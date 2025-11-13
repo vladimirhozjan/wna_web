@@ -1,10 +1,11 @@
 <template>
   <div class="auth-container">
-    <h2>Login</h2>
-    <form @submit.prevent="login">
+    <h2>Register</h2>
+    <form @submit.prevent="register">
       <input v-model="email" placeholder="Email" type="email" required />
       <input v-model="password" placeholder="Password" type="password" required />
-      <button type="submit">Login</button>
+      <input v-model="confirm" placeholder="Confirm Password" type="password" required />
+      <button type="submit">Register</button>
     </form>
   </div>
 </template>
@@ -14,10 +15,10 @@ import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
+const confirm = ref('')
 
-const login = async () => {
-  console.log('Logging in:', email.value)
-  // sem kasneje dodaš klic na C++ backend (JWT auth)
+const register = async () => {
+  console.log('Registering:', email.value)
 }
 </script>
 
