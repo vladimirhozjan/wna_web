@@ -12,8 +12,10 @@
 
 <style >
 
+/*
   nav { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
   a { text-decoration: none; color: #42b983; }
   a.router-link-active { font-weight: bold; }
+*/
 
 </style>

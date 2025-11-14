@@ -1,23 +1,39 @@
 {
-  "name": "web",
-  "version": "0.0.0",
+  "name": "wna-web",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
+
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
+
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:local": "CLIENT_ENV=local vite build",
+    "build:dev": "CLIENT_ENV=development vite build",
+    "build:prod": "CLIENT_ENV=production vite build",
+    "build:main": "APP=main-app vite build",
+    "build:main:local": "CLIENT_ENV=local APP=main-app vite build",
+    "build:main:dev": "CLIENT_ENV=development APP=main-app vite build",
+    "build:main:prod": "CLIENT_ENV=production APP=main-app vite build",
+    "obfuscate": "vite build --mode production",
+    "clean": "rimraf dist"
   },
+
   "dependencies": {
     "vue": "^3.5.22",
     "vue-router": "^4.5.1"
   },
+
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "vite": "^7.1.7",
-    "vite-plugin-vue-devtools": "^8.0.2"
+    "vite-plugin-vue-devtools": "^8.0.2",
+    "rollup-plugin-obfuscator": "^1.1.0",
+    "rimraf": "^5.0.1",
+    "terser": "^5.31.0"
   }
 }
