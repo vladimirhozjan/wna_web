@@ -1,0 +1,36 @@
+:root {
+    /* Colors */
+    --color-action: #4185DE;
+    --color-button-hover: #356DC0;
+    --color-primary-text: #374151;
+    --color-app-background: #F7F9FB;
+    --color-border-light: #E3E8EF;
+
+
+    /* Font family*/
+    --font-family-default: 'Inter', sans-serif;
+
+    /* Font size */
+    --font-size-display: clamp(32px, 6vw, 48px);
+    --font-size-subtitle: clamp(15px, 2.2vw, 18px);
+    --font-size-h1: clamp(26px, 5vw, 36px);
+    --font-size-h2: clamp(24px, 4vw, 30px);
+    --font-size-h3: clamp(20px, 3.5vw, 24px);
+    --font-size-h4: clamp(18px, 2.8vw, 20px);
+    --font-size-body-m: clamp(15px, 2vw, 16px);
+    --font-size-body-s: clamp(13px, 1.8vw, 14px);
+    --font-size-footnote: 12px;
+    --font-size-label: 12px;
+
+    /* Line height */
+    --lh-display: 120%;
+    --lh-subtitle: 150%;
+    --lh-h1:   125%;
+    --lh-h2:   130%;
+    --lh-h3:   135%;
+    --lh-h4:   140%;
+    --lh-body-m: 150%;
+    --lh-body-s: 150%;
+    --lh-footnote: 150%;
+    --lh-label: 140%;
+}

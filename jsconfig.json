@@ -3,8 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@main-app/*": ["src/main-app/*"],
-      "@admin-app/*": ["src/admin-app/*"]
+      "@main/*": ["src/main-app/*"],
+      "@admin/*": ["src/admin-app/*"]
     },
     "moduleResolution": "bundler",
     "checkJs": false
