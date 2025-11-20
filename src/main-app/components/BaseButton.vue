@@ -69,6 +69,7 @@ defineProps({
   background: #ecf3fc;
   border: 1px solid #c6daf6;
   color: #356dc0;
+  font-weight: 600;
 }
 .base-btn--ghost:hover {
   background: #c1d8f5;
