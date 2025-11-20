@@ -2,10 +2,17 @@
     /* Colors */
     --color-action: #4185DE;
     --color-button-hover: #356DC0;
-    --color-primary-text: #374151;
+    --color-text-primary: #374151;
     --color-app-background: #F7F9FB;
     --color-border-light: #E3E8EF;
-    --color-popup-backdrop:  rgba(247, 249, 251, 0.8);
+    --color-popup-backdrop:  rgba(247, 249, 251, 0.5);
+    --color-popup-background: #FFFFFF;
+    --color-text-prefill: #D1D5DB;
+    --color-input-border: #D1D5DB;
+    --color-input-border-focus: #4185DE;
+    --color-input-border-error: #EF4444;
+    --color-link-text: #4185DE;
+    --color-link-hover: #0951ae;
 
 
     /* Font family*/
@@ -20,8 +27,8 @@
     --font-size-h4: clamp(18px, 2.8vw, 20px);
     --font-size-body-m: clamp(15px, 2vw, 16px);
     --font-size-body-s: clamp(13px, 1.8vw, 14px);
-    --font-size-footnote: 12px;
-    --font-size-label: 12px;
+    --font-size-footnote: 11px;
+    --font-size-label: 13px;
 
     /* Line height */
     --lh-display: 120%;

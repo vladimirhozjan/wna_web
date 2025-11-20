@@ -1,57 +1,38 @@
 <template>
   <div v-if="anyOpen" class="auth-backdrop" @click="closeAll">
     <div class="auth-dialog" @click.stop>
-      <!-- LOGIN -->
-      <section v-if="login">
-        <h2>Login</h2>
-        <label>
-          <span>Email</span>
-          <input v-model="email" placeholder="you@example.com" type="email" />
-        </label>
-        <label>
-          <span>Password</span>
-          <input v-model="password" placeholder="••••••••" type="password" />
-        </label>
-        <button class="btn primary" @click="doLogin">Login</button>
-        <button class="btn ghost" @click="closeAll">Cancel</button>
-        <p class="auth-links">
-          <a href="#" @click.prevent="$emit('switch-to-forgot')">Forgot password?</a>
-        </p>
-        <p class="auth-links">
-          <a href="#" @click.prevent="$emit('switch-to-register')">Create an account</a>
-        </p>
-      </section>
 
       <!-- REGISTER -->
       <section v-if="register">
-        <h2>Sign up</h2>
-        <label>
-          <span>Email</span>
-          <input v-model="email" placeholder="you@example.com" type="email" />
-        </label>
-        <label>
-          <span>Password</span>
-          <input v-model="password" placeholder="Choose a strong password" type="password" />
-        </label>
-        <button class="btn primary" @click="doRegister">Register</button>
-        <button class="btn ghost" @click="closeAll">Cancel</button>
-        <p class="auth-links">
-          <a href="#" @click.prevent="$emit('switch-to-login')">Already have an account?</a>
-        </p>
+        <h2 class="text-h2 color-text-primary">Create Your Account</h2>
+        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"/>
+        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols"/>
+        <Inpt v-model="confirm" type="password" title="Confirm password" placeholder="Confirm your password"/>
+        <Btn @click="doRegister">Register</Btn>
+        <Lnk text="Already have an account?" link="Sign In" @action="$emit('switch-to-login')"/>
+      </section>
+
+
+      <!-- LOGIN -->
+      <section v-if="login">
+        <h2 class="text-h2 color-text-primary">Welcome Back</h2>
+        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"/>
+        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols"/>
+        <Btn @click="doLogin">Sign In</Btn>
+        <Lnk text="Forgot your password?" link="Reset it" @action="$emit('switch-to-forgot')"/>
+        <div class="separator"></div>
+        <Btn class="btn-not-wide" variant="ghost" @click="$emit('switch-to-register')">Create new account</Btn>
       </section>
 
       <!-- FORGOT -->
       <section v-if="forgot">
-        <h2>Reset password</h2>
-        <label>
-          <span>Email</span>
-          <input v-model="email" placeholder="you@example.com" type="email" />
-        </label>
-        <button class="btn primary" @click="doForgot">Send reset link</button>
-        <button class="btn ghost" @click="closeAll">Cancel</button>
-        <p class="auth-links">
-          <a href="#" @click.prevent="$emit('switch-to-login')">Back to login</a>
-        </p>
+        <div>
+          <h2 class="text-h2 color-text-primary">Forgot your password?</h2>
+          <p class="subtitle text-body-s color-text-primary">No problem. Just enter your email address below and we’ll send you a link to reset it.</p>
+        </div>
+        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"/>
+        <Btn @click="doLogin">Send reset link</Btn>
+        <Lnk text="Remember your password?" link="Back to login" @action="$emit('switch-to-login')"/>
       </section>
     </div>
   </div>
@@ -59,6 +40,9 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import Inpt from "./Inpt.vue";
+import Btn from "./Btn.vue";
+import Lnk from "./Lnk.vue";
 
 const props = defineProps({
   login: {
@@ -89,6 +73,7 @@ const emit = defineEmits([
 
 const email = ref('')
 const password = ref('')
+const confirm = ref('')
 
 const anyOpen = computed(() => props.login || props.register || props.forgot)
 
@@ -96,6 +81,7 @@ watch(anyOpen, (open) => {
   if (!open) {
     email.value = ''
     password.value = ''
+    confirm.value = ''
   }
 })
 
@@ -106,18 +92,22 @@ function closeAll() {
 }
 
 function doLogin() {
+  //TODO: check email format, password requirements
   // TODO: call your real login API here
   emit('logged-in', { email: email.value })
   closeAll()
 }
 
 function doRegister() {
+  //TODO: check email format, password requirements and confirm password, then send
   // TODO: call your real registration API here
+
   emit('registered', { email: email.value })
   closeAll()
 }
 
 function doForgot() {
+  //TODO: check email format, password requirements
   // TODO: call your real forgot-password API here
   emit('password-reset-sent', { email: email.value })
   closeAll()
@@ -128,6 +118,7 @@ function doForgot() {
 .auth-backdrop {
   position: fixed;
   inset: 0;
+  backdrop-filter: blur(3px);
   background: var(--color-popup-backdrop);
   display: flex;
   align-items: center;
@@ -136,58 +127,38 @@ function doForgot() {
 }
 
 .auth-dialog {
-  background: #ffffff;
-  padding: 24px;
+  margin: 0 20px;
+  background: var(--color-popup-background);
+  padding: 30px 30px;
   border-radius: 12px;
   width: 100%;
-  max-width: 380px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25);
+  max-width: 420px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.20);
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 h2 {
-  margin-bottom: 16px;
-  font-size: 20px;
+  text-align: center;
 }
 
-label {
-  display: block;
-  text-align: left;
-  margin-bottom: 12px;
+.btn-not-wide {
+  margin: 0 auto;
 }
 
-label span {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 13px;
-  color: #555;
+.separator {
+  height: 1px;
+  background: var(--color-border-light);
+  margin-bottom: 10px;
 }
 
-input {
-  width: 100%;
-  padding: 9px 10px;
-  border-radius: 6px;
-  border: 1px solid #d0d0d0;
-  font-size: 14px;
+.subtitle {
+  text-align: center;
+  margin: 10px 20px 0 20px;
 }
 
-input:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
-}
-
-.auth-links {
-  margin-top: 10px;
-  font-size: 13px;
-}
-
-.auth-links a {
-  color: #2563eb;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.auth-links a:hover {
-  text-decoration: underline;
-}
 </style>

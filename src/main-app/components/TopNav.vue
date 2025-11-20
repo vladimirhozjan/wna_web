@@ -6,8 +6,8 @@
     </div>
 
     <div class="topnav-right desktop-only" v-if="!authenticated">
-      <BaseButton size="md" variant="primary"  @click="$emit('open-register')">Start Here</BaseButton>
-      <BaseButton size="md" variant="ghost" @click="$emit('open-login')">Sign In</BaseButton>
+      <Btn size="md" variant="primary"  @click="$emit('open-register')">Start Here</Btn>
+      <Btn size="md" variant="ghost" @click="$emit('open-login')">Sign In</Btn>
     </div>
 
     <div class="topnav-right desktop-only" v-else>
@@ -16,12 +16,12 @@
     </div>
 
     <div class="mobile-only">
-      <BaseButton class="hamburger" variant="ghost" size="sm" @click="toggleMobile">☰</BaseButton>
+      <Btn class="hamburger" variant="ghost" size="sm" @click="toggleMobile">☰</Btn>
     </div>
 
     <div v-if="showMobile" class="mobile-menu">
-      <BaseButton size="lg" variant="primary" @click="$emit('open-register')">Start Here</BaseButton>
-      <BaseButton size="lg" variant="ghost" @click="$emit('open-login')">Sign In</BaseButton>
+      <Btn size="lg" variant="primary" @click="$emit('open-register')">Start Here</Btn>
+      <Btn size="lg" variant="ghost" @click="$emit('open-login')">Sign In</Btn>
     </div>
   </nav>
 
@@ -29,7 +29,7 @@
 
 <script setup>
 import { ref } from "vue"
-import BaseButton from '../components/BaseButton.vue'
+import Btn from './Btn.vue'
 defineProps({
   authenticated: {
     type: Boolean,
