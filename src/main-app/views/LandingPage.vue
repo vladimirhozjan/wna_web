@@ -1,19 +1,14 @@
 <template>
-  <LandingLayout
-    @open-login="showLogin = true"
-    @open-register="showRegister = true"
-  >
-    <section class="hero">
-      <h1>WhatsNextAction</h1>
-      <p class="hero-subtitle">
-        Under construction – we're building a GTD-inspired productivity platform.
-      </p>
-      <p class="hero-note">
-        Sign up to be one of the first users when we launch.
-      </p>
-      <div class="hero-actions">
-        <button class="btn primary" @click="showRegister = true">Get early access</button>
-        <button class="btn ghost" @click="showLogin = true">I already have an account</button>
+  <LandingLayout class="page" @open-login="showLogin = true" @open-register="showRegister = true">
+    <section class="under-construction">
+      <div class="top-segment">
+        <h1 class="text-display color-text-primary">WhatsNextAction</h1>
+        <p class="text-subtitle color-text-primary">
+          Under construction – we're building a GTD-inspired productivity platform.
+        </p>
+      </div>
+      <div>
+        <img src="../assets/UnderConstruction.svg" alt="Under construction"/>
       </div>
     </section>
   </LandingLayout>
@@ -101,42 +96,31 @@ function onSuccess() {
 }
 
 function onPopupChange(val) {
-  if (!val) close()
+  if (!val) closeAuth()
 }
-
 watch(() => props.mode, (m) => switchTo(m), { immediate: true })
 
 </script>
 
 <style scoped>
-.hero {
-  padding: 40px 0;
-}
-
-h1 {
-  font-size: clamp(32px, 5vw, 44px);
-  margin-bottom: 12px;
-}
-
-.hero-subtitle {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.hero-note {
-  font-size: 14px;
-  margin-bottom: 24px;
-  color: #555;
-}
-
-.hero-actions {
+.under-construction {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  gap: 30px;
   justify-content: center;
+  flex: 1;
 }
 
-.hero-actions .btn {
-  min-width: 180px;
+.top-segment {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 </style>

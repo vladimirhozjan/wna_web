@@ -1,7 +1,6 @@
 <template>
   <div class="landing-layout">
-    <TopNav
-      :authenticated="false"
+    <TopNav :authenticated="false"
       @open-login="$emit('open-login')"
       @open-register="$emit('open-register')"
     />
@@ -22,8 +21,11 @@ defineEmits(['open-login', 'open-register'])
 <style scoped>
 .landing-container {
   max-width: 900px;
-  margin: 80px auto;
+  margin: 0 auto;
   text-align: center;
   padding: 0 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 </style>

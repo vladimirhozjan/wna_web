@@ -128,7 +128,7 @@ function doForgot() {
 .auth-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--color-popup-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,11 +174,6 @@ input:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
-}
-
-.btn {
-  width: 100%;
-  margin-top: 10px;
 }
 
 .auth-links {

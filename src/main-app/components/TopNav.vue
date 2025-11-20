@@ -6,18 +6,19 @@
     </div>
 
     <div class="topnav-right" v-if="!authenticated">
-      <button class="btn ghost" @click="$emit('open-login')">Login</button>
-      <button class="btn primary" @click="$emit('open-register')">Sign up</button>
+      <BaseButton size="md" variant="primary"  @click="$emit('open-register')">Start Here</BaseButton>
+      <BaseButton size="md" variant="ghost" @click="$emit('open-login')">Sign In</BaseButton>
     </div>
 
     <div class="topnav-right" v-else>
       <span class="topnav-user-placeholder">User</span>
-      <button class="btn ghost" @click="$emit('logout')">Logout</button>
+<!--      <button class="" @click="$emit('logout')">Logout</button>-->
     </div>
   </nav>
 </template>
 
 <script setup>
+import BaseButton from '../components/BaseButton.vue'
 defineProps({
   authenticated: {
     type: Boolean,
@@ -29,6 +30,7 @@ defineEmits(['open-login', 'open-register', 'logout'])
 </script>
 
 <style scoped>
+
 .topnav {
   display: flex;
   align-items: center;
@@ -43,14 +45,15 @@ defineEmits(['open-login', 'open-register', 'logout'])
 }
 
 .topnav-logo {
-  height: 64px;
-  width: 64px;
+  height: 48px;
+  width: 48px;
 }
 
 .topnav-right {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-right: 10px;
 }
 
 .topnav-user-placeholder {

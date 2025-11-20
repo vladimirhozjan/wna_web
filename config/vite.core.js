@@ -44,7 +44,9 @@ export function createViteConfig(mode, envVars, appConfig, domain) {
 
         resolve: {
             alias: {
-                '@': path.resolve('apps')
+                '@': path.resolve(__dirname, 'src'),
+                '@main': path.resolve(__dirname, 'src/main-app'),
+                '@admin': path.resolve(__dirname, 'src/admin-app'),
             }
         },
 
