@@ -5,7 +5,7 @@
       <!-- REGISTER -->
       <section v-if="register">
         <h2 class="text-h2 color-text-primary">Create Your Account</h2>
-        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"/>
+        <Inpt v-model="email" type="email" title="Email" :error="emailError" placeholder="Enter your email address"/>
         <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols"/>
         <Inpt v-model="confirm" type="password" title="Confirm password" placeholder="Confirm your password"/>
         <Btn @click="doRegister">Register</Btn>
@@ -16,7 +16,7 @@
       <!-- LOGIN -->
       <section v-if="login">
         <h2 class="text-h2 color-text-primary">Welcome Back</h2>
-        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"/>
+        <Inpt v-model="email" type="email" title="Email" :error="emailError" placeholder="Enter your email address"/>
         <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols"/>
         <Btn @click="doLogin">Sign In</Btn>
         <Lnk text="Forgot your password?" link="Reset it" @action="$emit('switch-to-forgot')"/>
@@ -75,6 +75,10 @@ const email = ref('')
 const password = ref('')
 const confirm = ref('')
 
+const emailError = ref("")
+const passwordError = ref("")
+const confirmError = ref("")
+
 const anyOpen = computed(() => props.login || props.register || props.forgot)
 
 watch(anyOpen, (open) => {
@@ -94,8 +98,9 @@ function closeAll() {
 function doLogin() {
   //TODO: check email format, password requirements
   // TODO: call your real login API here
-  emit('logged-in', { email: email.value })
-  closeAll()
+  //emit('logged-in', { email: email.value })
+  emailError.value = "Test"
+  // closeAll()
 }
 
 function doRegister() {

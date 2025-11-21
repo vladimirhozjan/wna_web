@@ -3,6 +3,7 @@
     --color-action: #4185DE;
     --color-button-hover: #356DC0;
     --color-text-primary: #374151;
+    --color-text-error: #7f1c1d;
     --color-app-background: #F7F9FB;
     --color-border-light: #E3E8EF;
     --color-popup-backdrop:  rgba(247, 249, 251, 0.5);
@@ -10,7 +11,8 @@
     --color-text-prefill: #D1D5DB;
     --color-input-border: #D1D5DB;
     --color-input-border-focus: #4185DE;
-    --color-input-border-error: #EF4444;
+    --color-input-border-error: #f9c6c6;
+    --color-input-background-error: #fef2f2;
     --color-link-text: #4185DE;
     --color-link-hover: #0951ae;
 

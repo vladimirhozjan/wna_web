@@ -1,8 +1,15 @@
 <template>
   <label>
-    <span class="text-label color-text-primary" v-if="title">{{ props.title }}</span>
-    <input v-model="model_value" :placeholder="props.placeholder" :type="props.type" class="text-body-m color-text-primary"/>
-    <span class="text-footnote color-text-primary" v-if="footer">{{ props.footer }}</span>
+    <span class="text-label color-text-primary" v-if="props.title">{{ props.title }}</span>
+    <input
+        v-model="model_value"
+        :placeholder="props.placeholder"
+        :type="props.type"
+        class="text-body-m color-text-primary"
+        :class="{ 'input-error': props.error }"
+    />
+    <span class="text-footnote color-text-primary" v-if="props.footer">{{ props.footer }}</span>
+    <span class="text-footnote color-error-text" v-if="props.error">{{ props.error }}</span>
   </label>
 </template>
 
@@ -16,7 +23,8 @@ const props = defineProps({
   type: {
     type: String,
     required: true,
-  }
+  },
+  error: String
 })
 </script>
 
@@ -48,6 +56,11 @@ input:focus {
 
 input::placeholder {
   color: var(--color-text-prefill);
+}
+
+input.input-error {
+  border-color: var(--color-input-border-error);
+  background: var(--color-input-background-error);
 }
 
 </style>
