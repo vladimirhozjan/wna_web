@@ -1,10 +1,7 @@
 <template>
   <button
-      :class="[
-      'base-btn',
-      `base-btn--${variant}`,
-      `base-btn--${size}`
-    ]"
+      :class="classes"
+      :disabled="disabled"
       v-bind="$attrs"
   >
     <slot />
@@ -12,7 +9,9 @@
 </template>
 
 <script setup>
-defineProps({
+import {computed} from 'vue'
+
+const props = defineProps({
   variant: {
     type: String,
     default: 'primary', // primary, ghost, danger
@@ -20,8 +19,20 @@ defineProps({
   size: {
     type: String,
     default: 'md', // sm, md, lg
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   }
 })
+
+const classes = computed(() => ([
+  'base-btn',
+  `base-btn--${props.variant}`,
+  `base-btn--${props.size}`,
+  { 'base-btn--disabled': props.disabled }
+]))
+
 </script>
 
 <style scoped>
@@ -64,6 +75,10 @@ defineProps({
 .base-btn--primary:active {
   background: #1c539c;
 }
+.base-btn--primary:disabled {
+  background: #acbfd7;
+  color: #f2f2f2;
+}
 
 .base-btn--ghost {
   background: #ecf3fc;
@@ -77,7 +92,11 @@ defineProps({
 .base-btn--ghost:active {
   background: #95bcee;
 }
-
+.base-btn--ghost:disabled {
+  background: #f1f4f8;
+  color: #95a9c6;
+  border: 1px solid #d2dce9;
+}
 
 .base-btn--danger {
   background: #ef4444;
@@ -85,6 +104,21 @@ defineProps({
   font-weight: 700;
 }
 .base-btn--danger:hover {
-  background: #d41111;
+  background: #eb1414;
 }
+.base-btn--danger:active {
+  background: #bc1010;
+}
+.base-btn--danger:disabled {
+  background: #e1b7b7;
+  color: #f2f2f2;
+}
+
+
+.base-btn--disabled,
+.base-btn:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 </style>

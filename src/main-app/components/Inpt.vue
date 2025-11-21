@@ -6,15 +6,17 @@
         :placeholder="props.placeholder"
         :type="props.type"
         class="text-body-m color-text-primary"
-        :class="{ 'input-error': props.error }"
+        :class="{ 'input-error': error }"
+        @input="handleInput"
     />
     <span class="text-footnote color-text-primary" v-if="props.footer">{{ props.footer }}</span>
-    <span class="text-footnote color-error-text" v-if="props.error">{{ props.error }}</span>
+    <span class="text-footnote color-text-error" v-if="error">{{ error }}</span>
   </label>
 </template>
 
 <script setup>
 const model_value = defineModel()
+const error = defineModel('error', { default: '' })
 
 const props = defineProps({
   title: String,
@@ -23,9 +25,13 @@ const props = defineProps({
   type: {
     type: String,
     required: true,
-  },
-  error: String
+  }
 })
+
+function handleInput(e) {
+  error.value = ''
+}
+
 </script>
 
 <style scoped>

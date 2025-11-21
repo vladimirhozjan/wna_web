@@ -5,10 +5,10 @@
       <!-- REGISTER -->
       <section v-if="register">
         <h2 class="text-h2 color-text-primary">Create Your Account</h2>
-        <Inpt v-model="email" type="email" title="Email" :error="emailError" placeholder="Enter your email address"/>
-        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols"/>
-        <Inpt v-model="confirm" type="password" title="Confirm password" placeholder="Confirm your password"/>
-        <Btn @click="doRegister">Register</Btn>
+        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
+        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
+        <Inpt v-model="confirm" type="password" title="Confirm password" placeholder="Confirm your password" v-model:error="confirmError" />
+        <Btn @click="doRegister" :disabled="disableRegister">Register</Btn>
         <Lnk text="Already have an account?" link="Sign In" @action="$emit('switch-to-login')"/>
       </section>
 
@@ -16,9 +16,9 @@
       <!-- LOGIN -->
       <section v-if="login">
         <h2 class="text-h2 color-text-primary">Welcome Back</h2>
-        <Inpt v-model="email" type="email" title="Email" :error="emailError" placeholder="Enter your email address"/>
-        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols"/>
-        <Btn @click="doLogin">Sign In</Btn>
+        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
+        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
+        <Btn @click="doLogin" :disabled="disableLogin">Sign In</Btn>
         <Lnk text="Forgot your password?" link="Reset it" @action="$emit('switch-to-forgot')"/>
         <div class="separator"></div>
         <Btn class="btn-not-wide" variant="ghost" @click="$emit('switch-to-register')">Create new account</Btn>
@@ -30,8 +30,8 @@
           <h2 class="text-h2 color-text-primary">Forgot your password?</h2>
           <p class="subtitle text-body-s color-text-primary">No problem. Just enter your email address below and we’ll send you a link to reset it.</p>
         </div>
-        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"/>
-        <Btn @click="doLogin">Send reset link</Btn>
+        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError"/>
+        <Btn @click="doForgot" :disabled="disableForgot">Send reset link</Btn>
         <Lnk text="Remember your password?" link="Back to login" @action="$emit('switch-to-login')"/>
       </section>
     </div>
@@ -43,6 +43,7 @@ import { computed, ref, watch } from 'vue'
 import Inpt from "./Inpt.vue";
 import Btn from "./Btn.vue";
 import Lnk from "./Lnk.vue";
+import {isValidEmail, isValidPassword} from "../scripts/auth.js";
 
 const props = defineProps({
   login: {
@@ -96,15 +97,39 @@ function closeAll() {
 }
 
 function doLogin() {
-  //TODO: check email format, password requirements
+  if (!isValidEmail(email.value)) {
+    emailError.value = "Invalid email"
+  }
+
+  if (!isValidPassword(password.value)) {
+    passwordError.value = "Password must contain letters, numbers and symbols"
+  }
+
+  if (emailError.value || passwordError.value) {
+    return
+  }
   // TODO: call your real login API here
-  //emit('logged-in', { email: email.value })
-  emailError.value = "Test"
-  // closeAll()
+  emit('logged-in', { email: email.value })
+  closeAll()
 }
 
 function doRegister() {
-  //TODO: check email format, password requirements and confirm password, then send
+  if (!isValidEmail(email.value)) {
+    emailError.value = "Invalid email"
+  }
+
+  if (!isValidPassword(password.value)) {
+    passwordError.value = "Password must contain letters, numbers and symbols"
+  }
+
+  if (password.value !== confirm.value) {
+    confirmError.value = "Passwords do not match"
+  }
+
+  if (emailError.value || passwordError.value || confirmError.value) {
+    return
+  }
+
   // TODO: call your real registration API here
 
   emit('registered', { email: email.value })
@@ -112,11 +137,24 @@ function doRegister() {
 }
 
 function doForgot() {
-  //TODO: check email format, password requirements
+  if (!isValidEmail(email.value)) {
+    emailError.value = "Invalid email"
+  }
+
+  if (emailError.value || passwordError.value) {
+    return
+  }
+
   // TODO: call your real forgot-password API here
+
   emit('password-reset-sent', { email: email.value })
   closeAll()
 }
+
+const disableLogin = computed(() => !email.value || !password.value)
+const disableRegister = computed(() => !email.value || !password.value || !confirm.value)
+const disableForgot = computed(() => !email.value)
+
 </script>
 
 <style scoped>
