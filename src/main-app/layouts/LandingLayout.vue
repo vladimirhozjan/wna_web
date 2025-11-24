@@ -1,6 +1,6 @@
 <template>
   <div class="landing-layout">
-    <TopNav :authenticated="false"
+    <TopNav :authenticated="auth.isAuthenticated.value"
       @open-login="$emit('open-login')"
       @open-register="$emit('open-register')"
     />
@@ -13,9 +13,9 @@
 
 <script setup>
 import TopNav from '../components/TopNav.vue'
-
+import {authModel} from "../scripts/authModel.js";
 defineEmits(['open-login', 'open-register'])
-
+const auth = authModel()
 </script>
 
 <style scoped>

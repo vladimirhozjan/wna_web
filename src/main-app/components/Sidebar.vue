@@ -11,24 +11,40 @@
         <li><a href="#">Calendar</a></li>
       </ul>
     </nav>
+    <div class="sidebar-footer">
+      <Btn @click="$emit('logout')">
+        Logout
+      </Btn>
+    </div>
   </aside>
 </template>
 
 <script setup>
+import Btn from "../components/Btn.vue";
+defineEmits(['logout']);
 </script>
 
 <style scoped>
 .sidebar {
   width: 240px;
-  border-right: 1px solid #e6e6e6;
-  padding: 20px 16px;
-  background: #fafafa;
-  height: 100%;
-  box-sizing: border-box;
+
+  background: #f9f9f9;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header {
   margin-bottom: 16px;
+}
+
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto; /* potisne na dno */
+  padding-top: 20px;
+  border-top: 1px solid #eee;
 }
 
 .sidebar-title {
@@ -59,4 +75,6 @@ a {
 a:hover {
   color: #2563eb;
 }
+
+
 </style>

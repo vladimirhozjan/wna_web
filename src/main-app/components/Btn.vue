@@ -4,7 +4,13 @@
       :disabled="disabled"
       v-bind="$attrs"
   >
-    <slot />
+    <!-- Loader -->
+    <span v-if="loading" class="base-btn__loader"></span>
+
+    <!-- Button content -->
+    <span v-show="!loading" class="base-btn__content">
+      <slot />
+    </span>
   </button>
 </template>
 
@@ -23,6 +29,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   }
 })
 
@@ -30,7 +40,10 @@ const classes = computed(() => ([
   'base-btn',
   `base-btn--${props.variant}`,
   `base-btn--${props.size}`,
-  { 'base-btn--disabled': props.disabled }
+  {
+    'base-btn--disabled': props.disabled,
+    'base-btn--loading': props.loading
+  }
 ]))
 
 </script>
@@ -45,6 +58,33 @@ const classes = computed(() => ([
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.base-btn__loader {
+  width: 13px;
+  height: 13px;
+  border: 4px solid transparent;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spinPulse 2s linear infinite;
+}
+
+@keyframes spinPulse {
+  0% {
+    transform: rotate(0deg) scale(0.9);
+    border-color: rgba(255,255,255,0.3);
+    border-top-color: #ffffff;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+    border-color: rgba(255,255,255,0.7);
+    border-top-color: #ffffff;
+  }
+  100% {
+    transform: rotate(360deg) scale(0.9);
+    border-color: rgba(255,255,255,0.3);
+    border-top-color: #ffffff;
+  }
 }
 
 /* SIZES */
@@ -114,11 +154,16 @@ const classes = computed(() => ([
   color: #f2f2f2;
 }
 
-
 .base-btn--disabled,
 .base-btn:disabled {
   cursor: not-allowed;
   pointer-events: none;
+}
+
+.base-btn--loading {
+  cursor: wait;
+  pointer-events: none;
+  opacity: 0.8;
 }
 
 </style>

@@ -1,12 +1,9 @@
 <template>
   <div class="dashboard">
-    <TopNav
-      :authenticated="true"
-      @logout="logout"
-    />
+    <TopNav :authenticated="auth.isAuthenticated.value" />
 
     <div class="dashboard-body">
-      <Sidebar class="dashboard-sidebar" />
+      <Sidebar class="dashboard-sidebar" @logout="$emit('logout')"/>
       <main class="dashboard-content">
         <slot />
       </main>
@@ -15,13 +12,21 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import TopNav from '../components/TopNav.vue'
 import Sidebar from '../components/Sidebar.vue'
+import router from "../router/router.js";
+import {authModel} from "../scripts/authModel.js";
 
-function logout() {
-  // TODO: clear auth tokens and redirect to landing
-  window.location.href = '/'
-}
+const auth = authModel()
+
+onMounted(async () => {
+  if (!auth.isAuthenticated.value) {
+    return router.push({name: 'landing'})
+  }
+})
+
+defineEmits(['logout'])
 </script>
 
 <style scoped>

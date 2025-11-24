@@ -5,23 +5,26 @@
       <span class="text-h3 color-text-primary">WhatsNextAction</span>
     </div>
 
-    <div class="topnav-right desktop-only" v-if="!authenticated">
-      <Btn size="md" variant="primary"  @click="$emit('open-register')">Start Here</Btn>
-      <Btn size="md" variant="ghost" @click="$emit('open-login')">Sign In</Btn>
+    <div v-if="!authenticated">
+      <div class="topnav-right desktop-only">
+        <Btn size="md" variant="primary"  @click="$emit('open-register')">Start Here</Btn>
+        <Btn size="md" variant="ghost" @click="$emit('open-login')">Sign In</Btn>
+      </div>
+      <div class="mobile-only">
+        <Btn class="hamburger" variant="ghost" size="sm" @click="toggleMobile">☰</Btn>
+      </div>
     </div>
 
-    <div class="topnav-right desktop-only" v-else>
-      <span class="topnav-user-placeholder">User</span>
-<!--      <button class="" @click="$emit('logout')">Logout</button>-->
+
+    <div v-if="showMobile" class="user-menu">
+      <div v-if="!authenticated">
+        <button class="dropdown-item" @click="$emit('open-register')">Start Here</button>
+        <button class="dropdown-item" @click="$emit('open-login')">Sign In</button>
+      </div>
     </div>
 
-    <div class="mobile-only">
-      <Btn class="hamburger" variant="ghost" size="sm" @click="toggleMobile">☰</Btn>
-    </div>
-
-    <div v-if="showMobile" class="mobile-menu">
-      <Btn size="lg" variant="primary" @click="$emit('open-register')">Start Here</Btn>
-      <Btn size="lg" variant="ghost" @click="$emit('open-login')">Sign In</Btn>
+    <div class="user-menu" v-if="authMenuOpen">
+      <button class="dropdown-item" @click="$emit('logout')">Logout</button>
     </div>
   </nav>
 
@@ -30,13 +33,22 @@
 <script setup>
 import { ref } from "vue"
 import Btn from './Btn.vue'
+
 defineProps({
   authenticated: {
     type: Boolean,
     default: false,
   },
+  user: {
+    type: Object,
+    default: () => ({
+      email: "",
+      avatarUrl: ""
+    })
+  }
 })
 
+const authMenuOpen = ref(false)
 const showMobile = ref(false)
 const toggleMobile = () => {
   showMobile.value = !showMobile.value
@@ -72,13 +84,7 @@ defineEmits(['open-login', 'open-register', 'logout'])
   margin-right: 10px;
 }
 
-.topnav-user-placeholder {
-  margin-right: 12px;
-  font-size: 14px;
-  color: #666;
-}
-
-.mobile-menu {
+.user-menu {
   position: absolute;
   top: 70px;
   right: 20px;
@@ -114,6 +120,20 @@ defineEmits(['open-login', 'open-register', 'logout'])
     border: none;
     margin-right: 4px;
   }
+}
+
+
+.dropdown-item {
+  width: 100%;
+  padding: 10px 18px;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 </style>

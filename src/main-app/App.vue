@@ -1,6 +1,7 @@
 <template>
   <div class="window-size">
-    Width: {{ width }}px — Height: {{ height }}px
+    <p>isAuthenticated: {{ auth.isAuthenticated }}</p>
+    <p>Width: {{ width }}px — Height: {{ height }}px</p>
   </div>
 
   <router-view />
@@ -8,9 +9,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue"
+import {authModel} from "./scripts/authModel.js";
 
 const width = ref(window.innerWidth)
 const height = ref(window.innerHeight)
+const auth = authModel()
 
 function updateSize() {
   width.value = window.innerWidth

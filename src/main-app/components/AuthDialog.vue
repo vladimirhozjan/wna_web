@@ -2,19 +2,17 @@
   <div v-if="anyOpen" class="auth-backdrop" @click="closeAll">
     <div class="auth-dialog" @click.stop>
 
-      <!-- REGISTER -->
-      <section v-if="register">
+      <section v-if="props.register">
         <h2 class="text-h2 color-text-primary">Create Your Account</h2>
         <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
         <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
         <Inpt v-model="confirm" type="password" title="Confirm password" placeholder="Confirm your password" v-model:error="confirmError" />
-        <Btn @click="doRegister" :disabled="disableRegister">Register</Btn>
+        <Btn @click="doRegister" :disabled="disableRegister" :loading="loading">Register</Btn>
         <Lnk text="Already have an account?" link="Sign In" @action="$emit('switch-to-login')"/>
       </section>
 
 
-      <!-- LOGIN -->
-      <section v-if="login">
+      <section v-if="props.login">
         <h2 class="text-h2 color-text-primary">Welcome Back</h2>
         <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
         <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
@@ -24,8 +22,7 @@
         <Btn class="btn-not-wide" variant="ghost" @click="$emit('switch-to-register')">Create new account</Btn>
       </section>
 
-      <!-- FORGOT -->
-      <section v-if="forgot">
+      <section v-if="props.forgot">
         <div>
           <h2 class="text-h2 color-text-primary">Forgot your password?</h2>
           <p class="subtitle text-body-s color-text-primary">No problem. Just enter your email address below and we’ll send you a link to reset it.</p>
@@ -43,7 +40,10 @@ import { computed, ref, watch } from 'vue'
 import Inpt from "./Inpt.vue";
 import Btn from "./Btn.vue";
 import Lnk from "./Lnk.vue";
-import {isValidEmail, isValidPassword} from "../scripts/auth.js";
+import {isValidEmail, isValidPassword} from "../scripts/authTools.js";
+import { authModel } from '../scripts/authModel.js'
+
+const auth = authModel()
 
 const props = defineProps({
   login: {
@@ -96,7 +96,7 @@ function closeAll() {
   emit('update:forgot', false)
 }
 
-function doLogin() {
+async function doLogin() {
   if (!isValidEmail(email.value)) {
     emailError.value = "Invalid email"
   }
@@ -108,12 +108,27 @@ function doLogin() {
   if (emailError.value || passwordError.value) {
     return
   }
-  // TODO: call your real login API here
-  emit('logged-in', { email: email.value })
-  closeAll()
+
+  try {
+    const data = await auth.login(email.value, password.value)
+
+    const userId = data.id || data.user_id || null
+
+    if (userId) {
+      await auth.loadUser(userId)
+    }
+
+    emit('logged-in', { email: email.value })
+    closeAll()
+  } catch (err) {
+    console.log(err)
+    // error.value je že nastavljen v modelu
+  }
+
+
 }
 
-function doRegister() {
+async function doRegister() {
   if (!isValidEmail(email.value)) {
     emailError.value = "Invalid email"
   }
@@ -130,13 +145,25 @@ function doRegister() {
     return
   }
 
-  // TODO: call your real registration API here
+  try {
+    const data = await auth.register(email.value, password.value)
 
-  emit('registered', { email: email.value })
-  closeAll()
+    const userId = data.id
+
+    await auth.loadUser(userId)
+
+    emit('registered', { email: email.value })
+    closeAll()
+
+  } catch (err) {
+    console.log(err)
+    // error.value je že nastavljen v modelu
+  }
+
+
 }
 
-function doForgot() {
+async function doForgot() {
   if (!isValidEmail(email.value)) {
     emailError.value = "Invalid email"
   }
@@ -145,10 +172,21 @@ function doForgot() {
     return
   }
 
-  // TODO: call your real forgot-password API here
+  try {
+    const data = await auth.forgotPassword(email.value)
+    console.log(data)
 
-  emit('password-reset-sent', { email: email.value })
-  closeAll()
+    //TODO: pojdi na stran kjer vneses password ali pa tudi ne odvisno od tokena
+
+    emit('password-reset-sent', { email: email.value })
+    closeAll()
+
+  } catch (err) {
+    console.log(err)
+    // error.value je že nastavljen v modelu
+  }
+
+
 }
 
 const disableLogin = computed(() => !email.value || !password.value)

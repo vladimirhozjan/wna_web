@@ -1,7 +1,7 @@
 export const DOMAINS = {
     local: {
-        app: 'http://localhost:8080',
-        api: 'http://localhost:9000'
+        app: 'http://localhost:5173',
+        api: 'http://localhost:8000'
     },
     development: {
         app: 'https://dev.whatsnextaction.com',
