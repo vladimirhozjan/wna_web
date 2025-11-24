@@ -8,6 +8,7 @@
         class="text-body-m color-text-primary"
         :class="{ 'input-error': error }"
         @input="handleInput"
+        @keydown.enter="$emit('enter')"
     />
     <span class="text-footnote color-text-primary" v-if="props.footer">{{ props.footer }}</span>
     <span class="text-footnote color-text-error" v-if="error">{{ error }}</span>
@@ -28,10 +29,11 @@ const props = defineProps({
   }
 })
 
-function handleInput(e) {
+function handleInput() {
   error.value = ''
 }
 
+defineEmits(['enter'])
 </script>
 
 <style scoped>

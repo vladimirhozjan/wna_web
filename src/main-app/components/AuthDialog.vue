@@ -6,7 +6,7 @@
         <h2 class="text-h2 color-text-primary">Create Your Account</h2>
         <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
         <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
-        <Inpt v-model="confirm" type="password" title="Confirm password" placeholder="Confirm your password" v-model:error="confirmError" />
+        <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password" placeholder="Confirm your password" v-model:error="confirmError" />
         <Btn @click="doRegister" :disabled="disableRegister" :loading="loading">Register</Btn>
         <Lnk text="Already have an account?" link="Sign In" @action="$emit('switch-to-login')"/>
       </section>
@@ -15,7 +15,7 @@
       <section v-if="props.login">
         <h2 class="text-h2 color-text-primary">Welcome Back</h2>
         <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
-        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
+        <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
         <Btn @click="doLogin" :disabled="disableLogin">Sign In</Btn>
         <Lnk text="Forgot your password?" link="Reset it" @action="$emit('switch-to-forgot')"/>
         <div class="separator"></div>
@@ -27,7 +27,7 @@
           <h2 class="text-h2 color-text-primary">Forgot your password?</h2>
           <p class="subtitle text-body-s color-text-primary">No problem. Just enter your email address below and we’ll send you a link to reset it.</p>
         </div>
-        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError"/>
+        <Inpt v-model="email" @enter="doForgot" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError"/>
         <Btn @click="doForgot" :disabled="disableForgot">Send reset link</Btn>
         <Lnk text="Remember your password?" link="Back to login" @action="$emit('switch-to-login')"/>
       </section>
@@ -159,7 +159,6 @@ async function doRegister() {
     console.log(err)
     // error.value je že nastavljen v modelu
   }
-
 
 }
 
