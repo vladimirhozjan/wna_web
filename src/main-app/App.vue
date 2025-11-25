@@ -1,15 +1,18 @@
 <template>
   <div class="window-size">
     <p>isAuthenticated: {{ auth.isAuthenticated }}</p>
+    <p>isLoading: {{ auth.loading}}</p>
     <p>Width: {{ width }}px — Height: {{ height }}px</p>
   </div>
 
-  <router-view />
+  <RouterView />
+  <ErrorToaster />
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue"
 import {authModel} from "./scripts/authModel.js";
+import ErrorToaster from "./components/ErrorToaster.vue";
 
 const width = ref(window.innerWidth)
 const height = ref(window.innerHeight)

@@ -7,7 +7,7 @@
         <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
         <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
         <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password" placeholder="Confirm your password" v-model:error="confirmError" />
-        <Btn @click="doRegister" :disabled="disableRegister" :loading="loading">Register</Btn>
+        <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
         <Lnk text="Already have an account?" link="Sign In" @action="$emit('switch-to-login')"/>
       </section>
 
@@ -16,7 +16,7 @@
         <h2 class="text-h2 color-text-primary">Welcome Back</h2>
         <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
         <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
-        <Btn @click="doLogin" :disabled="disableLogin">Sign In</Btn>
+        <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
         <Lnk text="Forgot your password?" link="Reset it" @action="$emit('switch-to-forgot')"/>
         <div class="separator"></div>
         <Btn class="btn-not-wide" variant="ghost" @click="$emit('switch-to-register')">Create new account</Btn>
@@ -28,7 +28,7 @@
           <p class="subtitle text-body-s color-text-primary">No problem. Just enter your email address below and we’ll send you a link to reset it.</p>
         </div>
         <Inpt v-model="email" @enter="doForgot" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError"/>
-        <Btn @click="doForgot" :disabled="disableForgot">Send reset link</Btn>
+        <Btn @click="doForgot" :disabled="disableForgot" :loading="auth.loading.value">Send reset link</Btn>
         <Lnk text="Remember your password?" link="Back to login" @action="$emit('switch-to-login')"/>
       </section>
     </div>
@@ -42,8 +42,11 @@ import Btn from "./Btn.vue";
 import Lnk from "./Lnk.vue";
 import {isValidEmail, isValidPassword} from "../scripts/authTools.js";
 import { authModel } from '../scripts/authModel.js'
+import { errorModel } from '../scripts/errorModel.js'
+import { mapApiError, ErrorScenario } from "../scripts/errorMapper.js";
 
 const auth = authModel()
+const error = errorModel()
 
 const props = defineProps({
   login: {
@@ -122,7 +125,7 @@ async function doLogin() {
     closeAll()
   } catch (err) {
     console.log(err)
-    // error.value je že nastavljen v modelu
+    error.push("Login failed with error: " + mapApiError(err, ErrorScenario.LOGIN))
   }
 
 
@@ -157,7 +160,7 @@ async function doRegister() {
 
   } catch (err) {
     console.log(err)
-    // error.value je že nastavljen v modelu
+    error.push("Registration failed with error: " + mapApiError(err, ErrorScenario.REGISTER))
   }
 
 }
@@ -182,7 +185,7 @@ async function doForgot() {
 
   } catch (err) {
     console.log(err)
-    // error.value je že nastavljen v modelu
+    error.push("Forgot password failed with error: " + mapApiError(err))
   }
 
 

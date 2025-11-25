@@ -1,8 +1,5 @@
 <template>
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-title">Menu</span>
-    </div>
     <nav>
       <ul>
         <li><a href="#">Dashboard</a></li>
@@ -33,10 +30,6 @@ defineEmits(['logout']);
   padding: 20px;
   display: flex;
   flex-direction: column;
-}
-
-.sidebar-header {
-  margin-bottom: 16px;
 }
 
 .sidebar-footer {

@@ -93,7 +93,7 @@ defineEmits(['open-login', 'open-register', 'logout'])
   gap: 12px;
   background: white;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 

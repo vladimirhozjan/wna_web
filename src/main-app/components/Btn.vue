@@ -51,7 +51,7 @@ const classes = computed(() => ([
 <style scoped>
 .base-btn {
   font-family: var(--font-family-default),serif;
-  border-radius: 7px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
   transition: 0.15s background, 0.15s color, 0.15s border;
