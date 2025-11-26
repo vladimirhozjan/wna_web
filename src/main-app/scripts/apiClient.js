@@ -76,7 +76,7 @@ export async function loginUser({ email, password }) {
     }
 }
 
-export async function refreshTokens() {
+export async function refreshToken() {
     try {
         const access = localStorage.getItem('auth_token')
         const refresh = localStorage.getItem('refresh_token')
@@ -123,7 +123,16 @@ export async function getUser(userId) {
 
 export async function forgotPassword(email) {
     try {
-        const res = await httpApi.post('/v1/user/forgot-password', { email })
+        const res = await httpApi.post('/v1/user/forgot', { email })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function resetPassword(password, token) {
+    try {
+        const res = await httpApi.post('/v1/user/reset', { password, token })
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -144,8 +153,21 @@ export async function deleteUser(userId) {
     }
 }
 
-export function logout() {
+export function logoutUser() {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
     delete httpApi.defaults.headers.Authorization
 }
+
+const apiClient = {
+    loginUser,
+    registerUser,
+    refreshToken,
+    getUser,
+    forgotPassword,
+    resetPassword,
+    deleteUser,
+    logoutUser,
+}
+
+export default apiClient

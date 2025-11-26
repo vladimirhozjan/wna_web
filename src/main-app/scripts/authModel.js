@@ -1,5 +1,5 @@
 import {computed, ref} from 'vue'
-import {forgotPassword as apiForgotPassword, getUser, loginUser, logout as apiLogout, refreshTokens, registerUser} from './authClient.js'
+import apiClient from './apiClient.js'
 
 window.addEventListener('storage', (event) => {
     if (event.key === 'logout') {
@@ -33,12 +33,12 @@ export function authModel() {
     }
 
 
-    async function register(email, password) {
+    async function registerUser(email, password) {
         loading.value = true
         error.value = null
 
         try {
-            const data = await registerUser({ email, password })
+            const data = await apiClient.registerUser({ email, password })
 
             if (data.user) {
                 currentUser.value = data.user
@@ -65,7 +65,7 @@ export function authModel() {
         error.value = null
 
         try {
-            return await apiForgotPassword(email)
+            return await apiClient.forgotPassword(email)
         } catch (err) {
             error.value = err
             throw err
@@ -74,12 +74,26 @@ export function authModel() {
         }
     }
 
-    async function login(email, password) {
+    async function resetPassword(password, token) {
         loading.value = true
         error.value = null
 
         try {
-            const data = await loginUser({ email, password })
+            return await apiClient.resetPassword(password, token)
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function loginUser(email, password) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.loginUser({ email, password })
 
             if (data.user) {
                 currentUser.value = data.user
@@ -101,14 +115,12 @@ export function authModel() {
         }
     }
 
-    async function refresh() {
+    async function refreshToken() {
         loading.value = true
         error.value = null
 
         try {
-            const data = await refreshTokens()
-            return data
-
+            return await apiClient.refreshTokens()
         } catch (err) {
             error.value = err
             throw err
@@ -118,8 +130,8 @@ export function authModel() {
         }
     }
 
-    function logout() {
-        apiLogout()
+    function logoutUser() {
+        apiClient.logoutUser()
         currentUser.value = null
 
         localStorage.removeItem('current_user')
@@ -133,7 +145,7 @@ export function authModel() {
         error.value = null
 
         try {
-            const user = await getUser(userId)   // <-- from authTools.js
+            const user = await apiClient.getUser(userId)   // <-- from authTools.js
             currentUser.value = user
             localStorage.setItem('current_user', JSON.stringify(user))
             return user
@@ -156,11 +168,12 @@ export function authModel() {
         isAuthenticated,
 
         // actions
-        register,
-        login,
+        registerUser,
+        loginUser,
         loadUser,
-        refresh,
-        logout,
-        forgotPassword
+        refreshToken,
+        logoutUser,
+        forgotPassword,
+        resetPassword
     }
 }

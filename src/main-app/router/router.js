@@ -9,6 +9,7 @@ const routes = [
     {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}},
     {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}},
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
+    {path: '/reset', name: 'reset', component: LandingPage, props: {mode: 'reset'}},
     {path: '/my', name: 'my', component: DashboardHome},
 ]
 

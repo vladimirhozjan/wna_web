@@ -17,7 +17,7 @@ import {watch} from "vue";
 const auth = authModel()
 const router = useRouter()
 function logout() {
-  auth.logout()
+  auth.logoutUser()
   router.push({name: 'landing'})
 }
 
