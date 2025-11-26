@@ -1,111 +1,174 @@
 <template>
-  <div v-if="anyOpen" class="auth-backdrop" @click="closeAll">
-    <div class="auth-dialog" @click.stop>
+  <Transition name="auth-fade">
+    <div v-if="isOpen" class="auth-backdrop" @click="closeAll">
+      <Transition name="auth-section" mode="out-in">
+        <div class="auth-dialog" @click.stop :key="props.mode || 'closed'">
 
-      <section v-if="props.register">
-        <h2 class="text-h2 color-text-primary">Create Your Account</h2>
-        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
-        <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
-        <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password" placeholder="Confirm your password" v-model:error="confirmError" />
-        <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
-        <Lnk text="Already have an account?" link="Sign In" @action="$emit('switch-to-login')"/>
-      </section>
+          <section v-if="props.mode === 'register'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Create Your Account</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                Start your journey to better clarity and control.
+              </p>
+            </div>
+            <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                  v-model:error="emailError"/>
+            <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
+                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                  v-model:error="passwordError"/>
+            <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
+                  placeholder="Confirm your password" v-model:error="confirmError"/>
+            <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
+            <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
+          </section>
 
+          <section v-else-if="props.mode === 'login'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Welcome Back</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                Let's get you organized.
+              </p>
+            </div>
+            <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                  v-model:error="emailError"/>
+            <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password"
+                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                  v-model:error="passwordError"/>
+            <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
+            <Lnk text="Forgot your password?" link="Reset it" @action="goToForgot"/>
+            <div class="separator"></div>
+            <Btn class="btn-not-wide" variant="ghost" @click="goToRegister">Create new account</Btn>
+          </section>
 
-      <section v-if="props.login">
-        <h2 class="text-h2 color-text-primary">Welcome Back</h2>
-        <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError" />
-        <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password" footer="Use 8 or more characters with a mix of letters, numbers and symbols" v-model:error="passwordError"/>
-        <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
-        <Lnk text="Forgot your password?" link="Reset it" @action="$emit('switch-to-forgot')"/>
-        <div class="separator"></div>
-        <Btn class="btn-not-wide" variant="ghost" @click="$emit('switch-to-register')">Create new account</Btn>
-      </section>
+          <section v-else-if="props.mode === 'forgot'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Forgot Your Password?</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                No problem. Just enter your email address below and we’ll send you a link to reset it.
+              </p>
+            </div>
+            <Inpt v-model="email" @enter="doForgot" type="email" title="Email"
+                  placeholder="Enter your email address" v-model:error="emailError"/>
+            <Btn @click="doForgot" :disabled="disableForgot" :loading="auth.loading.value">Send reset link</Btn>
+            <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
+          </section>
 
-      <section v-if="props.forgot">
-        <div>
-          <h2 class="text-h2 color-text-primary">Forgot your password?</h2>
-          <p class="subtitle text-body-s color-text-primary">No problem. Just enter your email address below and we’ll send you a link to reset it.</p>
+          <section v-else-if="props.mode === 'reset'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Set a new password</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                Create a new, strong password for your account.
+              </p>
+            </div>
+            <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
+                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                  v-model:error="passwordError"/>
+            <Inpt v-model="confirm" @enter="doReset" type="password" title="Confirm password"
+                  placeholder="Confirm your password" v-model:error="confirmError"/>
+            <Btn @click="doReset" :disabled="disableReset" :loading="auth.loading.value">Update password</Btn>
+            <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
+          </section>
         </div>
-        <Inpt v-model="email" @enter="doForgot" type="email" title="Email" placeholder="Enter your email address" v-model:error="emailError"/>
-        <Btn @click="doForgot" :disabled="disableForgot" :loading="auth.loading.value">Send reset link</Btn>
-        <Lnk text="Remember your password?" link="Back to login" @action="$emit('switch-to-login')"/>
-      </section>
+      </Transition>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
-import Inpt from "./Inpt.vue";
-import Btn from "./Btn.vue";
-import Lnk from "./Lnk.vue";
-import {isValidEmail, isValidPassword} from "../scripts/authTools.js";
-import { authModel } from '../scripts/authModel.js'
-import { errorModel } from '../scripts/errorModel.js'
-import { mapApiError, ErrorScenario } from "../scripts/errorMapper.js";
+import {computed, ref, watch} from 'vue'
+import Inpt from './Inpt.vue'
+import Btn from './Btn.vue'
+import Lnk from './Lnk.vue'
+import {isValidEmail, isValidPassword} from '../scripts/authTools.js'
+import {authModel} from '../scripts/authModel.js'
+import {errorModel} from '../scripts/errorModel.js'
+import {mapApiError, ErrorScenario} from '../scripts/errorMapper.js'
 
 const auth = authModel()
 const error = errorModel()
 
 const props = defineProps({
-  login: {
-    type: Boolean,
-    default: false,
-  },
-  register: {
-    type: Boolean,
-    default: false,
-  },
-  forgot: {
-    type: Boolean,
-    default: false,
+  mode: {
+    type: String,
+    default: null, // 'login' | 'register' | 'forgot' | 'reset' | null
   },
 })
 
 const emit = defineEmits([
-  'update:login',
-  'update:register',
-  'update:forgot',
-  'switch-to-login',
-  'switch-to-register',
-  'switch-to-forgot',
+  'update:mode',
   'logged-in',
-  'registered',
-  'password-reset-sent',
+  'registered'
 ])
 
 const email = ref('')
 const password = ref('')
 const confirm = ref('')
 
-const emailError = ref("")
-const passwordError = ref("")
-const confirmError = ref("")
+const emailError = ref('')
+const passwordError = ref('')
+const confirmError = ref('')
 
-const anyOpen = computed(() => props.login || props.register || props.forgot)
+const reset_token = ref('')
 
-watch(anyOpen, (open) => {
+const isOpen = computed(() => !!props.mode)
+
+watch(isOpen, (open) => {
   if (!open) {
-    email.value = ''
-    password.value = ''
-    confirm.value = ''
+    clearForm()
   }
 })
 
+function clearForm() {
+  email.value = ''
+  password.value = ''
+  confirm.value = ''
+
+  emailError.value = ''
+  passwordError.value = ''
+  confirmError.value = ''
+}
+
 function closeAll() {
-  emit('update:login', false)
-  emit('update:register', false)
-  emit('update:forgot', false)
+  emit('update:mode', null)
+}
+
+function goToLogin() {
+  password.value = ''
+  confirm.value = ''
+  clearErrors()
+  emit('update:mode', 'login')
+}
+
+function goToRegister() {
+  clearErrors()
+  emit('update:mode', 'register')
+}
+
+function goToForgot() {
+  clearErrors()
+  emit('update:mode', 'forgot')
+}
+
+function goToReset() {
+  clearErrors()
+  emit('update:mode', 'reset')
+}
+
+function clearErrors() {
+  emailError.value = ''
+  passwordError.value = ''
+  confirmError.value = ''
 }
 
 async function doLogin() {
+  clearErrors()
+
   if (!isValidEmail(email.value)) {
-    emailError.value = "Invalid email"
+    emailError.value = 'Invalid email'
   }
 
   if (!isValidPassword(password.value)) {
-    passwordError.value = "Password must contain letters, numbers and symbols"
+    passwordError.value = 'Password must contain letters, numbers and symbols'
   }
 
   if (emailError.value || passwordError.value) {
@@ -113,35 +176,30 @@ async function doLogin() {
   }
 
   try {
-    const data = await auth.login(email.value, password.value)
+    const data = await auth.loginUser(email.value, password.value)
+    await auth.loadUser(data.id)
 
-    const userId = data.id || data.user_id || null
-
-    if (userId) {
-      await auth.loadUser(userId)
-    }
-
-    emit('logged-in', { email: email.value })
+    emit('logged-in')
     closeAll()
   } catch (err) {
     console.log(err)
-    error.push("Login failed with error: " + mapApiError(err, ErrorScenario.LOGIN))
+    error.push('Login failed with error: ' + mapApiError(err, ErrorScenario.LOGIN))
   }
-
-
 }
 
 async function doRegister() {
+  clearErrors()
+
   if (!isValidEmail(email.value)) {
-    emailError.value = "Invalid email"
+    emailError.value = 'Invalid email'
   }
 
   if (!isValidPassword(password.value)) {
-    passwordError.value = "Password must contain letters, numbers and symbols"
+    passwordError.value = 'Password must contain letters, numbers and symbols'
   }
 
   if (password.value !== confirm.value) {
-    confirmError.value = "Passwords do not match"
+    confirmError.value = 'Passwords do not match'
   }
 
   if (emailError.value || passwordError.value || confirmError.value) {
@@ -149,52 +207,68 @@ async function doRegister() {
   }
 
   try {
-    const data = await auth.register(email.value, password.value)
+    const data = await auth.registerUser(email.value, password.value)
+    await auth.loadUser(data.id)
 
-    const userId = data.id
-
-    await auth.loadUser(userId)
-
-    emit('registered', { email: email.value })
+    emit('registered')
     closeAll()
-
   } catch (err) {
     console.log(err)
-    error.push("Registration failed with error: " + mapApiError(err, ErrorScenario.REGISTER))
+    error.push('Registration failed with error: ' + mapApiError(err, ErrorScenario.REGISTER)
+    )
   }
-
 }
 
 async function doForgot() {
+  clearErrors()
+
   if (!isValidEmail(email.value)) {
-    emailError.value = "Invalid email"
+    emailError.value = 'Invalid email'
   }
 
-  if (emailError.value || passwordError.value) {
+  if (emailError.value) {
     return
   }
 
   try {
+    reset_token.value = ''
     const data = await auth.forgotPassword(email.value)
-    console.log(data)
-
-    //TODO: pojdi na stran kjer vneses password ali pa tudi ne odvisno od tokena
-
-    emit('password-reset-sent', { email: email.value })
-    closeAll()
-
+    reset_token.value = data.reset_token
+    goToReset()
   } catch (err) {
     console.log(err)
-    error.push("Forgot password failed with error: " + mapApiError(err))
+    error.push('Forgot password failed with error: ' + mapApiError(err))
+  }
+}
+
+async function doReset() {
+  clearErrors()
+
+  if (!isValidPassword(password.value)) {
+    passwordError.value = 'Password must contain letters, numbers and symbols'
   }
 
+  if (password.value !== confirm.value) {
+    confirmError.value = 'Passwords do not match'
+  }
 
+  if (passwordError.value || confirmError.value) {
+    return
+  }
+
+  try {
+    await auth.resetPassword(password.value, reset_token.value)
+    goToLogin()
+  } catch (err) {
+    console.log(err)
+    error.push('Update password failed with error: ' + mapApiError(err))
+  }
 }
 
 const disableLogin = computed(() => !email.value || !password.value)
 const disableRegister = computed(() => !email.value || !password.value || !confirm.value)
 const disableForgot = computed(() => !email.value)
-
+const disableReset = computed(() => !password.value || !confirm.value)
 </script>
 
 <style scoped>
@@ -216,7 +290,7 @@ const disableForgot = computed(() => !email.value)
   border-radius: 12px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.20);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.2);
 }
 
 section {
@@ -242,6 +316,27 @@ h2 {
 .subtitle {
   text-align: center;
   margin: 10px 20px 0 20px;
+}
+
+.auth-fade-enter-active,
+.auth-fade-leave-active {
+  transition: opacity 0.15s ease-out;
+}
+
+.auth-fade-enter-from,
+.auth-fade-leave-to {
+  opacity: 0;
+}
+
+.auth-section-enter-active,
+.auth-section-leave-active {
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.auth-section-enter-from,
+.auth-section-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
 }
 
 </style>

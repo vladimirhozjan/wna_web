@@ -64,7 +64,7 @@ const classes = computed(() => ([
   width: 13px;
   height: 13px;
   border: 4px solid transparent;
-  border-top-color: #fff;
+  border-top-color: var(--color-btn-loader-top);
   border-radius: 50%;
   animation: spinPulse 2s linear infinite;
 }
@@ -72,18 +72,18 @@ const classes = computed(() => ([
 @keyframes spinPulse {
   0% {
     transform: rotate(0deg) scale(0.9);
-    border-color: rgba(255,255,255,0.3);
-    border-top-color: #ffffff;
+    border-color: var(--color-btn-loader-fade-1);
+    border-top-color: var(--color-btn-loader-top);
   }
   50% {
     transform: rotate(180deg) scale(1.05);
-    border-color: rgba(255,255,255,0.7);
-    border-top-color: #ffffff;
+    border-color: var(--color-btn-loader-fade-2);
+    border-top-color: var(--color-btn-loader-top);
   }
   100% {
     transform: rotate(360deg) scale(0.9);
-    border-color: rgba(255,255,255,0.3);
-    border-top-color: #ffffff;
+    border-color: var(--color-btn-loader-fade-1);
+    border-top-color: var(--color-btn-loader-top);
   }
 }
 
@@ -105,53 +105,53 @@ const classes = computed(() => ([
 
 /* VARIANTS */
 .base-btn--primary {
-  background: #4185DE;
+  background: var(--color-btn-primary-bg);
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--color-btn-primary-text);
 }
 .base-btn--primary:hover {
-  background: #236ac7;
+  background: var(--color-btn-primary-hover);
 }
 .base-btn--primary:active {
-  background: #1c539c;
+  background: var(--color-btn-primary-active);
 }
 .base-btn--primary:disabled {
-  background: #acbfd7;
-  color: #f2f2f2;
+  background: var(--color-btn-primary-dis-bg);
+  color: var(--color-btn-primary-dis-txt);
 }
 
 .base-btn--ghost {
-  background: #ecf3fc;
-  border: 1px solid #c6daf6;
-  color: #356dc0;
+  background: var(--color-btn-ghost-bg);
+  color: var(--color-btn-ghost-text);
+  border: 1px solid var(--color-btn-ghost-border);
   font-weight: 600;
 }
 .base-btn--ghost:hover {
-  background: #c1d8f5;
+  background: var(--color-btn-ghost-hover);
 }
 .base-btn--ghost:active {
-  background: #95bcee;
+  background: var(--color-btn-ghost-active);
 }
 .base-btn--ghost:disabled {
-  background: #f1f4f8;
-  color: #95a9c6;
-  border: 1px solid #d2dce9;
+  background: var(--color-btn-ghost-dis-bg);
+  color: var(--color-btn-ghost-dis-txt);
+  border: 1px solid var(--color-btn-ghost-dis-brd);
 }
 
 .base-btn--danger {
-  background: #ef4444;
-  color: #FFFFFF;
+  background: var(--color-btn-danger-bg);
+  color: var(--color-btn-danger-text);
   font-weight: 700;
 }
 .base-btn--danger:hover {
-  background: #eb1414;
+  background: var(--color-btn-danger-hover);
 }
 .base-btn--danger:active {
-  background: #bc1010;
+  background: var(--color-btn-danger-active);
 }
 .base-btn--danger:disabled {
-  background: #e1b7b7;
-  color: #f2f2f2;
+  background: var(--color-btn-danger-dis-bg);
+  color: var(--color-btn-danger-dis-txt);
 }
 
 .base-btn--disabled,

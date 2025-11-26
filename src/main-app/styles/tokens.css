@@ -4,10 +4,11 @@
     --color-button-hover: #356DC0;
     --color-text-primary: #374151;
     --color-text-error: #7f1c1d;
-    --color-app-background: #F7F9FB;
+    --color-app-background: #f8fafc;
     --color-border-light: #E3E8EF;
     --color-popup-backdrop:  rgba(247, 249, 251, 0.5);
     --color-popup-background: #FFFFFF;
+    --color-sidebar-background: #FFFFFF;
     --color-text-prefill: #D1D5DB;
     --color-input-border: #D1D5DB;
     --color-input-border-focus: #4185DE;
@@ -17,6 +18,39 @@
     --color-link-hover: #0951ae;
     --color-toast-error-bg: #fecaca;
     --color-toast-error-text: #7f1c1d;
+
+    --color-btn-loader-top: #fff;
+    --color-btn-loader-fade-1: rgba(255,255,255,0.3);
+    --color-btn-loader-fade-2: rgba(255,255,255,0.7);
+
+    --color-btn-primary-bg: #4185DE;
+    --color-btn-primary-text: #FFFFFF;
+    --color-btn-primary-hover: #236ac7;
+    --color-btn-primary-active: #1c539c;
+    --color-btn-primary-dis-bg: #acbfd7;
+    --color-btn-primary-dis-txt: #f2f2f2;
+
+    --color-btn-ghost-bg: #ecf3fc;
+    --color-btn-ghost-text: #356dc0;
+    --color-btn-ghost-border: #c6daf6;
+    --color-btn-ghost-hover: #c1d8f5;
+    --color-btn-ghost-active: #95bcee;
+    --color-btn-ghost-dis-bg: #f1f4f8;
+    --color-btn-ghost-dis-txt: #95a9c6;
+    --color-btn-ghost-dis-brd: #d2dce9;
+
+    --color-btn-danger-bg: #ef4444;
+    --color-btn-danger-text: #FFFFFF;
+    --color-btn-danger-hover: #eb1414;
+    --color-btn-danger-active: #bc1010;
+    --color-btn-danger-dis-bg: #e1b7b7;
+    --color-btn-danger-dis-txt: #f2f2f2;
+
+    --color-menu-item-default-text: var(--color-text-primary);
+    --color-menu-item-hover-bg: white;
+    --color-menu-item-hover-txt: #236ac7;
+    --color-menu-item-active-bg: white;
+    --color-menu-item-active-txt: var(--color-action);
 
 
     /* Font family*/

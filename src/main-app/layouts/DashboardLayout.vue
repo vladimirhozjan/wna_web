@@ -1,9 +1,17 @@
 <template>
   <div class="dashboard">
-    <TopNav :authenticated="auth.isAuthenticated.value" />
+    <TopNav :authenticated="auth.isAuthenticated.value" @open-sidebar="isSidebarOpen = true"/>
 
     <div class="dashboard-body">
-      <Sidebar class="dashboard-sidebar" @logout="$emit('logout')"/>
+      <!-- Desktop sidebar -->
+      <Sidebar class="dashboard-sidebar desktop-only" />
+
+      <!-- Mobile sidebar drawer -->
+      <SidebarDrawer :open="isSidebarOpen" @close="isSidebarOpen = false">
+        <Sidebar />
+      </SidebarDrawer>
+
+      <!-- Dashboard content -->
       <main class="dashboard-content">
         <slot />
       </main>
@@ -12,21 +20,31 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import TopNav from '../components/TopNav.vue'
-import Sidebar from '../components/Sidebar.vue'
+import { ref, watch, onMounted } from "vue";
+import TopNav from "../components/TopNav.vue";
+import Sidebar from "../components/Sidebar.vue";
+import SidebarDrawer from "../components/SidebarDrawer.vue";
+import { authModel } from "../scripts/authModel.js";
 import router from "../router/router.js";
-import {authModel} from "../scripts/authModel.js";
 
-const auth = authModel()
+const auth = authModel();
+const isSidebarOpen = ref(false);
 
-onMounted(async () => {
+onMounted(() => {
   if (!auth.isAuthenticated.value) {
-    return router.push({name: 'landing'})
+    router.push({ name: "landing" });
   }
-})
+});
 
-defineEmits(['logout'])
+watch(
+    () => auth.isAuthenticated.value,
+    (v) => {
+      if (!v) {
+        isSidebarOpen.value = false;
+        router.push({ name: "landing" });
+      }
+    }
+);
 </script>
 
 <style scoped>
@@ -39,16 +57,31 @@ defineEmits(['logout'])
 .dashboard-body {
   flex: 1;
   display: flex;
+  flex-direction: row;
   min-height: 0;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .dashboard-sidebar {
   flex-shrink: 0;
+  flex-grow: 0;
+  width: 260px;
 }
 
 .dashboard-content {
   flex: 1;
-  padding: 24px;
-  overflow: auto;
+  overflow-y: auto;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
 }
 </style>
