@@ -1,6 +1,5 @@
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
-//import path from 'node:path'
 
 export const APPS = {
     'main-app': {

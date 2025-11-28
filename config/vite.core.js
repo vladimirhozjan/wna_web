@@ -55,7 +55,7 @@ export function createViteConfig(mode, envVars, appConfig, domain) {
             __API_DOMAIN__: JSON.stringify(domain.api)
         },
 
-        plugins: appConfig.plugins,
+        plugins,
 
         preview: {
             port: appConfig.port

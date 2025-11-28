@@ -1,0 +1,30 @@
+services:
+  main_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web_main_app
+      ssh:
+        - default
+      args:
+        GIT_BRANCH: main
+        PROJECT_VERSION: ${PROJECT_VERSION}
+    image: wna_main_app:${PROJECT_VERSION}
+    container_name: wna_web_main_app
+    ports:
+      - "8080:8080"
+
+#  admin_app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      target: admin_app
+#      ssh:
+#        - default
+#      args:
+#        GIT_BRANCH: main
+#        PROJECT_VERSION: ${PROJECT_VERSION}
+#    image: wna_admin_app:${PROJECT_VERSION}
+#    container_name: wna_admin_app
+#    ports:
+#      - "8081:8081"
