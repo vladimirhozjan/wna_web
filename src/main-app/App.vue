@@ -1,5 +1,5 @@
 <template>
-  <div class="debug-window">
+  <div v-if="showDebug" class="debug-window">
     <p>isAuthenticated: {{ auth.isAuthenticated }}</p>
     <p>isLoading: {{ auth.loading}}</p>
     <p>size [w, h]: {{ width }} x {{ height }}</p>
@@ -18,6 +18,8 @@ import ErrorToaster from "./components/ErrorToaster.vue";
 const width = ref(window.innerWidth)
 const height = ref(window.innerHeight)
 const auth = authModel()
+
+
 const appVersion = computed(() =>  __APP_VERSION__ )
 
 function updateSize() {
@@ -25,14 +27,16 @@ function updateSize() {
   height.value = window.innerHeight
 }
 
+//todo: Daj spodnjo na false, ko gres v produkcijo
+const showDebug = ref(true)
 onMounted(() => {
+  showDebug.value = localStorage.getItem("debug-window") !== null
   window.addEventListener("resize", updateSize)
 })
 
 onUnmounted(() => {
   window.removeEventListener("resize", updateSize)
 })
-console.log('Version:', )
 </script>
 
 <style>
