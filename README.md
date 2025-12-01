@@ -93,10 +93,8 @@ You can use `.env.local`, `.env.development`, `.env.production`.
 
 Example:
 
-    CLIENT_ENV=local
     APP=main-app
 
--   `CLIENT_ENV` selects which domain group to use.
 -   `APP` selects which frontend app to build.
 
 ------------------------------------------------------------------------

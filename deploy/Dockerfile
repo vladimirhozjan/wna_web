@@ -1,32 +1,30 @@
 ##############################################
 # Stage 1 – Builder (Node + Vite)
 ##############################################
-FROM node:20 AS builder
+FROM node:20 AS web_builder
 
 WORKDIR /src
 
-# SSH support for GitHub cloning (same as backend)
-RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+# SSH support for GitHub clone
+RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh \
+    && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 ARG GIT_BRANCH=main
 ARG PROJECT_VERSION=d-xxx
+ARG APP=main-app
 
-# Clone frontend monorepo
+# Clone repo
 RUN --mount=type=ssh git clone --depth 1 --branch "${GIT_BRANCH}" \
     git@github.com:vladimirhozjan/wna_web.git .
 
-# Install dependencies
+# Install deps
 RUN npm ci
 
-# Build MAIN APP
-RUN CLIENT_ENV=production APP=main-app npm run build:main:prod
-
-# Build ADMIN APP
-#RUN CLIENT_ENV=production APP=admin-app npm run build:admin:prod
-
+# Build selected frontend app
+RUN APP=${APP} npm run build
 
 ##############################################
-# Stage 2a – main-app runtime (nginx)
+# Stage 2 – Runtime (nginx)
 ##############################################
 FROM nginx:stable AS web_main_app
 
@@ -35,11 +33,19 @@ RUN rm /etc/nginx/conf.d/default.conf
 WORKDIR /usr/share/nginx/html
 
 COPY main/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /src/dist/main-app/production ./
+
+COPY --from=web_builder /src/dist/main-app/local ./
+
+COPY main/runtime-config.template.js /usr/share/nginx/html/config.js
+
+COPY main/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 8080
+
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
-#
+
 #
 ###############################################
 ## Stage 2b – admin-app runtime (nginx)
@@ -51,7 +57,13 @@ CMD ["nginx", "-g", "daemon off;"]
 #WORKDIR /usr/share/nginx/html
 #
 #COPY config/admin/nginx.conf /etc/nginx/conf.d/default.conf
-#COPY --from=builder /src/dist/admin-app/production ./
+#COPY --from=web_builder /src/dist/admin-app/production ./
 #
 #EXPOSE 8081
 #CMD ["nginx", "-g", "daemon off;"]
+
+###############################################
+## Stage 3 – admin-app runtime (nginx)
+###############################################
+FROM web_builder AS web_builder_runtime
+CMD ["bash"]

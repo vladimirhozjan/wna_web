@@ -1,0 +1,88 @@
+# ============================================================
+# 1) Deployment (frontend runtime)
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-main-app
+  namespace: develop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-main-app
+  template:
+    metadata:
+      labels:
+        app: web-main-app
+    spec:
+      containers:
+        - name: web-main-app
+          image: europe-central2-docker.pkg.dev/wna-develop/wna-images/wna_web_main_app:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_DOMAIN
+              value: "https://dev.whatsnextaction.com"
+            - name: API_DOMAIN
+              value: "https://dev-api.whatsnextaction.com"
+
+---
+
+# ============================================================
+# 2) Service (exposes pod to Ingress)
+# ============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-main-app
+  namespace: develop
+spec:
+  type: NodePort
+  selector:
+    app: web-main-app
+  ports:
+    - port: 80
+      targetPort: 8080
+
+---
+
+# ============================================================
+# 3) Google Managed Certificate
+# ============================================================
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: wna-frontend-cert
+  namespace: develop
+spec:
+  domains:
+    - dev.whatsnextaction.com
+
+---
+
+# ============================================================
+# 4) Ingress (HTTPS enabled, auto redirect HTTP→HTTPS)
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-main-app
+  namespace: develop
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/managed-certificates: "wna-frontend-cert"
+    kubernetes.io/ingress.allow-http: "true"
+    kubernetes.io/ingress.global-static-ip-name: "wna-frontend-ip"
+spec:
+  rules:
+    - host: dev.whatsnextaction.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-main-app
+                port:
+                  number: 80

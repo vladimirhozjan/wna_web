@@ -1,8 +1,11 @@
 import axios from 'axios'
 import apiClient from './apiClient.js'
+import { getDomains } from './domains.js'   // ✔ browser-only import
+
+const { api } = getDomains()
 
 export const httpApi = axios.create({
-    baseURL: __API_DOMAIN__,
+    baseURL: api,
     timeout: 30000,
 })
 

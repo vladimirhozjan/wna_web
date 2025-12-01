@@ -12,14 +12,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:local": "CLIENT_ENV=local vite build",
-    "build:dev": "CLIENT_ENV=development vite build",
-    "build:prod": "CLIENT_ENV=production vite build",
     "build:main": "APP=main-app vite build",
-    "build:main:local": "CLIENT_ENV=local APP=main-app vite build",
-    "build:main:dev": "CLIENT_ENV=development APP=main-app vite build",
-    "build:main:prod": "CLIENT_ENV=production APP=main-app vite build",
-    "obfuscate": "vite build --mode production",
+    "build:admin": "APP=admin-app vite build",
     "clean": "rimraf dist"
   },
 

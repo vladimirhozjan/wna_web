@@ -5,8 +5,8 @@ import obfuscator from 'rollup-plugin-obfuscator'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = path.dirname(__filename)
 
-export function createViteConfig(mode, envVars, appConfig, domain) {
-    let isProduction = mode === 'production'
+export function createViteConfig(mode, envVars, appConfig) {
+    let isProduction = false //todo: to odkomentiraj preden gres live: mode === 'production'
     const plugins = [...appConfig.plugins]
 
     if (isProduction) {
@@ -50,11 +50,7 @@ export function createViteConfig(mode, envVars, appConfig, domain) {
             }
         },
 
-        define: {
-            __APP_DOMAIN__: JSON.stringify(domain.app),
-            __API_DOMAIN__: JSON.stringify(domain.api)
-        },
-
+        define: {},
         plugins,
 
         preview: {
@@ -62,7 +58,7 @@ export function createViteConfig(mode, envVars, appConfig, domain) {
         },
 
         build: {
-            outDir: path.resolve(__dirname, '..', appConfig.buildDir(envVars.CLIENT_ENV)),
+            outDir: path.resolve(__dirname, '..', appConfig.buildDir()),
             emptyOutDir: true,
 
             minify: 'terser',
