@@ -6,8 +6,9 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '')
 
     const APP        = env.APP || 'main-app'
+    const PROJECT_VERSION = env.PROJECT_VERSION || 'dev-0.0.0'
 
     const appConfig = APPS[APP] ?? APPS['main-app']
 
-    return createViteConfig(mode, { APP }, appConfig)
+    return createViteConfig(mode, { APP, PROJECT_VERSION }, appConfig)
 })

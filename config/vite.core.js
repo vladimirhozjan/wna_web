@@ -50,7 +50,10 @@ export function createViteConfig(mode, envVars, appConfig) {
             }
         },
 
-        define: {},
+        define: {
+            __APP_VERSION__: JSON.stringify(envVars.PROJECT_VERSION || '')
+        },
+
         plugins,
 
         preview: {

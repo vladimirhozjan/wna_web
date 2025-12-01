@@ -1,8 +1,9 @@
 <template>
-  <div class="window-size">
+  <div class="debug-window">
     <p>isAuthenticated: {{ auth.isAuthenticated }}</p>
     <p>isLoading: {{ auth.loading}}</p>
-    <p>Width: {{ width }}px — Height: {{ height }}px</p>
+    <p>size [w, h]: {{ width }} x {{ height }}</p>
+    <p>version: {{ appVersion }}</p>
   </div>
 
   <RouterView />
@@ -10,13 +11,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue"
+import {ref, onMounted, onUnmounted, computed} from "vue"
 import {authModel} from "./scripts/authModel.js";
 import ErrorToaster from "./components/ErrorToaster.vue";
 
 const width = ref(window.innerWidth)
 const height = ref(window.innerHeight)
 const auth = authModel()
+const appVersion = computed(() =>  __APP_VERSION__ )
 
 function updateSize() {
   width.value = window.innerWidth
@@ -30,10 +32,11 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", updateSize)
 })
+console.log('Version:', )
 </script>
 
 <style>
-.window-size {
+.debug-window {
   position: fixed;
   bottom: 10px;
   right: 10px;
