@@ -1,8 +1,7 @@
 import axios from 'axios'
 import apiClient from './apiClient.js'
-import { getDomains } from './domains.js'
 
-const { base_url } = getDomains()
+const { base_url } = window.getDomains()
 
 export const httpApi = axios.create({
     baseURL: base_url,
