@@ -5,10 +5,10 @@ const devFallback = {
 export function getDomains() {
     if (typeof window !== 'undefined' && window.RUNTIME_CONFIG) {
         return {
-            api: window.RUNTIME_CONFIG.API_DOMAIN
+            base_url: window.RUNTIME_CONFIG.API_DOMAIN
         }
     }
     return {
-        api: devFallback.API_DOMAIN
+        base_url: devFallback.API_DOMAIN
     }
 }
