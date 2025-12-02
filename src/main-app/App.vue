@@ -14,11 +14,12 @@
 import {ref, onMounted, onUnmounted, computed} from "vue"
 import {authModel} from "./scripts/authModel.js";
 import ErrorToaster from "./components/ErrorToaster.vue";
+import {getDomains}  from "./scripts/domains.js";
 
 const width = ref(window.innerWidth)
 const height = ref(window.innerHeight)
 const auth = authModel()
-const { base_url } = window.getDomains()
+const { base_url } = getDomains()
 
 
 const appVersion = computed(() =>  __APP_VERSION__ )
