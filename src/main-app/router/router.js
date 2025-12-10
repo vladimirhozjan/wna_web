@@ -26,6 +26,7 @@ const routes = [
     {path: '/settings', name: 'settings', component: SettingsPage},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},
+    {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 
 const router = createRouter({
