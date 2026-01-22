@@ -39,6 +39,11 @@ function normalizeError(error) {
     return { status: null, message: error.message || "Unknown error." }
 }
 
+function authHeaders() {
+    const token = localStorage.getItem('auth_token')
+    return { Authorization: `Bearer ${token}` }
+}
+
 export async function registerUser({ email, password }) {
     try {
         const res = await httpApi.post('/v1/user/register', { email, password })
@@ -82,7 +87,7 @@ export async function refreshToken() {
         const refresh = localStorage.getItem('refresh_token')
 
         if (!refresh) {
-            throw new Error('Refresh token manjka.')
+            throw new Error('Refresh token missing.')
         }
 
         const res = await httpApi.post(
@@ -109,12 +114,7 @@ export async function refreshToken() {
 
 export async function getUser(userId) {
     try {
-        const token = localStorage.getItem('auth_token')
-
-        const res = await httpApi.get(`/v1/user/get/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-
+        const res = await httpApi.get(`/v1/user/get/${userId}`, { headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -141,13 +141,58 @@ export async function resetPassword(password, token) {
 
 export async function deleteUser(userId) {
     try {
-        const token = localStorage.getItem('auth_token')
-
-        const res = await httpApi.delete(`/v1/user/delete/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
+        const res = await httpApi.delete(`/v1/user/delete/${userId}`, { headers: authHeaders() })
 
         return res.data || true // DELETE lahko vrača 204 (no content)
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function addStuff({ title, description = "" }) {
+    try {
+        const res = await httpApi.post('/v1/stuff', { title, description }, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateStuff(stuffId, { title, description = "" }) {
+    try {
+        const res = await httpApi.put(`/v1/stuff/${stuffId}`, { title, description }, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getStuff(stuffId) {
+    try {
+        const res = await httpApi.get(`/v1/stuff/${stuffId}`, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteStuff(stuffId) {
+    try {
+        const res = await httpApi.delete(`/v1/stuff/${stuffId}`, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listStuff({ limit = 10, cursor = null } = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/stuff', { params }, { headers: authHeaders() })
+        return res.data
     } catch (err) {
         throw normalizeError(err)
     }
@@ -168,6 +213,11 @@ const apiClient = {
     resetPassword,
     deleteUser,
     logoutUser,
+    addStuff,
+    updateStuff,
+    getStuff,
+    deleteStuff,
+    listStuff,
 }
 
 export default apiClient

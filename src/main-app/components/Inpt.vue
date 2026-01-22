@@ -2,6 +2,7 @@
   <label>
     <span class="text-label color-text-primary" v-if="props.title">{{ props.title }}</span>
     <input
+        ref="input_ref"
         v-model="model_value"
         :placeholder="props.placeholder"
         :type="props.type"
@@ -16,8 +17,11 @@
 </template>
 
 <script setup>
+import {ref, defineExpose} from "vue";
+
 const model_value = defineModel()
-const error = defineModel('error', { default: '' })
+const error = defineModel('error', {default: ''})
+const input_ref = ref()
 
 const props = defineProps({
   title: String,
@@ -34,6 +38,13 @@ function handleInput() {
 }
 
 defineEmits(['enter'])
+
+defineExpose({
+  focus() {
+    input_ref.value && input_ref.value.focus()
+  }
+})
+
 </script>
 
 <style scoped>

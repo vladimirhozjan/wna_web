@@ -11,4 +11,7 @@ import UnderConstruction from "../components/UnderConstruction.vue";
 </script>
 
 <style scoped>
+h1 {
+  padding: 10px;
+}
 </style>

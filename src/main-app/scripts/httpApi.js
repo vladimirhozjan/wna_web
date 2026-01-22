@@ -9,33 +9,34 @@ export const httpApi = axios.create({
     timeout: 30000,
 })
 
-httpApi.interceptors.request.use(async (config) => {
-    const token = localStorage.getItem('auth_token')
-    if (!token) return config
+httpApi.interceptors.request.use(async (req) => {
+    const access_token = localStorage.getItem('auth_token')
+    if (!access_token) return req
 
-    if (config.url && config.url.startsWith('/v1/user/refresh')) {
-        config.headers.Authorization = `Bearer ${token}`
-        return config
+    if (req.url && req.url.startsWith('/v1/user/refresh')) {
+        const refresh_token = localStorage.getItem('refresh_token')
+        if (!refresh_token) return req
+        
+        req.headers.Authorization = `Bearer ${refresh_token}`
+        return req
     }
 
-    const payload = JSON.parse(atob(token.split('.')[1]))
+    const payload = JSON.parse(atob(access_token.split('.')[1]))
     const now = Math.floor(Date.now() / 1000)
     const expiresIn = payload.exp - now
-    const limit = payload.exp / 10
 
-    //todo: naredi kontra po 10min uporabe, za test, kasneje 30 dni, po 24h novi token
-    if (expiresIn < limit) {
+    if (expiresIn < 0) {
         try {
             const refreshed = await apiClient.refreshToken()
             const newToken = refreshed.access_token
-            config.headers.Authorization = `Bearer ${newToken}`
-            return config
+            req.headers.Authorization = `Bearer ${newToken}`
+            return req
         } catch (e) {
             console.error("Refresh failed:", e)
         }
     }
 
     // Otherwise use existing token
-    config.headers.Authorization = `Bearer ${token}`
-    return config
+    req.headers.Authorization = `Bearer ${access_token}`
+    return req
 })
