@@ -1,0 +1,81 @@
+<template>
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="confirm.state.visible" class="overlay" @click.self="confirm.state.onCancel">
+        <div class="dialog">
+          <h3 class="title">{{ confirm.state.title }}</h3>
+          <p class="message">{{ confirm.state.message }}</p>
+          <div class="actions">
+            <Btn variant="secondary" size="sm" @click="confirm.state.onCancel">
+              {{ confirm.state.cancelText }}
+            </Btn>
+            <Btn variant="danger" size="sm" @click="confirm.state.onConfirm">
+              {{ confirm.state.confirmText }}
+            </Btn>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
+
+<script setup>
+import { confirmModel } from '../scripts/confirmModel.js'
+import Btn from './Btn.vue'
+
+const confirm = confirmModel()
+</script>
+
+<style scoped>
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99998;
+}
+
+.dialog {
+  background: var(--color-bg-primary, #fff);
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 300px;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.title {
+  margin: 0 0 12px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-l, 18px);
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a1a);
+}
+
+.message {
+  margin: 0 0 20px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m, 14px);
+  color: var(--color-text-secondary, #666);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

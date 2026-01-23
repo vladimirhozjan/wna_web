@@ -68,6 +68,7 @@ import DashboardLayout from "../layouts/DashboardLayout.vue";
 import {ref, onMounted, nextTick, watch} from 'vue'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
+import { confirmModel } from '../scripts/confirmModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 
@@ -84,6 +85,7 @@ const {
 } = stuffModel()
 
 const toaster = errorModel()
+const confirm = confirmModel()
 
 // local UI state
 const new_stuff_title = ref('')
@@ -135,7 +137,16 @@ async function loadMore() {
 }
 
 async function onDelete(id) {
-  await deleteStuff(id)
+  const confirmed = await confirm.show({
+    title: 'Delete stuff',
+    message: 'Are you sure you want to delete this item?',
+    confirmText: 'Delete',
+    cancelText: 'Cancel'
+  })
+
+  if (confirmed) {
+    await deleteStuff(id)
+  }
 }
 
 function onEdit(item) {
