@@ -176,8 +176,8 @@ async function doLogin() {
   }
 
   try {
-    const data = await auth.loginUser(email.value, password.value)
-    await auth.loadUser(data.id)
+    await auth.loginUser(email.value, password.value)
+    await auth.loadUser()
 
     emit('logged-in')
     closeAll()
@@ -207,8 +207,8 @@ async function doRegister() {
   }
 
   try {
-    const data = await auth.registerUser(email.value, password.value)
-    await auth.loadUser(data.id)
+    await auth.registerUser(email.value, password.value)
+    await auth.loadUser()
 
     emit('registered')
     closeAll()

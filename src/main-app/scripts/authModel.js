@@ -140,12 +140,12 @@ export function authModel() {
         isAuthenticated.value = false
     }
 
-    async function loadUser(userId) {
+    async function loadUser() {
         loading.value = true
         error.value = null
 
         try {
-            const user = await apiClient.getUser(userId)   // <-- from authTools.js
+            const user = await apiClient.getUser()
             currentUser.value = user
             localStorage.setItem('current_user', JSON.stringify(user))
             return user

@@ -112,9 +112,9 @@ export async function refreshToken() {
     }
 }
 
-export async function getUser(userId) {
+export async function getUser() {
     try {
-        const res = await httpApi.get(`/v1/user/get/${userId}`, { headers: authHeaders()})
+        const res = await httpApi.get('/v1/user/get', { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -139,9 +139,9 @@ export async function resetPassword(password, token) {
     }
 }
 
-export async function deleteUser(userId) {
+export async function deleteUser() {
     try {
-        const res = await httpApi.delete(`/v1/user/delete/${userId}`, { headers: authHeaders() })
+        const res = await httpApi.delete('/v1/user/delete', { headers: authHeaders() })
 
         return res.data || true // DELETE lahko vrača 204 (no content)
     } catch (err) {
