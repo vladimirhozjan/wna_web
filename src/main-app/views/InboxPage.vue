@@ -10,7 +10,6 @@
       <Inpt
           ref="add_input"
           v-model="new_stuff_title"
-          v-model:error="error_input"
           type="text"
           placeholder="Add new stuff"
           @keyup.enter="onAdd"
@@ -66,8 +65,9 @@
 
 <script setup>
 import DashboardLayout from "../layouts/DashboardLayout.vue";
-import {ref, onMounted, nextTick, computed, watch} from 'vue'
+import {ref, onMounted, nextTick, watch} from 'vue'
 import { stuffModel } from '../scripts/stuffModel.js'
+import { errorModel } from '../scripts/errorModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 
@@ -83,6 +83,8 @@ const {
   deleteStuff,
 } = stuffModel()
 
+const toaster = errorModel()
+
 // local UI state
 const new_stuff_title = ref('')
 const add_input = ref(null)
@@ -91,13 +93,11 @@ const editing = ref(false)
 const edit_id = ref(null)
 const edit_title = ref('')
 
-const error_input = computed({
-  get: () => {
-    if (!error.value) return ''
-    if (typeof error.value === 'string') return error.value
-    return error.value.message ?? ''
-  },
-  set: () => {}
+// show errors in toaster
+watch(error, (err) => {
+  if (!err) return
+  const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
+  toaster.push(msg)
 })
 
 // lifecycle
