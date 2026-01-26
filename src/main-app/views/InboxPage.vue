@@ -49,14 +49,17 @@
         </div>
 
         <!-- Stuff list -->
-        <div v-else class="stuff-list">
+        <div v-else class="stuff-list" :class="{ 'stuff-list--dragging': draggingId || isDropping }"
+             @dragover="onListDragOver"
+        >
           <div
               v-for="(item, index) in items"
               :key="item.id"
               class="item-wrapper"
               :class="{
-                'item-wrapper--drop-target': dropTargetIndex === index && isValidDropTarget(index),
-                'item-wrapper--dragging': draggingId === item.id
+                'item-wrapper--drop-target': dropTargetIndex === index && draggingId !== item.id,
+                'item-wrapper--dragging': draggingId === item.id,
+                'item-wrapper--appearing': appearingId === item.id
               }"
               @dragover="onDragOver($event, index)"
               @dragleave="onDragLeave"
@@ -68,7 +71,7 @@
                 :loading="updatingId === item.id || deletingId === item.id"
                 @update="onItemUpdate"
                 @check="onItemCheck"
-                @dragstart="onDragStart(item.id, index)"
+                @dragstart="onDragStart(item.id)"
                 @dragend="onDragEnd"
             >
               <template #actions>
@@ -80,7 +83,7 @@
           <div
               v-if="draggingId"
               class="item-wrapper item-wrapper--end"
-              :class="{ 'item-wrapper--drop-target': dropTargetIndex === items.length && isValidDropTarget(items.length) }"
+              :class="{ 'item-wrapper--drop-target': dropTargetIndex === items.length }"
               @dragover="onDragOver($event, items.length)"
               @dragleave="onDragLeave"
               @drop="onDrop($event, items.length)"
@@ -138,15 +141,8 @@ const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
 const draggingId = ref(null)
-const draggingIndex = ref(null)
 const dropTargetIndex = ref(null)
-
-// Check if drop target should show (not adjacent to dragging item)
-function isValidDropTarget(index) {
-  if (draggingIndex.value === null) return false
-  // Don't show placeholder at current position or immediately after
-  return index !== draggingIndex.value && index !== draggingIndex.value + 1
-}
+const appearingId = ref(null)
 
 // show errors in toaster
 watch(error, (err) => {
@@ -235,35 +231,118 @@ function onClarify() {
 }
 
 // Drag and drop
-function onDragStart(id, index) {
+const isDropping = ref(false)
+
+function onDragStart(id) {
   draggingId.value = id
-  draggingIndex.value = index
+  isDropping.value = false
+  // Show placeholder on next item (visually in place of collapsed dragged item)
+  const index = items.value.findIndex(i => i.id === id)
+  dropTargetIndex.value = index + 1
 }
 
 function onDragEnd() {
-  draggingId.value = null
-  draggingIndex.value = null
-  dropTargetIndex.value = null
+  // Only reset if not handled by onDrop
+  if (!isDropping.value) {
+    draggingId.value = null
+    dropTargetIndex.value = null
+  }
 }
 
 function onDragOver(e, index) {
   e.preventDefault()
   e.dataTransfer.dropEffect = 'move'
-  dropTargetIndex.value = index
+
+  const item = items.value[index]
+  const draggingIndex = items.value.findIndex(i => i.id === draggingId.value)
+
+  // Skip the dragged item's own wrapper (it's collapsed, so midpoint calc is wrong)
+  if (item && item.id === draggingId.value) {
+    return
+  }
+
+  // Get the actual Item element's rect (not the wrapper with padding)
+  const itemElement = e.currentTarget.querySelector('.item')
+  const rect = itemElement ? itemElement.getBoundingClientRect() : e.currentTarget.getBoundingClientRect()
+  const midpoint = rect.top + rect.height / 2
+  const isTopHalf = e.clientY < midpoint
+
+  // Helper to set dropTargetIndex, skipping the dragged item's index
+  // (placeholder can't show on dragged item due to template condition)
+  function setDropTarget(newIndex) {
+    if (newIndex === draggingIndex) {
+      // Skip dragged item's index - use index+1 instead (visually same position)
+      dropTargetIndex.value = draggingIndex + 1
+    } else {
+      dropTargetIndex.value = newIndex
+    }
+  }
+
+  // Check if dragged item is between current hover position and placeholder
+  const placeholderIdx = dropTargetIndex.value
+  const isDraggedItemBetween = draggingIndex !== -1 && placeholderIdx !== null && (
+    (index < draggingIndex && placeholderIdx > draggingIndex) ||
+    (index > draggingIndex && placeholderIdx <= draggingIndex)
+  )
+
+  if (dropTargetIndex.value === null) {
+    // First hover - set initial position
+    setDropTarget(isTopHalf ? index : index + 1)
+  } else if (isDraggedItemBetween) {
+    // Dragged item is between us and placeholder - allow free movement past it
+    setDropTarget(isTopHalf ? index : index + 1)
+  } else if (isTopHalf && dropTargetIndex.value === index + 1) {
+    // Top half of item immediately above placeholder -> move up
+    setDropTarget(index)
+  } else if (!isTopHalf && dropTargetIndex.value === index) {
+    // Bottom half of item immediately below placeholder -> move down
+    setDropTarget(index + 1)
+  }
 }
 
 function onDragLeave() {
-  dropTargetIndex.value = null
+  // Don't clear - keep placeholder visible while dragging
+}
+
+function onListDragOver(e) {
+  // Handle dragover on the list container (gaps between items, collapsed item area)
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  // Keep current dropTargetIndex - don't change it
 }
 
 async function onDrop(e, toIndex) {
   e.preventDefault()
-  dropTargetIndex.value = null
+  isDropping.value = true
 
   if (!draggingId.value) return
 
-  await moveStuff(draggingId.value, toIndex)
+  const id = draggingId.value
+
+  // 1. Reorder the list (item moves to new position in DOM)
+  await moveStuff(id, toIndex)
+
+  // 2. Show the item instantly (no max-height animation)
+  appearingId.value = id
   draggingId.value = null
+
+  // 3. Wait a frame for the item to render
+  await nextTick()
+
+  // 4. Close the gap around the item
+  dropTargetIndex.value = null
+
+  // 5. Clear appearing state after gap animation
+  setTimeout(() => {
+    appearingId.value = null
+  }, 250)
+
+  // 6. Re-enable hover only after mouse moves
+  const onMouseMove = () => {
+    isDropping.value = false
+    document.removeEventListener('mousemove', onMouseMove)
+  }
+  document.addEventListener('mousemove', onMouseMove, { once: true })
 }
 
 </script>
@@ -310,14 +389,31 @@ h1 {
 
 .stuff-list {
   margin-top: 16px;
+  user-select: none;
+}
+
+.stuff-list--dragging .item-wrapper {
+  pointer-events: auto;
+}
+
+.stuff-list--dragging :deep(.item:hover) {
+  background: var(--color-bg-primary);
 }
 
 .item-wrapper {
-  transition: padding 0.2s ease, opacity 0.2s ease;
+  max-height: 200px;
+  overflow: hidden;
+  transition: padding 0.2s ease, max-height 0.2s ease, opacity 0.2s ease;
 }
 
 .item-wrapper--dragging {
-  opacity: 0.4;
+  max-height: 1px;
+  opacity: 0;
+  padding: 0;
+}
+
+.item-wrapper--appearing {
+  transition: padding 0.2s ease;
 }
 
 .item-wrapper--drop-target {

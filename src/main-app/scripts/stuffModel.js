@@ -136,15 +136,18 @@ export function stuffModel() {
         const fromIndex = items.value.findIndex(i => i.id === stuffId)
         if (fromIndex === -1 || fromIndex === toIndex) return
 
+        // Adjust target index when moving forward (removal shifts indices)
+        const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex
+
         // Store original order for rollback
         const originalItems = [...items.value]
 
         // Optimistic reorder
         const [item] = items.value.splice(fromIndex, 1)
-        items.value.splice(toIndex, 0, item)
+        items.value.splice(insertIndex, 0, item)
 
         try {
-            await apiClient.moveStuff(stuffId, toIndex)
+            await apiClient.moveStuff(stuffId, insertIndex)
         } catch (err) {
             // Revert on error
             items.value = originalItems
