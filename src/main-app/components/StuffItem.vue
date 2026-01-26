@@ -28,8 +28,9 @@
           @click.stop
       />
       <span v-else class="stuff-item__title">{{ title }}</span>
-      <span v-if="description && !isEditing" class="stuff-item__description">{{ description }}</span>
     </div>
+
+    <div class="stuff-item__separator"></div>
 
     <!-- Actions slot -->
     <div class="stuff-item__actions" @click.stop>
@@ -49,10 +50,6 @@ const props = defineProps({
   title: {
     type: String,
     required: true
-  },
-  description: {
-    type: String,
-    default: ''
   },
   checked: {
     type: Boolean,
@@ -167,13 +164,14 @@ function onDragEnd(e) {
 }
 
 .stuff-item__content {
-  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
+.stuff-item__separator {
+  flex: 1;
+}
 .stuff-item__title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m, 14px);
@@ -184,27 +182,20 @@ function onDragEnd(e) {
 }
 
 .stuff-item__input {
-  width: 100%;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m, 14px);
   color: var(--color-text-primary, #1a1a1a);
-  border: 1px solid var(--color-primary, #4a90d9);
-  border-radius: 4px;
-  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-primary, #4a90d9);
+  padding: 0;
+  margin: 0;
   outline: none;
+  width: 100%;
 }
 
 .stuff-item--editing {
   background: var(--color-bg-primary, #fff);
-}
-
-.stuff-item__description {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s, 12px);
-  color: var(--color-text-secondary, #666);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .stuff-item__actions {
