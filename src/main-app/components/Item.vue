@@ -17,16 +17,19 @@
 
     <!-- Content -->
     <div class="item__content" @click="onClick">
-      <input
-          v-if="isEditing"
-          ref="editInput"
-          v-model="editValue"
-          class="item__input"
-          @keyup.enter="onSave"
-          @keyup.escape="onCancel"
-          @blur="onSave"
-          @click.stop
-      />
+      <span v-if="isEditing" class="item__input-wrapper">
+        <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
+        <input
+            ref="editInput"
+            v-model="editValue"
+            class="item__input"
+            :style="{ width: inputWidth + 'px' }"
+            @keyup.enter="onSave"
+            @keyup.escape="onCancel"
+            @blur="onSave"
+            @click.stop
+        />
+      </span>
       <span v-else class="item__title">{{ title }}</span>
     </div>
 
@@ -40,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 
 const props = defineProps({
   id: {
@@ -67,6 +70,16 @@ const isDragging = ref(false)
 const isEditing = ref(false)
 const editValue = ref('')
 const editInput = ref(null)
+const inputMeasure = ref(null)
+const inputWidth = ref(50)
+
+watch(editValue, () => {
+  nextTick(() => {
+    if (inputMeasure.value) {
+      inputWidth.value = Math.max(50, inputMeasure.value.offsetWidth + 2)
+    }
+  })
+})
 
 function onClick() {
   if (isEditing.value) return
@@ -75,6 +88,9 @@ function onClick() {
   editValue.value = props.title
 
   nextTick(() => {
+    if (inputMeasure.value) {
+      inputWidth.value = Math.max(50, inputMeasure.value.offsetWidth + 2)
+    }
     editInput.value?.focus()
     editInput.value?.select()
   })
@@ -181,6 +197,19 @@ function onDragEnd(e) {
   text-overflow: ellipsis;
 }
 
+.item__input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.item__measure {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m, 14px);
+}
+
 .item__input {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m, 14px);
@@ -191,7 +220,8 @@ function onDragEnd(e) {
   padding: 0;
   margin: 0;
   outline: none;
-  width: 100%;
+  min-width: 50px;
+  max-width: 100%;
 }
 
 .item--editing {
