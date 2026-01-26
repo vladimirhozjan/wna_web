@@ -26,16 +26,21 @@
     </div>
 
     <!-- Stuff list -->
-    <ul class="stuff-list">
-      <li v-for="item in items" :key="item.id" class="stuff-item">
-        <span class="title">{{ item.title }}</span>
-
-        <div class="actions">
-          <button @click="onEdit(item)">Edit</button>
-          <button @click="onDelete(item.id)">✕</button>
-        </div>
-      </li>
-    </ul>
+    <div class="stuff-list">
+      <StuffItem
+          v-for="item in items"
+          :key="item.id"
+          :id="item.id"
+          :title="item.title"
+          :description="item.description"
+          @update="onItemUpdate"
+          @check="onItemCheck"
+      >
+        <template #actions>
+          <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+        </template>
+      </StuffItem>
+    </div>
 
     <!-- Load more -->
     <div class="load-more">
@@ -43,21 +48,6 @@
         Load more
       </button>
       <span v-if="loading">Loading…</span>
-    </div>
-
-    <!-- Simple edit box (inline, minimal) -->
-    <div v-if="editing" class="edit-box">
-      <h4>Edit stuff</h4>
-
-      <input
-          v-model="edit_title"
-          @keyup.enter="onSaveEdit"
-      />
-
-      <div class="edit-actions">
-        <button @click="onSaveEdit">Save</button>
-        <button @click="onCancelEdit">Cancel</button>
-      </div>
     </div>
 
   </DashboardLayout>
@@ -71,6 +61,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
+import StuffItem from '../components/StuffItem.vue'
 
 // model
 const {
@@ -90,10 +81,6 @@ const confirm = confirmModel()
 // local UI state
 const new_stuff_title = ref('')
 const add_input = ref(null)
-
-const editing = ref(false)
-const edit_id = ref(null)
-const edit_title = ref('')
 
 // show errors in toaster
 watch(error, (err) => {
@@ -136,6 +123,15 @@ async function loadMore() {
   await loadStuff()
 }
 
+async function onItemUpdate(id, { title }) {
+  await updateStuff(id, { title })
+}
+
+function onItemCheck(id, checked) {
+  // TODO: Handle check action - could mark as done or move to different bucket
+  console.log('Item checked:', id, checked)
+}
+
 async function onDelete(id) {
   const confirmed = await confirm.show({
     title: 'Delete stuff',
@@ -149,28 +145,6 @@ async function onDelete(id) {
   }
 }
 
-function onEdit(item) {
-  editing.value = true
-  edit_id.value = item.id
-  edit_title.value = item.title
-}
-
-async function onSaveEdit() {
-  const t = (edit_title.value ?? '').toString().trim()
-  if (!t) return
-
-  await updateStuff(edit_id.value, { title: t })
-
-  editing.value = false
-  edit_id.value = null
-  edit_title.value = ''
-}
-
-function onCancelEdit() {
-  editing.value = false
-  edit_id.value = null
-  edit_title.value = ''
-}
 </script>
 
 <style scoped>
@@ -190,25 +164,28 @@ h1 {
 }
 
 .stuff-list {
-  list-style: none;
-  padding: 0;
-}
-
-.stuff-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.actions button {
-  margin-left: 6px;
-}
-
-.edit-box {
   margin-top: 16px;
-  padding: 12px;
-  border: 1px solid #ccc;
+}
+
+.action-btn {
+  padding: 4px 8px;
+  border: none;
+  background: var(--color-bg-secondary, #f0f0f0);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.action-btn:hover {
+  background: var(--color-bg-hover, #e0e0e0);
+}
+
+.action-btn--danger {
+  color: var(--color-danger, #dc3545);
+}
+
+.action-btn--danger:hover {
+  background: var(--color-danger-light, #f8d7da);
 }
 
 .load-more  {
