@@ -70,7 +70,37 @@ This is a **multi-app Vue 3 + Vite 7** frontend project supporting two applicati
 - `scripts/authModel.js` - Authentication state management (reactive refs, not Vuex/Pinia)
 - `layouts/` - `LandingLayout.vue`, `DashboardLayout.vue`
 - `views/` - Route-level components (InboxPage, TodayPage, NextPage, etc.)
-- `components/` - Reusable UI (Btn, Inpt, Lnk, Sidebar, TopNav, ErrorToaster, AuthDialog)
+- `components/` - Reusable UI components
+- `scripts/errorModel.js`, `scripts/confirmModel.js` - Singleton state models for global UI
+
+### Key Components
+
+- **StuffItem** - Reusable list item with checkbox, inline title editing, drag support, and actions slot. Click title to edit inline (Enter/blur saves, Escape cancels). Actions visible on hover (always visible on touch devices).
+- **ConfirmDialog** - Modal for critical actions (delete confirmation). Uses singleton pattern via `confirmModel`.
+- **ErrorToaster** - Toast notifications at bottom of screen. Uses singleton pattern via `errorModel`.
+- **Btn** - Button with variants: `primary`, `ghost`, `danger`. Sizes: `sm`, `md`, `lg`.
+- **Inpt** - Input field with label and error display.
+
+### Singleton Model Pattern
+
+Global UI state uses singleton models (not Vuex/Pinia):
+
+```js
+// Error toasts
+import { errorModel } from '../scripts/errorModel.js'
+const toaster = errorModel()
+toaster.push('Something went wrong')
+
+// Confirmation dialogs
+import { confirmModel } from '../scripts/confirmModel.js'
+const confirm = confirmModel()
+const confirmed = await confirm.show({
+  title: 'Delete',
+  message: 'Are you sure?',
+  confirmText: 'Delete',
+  cancelText: 'Cancel'
+})
+```
 
 ### API Pattern
 
