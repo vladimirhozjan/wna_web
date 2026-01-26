@@ -75,7 +75,7 @@ This is a **multi-app Vue 3 + Vite 7** frontend project supporting two applicati
 
 ### Key Components
 
-- **StuffItem** - Reusable list item with checkbox, inline title editing, drag support, and actions slot. Click title to edit inline (Enter/blur saves, Escape cancels). Actions visible on hover (always visible on touch devices).
+- **Item** - Reusable list item with checkbox, inline title editing, drag support, and actions slot. Click title to edit inline (Enter/blur saves, Escape cancels). Actions visible on hover (always visible on touch devices).
 - **ConfirmDialog** - Modal for critical actions (delete confirmation). Uses singleton pattern via `confirmModel`.
 - **ErrorToaster** - Toast notifications at bottom of screen. Uses singleton pattern via `errorModel`.
 - **Btn** - Button with variants: `primary`, `ghost`, `danger`. Sizes: `sm`, `md`, `lg`.

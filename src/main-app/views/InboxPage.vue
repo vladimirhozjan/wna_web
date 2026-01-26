@@ -27,7 +27,7 @@
 
     <!-- Stuff list -->
     <div class="stuff-list">
-      <StuffItem
+      <Item
           v-for="item in items"
           :key="item.id"
           :id="item.id"
@@ -38,7 +38,7 @@
         <template #actions>
           <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
         </template>
-      </StuffItem>
+      </Item>
     </div>
 
     <!-- Load more -->
@@ -60,7 +60,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
-import StuffItem from '../components/StuffItem.vue'
+import Item from '../components/Item.vue'
 
 // model
 const {

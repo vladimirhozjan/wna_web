@@ -1,13 +1,13 @@
 <template>
   <div
-      class="stuff-item"
-      :class="{ 'stuff-item--checked': checked, 'stuff-item--dragging': isDragging, 'stuff-item--editing': isEditing }"
+      class="item"
+      :class="{ 'item--checked': checked, 'item--dragging': isDragging, 'item--editing': isEditing }"
       :draggable="!isEditing"
       @dragstart="onDragStart"
       @dragend="onDragEnd"
   >
     <!-- Checkbox -->
-    <div class="stuff-item__checkbox" @click.stop>
+    <div class="item__checkbox" @click.stop>
       <input
           type="checkbox"
           :checked="checked"
@@ -16,24 +16,24 @@
     </div>
 
     <!-- Content -->
-    <div class="stuff-item__content" @click="onClick">
+    <div class="item__content" @click="onClick">
       <input
           v-if="isEditing"
           ref="editInput"
           v-model="editValue"
-          class="stuff-item__input"
+          class="item__input"
           @keyup.enter="onSave"
           @keyup.escape="onCancel"
           @blur="onSave"
           @click.stop
       />
-      <span v-else class="stuff-item__title">{{ title }}</span>
+      <span v-else class="item__title">{{ title }}</span>
     </div>
 
-    <div class="stuff-item__separator"></div>
+    <div class="item__separator"></div>
 
     <!-- Actions slot -->
-    <div class="stuff-item__actions" @click.stop>
+    <div class="item__actions" @click.stop>
       <slot name="actions" />
     </div>
   </div>
@@ -122,7 +122,7 @@ function onDragEnd(e) {
 </script>
 
 <style scoped>
-.stuff-item {
+.item {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -134,45 +134,45 @@ function onDragEnd(e) {
   user-select: none;
 }
 
-.stuff-item:hover {
+.item:hover {
   background: var(--color-bg-hover, #f9f9f9);
 }
 
-.stuff-item--checked {
+.item--checked {
   opacity: 0.6;
 }
 
-.stuff-item--checked .stuff-item__title {
+.item--checked .item__title {
   text-decoration: line-through;
   color: var(--color-text-secondary, #888);
 }
 
-.stuff-item--dragging {
+.item--dragging {
   opacity: 0.5;
   background: var(--color-bg-dragging, #f0f0f0);
 }
 
-.stuff-item__checkbox {
+.item__checkbox {
   flex-shrink: 0;
 }
 
-.stuff-item__checkbox input[type="checkbox"] {
+.item__checkbox input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
   accent-color: var(--color-primary, #4a90d9);
 }
 
-.stuff-item__content {
+.item__content {
   min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
-.stuff-item__separator {
+.item__separator {
   flex: 1;
 }
-.stuff-item__title {
+.item__title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m, 14px);
   color: var(--color-text-primary, #1a1a1a);
@@ -181,7 +181,7 @@ function onDragEnd(e) {
   text-overflow: ellipsis;
 }
 
-.stuff-item__input {
+.item__input {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m, 14px);
   color: var(--color-text-primary, #1a1a1a);
@@ -194,11 +194,11 @@ function onDragEnd(e) {
   width: 100%;
 }
 
-.stuff-item--editing {
+.item--editing {
   background: var(--color-bg-primary, #fff);
 }
 
-.stuff-item__actions {
+.item__actions {
   flex-shrink: 0;
   display: flex;
   gap: 8px;
@@ -206,12 +206,12 @@ function onDragEnd(e) {
   transition: opacity 0.15s ease;
 }
 
-.stuff-item:hover .stuff-item__actions {
+.item:hover .item__actions {
   opacity: 1;
 }
 
 @media (hover: none) {
-  .stuff-item__actions {
+  .item__actions {
     opacity: 1;
   }
 }
