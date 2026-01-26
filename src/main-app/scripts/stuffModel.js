@@ -17,7 +17,6 @@ export function stuffModel() {
 
         try {
             if (reset) {
-                items.value = []
                 cursor.value = null
                 hasMore.value = true
             }
@@ -27,8 +26,14 @@ export function stuffModel() {
                 cursor: cursor.value,
             })
 
-            if (data.length > 0) {
+            if (reset) {
+                // Replace items in one operation (no flicker)
+                items.value = data
+            } else if (data.length > 0) {
                 items.value.push(...data)
+            }
+
+            if (data.length > 0) {
                 cursor.value = data[data.length - 1].id
             }
 
