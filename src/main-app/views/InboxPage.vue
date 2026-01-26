@@ -54,7 +54,10 @@
               v-for="(item, index) in items"
               :key="item.id"
               class="item-wrapper"
-              :class="{ 'item-wrapper--drop-target': dropTargetIndex === index && draggingId !== item.id }"
+              :class="{
+                'item-wrapper--drop-target': dropTargetIndex === index && isValidDropTarget(index),
+                'item-wrapper--dragging': draggingId === item.id
+              }"
               @dragover="onDragOver($event, index)"
               @dragleave="onDragLeave"
               @drop="onDrop($event, index)"
@@ -65,7 +68,7 @@
                 :loading="updatingId === item.id || deletingId === item.id"
                 @update="onItemUpdate"
                 @check="onItemCheck"
-                @dragstart="onDragStart(item.id)"
+                @dragstart="onDragStart(item.id, index)"
                 @dragend="onDragEnd"
             >
               <template #actions>
@@ -73,6 +76,15 @@
               </template>
             </Item>
           </div>
+          <!-- Drop zone at end of list -->
+          <div
+              v-if="draggingId"
+              class="item-wrapper item-wrapper--end"
+              :class="{ 'item-wrapper--drop-target': dropTargetIndex === items.length && isValidDropTarget(items.length) }"
+              @dragover="onDragOver($event, items.length)"
+              @dragleave="onDragLeave"
+              @drop="onDrop($event, items.length)"
+          ></div>
         </div>
 
         <!-- Load more -->
@@ -126,7 +138,15 @@ const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
 const draggingId = ref(null)
+const draggingIndex = ref(null)
 const dropTargetIndex = ref(null)
+
+// Check if drop target should show (not adjacent to dragging item)
+function isValidDropTarget(index) {
+  if (draggingIndex.value === null) return false
+  // Don't show placeholder at current position or immediately after
+  return index !== draggingIndex.value && index !== draggingIndex.value + 1
+}
 
 // show errors in toaster
 watch(error, (err) => {
@@ -215,12 +235,14 @@ function onClarify() {
 }
 
 // Drag and drop
-function onDragStart(id) {
+function onDragStart(id, index) {
   draggingId.value = id
+  draggingIndex.value = index
 }
 
 function onDragEnd() {
   draggingId.value = null
+  draggingIndex.value = null
   dropTargetIndex.value = null
 }
 
@@ -290,21 +312,35 @@ h1 {
   margin-top: 16px;
 }
 
+.item-wrapper {
+  transition: padding 0.2s ease, opacity 0.2s ease;
+}
+
+.item-wrapper--dragging {
+  opacity: 0.4;
+}
+
 .item-wrapper--drop-target {
+  padding-top: 52px;
   position: relative;
 }
 
 .item-wrapper--drop-target::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: 8px;
   left: 16px;
   right: 16px;
-  height: 3px;
+  height: 36px;
   background: var(--color-action);
-  border-radius: 2px;
-  z-index: 10;
+  opacity: 0.15;
+  border-radius: 6px;
+  border: 2px dashed var(--color-action);
   pointer-events: none;
+}
+
+.item-wrapper--end {
+  min-height: 60px;
 }
 
 .action-btn {
