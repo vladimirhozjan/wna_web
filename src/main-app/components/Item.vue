@@ -1,10 +1,7 @@
 <template>
   <div
       class="item"
-      :class="{ 'item--checked': checked, 'item--dragging': isDragging, 'item--editing': isEditing, 'item--loading': loading }"
-      :draggable="!isEditing && !loading"
-      @dragstart="onDragStart"
-      @dragend="onDragEnd"
+      :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading }"
   >
     <!-- Checkbox -->
     <div class="item__checkbox" @click.stop>
@@ -42,6 +39,9 @@
     <div class="item__actions" @click.stop>
       <slot name="actions" />
     </div>
+
+    <!-- Drag handle slot (right side) -->
+    <slot name="drag-handle" />
   </div>
 </template>
 
@@ -61,19 +61,14 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  dragData: {
-    type: Object,
-    default: null
-  },
   loading: {
     type: Boolean,
     default: false
   }
 })
 
-const emit = defineEmits(['update', 'check', 'dragstart', 'dragend'])
+const emit = defineEmits(['update', 'check'])
 
-const isDragging = ref(false)
 const isEditing = ref(false)
 const editValue = ref('')
 const editInput = ref(null)
@@ -122,26 +117,6 @@ function onCancel() {
 function onCheck(e) {
   emit('check', props.id, e.target.checked)
 }
-
-function onDragStart(e) {
-  if (isEditing.value) {
-    e.preventDefault()
-    return
-  }
-
-  isDragging.value = true
-
-  const data = props.dragData || { id: props.id, title: props.title }
-  e.dataTransfer.setData('application/json', JSON.stringify(data))
-  e.dataTransfer.effectAllowed = 'move'
-
-  emit('dragstart', props.id, e)
-}
-
-function onDragEnd(e) {
-  isDragging.value = false
-  emit('dragend', props.id, e)
-}
 </script>
 
 <style scoped>
@@ -169,11 +144,6 @@ function onDragEnd(e) {
 .item--checked .item__title {
   text-decoration: line-through;
   color: var(--color-text-secondary);
-}
-
-.item--dragging {
-  opacity: 0.5;
-  background: var(--color-bg-secondary);
 }
 
 .item__checkbox {

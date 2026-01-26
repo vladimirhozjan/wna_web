@@ -132,25 +132,11 @@ export function stuffModel() {
     async function moveStuff(stuffId, toIndex) {
         error.value = null
 
-        // Find current index
-        const fromIndex = items.value.findIndex(i => i.id === stuffId)
-        if (fromIndex === -1 || fromIndex === toIndex) return
-
-        // Adjust target index when moving forward (removal shifts indices)
-        const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex
-
-        // Store original order for rollback
-        const originalItems = [...items.value]
-
-        // Optimistic reorder
-        const [item] = items.value.splice(fromIndex, 1)
-        items.value.splice(insertIndex, 0, item)
-
+        // VueDraggable already moved the item in the array
+        // We just need to sync with the API
         try {
-            await apiClient.moveStuff(stuffId, insertIndex)
+            await apiClient.moveStuff(stuffId, toIndex)
         } catch (err) {
-            // Revert on error
-            items.value = originalItems
             error.value = err
             throw err
         }
