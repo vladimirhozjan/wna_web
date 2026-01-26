@@ -44,10 +44,15 @@
 
     <!-- Load more -->
     <div class="load-more">
-      <button v-if="hasMore && !loading" @click="loadMore">
+      <Btn
+          v-if="hasMore"
+          variant="ghost"
+          size="sm"
+          :loading="loading"
+          @click="loadMore"
+      >
         Load more
-      </button>
-      <span v-if="loading">Loading…</span>
+      </Btn>
     </div>
 
   </DashboardLayout>
@@ -202,7 +207,9 @@ h1 {
   background: var(--color-danger-light, #f8d7da);
 }
 
-.load-more  {
-  margin: 10px;
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
 }
 </style>

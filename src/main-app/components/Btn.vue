@@ -8,7 +8,7 @@
     <span v-if="loading" class="base-btn__loader"></span>
 
     <!-- Button content -->
-    <span v-show="!loading" class="base-btn__content">
+    <span class="base-btn__content">
       <slot />
     </span>
   </button>
@@ -50,6 +50,7 @@ const classes = computed(() => ([
 
 <style scoped>
 .base-btn {
+  position: relative;
   font-family: var(--font-family-default),serif;
   border-radius: 6px;
   border: none;
@@ -61,31 +62,22 @@ const classes = computed(() => ([
 }
 
 .base-btn__loader {
-  width: 13px;
-  height: 13px;
-  border: 4px solid transparent;
-  border-top-color: var(--color-btn-loader-top);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-btn-loader-fade-1, #ddd);
+  border-top-color: var(--color-btn-loader-top, currentColor);
   border-radius: 50%;
-  animation: spinPulse 2s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
-@keyframes spinPulse {
-  0% {
-    transform: rotate(0deg) scale(0.9);
-    border-color: var(--color-btn-loader-fade-1);
-    border-top-color: var(--color-btn-loader-top);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.05);
-    border-color: var(--color-btn-loader-fade-2);
-    border-top-color: var(--color-btn-loader-top);
-  }
-  100% {
-    transform: rotate(360deg) scale(0.9);
-    border-color: var(--color-btn-loader-fade-1);
-    border-top-color: var(--color-btn-loader-top);
-  }
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
 
 /* SIZES */
 .base-btn--sm {

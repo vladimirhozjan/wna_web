@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import apiClient from './apiClient.js'
 
 const items = ref([])
@@ -6,7 +6,8 @@ const current = ref(null)
 const loading = ref(false)
 const error = ref(null)
 const cursor = ref(null)
-const limit = ref(50)
+const limit = ref(10)
+const hasMore = ref(true)
 
 export function stuffModel() {
 
@@ -18,6 +19,7 @@ export function stuffModel() {
             if (reset) {
                 items.value = []
                 cursor.value = null
+                hasMore.value = true
             }
 
             const data = await apiClient.listStuff({
@@ -29,6 +31,9 @@ export function stuffModel() {
                 items.value.push(...data)
                 cursor.value = data[data.length - 1].id
             }
+
+            // Hide "Load more" if we got fewer items than requested
+            hasMore.value = data.length >= limit.value
 
             return data
         } catch (err) {
@@ -118,8 +123,6 @@ export function stuffModel() {
             loading.value = false
         }
     }
-
-    const hasMore = computed(() => cursor.value !== null)
 
     return {
         // state
