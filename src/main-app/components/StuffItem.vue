@@ -209,4 +209,10 @@ function onDragEnd(e) {
 .stuff-item:hover .stuff-item__actions {
   opacity: 1;
 }
+
+@media (hover: none) {
+  .stuff-item__actions {
+    opacity: 1;
+  }
+}
 </style>
