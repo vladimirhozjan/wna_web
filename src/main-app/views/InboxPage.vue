@@ -48,47 +48,44 @@
           </p>
         </div>
 
-        <!-- Stuff list -->
-        <div v-else class="stuff-list" :class="{ 'stuff-list--dragging': draggingId || isDropping }"
-             @dragover="onListDragOver"
+        <!-- Stuff list with drag and drop -->
+        <VueDraggable
+            v-else
+            v-model="items"
+            class="stuff-list"
+            :animation="200"
+            ghost-class="item-wrapper--ghost"
+            drag-class="item-wrapper--drag"
+            handle=".drag-handle"
+            :delay="100"
+            :delay-on-touch-only="true"
+            @start="onDragStart"
+            @end="onDragEnd"
         >
           <div
-              v-for="(item, index) in items"
+              v-for="item in items"
               :key="item.id"
               class="item-wrapper"
-              :class="{
-                'item-wrapper--drop-target': dropTargetIndex === index && draggingId !== item.id,
-                'item-wrapper--dragging': draggingId === item.id,
-                'item-wrapper--appearing': appearingId === item.id
-              }"
-              @dragover="onDragOver($event, index)"
-              @dragleave="onDragLeave"
-              @drop="onDrop($event, index)"
           >
             <Item
                 :id="item.id"
                 :title="item.title"
                 :loading="updatingId === item.id || deletingId === item.id"
+                :draggable="false"
                 @update="onItemUpdate"
                 @check="onItemCheck"
-                @dragstart="onDragStart(item.id)"
-                @dragend="onDragEnd"
             >
+              <template #drag-handle>
+                <div class="drag-handle">
+                  <span class="drag-handle__icon">⋮⋮</span>
+                </div>
+              </template>
               <template #actions>
                 <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
               </template>
             </Item>
           </div>
-          <!-- Drop zone at end of list -->
-          <div
-              v-if="draggingId"
-              class="item-wrapper item-wrapper--end"
-              :class="{ 'item-wrapper--drop-target': dropTargetIndex === items.length }"
-              @dragover="onDragOver($event, items.length)"
-              @dragleave="onDragLeave"
-              @drop="onDrop($event, items.length)"
-          ></div>
-        </div>
+        </VueDraggable>
 
         <!-- Load more -->
         <div class="load-more">
@@ -111,6 +108,7 @@
 <script setup>
 import DashboardLayout from "../layouts/DashboardLayout.vue";
 import {ref, onMounted, nextTick, watch} from 'vue'
+import { VueDraggable } from 'vue-draggable-plus'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -140,9 +138,10 @@ const new_stuff_title = ref('')
 const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
-const draggingId = ref(null)
-const dropTargetIndex = ref(null)
-const appearingId = ref(null)
+
+// Drag state for API sync
+let draggedItemId = null
+let originalIndex = null
 
 // show errors in toaster
 watch(error, (err) => {
@@ -230,121 +229,28 @@ function onClarify() {
   console.log('Clarify clicked')
 }
 
-// Drag and drop
-const isDropping = ref(false)
-
-function onDragStart(id) {
-  draggingId.value = id
-  isDropping.value = false
-  // Show placeholder on next item (visually in place of collapsed dragged item)
-  const index = items.value.findIndex(i => i.id === id)
-  dropTargetIndex.value = index + 1
+// Drag and drop handlers
+function onDragStart(evt) {
+  originalIndex = evt.oldIndex
+  draggedItemId = items.value[evt.oldIndex]?.id
 }
 
-function onDragEnd() {
-  // Only reset if not handled by onDrop
-  if (!isDropping.value) {
-    draggingId.value = null
-    dropTargetIndex.value = null
-  }
-}
+async function onDragEnd(evt) {
+  const newIndex = evt.newIndex
 
-function onDragOver(e, index) {
-  e.preventDefault()
-  e.dataTransfer.dropEffect = 'move'
-
-  const item = items.value[index]
-  const draggingIndex = items.value.findIndex(i => i.id === draggingId.value)
-
-  // Skip the dragged item's own wrapper (it's collapsed, so midpoint calc is wrong)
-  if (item && item.id === draggingId.value) {
-    return
-  }
-
-  // Get the actual Item element's rect (not the wrapper with padding)
-  const itemElement = e.currentTarget.querySelector('.item')
-  const rect = itemElement ? itemElement.getBoundingClientRect() : e.currentTarget.getBoundingClientRect()
-  const midpoint = rect.top + rect.height / 2
-  const isTopHalf = e.clientY < midpoint
-
-  // Helper to set dropTargetIndex, skipping the dragged item's index
-  // (placeholder can't show on dragged item due to template condition)
-  function setDropTarget(newIndex) {
-    if (newIndex === draggingIndex) {
-      // Skip dragged item's index - use index+1 instead (visually same position)
-      dropTargetIndex.value = draggingIndex + 1
-    } else {
-      dropTargetIndex.value = newIndex
+  // Only sync with API if position changed
+  if (originalIndex !== newIndex && draggedItemId) {
+    try {
+      await moveStuff(draggedItemId, newIndex)
+    } catch (e) {
+      // Revert on error - reload the list
+      await loadStuff({ reset: true })
     }
   }
 
-  // Check if dragged item is between current hover position and placeholder
-  const placeholderIdx = dropTargetIndex.value
-  const isDraggedItemBetween = draggingIndex !== -1 && placeholderIdx !== null && (
-    (index < draggingIndex && placeholderIdx > draggingIndex) ||
-    (index > draggingIndex && placeholderIdx <= draggingIndex)
-  )
-
-  if (dropTargetIndex.value === null) {
-    // First hover - set initial position
-    setDropTarget(isTopHalf ? index : index + 1)
-  } else if (isDraggedItemBetween) {
-    // Dragged item is between us and placeholder - allow free movement past it
-    setDropTarget(isTopHalf ? index : index + 1)
-  } else if (isTopHalf && dropTargetIndex.value === index + 1) {
-    // Top half of item immediately above placeholder -> move up
-    setDropTarget(index)
-  } else if (!isTopHalf && dropTargetIndex.value === index) {
-    // Bottom half of item immediately below placeholder -> move down
-    setDropTarget(index + 1)
-  }
+  draggedItemId = null
+  originalIndex = null
 }
-
-function onDragLeave() {
-  // Don't clear - keep placeholder visible while dragging
-}
-
-function onListDragOver(e) {
-  // Handle dragover on the list container (gaps between items, collapsed item area)
-  e.preventDefault()
-  e.dataTransfer.dropEffect = 'move'
-  // Keep current dropTargetIndex - don't change it
-}
-
-async function onDrop(e, toIndex) {
-  e.preventDefault()
-  isDropping.value = true
-
-  if (!draggingId.value) return
-
-  const id = draggingId.value
-
-  // 1. Reorder the list (item moves to new position in DOM)
-  await moveStuff(id, toIndex)
-
-  // 2. Show the item instantly (no max-height animation)
-  appearingId.value = id
-  draggingId.value = null
-
-  // 3. Wait a frame for the item to render
-  await nextTick()
-
-  // 4. Close the gap around the item
-  dropTargetIndex.value = null
-
-  // 5. Clear appearing state after gap animation
-  setTimeout(() => {
-    appearingId.value = null
-  }, 250)
-
-  // 6. Re-enable hover only after mouse moves
-  const onMouseMove = () => {
-    isDropping.value = false
-    document.removeEventListener('mousemove', onMouseMove)
-  }
-  document.addEventListener('mousemove', onMouseMove, { once: true })
-}
-
 </script>
 
 <style scoped>
@@ -389,54 +295,44 @@ h1 {
 
 .stuff-list {
   margin-top: 16px;
-  user-select: none;
-}
-
-.stuff-list--dragging .item-wrapper {
-  pointer-events: auto;
-}
-
-.stuff-list--dragging :deep(.item:hover) {
-  background: var(--color-bg-primary);
 }
 
 .item-wrapper {
-  max-height: 200px;
-  overflow: hidden;
-  transition: padding 0.2s ease, max-height 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.item-wrapper--dragging {
-  max-height: 1px;
-  opacity: 0;
-  padding: 0;
+/* Drag handle */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  cursor: grab;
+  color: var(--color-text-tertiary);
+  touch-action: none;
+  user-select: none;
 }
 
-.item-wrapper--appearing {
-  transition: padding 0.2s ease;
+.drag-handle:active {
+  cursor: grabbing;
 }
 
-.item-wrapper--drop-target {
-  padding-top: 52px;
-  position: relative;
+.drag-handle__icon {
+  font-size: 14px;
+  letter-spacing: -2px;
 }
 
-.item-wrapper--drop-target::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 16px;
-  right: 16px;
-  height: 36px;
-  background: var(--color-action);
-  opacity: 0.15;
-  border-radius: 6px;
-  border: 2px dashed var(--color-action);
-  pointer-events: none;
-}
+/* Show drag handle on hover (desktop) or always (touch) */
+@media (hover: hover) {
+  .drag-handle {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
 
-.item-wrapper--end {
-  min-height: 60px;
+  .item-wrapper:hover .drag-handle {
+    opacity: 1;
+  }
 }
 
 .action-btn {
