@@ -3,9 +3,16 @@
     --color-action: #4185DE;
     --color-button-hover: #356DC0;
     --color-text-primary: #374151;
+    --color-text-secondary: #6B7280;
+    --color-text-tertiary: #9CA3AF;
     --color-text-error: #7f1c1d;
     --color-app-background: #f8fafc;
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F3F4F6;
+    --color-bg-hover: #E5E7EB;
     --color-border-light: #E3E8EF;
+    --color-danger: #ef4444;
+    --color-danger-light: #FEE2E2;
     --color-popup-backdrop:  rgba(247, 249, 251, 0.5);
     --color-popup-background: #FFFFFF;
     --color-sidebar-background: #FFFFFF;

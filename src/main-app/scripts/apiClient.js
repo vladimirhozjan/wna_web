@@ -185,6 +185,15 @@ export async function deleteStuff(stuffId) {
     }
 }
 
+export async function moveStuff(stuffId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/move`, { destination }, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function listStuff({ limit = 10, cursor = null } = {}) {
     try {
         const params = {}
@@ -217,6 +226,7 @@ const apiClient = {
     updateStuff,
     getStuff,
     deleteStuff,
+    moveStuff,
     listStuff,
 }
 

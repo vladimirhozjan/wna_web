@@ -129,6 +129,30 @@ export function stuffModel() {
         }
     }
 
+    async function moveStuff(stuffId, toIndex) {
+        error.value = null
+
+        // Find current index
+        const fromIndex = items.value.findIndex(i => i.id === stuffId)
+        if (fromIndex === -1 || fromIndex === toIndex) return
+
+        // Store original order for rollback
+        const originalItems = [...items.value]
+
+        // Optimistic reorder
+        const [item] = items.value.splice(fromIndex, 1)
+        items.value.splice(toIndex, 0, item)
+
+        try {
+            await apiClient.moveStuff(stuffId, toIndex)
+        } catch (err) {
+            // Revert on error
+            items.value = originalItems
+            error.value = err
+            throw err
+        }
+    }
+
     return {
         // state
         items,
@@ -145,5 +169,6 @@ export function stuffModel() {
         addStuff,
         updateStuff,
         deleteStuff,
+        moveStuff,
     }
 }

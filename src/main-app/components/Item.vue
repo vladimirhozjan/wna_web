@@ -25,7 +25,7 @@
             class="item__input"
             :style="{ width: inputWidth + 'px' }"
             @keyup.enter="onSave"
-            @keyup.escape="onCancel"
+            @keyup.esc="onCancel"
             @blur="onSave"
             @click.stop
         />
@@ -151,15 +151,15 @@ function onDragEnd(e) {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: var(--color-bg-primary, #fff);
-  border-bottom: 1px solid var(--color-border-light, #eee);
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border-light);
   cursor: pointer;
   transition: background 0.15s ease;
   user-select: none;
 }
 
 .item:hover {
-  background: var(--color-bg-hover, #f9f9f9);
+  background: var(--color-bg-hover);
 }
 
 .item--checked {
@@ -168,12 +168,12 @@ function onDragEnd(e) {
 
 .item--checked .item__title {
   text-decoration: line-through;
-  color: var(--color-text-secondary, #888);
+  color: var(--color-text-secondary);
 }
 
 .item--dragging {
   opacity: 0.5;
-  background: var(--color-bg-dragging, #f0f0f0);
+  background: var(--color-bg-secondary);
 }
 
 .item__checkbox {
@@ -184,7 +184,7 @@ function onDragEnd(e) {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: var(--color-primary, #4a90d9);
+  accent-color: var(--color-action);
 }
 
 .item__content {
@@ -198,8 +198,8 @@ function onDragEnd(e) {
 }
 .item__title {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m, 14px);
-  color: var(--color-text-primary, #1a1a1a);
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -215,16 +215,16 @@ function onDragEnd(e) {
   visibility: hidden;
   white-space: pre;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m, 14px);
+  font-size: var(--font-size-body-m);
 }
 
 .item__input {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m, 14px);
-  color: var(--color-text-primary, #1a1a1a);
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--color-primary, #4a90d9);
+  border-bottom: 1px solid var(--color-action);
   padding: 0;
   margin: 0;
   outline: none;
@@ -233,7 +233,7 @@ function onDragEnd(e) {
 }
 
 .item--editing {
-  background: var(--color-bg-primary, #fff);
+  background: var(--color-bg-primary);
 }
 
 .item--loading {
@@ -249,8 +249,8 @@ function onDragEnd(e) {
   margin-left: -10px;
   width: 20px;
   height: 20px;
-  border: 2px solid var(--color-border-light, #ddd);
-  border-top-color: var(--color-primary, #4a90d9);
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

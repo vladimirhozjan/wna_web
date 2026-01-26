@@ -44,7 +44,11 @@
     <div id="app">
       <!-- Splash screen - replaced when Vue mounts -->
       <div class="splash">
-        <img class="splash-icon" src="assets/UnderConstruction.svg" alt="Loading">
+        <!-- Replace this SVG with your logo -->
+        <svg class="splash-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="5" width="90" height="90" rx="8" fill="none" stroke="#4185DE" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="50" y="54" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#4185DE">Replace me</text>
+        </svg>
         <div class="splash-spinner"></div>
         <p class="splash-text">Loading your content...</p>
       </div>

@@ -50,19 +50,29 @@
 
         <!-- Stuff list -->
         <div v-else class="stuff-list">
-          <Item
-              v-for="item in items"
+          <div
+              v-for="(item, index) in items"
               :key="item.id"
-              :id="item.id"
-              :title="item.title"
-              :loading="updatingId === item.id || deletingId === item.id"
-              @update="onItemUpdate"
-              @check="onItemCheck"
+              class="item-wrapper"
+              :class="{ 'item-wrapper--drop-target': dropTargetIndex === index && draggingId !== item.id }"
+              @dragover="onDragOver($event, index)"
+              @dragleave="onDragLeave"
+              @drop="onDrop($event, index)"
           >
-            <template #actions>
-              <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
-            </template>
-          </Item>
+            <Item
+                :id="item.id"
+                :title="item.title"
+                :loading="updatingId === item.id || deletingId === item.id"
+                @update="onItemUpdate"
+                @check="onItemCheck"
+                @dragstart="onDragStart(item.id)"
+                @dragend="onDragEnd"
+            >
+              <template #actions>
+                <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+              </template>
+            </Item>
+          </div>
         </div>
 
         <!-- Load more -->
@@ -104,6 +114,7 @@ const {
   addStuff,
   updateStuff,
   deleteStuff,
+  moveStuff,
 } = stuffModel()
 
 const toaster = errorModel()
@@ -114,6 +125,8 @@ const new_stuff_title = ref('')
 const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
+const draggingId = ref(null)
+const dropTargetIndex = ref(null)
 
 // show errors in toaster
 watch(error, (err) => {
@@ -201,6 +214,36 @@ function onClarify() {
   console.log('Clarify clicked')
 }
 
+// Drag and drop
+function onDragStart(id) {
+  draggingId.value = id
+}
+
+function onDragEnd() {
+  draggingId.value = null
+  dropTargetIndex.value = null
+}
+
+function onDragOver(e, index) {
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  dropTargetIndex.value = index
+}
+
+function onDragLeave() {
+  dropTargetIndex.value = null
+}
+
+async function onDrop(e, toIndex) {
+  e.preventDefault()
+  dropTargetIndex.value = null
+
+  if (!draggingId.value) return
+
+  await moveStuff(draggingId.value, toIndex)
+  draggingId.value = null
+}
+
 </script>
 
 <style scoped>
@@ -212,7 +255,7 @@ function onClarify() {
 
 .inbox-header {
   flex-shrink: 0;
-  background: var(--color-bg-primary, #fff);
+  background: var(--color-bg-primary);
 }
 
 .inbox-content {
@@ -247,25 +290,40 @@ h1 {
   margin-top: 16px;
 }
 
+.item-wrapper--drop-target {
+  position: relative;
+}
+
+.item-wrapper--drop-target::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: var(--color-action);
+  border-radius: 1px;
+}
+
 .action-btn {
   padding: 4px 8px;
   border: none;
-  background: var(--color-bg-secondary, #f0f0f0);
+  background: var(--color-bg-secondary);
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
 }
 
 .action-btn:hover {
-  background: var(--color-bg-hover, #e0e0e0);
+  background: var(--color-bg-hover);
 }
 
 .action-btn--danger {
-  color: var(--color-danger, #dc3545);
+  color: var(--color-danger);
 }
 
 .action-btn--danger:hover {
-  background: var(--color-danger-light, #f8d7da);
+  background: var(--color-danger-light);
 }
 
 .load-more {
@@ -286,22 +344,22 @@ h1 {
 .empty-state__icon {
   width: 80px;
   height: 80px;
-  color: var(--color-text-tertiary, #aaa);
+  color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }
 
 .empty-state__title {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3, 20px);
+  font-size: var(--font-size-h3);
   font-weight: 600;
-  color: var(--color-text-primary, #1a1a1a);
+  color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-state__text {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m, 14px);
-  color: var(--color-text-secondary, #666);
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
 }
