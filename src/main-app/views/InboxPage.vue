@@ -32,6 +32,7 @@
           :key="item.id"
           :id="item.id"
           :title="item.title"
+          :loading="updatingId === item.id"
           @update="onItemUpdate"
           @check="onItemCheck"
       >
@@ -80,6 +81,7 @@ const confirm = confirmModel()
 // local UI state
 const new_stuff_title = ref('')
 const add_input = ref(null)
+const updatingId = ref(null)
 
 // show errors in toaster
 watch(error, (err) => {
@@ -123,7 +125,20 @@ async function loadMore() {
 }
 
 async function onItemUpdate(id, { title }) {
-  await updateStuff(id, { title })
+  // Optimistic update
+  const item = items.value.find(i => i.id === id)
+  const oldTitle = item?.title
+  if (item) item.title = title
+
+  updatingId.value = id
+  try {
+    await updateStuff(id, { title })
+  } catch (e) {
+    // Revert on error
+    if (item) item.title = oldTitle
+  } finally {
+    updatingId.value = null
+  }
 }
 
 function onItemCheck(id, checked) {

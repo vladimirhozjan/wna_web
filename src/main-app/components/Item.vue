@@ -1,8 +1,8 @@
 <template>
   <div
       class="item"
-      :class="{ 'item--checked': checked, 'item--dragging': isDragging, 'item--editing': isEditing }"
-      :draggable="!isEditing"
+      :class="{ 'item--checked': checked, 'item--dragging': isDragging, 'item--editing': isEditing, 'item--loading': loading }"
+      :draggable="!isEditing && !loading"
       @dragstart="onDragStart"
       @dragend="onDragEnd"
   >
@@ -33,6 +33,9 @@
       <span v-else class="item__title">{{ title }}</span>
     </div>
 
+    <!-- Spinner overlay -->
+    <span v-if="loading" class="item__spinner"></span>
+
     <div class="item__separator"></div>
 
     <!-- Actions slot -->
@@ -61,6 +64,10 @@ const props = defineProps({
   dragData: {
     type: Object,
     default: null
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -139,6 +146,7 @@ function onDragEnd(e) {
 
 <style scoped>
 .item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -226,6 +234,29 @@ function onDragEnd(e) {
 
 .item--editing {
   background: var(--color-bg-primary, #fff);
+}
+
+.item--loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.item__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border-light, #ddd);
+  border-top-color: var(--color-primary, #4a90d9);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .item__actions {
