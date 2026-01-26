@@ -25,8 +25,17 @@
       </Btn>
     </div>
 
+    <!-- Empty state -->
+    <div v-if="!loading && items.length === 0" class="empty-state">
+      <InboxIcon class="empty-state__icon" />
+      <h2 class="empty-state__title">Your inbox is empty</h2>
+      <p class="empty-state__text">
+        Capture everything on your mind. Add new stuff above to get started.
+      </p>
+    </div>
+
     <!-- Stuff list -->
-    <div class="stuff-list">
+    <div v-else class="stuff-list">
       <Item
           v-for="item in items"
           :key="item.id"
@@ -45,7 +54,7 @@
     <!-- Load more -->
     <div class="load-more">
       <Btn
-          v-if="hasMore"
+          v-if="hasMore && items.length > 0"
           variant="ghost"
           size="sm"
           :loading="loading"
@@ -67,6 +76,7 @@ import { confirmModel } from '../scripts/confirmModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 import Item from '../components/Item.vue'
+import InboxIcon from '../assets/InboxIcon.vue'
 
 // model
 const {
@@ -217,5 +227,37 @@ h1 {
   display: flex;
   justify-content: center;
   margin: 16px 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.empty-state__icon {
+  width: 80px;
+  height: 80px;
+  color: var(--color-text-tertiary, #aaa);
+  margin-bottom: 16px;
+}
+
+.empty-state__title {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-h3, 20px);
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a1a);
+  margin: 0 0 8px 0;
+}
+
+.empty-state__text {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m, 14px);
+  color: var(--color-text-secondary, #666);
+  margin: 0;
+  max-width: 300px;
 }
 </style>
