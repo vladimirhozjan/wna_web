@@ -3,6 +3,14 @@
 
     <div class="title">
       <h1 class="text-h1 color-text-primary">Inbox</h1>
+      <Btn
+          v-if="items.length > 0"
+          variant="ghost"
+          size="sm"
+          @click="onClarify"
+      >
+        Clarify
+      </Btn>
     </div>
 
     <!-- Add Stuff -->
@@ -180,9 +188,21 @@ async function onDelete(id) {
   }
 }
 
+function onClarify() {
+  // TODO: Navigate to clarify view or open clarify modal for first item
+  console.log('Clarify clicked')
+}
+
 </script>
 
 <style scoped>
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 10px;
+}
+
 h1 {
   padding: 10px;
 }
