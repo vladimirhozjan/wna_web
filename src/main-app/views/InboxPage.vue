@@ -300,9 +300,11 @@ h1 {
   top: 0;
   left: 16px;
   right: 16px;
-  height: 2px;
+  height: 3px;
   background: var(--color-action);
-  border-radius: 1px;
+  border-radius: 2px;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .action-btn {
