@@ -1,77 +1,85 @@
 <template>
   <DashboardLayout>
+    <div class="inbox-page">
 
-    <div class="title">
-      <h1 class="text-h1 color-text-primary">Inbox</h1>
-      <Btn
-          v-if="items.length > 0"
-          variant="ghost"
-          size="sm"
-          @click="onClarify"
-      >
-        Clarify
-      </Btn>
+      <!-- Fixed header -->
+      <div class="inbox-header">
+        <div class="title">
+          <h1 class="text-h1 color-text-primary">Inbox</h1>
+          <Btn
+              v-if="items.length > 0"
+              variant="ghost"
+              size="sm"
+              @click="onClarify"
+          >
+            Clarify
+          </Btn>
+        </div>
+
+        <!-- Add Stuff -->
+        <div class="inbox-input">
+          <Inpt
+              ref="add_input"
+              v-model="new_stuff_title"
+              type="text"
+              placeholder="Add new stuff"
+              @keyup.enter="onAdd"
+              :disabled="loading"
+          />
+          <Btn @click="onAdd"
+               :disabled="loading || !new_stuff_title.trim()"
+               :loading="loading"
+               class="add-button"
+               variant="primary"
+               size="sm">
+            Add
+          </Btn>
+        </div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="inbox-content">
+        <!-- Empty state -->
+        <div v-if="!loading && items.length === 0" class="empty-state">
+          <InboxIcon class="empty-state__icon" />
+          <h2 class="empty-state__title">Your inbox is empty</h2>
+          <p class="empty-state__text">
+            Capture everything on your mind. Add new stuff above to get started.
+          </p>
+        </div>
+
+        <!-- Stuff list -->
+        <div v-else class="stuff-list">
+          <Item
+              v-for="item in items"
+              :key="item.id"
+              :id="item.id"
+              :title="item.title"
+              :loading="updatingId === item.id || deletingId === item.id"
+              @update="onItemUpdate"
+              @check="onItemCheck"
+          >
+            <template #actions>
+              <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+            </template>
+          </Item>
+        </div>
+
+        <!-- Load more -->
+        <div class="load-more">
+          <Btn
+              v-if="hasMore && items.length > 0"
+              variant="ghost"
+              size="sm"
+              :loading="loading"
+              @click="loadMore"
+          >
+            Load more
+          </Btn>
+        </div>
+      </div>
+
     </div>
-
-    <!-- Add Stuff -->
-    <div class="inbox-input">
-      <Inpt
-          ref="add_input"
-          v-model="new_stuff_title"
-          type="text"
-          placeholder="Add new stuff"
-          @keyup.enter="onAdd"
-          :disabled="loading"
-      />
-      <Btn @click="onAdd"
-           :disabled="loading || !new_stuff_title.trim()"
-           :loading="loading"
-           class="add-button"
-           variant="primary"
-           size="sm">
-        Add
-      </Btn>
-    </div>
-
-    <!-- Empty state -->
-    <div v-if="!loading && items.length === 0" class="empty-state">
-      <InboxIcon class="empty-state__icon" />
-      <h2 class="empty-state__title">Your inbox is empty</h2>
-      <p class="empty-state__text">
-        Capture everything on your mind. Add new stuff above to get started.
-      </p>
-    </div>
-
-    <!-- Stuff list -->
-    <div v-else class="stuff-list">
-      <Item
-          v-for="item in items"
-          :key="item.id"
-          :id="item.id"
-          :title="item.title"
-          :loading="updatingId === item.id || deletingId === item.id"
-          @update="onItemUpdate"
-          @check="onItemCheck"
-      >
-        <template #actions>
-          <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
-        </template>
-      </Item>
-    </div>
-
-    <!-- Load more -->
-    <div class="load-more">
-      <Btn
-          v-if="hasMore && items.length > 0"
-          variant="ghost"
-          size="sm"
-          :loading="loading"
-          @click="loadMore"
-      >
-        Load more
-      </Btn>
-    </div>
-
   </DashboardLayout>
 </template>
 
@@ -196,6 +204,23 @@ function onClarify() {
 </script>
 
 <style scoped>
+.inbox-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.inbox-header {
+  flex-shrink: 0;
+  background: var(--color-bg-primary, #fff);
+}
+
+.inbox-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
 .title {
   display: flex;
   align-items: center;
