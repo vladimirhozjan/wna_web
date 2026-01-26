@@ -32,7 +32,7 @@
           :key="item.id"
           :id="item.id"
           :title="item.title"
-          :loading="updatingId === item.id"
+          :loading="updatingId === item.id || deletingId === item.id"
           @update="onItemUpdate"
           @check="onItemCheck"
       >
@@ -87,6 +87,7 @@ const confirm = confirmModel()
 const new_stuff_title = ref('')
 const add_input = ref(null)
 const updatingId = ref(null)
+const deletingId = ref(null)
 
 // show errors in toaster
 watch(error, (err) => {
@@ -160,7 +161,12 @@ async function onDelete(id) {
   })
 
   if (confirmed) {
-    await deleteStuff(id)
+    deletingId.value = id
+    try {
+      await deleteStuff(id)
+    } finally {
+      deletingId.value = null
+    }
   }
 }
 
