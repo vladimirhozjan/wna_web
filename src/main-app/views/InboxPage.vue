@@ -306,21 +306,21 @@ h1 {
   margin-bottom: 4px;
 }
 
-.stuff-list {
-  margin-top: 16px;
-}
-
 .item-wrapper .item{
   -webkit-touch-callout: none; /* iOS Safari */
   user-select: none;
 }
 
 .item-wrapper-chosen .item{
-  background-color: red;
+  background-color: var(--color-bg-hover);
 }
 
 .item-wrapper-ghost .item{
-  background-color: blue;
+  background-color: var(--color-bg-primary);
+}
+
+.item-wrapper-ghost .item>* {
+  opacity: 0;
 }
 
 .action-btn {
