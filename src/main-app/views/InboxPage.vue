@@ -306,13 +306,15 @@ h1 {
 }
 
 .item-wrapper--chosen .item {
-  background-color: blue;
-  opacity: 0.5;
+  background-color: var(--color-bg-hover);
 }
 
 .item-wrapper--ghost .item {
-  background-color: red;
-  opacity: 0.5;
+  background-color: var(--color-bg-primary);
+}
+
+.item-wrapper--ghost .item > *{
+  opacity: 0;
 }
 
 /* Drag handle */
