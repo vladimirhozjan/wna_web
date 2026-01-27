@@ -54,8 +54,9 @@
             v-model="items"
             class="stuff-list"
             :animation="200"
-            ghost-class="item-wrapper--ghost"
-            drag-class="item-wrapper--drag"
+            :ghostClass="'item-wrapper--ghost'"
+            :chosenClass="'item-wrapper--chosen'"
+            :dragClass="'item-wrapper--drag'"
             handle=".drag-handle"
             :delay="100"
             :delay-on-touch-only="true"
@@ -231,11 +232,13 @@ function onClarify() {
 
 // Drag and drop handlers
 function onDragStart(evt) {
+  console.log('Drag start:', evt)
   originalIndex = evt.oldIndex
   draggedItemId = items.value[evt.oldIndex]?.id
 }
 
 async function onDragEnd(evt) {
+  console.log('Drag end:', evt)
   const newIndex = evt.newIndex
 
   // Only sync with API if position changed
@@ -301,6 +304,16 @@ h1 {
 
 .item-wrapper {
   transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.item-wrapper--chosen .item {
+  background-color: blue;
+  opacity: 0.5;
+}
+
+.item-wrapper--ghost .item {
+  background-color: red;
+  opacity: 0.5;
 }
 
 /* Drag handle */
@@ -395,4 +408,7 @@ h1 {
   margin: 0;
   max-width: 300px;
 }
+
 </style>
+
+

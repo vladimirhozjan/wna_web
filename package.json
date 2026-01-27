@@ -8,7 +8,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "nodebug": "NODE_OPTIONS= vite",
     "build": "vite build",
     "preview": "vite preview",
     "build:main": "APP=main-app vite build",
