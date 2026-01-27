@@ -59,6 +59,12 @@
             handle=".drag-handle"
             :delay="100"
             :delay-on-touch-only="true"
+
+            :force-fallback="true"
+            :fallback-on-body="true"
+            :fallback-tolerance="5"
+            :scroll="false"
+
             @start="onDragStart"
             @end="onDragEnd"
         >
@@ -309,11 +315,11 @@ h1 {
 }
 
 .item-wrapper--chosen .item {
-  background-color: var(--color-bg-hover);
+  background-color: red;
 }
 
 .item-wrapper--ghost .item {
-  background-color: var(--color-bg-primary);
+  background-color: blue;
 }
 
 .item-wrapper--ghost .item > *{
@@ -331,6 +337,12 @@ h1 {
 
 .is-dragging .item-wrapper:hover .drag-handle {
   opacity: 0;
+}
+
+.is-dragging .inbox-content {
+  overflow: hidden !important;
+  -webkit-overflow-scrolling: auto !important;
+  touch-action: none !important;
 }
 
 /* Drag handle */
@@ -426,6 +438,14 @@ h1 {
   max-width: 300px;
 }
 
+</style>
+
+<style>
+.sortable-drag {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: none;
+}
 </style>
 
 
