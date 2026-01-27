@@ -52,7 +52,7 @@
         <VueDraggable
             v-else
             v-model="items"
-            class="stuff-list"
+            :class="['stuff-list', { 'is-dragging': isDragging }]"
             :animation="200"
             :ghostClass="'item-wrapper--ghost'"
             :chosenClass="'item-wrapper--chosen'"
@@ -142,6 +142,7 @@ const deletingId = ref(null)
 // Drag state for API sync
 let draggedItemId = null
 let originalIndex = null
+const isDragging = ref(false)
 
 // show errors in toaster
 watch(error, (err) => {
@@ -234,10 +235,12 @@ function onDragStart(evt) {
   console.log('Drag start:', evt)
   originalIndex = evt.oldIndex
   draggedItemId = items.value[evt.oldIndex]?.id
+  isDragging.value = true
 }
 
 async function onDragEnd(evt) {
   console.log('Drag end:', evt)
+  isDragging.value = false
   const newIndex = evt.newIndex
 
   // Only sync with API if position changed
@@ -314,6 +317,19 @@ h1 {
 }
 
 .item-wrapper--ghost .item > *{
+  opacity: 0;
+}
+
+/* Disable all hover effects while dragging */
+.is-dragging .item-wrapper :deep(.item:hover) {
+  background: var(--color-bg-primary);
+}
+
+.is-dragging .item-wrapper :deep(.item:hover .item__actions) {
+  opacity: 0;
+}
+
+.is-dragging .item-wrapper:hover .drag-handle {
   opacity: 0;
 }
 
