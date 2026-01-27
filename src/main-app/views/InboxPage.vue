@@ -56,7 +56,6 @@
             :animation="200"
             :ghostClass="'item-wrapper--ghost'"
             :chosenClass="'item-wrapper--chosen'"
-            :dragClass="'item-wrapper--drag'"
             handle=".drag-handle"
             :delay="100"
             :delay-on-touch-only="true"
