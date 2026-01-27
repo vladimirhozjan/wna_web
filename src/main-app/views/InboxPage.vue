@@ -52,13 +52,11 @@
         <VueDraggable
             v-else
             v-model="items"
-            :class="['stuff-list', { 'is-dragging': isDragging }]"
-            :animation="200"
-            :ghostClass="'item-wrapper--ghost'"
-            :chosenClass="'item-wrapper--chosen'"
-            handle=".drag-handle"
-            :delay="100"
+            :delay="250"
             :delay-on-touch-only="true"
+            :animation="200"
+            :chosen-class="'item-wrapper-chosen'"
+            :ghost-class="'item-wrapper-ghost'"
             @start="onDragStart"
             @end="onDragEnd"
         >
@@ -67,23 +65,7 @@
               :key="item.id"
               class="item-wrapper"
           >
-            <Item
-                :id="item.id"
-                :title="item.title"
-                :loading="updatingId === item.id || deletingId === item.id"
-                :draggable="false"
-                @update="onItemUpdate"
-                @check="onItemCheck"
-            >
-              <template #drag-handle>
-                <div class="drag-handle">
-                  <span class="drag-handle__icon">⋮⋮</span>
-                </div>
-              </template>
-              <template #actions>
-                <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
-              </template>
-            </Item>
+            {{item.title}}
           </div>
         </VueDraggable>
 
@@ -268,6 +250,7 @@ async function onDragEnd(evt) {
 .inbox-header {
   flex-shrink: 0;
   background: var(--color-bg-primary);
+  margin-bottom: 10px;
 }
 
 .inbox-content {
@@ -305,66 +288,16 @@ h1 {
 }
 
 .item-wrapper {
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.item-wrapper--chosen .item {
-  background-color: var(--color-bg-hover);
-}
-
-.item-wrapper--ghost .item {
-  background-color: var(--color-bg-primary);
-}
-
-.item-wrapper--ghost .item > *{
-  opacity: 0;
-}
-
-/* Disable all hover effects while dragging */
-.is-dragging .item-wrapper :deep(.item:hover) {
-  background: var(--color-bg-primary);
-}
-
-.is-dragging .item-wrapper :deep(.item:hover .item__actions) {
-  opacity: 0;
-}
-
-.is-dragging .item-wrapper:hover .drag-handle {
-  opacity: 0;
-}
-
-/* Drag handle */
-.drag-handle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  cursor: grab;
-  color: var(--color-text-tertiary);
-  touch-action: none;
+  -webkit-touch-callout: none; /* iOS Safari */
   user-select: none;
 }
 
-.drag-handle:active {
-  cursor: grabbing;
+.item-wrapper-chosen {
+  background-color: red;
 }
 
-.drag-handle__icon {
-  font-size: 14px;
-  letter-spacing: -2px;
-}
-
-/* Show drag handle on hover (desktop) or always (touch) */
-@media (hover: hover) {
-  .drag-handle {
-    opacity: 0;
-    transition: opacity 0.15s ease;
-  }
-
-  .item-wrapper:hover .drag-handle {
-    opacity: 1;
-  }
+.item-wrapper-ghost {
+  background-color: blue;
 }
 
 .action-btn {
