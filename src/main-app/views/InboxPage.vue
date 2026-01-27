@@ -52,9 +52,8 @@
         <VueDraggable
             v-else
             v-model="items"
-            :delay="250"
-            :delay-on-touch-only="true"
-            :animation="200"
+            :delay="100"
+            :animation="100"
             :chosen-class="'item-wrapper-chosen'"
             :ghost-class="'item-wrapper-ghost'"
             @start="onDragStart"
@@ -64,8 +63,21 @@
               v-for="item in items"
               :key="item.id"
               class="item-wrapper"
+
           >
-            {{item.title}}
+            <Item
+                :id="item.id"
+                :title="item.title"
+                :loading="updatingId === item.id || deletingId === item.id"
+                :checked="item.checked"
+                @update="onItemUpdate"
+                @check="onItemCheck"
+                @click="onItemClick(item)"
+            >
+              <template #actions>
+                <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+              </template>
+            </Item>
           </div>
         </VueDraggable>
 
@@ -165,6 +177,17 @@ async function onAdd() {
 
 async function loadMore() {
   await loadStuff()
+}
+
+function onItemClick(item) {
+  if (isDragging.value) {
+    // klik je posledica draga → ignoriraj
+    return
+  }
+
+  // pravi klik
+  console.log('CLICK on item', item.id)
+  // npr: open edit, navigate, focus input …
 }
 
 async function onItemUpdate(id, { title }) {
@@ -287,16 +310,16 @@ h1 {
   margin-top: 16px;
 }
 
-.item-wrapper {
+.item-wrapper .item{
   -webkit-touch-callout: none; /* iOS Safari */
   user-select: none;
 }
 
-.item-wrapper-chosen {
+.item-wrapper-chosen .item{
   background-color: red;
 }
 
-.item-wrapper-ghost {
+.item-wrapper-ghost .item{
   background-color: blue;
 }
 

@@ -133,8 +133,32 @@ function onCheck(e) {
   user-select: none;
 }
 
-.item:hover {
-  background: var(--color-bg-hover);
+.item__actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    background: var(--color-bg-hover);
+  }
+
+  .item:hover .item__actions {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .item__actions {
+    opacity: 1;
+  }
+}
+
+.item:active {
+  background: var(--color-action);
 }
 
 .item--checked {
@@ -229,21 +253,4 @@ function onCheck(e) {
   to { transform: rotate(360deg); }
 }
 
-.item__actions {
-  flex-shrink: 0;
-  display: flex;
-  gap: 8px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.item:hover .item__actions {
-  opacity: 1;
-}
-
-@media (hover: none) {
-  .item__actions {
-    opacity: 1;
-  }
-}
 </style>
