@@ -13,7 +13,7 @@
     </div>
 
     <!-- Content -->
-    <div class="item__content" @click="onClick">
+    <div class="item__content" @click.stop="onClick">
       <span v-if="isEditing" class="item__input-wrapper">
         <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
         <input
