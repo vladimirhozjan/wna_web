@@ -269,6 +269,8 @@ async function onDragEnd(evt) {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .title {

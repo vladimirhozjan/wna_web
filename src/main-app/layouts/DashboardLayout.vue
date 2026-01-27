@@ -51,7 +51,7 @@ watch(
 .dashboard {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .dashboard-body {
@@ -62,6 +62,7 @@ watch(
   flex-wrap: nowrap;
   align-items: stretch;
   justify-content: flex-start;
+  overflow: hidden;
 }
 
 .dashboard-sidebar {
@@ -72,7 +73,8 @@ watch(
 
 .dashboard-content {
   flex: 1;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .desktop-only {
