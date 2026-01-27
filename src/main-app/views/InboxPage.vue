@@ -68,7 +68,7 @@
             <Item
                 :id="item.id"
                 :title="item.title"
-                :loading="updatingId === item.id || deletingId === item.id"
+                :loading="updatingId === item.id || deletingId === item.id || movingId === item.id"
                 :checked="item.checked"
                 @update="onItemUpdate"
                 @check="onItemCheck"
@@ -132,6 +132,7 @@ const new_stuff_title = ref('')
 const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
+const movingId = ref(null)
 
 // Drag state for API sync
 let draggedItemId = null
@@ -250,11 +251,14 @@ async function onDragEnd(evt) {
 
   // Only sync with API if position changed
   if (originalIndex !== newIndex && draggedItemId) {
+    movingId.value = draggedItemId
     try {
       await moveStuff(draggedItemId, newIndex)
     } catch (e) {
       // Revert on error - reload the list
       await loadStuff({ reset: true })
+    } finally {
+      movingId.value = null
     }
   }
 
