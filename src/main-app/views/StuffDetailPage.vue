@@ -106,16 +106,18 @@
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
             </div>
-            <input
+            <textarea
                 v-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editValue"
                 class="detail-title-input"
                 :disabled="savingField === 'title'"
-                @keyup.enter="saveField('title')"
+                @keydown.enter.prevent="saveField('title')"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('title')"
-            />
+                @input="autoResizeTitle"
+                rows="1"
+            ></textarea>
             <h2
                 v-else
                 class="detail-title"
@@ -248,6 +250,7 @@ function startEdit(field, value) {
   editValue.value = value
   nextTick(() => {
     if (field === 'title' && titleInput.value) {
+      autoResizeTitle()
       titleInput.value.focus()
       titleInput.value.select()
     } else if (field === 'description' && descriptionInput.value) {
@@ -259,6 +262,13 @@ function startEdit(field, value) {
 function cancelEdit() {
   editingField.value = null
   editValue.value = ''
+}
+
+function autoResizeTitle() {
+  if (titleInput.value) {
+    titleInput.value.style.height = 'auto'
+    titleInput.value.style.height = titleInput.value.scrollHeight + 'px'
+  }
 }
 
 async function saveField(field) {
