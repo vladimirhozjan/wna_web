@@ -13,134 +13,137 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="item" class="detail-content">
+      <div v-else-if="item" class="detail-body">
 
-        <!-- Checkbox -->
-        <div class="detail-row">
-          <label class="detail-label">Checked</label>
-          <div class="detail-value">
-            <input
-                type="checkbox"
-                class="detail-checkbox"
-                :checked="item.checked"
-                :disabled="savingField === 'checked'"
-                @change="onCheckChange"
-            />
-            <span v-if="savingField === 'checked'" class="field-spinner"></span>
-          </div>
-        </div>
-
-        <!-- Type -->
-        <div class="detail-row">
-          <label class="detail-label">Type</label>
-          <div class="detail-value">
-            <select
-                class="detail-select"
-                :value="item.type || 'STUFF'"
-                :disabled="savingField === 'type'"
-                @change="onTypeChange"
-            >
-              <option value="STUFF">Stuff</option>
-              <option value="ACTION">Action</option>
-              <option value="PROJECT">Project</option>
-            </select>
-            <span v-if="savingField === 'type'" class="field-spinner"></span>
-          </div>
-        </div>
-
-        <!-- State -->
-        <div class="detail-row">
-          <label class="detail-label">State</label>
-          <div class="detail-value">
-            <select
-                class="detail-select"
-                :value="item.state || 'INBOX'"
-                :disabled="savingField === 'state'"
-                @change="onStateChange"
-            >
-              <option value="INBOX">Inbox</option>
-              <option value="SOMEDAY">Someday</option>
-            </select>
-            <span v-if="savingField === 'state'" class="field-spinner"></span>
-          </div>
-        </div>
-
-        <!-- Title -->
-        <div class="detail-row">
-          <label class="detail-label">Title</label>
-          <div class="detail-value">
-            <span v-if="savingField === 'title'" class="field-spinner"></span>
+        <!-- Title area -->
+        <div class="detail-title-area">
+          <input
+              type="checkbox"
+              class="detail-checkbox"
+              :checked="item.checked"
+              :disabled="savingField === 'checked'"
+              @change="onCheckChange"
+          />
+          <div class="detail-title-wrapper">
+            <div v-if="savingField === 'title'" class="detail-section-overlay">
+              <span class="detail-spinner"></span>
+            </div>
             <input
                 v-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editValue"
-                class="detail-input"
+                class="detail-title-input"
                 :disabled="savingField === 'title'"
                 @keyup.enter="saveField('title')"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('title')"
             />
-            <span
+            <h2
                 v-else
-                class="detail-text detail-text--editable"
+                class="detail-title"
                 @click="startEdit('title', item.title)"
-            >{{ item.title }}</span>
+            >{{ item.title }}</h2>
           </div>
         </div>
 
-        <!-- Description -->
-        <div class="detail-row detail-row--top">
-          <label class="detail-label">Description</label>
-          <div class="detail-value">
-            <span v-if="savingField === 'description'" class="field-spinner"></span>
+        <!-- Description area -->
+        <div class="detail-description-area">
+          <label class="detail-section-label">Description</label>
+          <div v-if="editingField === 'description'" class="detail-description-edit">
             <textarea
-                v-if="editingField === 'description'"
                 ref="descriptionInput"
                 v-model="editValue"
                 class="detail-textarea"
                 :disabled="savingField === 'description'"
                 @keyup.esc="cancelEdit"
-                @blur="saveField('description')"
                 rows="4"
             ></textarea>
-            <span
-                v-else
-                class="detail-text detail-text--editable"
-                :class="{ 'detail-text--placeholder': !item.description }"
-                @click="startEdit('description', item.description || '')"
-            >{{ item.description || 'Add description...' }}</span>
+            <div class="detail-description-actions">
+              <Btn
+                  variant="primary"
+                  size="sm"
+                  :disabled="savingField === 'description'"
+                  :loading="savingField === 'description'"
+                  @mousedown.prevent
+                  @click="saveField('description')"
+              >Save</Btn>
+              <Btn
+                  variant="ghost"
+                  size="sm"
+                  :disabled="savingField === 'description'"
+                  @mousedown.prevent
+                  @click="cancelEdit"
+              >Cancel</Btn>
+            </div>
           </div>
+          <p
+              v-else
+              class="detail-description"
+              :class="{ 'detail-description--empty': !item.description }"
+              @click="startEdit('description', item.description || '')"
+          >{{ item.description || 'Add a description...' }}</p>
         </div>
 
-        <!-- Position -->
-        <div class="detail-row">
-          <label class="detail-label">Position</label>
-          <div class="detail-value">
-            <span v-if="savingField === 'position'" class="field-spinner"></span>
-            <input
-                type="number"
-                class="detail-input detail-input--narrow"
-                :value="item.position"
-                :disabled="savingField === 'position'"
-                @change="onPositionChange"
-            />
-          </div>
-        </div>
+        <!-- Details section -->
+        <div class="detail-fields">
 
-        <!-- Created at -->
-        <div class="detail-row">
-          <label class="detail-label">Created at</label>
-          <div class="detail-value">
-            <span class="detail-text">{{ formatDate(item.created) }}</span>
+          <div class="detail-field">
+            <span class="detail-field-label">Type</span>
+            <div class="detail-field-control">
+              <select
+                  class="detail-select"
+                  :value="item.type || 'STUFF'"
+                  :disabled="savingField === 'type'"
+                  @change="onTypeChange"
+              >
+                <option value="STUFF">Stuff</option>
+                <option value="ACTION">Action</option>
+                <option value="PROJECT">Project</option>
+              </select>
+              <span v-if="savingField === 'type'" class="field-spinner"></span>
+            </div>
           </div>
-        </div>
 
-        <!-- Updated at -->
-        <div class="detail-row">
-          <label class="detail-label">Updated at</label>
-          <div class="detail-value">
-            <span class="detail-text">{{ formatDate(item.updated) }}</span>
+          <div class="detail-field">
+            <span class="detail-field-label">State</span>
+            <div class="detail-field-control">
+              <select
+                  class="detail-select"
+                  :value="item.state || 'INBOX'"
+                  :disabled="savingField === 'state'"
+                  @change="onStateChange"
+              >
+                <option value="INBOX">Inbox</option>
+                <option value="SOMEDAY">Someday</option>
+              </select>
+              <span v-if="savingField === 'state'" class="field-spinner"></span>
+            </div>
           </div>
+
+          <div class="detail-field">
+            <span class="detail-field-label">Position</span>
+            <div class="detail-field-control">
+              <input
+                  type="number"
+                  class="detail-input detail-input--narrow"
+                  :value="item.position"
+                  :disabled="savingField === 'position'"
+                  @change="onPositionChange"
+              />
+              <span v-if="savingField === 'position'" class="field-spinner"></span>
+            </div>
+          </div>
+
+          <div class="detail-field">
+            <span class="detail-field-label">Created</span>
+            <span class="detail-field-text">{{ formatDate(item.created) }}</span>
+          </div>
+
+          <div class="detail-field">
+            <span class="detail-field-label">Updated</span>
+            <span class="detail-field-text">{{ formatDate(item.updated) }}</span>
+          </div>
+
         </div>
 
       </div>
@@ -220,11 +223,18 @@ function cancelEdit() {
 
 async function saveField(field) {
   if (editingField.value !== field) return
+  if (savingField.value) return
   const newValue = editValue.value.trim()
-  editingField.value = null
 
-  if (field === 'title' && (!newValue || newValue === item.value.title)) return
-  if (field === 'description' && newValue === (item.value.description || '')) return
+  if (field === 'title' && (!newValue || newValue === item.value.title)) {
+    editingField.value = null
+    return
+  }
+
+  if (field === 'description' && newValue === (item.value.description || '')) {
+    editingField.value = null
+    return
+  }
 
   const oldValue = item.value[field]
   item.value[field] = newValue
@@ -232,8 +242,16 @@ async function saveField(field) {
 
   try {
     await updateStuff(item.value.id, { title: item.value.title, description: item.value.description })
+    editingField.value = null
   } catch {
     item.value[field] = oldValue
+    setTimeout(() => {
+      if (field === 'title') {
+        titleInput.value?.focus()
+      } else if (field === 'description') {
+        descriptionInput.value?.focus()
+      }
+    }, 100)
   } finally {
     savingField.value = null
   }
@@ -310,7 +328,8 @@ function formatDate(dateStr) {
 
 .detail-header {
   flex-shrink: 0;
-  padding: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .detail-loading {
@@ -319,79 +338,127 @@ function formatDate(dateStr) {
   padding: 48px;
 }
 
-.detail-content {
+.detail-body {
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px 24px;
+  min-height: 0;
 }
 
-.detail-row {
+.detail-section-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.detail-row--top {
-  align-items: flex-start;
-}
-
-.detail-label {
-  flex-shrink: 0;
-  width: 120px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-secondary);
-  font-weight: 500;
-}
-
-.detail-value {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.detail-text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-}
-
-.detail-text--editable {
-  cursor: pointer;
-  padding: 4px 8px;
+  justify-content: center;
+  z-index: 10;
   border-radius: 4px;
 }
 
-.detail-text--editable:hover {
+/* ── Title area ── */
+.detail-title-area {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px 24px 0;
+}
+
+.detail-title-area .detail-checkbox {
+  margin-top: 15px;
+}
+
+.detail-title-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-title {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-h2);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+.detail-title:hover {
   background: var(--color-bg-secondary);
 }
 
-.detail-text--placeholder {
-  color: var(--color-text-tertiary);
-  font-style: italic;
-}
-
-.detail-input {
+.detail-title-input {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
+  font-size: var(--font-size-h2);
+  font-weight: 600;
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 6px;
   padding: 4px 8px;
   outline: none;
   width: 100%;
+  background: var(--color-bg-primary);
 }
 
-.detail-input:focus {
+.detail-title-input:focus {
   border-color: var(--color-input-border-focus);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
-.detail-input--narrow {
-  width: 80px;
+/* ── Description area ── */
+.detail-description-area {
+  padding: 16px 24px 24px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.detail-section-label {
+  display: block;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.detail-description {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  margin: 0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-description:hover {
+  background: var(--color-bg-secondary);
+}
+
+.detail-description--empty {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.detail-description-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.detail-description-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .detail-textarea {
@@ -404,6 +471,8 @@ function formatDate(dateStr) {
   outline: none;
   width: 100%;
   resize: vertical;
+  background: var(--color-bg-primary);
+  box-sizing: border-box;
 }
 
 .detail-textarea:focus {
@@ -411,6 +480,45 @@ function formatDate(dateStr) {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
+/* ── Detail fields (Trello-style rows) ── */
+.detail-fields {
+  padding: 0 24px 24px;
+}
+
+.detail-field {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.detail-field:last-child {
+  border-bottom: none;
+}
+
+.detail-field-label {
+  flex-shrink: 0;
+  width: 100px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.detail-field-control {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-field-text {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+}
+
+/* ── Form controls ── */
 .detail-select {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
@@ -421,6 +529,7 @@ function formatDate(dateStr) {
   outline: none;
   background: var(--color-bg-primary);
   cursor: pointer;
+  width: 100%;
 }
 
 .detail-select:focus {
@@ -428,9 +537,31 @@ function formatDate(dateStr) {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
+.detail-input {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  outline: none;
+  width: 100%;
+  background: var(--color-bg-primary);
+}
+
+.detail-input:focus {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.detail-input--narrow {
+  width: 80px;
+}
+
 .detail-select:disabled,
 .detail-input:disabled,
-.detail-textarea:disabled {
+.detail-textarea:disabled,
+.detail-title-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -440,12 +571,14 @@ function formatDate(dateStr) {
   height: 18px;
   cursor: pointer;
   accent-color: var(--color-action);
+  flex-shrink: 0;
 }
 
 .detail-checkbox:disabled {
   cursor: not-allowed;
 }
 
+/* ── Spinners ── */
 .field-spinner {
   flex-shrink: 0;
   width: 16px;
@@ -467,5 +600,20 @@ function formatDate(dateStr) {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .detail-title-area {
+    padding: 16px 16px 0;
+  }
+
+  .detail-description-area {
+    padding: 12px 16px 16px;
+  }
+
+  .detail-fields {
+    padding: 0 16px 16px;
+  }
 }
 </style>
