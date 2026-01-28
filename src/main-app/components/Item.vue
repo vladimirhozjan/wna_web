@@ -64,6 +64,10 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false
+  },
+  editable: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -85,6 +89,7 @@ watch(editValue, () => {
 
 function onClick() {
   if (isEditing.value) return
+  if (!props.editable) return
 
   isEditing.value = true
   editValue.value = props.title

@@ -126,6 +126,33 @@
           </div>
         </div>
 
+        <!-- Action buttons -->
+        <div class="detail-actions">
+          <Btn
+              variant="primary"
+              size="sm"
+              @click="openClarify"
+          >
+            Clarify
+          </Btn>
+          <Btn
+              variant="ghost"
+              size="sm"
+              :loading="actionLoading === 'done'"
+              @click="onMarkDone"
+          >
+            Done
+          </Btn>
+          <Btn
+              variant="ghost"
+              size="sm"
+              :loading="actionLoading === 'move'"
+              @click="onMove"
+          >
+            Move
+          </Btn>
+        </div>
+
         <!-- Description area -->
         <div class="detail-description-area">
           <label class="detail-section-label">Description</label>
@@ -180,15 +207,40 @@
 
       </div>
 
+      <!-- Clarify Slide-over (Desktop) -->
+      <Teleport to="body" v-if="showClarify && item && !isMobile">
+        <div class="clarify-slideover-overlay" @click="closeClarify">
+          <div class="clarify-slideover" @click.stop>
+            <ClarifyPanel
+                :stuff-item="item"
+                mode="modal"
+                @done="onClarifyDone"
+                @cancel="closeClarify"
+            />
+          </div>
+        </div>
+      </Teleport>
+
+      <!-- Clarify Fullscreen (Mobile) -->
+      <Teleport to="body" v-if="showClarify && item && isMobile">
+        <ClarifyPanel
+            :stuff-item="item"
+            mode="fullscreen"
+            @done="onClarifyDone"
+            @cancel="closeClarify"
+        />
+      </Teleport>
+
     </div>
   </DashboardLayout>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
+import ClarifyPanel from '../components/ClarifyPanel.vue'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 
@@ -212,6 +264,11 @@ const descriptionInput = ref(null)
 const showTypeDialog = ref(false)
 const showStateDialog = ref(false)
 
+// Clarify state
+const showClarify = ref(false)
+const isMobile = ref(false)
+const actionLoading = ref(null)
+
 const typeOptions = [
   { value: 'STUFF', label: 'Stuff' },
   { value: 'ACTION', label: 'Action' },
@@ -230,6 +287,9 @@ watch(error, (err) => {
 })
 
 onMounted(async () => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+
   try {
     const data = await getStuff(route.params.id)
     item.value = { ...data }
@@ -239,6 +299,14 @@ onMounted(async () => {
     pageLoading.value = false
   }
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 768
+}
 
 function goBack() {
   router.push({ name: 'inbox' })
@@ -377,6 +445,46 @@ async function selectState(newState) {
 function formatDate(dateStr) {
   if (!dateStr) return '—'
   return new Date(dateStr).toLocaleString()
+}
+
+// Clarify functions
+function openClarify() {
+  showClarify.value = true
+}
+
+function closeClarify() {
+  showClarify.value = false
+}
+
+function onClarifyDone() {
+  showClarify.value = false
+  // Navigate back to inbox after clarifying
+  router.push({ name: 'inbox' })
+}
+
+// Action button handlers (API stubs)
+async function onMarkDone() {
+  actionLoading.value = 'done'
+  try {
+    // API STUB: markStuffDone
+    console.log('API STUB: markStuffDone', item.value.id)
+    await new Promise(r => setTimeout(r, 500))
+    toaster.push('Mark as done not yet implemented')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onMove() {
+  actionLoading.value = 'move'
+  try {
+    // API STUB: moveStuff
+    console.log('API STUB: moveStuff', item.value.id)
+    await new Promise(r => setTimeout(r, 500))
+    toaster.push('Move not yet implemented')
+  } finally {
+    actionLoading.value = null
+  }
 }
 </script>
 
@@ -628,6 +736,13 @@ function formatDate(dateStr) {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
+/* ── Action buttons ── */
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+}
+
 /* ── Description area ── */
 .detail-description-area {
   padding: 20px 24px 28px;
@@ -771,6 +886,34 @@ function formatDate(dateStr) {
   to { transform: rotate(360deg); }
 }
 
+/* ── Clarify Slide-over ── */
+.clarify-slideover-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.clarify-slideover {
+  width: 480px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--color-bg-primary);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .detail-header {
@@ -789,12 +932,20 @@ function formatDate(dateStr) {
     padding: 16px 16px 0;
   }
 
+  .detail-actions {
+    padding: 12px 16px;
+  }
+
   .detail-description-area {
     padding: 12px 16px 16px;
   }
 
   .detail-metadata {
     padding: 12px 16px 16px;
+  }
+
+  .clarify-slideover {
+    display: none;
   }
 }
 </style>

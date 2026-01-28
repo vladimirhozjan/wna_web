@@ -213,6 +213,48 @@ export function logoutUser() {
     delete httpApi.defaults.headers.Authorization
 }
 
+// ── Clarify API stubs (not yet implemented on backend) ──
+
+export async function clarifyToAction(stuffId, actionData) {
+    // TODO: Implement when backend is ready
+    // POST /v1/stuff/{stuffId}/clarify/action
+    console.log('API STUB: clarifyToAction', stuffId, actionData)
+    await new Promise(r => setTimeout(r, 500))
+    throw { status: 501, message: 'clarifyToAction not yet implemented' }
+}
+
+export async function clarifyToProject(stuffId, projectData) {
+    // TODO: Implement when backend is ready
+    // POST /v1/stuff/{stuffId}/clarify/project
+    console.log('API STUB: clarifyToProject', stuffId, projectData)
+    await new Promise(r => setTimeout(r, 500))
+    throw { status: 501, message: 'clarifyToProject not yet implemented' }
+}
+
+export async function clarifyToReference(stuffId) {
+    // TODO: Implement when backend is ready
+    // POST /v1/stuff/{stuffId}/clarify/reference
+    console.log('API STUB: clarifyToReference', stuffId)
+    await new Promise(r => setTimeout(r, 500))
+    throw { status: 501, message: 'clarifyToReference not yet implemented' }
+}
+
+export async function clarifyToSomeday(stuffId) {
+    // TODO: Implement when backend is ready
+    // POST /v1/stuff/{stuffId}/clarify/someday
+    console.log('API STUB: clarifyToSomeday', stuffId)
+    await new Promise(r => setTimeout(r, 500))
+    throw { status: 501, message: 'clarifyToSomeday not yet implemented' }
+}
+
+export async function clarifyToTrash(stuffId) {
+    // TODO: Implement when backend is ready
+    // Uses existing deleteStuff endpoint
+    console.log('API STUB: clarifyToTrash', stuffId)
+    await new Promise(r => setTimeout(r, 500))
+    throw { status: 501, message: 'clarifyToTrash not yet implemented' }
+}
+
 const apiClient = {
     loginUser,
     registerUser,
@@ -228,6 +270,12 @@ const apiClient = {
     deleteStuff,
     moveStuff,
     listStuff,
+    // Clarify API stubs
+    clarifyToAction,
+    clarifyToProject,
+    clarifyToReference,
+    clarifyToSomeday,
+    clarifyToTrash,
 }
 
 export default apiClient
