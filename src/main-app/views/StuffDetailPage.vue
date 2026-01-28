@@ -15,6 +15,79 @@
       <!-- Content -->
       <div v-else-if="item" class="detail-body">
 
+        <!-- State / Type bar -->
+        <div class="detail-meta-bar">
+          <div class="detail-meta-item">
+            <!-- Link mode -->
+            <span
+                v-if="!showStateDialog && savingField !== 'state'"
+                class="detail-meta-link"
+                @click="toggleStateDialog"
+            >{{ formatState(item.state) }}</span>
+            <!-- Input mode -->
+            <template v-else>
+              <div class="detail-meta-input-wrapper">
+                <div v-if="savingField === 'state'" class="detail-section-overlay">
+                  <span class="field-spinner"></span>
+                </div>
+                <button class="detail-meta-input detail-meta-input--open" @click="toggleStateDialog">
+                  {{ formatState(item.state) }}
+                  <span class="detail-meta-input-arrow">▾</span>
+                </button>
+              </div>
+              <template v-if="showStateDialog && savingField !== 'state'">
+                <div class="detail-dropdown-backdrop" @click="showStateDialog = false"></div>
+                <div class="detail-dropdown">
+                  <div class="detail-dropdown-options">
+                    <button
+                        v-for="opt in stateOptions"
+                        :key="opt.value"
+                        class="detail-dropdown-option"
+                        :class="{ 'detail-dropdown-option--selected': item.state === opt.value }"
+                        @click="selectState(opt.value)"
+                    >{{ opt.label }}</button>
+                  </div>
+                </div>
+              </template>
+            </template>
+          </div>
+          <span class="detail-meta-separator">/</span>
+          <div class="detail-meta-item">
+            <!-- Link mode -->
+            <span
+                v-if="!showTypeDialog && savingField !== 'type'"
+                class="detail-meta-link"
+                @click="toggleTypeDialog"
+            >{{ formatType(item.type) }}</span>
+            <!-- Input mode -->
+            <template v-else>
+              <div class="detail-meta-input-wrapper">
+                <div v-if="savingField === 'type'" class="detail-section-overlay">
+                  <span class="field-spinner"></span>
+                </div>
+                <button class="detail-meta-input detail-meta-input--open" @click="toggleTypeDialog">
+                  {{ formatType(item.type) }}
+                  <span class="detail-meta-input-arrow">▾</span>
+                </button>
+              </div>
+              <template v-if="showTypeDialog && savingField !== 'type'">
+                <div class="detail-dropdown-backdrop" @click="showTypeDialog = false"></div>
+                <div class="detail-dropdown">
+                  <div class="detail-dropdown-options">
+                    <button
+                        v-for="opt in typeOptions"
+                        :key="opt.value"
+                        class="detail-dropdown-option"
+                        :class="{ 'detail-dropdown-option--selected': item.type === opt.value }"
+                        @click="selectType(opt.value)"
+                    >{{ opt.label }}</button>
+                  </div>
+                </div>
+              </template>
+            </template>
+          </div>
+        </div>
+
         <!-- Title area -->
         <div class="detail-title-area">
           <input
@@ -88,39 +161,6 @@
         <div class="detail-fields">
 
           <div class="detail-field">
-            <span class="detail-field-label">Type</span>
-            <div class="detail-field-control">
-              <select
-                  class="detail-select"
-                  :value="item.type || 'STUFF'"
-                  :disabled="savingField === 'type'"
-                  @change="onTypeChange"
-              >
-                <option value="STUFF">Stuff</option>
-                <option value="ACTION">Action</option>
-                <option value="PROJECT">Project</option>
-              </select>
-              <span v-if="savingField === 'type'" class="field-spinner"></span>
-            </div>
-          </div>
-
-          <div class="detail-field">
-            <span class="detail-field-label">State</span>
-            <div class="detail-field-control">
-              <select
-                  class="detail-select"
-                  :value="item.state || 'INBOX'"
-                  :disabled="savingField === 'state'"
-                  @change="onStateChange"
-              >
-                <option value="INBOX">Inbox</option>
-                <option value="SOMEDAY">Someday</option>
-              </select>
-              <span v-if="savingField === 'state'" class="field-spinner"></span>
-            </div>
-          </div>
-
-          <div class="detail-field">
             <span class="detail-field-label">Position</span>
             <div class="detail-field-control">
               <input
@@ -180,6 +220,19 @@ const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
+const showTypeDialog = ref(false)
+const showStateDialog = ref(false)
+
+const typeOptions = [
+  { value: 'STUFF', label: 'Stuff' },
+  { value: 'ACTION', label: 'Action' },
+  { value: 'PROJECT', label: 'Project' },
+]
+
+const stateOptions = [
+  { value: 'INBOX', label: 'Inbox' },
+  { value: 'SOMEDAY', label: 'Someday' },
+]
 
 watch(error, (err) => {
   if (!err) return
@@ -272,9 +325,33 @@ async function onCheckChange(e) {
   }
 }
 
-async function onTypeChange(e) {
+function toggleStateDialog() {
+  showStateDialog.value = !showStateDialog.value
+  showTypeDialog.value = false
+}
+
+function toggleTypeDialog() {
+  showTypeDialog.value = !showTypeDialog.value
+  showStateDialog.value = false
+}
+
+function formatType(type) {
+  const opt = typeOptions.find(o => o.value === type)
+  return opt ? opt.label : type || 'Stuff'
+}
+
+function formatState(state) {
+  const opt = stateOptions.find(o => o.value === state)
+  return opt ? opt.label : state || 'Inbox'
+}
+
+async function selectType(newType) {
+  showTypeDialog.value = false
+  const currentType = item.value.type || 'STUFF'
+  if (newType === currentType) return
+
   const oldType = item.value.type
-  item.value.type = e.target.value
+  item.value.type = newType
   savingField.value = 'type'
 
   // API not yet implemented
@@ -284,9 +361,13 @@ async function onTypeChange(e) {
   savingField.value = null
 }
 
-async function onStateChange(e) {
+async function selectState(newState) {
+  showStateDialog.value = false
+  const currentState = item.value.state || 'INBOX'
+  if (newState === currentState) return
+
   const oldState = item.value.state
-  item.value.state = e.target.value
+  item.value.state = newState
   savingField.value = 'state'
 
   // API not yet implemented
@@ -342,6 +423,120 @@ function formatDate(dateStr) {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+}
+
+/* ── Meta bar (Type / State) ── */
+.detail-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px 0;
+}
+
+.detail-meta-link {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-link-text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-meta-link:hover {
+  color: var(--color-button-hover);
+  text-decoration: underline;
+}
+
+.detail-meta-input-wrapper {
+  position: relative;
+}
+
+.detail-meta-input {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-meta-input:hover {
+  border-color: var(--color-input-border-focus);
+}
+
+.detail-meta-input--open {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.detail-meta-input-arrow {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}
+
+.detail-meta-item {
+  position: relative;
+}
+
+.detail-meta-separator {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+}
+
+/* ── Dropdowns ── */
+.detail-dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.detail-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--color-bg-primary);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 140px;
+  z-index: 100;
+}
+
+.detail-dropdown-options {
+  padding: 4px 0;
+}
+
+.detail-dropdown-option {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.detail-dropdown-option:hover {
+  background: var(--color-bg-secondary);
+}
+
+.detail-dropdown-option--selected {
+  background: var(--color-bg-secondary);
+  color: var(--color-action);
+  font-weight: 500;
 }
 
 .detail-section-overlay {
@@ -519,24 +714,6 @@ function formatDate(dateStr) {
 }
 
 /* ── Form controls ── */
-.detail-select {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  padding: 4px 8px;
-  outline: none;
-  background: var(--color-bg-primary);
-  cursor: pointer;
-  width: 100%;
-}
-
-.detail-select:focus {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
 .detail-input {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
@@ -558,7 +735,6 @@ function formatDate(dateStr) {
   width: 80px;
 }
 
-.detail-select:disabled,
 .detail-input:disabled,
 .detail-textarea:disabled,
 .detail-title-input:disabled {
@@ -604,6 +780,10 @@ function formatDate(dateStr) {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  .detail-meta-bar {
+    padding: 12px 16px 0;
+  }
+
   .detail-title-area {
     padding: 16px 16px 0;
   }
