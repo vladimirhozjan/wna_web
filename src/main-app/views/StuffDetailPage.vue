@@ -134,6 +134,7 @@
                 class="detail-textarea"
                 :disabled="savingField === 'description'"
                 @keyup.esc="cancelEdit"
+                @blur="saveField('description')"
                 rows="4"
             ></textarea>
             <div class="detail-description-actions">
@@ -164,23 +165,15 @@
 
         <!-- Metadata section -->
         <div class="detail-metadata">
-          <!-- Mobile: collapsible toggle -->
-          <button class="detail-metadata-toggle" @click="metadataExpanded = !metadataExpanded">
-            <span>Details</span>
-            <span class="detail-metadata-arrow" :class="{ 'detail-metadata-arrow--open': metadataExpanded }">▾</span>
-          </button>
-          <!-- Content: always visible on desktop, collapsible on mobile -->
-          <div class="detail-metadata-content" :class="{ 'detail-metadata-content--expanded': metadataExpanded }">
-            <span class="detail-metadata-item">
-              <span class="detail-metadata-label">Created</span>
-              <span class="detail-metadata-value">{{ formatDate(item.created) }}</span>
-            </span>
-            <span class="detail-metadata-separator">·</span>
-            <span class="detail-metadata-item">
-              <span class="detail-metadata-label">Updated</span>
-              <span class="detail-metadata-value">{{ formatDate(item.updated) }}</span>
-            </span>
-          </div>
+          <span class="detail-metadata-item">
+            <span class="detail-metadata-label">Created</span>
+            <span class="detail-metadata-value">{{ formatDate(item.created) }}</span>
+          </span>
+          <span class="detail-metadata-separator">·</span>
+          <span class="detail-metadata-item">
+            <span class="detail-metadata-label">Updated</span>
+            <span class="detail-metadata-value">{{ formatDate(item.updated) }}</span>
+          </span>
         </div>
 
       </div>
@@ -216,7 +209,6 @@ const titleInput = ref(null)
 const descriptionInput = ref(null)
 const showTypeDialog = ref(false)
 const showStateDialog = ref(false)
-const metadataExpanded = ref(false)
 
 const typeOptions = [
   { value: 'STUFF', label: 'Stuff' },
@@ -628,7 +620,7 @@ function formatDate(dateStr) {
 
 /* ── Description area ── */
 .detail-description-area {
-  padding: 16px 24px 24px;
+  padding: 20px 24px 28px;
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -666,6 +658,7 @@ function formatDate(dateStr) {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-top: 10px;
 }
 
 
@@ -695,41 +688,12 @@ function formatDate(dateStr) {
 
 /* ── Metadata section ── */
 .detail-metadata {
-  padding: 16px 24px 24px;
-  margin-top: 8px;
-}
-
-.detail-metadata-toggle {
-  display: none;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  padding: 8px 0;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: 12px;
-  color: var(--color-text-tertiary);
-  cursor: pointer;
-}
-
-.detail-metadata-toggle:hover {
-  color: var(--color-text-secondary);
-}
-
-.detail-metadata-arrow {
-  font-size: 10px;
-  transition: transform 0.2s ease;
-}
-
-.detail-metadata-arrow--open {
-  transform: rotate(180deg);
-}
-
-.detail-metadata-content {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+  padding: 16px 24px 24px;
+  margin-top: 8px;
 }
 
 .detail-metadata-item {
@@ -821,19 +785,6 @@ function formatDate(dateStr) {
 
   .detail-metadata {
     padding: 12px 16px 16px;
-  }
-
-  .detail-metadata-toggle {
-    display: flex;
-  }
-
-  .detail-metadata-content {
-    display: none;
-    padding-top: 8px;
-  }
-
-  .detail-metadata-content--expanded {
-    display: flex;
   }
 }
 </style>
