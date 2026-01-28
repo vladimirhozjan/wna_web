@@ -36,13 +36,13 @@
           <div class="detail-value">
             <select
                 class="detail-select"
-                :value="item.type || 'stuff'"
+                :value="item.type || 'STUFF'"
                 :disabled="savingField === 'type'"
                 @change="onTypeChange"
             >
-              <option value="stuff">Stuff</option>
-              <option value="action">Action</option>
-              <option value="project">Project</option>
+              <option value="STUFF">Stuff</option>
+              <option value="ACTION">Action</option>
+              <option value="PROJECT">Project</option>
             </select>
             <span v-if="savingField === 'type'" class="field-spinner"></span>
           </div>
@@ -54,16 +54,12 @@
           <div class="detail-value">
             <select
                 class="detail-select"
-                :value="item.state || 'inbox'"
+                :value="item.state || 'INBOX'"
                 :disabled="savingField === 'state'"
                 @change="onStateChange"
             >
-              <option value="inbox">Inbox</option>
-              <option value="next">Next</option>
-              <option value="calendar">Calendar</option>
-              <option value="waiting">Waiting For</option>
-              <option value="someday">Someday</option>
-              <option value="reference">Reference</option>
+              <option value="INBOX">Inbox</option>
+              <option value="SOMEDAY">Someday</option>
             </select>
             <span v-if="savingField === 'state'" class="field-spinner"></span>
           </div>
@@ -135,7 +131,7 @@
         <div class="detail-row">
           <label class="detail-label">Created at</label>
           <div class="detail-value">
-            <span class="detail-text">{{ formatDate(item.created_at) }}</span>
+            <span class="detail-text">{{ formatDate(item.created) }}</span>
           </div>
         </div>
 
@@ -143,7 +139,7 @@
         <div class="detail-row">
           <label class="detail-label">Updated at</label>
           <div class="detail-value">
-            <span class="detail-text">{{ formatDate(item.updated_at) }}</span>
+            <span class="detail-text">{{ formatDate(item.updated) }}</span>
           </div>
         </div>
 
@@ -250,7 +246,7 @@ async function onCheckChange(e) {
   savingField.value = 'checked'
 
   try {
-    await updateStuff(item.value.id, { title: item.value.title, checked })
+    await updateStuff(item.value.id, { title: item.value.title })
   } catch {
     item.value.checked = old
   } finally {
