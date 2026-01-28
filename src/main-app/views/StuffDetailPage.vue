@@ -4,7 +4,85 @@
 
       <!-- Header -->
       <div class="detail-header">
-        <Btn variant="ghost" size="sm" @click="goBack">← Back</Btn>
+        <div class="detail-header-left">
+          <a class="detail-back-link" @click="goBack">&lt;</a>
+          <template v-if="item">
+            <div class="detail-meta-item">
+              <span
+                  v-if="!showStateDialog && savingField !== 'state'"
+                  class="detail-meta-link"
+                  @click="toggleStateDialog"
+              >{{ formatState(item.state) }}</span>
+              <template v-else>
+                <div class="detail-meta-input-wrapper">
+                  <div v-if="savingField === 'state'" class="detail-section-overlay">
+                    <span class="field-spinner"></span>
+                  </div>
+                  <button class="detail-meta-input detail-meta-input--open" @click="toggleStateDialog">
+                    {{ formatState(item.state) }}
+                    <span class="detail-meta-input-arrow">▾</span>
+                  </button>
+                </div>
+                <template v-if="showStateDialog && savingField !== 'state'">
+                  <div class="detail-dropdown-backdrop" @click="showStateDialog = false"></div>
+                  <div class="detail-dropdown">
+                    <div class="detail-dropdown-options">
+                      <button
+                          v-for="opt in stateOptions"
+                          :key="opt.value"
+                          class="detail-dropdown-option"
+                          :class="{ 'detail-dropdown-option--selected': (item.state || 'INBOX') === opt.value }"
+                          @click="selectState(opt.value)"
+                      >{{ opt.label }}</button>
+                    </div>
+                  </div>
+                </template>
+              </template>
+            </div>
+            <span class="detail-meta-separator">/</span>
+            <div class="detail-meta-item">
+              <span
+                  v-if="!showTypeDialog && savingField !== 'type'"
+                  class="detail-meta-link"
+                  @click="toggleTypeDialog"
+              >{{ formatType(item.type) }}</span>
+              <template v-else>
+                <div class="detail-meta-input-wrapper">
+                  <div v-if="savingField === 'type'" class="detail-section-overlay">
+                    <span class="field-spinner"></span>
+                  </div>
+                  <button class="detail-meta-input detail-meta-input--open" @click="toggleTypeDialog">
+                    {{ formatType(item.type) }}
+                    <span class="detail-meta-input-arrow">▾</span>
+                  </button>
+                </div>
+                <template v-if="showTypeDialog && savingField !== 'type'">
+                  <div class="detail-dropdown-backdrop" @click="showTypeDialog = false"></div>
+                  <div class="detail-dropdown">
+                    <div class="detail-dropdown-options">
+                      <button
+                          v-for="opt in typeOptions"
+                          :key="opt.value"
+                          class="detail-dropdown-option"
+                          :class="{ 'detail-dropdown-option--selected': (item.type || 'STUFF') === opt.value }"
+                          @click="selectType(opt.value)"
+                      >{{ opt.label }}</button>
+                    </div>
+                  </div>
+                </template>
+              </template>
+            </div>
+          </template>
+        </div>
+        <div v-if="item" class="detail-header-right">
+          <div class="detail-nav-buttons">
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="First">⏮</Btn>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Previous">◀</Btn>
+            <span class="detail-position">{{ item.position ?? 0 }}</span>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Next">▶</Btn>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Last">⏭</Btn>
+          </div>
+        </div>
       </div>
 
       <!-- Loading state -->
@@ -14,79 +92,6 @@
 
       <!-- Content -->
       <div v-else-if="item" class="detail-body">
-
-        <!-- State / Type bar -->
-        <div class="detail-meta-bar">
-          <div class="detail-meta-item">
-            <!-- Link mode -->
-            <span
-                v-if="!showStateDialog && savingField !== 'state'"
-                class="detail-meta-link"
-                @click="toggleStateDialog"
-            >{{ formatState(item.state) }}</span>
-            <!-- Input mode -->
-            <template v-else>
-              <div class="detail-meta-input-wrapper">
-                <div v-if="savingField === 'state'" class="detail-section-overlay">
-                  <span class="field-spinner"></span>
-                </div>
-                <button class="detail-meta-input detail-meta-input--open" @click="toggleStateDialog">
-                  {{ formatState(item.state) }}
-                  <span class="detail-meta-input-arrow">▾</span>
-                </button>
-              </div>
-              <template v-if="showStateDialog && savingField !== 'state'">
-                <div class="detail-dropdown-backdrop" @click="showStateDialog = false"></div>
-                <div class="detail-dropdown">
-                  <div class="detail-dropdown-options">
-                    <button
-                        v-for="opt in stateOptions"
-                        :key="opt.value"
-                        class="detail-dropdown-option"
-                        :class="{ 'detail-dropdown-option--selected': item.state === opt.value }"
-                        @click="selectState(opt.value)"
-                    >{{ opt.label }}</button>
-                  </div>
-                </div>
-              </template>
-            </template>
-          </div>
-          <span class="detail-meta-separator">/</span>
-          <div class="detail-meta-item">
-            <!-- Link mode -->
-            <span
-                v-if="!showTypeDialog && savingField !== 'type'"
-                class="detail-meta-link"
-                @click="toggleTypeDialog"
-            >{{ formatType(item.type) }}</span>
-            <!-- Input mode -->
-            <template v-else>
-              <div class="detail-meta-input-wrapper">
-                <div v-if="savingField === 'type'" class="detail-section-overlay">
-                  <span class="field-spinner"></span>
-                </div>
-                <button class="detail-meta-input detail-meta-input--open" @click="toggleTypeDialog">
-                  {{ formatType(item.type) }}
-                  <span class="detail-meta-input-arrow">▾</span>
-                </button>
-              </div>
-              <template v-if="showTypeDialog && savingField !== 'type'">
-                <div class="detail-dropdown-backdrop" @click="showTypeDialog = false"></div>
-                <div class="detail-dropdown">
-                  <div class="detail-dropdown-options">
-                    <button
-                        v-for="opt in typeOptions"
-                        :key="opt.value"
-                        class="detail-dropdown-option"
-                        :class="{ 'detail-dropdown-option--selected': item.type === opt.value }"
-                        @click="selectType(opt.value)"
-                    >{{ opt.label }}</button>
-                  </div>
-                </div>
-              </template>
-            </template>
-          </div>
-        </div>
 
         <!-- Title area -->
         <div class="detail-title-area">
@@ -157,33 +162,25 @@
           >{{ item.description || 'Add a description...' }}</p>
         </div>
 
-        <!-- Details section -->
-        <div class="detail-fields">
-
-          <div class="detail-field">
-            <span class="detail-field-label">Position</span>
-            <div class="detail-field-control">
-              <input
-                  type="number"
-                  class="detail-input detail-input--narrow"
-                  :value="item.position"
-                  :disabled="savingField === 'position'"
-                  @change="onPositionChange"
-              />
-              <span v-if="savingField === 'position'" class="field-spinner"></span>
-            </div>
+        <!-- Metadata section -->
+        <div class="detail-metadata">
+          <!-- Mobile: collapsible toggle -->
+          <button class="detail-metadata-toggle" @click="metadataExpanded = !metadataExpanded">
+            <span>Details</span>
+            <span class="detail-metadata-arrow" :class="{ 'detail-metadata-arrow--open': metadataExpanded }">▾</span>
+          </button>
+          <!-- Content: always visible on desktop, collapsible on mobile -->
+          <div class="detail-metadata-content" :class="{ 'detail-metadata-content--expanded': metadataExpanded }">
+            <span class="detail-metadata-item">
+              <span class="detail-metadata-label">Created</span>
+              <span class="detail-metadata-value">{{ formatDate(item.created) }}</span>
+            </span>
+            <span class="detail-metadata-separator">·</span>
+            <span class="detail-metadata-item">
+              <span class="detail-metadata-label">Updated</span>
+              <span class="detail-metadata-value">{{ formatDate(item.updated) }}</span>
+            </span>
           </div>
-
-          <div class="detail-field">
-            <span class="detail-field-label">Created</span>
-            <span class="detail-field-text">{{ formatDate(item.created) }}</span>
-          </div>
-
-          <div class="detail-field">
-            <span class="detail-field-label">Updated</span>
-            <span class="detail-field-text">{{ formatDate(item.updated) }}</span>
-          </div>
-
         </div>
 
       </div>
@@ -205,12 +202,9 @@ const router = useRouter()
 const toaster = errorModel()
 
 const {
-  current,
-  loading,
   error,
   getStuff,
   updateStuff,
-  moveStuff,
 } = stuffModel()
 
 const item = ref(null)
@@ -222,6 +216,7 @@ const titleInput = ref(null)
 const descriptionInput = ref(null)
 const showTypeDialog = ref(false)
 const showStateDialog = ref(false)
+const metadataExpanded = ref(false)
 
 const typeOptions = [
   { value: 'STUFF', label: 'Stuff' },
@@ -377,23 +372,6 @@ async function selectState(newState) {
   savingField.value = null
 }
 
-async function onPositionChange(e) {
-  const newPos = parseInt(e.target.value, 10)
-  if (isNaN(newPos) || newPos === item.value.position) return
-
-  const oldPos = item.value.position
-  item.value.position = newPos
-  savingField.value = 'position'
-
-  try {
-    await moveStuff(item.value.id, newPos)
-  } catch {
-    item.value.position = oldPos
-  } finally {
-    savingField.value = null
-  }
-}
-
 function formatDate(dateStr) {
   if (!dateStr) return '—'
   return new Date(dateStr).toLocaleString()
@@ -409,8 +387,58 @@ function formatDate(dateStr) {
 
 .detail-header {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 16px;
   border-bottom: 1px solid var(--color-border-light);
+}
+
+.detail-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-back-link {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-link-text);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.detail-back-link:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-button-hover);
+}
+
+.detail-position {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  min-width: 20px;
+  text-align: center;
+  padding: 0 4px;
+}
+
+.detail-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.detail-nav-btn {
+  padding: 4px 8px !important;
+  min-width: unset !important;
+  font-size: 12px !important;
 }
 
 .detail-loading {
@@ -425,13 +453,7 @@ function formatDate(dateStr) {
   min-height: 0;
 }
 
-/* ── Meta bar (Type / State) ── */
-.detail-meta-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 24px 0;
-}
+/* ── Meta (State / Type) ── */
 
 .detail-meta-link {
   font-family: var(--font-family-default), sans-serif;
@@ -556,13 +578,9 @@ function formatDate(dateStr) {
 /* ── Title area ── */
 .detail-title-area {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 24px 24px 0;
-}
-
-.detail-title-area .detail-checkbox {
-  margin-top: 15px;
 }
 
 .detail-title-wrapper {
@@ -675,67 +693,68 @@ function formatDate(dateStr) {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
-/* ── Detail fields (Trello-style rows) ── */
-.detail-fields {
-  padding: 0 24px 24px;
+/* ── Metadata section ── */
+.detail-metadata {
+  padding: 16px 24px 24px;
+  margin-top: 8px;
 }
 
-.detail-field {
-  display: flex;
+.detail-metadata-toggle {
+  display: none;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.detail-field:last-child {
-  border-bottom: none;
-}
-
-.detail-field-label {
-  flex-shrink: 0;
-  width: 100px;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 8px 0;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+}
+
+.detail-metadata-toggle:hover {
   color: var(--color-text-secondary);
-  font-weight: 500;
 }
 
-.detail-field-control {
-  flex: 1;
+.detail-metadata-arrow {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+.detail-metadata-arrow--open {
+  transform: rotate(180deg);
+}
+
+.detail-metadata-content {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.detail-field-text {
+.detail-metadata-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detail-metadata-label {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
 }
 
-/* ── Form controls ── */
-.detail-input {
+.detail-metadata-value {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  padding: 4px 8px;
-  outline: none;
-  width: 100%;
-  background: var(--color-bg-primary);
+  font-size: 11px;
+  color: var(--color-text-secondary);
 }
 
-.detail-input:focus {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+.detail-metadata-separator {
+  color: var(--color-text-tertiary);
+  font-size: 11px;
 }
 
-.detail-input--narrow {
-  width: 80px;
-}
-
-.detail-input:disabled,
 .detail-textarea:disabled,
 .detail-title-input:disabled {
   opacity: 0.6;
@@ -780,8 +799,16 @@ function formatDate(dateStr) {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .detail-meta-bar {
-    padding: 12px 16px 0;
+  .detail-header {
+    padding: 8px 12px;
+  }
+
+  .detail-header-left {
+    gap: 6px;
+  }
+
+  .detail-header-right {
+    gap: 8px;
   }
 
   .detail-title-area {
@@ -792,8 +819,21 @@ function formatDate(dateStr) {
     padding: 12px 16px 16px;
   }
 
-  .detail-fields {
-    padding: 0 16px 16px;
+  .detail-metadata {
+    padding: 12px 16px 16px;
+  }
+
+  .detail-metadata-toggle {
+    display: flex;
+  }
+
+  .detail-metadata-content {
+    display: none;
+    padding-top: 8px;
+  }
+
+  .detail-metadata-content--expanded {
+    display: flex;
   }
 }
 </style>
