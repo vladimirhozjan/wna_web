@@ -102,6 +102,7 @@
 <script setup>
 import DashboardLayout from "../layouts/DashboardLayout.vue";
 import {ref, onMounted, nextTick, watch} from 'vue'
+import { useRouter } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
@@ -124,6 +125,7 @@ const {
   moveStuff,
 } = stuffModel()
 
+const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
 
@@ -186,9 +188,7 @@ function onItemClick(item) {
     return
   }
 
-  // pravi klik
-  console.log('CLICK on item', item.id)
-  // npr: open edit, navigate, focus input …
+  router.push({ name: 'stuff-detail', params: { id: item.id } })
 }
 
 async function onItemUpdate(id, { title }) {

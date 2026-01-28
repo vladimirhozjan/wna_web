@@ -10,6 +10,7 @@ import ReferencePage from '../views/ReferencePage.vue'
 import SettingsPage from '../views/SettingsPage.vue'
 import TodayPage from '../views/TodayPage.vue'
 import SomedayPage from '../views/SomedayPage.vue'
+import StuffDetailPage from '../views/StuffDetailPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
     {path: '/settings', name: 'settings', component: SettingsPage},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},
+    {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 
