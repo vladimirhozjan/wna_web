@@ -3,7 +3,16 @@
     <!-- Header -->
     <div class="clarify-header">
       <h2 class="clarify-header-title">Clarify</h2>
-      <button class="clarify-close-btn" @click="onCancel" title="Close">×</button>
+      <div class="clarify-header-nav">
+        <button
+            v-if="canGoBack"
+            class="clarify-nav-btn"
+            @click="onBack"
+            title="Back"
+        >&lt;</button>
+        <span class="clarify-step-indicator">{{ currentStepNumber }}/{{ totalSteps }}</span>
+        <button class="clarify-nav-btn" @click="onCancel" title="Close">×</button>
+      </div>
     </div>
 
     <!-- Progress bar -->
@@ -45,7 +54,6 @@
           v-else-if="state.step === ClarifyState.CONFIRM"
           :summary="clarify.getConfirmSummary()"
           :loading="state.loading"
-          :error="state.error"
           @confirm="onConfirm"
       />
       <div v-else-if="state.step === ClarifyState.DONE" class="clarify-done">
@@ -54,32 +62,13 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="clarify-footer" v-if="showFooter">
-      <Btn
-          v-if="canGoBack"
-          variant="ghost"
-          size="sm"
-          @click="onBack"
-      >
-        Back
-      </Btn>
-      <div class="clarify-footer-spacer"></div>
-      <Btn
-          variant="ghost"
-          size="sm"
-          @click="onCancel"
-      >
-        Cancel
-      </Btn>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { clarifyModel, ClarifyState } from '../scripts/clarifyModel.js'
-import Btn from './Btn.vue'
+import { errorModel } from '../scripts/errorModel.js'
 import ClarifyStepActionable from './ClarifyStepActionable.vue'
 import ClarifyStepNonActionable from './ClarifyStepNonActionable.vue'
 import ClarifyStepActionCount from './ClarifyStepActionCount.vue'
@@ -103,19 +92,48 @@ const emit = defineEmits(['done', 'cancel'])
 
 const clarify = clarifyModel()
 const state = clarify.state
+const toaster = errorModel()
+
+// Show errors as toast
+watch(() => state.error, (err) => {
+  if (!err) return
+  toaster.push(err)
+})
 
 const progress = computed(() => clarify.getProgress())
-
-const showFooter = computed(() => {
-  return ![ClarifyState.DONE, ClarifyState.CONFIRM].includes(state.step)
-})
 
 const canGoBack = computed(() => {
   return ![
     ClarifyState.ACTIONABLE_DECISION,
-    ClarifyState.CONFIRM,
     ClarifyState.DONE,
   ].includes(state.step)
+})
+
+const totalSteps = computed(() => {
+  // Steps depend on path: actionable path has 4 steps, non-actionable has 3
+  if (state.isActionable === false) return 3
+  if (state.isActionable === true) return 4
+  return 4 // default before decision
+})
+
+const currentStepNumber = computed(() => {
+  switch (state.step) {
+    case ClarifyState.ACTIONABLE_DECISION:
+      return 1
+    case ClarifyState.NON_ACTIONABLE_TARGET:
+      return 2
+    case ClarifyState.ACTION_COUNT_DECISION:
+      return 2
+    case ClarifyState.CREATE_ACTION:
+    case ClarifyState.CREATE_PROJECT:
+      return 3
+    case ClarifyState.CONFIRM:
+      return state.isActionable ? 4 : 3
+    case ClarifyState.DONE:
+      return totalSteps.value
+    default:
+      return 1
+  }
 })
 
 onMounted(() => {
@@ -208,7 +226,7 @@ function onCancel() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--color-border-light);
   flex-shrink: 0;
 }
@@ -221,23 +239,37 @@ function onCancel() {
   margin: 0;
 }
 
-.clarify-close-btn {
-  width: 32px;
-  height: 32px;
+.clarify-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clarify-nav-btn {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: none;
-  font-size: 20px;
+  font-size: 16px;
   color: var(--color-text-tertiary);
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-.clarify-close-btn:hover {
+.clarify-nav-btn:hover {
   background: var(--color-bg-secondary);
   color: var(--color-text-primary);
+}
+
+.clarify-step-indicator {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+  min-width: 28px;
+  text-align: center;
 }
 
 /* Progress */
@@ -311,35 +343,14 @@ function onCancel() {
   margin: 0;
 }
 
-/* Footer */
-.clarify-footer {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  border-top: 1px solid var(--color-border-light);
-  flex-shrink: 0;
-}
-
-.clarify-footer-spacer {
-  flex: 1;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-  .clarify-header {
-    padding: 12px 16px;
-  }
-
   .clarify-context {
     padding: 10px 16px;
   }
 
   .clarify-content {
     padding: 20px 16px;
-  }
-
-  .clarify-footer {
-    padding: 12px 16px;
   }
 }
 </style>

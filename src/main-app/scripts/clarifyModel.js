@@ -144,9 +144,6 @@ export function clarifyModel() {
     }
 
     function back() {
-        // Cannot go back from CONFIRM
-        if (state.step === ClarifyState.CONFIRM) return
-
         switch (state.step) {
             case ClarifyState.NON_ACTIONABLE_TARGET:
                 state.step = ClarifyState.ACTIONABLE_DECISION
@@ -163,6 +160,16 @@ export function clarifyModel() {
             case ClarifyState.CREATE_PROJECT:
                 state.step = ClarifyState.ACTION_COUNT_DECISION
                 state.isSingleAction = null
+                break
+            case ClarifyState.CONFIRM:
+                // Go back to previous form/selection based on path taken
+                if (!state.isActionable) {
+                    state.step = ClarifyState.NON_ACTIONABLE_TARGET
+                } else if (state.isSingleAction) {
+                    state.step = ClarifyState.CREATE_ACTION
+                } else {
+                    state.step = ClarifyState.CREATE_PROJECT
+                }
                 break
             default:
                 break

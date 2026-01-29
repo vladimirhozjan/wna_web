@@ -19,11 +19,6 @@
       </div>
     </div>
 
-    <!-- Error display -->
-    <div v-if="error" class="clarify-error">
-      {{ error }}
-    </div>
-
     <div class="clarify-confirm-actions">
       <Btn
           variant="primary"
@@ -49,10 +44,6 @@ defineProps({
   loading: {
     type: Boolean,
     default: false,
-  },
-  error: {
-    type: String,
-    default: null,
   },
 })
 
@@ -128,16 +119,6 @@ function formatDate(dateStr) {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
-}
-
-.clarify-error {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-danger);
-  background: var(--color-danger-light, #fef2f2);
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
 }
 
 .clarify-confirm-actions {
