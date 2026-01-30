@@ -213,46 +213,60 @@ export function logoutUser() {
     delete httpApi.defaults.headers.Authorization
 }
 
-// ── Clarify API stubs (not yet implemented on backend) ──
+// ── Clarify API ──
 
 export async function clarifyToAction(stuffId, actionData) {
-    // TODO: Implement when backend is ready
-    // POST /v1/stuff/{stuffId}/clarify/action
-    console.log('API STUB: clarifyToAction', stuffId, actionData)
-    await new Promise(r => setTimeout(r, 500))
-    throw { status: 501, message: 'clarifyToAction not yet implemented' }
+    try {
+        const body = {
+            target: 'action',
+            title: actionData.title,
+        }
+        if (actionData.description) body.description = actionData.description
+        if (actionData.dueDate) body.due_date = actionData.dueDate
+        if (actionData.deferUntil) body.start_date = actionData.deferUntil
+
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
 }
 
 export async function clarifyToProject(stuffId, projectData) {
-    // TODO: Implement when backend is ready
-    // POST /v1/stuff/{stuffId}/clarify/project
-    console.log('API STUB: clarifyToProject', stuffId, projectData)
-    await new Promise(r => setTimeout(r, 500))
-    throw { status: 501, message: 'clarifyToProject not yet implemented' }
+    try {
+        const body = {
+            target: 'project',
+            title: projectData.title,
+        }
+        if (projectData.description) body.description = projectData.description
+
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
 }
 
 export async function clarifyToReference(stuffId) {
-    // TODO: Implement when backend is ready
-    // POST /v1/stuff/{stuffId}/clarify/reference
-    console.log('API STUB: clarifyToReference', stuffId)
-    await new Promise(r => setTimeout(r, 500))
-    throw { status: 501, message: 'clarifyToReference not yet implemented' }
+    try {
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, { state: 'reference' }, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
 }
 
 export async function clarifyToSomeday(stuffId) {
-    // TODO: Implement when backend is ready
-    // POST /v1/stuff/{stuffId}/clarify/someday
-    console.log('API STUB: clarifyToSomeday', stuffId)
-    await new Promise(r => setTimeout(r, 500))
-    throw { status: 501, message: 'clarifyToSomeday not yet implemented' }
+    try {
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, { state: 'someday' }, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
 }
 
 export async function clarifyToTrash(stuffId) {
-    // TODO: Implement when backend is ready
-    // Uses existing deleteStuff endpoint
-    console.log('API STUB: clarifyToTrash', stuffId)
-    await new Promise(r => setTimeout(r, 500))
-    throw { status: 501, message: 'clarifyToTrash not yet implemented' }
+    return deleteStuff(stuffId)
 }
 
 const apiClient = {
