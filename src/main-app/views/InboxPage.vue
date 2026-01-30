@@ -354,6 +354,7 @@ async function onDragEnd(evt) {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding-right: 1px;
 }
 
 .inbox-page--clarify-mode {
@@ -373,6 +374,10 @@ async function onDragEnd(evt) {
   border-right: 1px solid var(--color-border-light);
 }
 
+.item-wrapper {
+  border-right: 1px solid var(--color-border-light);
+}
+
 .inbox-clarify-panel {
   flex: 1;
   min-width: 0;
@@ -383,6 +388,7 @@ async function onDragEnd(evt) {
   flex-shrink: 0;
   background: var(--color-bg-primary);
   margin-bottom: 10px;
+  border-right: 1px solid var(--color-border-light);
 }
 
 .inbox-content {
