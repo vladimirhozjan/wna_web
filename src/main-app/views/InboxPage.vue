@@ -64,8 +64,8 @@
               @move="onMove"
               @load-more="loadMore"
           >
-            <template #actions="{ item }" v-if="!clarifyMode">
-              <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+            <template #actions="{ item }">
+              <button v-if="!clarifyMode" class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
             </template>
             <template #empty>
               <InboxIcon class="empty-state__icon" />
