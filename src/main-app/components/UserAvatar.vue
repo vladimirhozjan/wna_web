@@ -26,7 +26,7 @@ function stringToColor(str) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 70%, 50%)`;
+  return `hsl(${hue}, 45%, 72%)`;
 }
 
 const bgColor = computed(() =>

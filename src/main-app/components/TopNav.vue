@@ -95,7 +95,7 @@ function clickLogin() {
 
 function goToDashboard() {
   showDropdown.value = false;
-  router.push("/inbox");
+  router.push("/next");
 }
 
 function goToSettings() {
