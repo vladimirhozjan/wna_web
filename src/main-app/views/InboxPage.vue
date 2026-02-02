@@ -49,64 +49,32 @@
 
         <!-- Scrollable content -->
         <div class="inbox-content">
-          <!-- Empty state -->
-          <div v-if="!loading && items.length === 0" class="empty-state">
-            <InboxIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">Your inbox is empty</h2>
-            <p class="empty-state__text">
-              Capture everything on your mind. Add new stuff above to get started.
-            </p>
-          </div>
-
-          <!-- Stuff list with drag and drop -->
-          <VueDraggable
-              v-else
+          <ItemList
               v-model="items"
-              :delay="100"
-              :animation="150"
-              :chosen-class="'item-wrapper-chosen'"
-              :ghost-class="'item-wrapper-ghost'"
+              :loading="loading"
+              :has-more="hasMore && !clarifyMode"
+              :loading-ids="loadingIds"
               :disabled="clarifyMode"
-              :class="{ 'inbox-list--dragging': isDragging }"
-              @start="onDragStart"
-              @end="onDragEnd"
+              :active-id="currentClarifyItem?.id ?? null"
+              :editable="!clarifyMode"
+              @update="onItemUpdate"
+              @check="onItemCheck"
+              @click="onItemClick"
+              @delete="onDelete"
+              @move="onMove"
+              @load-more="loadMore"
           >
-            <div
-                v-for="(item, index) in items"
-                :key="item.id"
-                class="item-wrapper"
-                :class="{ 'item-wrapper--active': clarifyMode && currentClarifyIndex === index }"
-            >
-              <Item
-                  :id="item.id"
-                  :title="item.title"
-                  :loading="updatingId === item.id || deletingId === item.id || movingId === item.id"
-                  :checked="item.checked"
-                  :editable="!clarifyMode"
-                  :no-hover="isDragging"
-                  @update="onItemUpdate"
-                  @check="onItemCheck"
-                  @click="onItemClick(item, index)"
-              >
-                <template #actions v-if="!clarifyMode">
-                  <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
-                </template>
-              </Item>
-            </div>
-          </VueDraggable>
-
-          <!-- Load more -->
-          <div class="load-more" v-if="!clarifyMode">
-            <Btn
-                v-if="hasMore && items.length > 0"
-                variant="ghost"
-                size="sm"
-                :loading="loading"
-                @click="loadMore"
-            >
-              Load more
-            </Btn>
-          </div>
+            <template #actions="{ item }" v-if="!clarifyMode">
+              <button class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+            </template>
+            <template #empty>
+              <InboxIcon class="empty-state__icon" />
+              <h2 class="empty-state__title">Your inbox is empty</h2>
+              <p class="empty-state__text">
+                Capture everything on your mind. Add new stuff above to get started.
+              </p>
+            </template>
+          </ItemList>
         </div>
       </div>
 
@@ -140,13 +108,12 @@
 import DashboardLayout from "../layouts/DashboardLayout.vue";
 import {ref, onMounted, nextTick, watch, computed, onUnmounted} from 'vue'
 import { useRouter } from 'vue-router'
-import { VueDraggable } from 'vue-draggable-plus'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
-import Item from '../components/Item.vue'
+import ItemList from '../components/ItemList.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import ClarifyPanel from '../components/ClarifyPanel.vue'
 
@@ -174,6 +141,14 @@ const updatingId = ref(null)
 const deletingId = ref(null)
 const movingId = ref(null)
 
+const loadingIds = computed(() => {
+  const ids = []
+  if (updatingId.value) ids.push(updatingId.value)
+  if (deletingId.value) ids.push(deletingId.value)
+  if (movingId.value) ids.push(movingId.value)
+  return ids
+})
+
 // Clarify mode state
 const clarifyMode = ref(false)
 const currentClarifyIndex = ref(0)
@@ -183,11 +158,6 @@ const currentClarifyItem = computed(() => {
   if (!clarifyMode.value) return null
   return items.value[currentClarifyIndex.value] || null
 })
-
-// Drag state for API sync
-let draggedItemId = null
-let originalIndex = null
-const isDragging = ref(false)
 
 // show errors in toaster
 watch(error, (err) => {
@@ -241,12 +211,7 @@ async function loadMore() {
 }
 
 function onItemClick(item, index) {
-  if (isDragging.value) {
-    return
-  }
-
   if (clarifyMode.value) {
-    // In clarify mode, select the item for clarification
     currentClarifyIndex.value = index
     return
   }
@@ -272,7 +237,8 @@ async function onItemUpdate(id, { title }) {
 }
 
 function onItemCheck(id, checked) {
-  console.log('Item checked:', id, checked)
+  const item = items.value.find(i => i.id === id)
+  if (item) item.checked = checked
 }
 
 async function onDelete(id) {
@@ -293,6 +259,17 @@ async function onDelete(id) {
   }
 }
 
+async function onMove(id, newIndex) {
+  movingId.value = id
+  try {
+    await moveStuff(id, newIndex)
+  } catch (e) {
+    await loadStuff({ reset: true })
+  } finally {
+    movingId.value = null
+  }
+}
+
 function onClarify() {
   if (items.value.length === 0) return
   clarifyMode.value = true
@@ -305,49 +282,16 @@ function exitClarifyMode() {
 }
 
 function onClarifyDone(processedItem) {
-  // Remove the processed item from the list (simulated - API will handle this in production)
   const idx = items.value.findIndex(i => i.id === processedItem.id)
   if (idx !== -1) {
     items.value.splice(idx, 1)
   }
 
-  // Auto-advance to next item or exit if done
   if (items.value.length === 0) {
     exitClarifyMode()
   } else if (currentClarifyIndex.value >= items.value.length) {
     currentClarifyIndex.value = items.value.length - 1
   }
-  // If currentClarifyIndex is still valid, it will auto-show the next item
-}
-
-// Drag and drop handlers
-function onDragStart(evt) {
-  console.log('Drag start:', evt)
-  originalIndex = evt.oldIndex
-  draggedItemId = items.value[evt.oldIndex]?.id
-  isDragging.value = true
-}
-
-async function onDragEnd(evt) {
-  console.log('Drag end:', evt)
-  isDragging.value = false
-  const newIndex = evt.newIndex
-
-  // Only sync with API if position changed
-  if (originalIndex !== newIndex && draggedItemId) {
-    movingId.value = draggedItemId
-    try {
-      await moveStuff(draggedItemId, newIndex)
-    } catch (e) {
-      // Revert on error - reload the list
-      await loadStuff({ reset: true })
-    } finally {
-      movingId.value = null
-    }
-  }
-
-  draggedItemId = null
-  originalIndex = null
 }
 </script>
 
@@ -373,10 +317,6 @@ async function onDragEnd(evt) {
 
 .inbox-page--clarify-mode .inbox-list-panel {
   flex: 0 0 320px;
-  border-right: 1px solid var(--color-border-light);
-}
-
-.item-wrapper {
   border-right: 1px solid var(--color-border-light);
 }
 
@@ -423,28 +363,6 @@ h1 {
   margin-bottom: 4px;
 }
 
-.item-wrapper .item{
-  -webkit-touch-callout: none; /* iOS Safari */
-  user-select: none;
-}
-
-.item-wrapper--active .item {
-  background-color: var(--color-bg-secondary);
-  border-left: 3px solid var(--color-action);
-}
-
-.item-wrapper-chosen .item{
-  background-color: var(--color-bg-hover);
-}
-
-.item-wrapper-ghost .item{
-  background-color: var(--color-btn-ghost-hover);
-}
-
-.item-wrapper-ghost .item > * {
-  opacity: 0;
-}
-
 .action-btn {
   padding: 4px 8px;
   border: none;
@@ -464,21 +382,6 @@ h1 {
 
 .action-btn--danger:hover {
   background: var(--color-danger-light);
-}
-
-.load-more {
-  display: flex;
-  justify-content: center;
-  margin: 16px 0;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
 }
 
 .empty-state__icon {

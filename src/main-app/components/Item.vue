@@ -4,7 +4,7 @@
       :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading, 'item--no-hover': noHover }"
   >
     <!-- Checkbox -->
-    <div class="item__checkbox" @click.stop>
+    <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
       <input
           type="checkbox"
           :checked="checked"
@@ -70,6 +70,10 @@ const props = defineProps({
     default: true
   },
   noHover: {
+    type: Boolean,
+    default: false
+  },
+  noCheckbox: {
     type: Boolean,
     default: false
   }
