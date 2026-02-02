@@ -107,10 +107,11 @@ function submit() {
   .quick-add-input {
     position: fixed;
     top: 6px;
-    left: 60px;
+    left: 52px;
     right: 48px;
     width: auto;
     z-index: 10;
+    background: var(--color-bg-primary);
   }
 }
 </style>
