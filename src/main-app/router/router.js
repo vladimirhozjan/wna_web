@@ -11,6 +11,8 @@ import SettingsPage from '../views/SettingsPage.vue'
 import TodayPage from '../views/TodayPage.vue'
 import SomedayPage from '../views/SomedayPage.vue'
 import StuffDetailPage from '../views/StuffDetailPage.vue'
+import CompletedPage from '../views/CompletedPage.vue'
+import TrashPage from '../views/TrashPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
@@ -27,6 +29,8 @@ const routes = [
     {path: '/settings', name: 'settings', component: SettingsPage},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},
+    {path: '/completed', name: 'completed', component: CompletedPage},
+    {path: '/trash', name: 'trash', component: TrashPage},
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]

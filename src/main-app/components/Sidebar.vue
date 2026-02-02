@@ -30,6 +30,14 @@
         <template #icon><ReferenceIcon/></template>
       </SidebarMenuItem>
 
+      <SidebarMenuItem label="Completed" :to="{ name: 'completed' }">
+        <template #icon><CompletedIcon/></template>
+      </SidebarMenuItem>
+
+      <SidebarMenuItem label="Trash" :to="{ name: 'trash' }">
+        <template #icon><TrashIcon/></template>
+      </SidebarMenuItem>
+
     </nav>
 
     <div class="sidebar-footer">
@@ -59,6 +67,8 @@ import InboxIcon from "../assets/InboxIcon.vue";
 import ProjectsIcon from "../assets/ProjectsIcon.vue";
 import SomedayIcon from "../assets/SomedayIcon.vue";
 import ReferenceIcon from "../assets/ReferenceIcon.vue";
+import CompletedIcon from "../assets/CompletedIcon.vue";
+import TrashIcon from "../assets/TrashIcon.vue";
 import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 
