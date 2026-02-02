@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
 .topnav-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .topnav-logo {
