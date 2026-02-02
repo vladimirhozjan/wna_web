@@ -35,7 +35,7 @@
         ☰
       </Btn>
 
-      <div class="avatar-container" ref="avatarContainerRef">
+      <div class="avatar-container" :class="{ 'desktop-only': context === 'dashboard' }" ref="avatarContainerRef">
         <UserAvatar
           :email="user?.email"
           :avatar-url="user?.avatarUrl"
