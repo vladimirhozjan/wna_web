@@ -1,7 +1,7 @@
 <template>
   <div class="clarify-step">
     <h3 class="clarify-step-question">Create Project</h3>
-    <p class="clarify-step-hint">Define the project outcome and its first action.</p>
+    <p class="clarify-step-hint">Define the project outcome.</p>
 
     <form class="clarify-form" @submit.prevent="onSubmit">
       <div class="clarify-field">
@@ -15,19 +15,6 @@
             placeholder="What's the desired outcome?"
             required
         />
-      </div>
-
-      <div class="clarify-field">
-        <label class="clarify-label" for="project-next-action">Next Action *</label>
-        <input
-            id="project-next-action"
-            v-model="form.nextActionTitle"
-            type="text"
-            class="clarify-input"
-            placeholder="What's the very first physical action?"
-            required
-        />
-        <span class="clarify-field-hint">Every project must have at least one next action.</span>
       </div>
 
       <div class="clarify-field">
@@ -46,7 +33,7 @@
             type="submit"
             variant="primary"
             size="md"
-            :disabled="!form.title.trim() || !form.nextActionTitle.trim()"
+            :disabled="!form.title.trim()"
         >
           Continue
         </Btn>
@@ -72,7 +59,6 @@ const titleInput = ref(null)
 
 const form = reactive({
   title: props.initialData.title || '',
-  nextActionTitle: props.initialData.nextActionTitle || '',
   description: props.initialData.description || '',
 })
 
@@ -81,10 +67,9 @@ onMounted(() => {
 })
 
 function onSubmit() {
-  if (!form.title.trim() || !form.nextActionTitle.trim()) return
+  if (!form.title.trim()) return
   emit('submit', {
     title: form.title.trim(),
-    nextActionTitle: form.nextActionTitle.trim(),
     description: form.description.trim(),
   })
 }
