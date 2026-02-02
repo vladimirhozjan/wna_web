@@ -269,6 +269,97 @@ export async function clarifyToTrash(stuffId) {
     return deleteStuff(stuffId)
 }
 
+// ── Action API ──
+
+export async function addAction(data) {
+    try {
+        const body = { title: data.title }
+        if (data.description) body.description = data.description
+        if (data.project_id) body.project_id = data.project_id
+        if (data.start_date) body.start_date = data.start_date
+        if (data.start_time) body.start_time = data.start_time
+        if (data.scheduled_date) body.scheduled_date = data.scheduled_date
+        if (data.scheduled_time) body.scheduled_time = data.scheduled_time
+        if (data.due_date) body.due_date = data.due_date
+        if (data.due_time) body.due_time = data.due_time
+        if (data.recurrence_rule) body.recurrence_rule = data.recurrence_rule
+        if (data.waiting_for) body.waiting_for = data.waiting_for
+        if (data.waiting_since) body.waiting_since = data.waiting_since
+        if (data.comments_json) body.comments_json = data.comments_json
+        if (data.tags) body.tags = data.tags
+
+        const res = await httpApi.post('/v1/action', body, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateAction(actionId, data) {
+    try {
+        const body = { title: data.title }
+        if (data.description !== undefined) body.description = data.description
+        if (data.state) body.state = data.state
+        if (data.project_id) body.project_id = data.project_id
+        if (data.start_date) body.start_date = data.start_date
+        if (data.start_time) body.start_time = data.start_time
+        if (data.scheduled_date) body.scheduled_date = data.scheduled_date
+        if (data.scheduled_time) body.scheduled_time = data.scheduled_time
+        if (data.due_date) body.due_date = data.due_date
+        if (data.due_time) body.due_time = data.due_time
+        if (data.recurrence_rule) body.recurrence_rule = data.recurrence_rule
+        if (data.waiting_for) body.waiting_for = data.waiting_for
+        if (data.waiting_since) body.waiting_since = data.waiting_since
+        if (data.comments_json) body.comments_json = data.comments_json
+        if (data.tags) body.tags = data.tags
+
+        const res = await httpApi.put(`/v1/action/${actionId}`, body, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getAction(actionId) {
+    try {
+        const res = await httpApi.get(`/v1/action/${actionId}`, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listActions({ limit = 10, cursor = null } = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/action', { params, headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteAction(actionId) {
+    try {
+        const res = await httpApi.delete(`/v1/action/${actionId}`, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function moveAction(actionId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/move`, { destination }, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,
@@ -290,6 +381,12 @@ const apiClient = {
     clarifyToReference,
     clarifyToSomeday,
     clarifyToTrash,
+    addAction,
+    updateAction,
+    getAction,
+    listActions,
+    deleteAction,
+    moveAction,
 }
 
 export default apiClient
