@@ -63,7 +63,7 @@
               v-else
               v-model="items"
               :delay="100"
-              :animation="100"
+              :animation="150"
               :chosen-class="'item-wrapper-chosen'"
               :ghost-class="'item-wrapper-ghost'"
               :disabled="clarifyMode"
@@ -83,6 +83,7 @@
                   :loading="updatingId === item.id || deletingId === item.id || movingId === item.id"
                   :checked="item.checked"
                   :editable="!clarifyMode"
+                  :no-hover="isDragging"
                   @update="onItemUpdate"
                   @check="onItemCheck"
                   @click="onItemClick(item, index)"
@@ -437,15 +438,11 @@ h1 {
 }
 
 .item-wrapper-ghost .item{
-  background-color: var(--color-bg-primary);
+  background-color: var(--color-btn-ghost-hover);
 }
 
-.item-wrapper-ghost .item>* {
+.item-wrapper-ghost .item > * {
   opacity: 0;
-}
-
-.inbox-list--dragging .item-wrapper .item:hover {
-  background: var(--color-bg-primary);
 }
 
 .action-btn {

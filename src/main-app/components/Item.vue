@@ -1,7 +1,7 @@
 <template>
   <div
       class="item"
-      :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading }"
+      :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading, 'item--no-hover': noHover }"
   >
     <!-- Checkbox -->
     <div class="item__checkbox" @click.stop>
@@ -68,6 +68,10 @@ const props = defineProps({
   editable: {
     type: Boolean,
     default: true
+  },
+  noHover: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -147,11 +151,11 @@ function onCheck(e) {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .item:hover {
+  .item:not(.item--no-hover):hover {
     background: var(--color-bg-hover);
   }
 
-  .item:hover .item__actions {
+  .item:not(.item--no-hover):hover .item__actions {
     opacity: 1;
   }
 }
