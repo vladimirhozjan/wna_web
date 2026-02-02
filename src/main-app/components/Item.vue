@@ -162,6 +162,11 @@ function onCheck(e) {
   .item:not(.item--no-hover):hover .item__actions {
     opacity: 1;
   }
+
+}
+
+.item:not(.item--no-hover):active {
+  background: var(--color-btn-ghost-hover) !important;
 }
 
 @media (hover: none) and (pointer: coarse) {
