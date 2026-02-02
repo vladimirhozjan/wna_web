@@ -151,7 +151,7 @@ export async function deleteUser() {
 
 export async function addStuff({ title, description = "" }) {
     try {
-        const res = await httpApi.post('/v1/stuff', { title, description }, { headers: authHeaders() })
+        const res = await httpApi.post('/v1/inbox', { title, description }, { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -160,7 +160,7 @@ export async function addStuff({ title, description = "" }) {
 
 export async function updateStuff(stuffId, { title, description = "" }) {
     try {
-        const res = await httpApi.put(`/v1/stuff/${stuffId}`, { title, description }, { headers: authHeaders() })
+        const res = await httpApi.put(`/v1/inbox/${stuffId}`, { title, description }, { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -169,7 +169,7 @@ export async function updateStuff(stuffId, { title, description = "" }) {
 
 export async function getStuff(stuffId) {
     try {
-        const res = await httpApi.get(`/v1/stuff/${stuffId}`, { headers: authHeaders() })
+        const res = await httpApi.get(`/v1/inbox/${stuffId}`, { headers: authHeaders() })
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -178,7 +178,7 @@ export async function getStuff(stuffId) {
 
 export async function deleteStuff(stuffId) {
     try {
-        const res = await httpApi.delete(`/v1/stuff/${stuffId}`, { headers: authHeaders() })
+        const res = await httpApi.delete(`/v1/inbox/${stuffId}`, { headers: authHeaders() })
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -187,7 +187,7 @@ export async function deleteStuff(stuffId) {
 
 export async function moveStuff(stuffId, destination) {
     try {
-        const res = await httpApi.post(`/v1/stuff/${stuffId}/move`, { destination }, { headers: authHeaders() })
+        const res = await httpApi.post(`/v1/inbox/${stuffId}/move`, { destination }, { headers: authHeaders() })
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -200,7 +200,7 @@ export async function listStuff({ limit = 10, cursor = null } = {}) {
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
 
-        const res = await httpApi.get('/v1/stuff', { params }, { headers: authHeaders() })
+        const res = await httpApi.get('/v1/inbox', { params, headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -225,7 +225,7 @@ export async function clarifyToAction(stuffId, actionData) {
         if (actionData.dueDate) body.due_date = actionData.dueDate
         if (actionData.deferUntil) body.start_date = actionData.deferUntil
 
-        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, { headers: authHeaders() })
+        const res = await httpApi.post(`/v1/inbox/${stuffId}/transform`, body, { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -239,8 +239,9 @@ export async function clarifyToProject(stuffId, projectData) {
             title: projectData.title,
         }
         if (projectData.description) body.description = projectData.description
+        if (projectData.outcome) body.outcome = projectData.outcome
 
-        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, { headers: authHeaders() })
+        const res = await httpApi.post(`/v1/inbox/${stuffId}/transform`, body, { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -249,7 +250,7 @@ export async function clarifyToProject(stuffId, projectData) {
 
 export async function clarifyToReference(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, { state: 'reference' }, { headers: authHeaders() })
+        const res = await httpApi.patch(`/v1/inbox/${stuffId}`, { state: 'reference' }, { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -258,7 +259,7 @@ export async function clarifyToReference(stuffId) {
 
 export async function clarifyToSomeday(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, { state: 'someday' }, { headers: authHeaders() })
+        const res = await httpApi.patch(`/v1/inbox/${stuffId}`, { state: 'someday' }, { headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -335,7 +336,7 @@ export async function listActions({ limit = 10, cursor = null } = {}) {
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
 
-        const res = await httpApi.get('/v1/action', { params, headers: authHeaders() })
+        const res = await httpApi.get('/v1/nextActions', { params, headers: authHeaders() })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -354,6 +355,74 @@ export async function deleteAction(actionId) {
 export async function moveAction(actionId, destination) {
     try {
         const res = await httpApi.post(`/v1/action/${actionId}/move`, { destination }, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// ── Project API ──
+
+export async function addProject(data) {
+    try {
+        const body = { title: data.title }
+        if (data.description) body.description = data.description
+        if (data.outcome) body.outcome = data.outcome
+
+        const res = await httpApi.post('/v1/project', body, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateProject(projectId, data) {
+    try {
+        const body = { title: data.title }
+        if (data.description !== undefined) body.description = data.description
+        if (data.outcome !== undefined) body.outcome = data.outcome
+
+        const res = await httpApi.put(`/v1/project/${projectId}`, body, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getProject(projectId) {
+    try {
+        const res = await httpApi.get(`/v1/project/${projectId}`, { headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listProjects({ limit = 10, cursor = null } = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/projects', { params, headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteProject(projectId) {
+    try {
+        const res = await httpApi.delete(`/v1/project/${projectId}`, { headers: authHeaders() })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function moveProject(projectId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/move`, { destination }, { headers: authHeaders() })
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -387,6 +456,12 @@ const apiClient = {
     listActions,
     deleteAction,
     moveAction,
+    addProject,
+    updateProject,
+    getProject,
+    listProjects,
+    deleteProject,
+    moveProject,
 }
 
 export default apiClient
