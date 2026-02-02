@@ -64,9 +64,9 @@ onUnmounted(() => {
 
 .clarify-step-question {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-h4);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
@@ -79,6 +79,7 @@ onUnmounted(() => {
 
 .clarify-options {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
 }
@@ -94,7 +95,8 @@ onUnmounted(() => {
   background: var(--color-bg-primary);
   cursor: pointer;
   transition: all 0.15s ease;
-  min-width: 160px;
+  min-width: 0;
+  flex: 1 1 140px;
 }
 
 .clarify-option:hover {

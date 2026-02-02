@@ -57,9 +57,9 @@ onUnmounted(() => {
 
 .clarify-step-question {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-h4);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
@@ -72,6 +72,7 @@ onUnmounted(() => {
 
 .clarify-options {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
 }
@@ -81,7 +82,9 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 24px 48px;
+  padding: 24px 32px;
+  min-width: 0;
+  flex: 1 1 140px;
   border: 2px solid var(--color-border-light);
   border-radius: 12px;
   background: var(--color-bg-primary);

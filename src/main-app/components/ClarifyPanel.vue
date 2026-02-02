@@ -23,7 +23,7 @@
     <!-- Context - show item being processed -->
     <div class="clarify-context" v-if="stuffItem">
       <span class="clarify-context-label">Processing:</span>
-      <span class="clarify-context-title">"{{ stuffItem.title }}"</span>
+      <span class="clarify-context-title">{{ stuffItem.title }}</span>
     </div>
 
     <!-- Step Content -->
@@ -137,7 +137,10 @@ const currentStepNumber = computed(() => {
 })
 
 onMounted(() => {
-  clarify.start(props.stuffItem, props.mode)
+  // Only start if not already in progress (avoids reset on mobile/desktop switch)
+  if (state.step === ClarifyState.IDLE || state.stuffItem?.id !== props.stuffItem.id) {
+    clarify.start(props.stuffItem, props.mode)
+  }
   window.addEventListener('keydown', handleKeydown)
 })
 
@@ -287,24 +290,24 @@ function onCancel() {
 
 /* Context */
 .clarify-context {
-  padding: 12px 20px;
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 16px 20px;
   flex-shrink: 0;
+  text-align: center;
 }
 
 .clarify-context-label {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
-  margin-right: 6px;
+  display: block;
+  margin-bottom: 4px;
 }
 
 .clarify-context-title {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
+  font-size: var(--font-size-h3);
   color: var(--color-text-primary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* Content */

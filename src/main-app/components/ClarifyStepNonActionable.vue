@@ -77,9 +77,9 @@ onUnmounted(() => {
 
 .clarify-step-question {
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-h4);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
