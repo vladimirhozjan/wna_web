@@ -24,7 +24,9 @@
 
     <!-- AUTHENTICATED -->
     <div v-else class="topnav-auth-right">
-      <!-- Dashboard mobile: hamburger + avatar -->
+      <QuickAddBtn v-if="context === 'dashboard'" @add="onQuickAdd" />
+
+      <!-- Dashboard mobile: hamburger -->
       <Btn
         v-if="context === 'dashboard'"
         class="hamburger mobile-only"
@@ -56,6 +58,9 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import Btn from "./Btn.vue";
 import UserAvatar from "./UserAvatar.vue";
+import QuickAddBtn from "./QuickAddBtn.vue";
+import { stuffModel } from "../scripts/stuffModel.js";
+import { errorModel } from "../scripts/errorModel.js";
 
 defineProps({
   authenticated: {
@@ -106,6 +111,17 @@ function goToSettings() {
 function handleLogout() {
   showDropdown.value = false;
   emit("logout");
+}
+
+const { addStuff } = stuffModel();
+const toaster = errorModel();
+
+async function onQuickAdd(title) {
+  try {
+    await addStuff(title);
+  } catch (e) {
+    toaster.push(e.message || "Failed to add item");
+  }
 }
 
 function onClickOutside(e) {
