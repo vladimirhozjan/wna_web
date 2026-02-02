@@ -110,10 +110,17 @@ The httpApi interceptor automatically refreshes expired JWT tokens before reques
 
 ### Backend API
 
+Backend repo: `../wna_backend/` (C++20 microservices). Full API reference: `../wna_backend/API.md`.
+
 Backend runs on `http://localhost:8000` (router_service gateway). Key endpoints:
 
-- `/v1/user/*` - Auth: register, login, refresh, forgot, reset
-- `/v1/stuff/*` - Inbox items: CRUD + list with cursor pagination
+- `/v1/user/*` - Auth: register, login, refresh, forgot, reset, get, delete
+- `/v1/inbox` - Stuff (inbox) items: CRUD, list, move, patch state, transform
+- `/v1/inbox/{id}/transform` - Clarify stuff into action or project
+- `/v1/action` - Action CRUD (singular), `/v1/nextActions` for list (plural)
+- `/v1/project` - Project CRUD (singular), `/v1/projects` for list (plural)
+
+**Note on plural/singular:** CRUD endpoints use singular (`/v1/action/{id}`, `/v1/project/{id}`), list endpoints use plural (`/v1/nextActions`, `/v1/projects`).
 
 JWT tokens stored in localStorage (`auth_token`, `refresh_token`). User data cached in `current_user`.
 
