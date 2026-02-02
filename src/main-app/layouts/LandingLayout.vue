@@ -1,8 +1,12 @@
 <template>
   <div class="landing-layout">
-    <TopNav :authenticated="auth.isAuthenticated.value"
+    <TopNav
+      :authenticated="auth.isAuthenticated.value"
+      :user="auth.currentUser.value"
+      context="landing"
       @open-login="$emit('open-login')"
       @open-register="$emit('open-register')"
+      @logout="auth.logoutUser()"
     />
 
     <main class="landing-container">

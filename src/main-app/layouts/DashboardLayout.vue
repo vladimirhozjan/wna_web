@@ -1,6 +1,12 @@
 <template>
   <div class="dashboard">
-    <TopNav :authenticated="auth.isAuthenticated.value" @open-sidebar="isSidebarOpen = true"/>
+    <TopNav
+      :authenticated="auth.isAuthenticated.value"
+      :user="auth.currentUser.value"
+      context="dashboard"
+      @open-sidebar="isSidebarOpen = true"
+      @logout="auth.logoutUser()"
+    />
 
     <div class="dashboard-body">
       <!-- Desktop sidebar -->
