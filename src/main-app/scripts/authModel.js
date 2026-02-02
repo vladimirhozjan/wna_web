@@ -1,5 +1,6 @@
 import {computed, ref} from 'vue'
 import apiClient from './apiClient.js'
+import { confirmModel } from './confirmModel.js'
 
 window.addEventListener('storage', (event) => {
     if (event.key === 'logout') {
@@ -158,6 +159,19 @@ export function authModel() {
         }
     }
 
+    async function logoutWithConfirm() {
+        const confirm = confirmModel()
+        const confirmed = await confirm.show({
+            title: 'Log out',
+            message: 'Are you sure you want to log out?',
+            confirmText: 'Log out',
+            cancelText: 'Cancel',
+        })
+        if (!confirmed) return false
+        logoutUser()
+        return true
+    }
+
     _init()
 
     return {
@@ -173,6 +187,7 @@ export function authModel() {
         loadUser,
         refreshToken,
         logoutUser,
+        logoutWithConfirm,
         forgotPassword,
         resetPassword
     }

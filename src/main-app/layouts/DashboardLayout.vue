@@ -5,7 +5,7 @@
       :user="auth.currentUser.value"
       context="dashboard"
       @open-sidebar="isSidebarOpen = true"
-      @logout="auth.logoutUser()"
+      @logout="auth.logoutWithConfirm()"
     />
 
     <div class="dashboard-body">

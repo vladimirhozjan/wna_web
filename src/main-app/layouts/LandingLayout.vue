@@ -6,7 +6,7 @@
       context="landing"
       @open-login="$emit('open-login')"
       @open-register="$emit('open-register')"
-      @logout="auth.logoutUser()"
+      @logout="auth.logoutWithConfirm()"
     />
 
     <main class="landing-container">

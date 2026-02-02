@@ -71,13 +71,12 @@ import CompletedIcon from "../assets/CompletedIcon.vue";
 import TrashIcon from "../assets/TrashIcon.vue";
 import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
-
 const auth = authModel();
 const router = useRouter();
 
-function logout() {
-  auth.logoutUser();
-  router.push({ name: "landing" });
+async function logout() {
+  const confirmed = await auth.logoutWithConfirm();
+  if (confirmed) router.push({ name: "landing" });
 }
 </script>
 

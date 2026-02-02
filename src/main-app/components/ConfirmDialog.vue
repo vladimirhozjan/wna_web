@@ -33,6 +33,7 @@ const confirm = confirmModel()
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
+  padding-bottom: 48px;
   justify-content: center;
   z-index: 99998;
 }
