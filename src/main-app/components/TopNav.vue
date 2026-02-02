@@ -158,6 +158,7 @@ onBeforeUnmount(() => {
 
 .avatar-container {
   position: relative;
+  margin-right: 2px;
 }
 
 .user-menu {
