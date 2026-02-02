@@ -162,10 +162,6 @@ function onCheck(e) {
   }
 }
 
-.item:active {
-  background: var(--color-action);
-}
-
 .item--checked {
   opacity: 0.6;
 }

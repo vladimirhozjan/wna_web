@@ -67,6 +67,7 @@
               :chosen-class="'item-wrapper-chosen'"
               :ghost-class="'item-wrapper-ghost'"
               :disabled="clarifyMode"
+              :class="{ 'inbox-list--dragging': isDragging }"
               @start="onDragStart"
               @end="onDragEnd"
           >
@@ -441,6 +442,10 @@ h1 {
 
 .item-wrapper-ghost .item>* {
   opacity: 0;
+}
+
+.inbox-list--dragging .item-wrapper .item:hover {
+  background: var(--color-bg-primary);
 }
 
 .action-btn {
