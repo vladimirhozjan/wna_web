@@ -299,13 +299,10 @@ onMounted(async () => {
   try {
     const data = await getStuff(route.params.id)
     item.value = { ...data }
-    // Initialize position and total from response if available
-    if (typeof data.position === 'number') {
-      currentPosition.value = data.position
-    }
-    if (typeof data.total_items === 'number') {
-      totalItems.value = data.total_items
-    }
+
+    currentPosition.value = Number(route.query.position)
+    totalItems.value = Number(route.query.total)
+
   } catch {
     toaster.push('Failed to load item')
   } finally {
@@ -474,7 +471,7 @@ async function navigateToPosition(position) {
       totalItems.value = data.total_items
     }
     // Update URL without adding history entry
-    router.replace({ params: { id: data.id } })
+    router.replace({ params: { id: data.id, totalItems: data.totalItems } })
   } catch {
     toaster.push('Failed to load item')
   } finally {

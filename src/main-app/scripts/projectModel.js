@@ -8,6 +8,7 @@ const error = ref(null)
 const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
+const totalItems = ref(0)
 
 export function projectModel() {
 
@@ -37,6 +38,9 @@ export function projectModel() {
             }
 
             hasMore.value = data.length >= limit.value
+
+            const count_data = await apiClient.projectsCount()
+            totalItems.value = count_data.count
 
             return data
         } catch (err) {
@@ -147,6 +151,7 @@ export function projectModel() {
         cursor,
         limit,
         hasMore,
+        totalItems,
 
         loadProjects,
         getProject,

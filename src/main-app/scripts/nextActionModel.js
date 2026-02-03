@@ -8,6 +8,7 @@ const error = ref(null)
 const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
+const totalItems = ref(0)
 
 export function nextActionModel() {
 
@@ -37,6 +38,9 @@ export function nextActionModel() {
             }
 
             hasMore.value = data.length >= limit.value
+
+            const count_data = await apiClient.nextActionCount()
+            totalItems.value = count_data.count
 
             return data
         } catch (err) {
@@ -154,6 +158,7 @@ export function nextActionModel() {
         cursor,
         limit,
         hasMore,
+        totalItems,
 
         loadActions,
         getAction,

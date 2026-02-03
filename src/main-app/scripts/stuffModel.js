@@ -8,6 +8,7 @@ const error = ref(null)
 const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
+const totalItems = ref(0)
 
 export function stuffModel() {
 
@@ -40,6 +41,9 @@ export function stuffModel() {
             // Hide "Load more" if we got fewer items than requested
             hasMore.value = data.length >= limit.value
 
+            const count_data = await apiClient.inboxCount()
+            totalItems.value = count_data.count
+
             return data
         } catch (err) {
             error.value = err
@@ -55,6 +59,23 @@ export function stuffModel() {
 
         try {
             const data = await apiClient.getStuff(stuffId)
+            current.value = data
+            return data
+        } catch (err) {
+            error.value = err
+            current.value = null
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function getStuffByPosition(position) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.getStuffByPosition(position)
             current.value = data
             return data
         } catch (err) {
@@ -158,10 +179,12 @@ export function stuffModel() {
         cursor,
         limit,
         hasMore,
+        totalItems,
 
         // actions
         loadStuff,
         getStuff,
+        getStuffByPosition,
         addStuff,
         updateStuff,
         deleteStuff,

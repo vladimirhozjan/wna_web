@@ -128,6 +128,7 @@ const {
   updateStuff,
   deleteStuff,
   moveStuff,
+  totalItems,
 } = stuffModel()
 
 const router = useRouter()
@@ -216,7 +217,7 @@ function onItemClick(item, index) {
     return
   }
 
-  router.push({ name: 'stuff-detail', params: { id: item.id } })
+  router.push({ name: 'stuff-detail', params: { id: item.id }, query: { total: totalItems.value, position: item.position } })
 }
 
 async function onItemUpdate(id, { title }) {
