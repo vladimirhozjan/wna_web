@@ -20,13 +20,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 | Bucket | View | Contents |
 |--------|------|----------|
-| Inbox | `InboxPage` | Stuff only - raw unclarified items |
+| Inbox | `InboxPage`, `StuffDetailPage` | Stuff only - raw unclarified items |
 | Next | `NextPage` | Actions ready to do (no date, not delegated, not deferred) |
 | Today/Calendar | `TodayPage`, `CalendarPage` | Actions with due_date |
 | Waiting For | (TBD) | Actions with waiting_for set |
 | Someday | `SomedayPage` | Paused items, not currently actionable |
 | Reference | `ReferencePage` | Non-actionable files/notes |
 | Projects | `ProjectsPage` | Multi-action outcomes |
+| Completed | `CompletedPage` | Completed stuff/actions/projects |
+| Trash | `TrashPage` | Deleted items |
 
 ### Key Business Rules
 
@@ -69,27 +71,32 @@ This is a **multi-app Vue 3 + Vite 7** frontend project supporting two applicati
 - `scripts/apiClient.js` - API wrapper functions with error normalization
 - `scripts/authModel.js` - Authentication state management (reactive refs, not Vuex/Pinia)
 - `layouts/` - `LandingLayout.vue`, `DashboardLayout.vue`
-- `views/` - Route-level components (InboxPage, TodayPage, NextPage, etc.)
+- `views/` - Route-level components (InboxPage, StuffDetailPage, NextPage, ProjectsPage, etc.)
 - `components/` - Reusable UI components
-- `scripts/errorModel.js`, `scripts/confirmModel.js` - Singleton state models for global UI
+- `scripts/errorModel.js`, `scripts/confirmModel.js`, `scripts/clarifyModel.js` - Singleton state models for global UI
+- `scripts/stuffModel.js`, `scripts/nextActionModel.js`, `scripts/projectModel.js` - Domain data models with API integration
 
 ### Key Components
 
 - **Item** - Reusable list item with checkbox, inline title editing, drag support, and actions slot. Click title to edit inline (Enter/blur saves, Escape cancels). Actions visible on hover (always visible on touch devices).
+- **ItemList** - Wrapper for Item lists with loading states, empty states, infinite scroll support, and drag-to-reorder.
+- **ClarifyPanel** - Multi-step wizard for clarifying inbox items into actions/projects/reference/someday. Uses `clarifyModel` singleton. Modes: `inline`, `modal`, `fullscreen`.
 - **ConfirmDialog** - Modal for critical actions (delete confirmation). Uses singleton pattern via `confirmModel`.
-- **ErrorToaster** - Toast notifications at bottom of screen. Uses singleton pattern via `errorModel`.
-- **Btn** - Button with variants: `primary`, `ghost`, `danger`. Sizes: `sm`, `md`, `lg`.
+- **ErrorToaster** - Toast notifications at bottom of screen. Supports error and success toasts via `errorModel`.
+- **Btn** - Button with variants: `primary`, `ghost`, `danger`, `ghost-danger`, `icon`. Sizes: `sm`, `md`, `lg`.
 - **Inpt** - Input field with label and error display.
+- **QuickAddBtn** - Floating quick-add button for mobile, inline input for desktop.
 
 ### Singleton Model Pattern
 
 Global UI state uses singleton models (not Vuex/Pinia):
 
 ```js
-// Error toasts
+// Toasts (error and success)
 import { errorModel } from '../scripts/errorModel.js'
 const toaster = errorModel()
-toaster.push('Something went wrong')
+toaster.push('Something went wrong')     // Error toast (red)
+toaster.success('Item completed')        // Success toast (green)
 
 // Confirmation dialogs
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -100,6 +107,11 @@ const confirmed = await confirm.show({
   confirmText: 'Delete',
   cancelText: 'Cancel'
 })
+
+// Clarify workflow
+import { clarifyModel } from '../scripts/clarifyModel.js'
+const clarify = clarifyModel()
+clarify.start(stuffItem, 'modal')  // Start clarify flow
 ```
 
 ### API Pattern
@@ -115,12 +127,19 @@ Backend repo: `../wna_backend/` (C++20 microservices). Full API reference: `../w
 Backend runs on `http://localhost:8000` (router_service gateway). Key endpoints:
 
 - `/v1/user/*` - Auth: register, login, refresh, forgot, reset, get, delete
-- `/v1/inbox` - Stuff (inbox) items: CRUD, list, move, patch state, transform
-- `/v1/inbox/{id}/transform` - Clarify stuff into action or project
+- `/v1/stuff` - Stuff CRUD: create, get, update, delete, move, patch state, complete
+- `/v1/stuff/{id}/transform` - Clarify stuff into action or project
+- `/v1/stuff/{id}/complete` - Mark stuff as completed
+- `/v1/inbox` - List stuff, `/v1/inbox/pos/{n}` - Get by position
 - `/v1/action` - Action CRUD (singular), `/v1/nextActions` for list (plural)
+- `/v1/action/{id}/complete` - Mark action as completed
 - `/v1/project` - Project CRUD (singular), `/v1/projects` for list (plural)
+- `/v1/project/{id}/complete` - Mark project as completed
 
-**Note on plural/singular:** CRUD endpoints use singular (`/v1/action/{id}`, `/v1/project/{id}`), list endpoints use plural (`/v1/nextActions`, `/v1/projects`).
+**Note on naming:**
+- CRUD uses singular: `/v1/stuff/{id}`, `/v1/action/{id}`, `/v1/project/{id}`
+- Lists use: `/v1/inbox`, `/v1/nextActions`, `/v1/projects`
+- Position queries: `/v1/inbox/pos/{n}`, `/v1/nextActions/pos/{n}`, `/v1/projects/pos/{n}`
 
 JWT tokens stored in localStorage (`auth_token`, `refresh_token`). User data cached in `current_user`.
 
