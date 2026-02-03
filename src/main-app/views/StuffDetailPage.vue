@@ -267,6 +267,7 @@ import ClarifyPanel from '../components/ClarifyPanel.vue'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import { clarifyModel } from '../scripts/clarifyModel.js'
 import apiClient from '../scripts/apiClient.js'
 import NextIcon from '../assets/NextIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
@@ -532,10 +533,33 @@ function closeClarify() {
   showClarify.value = false
 }
 
-function onClarifyDone() {
-  showClarify.value = false
-  // Navigate back to inbox after clarifying
-  router.push({ name: 'inbox' })
+async function onClarifyDone() {
+  // Navigate to next item and continue clarifying
+  const newTotal = totalItems.value - 1
+  if (newTotal <= 0) {
+    // No more items - close clarify and go to inbox
+    showClarify.value = false
+    router.push({ name: 'inbox' })
+    return
+  }
+
+  // Get next item (same position, or previous if we were at the end)
+  const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
+
+  try {
+    const data = await getStuffByPosition(nextPos)
+    item.value = { ...data }
+    currentPosition.value = data.position
+    totalItems.value = data.total_items ?? newTotal
+    router.replace({ params: { id: data.id } })
+
+    // Restart clarify for the new item
+    const clarify = clarifyModel()
+    clarify.start(item.value, isMobile.value ? 'fullscreen' : 'modal')
+  } catch {
+    showClarify.value = false
+    router.push({ name: 'inbox' })
+  }
 }
 
 // Action button handlers
