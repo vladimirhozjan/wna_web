@@ -284,6 +284,15 @@ export async function clarifyToSomeday(stuffId) {
     }
 }
 
+export async function completeStuff(stuffId) {
+    try {
+        const res = await httpApi.patch(`/v1/inbox/${stuffId}`, {state: 'completed'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function clarifyToTrash(stuffId) {
     return deleteStuff(stuffId)
 }
@@ -487,6 +496,7 @@ const apiClient = {
     clarifyToProject,
     clarifyToReference,
     clarifyToSomeday,
+    completeStuff,
     clarifyToTrash,
     addAction,
     updateAction,

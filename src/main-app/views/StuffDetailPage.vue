@@ -95,13 +95,15 @@
 
         <!-- Title area -->
         <div class="detail-title-area">
-          <input
-              type="checkbox"
-              class="detail-checkbox"
-              :checked="item.checked"
-              :disabled="savingField === 'checked'"
-              @change="onCheckChange"
-          />
+          <div class="detail-checkbox-wrapper">
+            <span v-if="actionLoading === 'done'" class="detail-checkbox-spinner"></span>
+            <input
+                v-else
+                type="checkbox"
+                class="detail-checkbox"
+                @change="onCheckChange"
+            />
+          </div>
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
@@ -417,17 +419,13 @@ async function saveField(field) {
 
 async function onCheckChange(e) {
   const checked = e.target.checked
-  const old = item.value.checked
-  item.value.checked = checked
-  savingField.value = 'checked'
-
-  try {
-    await updateStuff(item.value.id, { title: item.value.title })
-  } catch {
-    item.value.checked = old
-  } finally {
-    savingField.value = null
+  if (!checked) {
+    // Can't uncheck - completed items aren't shown here
+    e.target.checked = false
+    return
   }
+  // Use same loading state as Done button
+  await onMarkDone()
 }
 
 function toggleStateDialog() {
@@ -548,10 +546,10 @@ function toggleMoveDialog() {
 async function onMarkDone() {
   actionLoading.value = 'done'
   try {
-    await apiClient.clarifyToTrash(item.value.id)
-    router.push({ name: 'inbox' })
+    await apiClient.completeStuff(item.value.id)
+    await navigateToNextOrPrev()
   } catch (err) {
-    toaster.push(err.message || 'Failed to mark as done')
+    toaster.push(err.message || 'Failed to complete item')
   } finally {
     actionLoading.value = null
   }
@@ -1016,6 +1014,15 @@ async function onDelete() {
   cursor: not-allowed;
 }
 
+.detail-checkbox-wrapper {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .detail-checkbox {
   width: 18px;
   height: 18px;
@@ -1024,8 +1031,13 @@ async function onDelete() {
   flex-shrink: 0;
 }
 
-.detail-checkbox:disabled {
-  cursor: not-allowed;
+.detail-checkbox-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 /* ── Spinners ── */

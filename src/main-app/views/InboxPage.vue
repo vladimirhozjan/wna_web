@@ -111,6 +111,7 @@ import { useRouter } from 'vue-router'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import apiClient from '../scripts/apiClient.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 import ItemList from '../components/ItemList.vue'
@@ -141,12 +142,14 @@ const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
 const movingId = ref(null)
+const completingId = ref(null)
 
 const loadingIds = computed(() => {
   const ids = []
   if (updatingId.value) ids.push(updatingId.value)
   if (deletingId.value) ids.push(deletingId.value)
   if (movingId.value) ids.push(movingId.value)
+  if (completingId.value) ids.push(completingId.value)
   return ids
 })
 
@@ -237,9 +240,22 @@ async function onItemUpdate(id, { title }) {
   }
 }
 
-function onItemCheck(id, checked) {
-  const item = items.value.find(i => i.id === id)
-  if (item) item.checked = checked
+async function onItemCheck(id, checked) {
+  if (!checked) return // Can't uncheck - completed items aren't shown here
+
+  completingId.value = id
+  try {
+    await apiClient.completeStuff(id)
+    // Remove item from list
+    const idx = items.value.findIndex(i => i.id === id)
+    if (idx !== -1) {
+      items.value.splice(idx, 1)
+    }
+  } catch (err) {
+    toaster.push(err.message || 'Failed to complete item')
+  } finally {
+    completingId.value = null
+  }
 }
 
 async function onDelete(id) {
