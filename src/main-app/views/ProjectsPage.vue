@@ -15,10 +15,13 @@
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
-            @delete="onDelete"
+            @delete="onTrash"
             @move="onMove"
             @load-more="loadMore"
         >
+          <template #actions="{ item }">
+            <button class="action-btn action-btn--danger" @click="onTrash(item.id)">✕</button>
+          </template>
           <template #empty>
             <ProjectsIcon class="empty-state__icon" />
             <h2 class="empty-state__title">No projects</h2>
@@ -48,7 +51,7 @@ const {
   hasMore,
   loadProjects,
   updateProject,
-  deleteProject,
+  trashProject,
   moveProject,
 } = projectModel()
 
@@ -105,18 +108,27 @@ function onItemCheck(id, checked) {
   // Projects don't have a check/complete action
 }
 
-async function onDelete(id) {
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title
+  return title.slice(0, maxLen).trim() + '…'
+}
+
+async function onTrash(id) {
+  const item = items.value.find(i => i.id === id)
+  const title = truncateTitle(item?.title)
+
   const confirmed = await confirm.show({
-    title: 'Delete project',
-    message: 'Are you sure you want to delete this project?',
-    confirmText: 'Delete',
+    title: 'Move to Trash',
+    message: 'Are you sure you want to move this project to trash?',
+    confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
 
   if (confirmed) {
     deletingId.value = id
     try {
-      await deleteProject(id)
+      await trashProject(id)
+      toaster.success(`"${title}" moved to trash`)
     } finally {
       deletingId.value = null
     }
@@ -181,5 +193,26 @@ h1 {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
+}
+
+.action-btn {
+  padding: 4px 8px;
+  border: none;
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.action-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.action-btn--danger {
+  color: var(--color-danger);
+}
+
+.action-btn--danger:hover {
+  background: var(--color-danger-light);
 }
 </style>

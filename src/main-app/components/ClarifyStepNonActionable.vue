@@ -30,7 +30,7 @@
       >
         <div class="clarify-option-content">
           <span class="clarify-option-label">Trash</span>
-          <span class="clarify-option-desc">Delete permanently</span>
+          <span class="clarify-option-desc">Move to trash</span>
         </div>
         <span class="clarify-option-key">T</span>
       </button>

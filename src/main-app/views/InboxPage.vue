@@ -60,12 +60,12 @@
               @update="onItemUpdate"
               @check="onItemCheck"
               @click="onItemClick"
-              @delete="onDelete"
+              @delete="onTrash"
               @move="onMove"
               @load-more="loadMore"
           >
             <template #actions="{ item }">
-              <button v-if="!clarifyMode" class="action-btn action-btn--danger" @click="onDelete(item.id)">✕</button>
+              <button v-if="!clarifyMode" class="action-btn action-btn--danger" @click="onTrash(item.id)">✕</button>
             </template>
             <template #empty>
               <InboxIcon class="empty-state__icon" />
@@ -127,7 +127,7 @@ const {
   loadStuff,
   addStuff,
   updateStuff,
-  deleteStuff,
+  trashStuff,
   moveStuff,
   totalItems,
 } = stuffModel()
@@ -267,22 +267,22 @@ async function onItemCheck(id, checked) {
   }
 }
 
-async function onDelete(id) {
+async function onTrash(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
   const confirmed = await confirm.show({
-    title: 'Delete stuff',
-    message: 'Are you sure you want to delete this item?',
-    confirmText: 'Delete',
+    title: 'Move to Trash',
+    message: 'Are you sure you want to move this item to trash?',
+    confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
 
   if (confirmed) {
     deletingId.value = id
     try {
-      await deleteStuff(id)
-      toaster.success(`"${title}" deleted`)
+      await trashStuff(id)
+      toaster.success(`"${title}" moved to trash`)
     } finally {
       deletingId.value = null
     }

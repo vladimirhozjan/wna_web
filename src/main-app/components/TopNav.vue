@@ -116,9 +116,15 @@ function handleLogout() {
 const { addStuff } = stuffModel();
 const toaster = errorModel();
 
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title;
+  return title.slice(0, maxLen).trim() + "…";
+}
+
 async function onQuickAdd(title) {
   try {
     await addStuff(title);
+    toaster.success(`"${truncateTitle(title)}" added to inbox`);
   } catch (e) {
     toaster.push(e.message || "Failed to add item");
   }

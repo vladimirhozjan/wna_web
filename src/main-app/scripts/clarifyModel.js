@@ -233,8 +233,8 @@ export function clarifyModel() {
                     }
                 case NonActionableTarget.TRASH:
                     return {
-                        action: 'Delete',
-                        description: 'This item will be permanently deleted.',
+                        action: 'Move to Trash',
+                        description: 'This item will be moved to trash.',
                     }
             }
         } else if (state.isSingleAction) {

@@ -131,15 +131,15 @@ export function stuffModel() {
         }
     }
 
-    async function deleteStuff(stuffId) {
+    async function trashStuff(stuffId) {
         loading.value = true
         error.value = null
 
         try {
-            await apiClient.deleteStuff(stuffId)
+            await apiClient.trashStuff(stuffId)
             items.value = items.value.filter(i => i.id !== stuffId)
 
-            // If the deleted item was the cursor (last loaded item),
+            // If the trashed item was the cursor (last loaded item),
             // update cursor to the new last item so "Load more" works
             if (cursor.value === stuffId) {
                 const last = items.value[items.value.length - 1]
@@ -187,7 +187,7 @@ export function stuffModel() {
         getStuffByPosition,
         addStuff,
         updateStuff,
-        deleteStuff,
+        trashStuff,
         moveStuff,
     }
 }

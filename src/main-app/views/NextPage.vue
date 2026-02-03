@@ -14,10 +14,13 @@
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
-            @delete="onDelete"
+            @delete="onTrash"
             @move="onMove"
             @load-more="loadMore"
         >
+          <template #actions="{ item }">
+            <button class="action-btn action-btn--danger" @click="onTrash(item.id)">✕</button>
+          </template>
           <template #empty>
             <ActionIcon class="empty-state__icon" />
             <h2 class="empty-state__title">No next actions</h2>
@@ -47,7 +50,7 @@ const {
   hasMore,
   loadActions,
   updateAction,
-  deleteAction,
+  trashAction,
   moveAction,
   completeAction,
 } = nextActionModel()
@@ -101,26 +104,41 @@ async function onItemUpdate(id, { title }) {
   }
 }
 
-function onItemCheck(id, checked) {
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title
+  return title.slice(0, maxLen).trim() + '…'
+}
+
+async function onItemCheck(id, checked) {
+  if (!checked) return
+
   const item = items.value.find(i => i.id === id)
-  if (item) item.checked = checked
-  if (checked) {
-    completeAction(id)
+  const title = truncateTitle(item?.title)
+
+  try {
+    await completeAction(id)
+    toaster.success(`"${title}" completed`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to complete action')
   }
 }
 
-async function onDelete(id) {
+async function onTrash(id) {
+  const item = items.value.find(i => i.id === id)
+  const title = truncateTitle(item?.title)
+
   const confirmed = await confirm.show({
-    title: 'Delete action',
-    message: 'Are you sure you want to delete this action?',
-    confirmText: 'Delete',
+    title: 'Move to Trash',
+    message: 'Are you sure you want to move this action to trash?',
+    confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
 
   if (confirmed) {
     deletingId.value = id
     try {
-      await deleteAction(id)
+      await trashAction(id)
+      toaster.success(`"${title}" moved to trash`)
     } finally {
       deletingId.value = null
     }
@@ -185,5 +203,26 @@ h1 {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
+}
+
+.action-btn {
+  padding: 4px 8px;
+  border: none;
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.action-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.action-btn--danger {
+  color: var(--color-danger);
+}
+
+.action-btn--danger:hover {
+  background: var(--color-danger-light);
 }
 </style>

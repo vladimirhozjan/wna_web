@@ -132,6 +132,30 @@ export function nextActionModel() {
         }
     }
 
+    async function trashAction(actionId) {
+        loading.value = true
+        error.value = null
+
+        try {
+            await apiClient.trashAction(actionId)
+            items.value = items.value.filter(i => i.id !== actionId)
+
+            if (cursor.value === actionId) {
+                const last = items.value[items.value.length - 1]
+                cursor.value = last ? last.id : null
+            }
+
+            if (current.value?.id === actionId) {
+                current.value = null
+            }
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
     async function moveAction(actionId, toIndex) {
         error.value = null
 
@@ -144,10 +168,27 @@ export function nextActionModel() {
     }
 
     async function completeAction(actionId) {
-        return updateAction(actionId, {
-            title: items.value.find(i => i.id === actionId)?.title,
-            state: 'COMPLETED',
-        })
+        loading.value = true
+        error.value = null
+
+        try {
+            await apiClient.completeAction(actionId)
+            items.value = items.value.filter(i => i.id !== actionId)
+
+            if (cursor.value === actionId) {
+                const last = items.value[items.value.length - 1]
+                cursor.value = last ? last.id : null
+            }
+
+            if (current.value?.id === actionId) {
+                current.value = null
+            }
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
     }
 
     return {
@@ -165,6 +206,7 @@ export function nextActionModel() {
         addAction,
         updateAction,
         deleteAction,
+        trashAction,
         moveAction,
         completeAction,
     }

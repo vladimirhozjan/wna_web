@@ -169,10 +169,10 @@
           <Btn
               variant="ghost-danger"
               size="sm"
-              :loading="actionLoading === 'delete'"
-              @click="onDelete"
+              :loading="actionLoading === 'trash'"
+              @click="onTrash"
           >
-            Delete
+            Trash
           </Btn>
         </div>
 
@@ -284,7 +284,7 @@ const {
   getStuff,
   getStuffByPosition,
   updateStuff,
-  deleteStuff,
+  trashStuff,
 } = stuffModel()
 
 const item = ref(null)
@@ -649,23 +649,23 @@ async function onMoveTo(destination) {
   }
 }
 
-async function onDelete() {
+async function onTrash() {
   const confirmed = await confirm.show({
-    title: 'Delete Item',
-    message: `Are you sure you want to delete "${item.value.title}"?`,
-    confirmText: 'Delete',
+    title: 'Move to Trash',
+    message: `Are you sure you want to move "${item.value.title}" to trash?`,
+    confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
 
   if (!confirmed) return
 
-  actionLoading.value = 'delete'
+  actionLoading.value = 'trash'
   try {
-    await deleteStuff(item.value.id)
-    toaster.success(`"${truncateTitle(item.value.title)}" deleted`)
+    await trashStuff(item.value.id)
+    toaster.success(`"${truncateTitle(item.value.title)}" moved to trash`)
     await navigateToNextOrPrev()
   } catch (err) {
-    toaster.push(err.message || 'Failed to delete item')
+    toaster.push(err.message || 'Failed to move item to trash')
   } finally {
     actionLoading.value = null
   }

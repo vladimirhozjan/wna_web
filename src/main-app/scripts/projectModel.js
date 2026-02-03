@@ -132,6 +132,30 @@ export function projectModel() {
         }
     }
 
+    async function trashProject(projectId) {
+        loading.value = true
+        error.value = null
+
+        try {
+            await apiClient.trashProject(projectId)
+            items.value = items.value.filter(i => i.id !== projectId)
+
+            if (cursor.value === projectId) {
+                const last = items.value[items.value.length - 1]
+                cursor.value = last ? last.id : null
+            }
+
+            if (current.value?.id === projectId) {
+                current.value = null
+            }
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
     async function moveProject(projectId, toIndex) {
         error.value = null
 
@@ -158,6 +182,7 @@ export function projectModel() {
         addProject,
         updateProject,
         deleteProject,
+        trashProject,
         moveProject,
     }
 }

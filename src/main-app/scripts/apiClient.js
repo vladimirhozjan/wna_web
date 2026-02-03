@@ -194,6 +194,15 @@ export async function deleteStuff(stuffId) {
     }
 }
 
+export async function trashStuff(stuffId) {
+    try {
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/trash`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function moveStuff(stuffId, destination) {
     try {
         const res = await httpApi.post(`/v1/stuff/${stuffId}/move`, {destination}, {headers: authHeaders()})
@@ -294,7 +303,7 @@ export async function completeStuff(stuffId) {
 }
 
 export async function clarifyToTrash(stuffId) {
-    return deleteStuff(stuffId)
+    return trashStuff(stuffId)
 }
 
 // ── Action API ──
@@ -373,6 +382,15 @@ export async function listActions({limit = 10, cursor = null} = {}) {
 export async function deleteAction(actionId) {
     try {
         const res = await httpApi.delete(`/v1/action/${actionId}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function trashAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/trash`, {}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -474,6 +492,15 @@ export async function deleteProject(projectId) {
     }
 }
 
+export async function trashProject(projectId) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/trash`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function moveProject(projectId, destination) {
     try {
         const res = await httpApi.post(`/v1/project/${projectId}/move`, {destination}, {headers: authHeaders()})
@@ -524,6 +551,7 @@ const apiClient = {
     getStuff,
     getStuffByPosition,
     deleteStuff,
+    trashStuff,
     moveStuff,
     listStuff,
     inboxCount,
@@ -539,6 +567,7 @@ const apiClient = {
     getAction,
     listActions,
     deleteAction,
+    trashAction,
     moveAction,
     nextActionCount,
     getActionByPosition,
@@ -548,6 +577,7 @@ const apiClient = {
     getProject,
     listProjects,
     deleteProject,
+    trashProject,
     moveProject,
     projectsCount,
     getProjectByPosition,

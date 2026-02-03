@@ -209,7 +209,7 @@ async function onConfirm() {
           toaster.success(`"${title}" moved to Someday`)
           break
         case NonActionableTarget.TRASH:
-          toaster.success(`"${title}" deleted`)
+          toaster.success(`"${title}" moved to trash`)
           break
       }
     } else if (state.isSingleAction) {
