@@ -151,7 +151,7 @@ export async function deleteUser() {
 
 export async function addStuff({title, description = ""}) {
     try {
-        const res = await httpApi.post('/v1/inbox', {title, description}, {headers: authHeaders()})
+        const res = await httpApi.post('/v1/stuff', {title, description}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -160,7 +160,7 @@ export async function addStuff({title, description = ""}) {
 
 export async function updateStuff(stuffId, {title, description = ""}) {
     try {
-        const res = await httpApi.put(`/v1/inbox/${stuffId}`, {title, description}, {headers: authHeaders()})
+        const res = await httpApi.put(`/v1/stuff/${stuffId}`, {title, description}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -169,7 +169,7 @@ export async function updateStuff(stuffId, {title, description = ""}) {
 
 export async function getStuff(stuffId) {
     try {
-        const res = await httpApi.get(`/v1/inbox/${stuffId}`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/stuff/${stuffId}`, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -187,7 +187,7 @@ export async function getStuffByPosition(position) {
 
 export async function deleteStuff(stuffId) {
     try {
-        const res = await httpApi.delete(`/v1/inbox/${stuffId}`, {headers: authHeaders()})
+        const res = await httpApi.delete(`/v1/stuff/${stuffId}`, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -196,7 +196,7 @@ export async function deleteStuff(stuffId) {
 
 export async function moveStuff(stuffId, destination) {
     try {
-        const res = await httpApi.post(`/v1/inbox/${stuffId}/move`, {destination}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/move`, {destination}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -218,7 +218,7 @@ export async function listStuff({limit = 10, cursor = null} = {}) {
 
 export async function inboxCount() {
     try {
-        const res = await httpApi.get(`/v1/inbox/count`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/stuff/count`, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -243,7 +243,7 @@ export async function clarifyToAction(stuffId, actionData) {
         if (actionData.dueDate) body.due_date = actionData.dueDate
         if (actionData.deferUntil) body.start_date = actionData.deferUntil
 
-        const res = await httpApi.post(`/v1/inbox/${stuffId}/transform`, body, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -259,7 +259,7 @@ export async function clarifyToProject(stuffId, projectData) {
         if (projectData.description) body.description = projectData.description
         if (projectData.outcome) body.outcome = projectData.outcome
 
-        const res = await httpApi.post(`/v1/inbox/${stuffId}/transform`, body, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -268,7 +268,7 @@ export async function clarifyToProject(stuffId, projectData) {
 
 export async function clarifyToReference(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/inbox/${stuffId}`, {state: 'reference'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'reference'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -277,7 +277,7 @@ export async function clarifyToReference(stuffId) {
 
 export async function clarifyToSomeday(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/inbox/${stuffId}`, {state: 'someday'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'someday'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -286,7 +286,7 @@ export async function clarifyToSomeday(stuffId) {
 
 export async function completeStuff(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/inbox/${stuffId}`, {state: 'completed'}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/complete`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -390,7 +390,25 @@ export async function moveAction(actionId, destination) {
 
 export async function nextActionCount() {
     try {
-        const res = await httpApi.get(`/v1/nextActions/count`, {headers: authHeaders()})
+        const res = await httpApi.get('/v1/nextActions/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getActionByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/nextActions/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function completeAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/complete`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -467,7 +485,25 @@ export async function moveProject(projectId, destination) {
 
 export async function projectsCount() {
     try {
-        const res = await httpApi.get(`/v1/projects/count`, {headers: authHeaders()})
+        const res = await httpApi.get('/v1/projects/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getProjectByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/projects/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function completeProject(projectId) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/complete`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -505,6 +541,8 @@ const apiClient = {
     deleteAction,
     moveAction,
     nextActionCount,
+    getActionByPosition,
+    completeAction,
     addProject,
     updateProject,
     getProject,
@@ -512,6 +550,8 @@ const apiClient = {
     deleteProject,
     moveProject,
     projectsCount,
+    getProjectByPosition,
+    completeProject,
 }
 
 export default apiClient
