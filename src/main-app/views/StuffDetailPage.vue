@@ -76,11 +76,11 @@
         </div>
         <div v-if="item" class="detail-header-right">
           <div class="detail-nav-buttons">
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="First">⏮</Btn>
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Previous">◀</Btn>
-            <span class="detail-position">{{ item.position ?? 0 }}</span>
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Next">▶</Btn>
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Last">⏭</Btn>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
+            <span class="detail-position">Item {{ currentPosition + 1 }} of {{ totalItems }}</span>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
+            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
           </div>
         </div>
       </div>
@@ -251,6 +251,7 @@ const toaster = errorModel()
 const {
   error,
   getStuff,
+  getStuffByPosition,
   updateStuff,
 } = stuffModel()
 
@@ -268,6 +269,11 @@ const showStateDialog = ref(false)
 const showClarify = ref(false)
 const isMobile = ref(false)
 const actionLoading = ref(null)
+
+// Navigation state
+const currentPosition = ref(0)
+const totalItems = ref(1)
+const navigating = ref(false)
 
 const typeOptions = [
   { value: 'STUFF', label: 'Stuff' },
@@ -293,6 +299,13 @@ onMounted(async () => {
   try {
     const data = await getStuff(route.params.id)
     item.value = { ...data }
+    // Initialize position and total from response if available
+    if (typeof data.position === 'number') {
+      currentPosition.value = data.position
+    }
+    if (typeof data.total_items === 'number') {
+      totalItems.value = data.total_items
+    }
   } catch {
     toaster.push('Failed to load item')
   } finally {
@@ -447,6 +460,44 @@ function formatDate(dateStr) {
   return new Date(dateStr).toLocaleString()
 }
 
+// Navigation functions
+async function navigateToPosition(position) {
+  if (navigating.value) return
+  if (position < 0 || position >= totalItems.value) return
+
+  navigating.value = true
+  try {
+    const data = await getStuffByPosition(position)
+    item.value = { ...data }
+    currentPosition.value = data.position
+    if (typeof data.total_items === 'number') {
+      totalItems.value = data.total_items
+    }
+    // Update URL without adding history entry
+    router.replace({ params: { id: data.id } })
+  } catch {
+    toaster.push('Failed to load item')
+  } finally {
+    navigating.value = false
+  }
+}
+
+function goFirst() {
+  navigateToPosition(0)
+}
+
+function goPrev() {
+  navigateToPosition(currentPosition.value - 1)
+}
+
+function goNext() {
+  navigateToPosition(currentPosition.value + 1)
+}
+
+function goLast() {
+  navigateToPosition(totalItems.value - 1)
+}
+
 // Clarify functions
 function openClarify() {
   showClarify.value = true
@@ -549,6 +600,7 @@ async function onMove() {
   padding: 4px 8px !important;
   min-width: unset !important;
   font-size: 12px !important;
+  user-select: none;
 }
 
 .detail-loading {
