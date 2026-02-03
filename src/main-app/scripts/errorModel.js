@@ -6,12 +6,12 @@ export function errorModel() {
     if (instance) return instance;
 
     const state = reactive({
-        errors: []   // { id, message }
+        errors: []   // { id, message, type }
     });
 
     let nextId = 1;
 
-    function push(message) {
+    function push(message, type = 'error') {
         // Remove duplicates
         const existing = state.errors.find(e => e.message === message);
         if (existing) return;
@@ -23,9 +23,14 @@ export function errorModel() {
             state.errors.splice(0, 1);
         }
 
-        state.errors.push({ id, message });
+        state.errors.push({ id, message, type });
 
-        setTimeout(() => remove(id), 5000);
+        const timeout = type === 'success' ? 3000 : 5000;
+        setTimeout(() => remove(id), timeout);
+    }
+
+    function success(message) {
+        push(message, 'success');
     }
 
     function remove(id) {
@@ -35,6 +40,6 @@ export function errorModel() {
         }
     }
 
-    instance = { state, push, remove };
+    instance = { state, push, success, remove };
     return instance;
 }

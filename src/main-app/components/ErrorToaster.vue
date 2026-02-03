@@ -2,9 +2,10 @@
   <div class="toast-wrapper">
     <TransitionGroup tag="div" name="toast" class="toast-inner">
       <div
-          v-for="(e, i) in error.state.errors"
+          v-for="e in error.state.errors"
           :key="e.id"
           class="toast"
+          :class="`toast--${e.type || 'error'}`"
           @click="error.remove(e.id)"
       >
         {{ e.message }}
@@ -35,9 +36,7 @@ const error = errorModel()
 
 .toast {
   display: inline-block;
-  background: var(--color-toast-error-bg);
-  color: var(--color-toast-error-text);
-  padding: 8px 8px;
+  padding: 8px 12px;
   border-radius: 6px;
   text-align: center;
   font-family: var(--font-family-default), serif;
@@ -45,9 +44,19 @@ const error = errorModel()
   line-height: var(--lh-body-s);
   font-weight: 400;
   margin-bottom: 10px;
+  cursor: pointer;
 }
 
-/* Animacije */
+.toast--error {
+  background: var(--color-toast-error-bg);
+  color: var(--color-toast-error-text);
+}
+
+.toast--success {
+  background: var(--color-toast-success-bg);
+  color: var(--color-toast-success-text);
+}
+
 :global(.toast-enter-from) {
   opacity: 0;
   transform: translateY(10px);

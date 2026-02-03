@@ -240,8 +240,16 @@ async function onItemUpdate(id, { title }) {
   }
 }
 
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title
+  return title.slice(0, maxLen).trim() + '…'
+}
+
 async function onItemCheck(id, checked) {
   if (!checked) return // Can't uncheck - completed items aren't shown here
+
+  const item = items.value.find(i => i.id === id)
+  const title = truncateTitle(item?.title)
 
   completingId.value = id
   try {
@@ -251,6 +259,7 @@ async function onItemCheck(id, checked) {
     if (idx !== -1) {
       items.value.splice(idx, 1)
     }
+    toaster.success(`"${title}" completed`)
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item')
   } finally {
@@ -259,6 +268,9 @@ async function onItemCheck(id, checked) {
 }
 
 async function onDelete(id) {
+  const item = items.value.find(i => i.id === id)
+  const title = truncateTitle(item?.title)
+
   const confirmed = await confirm.show({
     title: 'Delete stuff',
     message: 'Are you sure you want to delete this item?',
@@ -270,6 +282,7 @@ async function onDelete(id) {
     deletingId.value = id
     try {
       await deleteStuff(id)
+      toaster.success(`"${title}" deleted`)
     } finally {
       deletingId.value = null
     }

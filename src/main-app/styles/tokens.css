@@ -25,6 +25,10 @@
     --color-link-hover: #0951ae;
     --color-toast-error-bg: #fecaca;
     --color-toast-error-text: #7f1c1d;
+    --color-toast-success-bg: #d1fae5;
+    --color-toast-success-text: #065f46;
+    --color-success: #16a34a;
+    --color-success-light: #dcfce7;
 
     --color-btn-loader-top: #fff;
     --color-btn-loader-fade-1: rgba(255,255,255,0.3);
@@ -79,6 +83,7 @@
     --font-size-h2: clamp(24px, 4vw, 30px);
     --font-size-h3: clamp(20px, 3.5vw, 24px);
     --font-size-h4: clamp(18px, 2.8vw, 20px);
+    --font-size-body-l: clamp(17px, 2.2vw, 18px);
     --font-size-body-m: clamp(15px, 2vw, 16px);
     --font-size-body-s: clamp(13px, 1.8vw, 14px);
     --font-size-footnote: 11px;

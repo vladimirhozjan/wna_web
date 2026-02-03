@@ -67,7 +67,7 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, watch } from 'vue'
-import { clarifyModel, ClarifyState } from '../scripts/clarifyModel.js'
+import { clarifyModel, ClarifyState, NonActionableTarget } from '../scripts/clarifyModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import ClarifyStepActionable from './ClarifyStepActionable.vue'
 import ClarifyStepNonActionable from './ClarifyStepNonActionable.vue'
@@ -189,9 +189,35 @@ function onProjectSubmit(data) {
   clarify.proceedToConfirm()
 }
 
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title
+  return title.slice(0, maxLen).trim() + '…'
+}
+
 async function onConfirm() {
   const success = await clarify.confirm()
   if (success) {
+    const title = truncateTitle(props.stuffItem.title)
+
+    // Show success toast based on what was done
+    if (!state.isActionable) {
+      switch (state.nonActionableTarget) {
+        case NonActionableTarget.REFERENCE:
+          toaster.success(`"${title}" moved to Reference`)
+          break
+        case NonActionableTarget.SOMEDAY:
+          toaster.success(`"${title}" moved to Someday`)
+          break
+        case NonActionableTarget.TRASH:
+          toaster.success(`"${title}" deleted`)
+          break
+      }
+    } else if (state.isSingleAction) {
+      toaster.success(`"${title}" converted to action`)
+    } else {
+      toaster.success(`"${title}" converted to project`)
+    }
+
     emit('done', props.stuffItem)
   }
 }
@@ -330,8 +356,8 @@ function onCancel() {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--color-success-light, #dcfce7);
-  color: var(--color-success, #16a34a);
+  background: var(--color-success-light);
+  color: var(--color-success);
   display: flex;
   align-items: center;
   justify-content: center;

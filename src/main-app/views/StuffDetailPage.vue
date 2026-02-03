@@ -543,10 +543,17 @@ function toggleMoveDialog() {
   showMoveDialog.value = !showMoveDialog.value
 }
 
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title
+  return title.slice(0, maxLen).trim() + '…'
+}
+
 async function onMarkDone() {
   actionLoading.value = 'done'
+  const title = truncateTitle(item.value.title)
   try {
     await apiClient.completeStuff(item.value.id)
+    toaster.success(`"${title}" completed`)
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item')
@@ -581,6 +588,13 @@ async function onMoveTo(destination) {
   showMoveDialog.value = false
   actionLoading.value = 'move'
 
+  const destinationLabels = {
+    action: 'Next Actions',
+    project: 'Projects',
+    someday: 'Someday',
+    reference: 'Reference'
+  }
+
   try {
     switch (destination) {
       case 'action':
@@ -602,6 +616,7 @@ async function onMoveTo(destination) {
         await apiClient.clarifyToReference(item.value.id)
         break
     }
+    toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to move item')
@@ -623,6 +638,7 @@ async function onDelete() {
   actionLoading.value = 'delete'
   try {
     await deleteStuff(item.value.id)
+    toaster.success(`"${truncateTitle(item.value.title)}" deleted`)
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to delete item')
