@@ -76,11 +76,11 @@
         </div>
         <div v-if="item" class="detail-header-right">
           <div class="detail-nav-buttons">
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
             <span class="detail-position">Item {{ currentPosition + 1 }} of {{ totalItems }}</span>
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
-            <Btn variant="ghost" size="sm" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
           </div>
         </div>
       </div>
@@ -597,10 +597,7 @@ async function onMove() {
 }
 
 .detail-nav-btn {
-  padding: 4px 8px !important;
-  min-width: unset !important;
-  font-size: 12px !important;
-  user-select: none;
+  font-size: 12px;
 }
 
 .detail-loading {
