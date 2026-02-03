@@ -143,13 +143,34 @@
           >
             Done
           </Btn>
+          <div class="detail-action-wrapper">
+            <Btn
+                variant="ghost"
+                size="sm"
+                :loading="actionLoading === 'move'"
+                @click="toggleMoveDialog"
+            >
+              Move
+            </Btn>
+            <template v-if="showMoveDialog && actionLoading !== 'move'">
+              <div class="detail-dropdown-backdrop" @click="showMoveDialog = false"></div>
+              <div class="detail-dropdown detail-dropdown--actions">
+                <div class="detail-dropdown-options">
+                  <button class="detail-dropdown-option" @click="onMoveTo('action')"><NextIcon class="detail-dropdown-icon" /> Next Actions</button>
+                  <button class="detail-dropdown-option" @click="onMoveTo('project')"><ProjectsIcon class="detail-dropdown-icon" /> Projects</button>
+                  <button class="detail-dropdown-option" @click="onMoveTo('someday')"><SomedayIcon class="detail-dropdown-icon" /> Someday</button>
+                  <button class="detail-dropdown-option" @click="onMoveTo('reference')"><ReferenceIcon class="detail-dropdown-icon" /> Reference</button>
+                </div>
+              </div>
+            </template>
+          </div>
           <Btn
-              variant="ghost"
+              variant="ghost-danger"
               size="sm"
-              :loading="actionLoading === 'move'"
-              @click="onMove"
+              :loading="actionLoading === 'delete'"
+              @click="onDelete"
           >
-            Move
+            Delete
           </Btn>
         </div>
 
@@ -243,16 +264,24 @@ import Btn from '../components/Btn.vue'
 import ClarifyPanel from '../components/ClarifyPanel.vue'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
+import { confirmModel } from '../scripts/confirmModel.js'
+import apiClient from '../scripts/apiClient.js'
+import NextIcon from '../assets/NextIcon.vue'
+import ProjectsIcon from '../assets/ProjectsIcon.vue'
+import SomedayIcon from '../assets/SomedayIcon.vue'
+import ReferenceIcon from '../assets/ReferenceIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
+const confirm = confirmModel()
 
 const {
   error,
   getStuff,
   getStuffByPosition,
   updateStuff,
+  deleteStuff,
 } = stuffModel()
 
 const item = ref(null)
@@ -269,6 +298,7 @@ const showStateDialog = ref(false)
 const showClarify = ref(false)
 const isMobile = ref(false)
 const actionLoading = ref(null)
+const showMoveDialog = ref(false)
 
 // Navigation state
 const currentPosition = ref(0)
@@ -510,26 +540,94 @@ function onClarifyDone() {
   router.push({ name: 'inbox' })
 }
 
-// Action button handlers (API stubs)
+// Action button handlers
+function toggleMoveDialog() {
+  showMoveDialog.value = !showMoveDialog.value
+}
+
 async function onMarkDone() {
   actionLoading.value = 'done'
   try {
-    // API STUB: markStuffDone
-    console.log('API STUB: markStuffDone', item.value.id)
-    await new Promise(r => setTimeout(r, 500))
-    toaster.push('Mark as done not yet implemented')
+    await apiClient.clarifyToTrash(item.value.id)
+    router.push({ name: 'inbox' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to mark as done')
   } finally {
     actionLoading.value = null
   }
 }
 
-async function onMove() {
-  actionLoading.value = 'move'
+async function navigateToNextOrPrev() {
+  const newTotal = totalItems.value - 1
+  if (newTotal <= 0) {
+    router.push({ name: 'inbox' })
+    return
+  }
+
+  // Try same position (next item slides into this position)
+  // If we were at the last item, go to previous
+  const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
+
   try {
-    // API STUB: moveStuff
-    console.log('API STUB: moveStuff', item.value.id)
-    await new Promise(r => setTimeout(r, 500))
-    toaster.push('Move not yet implemented')
+    const data = await getStuffByPosition(nextPos)
+    item.value = { ...data }
+    currentPosition.value = data.position
+    totalItems.value = data.total_items ?? newTotal
+    router.replace({ params: { id: data.id } })
+  } catch {
+    router.push({ name: 'inbox' })
+  }
+}
+
+async function onMoveTo(destination) {
+  showMoveDialog.value = false
+  actionLoading.value = 'move'
+
+  try {
+    switch (destination) {
+      case 'action':
+        await apiClient.clarifyToAction(item.value.id, {
+          title: item.value.title,
+          description: item.value.description || ''
+        })
+        break
+      case 'project':
+        await apiClient.clarifyToProject(item.value.id, {
+          title: item.value.title,
+          description: item.value.description || ''
+        })
+        break
+      case 'someday':
+        await apiClient.clarifyToSomeday(item.value.id)
+        break
+      case 'reference':
+        await apiClient.clarifyToReference(item.value.id)
+        break
+    }
+    await navigateToNextOrPrev()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move item')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onDelete() {
+  const confirmed = await confirm.show({
+    title: 'Delete Item',
+    message: `Are you sure you want to delete "${item.value.title}"?`,
+    confirmText: 'Delete',
+    cancelText: 'Cancel'
+  })
+
+  if (!confirmed) return
+
+  actionLoading.value = 'delete'
+  try {
+    await deleteStuff(item.value.id)
+    await navigateToNextOrPrev()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to delete item')
   } finally {
     actionLoading.value = null
   }
@@ -691,13 +789,14 @@ async function onMove() {
 }
 
 .detail-dropdown-options {
-  padding: 4px 0;
+  padding: 4px;
 }
 
 .detail-dropdown-option {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 8px 12px;
+  padding: 4px ;
   background: none;
   border: none;
   text-align: left;
@@ -709,6 +808,18 @@ async function onMove() {
 
 .detail-dropdown-option:hover {
   background: var(--color-bg-secondary);
+}
+
+.detail-dropdown-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.detail-dropdown-option:hover .detail-dropdown-icon {
+  color: var(--color-action);
 }
 
 .detail-dropdown-option--selected {
@@ -787,6 +898,15 @@ async function onMove() {
   display: flex;
   gap: 8px;
   padding: 16px 24px;
+}
+
+.detail-action-wrapper {
+  position: relative;
+}
+
+.detail-dropdown--actions {
+  left: 0;
+  min-width: 160px;
 }
 
 /* ── Description area ── */

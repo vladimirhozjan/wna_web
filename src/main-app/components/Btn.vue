@@ -20,7 +20,7 @@ import {computed} from 'vue'
 const props = defineProps({
   variant: {
     type: String,
-    default: 'primary', // primary, ghost, danger, icon
+    default: 'primary', // primary, ghost, danger, ghost-danger, icon
   },
   size: {
     type: String,
@@ -144,6 +144,24 @@ const classes = computed(() => ([
 .base-btn--danger:disabled {
   background: var(--color-btn-danger-dis-bg);
   color: var(--color-btn-danger-dis-txt);
+}
+
+.base-btn--ghost-danger {
+  background: var(--color-btn-ghost-danger-bg);
+  color: var(--color-btn-ghost-danger-text);
+  border: 1px solid var(--color-btn-ghost-danger-border);
+  font-weight: 600;
+}
+.base-btn--ghost-danger:hover:not(:disabled) {
+  background: var(--color-btn-ghost-danger-hover);
+}
+.base-btn--ghost-danger:active {
+  background: var(--color-btn-ghost-danger-active);
+}
+.base-btn--ghost-danger:disabled {
+  background: var(--color-btn-ghost-danger-dis-bg);
+  color: var(--color-btn-ghost-danger-dis-txt);
+  border: 1px solid var(--color-btn-ghost-danger-dis-brd);
 }
 
 .base-btn--icon {

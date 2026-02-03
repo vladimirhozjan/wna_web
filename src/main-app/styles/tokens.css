@@ -53,6 +53,15 @@
     --color-btn-danger-dis-bg: #e1b7b7;
     --color-btn-danger-dis-txt: #f2f2f2;
 
+    --color-btn-ghost-danger-bg: #fef2f2;
+    --color-btn-ghost-danger-text: #dc2626;
+    --color-btn-ghost-danger-border: #fecaca;
+    --color-btn-ghost-danger-hover: #fee2e2;
+    --color-btn-ghost-danger-active: #fecaca;
+    --color-btn-ghost-danger-dis-bg: #fef2f2;
+    --color-btn-ghost-danger-dis-txt: #f87171;
+    --color-btn-ghost-danger-dis-brd: #fecaca;
+
     --color-menu-item-default-text: var(--color-text-primary);
     --color-menu-item-hover-bg: white;
     --color-menu-item-hover-txt: #236ac7;
