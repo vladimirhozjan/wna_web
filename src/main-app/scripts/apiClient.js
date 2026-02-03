@@ -381,7 +381,7 @@ export async function moveAction(actionId, destination) {
 
 export async function nextActionCount() {
     try {
-        const res = await httpApi.get(`/v1/count`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/nextActions/count`, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -458,7 +458,7 @@ export async function moveProject(projectId, destination) {
 
 export async function projectsCount() {
     try {
-        const res = await httpApi.hry(`/v1/projects/count`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/projects/count`, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
