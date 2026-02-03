@@ -39,7 +39,7 @@ const confirm = confirmModel()
 }
 
 .dialog {
-  background: var(--color-bg-primary, #fff);
+  background: var(--color-bg-primary);
   border-radius: 8px;
   padding: 24px;
   min-width: 300px;
@@ -50,16 +50,16 @@ const confirm = confirmModel()
 .title {
   margin: 0 0 12px;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l, 18px);
+  font-size: var(--font-size-body-l);
   font-weight: 600;
-  color: var(--color-text-primary, #1a1a1a);
+  color: var(--color-text-primary);
 }
 
 .message {
   margin: 0 0 20px;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m, 14px);
-  color: var(--color-text-secondary, #666);
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 

@@ -687,7 +687,7 @@ async function onDelete() {
 
 .detail-back-link:hover {
   background: var(--color-bg-secondary);
-  color: var(--color-button-hover);
+  color: var(--color-link-hover);
 }
 
 .detail-position {
@@ -734,7 +734,7 @@ async function onDelete() {
 }
 
 .detail-meta-link:hover {
-  color: var(--color-button-hover);
+  color: var(--color-link-hover);
   text-decoration: underline;
 }
 

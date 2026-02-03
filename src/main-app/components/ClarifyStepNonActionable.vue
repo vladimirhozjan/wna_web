@@ -124,7 +124,7 @@ onUnmounted(() => {
 
 .clarify-option--danger:hover {
   border-color: var(--color-danger);
-  background: var(--color-danger-light, #fef2f2);
+  background: var(--color-danger-light);
 }
 
 .clarify-option--danger:focus {

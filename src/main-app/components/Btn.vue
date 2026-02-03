@@ -68,8 +68,8 @@ const classes = computed(() => ([
   transform: translate(-50%, -50%);
   width: 14px;
   height: 14px;
-  border: 2px solid var(--color-btn-loader-fade-1, #ddd);
-  border-top-color: var(--color-btn-loader-top, currentColor);
+  border: 2px solid var(--color-btn-loader-fade-1);
+  border-top-color: var(--color-btn-loader-top);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
