@@ -126,6 +126,7 @@ async function onEmptyTrash() {
 }
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
 .trash-page {
   display: flex;

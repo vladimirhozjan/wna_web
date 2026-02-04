@@ -113,6 +113,7 @@ function onDragEnd(evt) {
 }
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
 .item-wrapper .item {
   -webkit-touch-callout: none;

@@ -61,6 +61,7 @@ export function trashModel() {
                     await apiClient.restoreProject(item.id)
                     break
                 default:
+                    // noinspection ExceptionCaughtLocallyJS
                     throw new Error(`Unknown item type: ${item.type}`)
             }
 
@@ -121,6 +122,7 @@ export function trashModel() {
                     await apiClient.deleteProject(item.id)
                     break
                 default:
+                    // noinspection ExceptionCaughtLocallyJS
                     throw new Error(`Unknown item type: ${item.type}`)
             }
 

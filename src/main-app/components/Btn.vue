@@ -48,6 +48,7 @@ const classes = computed(() => ([
 
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style scoped>
 .base-btn {
   position: relative;
