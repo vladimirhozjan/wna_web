@@ -751,7 +751,7 @@ async function onTrash() {
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
-  padding: 4px 8px;
+  padding: 4px 0;
   outline: none;
   width: 100%;
   resize: none;
