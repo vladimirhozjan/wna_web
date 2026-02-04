@@ -13,8 +13,8 @@
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
             <span class="detail-position">
-              <span v-if="navigating" class="detail-nav-spinner"></span>
-              <template v-else>{{ currentPosition + 1 }} of {{ totalItems }}</template>
+              <span class="detail-nav-spinner" v-if="navigating"></span>
+              {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
             <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
@@ -37,6 +37,11 @@
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
             </div>
+            <h2
+                class="detail-title"
+                :class="{ 'detail-title--hidden': editingField === 'title' }"
+                @click="startEdit('title', item.title)"
+            >{{ item.title }}</h2>
             <textarea
                 v-if="editingField === 'title'"
                 ref="titleInput"
@@ -49,11 +54,6 @@
                 @input="autoResizeTitle"
                 rows="1"
             ></textarea>
-            <h2
-                v-else
-                class="detail-title"
-                @click="startEdit('title', item.title)"
-            >{{ item.title }}</h2>
           </div>
         </div>
 
@@ -294,8 +294,8 @@ function cancelEdit() {
 
 function autoResizeTitle() {
   if (titleInput.value) {
-    titleInput.value.style.height = 'auto'
-    titleInput.value.style.height = titleInput.value.scrollHeight + 'px'
+    titleInput.value.style.height = '0'
+    titleInput.value.style.height = Math.max(44, titleInput.value.scrollHeight) + 'px'
   }
 }
 
@@ -569,10 +569,11 @@ async function onTrash() {
 }
 
 .detail-position {
+  position: relative;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
-  min-width: 20px;
+  min-width: 60px;
   text-align: center;
   padding: 0 4px;
 }
@@ -588,13 +589,17 @@ async function onTrash() {
 }
 
 .detail-nav-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 14px;
   height: 14px;
   border: 2px solid var(--color-border-light);
   border-top-color: var(--color-action);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  display: inline-block;
+  background: var(--color-bg-primary);
 }
 
 .detail-loading {
@@ -705,26 +710,23 @@ async function onTrash() {
 /* ── Title area ── */
 .detail-title-area {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 24px 24px 0;
 }
 
 .detail-type-icon {
-  width: 28px;
-  height: 28px;
+  width: 42px;
+  height: 42px;
   color: var(--color-text-tertiary);
   flex-shrink: 0;
-  margin-top: 4px;
+  align-self: center;
 }
 
 .detail-title-wrapper {
   position: relative;
   flex: 1;
   min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .detail-title {
@@ -733,27 +735,41 @@ async function onTrash() {
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  line-height: 1.4;
   word-break: break-word;
+  cursor: pointer;
 }
 
 .detail-title:hover {
   background: var(--color-bg-secondary);
 }
 
+.detail-title--hidden {
+  visibility: hidden;
+}
+
 .detail-title-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h2);
   font-weight: 600;
   color: var(--color-text-primary);
+  margin: 0;
+  padding: 5px 7px;
   border: 1px solid var(--color-input-border);
   border-radius: 6px;
-  padding: 4px 8px;
+  line-height: 1.4;
+  box-sizing: border-box;
   outline: none;
-  width: 100%;
   background: var(--color-bg-primary);
+  resize: none;
+  overflow: hidden;
 }
 
 .detail-title-input:focus {
