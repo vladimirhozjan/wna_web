@@ -541,6 +541,48 @@ export async function completeProject(projectId) {
     }
 }
 
+// ── Someday API ──
+
+export async function listSomeday({limit = 10, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/someday', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function activateStuff(stuffId) {
+    try {
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'active'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function activateAction(actionId) {
+    try {
+        const res = await httpApi.put(`/v1/action/${actionId}`, {state: 'active'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function activateProject(projectId) {
+    try {
+        const res = await httpApi.patch(`/v1/project/${projectId}`, {state: 'active'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Trash API ──
 
 export async function listTrash({limit = 10, cursor = null} = {}) {
@@ -637,6 +679,10 @@ const apiClient = {
     projectsCount,
     getProjectByPosition,
     completeProject,
+    listSomeday,
+    activateStuff,
+    activateAction,
+    activateProject,
     listTrash,
     emptyTrash,
     restoreStuff,
