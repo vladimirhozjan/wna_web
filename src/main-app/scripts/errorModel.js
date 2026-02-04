@@ -18,8 +18,8 @@ export function errorModel() {
 
         const id = nextId++;
 
-        // Keep max 4
-        if (state.errors.length >= 4) {
+        // Keep max 5
+        if (state.errors.length >= 5) {
             state.errors.splice(0, 1);
         }
 

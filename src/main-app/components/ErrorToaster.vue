@@ -30,12 +30,13 @@ const error = errorModel()
 }
 
 .toast-inner {
-  display: block;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
 .toast {
-  display: inline-block;
   padding: 8px 12px;
   border-radius: 6px;
   text-align: center;
@@ -45,36 +46,50 @@ const error = errorModel()
   font-weight: 400;
   margin-bottom: 10px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
+/* noinspection CssUnusedSymbol - used via dynamic :class binding */
 .toast--error {
   background: var(--color-toast-error-bg);
   color: var(--color-toast-error-text);
 }
 
+/* noinspection CssUnusedSymbol - used via dynamic :class binding */
 .toast--success {
   background: var(--color-toast-success-bg);
   color: var(--color-toast-success-text);
 }
 
+/* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-enter-from) {
   opacity: 0;
   transform: translateY(10px);
 }
 
+/* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-enter-active),
 :global(.toast-leave-active),
 :global(.toast-move) {
   transition: all .25s ease;
 }
 
+/* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-enter-to) {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-leave-to) {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(-10px);
+}
+
+/* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
+:global(.toast-leave-active) {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 </style>
