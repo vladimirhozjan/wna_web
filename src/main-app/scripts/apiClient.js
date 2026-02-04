@@ -51,6 +51,7 @@ export async function registerUser({email, password}) {
         const data = res.data
 
         if (!data.id || !data.access_token || !data.refresh_token) {
+            // noinspection ExceptionCaughtLocallyJS
             throw new Error('Unexpected response from server')
         }
 
@@ -69,6 +70,7 @@ export async function loginUser({email, password}) {
         const data = res.data
 
         if (!data.access_token || !data.refresh_token) {
+            // noinspection ExceptionCaughtLocallyJS
             throw new Error('Unexpected response from server')
         }
 
@@ -87,6 +89,7 @@ export async function refreshToken() {
         const refresh = localStorage.getItem('refresh_token')
 
         if (!refresh) {
+            // noinspection ExceptionCaughtLocallyJS
             throw new Error('Refresh token missing.')
         }
 
@@ -99,6 +102,7 @@ export async function refreshToken() {
         const data = res.data
 
         if (!data.access_token || !data.refresh_token) {
+            // noinspection ExceptionCaughtLocallyJS
             throw new Error('Unexpected response from server')
         }
 
