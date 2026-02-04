@@ -99,19 +99,26 @@
         </div>
 
         <!-- Description area -->
-        <div class="detail-description-area">
+        <div class="detail-section-area">
           <label class="detail-section-label">Description</label>
-          <div v-if="editingField === 'description'" class="detail-description-edit">
+          <div class="detail-section-wrapper">
+            <p
+                v-if="editingField !== 'description'"
+                class="detail-section-content"
+                :class="{ 'detail-section-content--empty': !action.description }"
+                @click="startEdit('description', action.description || '')"
+            >{{ action.description || 'Add a description...' }}</p>
             <textarea
+                v-else
                 ref="descriptionInput"
                 v-model="editValue"
-                class="detail-textarea"
+                class="detail-section-textarea"
                 :disabled="savingField === 'description'"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('description')"
-                rows="4"
+                rows="1"
             ></textarea>
-            <div class="detail-description-actions">
+            <div v-if="editingField === 'description'" class="detail-section-actions">
               <Btn
                   variant="primary"
                   size="sm"
@@ -129,12 +136,6 @@
               >Cancel</Btn>
             </div>
           </div>
-          <p
-              v-else
-              class="detail-description"
-              :class="{ 'detail-description--empty': !action.description }"
-              @click="startEdit('description', action.description || '')"
-          >{{ action.description || 'Add a description...' }}</p>
         </div>
 
         <!-- Metadata section -->
@@ -604,8 +605,8 @@ async function onTrash() {
 .detail-title-area {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 24px 24px 0;
+  gap: 0;
+  padding: 24px 24px 0 4px; /* 4px centers 42px icon in 50px space */
 }
 
 .detail-type-icon {
@@ -628,7 +629,7 @@ async function onTrash() {
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
-  padding: 5px 7px;
+  padding: 5px 0;
   border: 1px solid transparent;
   border-radius: 6px;
   line-height: 1.4;
@@ -654,7 +655,7 @@ async function onTrash() {
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
-  padding: 5px 7px;
+  padding: 5px 0;
   border: 1px solid var(--color-input-border);
   border-radius: 6px;
   line-height: 1.4;
@@ -674,7 +675,7 @@ async function onTrash() {
 .detail-actions {
   display: flex;
   gap: 8px;
-  padding: 16px 24px;
+  padding: 16px 24px 16px 50px; /* 42px icon + 8px gap */
 }
 
 .detail-action-wrapper {
@@ -698,9 +699,9 @@ async function onTrash() {
   color: var(--color-action);
 }
 
-/* ── Description area ── */
-.detail-description-area {
-  padding: 20px 24px 28px;
+/* ── Section areas (description) ── */
+.detail-section-area {
+  padding: 12px 24px 12px 50px; /* 42px icon + 8px gap */
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -710,60 +711,65 @@ async function onTrash() {
   font-size: var(--font-size-body-s);
   font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
-.detail-description {
+.detail-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-section-content {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
-  padding: 8px;
+  padding: 4px 0;
   border-radius: 4px;
+  border: 1px solid transparent;
   white-space: pre-wrap;
   word-break: break-word;
+  line-height: 1.5;
+  min-height: 32px;
+  box-sizing: border-box;
 }
 
-.detail-description:hover {
+.detail-section-content:hover {
   background: var(--color-bg-secondary);
 }
 
-.detail-description--empty {
+.detail-section-content--empty {
   color: var(--color-text-tertiary);
   font-style: italic;
 }
 
-.detail-description-edit {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 10px;
-}
-
-
-.detail-description-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.detail-textarea {
+.detail-section-textarea {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: 4px;
+  padding: 4px 8px;
   outline: none;
   width: 100%;
-  resize: vertical;
+  resize: none;
   background: var(--color-bg-primary);
   box-sizing: border-box;
+  line-height: 1.5;
+  min-height: 32px;
+  field-sizing: content;
 }
 
-.detail-textarea:focus {
+.detail-section-textarea:focus {
   border-color: var(--color-input-border-focus);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.detail-section-actions {
+  display: flex;
+  gap: 8px;
 }
 
 /* ── Metadata section ── */
@@ -772,7 +778,7 @@ async function onTrash() {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 16px 24px 24px;
+  padding: 16px 24px 24px 50px; /* 42px icon + 8px gap */
   margin-top: 8px;
 }
 
@@ -799,7 +805,7 @@ async function onTrash() {
   font-size: 11px;
 }
 
-.detail-textarea:disabled,
+.detail-section-textarea:disabled,
 .detail-title-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -834,19 +840,19 @@ async function onTrash() {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0;
+    padding: 16px 16px 0 4px;
   }
 
   .detail-actions {
-    padding: 12px 16px;
+    padding: 12px 16px 12px 50px;
   }
 
-  .detail-description-area {
-    padding: 12px 16px 16px;
+  .detail-section-area {
+    padding: 12px 16px 12px 50px;
   }
 
   .detail-metadata {
-    padding: 12px 16px 16px;
+    padding: 12px 16px 16px 50px;
   }
 }
 </style>
