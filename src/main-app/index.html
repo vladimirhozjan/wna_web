@@ -11,30 +11,39 @@
         position: fixed;
         inset: 0;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
         background: #fff;
-        gap: 16px;
         pointer-events: none;
       }
-      .splash-icon {
-        width: 200px;
-        height: 200px;
-      }
-      .splash-spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid #e0e0e0;
-        border-top-color: #4185DE;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+      .splash-wrapper {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
       }
       .splash-text {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 16px;
-        color: #374151;
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b7280;
         margin: 0;
+      }
+      .splash-icon {
+        width: 100px;
+        height: 100px;
+      }
+      .splash-spinner {
+        position: absolute;
+        inset: 0;
+        border: 6px solid rgba(65, 133, 222, 0.15);
+        border-top-color: #4185DE;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
       @keyframes spin {
         to { transform: rotate(360deg); }
@@ -45,13 +54,14 @@
     <div id="app">
       <!-- Splash screen - replaced when Vue mounts -->
       <div class="splash">
-        <!-- Replace this SVG with your logo -->
-        <svg class="splash-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <rect x="5" y="5" width="90" height="90" rx="8" fill="none" stroke="#4185DE" stroke-width="2" stroke-dasharray="6 4"/>
-          <text x="50" y="54" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#4185DE">Replace me</text>
-        </svg>
-        <div class="splash-spinner"></div>
-        <p class="splash-text">Loading your content...</p>
+        <div class="splash-wrapper">
+          <div class="splash-spinner"></div>
+          <svg class="splash-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="64" height="64" rx="14" fill="#4185DE"/>
+            <path d="M25 54L30 34H18L39 10L34 30H46L25 54Z" fill="white"/>
+          </svg>
+          <p class="splash-text">Loading your content...</p>
+        </div>
       </div>
     </div>
     <!--config.js comes from CI, do not remove it-->
