@@ -1,7 +1,7 @@
 <template>
   <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <path stroke="currentColor" stroke-width="2" fill="none"
-          d="M24 12V24L30 30M24 40C32.8 40 40 32.8 40 24C40 15.2 32.8 8 24 8C15.2 8 8 15.2 8 24C8 32.8 15.2 40 24 40Z"/>
+    <path fill="currentColor"
+          d="M24 15C19 15 15 19 15 24C15 29 19 33 24 33C29 33 33 29 33 24C33 19 29 15 24 15ZM24 31C20 31 17 28 17 24C17 20 20 17 24 17C28 17 31 20 31 24C31 28 28 31 24 31ZM24.5 19.5H23V25L27.5 28L28.5 26.5L24.5 24V19.5Z"/>
   </svg>
 </template>
 

@@ -32,6 +32,10 @@
         <template #icon><CalendarIcon /></template>
       </SidebarMenuItem>
 
+      <SidebarMenuItem label="Waiting For" :to="{ name: 'waiting-for' }">
+        <template #icon><WaitingIcon /></template>
+      </SidebarMenuItem>
+
       <SidebarMenuItem
           label="Someday / Maybe"
           :to="{ name: 'someday' }"
@@ -84,6 +88,7 @@ import TodayIcon from "../assets/TodayIcon.vue";
 import InboxIcon from "../assets/InboxIcon.vue";
 import ProjectsIcon from "../assets/ProjectsIcon.vue";
 import SomedayIcon from "../assets/SomedayIcon.vue";
+import WaitingIcon from "../assets/WaitingIcon.vue";
 import ReferenceIcon from "../assets/ReferenceIcon.vue";
 import CompletedIcon from "../assets/CompletedIcon.vue";
 import TrashIcon from "../assets/TrashIcon.vue";
