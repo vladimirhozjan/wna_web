@@ -36,6 +36,9 @@
             @check="(id, checked) => emit('check', id, checked)"
             @click="onItemClick(item, index)"
         >
+          <template v-if="$slots.prefix" #prefix>
+            <slot name="prefix" :item="item" />
+          </template>
           <template #actions>
             <slot name="actions" :item="item">
               <button class="action-btn action-btn--danger" @click="emit('delete', item.id)">✕</button>

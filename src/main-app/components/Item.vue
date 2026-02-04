@@ -12,6 +12,11 @@
       />
     </div>
 
+    <!-- Prefix slot (for icons etc.) -->
+    <div v-if="$slots.prefix" class="item__prefix">
+      <slot name="prefix" />
+    </div>
+
     <!-- Content -->
     <div class="item__content" @click.stop="onClick">
       <span v-if="isEditing" class="item__input-wrapper">
@@ -193,6 +198,12 @@ function onCheck(e) {
   height: 18px;
   cursor: pointer;
   accent-color: var(--color-action);
+}
+
+.item__prefix {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .item__content {
