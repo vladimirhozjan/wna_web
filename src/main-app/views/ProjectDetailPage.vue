@@ -7,14 +7,15 @@
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
           <span class="detail-meta-link" @click="goBack">Projects</span>
-          <span class="detail-meta-separator">/</span>
-          <span class="detail-meta-label">Project</span>
         </div>
         <div v-if="project" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
-            <span class="detail-position">Item {{ currentPosition + 1 }} of {{ totalItems }}</span>
+            <span class="detail-position">
+              <span v-if="navigating" class="detail-nav-spinner"></span>
+              <template v-else>{{ currentPosition + 1 }} of {{ totalItems }}</template>
+            </span>
             <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
           </div>
@@ -31,6 +32,7 @@
 
         <!-- Title area -->
         <div class="detail-title-area">
+          <ProjectsIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
@@ -76,7 +78,7 @@
         </div>
 
         <!-- Outcome area -->
-        <div class="detail-section-area">
+        <div class="detail-section-area detail-section-area--no-border">
           <label class="detail-section-label">Outcome</label>
           <div v-if="editingField === 'outcome'" class="detail-section-edit">
             <textarea
@@ -180,6 +182,7 @@ import Btn from '../components/Btn.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import ProjectsIcon from '../assets/ProjectsIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -452,7 +455,7 @@ async function onTrash() {
 .detail-header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .detail-header-right {
@@ -487,18 +490,6 @@ async function onTrash() {
   text-decoration: underline;
 }
 
-.detail-meta-separator {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-tertiary);
-}
-
-.detail-meta-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-secondary);
-}
-
 .detail-position {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
@@ -516,6 +507,16 @@ async function onTrash() {
 
 .detail-nav-btn {
   font-size: 12px;
+}
+
+.detail-nav-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
 }
 
 .detail-loading {
@@ -547,9 +548,17 @@ async function onTrash() {
 /* ── Title area ── */
 .detail-title-area {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 24px 24px 0;
+}
+
+.detail-type-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .detail-title-wrapper {
@@ -606,6 +615,11 @@ async function onTrash() {
 .detail-section-area {
   padding: 20px 24px 28px;
   border-bottom: 1px solid var(--color-border-light);
+}
+
+.detail-section-area--no-border {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .detail-section-label {

@@ -111,4 +111,5 @@ function onDrop(e) {
 .icon {
   display: flex;
 }
+
 </style>

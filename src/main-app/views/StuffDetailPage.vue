@@ -6,79 +6,16 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <template v-if="item">
-            <div class="detail-meta-item">
-              <span
-                  v-if="!showStateDialog && savingField !== 'state'"
-                  class="detail-meta-link"
-                  @click="toggleStateDialog"
-              >{{ formatState(item.state) }}</span>
-              <template v-else>
-                <div class="detail-meta-input-wrapper">
-                  <div v-if="savingField === 'state'" class="detail-section-overlay">
-                    <span class="field-spinner"></span>
-                  </div>
-                  <button class="detail-meta-input detail-meta-input--open" @click="toggleStateDialog">
-                    {{ formatState(item.state) }}
-                    <span class="detail-meta-input-arrow">▾</span>
-                  </button>
-                </div>
-                <template v-if="showStateDialog && savingField !== 'state'">
-                  <div class="detail-dropdown-backdrop" @click="showStateDialog = false"></div>
-                  <div class="detail-dropdown">
-                    <div class="detail-dropdown-options">
-                      <button
-                          v-for="opt in stateOptions"
-                          :key="opt.value"
-                          class="detail-dropdown-option"
-                          :class="{ 'detail-dropdown-option--selected': (item.state || 'INBOX') === opt.value }"
-                          @click="selectState(opt.value)"
-                      >{{ opt.label }}</button>
-                    </div>
-                  </div>
-                </template>
-              </template>
-            </div>
-            <span class="detail-meta-separator">/</span>
-            <div class="detail-meta-item">
-              <span
-                  v-if="!showTypeDialog && savingField !== 'type'"
-                  class="detail-meta-link"
-                  @click="toggleTypeDialog"
-              >{{ formatType(item.type) }}</span>
-              <template v-else>
-                <div class="detail-meta-input-wrapper">
-                  <div v-if="savingField === 'type'" class="detail-section-overlay">
-                    <span class="field-spinner"></span>
-                  </div>
-                  <button class="detail-meta-input detail-meta-input--open" @click="toggleTypeDialog">
-                    {{ formatType(item.type) }}
-                    <span class="detail-meta-input-arrow">▾</span>
-                  </button>
-                </div>
-                <template v-if="showTypeDialog && savingField !== 'type'">
-                  <div class="detail-dropdown-backdrop" @click="showTypeDialog = false"></div>
-                  <div class="detail-dropdown">
-                    <div class="detail-dropdown-options">
-                      <button
-                          v-for="opt in typeOptions"
-                          :key="opt.value"
-                          class="detail-dropdown-option"
-                          :class="{ 'detail-dropdown-option--selected': (item.type || 'STUFF') === opt.value }"
-                          @click="selectType(opt.value)"
-                      >{{ opt.label }}</button>
-                    </div>
-                  </div>
-                </template>
-              </template>
-            </div>
-          </template>
+          <span class="detail-meta-link" @click="goBack">Inbox</span>
         </div>
         <div v-if="item" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
-            <span class="detail-position">Item {{ currentPosition + 1 }} of {{ totalItems }}</span>
+            <span class="detail-position">
+              <span v-if="navigating" class="detail-nav-spinner"></span>
+              <template v-else>{{ currentPosition + 1 }} of {{ totalItems }}</template>
+            </span>
             <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
           </div>
@@ -95,15 +32,7 @@
 
         <!-- Title area -->
         <div class="detail-title-area">
-          <div class="detail-checkbox-wrapper">
-            <span v-if="actionLoading === 'done'" class="detail-checkbox-spinner"></span>
-            <input
-                v-else
-                type="checkbox"
-                class="detail-checkbox"
-                @change="onCheckChange"
-            />
-          </div>
+          <InboxIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
@@ -269,6 +198,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import { clarifyModel } from '../scripts/clarifyModel.js'
 import apiClient from '../scripts/apiClient.js'
+import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
@@ -294,8 +224,6 @@ const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
-const showTypeDialog = ref(false)
-const showStateDialog = ref(false)
 
 // Clarify state
 const showClarify = ref(false)
@@ -307,17 +235,6 @@ const showMoveDialog = ref(false)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
-
-const typeOptions = [
-  { value: 'STUFF', label: 'Stuff' },
-  { value: 'ACTION', label: 'Action' },
-  { value: 'PROJECT', label: 'Project' },
-]
-
-const stateOptions = [
-  { value: 'INBOX', label: 'Inbox' },
-  { value: 'SOMEDAY', label: 'Someday' },
-]
 
 watch(error, (err) => {
   if (!err) return
@@ -416,69 +333,6 @@ async function saveField(field) {
   } finally {
     savingField.value = null
   }
-}
-
-async function onCheckChange(e) {
-  const checked = e.target.checked
-  if (!checked) {
-    // Can't uncheck - completed items aren't shown here
-    e.target.checked = false
-    return
-  }
-  // Use same loading state as Done button
-  await onMarkDone()
-}
-
-function toggleStateDialog() {
-  showStateDialog.value = !showStateDialog.value
-  showTypeDialog.value = false
-}
-
-function toggleTypeDialog() {
-  showTypeDialog.value = !showTypeDialog.value
-  showStateDialog.value = false
-}
-
-function formatType(type) {
-  const opt = typeOptions.find(o => o.value === type)
-  return opt ? opt.label : type || 'Stuff'
-}
-
-function formatState(state) {
-  const opt = stateOptions.find(o => o.value === state)
-  return opt ? opt.label : state || 'Inbox'
-}
-
-async function selectType(newType) {
-  showTypeDialog.value = false
-  const currentType = item.value.type || 'STUFF'
-  if (newType === currentType) return
-
-  const oldType = item.value.type
-  item.value.type = newType
-  savingField.value = 'type'
-
-  // API not yet implemented
-  await new Promise(r => setTimeout(r, 300))
-  toaster.push('Type change not yet implemented')
-  item.value.type = oldType
-  savingField.value = null
-}
-
-async function selectState(newState) {
-  showStateDialog.value = false
-  const currentState = item.value.state || 'INBOX'
-  if (newState === currentState) return
-
-  const oldState = item.value.state
-  item.value.state = newState
-  savingField.value = 'state'
-
-  // API not yet implemented
-  await new Promise(r => setTimeout(r, 300))
-  toaster.push('State change not yet implemented')
-  item.value.state = oldState
-  savingField.value = null
 }
 
 function formatDate(dateStr) {
@@ -691,7 +545,7 @@ async function onTrash() {
 .detail-header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .detail-header-right {
@@ -733,6 +587,16 @@ async function onTrash() {
   font-size: 12px;
 }
 
+.detail-nav-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
 .detail-loading {
   display: flex;
   justify-content: center;
@@ -760,48 +624,6 @@ async function onTrash() {
 .detail-meta-link:hover {
   color: var(--color-link-hover);
   text-decoration: underline;
-}
-
-.detail-meta-input-wrapper {
-  position: relative;
-}
-
-.detail-meta-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.detail-meta-input:hover {
-  border-color: var(--color-input-border-focus);
-}
-
-.detail-meta-input--open {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.detail-meta-input-arrow {
-  font-size: 10px;
-  color: var(--color-text-tertiary);
-}
-
-.detail-meta-item {
-  position: relative;
-}
-
-.detail-meta-separator {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-tertiary);
 }
 
 /* ── Dropdowns ── */
@@ -883,9 +705,17 @@ async function onTrash() {
 /* ── Title area ── */
 .detail-title-area {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 24px 24px 0;
+}
+
+.detail-type-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .detail-title-wrapper {
@@ -1054,43 +884,7 @@ async function onTrash() {
   cursor: not-allowed;
 }
 
-.detail-checkbox-wrapper {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.detail-checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--color-action);
-  flex-shrink: 0;
-}
-
-.detail-checkbox-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
 /* ── Spinners ── */
-.field-spinner {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
 .detail-spinner {
   width: 24px;
   height: 24px;

@@ -6,48 +6,16 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <template v-if="action">
-            <div class="detail-meta-item">
-              <span
-                  v-if="!showStateDialog && savingField !== 'state'"
-                  class="detail-meta-link"
-                  @click="toggleStateDialog"
-              >{{ formatState(action.state) }}</span>
-              <template v-else>
-                <div class="detail-meta-input-wrapper">
-                  <div v-if="savingField === 'state'" class="detail-section-overlay">
-                    <span class="field-spinner"></span>
-                  </div>
-                  <button class="detail-meta-input detail-meta-input--open" @click="toggleStateDialog">
-                    {{ formatState(action.state) }}
-                    <span class="detail-meta-input-arrow">▾</span>
-                  </button>
-                </div>
-                <template v-if="showStateDialog && savingField !== 'state'">
-                  <div class="detail-dropdown-backdrop" @click="showStateDialog = false"></div>
-                  <div class="detail-dropdown">
-                    <div class="detail-dropdown-options">
-                      <button
-                          v-for="opt in stateOptions"
-                          :key="opt.value"
-                          class="detail-dropdown-option"
-                          :class="{ 'detail-dropdown-option--selected': (action.state || 'NEXT') === opt.value }"
-                          @click="selectState(opt.value)"
-                      >{{ opt.label }}</button>
-                    </div>
-                  </div>
-                </template>
-              </template>
-            </div>
-            <span class="detail-meta-separator">/</span>
-            <span class="detail-meta-label">Action</span>
-          </template>
+          <span class="detail-meta-link" @click="goBack">Next</span>
         </div>
         <div v-if="action" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
-            <span class="detail-position">Item {{ currentPosition + 1 }} of {{ totalItems }}</span>
+            <span class="detail-position">
+              <span v-if="navigating" class="detail-nav-spinner"></span>
+              <template v-else>{{ currentPosition + 1 }} of {{ totalItems }}</template>
+            </span>
             <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
           </div>
@@ -64,15 +32,7 @@
 
         <!-- Title area -->
         <div class="detail-title-area">
-          <div class="detail-checkbox-wrapper">
-            <span v-if="actionLoading === 'done'" class="detail-checkbox-spinner"></span>
-            <input
-                v-else
-                type="checkbox"
-                class="detail-checkbox"
-                @change="onCheckChange"
-            />
-          </div>
+          <ActionIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
@@ -107,6 +67,27 @@
           >
             Done
           </Btn>
+          <div class="detail-action-wrapper">
+            <Btn
+                variant="ghost"
+                size="sm"
+                :loading="actionLoading === 'move'"
+                @click="toggleMoveDialog"
+            >
+              Move
+            </Btn>
+            <template v-if="showMoveDialog && actionLoading !== 'move'">
+              <div class="detail-dropdown-backdrop" @click="showMoveDialog = false"></div>
+              <div class="detail-dropdown detail-dropdown--actions">
+                <div class="detail-dropdown-options">
+                  <button class="detail-dropdown-option" @click="onMoveTo('NEXT')"><NextIcon class="detail-dropdown-icon" /> Next Actions</button>
+                  <button class="detail-dropdown-option" @click="onMoveTo('WAITING')"><WaitingIcon class="detail-dropdown-icon" /> Waiting For</button>
+                  <button class="detail-dropdown-option" @click="onMoveTo('CALENDAR')"><CalendarIcon class="detail-dropdown-icon" /> Calendar</button>
+                  <button class="detail-dropdown-option" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="detail-dropdown-icon" /> Someday</button>
+                </div>
+              </div>
+            </template>
+          </div>
           <Btn
               variant="ghost-danger"
               size="sm"
@@ -183,6 +164,11 @@ import Btn from '../components/Btn.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import ActionIcon from '../assets/ActionIcon.vue'
+import NextIcon from '../assets/NextIcon.vue'
+import WaitingIcon from '../assets/WaitingIcon.vue'
+import CalendarIcon from '../assets/CalendarIcon.vue'
+import SomedayIcon from '../assets/SomedayIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -205,20 +191,13 @@ const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
-const showStateDialog = ref(false)
 const actionLoading = ref(null)
+const showMoveDialog = ref(false)
 
 // Navigation state
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
-
-const stateOptions = [
-  { value: 'NEXT', label: 'Next' },
-  { value: 'WAITING', label: 'Waiting' },
-  { value: 'CALENDAR', label: 'Calendar' },
-  { value: 'DEFERRED', label: 'Deferred' },
-]
 
 watch(error, (err) => {
   if (!err) return
@@ -309,40 +288,34 @@ async function saveField(field) {
   }
 }
 
-async function onCheckChange(e) {
-  const checked = e.target.checked
-  if (!checked) {
-    e.target.checked = false
-    return
-  }
-  await onMarkDone()
+function toggleMoveDialog() {
+  showMoveDialog.value = !showMoveDialog.value
 }
 
-function toggleStateDialog() {
-  showStateDialog.value = !showStateDialog.value
-}
-
-function formatState(state) {
-  const opt = stateOptions.find(o => o.value === state)
-  return opt ? opt.label : state || 'Next'
-}
-
-async function selectState(newState) {
-  showStateDialog.value = false
+async function onMoveTo(newState) {
+  showMoveDialog.value = false
   const currentState = action.value.state || 'NEXT'
   if (newState === currentState) return
 
+  actionLoading.value = 'move'
   const oldState = action.value.state
   action.value.state = newState
-  savingField.value = 'state'
+
+  const stateLabels = {
+    NEXT: 'Next Actions',
+    WAITING: 'Waiting For',
+    CALENDAR: 'Calendar',
+    SOMEDAY: 'Someday'
+  }
 
   try {
     await updateAction(action.value.id, { title: action.value.title, state: newState })
+    toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabels[newState]}`)
   } catch {
     action.value.state = oldState
-    toaster.push('Failed to update state')
+    toaster.push('Failed to move action')
   } finally {
-    savingField.value = null
+    actionLoading.value = null
   }
 }
 
@@ -477,7 +450,7 @@ async function onTrash() {
 .detail-header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .detail-header-right {
@@ -519,6 +492,16 @@ async function onTrash() {
   font-size: 12px;
 }
 
+.detail-nav-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
 .detail-loading {
   display: flex;
   justify-content: center;
@@ -548,55 +531,7 @@ async function onTrash() {
   text-decoration: underline;
 }
 
-.detail-meta-input-wrapper {
-  position: relative;
-}
-
-.detail-meta-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.detail-meta-input:hover {
-  border-color: var(--color-input-border-focus);
-}
-
-.detail-meta-input--open {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.detail-meta-input-arrow {
-  font-size: 10px;
-  color: var(--color-text-tertiary);
-}
-
-.detail-meta-item {
-  position: relative;
-}
-
-.detail-meta-separator {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-tertiary);
-}
-
-.detail-meta-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-secondary);
-}
-
-/* ── Dropdowns ── */
+/* ── Dropdowns __ */
 .detail-dropdown-backdrop {
   position: fixed;
   top: 0;
@@ -663,9 +598,17 @@ async function onTrash() {
 /* ── Title area ── */
 .detail-title-area {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 24px 24px 0;
+}
+
+.detail-type-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .detail-title-wrapper {
@@ -716,6 +659,27 @@ async function onTrash() {
   display: flex;
   gap: 8px;
   padding: 16px 24px;
+}
+
+.detail-action-wrapper {
+  position: relative;
+}
+
+.detail-dropdown--actions {
+  left: 0;
+  min-width: 160px;
+}
+
+.detail-dropdown-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.detail-dropdown-option:hover .detail-dropdown-icon {
+  color: var(--color-action);
 }
 
 /* ── Description area ── */
@@ -825,43 +789,7 @@ async function onTrash() {
   cursor: not-allowed;
 }
 
-.detail-checkbox-wrapper {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.detail-checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--color-action);
-  flex-shrink: 0;
-}
-
-.detail-checkbox-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* ── Spinners ── */
-.field-spinner {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
+/* ── Spinners __ */
 .detail-spinner {
   width: 24px;
   height: 24px;
