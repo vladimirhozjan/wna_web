@@ -36,6 +36,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionIcon from '../assets/ActionIcon.vue'
@@ -43,11 +44,14 @@ import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
+const router = useRouter()
+
 const {
   items,
   loading,
   error,
   hasMore,
+  totalItems,
   loadActions,
   updateAction,
   trashAction,
@@ -84,9 +88,12 @@ async function loadMore() {
   await loadActions()
 }
 
-function onItemClick(item) {
-  // TODO: navigate to action detail page
-  console.log('Action clicked:', item.id)
+function onItemClick(item, index) {
+  router.push({
+    name: 'action-detail',
+    params: { id: item.id },
+    query: { position: index, total: totalItems.value }
+  })
 }
 
 async function onItemUpdate(id, { title }) {

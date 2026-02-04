@@ -11,6 +11,7 @@ import SettingsPage from '../views/SettingsPage.vue'
 import TodayPage from '../views/TodayPage.vue'
 import SomedayPage from '../views/SomedayPage.vue'
 import StuffDetailPage from '../views/StuffDetailPage.vue'
+import ActionDetailPage from '../views/ActionDetailPage.vue'
 import CompletedPage from '../views/CompletedPage.vue'
 import TrashPage from '../views/TrashPage.vue'
 
@@ -32,6 +33,7 @@ const routes = [
     {path: '/completed', name: 'completed', component: CompletedPage},
     {path: '/trash', name: 'trash', component: TrashPage},
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
+    {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 

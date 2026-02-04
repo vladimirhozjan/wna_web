@@ -191,6 +191,23 @@ export function nextActionModel() {
         }
     }
 
+    async function getActionByPosition(position) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.getActionByPosition(position)
+            current.value = data
+            return data
+        } catch (err) {
+            error.value = err
+            current.value = null
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
     return {
         items,
         current,
@@ -203,6 +220,7 @@ export function nextActionModel() {
 
         loadActions,
         getAction,
+        getActionByPosition,
         addAction,
         updateAction,
         deleteAction,
