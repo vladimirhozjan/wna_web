@@ -167,6 +167,47 @@ export function projectModel() {
         }
     }
 
+    async function getProjectByPosition(position) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.getProjectByPosition(position)
+            current.value = data
+            return data
+        } catch (err) {
+            error.value = err
+            current.value = null
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function completeProject(projectId) {
+        loading.value = true
+        error.value = null
+
+        try {
+            await apiClient.completeProject(projectId)
+            items.value = items.value.filter(i => i.id !== projectId)
+
+            if (cursor.value === projectId) {
+                const last = items.value[items.value.length - 1]
+                cursor.value = last ? last.id : null
+            }
+
+            if (current.value?.id === projectId) {
+                current.value = null
+            }
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
     return {
         items,
         current,
@@ -179,10 +220,12 @@ export function projectModel() {
 
         loadProjects,
         getProject,
+        getProjectByPosition,
         addProject,
         updateProject,
         deleteProject,
         trashProject,
         moveProject,
+        completeProject,
     }
 }

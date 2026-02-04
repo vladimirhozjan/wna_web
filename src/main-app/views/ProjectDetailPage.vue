@@ -6,44 +6,11 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <template v-if="action">
-            <div class="detail-meta-item">
-              <span
-                  v-if="!showStateDialog && savingField !== 'state'"
-                  class="detail-meta-link"
-                  @click="toggleStateDialog"
-              >{{ formatState(action.state) }}</span>
-              <template v-else>
-                <div class="detail-meta-input-wrapper">
-                  <div v-if="savingField === 'state'" class="detail-section-overlay">
-                    <span class="field-spinner"></span>
-                  </div>
-                  <button class="detail-meta-input detail-meta-input--open" @click="toggleStateDialog">
-                    {{ formatState(action.state) }}
-                    <span class="detail-meta-input-arrow">▾</span>
-                  </button>
-                </div>
-                <template v-if="showStateDialog && savingField !== 'state'">
-                  <div class="detail-dropdown-backdrop" @click="showStateDialog = false"></div>
-                  <div class="detail-dropdown">
-                    <div class="detail-dropdown-options">
-                      <button
-                          v-for="opt in stateOptions"
-                          :key="opt.value"
-                          class="detail-dropdown-option"
-                          :class="{ 'detail-dropdown-option--selected': (action.state || 'NEXT') === opt.value }"
-                          @click="selectState(opt.value)"
-                      >{{ opt.label }}</button>
-                    </div>
-                  </div>
-                </template>
-              </template>
-            </div>
-            <span class="detail-meta-separator">/</span>
-            <span class="detail-meta-label">Action</span>
-          </template>
+          <span class="detail-meta-link" @click="goBack">Projects</span>
+          <span class="detail-meta-separator">/</span>
+          <span class="detail-meta-label">Project</span>
         </div>
-        <div v-if="action" class="detail-header-right">
+        <div v-if="project" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
@@ -60,19 +27,10 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="action" class="detail-body">
+      <div v-else-if="project" class="detail-body">
 
         <!-- Title area -->
         <div class="detail-title-area">
-          <div class="detail-checkbox-wrapper">
-            <span v-if="actionLoading === 'done'" class="detail-checkbox-spinner"></span>
-            <input
-                v-else
-                type="checkbox"
-                class="detail-checkbox"
-                @change="onCheckChange"
-            />
-          </div>
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
@@ -92,8 +50,8 @@
             <h2
                 v-else
                 class="detail-title"
-                @click="startEdit('title', action.title)"
-            >{{ action.title }}</h2>
+                @click="startEdit('title', project.title)"
+            >{{ project.title }}</h2>
           </div>
         </div>
 
@@ -102,10 +60,10 @@
           <Btn
               variant="ghost"
               size="sm"
-              :loading="actionLoading === 'done'"
-              @click="onMarkDone"
+              :loading="actionLoading === 'complete'"
+              @click="onComplete"
           >
-            Done
+            Complete
           </Btn>
           <Btn
               variant="ghost-danger"
@@ -117,10 +75,49 @@
           </Btn>
         </div>
 
+        <!-- Outcome area -->
+        <div class="detail-section-area">
+          <label class="detail-section-label">Outcome</label>
+          <div v-if="editingField === 'outcome'" class="detail-section-edit">
+            <textarea
+                ref="outcomeInput"
+                v-model="editValue"
+                class="detail-textarea"
+                :disabled="savingField === 'outcome'"
+                @keyup.esc="cancelEdit"
+                @blur="saveField('outcome')"
+                rows="3"
+            ></textarea>
+            <div class="detail-section-actions">
+              <Btn
+                  variant="primary"
+                  size="sm"
+                  :disabled="savingField === 'outcome'"
+                  :loading="savingField === 'outcome'"
+                  @mousedown.prevent
+                  @click="saveField('outcome')"
+              >Save</Btn>
+              <Btn
+                  variant="ghost"
+                  size="sm"
+                  :disabled="savingField === 'outcome'"
+                  @mousedown.prevent
+                  @click="cancelEdit"
+              >Cancel</Btn>
+            </div>
+          </div>
+          <p
+              v-else
+              class="detail-section-content"
+              :class="{ 'detail-section-content--empty': !project.outcome }"
+              @click="startEdit('outcome', project.outcome || '')"
+          >{{ project.outcome || 'What does done look like?' }}</p>
+        </div>
+
         <!-- Description area -->
-        <div class="detail-description-area">
+        <div class="detail-section-area">
           <label class="detail-section-label">Description</label>
-          <div v-if="editingField === 'description'" class="detail-description-edit">
+          <div v-if="editingField === 'description'" class="detail-section-edit">
             <textarea
                 ref="descriptionInput"
                 v-model="editValue"
@@ -130,7 +127,7 @@
                 @blur="saveField('description')"
                 rows="4"
             ></textarea>
-            <div class="detail-description-actions">
+            <div class="detail-section-actions">
               <Btn
                   variant="primary"
                   size="sm"
@@ -150,22 +147,22 @@
           </div>
           <p
               v-else
-              class="detail-description"
-              :class="{ 'detail-description--empty': !action.description }"
-              @click="startEdit('description', action.description || '')"
-          >{{ action.description || 'Add a description...' }}</p>
+              class="detail-section-content"
+              :class="{ 'detail-section-content--empty': !project.description }"
+              @click="startEdit('description', project.description || '')"
+          >{{ project.description || 'Add a description...' }}</p>
         </div>
 
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
             <span class="detail-metadata-label">Created</span>
-            <span class="detail-metadata-value">{{ formatDate(action.created) }}</span>
+            <span class="detail-metadata-value">{{ formatDate(project.created) }}</span>
           </span>
           <span class="detail-metadata-separator">·</span>
           <span class="detail-metadata-item">
             <span class="detail-metadata-label">Updated</span>
-            <span class="detail-metadata-value">{{ formatDate(action.updated) }}</span>
+            <span class="detail-metadata-value">{{ formatDate(project.updated) }}</span>
           </span>
         </div>
 
@@ -180,7 +177,7 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
-import { nextActionModel } from '../scripts/nextActionModel.js'
+import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
@@ -191,34 +188,27 @@ const confirm = confirmModel()
 
 const {
   error,
-  getAction,
-  getActionByPosition,
-  updateAction,
-  trashAction,
-  completeAction,
-} = nextActionModel()
+  getProject,
+  getProjectByPosition,
+  updateProject,
+  trashProject,
+  completeProject,
+} = projectModel()
 
-const action = ref(null)
+const project = ref(null)
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
-const showStateDialog = ref(false)
+const outcomeInput = ref(null)
 const actionLoading = ref(null)
 
 // Navigation state
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
-
-const stateOptions = [
-  { value: 'NEXT', label: 'Next' },
-  { value: 'WAITING', label: 'Waiting' },
-  { value: 'CALENDAR', label: 'Calendar' },
-  { value: 'DEFERRED', label: 'Deferred' },
-]
 
 watch(error, (err) => {
   if (!err) return
@@ -228,22 +218,22 @@ watch(error, (err) => {
 
 onMounted(async () => {
   try {
-    const data = await getAction(route.params.id)
-    action.value = { ...data }
+    const data = await getProject(route.params.id)
+    project.value = { ...data }
 
     currentPosition.value = Number(route.query.position) || 0
     totalItems.value = Number(route.query.total) || 1
 
   } catch {
-    toaster.push('Failed to load action')
-    router.push({ name: 'next' })
+    toaster.push('Failed to load project')
+    router.push({ name: 'projects' })
   } finally {
     pageLoading.value = false
   }
 })
 
 function goBack() {
-  router.push({ name: 'next' })
+  router.push({ name: 'projects' })
 }
 
 function startEdit(field, value) {
@@ -257,6 +247,8 @@ function startEdit(field, value) {
       titleInput.value.select()
     } else if (field === 'description' && descriptionInput.value) {
       descriptionInput.value.focus()
+    } else if (field === 'outcome' && outcomeInput.value) {
+      outcomeInput.value.focus()
     }
   })
 }
@@ -278,69 +270,43 @@ async function saveField(field) {
   if (savingField.value) return
   const newValue = editValue.value.trim()
 
-  if (field === 'title' && (!newValue || newValue === action.value.title)) {
+  if (field === 'title' && (!newValue || newValue === project.value.title)) {
     editingField.value = null
     return
   }
 
-  if (field === 'description' && newValue === (action.value.description || '')) {
+  if (field === 'description' && newValue === (project.value.description || '')) {
     editingField.value = null
     return
   }
 
-  const oldValue = action.value[field]
-  action.value[field] = newValue
+  if (field === 'outcome' && newValue === (project.value.outcome || '')) {
+    editingField.value = null
+    return
+  }
+
+  const oldValue = project.value[field]
+  project.value[field] = newValue
   savingField.value = field
 
   try {
-    await updateAction(action.value.id, { title: action.value.title, description: action.value.description })
+    await updateProject(project.value.id, {
+      title: project.value.title,
+      description: project.value.description,
+      outcome: project.value.outcome
+    })
     editingField.value = null
   } catch {
-    action.value[field] = oldValue
+    project.value[field] = oldValue
     setTimeout(() => {
       if (field === 'title') {
         titleInput.value?.focus()
       } else if (field === 'description') {
         descriptionInput.value?.focus()
+      } else if (field === 'outcome') {
+        outcomeInput.value?.focus()
       }
     }, 100)
-  } finally {
-    savingField.value = null
-  }
-}
-
-async function onCheckChange(e) {
-  const checked = e.target.checked
-  if (!checked) {
-    e.target.checked = false
-    return
-  }
-  await onMarkDone()
-}
-
-function toggleStateDialog() {
-  showStateDialog.value = !showStateDialog.value
-}
-
-function formatState(state) {
-  const opt = stateOptions.find(o => o.value === state)
-  return opt ? opt.label : state || 'Next'
-}
-
-async function selectState(newState) {
-  showStateDialog.value = false
-  const currentState = action.value.state || 'NEXT'
-  if (newState === currentState) return
-
-  const oldState = action.value.state
-  action.value.state = newState
-  savingField.value = 'state'
-
-  try {
-    await updateAction(action.value.id, { title: action.value.title, state: newState })
-  } catch {
-    action.value.state = oldState
-    toaster.push('Failed to update state')
   } finally {
     savingField.value = null
   }
@@ -358,19 +324,19 @@ async function navigateToPosition(position) {
 
   navigating.value = true
   try {
-    const data = await getActionByPosition(position)
-    action.value = { ...data }
+    const data = await getProjectByPosition(position)
+    project.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
       totalItems.value = data.total_items
     }
     router.replace({
-      name: 'action-detail',
+      name: 'project-detail',
       params: { id: data.id },
       query: { position: data.position, total: totalItems.value }
     })
   } catch {
-    toaster.push('Failed to load action')
+    toaster.push('Failed to load project')
   } finally {
     navigating.value = false
   }
@@ -397,15 +363,24 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…'
 }
 
-async function onMarkDone() {
-  actionLoading.value = 'done'
-  const title = truncateTitle(action.value.title)
+async function onComplete() {
+  const confirmed = await confirm.show({
+    title: 'Complete Project',
+    message: `Are you sure you want to mark "${project.value.title}" as complete?`,
+    confirmText: 'Complete',
+    cancelText: 'Cancel'
+  })
+
+  if (!confirmed) return
+
+  actionLoading.value = 'complete'
+  const title = truncateTitle(project.value.title)
   try {
-    await completeAction(action.value.id)
+    await completeProject(project.value.id)
     toaster.success(`"${title}" completed`)
     await navigateToNextOrPrev()
   } catch (err) {
-    toaster.push(err.message || 'Failed to complete action')
+    toaster.push(err.message || 'Failed to complete project')
   } finally {
     actionLoading.value = null
   }
@@ -414,31 +389,31 @@ async function onMarkDone() {
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
   if (newTotal <= 0) {
-    router.push({ name: 'next' })
+    router.push({ name: 'projects' })
     return
   }
 
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    const data = await getActionByPosition(nextPos)
-    action.value = { ...data }
+    const data = await getProjectByPosition(nextPos)
+    project.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
     router.replace({
-      name: 'action-detail',
+      name: 'project-detail',
       params: { id: data.id },
       query: { position: data.position, total: totalItems.value }
     })
   } catch {
-    router.push({ name: 'next' })
+    router.push({ name: 'projects' })
   }
 }
 
 async function onTrash() {
   const confirmed = await confirm.show({
     title: 'Move to Trash',
-    message: `Are you sure you want to move "${action.value.title}" to trash?`,
+    message: `Are you sure you want to move "${project.value.title}" to trash?`,
     confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
@@ -447,11 +422,11 @@ async function onTrash() {
 
   actionLoading.value = 'trash'
   try {
-    await trashAction(action.value.id)
-    toaster.success(`"${truncateTitle(action.value.title)}" moved to trash`)
+    await trashProject(project.value.id)
+    toaster.success(`"${truncateTitle(project.value.title)}" moved to trash`)
     await navigateToNextOrPrev()
   } catch (err) {
-    toaster.push(err.message || 'Failed to move action to trash')
+    toaster.push(err.message || 'Failed to move project to trash')
   } finally {
     actionLoading.value = null
   }
@@ -500,6 +475,30 @@ async function onTrash() {
   color: var(--color-link-hover);
 }
 
+.detail-meta-link {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-link-text);
+  cursor: pointer;
+}
+
+.detail-meta-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.detail-meta-separator {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+}
+
+.detail-meta-label {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
+}
+
 .detail-position {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
@@ -529,121 +528,6 @@ async function onTrash() {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-}
-
-/* ── Meta (State) ── */
-
-.detail-meta-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-link-text);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.detail-meta-link:hover {
-  color: var(--color-link-hover);
-  text-decoration: underline;
-}
-
-.detail-meta-input-wrapper {
-  position: relative;
-}
-
-.detail-meta-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.detail-meta-input:hover {
-  border-color: var(--color-input-border-focus);
-}
-
-.detail-meta-input--open {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.detail-meta-input-arrow {
-  font-size: 10px;
-  color: var(--color-text-tertiary);
-}
-
-.detail-meta-item {
-  position: relative;
-}
-
-.detail-meta-separator {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-tertiary);
-}
-
-.detail-meta-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-secondary);
-}
-
-/* ── Dropdowns ── */
-.detail-dropdown-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 99;
-}
-
-.detail-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  background: var(--color-bg-primary);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 140px;
-  z-index: 100;
-}
-
-.detail-dropdown-options {
-  padding: 4px;
-}
-
-.detail-dropdown-option {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 4px ;
-  background: none;
-  border: none;
-  text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.detail-dropdown-option:hover {
-  background: var(--color-bg-secondary);
-}
-
-.detail-dropdown-option--selected {
-  background: var(--color-bg-secondary);
-  color: var(--color-action);
-  font-weight: 500;
 }
 
 .detail-section-overlay {
@@ -718,8 +602,8 @@ async function onTrash() {
   padding: 16px 24px;
 }
 
-/* ── Description area ── */
-.detail-description-area {
+/* ── Section areas (outcome, description) ── */
+.detail-section-area {
   padding: 20px 24px 28px;
   border-bottom: 1px solid var(--color-border-light);
 }
@@ -733,7 +617,7 @@ async function onTrash() {
   margin-bottom: 8px;
 }
 
-.detail-description {
+.detail-section-content {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
@@ -745,24 +629,23 @@ async function onTrash() {
   word-break: break-word;
 }
 
-.detail-description:hover {
+.detail-section-content:hover {
   background: var(--color-bg-secondary);
 }
 
-.detail-description--empty {
+.detail-section-content--empty {
   color: var(--color-text-tertiary);
   font-style: italic;
 }
 
-.detail-description-edit {
+.detail-section-edit {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding-top: 10px;
 }
 
-
-.detail-description-actions {
+.detail-section-actions {
   display: flex;
   gap: 8px;
 }
@@ -825,43 +708,7 @@ async function onTrash() {
   cursor: not-allowed;
 }
 
-.detail-checkbox-wrapper {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.detail-checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--color-action);
-  flex-shrink: 0;
-}
-
-.detail-checkbox-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
 /* ── Spinners ── */
-.field-spinner {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
 .detail-spinner {
   width: 24px;
   height: 24px;
@@ -897,7 +744,7 @@ async function onTrash() {
     padding: 12px 16px;
   }
 
-  .detail-description-area {
+  .detail-section-area {
     padding: 12px 16px 16px;
   }
 

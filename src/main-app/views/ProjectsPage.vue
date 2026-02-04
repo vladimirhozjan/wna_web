@@ -37,6 +37,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
@@ -44,11 +45,14 @@ import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
+const router = useRouter()
+
 const {
   items,
   loading,
   error,
   hasMore,
+  totalItems,
   loadProjects,
   updateProject,
   trashProject,
@@ -84,9 +88,12 @@ async function loadMore() {
   await loadProjects()
 }
 
-function onItemClick(item) {
-  // TODO: navigate to project detail page
-  console.log('Project clicked:', item.id)
+function onItemClick(item, index) {
+  router.push({
+    name: 'project-detail',
+    params: { id: item.id },
+    query: { position: index, total: totalItems.value }
+  })
 }
 
 async function onItemUpdate(id, { title }) {
