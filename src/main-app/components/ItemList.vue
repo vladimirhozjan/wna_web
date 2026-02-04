@@ -22,7 +22,13 @@
           v-for="(item, index) in items"
           :key="item.id"
           class="item-wrapper"
-          :class="{ 'item-wrapper--active': activeId != null && activeId === item.id }"
+          :class="{
+            'item-wrapper--active': activeId != null && activeId === item.id,
+            'item-wrapper--dragging': nativeDraggingId === item.id
+          }"
+          :draggable="!!sourceType && !disabled"
+          @dragstart.capture="onNativeDragStart($event, item)"
+          @dragend.capture="onNativeDragEnd"
       >
         <Item
             :id="item.id"
@@ -67,6 +73,7 @@ import { ref, computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import Item from './Item.vue'
 import Btn from './Btn.vue'
+import { dragModel } from '../scripts/dragModel.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -76,7 +83,11 @@ const props = defineProps({
   activeId: { type: [String, Number], default: null },
   editable: { type: Boolean, default: true },
   noCheckbox: { type: Boolean, default: false },
+  sourceType: { type: String, default: null },
 })
+
+const drag = dragModel()
+const nativeDraggingId = ref(null)
 
 const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-more'])
 
@@ -98,6 +109,20 @@ function onDragStart(evt) {
   originalIndex = evt.oldIndex
   draggedItemId = items.value[evt.oldIndex]?.id
   isDragging.value = true
+
+  // Set native drag data for cross-component drops
+  const item = items.value[evt.oldIndex]
+  if (props.sourceType && item && evt.originalEvent?.dataTransfer) {
+    nativeDraggingId.value = item.id
+    drag.startDrag(item, props.sourceType)
+    evt.originalEvent.dataTransfer.effectAllowed = 'move'
+    evt.originalEvent.dataTransfer.setData('application/json', JSON.stringify({
+      id: item.id,
+      title: item.title,
+      description: item.description || '',
+      sourceType: props.sourceType
+    }))
+  }
 }
 
 function onDragEnd(evt) {
@@ -110,6 +135,31 @@ function onDragEnd(evt) {
 
   draggedItemId = null
   originalIndex = null
+
+  // Clear native drag state
+  if (nativeDraggingId.value) {
+    nativeDraggingId.value = null
+    drag.endDrag()
+  }
+}
+
+function onNativeDragStart(evt, item) {
+  if (!props.sourceType) return
+
+  nativeDraggingId.value = item.id
+  drag.startDrag(item, props.sourceType)
+  evt.dataTransfer.effectAllowed = 'move'
+  evt.dataTransfer.setData('application/json', JSON.stringify({
+    id: item.id,
+    title: item.title,
+    description: item.description || '',
+    sourceType: props.sourceType
+  }))
+}
+
+function onNativeDragEnd() {
+  nativeDraggingId.value = null
+  drag.endDrag()
 }
 </script>
 
@@ -125,8 +175,15 @@ function onDragEnd(evt) {
   border-left: 3px solid var(--color-action);
 }
 
-.item-wrapper-chosen .item {
+.item-wrapper-chosen .item,
+.item-wrapper--dragging .item {
   background-color: var(--color-bg-hover);
+  border-left: none;
+}
+
+.item-wrapper--dragging.item-wrapper--active .item {
+  background-color: var(--color-bg-hover);
+  border-left: none;
 }
 
 .item-wrapper-ghost .item {

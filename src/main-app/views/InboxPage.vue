@@ -57,6 +57,7 @@
               :disabled="clarifyMode"
               :active-id="currentClarifyItem?.id ?? null"
               :editable="!clarifyMode"
+              :source-type="clarifyMode ? null : 'stuff'"
               @update="onItemUpdate"
               @check="onItemCheck"
               @click="onItemClick"

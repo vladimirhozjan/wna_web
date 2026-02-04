@@ -7,8 +7,12 @@
     <button
         type="button"
         class="menu-item text-body-m"
-        :class="{ active: isActive }"
+        :class="{ active: isActive, 'drop-target': showDropTarget }"
         @click="navigate"
+        @dragover="onDragOver"
+        @dragenter="onDragEnter"
+        @dragleave="onDragLeave"
+        @drop="onDrop"
     >
       <span class="icon">
         <slot name="icon" />
@@ -19,12 +23,59 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { ref, computed } from "vue";
+import { dragModel } from "../scripts/dragModel.js";
 
 const props = defineProps({
   label: { type: String, required: true },
-  to: { type: [String, Object], required: true }
+  to: { type: [String, Object], required: true },
+  acceptDrop: { type: Array, default: () => [] },
 });
+
+const emit = defineEmits(['drop']);
+
+const drag = dragModel();
+const isOver = ref(false);
+
+const canAcceptDrop = computed(() => {
+  if (!props.acceptDrop.length) return false;
+  return drag.state.isDragging && props.acceptDrop.includes(drag.state.sourceType);
+});
+
+const showDropTarget = computed(() => isOver.value && canAcceptDrop.value);
+
+function onDragOver(e) {
+  if (!canAcceptDrop.value) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  isOver.value = true;
+}
+
+function onDragEnter(e) {
+  if (!canAcceptDrop.value) return;
+  e.preventDefault();
+  isOver.value = true;
+}
+
+function onDragLeave(e) {
+  // Only set to false if leaving the button itself, not a child
+  if (e.currentTarget.contains(e.relatedTarget)) return;
+  isOver.value = false;
+}
+
+function onDrop(e) {
+  isOver.value = false;
+  if (!canAcceptDrop.value) return;
+
+  e.preventDefault();
+
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('application/json'));
+    emit('drop', data);
+  } catch {
+    // Invalid data
+  }
+}
 </script>
 
 <style scoped>
@@ -50,6 +101,11 @@ const props = defineProps({
   background: var(--color-menu-item-active-bg);
   color: var(--color-menu-item-active-txt);
   font-weight: 600;
+}
+
+.menu-item.drop-target {
+  color: var(--color-menu-item-hover-txt);
+  background: var(--color-btn-ghost-hover);
 }
 
 .icon {

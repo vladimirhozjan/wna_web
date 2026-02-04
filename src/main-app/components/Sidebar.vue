@@ -2,7 +2,12 @@
   <aside class="sidebar">
     <nav class="sidebar-nav">
 
-      <SidebarMenuItem label="Next Action" :to="{ name: 'next' }">
+      <SidebarMenuItem
+          label="Next Action"
+          :to="{ name: 'next' }"
+          :accept-drop="['stuff']"
+          @drop="onDropToNextAction"
+      >
         <template #icon><NextIcon/></template>
       </SidebarMenuItem>
 
@@ -14,7 +19,12 @@
         <template #icon><InboxIcon/></template>
       </SidebarMenuItem>
 
-      <SidebarMenuItem label="Projects" :to="{ name: 'projects' }">
+      <SidebarMenuItem
+          label="Projects"
+          :to="{ name: 'projects' }"
+          :accept-drop="['stuff']"
+          @drop="onDropToProjects"
+      >
         <template #icon><ProjectsIcon/></template>
       </SidebarMenuItem>
 
@@ -22,7 +32,12 @@
         <template #icon><CalendarIcon /></template>
       </SidebarMenuItem>
 
-      <SidebarMenuItem label="Someday / Maybe" :to="{ name: 'someday' }">
+      <SidebarMenuItem
+          label="Someday / Maybe"
+          :to="{ name: 'someday' }"
+          :accept-drop="['stuff']"
+          @drop="onDropToSomeday"
+      >
         <template #icon><SomedayIcon/></template>
       </SidebarMenuItem>
 
@@ -57,6 +72,9 @@
 
 <script setup>
 import { authModel } from "../scripts/authModel.js";
+import { errorModel } from "../scripts/errorModel.js";
+import { stuffModel } from "../scripts/stuffModel.js";
+import apiClient from "../scripts/apiClient.js";
 import { useRouter } from "vue-router";
 
 import SidebarMenuItem from "./SidebarMenuItem.vue";
@@ -71,12 +89,69 @@ import CompletedIcon from "../assets/CompletedIcon.vue";
 import TrashIcon from "../assets/TrashIcon.vue";
 import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
+
 const auth = authModel();
+const toaster = errorModel();
+const { items: stuffItems } = stuffModel();
 const router = useRouter();
 
 async function logout() {
   const confirmed = await auth.logoutWithConfirm();
   if (confirmed) router.push({ name: "landing" });
+}
+
+function truncateTitle(title, maxLen = 30) {
+  if (!title || title.length <= maxLen) return title;
+  return title.slice(0, maxLen).trim() + '…';
+}
+
+async function onDropToNextAction(data) {
+  if (data.sourceType !== 'stuff') return;
+
+  try {
+    await apiClient.clarifyToAction(data.id, {
+      title: data.title,
+      description: data.description || ''
+    });
+    removeFromInbox(data.id);
+    toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move item');
+  }
+}
+
+async function onDropToProjects(data) {
+  if (data.sourceType !== 'stuff') return;
+
+  try {
+    await apiClient.clarifyToProject(data.id, {
+      title: data.title,
+      description: data.description || ''
+    });
+    removeFromInbox(data.id);
+    toaster.success(`"${truncateTitle(data.title)}" moved to Projects`);
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move item');
+  }
+}
+
+async function onDropToSomeday(data) {
+  if (data.sourceType !== 'stuff') return;
+
+  try {
+    await apiClient.clarifyToSomeday(data.id);
+    removeFromInbox(data.id);
+    toaster.success(`"${truncateTitle(data.title)}" moved to Someday`);
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move item');
+  }
+}
+
+function removeFromInbox(id) {
+  const idx = stuffItems.value.findIndex(i => i.id === id);
+  if (idx !== -1) {
+    stuffItems.value.splice(idx, 1);
+  }
 }
 </script>
 

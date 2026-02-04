@@ -171,7 +171,11 @@ function onCheck(e) {
 }
 
 .item:not(.item--no-hover):active {
-  background: var(--color-btn-ghost-hover) !important;
+  background: var(--color-bg-hover) !important;
+}
+
+.item:not(.item--no-hover):active .item__actions {
+  opacity: 0;
 }
 
 @media (hover: none) and (pointer: coarse) {
