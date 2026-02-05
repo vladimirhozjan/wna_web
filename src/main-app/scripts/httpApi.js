@@ -33,6 +33,15 @@ httpApi.interceptors.request.use(async (req) => {
             return req
         } catch (e) {
             console.error("Refresh failed:", e)
+            // If refresh token is invalid (404), logout and redirect
+            if (e.status === 404 || e.status === 401) {
+                localStorage.removeItem('auth_token')
+                localStorage.removeItem('refresh_token')
+                localStorage.removeItem('current_user')
+                localStorage.setItem('logout', Date.now().toString())
+                window.location.href = '/'
+            }
+            throw e
         }
     }
 
