@@ -39,7 +39,7 @@
             </div>
             <h2
                 class="detail-title"
-                :class="{ 'detail-title--hidden': editingField === 'title' }"
+                :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
                 @click="startEdit('title', item.title)"
             >{{ item.title }}</h2>
             <textarea
@@ -59,22 +59,34 @@
 
         <!-- Action buttons -->
         <div class="detail-actions">
-          <Btn
-              variant="primary"
-              size="sm"
-              @click="openClarify"
-          >
-            Clarify
-          </Btn>
-          <Btn
-              variant="ghost"
-              size="sm"
-              :loading="actionLoading === 'done'"
-              @click="onMarkDone"
-          >
-            Done
-          </Btn>
-          <div class="detail-action-wrapper">
+          <template v-if="isCompleted">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'undo'"
+                @click="onUndo"
+            >
+              Undo
+            </Btn>
+          </template>
+          <template v-else>
+            <Btn
+                variant="primary"
+                size="sm"
+                @click="openClarify"
+            >
+              Clarify
+            </Btn>
+            <Btn
+                variant="ghost"
+                size="sm"
+                :loading="actionLoading === 'done'"
+                @click="onMarkDone"
+            >
+              Done
+            </Btn>
+          </template>
+          <div v-if="!isCompleted" class="detail-action-wrapper">
             <Btn
                 variant="ghost"
                 size="sm"
@@ -189,7 +201,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
+import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
@@ -236,6 +248,9 @@ const showMoveDialog = ref(false)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
+
+// Computed
+const isCompleted = computed(() => item.value?.state === 'COMPLETED')
 
 watch(error, (err) => {
   if (!err) return
@@ -525,6 +540,20 @@ async function onTrash() {
     actionLoading.value = null
   }
 }
+
+async function onUndo() {
+  actionLoading.value = 'undo'
+  const title = truncateTitle(item.value.title)
+  try {
+    await apiClient.uncompleteStuff(item.value.id)
+    toaster.success(`"${title}" restored to inbox`)
+    router.push({ name: 'completed' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to restore item')
+  } finally {
+    actionLoading.value = null
+  }
+}
 </script>
 
 <style scoped>
@@ -750,6 +779,12 @@ async function onTrash() {
 
 .detail-title--hidden {
   visibility: hidden;
+}
+
+.detail-title--completed {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+  opacity: 0.6;
 }
 
 .detail-title-input {

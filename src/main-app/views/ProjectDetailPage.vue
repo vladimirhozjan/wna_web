@@ -39,7 +39,7 @@
             </div>
             <h2
                 class="detail-title"
-                :class="{ 'detail-title--hidden': editingField === 'title' }"
+                :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
                 @click="startEdit('title', project.title)"
             >{{ project.title }}</h2>
             <textarea
@@ -59,14 +59,26 @@
 
         <!-- Action buttons -->
         <div class="detail-actions">
-          <Btn
-              variant="ghost"
-              size="sm"
-              :loading="actionLoading === 'complete'"
-              @click="onComplete"
-          >
-            Complete
-          </Btn>
+          <template v-if="isCompleted">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'undo'"
+                @click="onUndo"
+            >
+              Undo
+            </Btn>
+          </template>
+          <template v-else>
+            <Btn
+                variant="ghost"
+                size="sm"
+                :loading="actionLoading === 'complete'"
+                @click="onComplete"
+            >
+              Complete
+            </Btn>
+          </template>
           <Btn
               variant="ghost-danger"
               size="sm"
@@ -177,13 +189,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import apiClient from '../scripts/apiClient.js'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 
 const route = useRoute()
@@ -214,6 +227,9 @@ const actionLoading = ref(null)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
+
+// Computed
+const isCompleted = computed(() => project.value?.state === 'COMPLETED')
 
 watch(error, (err) => {
   if (!err) return
@@ -436,6 +452,20 @@ async function onTrash() {
     actionLoading.value = null
   }
 }
+
+async function onUndo() {
+  actionLoading.value = 'undo'
+  const title = truncateTitle(project.value.title)
+  try {
+    await apiClient.uncompleteProject(project.value.id)
+    toaster.success(`"${title}" restored to projects`)
+    router.push({ name: 'completed' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to restore project')
+  } finally {
+    actionLoading.value = null
+  }
+}
 </script>
 
 <style scoped>
@@ -594,6 +624,12 @@ async function onTrash() {
 
 .detail-title--hidden {
   visibility: hidden;
+}
+
+.detail-title--completed {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+  opacity: 0.6;
 }
 
 .detail-title-input {

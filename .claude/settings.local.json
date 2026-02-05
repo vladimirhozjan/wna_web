@@ -13,7 +13,12 @@
       "Bash(for file in UnderConstruction.svg AppIcon.svg ActionIcon.vue StuffIcon.vue)",
       "Bash(do echo \"=== $file ===\")",
       "Bash(done)",
-      "Bash(for file in \"icons/favicon.ico\" \"icons/today.svg\" \"icons/inbox.svg\" \"icons/projects.svg\" \"icons/next.svg\" \"icons/reference.svg\" \"icons/settings.svg\" \"icons/someday.svg\" \"icons/calendar.svg\" \"icons/logout.svg\" \"icons/favicon.svg\")"
+      "Bash(for file in \"icons/favicon.ico\" \"icons/today.svg\" \"icons/inbox.svg\" \"icons/projects.svg\" \"icons/next.svg\" \"icons/reference.svg\" \"icons/settings.svg\" \"icons/someday.svg\" \"icons/calendar.svg\" \"icons/logout.svg\" \"icons/favicon.svg\")",
+      "Bash(ls:*)",
+      "Bash(trash:*)",
+      "Bash(Trash \" /Users/vladimirhozjan/Documents/wna_backend/API.md)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ]
   }
 }

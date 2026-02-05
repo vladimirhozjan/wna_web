@@ -541,6 +541,59 @@ export async function completeProject(projectId) {
     }
 }
 
+// ── Completed API ──
+
+export async function listCompleted({limit = 10, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/completed', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function completedCount() {
+    try {
+        const res = await httpApi.get('/v1/completed/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// ── Uncomplete API ──
+
+export async function uncompleteStuff(stuffId) {
+    try {
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/uncomplete`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function uncompleteAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/uncomplete`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function uncompleteProject(projectId) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/uncomplete`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Trash API ──
 
 export async function listTrash({limit = 10, cursor = null} = {}) {
@@ -642,6 +695,11 @@ const apiClient = {
     restoreStuff,
     restoreAction,
     restoreProject,
+    listCompleted,
+    completedCount,
+    uncompleteStuff,
+    uncompleteAction,
+    uncompleteProject,
 }
 
 export default apiClient
