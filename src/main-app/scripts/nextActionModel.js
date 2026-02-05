@@ -191,6 +191,27 @@ export function nextActionModel() {
         }
     }
 
+    async function changeActionState(actionId, state, title) {
+        error.value = null
+
+        try {
+            await apiClient.changeActionState(actionId, state, title)
+            items.value = items.value.filter(i => i.id !== actionId)
+
+            if (cursor.value === actionId) {
+                const last = items.value[items.value.length - 1]
+                cursor.value = last ? last.id : null
+            }
+
+            if (current.value?.id === actionId) {
+                current.value = { ...current.value, state }
+            }
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
     async function getActionByPosition(position) {
         loading.value = true
         error.value = null
@@ -227,5 +248,6 @@ export function nextActionModel() {
         trashAction,
         moveAction,
         completeAction,
+        changeActionState,
     }
 }
