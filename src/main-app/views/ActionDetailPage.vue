@@ -6,7 +6,7 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">{{ isCompleted ? 'Completed' : 'Next' }}</span>
+          <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
         <div v-if="action" class="detail-header-right">
           <div class="detail-nav-buttons">
@@ -219,6 +219,12 @@ const navigating = ref(false)
 
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
+const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
+const backLabel = computed(() => {
+  if (isCompleted.value) return 'Completed'
+  if (isSomeday.value) return 'Someday / Maybe'
+  return 'Next'
+})
 
 watch(error, (err) => {
   if (!err) return
@@ -243,7 +249,13 @@ onMounted(async () => {
 })
 
 function goBack() {
-  router.push({ name: isCompleted.value ? 'completed' : 'next' })
+  if (isCompleted.value) {
+    router.push({ name: 'completed' })
+  } else if (isSomeday.value) {
+    router.push({ name: 'someday' })
+  } else {
+    router.push({ name: 'next' })
+  }
 }
 
 function startEdit(field, value) {
