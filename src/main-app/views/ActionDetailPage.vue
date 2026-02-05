@@ -80,10 +80,11 @@
               <div class="detail-dropdown-backdrop" @click="showMoveDialog = false"></div>
               <div class="detail-dropdown detail-dropdown--actions">
                 <div class="detail-dropdown-options">
-                  <button class="detail-dropdown-option" @click="onMoveTo('NEXT')"><NextIcon class="detail-dropdown-icon" /> Next Actions</button>
-                  <button class="detail-dropdown-option" @click="onMoveTo('WAITING')"><WaitingIcon class="detail-dropdown-icon" /> Waiting For</button>
-                  <button class="detail-dropdown-option" @click="onMoveTo('CALENDAR')"><CalendarIcon class="detail-dropdown-icon" /> Calendar</button>
-                  <button class="detail-dropdown-option" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="detail-dropdown-icon" /> Someday</button>
+                  <button v-if="action.state !== 'NEXT'" class="detail-dropdown-option" @click="onMoveTo('NEXT')"><NextIcon class="detail-dropdown-icon" /> Next Actions</button>
+                  <button v-if="action.state !== 'TODAY'" class="detail-dropdown-option" @click="onMoveTo('TODAY')"><TodayIcon class="detail-dropdown-icon" /> Today</button>
+                  <button v-if="action.state !== 'WAITING'" class="detail-dropdown-option" @click="onMoveTo('WAITING')"><WaitingIcon class="detail-dropdown-icon" /> Waiting For</button>
+                  <button v-if="action.state !== 'CALENDAR'" class="detail-dropdown-option" @click="onMoveTo('CALENDAR')"><CalendarIcon class="detail-dropdown-icon" /> Calendar</button>
+                  <button v-if="action.state !== 'SOMEDAY'" class="detail-dropdown-option" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="detail-dropdown-icon" /> Someday</button>
                 </div>
               </div>
             </template>
@@ -166,6 +167,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import ActionIcon from '../assets/ActionIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
+import TodayIcon from '../assets/TodayIcon.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
 import CalendarIcon from '../assets/CalendarIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
@@ -182,6 +184,7 @@ const {
   updateAction,
   trashAction,
   completeAction,
+  changeActionState,
 } = nextActionModel()
 
 const action = ref(null)
@@ -303,14 +306,16 @@ async function onMoveTo(newState) {
 
   const stateLabels = {
     NEXT: 'Next Actions',
+    TODAY: 'Today',
     WAITING: 'Waiting For',
     CALENDAR: 'Calendar',
     SOMEDAY: 'Someday'
   }
 
   try {
-    await updateAction(action.value.id, { title: action.value.title, state: newState })
+    await changeActionState(action.value.id, newState, action.value.title)
     toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabels[newState]}`)
+    await navigateToNextOrPrev()
   } catch {
     action.value.state = oldState
     toaster.push('Failed to move action')

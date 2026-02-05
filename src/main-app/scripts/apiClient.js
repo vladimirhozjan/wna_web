@@ -281,7 +281,7 @@ export async function clarifyToProject(stuffId, projectData) {
 
 export async function clarifyToReference(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'reference'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'REFERENCE'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -290,7 +290,7 @@ export async function clarifyToReference(stuffId) {
 
 export async function clarifyToSomeday(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'someday'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'SOMEDAY'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -437,6 +437,39 @@ export async function completeAction(actionId) {
     }
 }
 
+export async function changeActionState(actionId, state, title) {
+    try {
+        // Use dedicated endpoints for specific states
+        if (state === 'SOMEDAY') {
+            const res = await httpApi.post(`/v1/action/${actionId}/someday`, {}, {headers: authHeaders()})
+            return res.data
+        }
+        // For other states, use PUT with title
+        const res = await httpApi.put(`/v1/action/${actionId}`, {title, state}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function somedayAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/someday`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function somedayProject(projectId) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/someday`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Project API ──
 
 export async function addProject(data) {
@@ -558,16 +591,16 @@ export async function listSomeday({limit = 10, cursor = null} = {}) {
 
 export async function activateStuff(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'active'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'INBOX'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
     }
 }
 
-export async function activateAction(actionId) {
+export async function activateAction(actionId, title) {
     try {
-        const res = await httpApi.put(`/v1/action/${actionId}`, {state: 'active'}, {headers: authHeaders()})
+        const res = await httpApi.put(`/v1/action/${actionId}`, {title, state: 'NEXT'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -576,7 +609,7 @@ export async function activateAction(actionId) {
 
 export async function activateProject(projectId) {
     try {
-        const res = await httpApi.patch(`/v1/project/${projectId}`, {state: 'active'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/project/${projectId}`, {state: 'ACTIVE'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -669,6 +702,9 @@ const apiClient = {
     nextActionCount,
     getActionByPosition,
     completeAction,
+    changeActionState,
+    somedayAction,
+    somedayProject,
     addProject,
     updateProject,
     getProject,
