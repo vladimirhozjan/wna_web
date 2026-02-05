@@ -69,6 +69,16 @@
               Undo
             </Btn>
           </template>
+          <template v-else-if="isSomeday">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'activate'"
+                @click="onActivate"
+            >
+              Activate
+            </Btn>
+          </template>
           <template v-else>
             <Btn
                 variant="ghost"
@@ -458,7 +468,11 @@ async function onTrash() {
   try {
     await trashProject(project.value.id)
     toaster.success(`"${truncateTitle(project.value.title)}" moved to trash`)
-    await navigateToNextOrPrev()
+    if (isSomeday.value) {
+      router.push({ name: 'someday' })
+    } else {
+      await navigateToNextOrPrev()
+    }
   } catch (err) {
     toaster.push(err.message || 'Failed to move project to trash')
   } finally {
@@ -475,6 +489,20 @@ async function onUndo() {
     router.push({ name: 'completed' })
   } catch (err) {
     toaster.push(err.message || 'Failed to restore project')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onActivate() {
+  actionLoading.value = 'activate'
+  const title = truncateTitle(project.value.title)
+  try {
+    await apiClient.activateProject(project.value.id)
+    toaster.success(`"${title}" moved to Projects`)
+    router.push({ name: 'someday' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to activate project')
   } finally {
     actionLoading.value = null
   }

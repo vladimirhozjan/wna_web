@@ -69,6 +69,16 @@
               Undo
             </Btn>
           </template>
+          <template v-else-if="isSomeday">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'activate'"
+                @click="onActivate"
+            >
+              Activate
+            </Btn>
+          </template>
           <template v-else>
             <Btn
                 variant="ghost"
@@ -79,7 +89,7 @@
               Done
             </Btn>
           </template>
-          <div v-if="!isCompleted" class="detail-action-wrapper">
+          <div v-if="!isCompleted && !isSomeday" class="detail-action-wrapper">
             <Btn
                 variant="ghost"
                 size="sm"
@@ -457,7 +467,11 @@ async function onTrash() {
   try {
     await trashAction(action.value.id)
     toaster.success(`"${truncateTitle(action.value.title)}" moved to trash`)
-    await navigateToNextOrPrev()
+    if (isSomeday.value) {
+      router.push({ name: 'someday' })
+    } else {
+      await navigateToNextOrPrev()
+    }
   } catch (err) {
     toaster.push(err.message || 'Failed to move action to trash')
   } finally {
@@ -474,6 +488,20 @@ async function onUndo() {
     router.push({ name: 'completed' })
   } catch (err) {
     toaster.push(err.message || 'Failed to restore action')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onActivate() {
+  actionLoading.value = 'activate'
+  const title = truncateTitle(action.value.title)
+  try {
+    await apiClient.activateAction(action.value.id)
+    toaster.success(`"${title}" moved to Next Actions`)
+    router.push({ name: 'someday' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to activate action')
   } finally {
     actionLoading.value = null
   }

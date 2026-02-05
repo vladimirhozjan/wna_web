@@ -55,7 +55,7 @@ export function somedayModel() {
                     await apiClient.activateStuff(item.id)
                     break
                 case 'ACTION':
-                    await apiClient.activateAction(item.id, item.title)
+                    await apiClient.activateAction(item.id)
                     break
                 case 'PROJECT':
                     await apiClient.activateProject(item.id)

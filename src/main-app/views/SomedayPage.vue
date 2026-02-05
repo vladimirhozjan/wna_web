@@ -26,6 +26,7 @@
             </span>
           </template>
           <template #actions="{ item }">
+            <Btn variant="link" size="sm" @click.stop="onActivate(item.id)">Activate</Btn>
             <button class="action-btn action-btn--danger" @click.stop="onTrash(item.id)">&#10005;</button>
           </template>
           <template #empty>
@@ -46,6 +47,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
+import Btn from '../components/Btn.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
@@ -62,6 +64,7 @@ const {
   error,
   hasMore,
   loadSomeday,
+  activateItem,
   trashItem,
   updateItem,
 } = somedayModel()
@@ -71,11 +74,13 @@ const confirm = confirmModel()
 
 const updatingId = ref(null)
 const deletingId = ref(null)
+const activatingId = ref(null)
 
 const loadingIds = computed(() => {
   const ids = []
   if (updatingId.value) ids.push(updatingId.value)
   if (deletingId.value) ids.push(deletingId.value)
+  if (activatingId.value) ids.push(activatingId.value)
   return ids
 })
 
@@ -135,6 +140,28 @@ async function onItemUpdate(id, { title }) {
     item.title = oldTitle
   } finally {
     updatingId.value = null
+  }
+}
+
+async function onActivate(id) {
+  const item = items.value.find(i => i.id === id)
+  if (!item) return
+
+  const title = truncateTitle(item.title)
+  const typeLabels = {
+    STUFF: 'Inbox',
+    ACTION: 'Next Actions',
+    PROJECT: 'Projects'
+  }
+
+  activatingId.value = id
+  try {
+    await activateItem(item)
+    toaster.success(`"${title}" moved to ${typeLabels[item.type]}`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to activate item')
+  } finally {
+    activatingId.value = null
   }
 }
 
