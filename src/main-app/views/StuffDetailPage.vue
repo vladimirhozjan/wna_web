@@ -6,7 +6,7 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">Inbox</span>
+          <span class="detail-meta-link" @click="goBack">{{ isCompleted ? 'Completed' : 'Inbox' }}</span>
         </div>
         <div v-if="item" class="detail-header-right">
           <div class="detail-nav-buttons">
@@ -108,6 +108,7 @@
             </template>
           </div>
           <Btn
+              v-if="!isCompleted"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -285,7 +286,7 @@ function checkMobile() {
 }
 
 function goBack() {
-  router.push({ name: 'inbox' })
+  router.push({ name: isCompleted.value ? 'completed' : 'inbox' })
 }
 
 function startEdit(field, value) {

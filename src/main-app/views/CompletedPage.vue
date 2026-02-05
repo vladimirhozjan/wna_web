@@ -24,6 +24,7 @@
               <ProjectsIcon v-else-if="item.type === 'PROJECT'" />
             </span>
           </template>
+          <template #actions><span></span></template>
           <template #empty>
             <CompletedIcon class="empty-state__icon" />
             <h2 class="empty-state__title">No completed items</h2>

@@ -6,7 +6,7 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">Projects</span>
+          <span class="detail-meta-link" @click="goBack">{{ isCompleted ? 'Completed' : 'Projects' }}</span>
         </div>
         <div v-if="project" class="detail-header-right">
           <div class="detail-nav-buttons">
@@ -80,6 +80,7 @@
             </Btn>
           </template>
           <Btn
+              v-if="!isCompleted"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -254,7 +255,7 @@ onMounted(async () => {
 })
 
 function goBack() {
-  router.push({ name: 'projects' })
+  router.push({ name: isCompleted.value ? 'completed' : 'projects' })
 }
 
 function startEdit(field, value) {
