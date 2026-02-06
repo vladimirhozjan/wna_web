@@ -74,7 +74,13 @@
                 </div>
               </div>
               <ActionBtn
-                  v-if="!session.is_current"
+                  v-if="session.is_current"
+                  variant="primary"
+                  :loading="loggingOut"
+                  @click="onLogout"
+              />
+              <ActionBtn
+                  v-else
                   variant="primary"
                   :loading="revokingId === session.id"
                   @click="onRevokeSession(session.id)"
@@ -88,27 +94,12 @@
           <h2 class="settings-section-title">Application</h2>
 
           <div class="settings-row">
-            <span class="settings-label">Add new items to</span>
-            <div class="settings-radio-group">
-              <label class="settings-radio">
-                <input
-                    type="radio"
-                    name="addPosition"
-                    value="beginning"
-                    v-model="addPosition"
-                />
-                <span>Beginning of list</span>
-              </label>
-              <label class="settings-radio">
-                <input
-                    type="radio"
-                    name="addPosition"
-                    value="end"
-                    v-model="addPosition"
-                />
-                <span>End of list</span>
-              </label>
-            </div>
+            <span class="settings-label">New items position in the list</span>
+            <Select
+                v-model="addPosition"
+                :options="positionOptions"
+                title="New items position"
+            />
           </div>
         </div>
 
@@ -128,11 +119,6 @@
               <span class="settings-toggle-slider"></span>
             </label>
           </div>
-        </div>
-
-        <!-- Logout -->
-        <div class="settings-section">
-          <Btn variant="ghost" size="md" @click="onLogout">Log Out</Btn>
         </div>
 
       </div>
@@ -205,6 +191,7 @@ import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import Select from '../components/Select.vue'
 import { authModel } from '../scripts/authModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -224,6 +211,11 @@ const appVersion = __APP_VERSION__
 // Preferences
 const addPosition = ref(localStorage.getItem('pref-add-position') || 'end')
 const debugMode = ref(localStorage.getItem('debug-window') !== null)
+
+const positionOptions = [
+  { value: 'end', label: 'End' },
+  { value: 'beginning', label: 'Beginning' }
+]
 
 // Password modal state
 const showPasswordModal = ref(false)
@@ -245,6 +237,7 @@ const revokingAll = ref(false)
 
 // Other state
 const isMobile = ref(false)
+const loggingOut = ref(false)
 
 // Computed
 const canChangePassword = computed(() => {
@@ -328,7 +321,7 @@ function formatSessionTime(dateStr) {
 async function onRevokeSession(sessionId) {
   const confirmed = await confirm.show({
     title: 'End Session',
-    message: 'Are you sure you want to end this session? The device will be logged out.',
+    message: 'Are you sure you want to end this session? The device will be signed out within the next hour.',
     confirmText: 'End Session',
     cancelText: 'Cancel'
   })
@@ -351,7 +344,7 @@ async function onRevokeAllSessions() {
   const otherCount = sessions.value.filter(s => !s.is_current).length
   const confirmed = await confirm.show({
     title: 'End All Other Sessions',
-    message: `Are you sure you want to end ${otherCount} other session${otherCount !== 1 ? 's' : ''}? All other devices will be logged out.`,
+    message: `Are you sure you want to end all other sessions? ${otherCount} device${otherCount !== 1 ? 's' : ''} will be signed out within the next hour.`,
     confirmText: 'End All',
     cancelText: 'Cancel'
   })
@@ -434,10 +427,17 @@ async function onChangePassword() {
 
 // Account actions
 async function onLogout() {
-  const loggedOut = await auth.logoutWithConfirm()
-  if (loggedOut) {
-    router.push({ name: 'login' })
-  }
+  const confirmed = await confirm.show({
+    title: 'Log out',
+    message: 'Are you sure you want to log out?',
+    confirmText: 'Log out',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  loggingOut.value = true
+  auth.logoutUser()
+  router.push({ name: 'login' })
 }
 </script>
 
@@ -627,29 +627,6 @@ async function onLogout() {
   color: var(--color-text-tertiary);
 }
 
-/* Radio group */
-.settings-radio-group {
-  display: flex;
-  gap: 16px;
-}
-
-.settings-radio {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-}
-
-.settings-radio input[type="radio"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-action);
-  cursor: pointer;
-}
-
 /* Toggle switch */
 .settings-toggle {
   position: relative;
@@ -789,32 +766,16 @@ async function onLogout() {
   }
 
   .settings-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
     padding: 12px 0;
-  }
-
-  .settings-radio-group {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .settings-section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .session-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
   }
 
   .session-item--current {
     margin: 0 -8px;
     padding: 12px 8px;
+  }
+
+  .session-name {
+    word-break: break-word;
   }
 }
 </style>

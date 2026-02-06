@@ -86,27 +86,21 @@
               Done
             </Btn>
           </template>
-          <div v-if="!isCompleted" class="detail-action-wrapper">
-            <Btn
-                variant="ghost"
-                size="sm"
-                :loading="actionLoading === 'move'"
-                @click="toggleMoveDialog"
-            >
-              Move
-            </Btn>
-            <template v-if="showMoveDialog && actionLoading !== 'move'">
-              <div class="detail-dropdown-backdrop" @click="showMoveDialog = false"></div>
-              <div class="detail-dropdown detail-dropdown--actions">
-                <div class="detail-dropdown-options">
-                  <button class="detail-dropdown-option" @click="onMoveTo('action')"><NextIcon class="detail-dropdown-icon" /> Next Actions</button>
-                  <button class="detail-dropdown-option" @click="onMoveTo('project')"><ProjectsIcon class="detail-dropdown-icon" /> Projects</button>
-                  <button class="detail-dropdown-option" @click="onMoveTo('someday')"><SomedayIcon class="detail-dropdown-icon" /> Someday</button>
-                  <button class="detail-dropdown-option" @click="onMoveTo('reference')"><ReferenceIcon class="detail-dropdown-icon" /> Reference</button>
-                </div>
-              </div>
+          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
+            <template #trigger>
+              <Btn
+                  variant="ghost"
+                  size="sm"
+                  :loading="actionLoading === 'move'"
+              >
+                Move
+              </Btn>
             </template>
-          </div>
+            <button class="dropdown-item" @click="onMoveTo('action')"><NextIcon class="dropdown-item-icon" /> Next Actions</button>
+            <button class="dropdown-item" @click="onMoveTo('project')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
+            <button class="dropdown-item" @click="onMoveTo('someday')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+            <button class="dropdown-item" @click="onMoveTo('reference')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
+          </Dropdown>
           <Btn
               variant="ghost-danger"
               size="sm"
@@ -205,6 +199,7 @@ import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
+import Dropdown from '../components/Dropdown.vue'
 import ClarifyPanel from '../components/ClarifyPanel.vue'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
@@ -433,9 +428,6 @@ async function onClarifyDone() {
 }
 
 // Action button handlers
-function toggleMoveDialog() {
-  showMoveDialog.value = !showMoveDialog.value
-}
 
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title
@@ -661,68 +653,6 @@ async function onUndo() {
   text-decoration: underline;
 }
 
-/* ── Dropdowns ── */
-.detail-dropdown-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 99;
-}
-
-.detail-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  background: var(--color-bg-primary);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 140px;
-  z-index: 100;
-}
-
-.detail-dropdown-options {
-  padding: 4px;
-}
-
-.detail-dropdown-option {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 4px ;
-  background: none;
-  border: none;
-  text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.detail-dropdown-option:hover {
-  background: var(--color-bg-secondary);
-}
-
-.detail-dropdown-icon {
-  width: 32px;
-  height: 32px;
-  margin-right: 4px;
-  color: var(--color-text-tertiary);
-  flex-shrink: 0;
-}
-
-.detail-dropdown-option:hover .detail-dropdown-icon {
-  color: var(--color-action);
-}
-
-.detail-dropdown-option--selected {
-  background: var(--color-bg-secondary);
-  color: var(--color-action);
-  font-weight: 500;
-}
-
 .detail-section-overlay {
   position: absolute;
   top: 0;
@@ -818,15 +748,6 @@ async function onUndo() {
   display: flex;
   gap: 8px;
   padding: 16px 24px 16px 50px; /* 42px icon + 8px gap */
-}
-
-.detail-action-wrapper {
-  position: relative;
-}
-
-.detail-dropdown--actions {
-  left: 0;
-  min-width: 160px;
 }
 
 /* ── Section areas (description) ── */

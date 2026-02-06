@@ -79,28 +79,22 @@
               Done
             </Btn>
           </template>
-          <div v-if="!isCompleted" class="detail-action-wrapper">
-            <Btn
-                variant="ghost"
-                size="sm"
-                :loading="actionLoading === 'move'"
-                @click="toggleMoveDialog"
-            >
-              Move
-            </Btn>
-            <template v-if="showMoveDialog && actionLoading !== 'move'">
-              <div class="detail-dropdown-backdrop" @click="showMoveDialog = false"></div>
-              <div class="detail-dropdown detail-dropdown--actions">
-                <div class="detail-dropdown-options">
-                  <button v-if="action.state !== 'NEXT'" class="detail-dropdown-option" @click="onMoveTo('NEXT')"><NextIcon class="detail-dropdown-icon" /> Next Actions</button>
-                  <button v-if="action.state !== 'TODAY'" class="detail-dropdown-option" @click="onMoveTo('TODAY')"><TodayIcon class="detail-dropdown-icon" /> Today</button>
-                  <button v-if="action.state !== 'WAITING'" class="detail-dropdown-option" @click="onMoveTo('WAITING')"><WaitingIcon class="detail-dropdown-icon" /> Waiting For</button>
-                  <button v-if="action.state !== 'CALENDAR'" class="detail-dropdown-option" @click="onMoveTo('CALENDAR')"><CalendarIcon class="detail-dropdown-icon" /> Calendar</button>
-                  <button v-if="action.state !== 'SOMEDAY'" class="detail-dropdown-option" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="detail-dropdown-icon" /> Someday</button>
-                </div>
-              </div>
+          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
+            <template #trigger>
+              <Btn
+                  variant="ghost"
+                  size="sm"
+                  :loading="actionLoading === 'move'"
+              >
+                Move
+              </Btn>
             </template>
-          </div>
+            <button v-if="action.state !== 'NEXT'" class="dropdown-item" @click="onMoveTo('NEXT')"><NextIcon class="dropdown-item-icon" /> Next Actions</button>
+            <button v-if="action.state !== 'TODAY'" class="dropdown-item" @click="onMoveTo('TODAY')"><TodayIcon class="dropdown-item-icon" /> Today</button>
+            <button v-if="action.state !== 'WAITING'" class="dropdown-item" @click="onMoveTo('WAITING')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
+            <button v-if="action.state !== 'CALENDAR'" class="dropdown-item" @click="onMoveTo('CALENDAR')"><CalendarIcon class="dropdown-item-icon" /> Calendar</button>
+            <button v-if="action.state !== 'SOMEDAY'" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+          </Dropdown>
           <Btn
               variant="ghost-danger"
               size="sm"
@@ -175,6 +169,7 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
+import Dropdown from '../components/Dropdown.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -306,10 +301,6 @@ async function saveField(field) {
   } finally {
     savingField.value = null
   }
-}
-
-function toggleMoveDialog() {
-  showMoveDialog.value = !showMoveDialog.value
 }
 
 async function onMoveTo(newState) {
@@ -572,56 +563,6 @@ async function onUndo() {
   text-decoration: underline;
 }
 
-/* ── Dropdowns __ */
-.detail-dropdown-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 99;
-}
-
-.detail-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  background: var(--color-bg-primary);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 140px;
-  z-index: 100;
-}
-
-.detail-dropdown-options {
-  padding: 4px;
-}
-
-.detail-dropdown-option {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 4px ;
-  background: none;
-  border: none;
-  text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.detail-dropdown-option:hover {
-  background: var(--color-bg-secondary);
-}
-
-.detail-dropdown-option--selected {
-  background: var(--color-bg-secondary);
-  color: var(--color-action);
-  font-weight: 500;
-}
-
 .detail-section-overlay {
   position: absolute;
   top: 0;
@@ -717,27 +658,6 @@ async function onUndo() {
   display: flex;
   gap: 8px;
   padding: 16px 24px 16px 50px; /* 42px icon + 8px gap */
-}
-
-.detail-action-wrapper {
-  position: relative;
-}
-
-.detail-dropdown--actions {
-  left: 0;
-  min-width: 160px;
-}
-
-.detail-dropdown-icon {
-  width: 32px;
-  height: 32px;
-  margin-right: 4px;
-  color: var(--color-text-tertiary);
-  flex-shrink: 0;
-}
-
-.detail-dropdown-option:hover .detail-dropdown-icon {
-  color: var(--color-action);
 }
 
 /* ── Section areas (description) ── */

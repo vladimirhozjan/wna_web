@@ -61,6 +61,7 @@ onUnmounted(() => {
   border-radius: 6px;
   font-size: 12px;
   z-index: 9999;
+  pointer-events: none;
 }
 </style>
 
