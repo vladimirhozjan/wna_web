@@ -87,12 +87,12 @@ export function stuffModel() {
         }
     }
 
-    async function addStuff(title, description = '') {
+    async function addStuff(title, description = '', position = null) {
         loading.value = true
         error.value = null
 
         try {
-            const created = await apiClient.addStuff({ title, description })
+            const created = await apiClient.addStuff({ title, description, position })
             await loadStuff({ reset: true })
             return created
         } catch (err) {

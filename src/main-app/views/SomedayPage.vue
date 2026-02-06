@@ -26,7 +26,7 @@
             </span>
           </template>
           <template #actions="{ item }">
-            <button class="action-btn action-btn--danger" @click.stop="onTrash(item.id)">&#10005;</button>
+            <ActionBtn @click.stop="onTrash(item.id)" />
           </template>
           <template #empty>
             <SomedayIcon class="empty-state__icon" />
@@ -46,6 +46,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
+import ActionBtn from '../components/ActionBtn.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
@@ -235,26 +236,5 @@ async function onTrash(id) {
 
 .type-icon--project {
   color: #b45309;
-}
-
-.action-btn {
-  padding: 4px 8px;
-  border: none;
-  background: var(--color-bg-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.action-btn:hover {
-  background: var(--color-bg-hover);
-}
-
-.action-btn--danger {
-  color: var(--color-danger);
-}
-
-.action-btn--danger:hover {
-  background: var(--color-danger-light);
 }
 </style>

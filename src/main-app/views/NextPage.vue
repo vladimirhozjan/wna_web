@@ -19,7 +19,7 @@
             @load-more="loadMore"
         >
           <template #actions="{ item }">
-            <button class="action-btn action-btn--danger" @click="onTrash(item.id)">✕</button>
+            <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
             <ActionIcon class="empty-state__icon" />
@@ -39,6 +39,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
+import ActionBtn from '../components/ActionBtn.vue'
 import ActionIcon from '../assets/ActionIcon.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
@@ -210,26 +211,5 @@ h1 {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
-}
-
-.action-btn {
-  padding: 4px 8px;
-  border: none;
-  background: var(--color-bg-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.action-btn:hover {
-  background: var(--color-bg-hover);
-}
-
-.action-btn--danger {
-  color: var(--color-danger);
-}
-
-.action-btn--danger:hover {
-  background: var(--color-danger-light);
 }
 </style>

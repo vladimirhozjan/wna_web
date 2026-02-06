@@ -47,7 +47,7 @@
           </template>
           <template #actions>
             <slot name="actions" :item="item">
-              <button class="action-btn action-btn--danger" @click="emit('delete', item.id)">✕</button>
+              <ActionBtn @click="emit('delete', item.id)" />
             </slot>
           </template>
         </Item>
@@ -73,6 +73,7 @@ import { ref, computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import Item from './Item.vue'
 import Btn from './Btn.vue'
+import ActionBtn from './ActionBtn.vue'
 import { dragModel } from '../scripts/dragModel.js'
 
 const props = defineProps({
@@ -192,27 +193,6 @@ function onNativeDragEnd() {
 
 .item-wrapper-ghost .item > * {
   opacity: 0;
-}
-
-.action-btn {
-  padding: 4px 8px;
-  border: none;
-  background: var(--color-bg-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.action-btn:hover {
-  background: var(--color-bg-hover);
-}
-
-.action-btn--danger {
-  color: var(--color-danger);
-}
-
-.action-btn--danger:hover {
-  background: var(--color-danger-light);
 }
 
 .load-more {

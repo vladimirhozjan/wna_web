@@ -153,9 +153,69 @@ export async function deleteUser() {
     }
 }
 
-export async function addStuff({title, description = ""}) {
+export async function changePassword(currentPassword, newPassword) {
     try {
-        const res = await httpApi.post('/v1/stuff', {title, description}, {headers: authHeaders()})
+        const res = await httpApi.post('/v1/user/change-password', {
+            current_password: currentPassword,
+            new_password: newPassword
+        }, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+async function hashRefreshToken(refreshToken) {
+    if (!refreshToken) return null
+    const encoder = new TextEncoder()
+    const data = encoder.encode(refreshToken)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+export async function listSessions() {
+    try {
+        const refreshToken = localStorage.getItem('refresh_token')
+        const refreshTokenHash = await hashRefreshToken(refreshToken)
+        const res = await httpApi.get('/v1/user/sessions', {
+            params: refreshTokenHash ? {refresh_token_hash: refreshTokenHash} : {},
+            headers: authHeaders()
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function revokeSession(sessionId) {
+    try {
+        const res = await httpApi.delete(`/v1/user/sessions/${sessionId}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function revokeAllSessions() {
+    try {
+        const refreshToken = localStorage.getItem('refresh_token')
+        const refreshTokenHash = await hashRefreshToken(refreshToken)
+        const res = await httpApi.delete('/v1/user/sessions', {
+            data: {refresh_token_hash: refreshTokenHash},
+            headers: authHeaders()
+        })
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function addStuff({title, description = "", position = null}) {
+    try {
+        const body = {title, description}
+        if (position !== null) body.position = position
+        const res = await httpApi.post('/v1/stuff', body, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -728,6 +788,10 @@ const apiClient = {
     forgotPassword,
     resetPassword,
     deleteUser,
+    changePassword,
+    listSessions,
+    revokeSession,
+    revokeAllSessions,
     logoutUser,
     addStuff,
     updateStuff,

@@ -33,13 +33,20 @@ function updateSize() {
 
 //todo: Daj spodnjo na false, ko gres v produkcijo
 const showDebug = ref(true)
+
+function onDebugModeChanged(e) {
+  showDebug.value = e.detail
+}
+
 onMounted(() => {
   showDebug.value = localStorage.getItem("debug-window") !== null
   window.addEventListener("resize", updateSize)
+  window.addEventListener("debug-mode-changed", onDebugModeChanged)
 })
 
 onUnmounted(() => {
   window.removeEventListener("resize", updateSize)
+  window.removeEventListener("debug-mode-changed", onDebugModeChanged)
 })
 </script>
 

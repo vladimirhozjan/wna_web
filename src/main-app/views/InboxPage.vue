@@ -66,7 +66,7 @@
               @load-more="loadMore"
           >
             <template #actions="{ item }">
-              <button v-if="!clarifyMode" class="action-btn action-btn--danger" @click="onTrash(item.id)">✕</button>
+              <ActionBtn v-if="!clarifyMode" @click="onTrash(item.id)" />
             </template>
             <template #empty>
               <InboxIcon class="empty-state__icon" />
@@ -116,6 +116,7 @@ import apiClient from '../scripts/apiClient.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 import ItemList from '../components/ItemList.vue'
+import ActionBtn from '../components/ActionBtn.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import ClarifyPanel from '../components/ClarifyPanel.vue'
 
@@ -206,7 +207,11 @@ async function onAdd() {
   const t = (new_stuff_title.value ?? '').toString().trim()
   if (!t) return
 
-  await addStuff(t)
+  // Read position preference: 'beginning' or 'end' (default)
+  const positionPref = localStorage.getItem('pref-add-position') || 'end'
+  const position = positionPref === 'beginning' ? 0 : null
+
+  await addStuff(t, '', position)
   new_stuff_title.value = ''
   focusAddInput()
 }
@@ -392,27 +397,6 @@ h1 {
 .add-button {
   margin-top: 8px;
   margin-bottom: 4px;
-}
-
-.action-btn {
-  padding: 4px 8px;
-  border: none;
-  background: var(--color-bg-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.action-btn:hover {
-  background: var(--color-bg-hover);
-}
-
-.action-btn--danger {
-  color: var(--color-danger);
-}
-
-.action-btn--danger:hover {
-  background: var(--color-danger-light);
 }
 
 .empty-state__icon {
