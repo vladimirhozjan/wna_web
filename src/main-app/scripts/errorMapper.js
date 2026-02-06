@@ -15,6 +15,7 @@ const statusMap = {
 export const ErrorScenario = Object.freeze({
     LOGIN: "Login",
     REGISTER: "Register",
+    CHANGE_PASSWORD: "ChangePassword",
     GENERIC: "Generic",
 })
 
@@ -32,9 +33,16 @@ export function mapApiError(error, scenario=ErrorScenario.GENERIC) {
             if (status === 401) {
                 return "Incorrect email and/or password. Please correct your credentials.";
             }
-        }  else if (scenario === ErrorScenario.REGISTER) {
+        } else if (scenario === ErrorScenario.REGISTER) {
             if (status === 409) {
                 return "Email already exists. Change email or sign in.";
+            }
+        } else if (scenario === ErrorScenario.CHANGE_PASSWORD) {
+            if (status === 400) {
+                return "New password does not meet requirements.";
+            }
+            if (status === 401) {
+                return "Current password is incorrect.";
             }
         }
 

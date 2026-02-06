@@ -155,11 +155,14 @@ export async function deleteUser() {
 
 export async function changePassword(currentPassword, newPassword) {
     try {
+        const refreshToken = localStorage.getItem('refresh_token')
+        const refreshTokenHash = await hashRefreshToken(refreshToken)
         const res = await httpApi.post('/v1/user/change-password', {
             current_password: currentPassword,
-            new_password: newPassword
+            new_password: newPassword,
+            refresh_token_hash: refreshTokenHash
         }, {headers: authHeaders()})
-        return res.data || true
+        return res.data
     } catch (err) {
         throw normalizeError(err)
     }

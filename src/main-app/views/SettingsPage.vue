@@ -149,6 +149,7 @@
                   type="password"
                   title="New Password"
                   placeholder="Enter new password"
+                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
                   @enter="onChangePassword"
               />
 
@@ -195,6 +196,8 @@ import Select from '../components/Select.vue'
 import { authModel } from '../scripts/authModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import { isValidPassword } from '../scripts/authTools.js'
+import { mapApiError, ErrorScenario } from '../scripts/errorMapper.js'
 import { changePassword, listSessions, revokeSession, revokeAllSessions } from '../scripts/apiClient.js'
 
 const router = useRouter()
@@ -382,44 +385,41 @@ function closePasswordModal() {
 }
 
 async function onChangePassword() {
-  // Validate
+  // Clear errors
   currentPasswordError.value = ''
   newPasswordError.value = ''
   confirmPasswordError.value = ''
 
+  // Validate
   if (!currentPassword.value.trim()) {
     currentPasswordError.value = 'Current password is required'
-    return
   }
 
-  if (!newPassword.value.trim()) {
-    newPasswordError.value = 'New password is required'
-    return
-  }
-
-  if (newPassword.value.length < 8) {
-    newPasswordError.value = 'Password must be at least 8 characters'
-    return
+  if (!isValidPassword(newPassword.value)) {
+    newPasswordError.value = 'Password must contain letters, numbers and symbols'
   }
 
   if (newPassword.value !== confirmPassword.value) {
     confirmPasswordError.value = 'Passwords do not match'
+  }
+
+  if (currentPasswordError.value || newPasswordError.value || confirmPasswordError.value) {
     return
   }
 
   changingPassword.value = true
   try {
-    await changePassword(currentPassword.value, newPassword.value)
-    toaster.success('Password changed successfully')
-    closePasswordModal()
-  } catch (err) {
-    const msg = err.message || 'Failed to change password'
-    // Try to show error on appropriate field
-    if (msg.toLowerCase().includes('current') || msg.toLowerCase().includes('incorrect') || msg.toLowerCase().includes('wrong')) {
-      currentPasswordError.value = msg
+    const result = await changePassword(currentPassword.value, newPassword.value)
+    const revokedCount = result?.revoked_sessions || 0
+    if (revokedCount > 0) {
+      toaster.success(`Password changed. ${revokedCount} other session${revokedCount !== 1 ? 's' : ''} signed out.`)
     } else {
-      newPasswordError.value = msg
+      toaster.success('Password changed successfully')
     }
+    closePasswordModal()
+    loadSessions()
+  } catch (err) {
+    toaster.push('Password change failed: ' + mapApiError(err, ErrorScenario.CHANGE_PASSWORD))
   } finally {
     changingPassword.value = false
   }
