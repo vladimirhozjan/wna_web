@@ -353,7 +353,7 @@ export async function clarifyToReference(stuffId) {
 
 export async function clarifyToSomeday(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'SOMEDAY'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'someday'}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -661,9 +661,9 @@ export async function activateStuff(stuffId) {
     }
 }
 
-export async function activateAction(actionId, title) {
+export async function activateAction(actionId) {
     try {
-        const res = await httpApi.put(`/v1/action/${actionId}`, {title, state: 'NEXT'}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/activate`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -672,7 +672,7 @@ export async function activateAction(actionId, title) {
 
 export async function activateProject(projectId) {
     try {
-        const res = await httpApi.patch(`/v1/project/${projectId}`, {state: 'ACTIVE'}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/project/${projectId}/activate`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)

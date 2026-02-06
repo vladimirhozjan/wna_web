@@ -1,7 +1,12 @@
 <template>
   <div class="item-list">
+    <!-- Loading state -->
+    <div v-if="loading && items.length === 0" class="loading-state">
+      <span class="loading-spinner"></span>
+    </div>
+
     <!-- Empty state -->
-    <div v-if="!loading && items.length === 0" class="empty-state">
+    <div v-else-if="!loading && items.length === 0" class="empty-state">
       <slot name="empty" />
     </div>
 
@@ -208,5 +213,25 @@ function onNativeDragEnd() {
   justify-content: center;
   padding: 48px 24px;
   text-align: center;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

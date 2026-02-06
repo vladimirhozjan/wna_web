@@ -6,7 +6,7 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">Projects</span>
+          <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
         <div v-if="project" class="detail-header-right">
           <div class="detail-nav-buttons">
@@ -69,6 +69,16 @@
               Undo
             </Btn>
           </template>
+          <template v-else-if="isSomeday">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'activate'"
+                @click="onActivate"
+            >
+              Activate
+            </Btn>
+          </template>
           <template v-else>
             <Btn
                 variant="ghost"
@@ -80,6 +90,7 @@
             </Btn>
           </template>
           <Btn
+              v-if="!isCompleted"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -230,6 +241,12 @@ const navigating = ref(false)
 
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
+const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
+const backLabel = computed(() => {
+  if (isCompleted.value) return 'Completed'
+  if (isSomeday.value) return 'Someday / Maybe'
+  return 'Projects'
+})
 
 watch(error, (err) => {
   if (!err) return
@@ -254,7 +271,13 @@ onMounted(async () => {
 })
 
 function goBack() {
-  router.push({ name: 'projects' })
+  if (isCompleted.value) {
+    router.push({ name: 'completed' })
+  } else if (isSomeday.value) {
+    router.push({ name: 'someday' })
+  } else {
+    router.push({ name: 'projects' })
+  }
 }
 
 function startEdit(field, value) {
@@ -445,7 +468,11 @@ async function onTrash() {
   try {
     await trashProject(project.value.id)
     toaster.success(`"${truncateTitle(project.value.title)}" moved to trash`)
-    await navigateToNextOrPrev()
+    if (isSomeday.value) {
+      router.push({ name: 'someday' })
+    } else {
+      await navigateToNextOrPrev()
+    }
   } catch (err) {
     toaster.push(err.message || 'Failed to move project to trash')
   } finally {
@@ -462,6 +489,20 @@ async function onUndo() {
     router.push({ name: 'completed' })
   } catch (err) {
     toaster.push(err.message || 'Failed to restore project')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onActivate() {
+  actionLoading.value = 'activate'
+  const title = truncateTitle(project.value.title)
+  try {
+    await apiClient.activateProject(project.value.id)
+    toaster.success(`"${title}" moved to Projects`)
+    router.push({ name: 'someday' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to activate project')
   } finally {
     actionLoading.value = null
   }

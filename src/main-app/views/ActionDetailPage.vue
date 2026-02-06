@@ -6,7 +6,7 @@
       <div class="detail-header">
         <div class="detail-header-left">
           <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">Next</span>
+          <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
         <div v-if="action" class="detail-header-right">
           <div class="detail-nav-buttons">
@@ -69,6 +69,16 @@
               Undo
             </Btn>
           </template>
+          <template v-else-if="isSomeday">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'activate'"
+                @click="onActivate"
+            >
+              Activate
+            </Btn>
+          </template>
           <template v-else>
             <Btn
                 variant="ghost"
@@ -79,7 +89,7 @@
               Done
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="ghost"
@@ -96,6 +106,7 @@
             <button v-if="action.state !== 'SOMEDAY'" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
           </Dropdown>
           <Btn
+              v-if="!isCompleted"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -213,6 +224,12 @@ const navigating = ref(false)
 
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
+const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
+const backLabel = computed(() => {
+  if (isCompleted.value) return 'Completed'
+  if (isSomeday.value) return 'Someday / Maybe'
+  return 'Next'
+})
 
 watch(error, (err) => {
   if (!err) return
@@ -237,7 +254,13 @@ onMounted(async () => {
 })
 
 function goBack() {
-  router.push({ name: 'next' })
+  if (isCompleted.value) {
+    router.push({ name: 'completed' })
+  } else if (isSomeday.value) {
+    router.push({ name: 'someday' })
+  } else {
+    router.push({ name: 'next' })
+  }
 }
 
 function startEdit(field, value) {
@@ -435,7 +458,11 @@ async function onTrash() {
   try {
     await trashAction(action.value.id)
     toaster.success(`"${truncateTitle(action.value.title)}" moved to trash`)
-    await navigateToNextOrPrev()
+    if (isSomeday.value) {
+      router.push({ name: 'someday' })
+    } else {
+      await navigateToNextOrPrev()
+    }
   } catch (err) {
     toaster.push(err.message || 'Failed to move action to trash')
   } finally {
@@ -452,6 +479,20 @@ async function onUndo() {
     router.push({ name: 'completed' })
   } catch (err) {
     toaster.push(err.message || 'Failed to restore action')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onActivate() {
+  actionLoading.value = 'activate'
+  const title = truncateTitle(action.value.title)
+  try {
+    await apiClient.activateAction(action.value.id)
+    toaster.success(`"${title}" moved to Next Actions`)
+    router.push({ name: 'someday' })
+  } catch (err) {
+    toaster.push(err.message || 'Failed to activate action')
   } finally {
     actionLoading.value = null
   }
