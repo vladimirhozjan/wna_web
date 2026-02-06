@@ -654,7 +654,7 @@ export async function listSomeday({limit = 10, cursor = null} = {}) {
 
 export async function activateStuff(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'INBOX'}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/activate`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
