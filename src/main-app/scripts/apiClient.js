@@ -343,12 +343,7 @@ export async function clarifyToProject(stuffId, projectData) {
 }
 
 export async function clarifyToReference(stuffId) {
-    try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'REFERENCE'}, {headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
+    throw new Error('Reference feature not implemented yet')
 }
 
 export async function clarifyToSomeday(stuffId) {
