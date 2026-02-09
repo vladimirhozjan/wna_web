@@ -400,12 +400,12 @@ export async function updateAction(actionId, data) {
         if (data.description !== undefined) body.description = data.description
         if (data.state) body.state = data.state
         if (data.project_id) body.project_id = data.project_id
-        if (data.start_date) body.start_date = data.start_date
-        if (data.start_time) body.start_time = data.start_time
-        if (data.scheduled_date) body.scheduled_date = data.scheduled_date
-        if (data.scheduled_time) body.scheduled_time = data.scheduled_time
-        if (data.due_date) body.due_date = data.due_date
-        if (data.due_time) body.due_time = data.due_time
+        if (data.start_date !== undefined) body.start_date = data.start_date
+        if (data.start_time !== undefined) body.start_time = data.start_time
+        if (data.scheduled_date !== undefined) body.scheduled_date = data.scheduled_date
+        if (data.scheduled_time !== undefined) body.scheduled_time = data.scheduled_time
+        if (data.due_date !== undefined) body.due_date = data.due_date
+        if (data.due_time !== undefined) body.due_time = data.due_time
         if (data.recurrence_rule) body.recurrence_rule = data.recurrence_rule
         if (data.waiting_for) body.waiting_for = data.waiting_for
         if (data.waiting_since) body.waiting_since = data.waiting_since
@@ -462,6 +462,46 @@ export async function trashAction(actionId) {
 export async function moveAction(actionId, destination) {
     try {
         const res = await httpApi.post(`/v1/action/${actionId}/move`, {destination}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deferAction(actionId, type, date, time = null) {
+    try {
+        const body = { type, date }
+        if (time) body.time = time
+        const res = await httpApi.post(`/v1/action/${actionId}/defer`, body, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function undeferAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/undefer`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function setDueDate(actionId, date, time = null) {
+    try {
+        const body = { date }
+        if (time) body.time = time
+        const res = await httpApi.post(`/v1/action/${actionId}/due`, body, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function clearDueDate(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/undue`, {}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)

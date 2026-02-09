@@ -156,6 +156,108 @@
           </div>
         </div>
 
+        <!-- Dates Section (collapsible) -->
+        <div class="detail-section-area">
+          <div class="detail-section-header" @click="toggleDatesSection">
+            <label class="detail-section-label">Dates</label>
+            <span v-if="!datesExpanded && !hasAnyDate" class="detail-section-content detail-section-content--empty detail-section-content--inline">Add dates...</span>
+            <span v-else-if="!datesExpanded" class="detail-section-content detail-section-content--inline">{{ datesSummary }}</span>
+            <span class="detail-section-toggle">{{ datesExpanded ? '▼' : '▶' }}</span>
+          </div>
+
+          <div v-if="datesExpanded" class="detail-dates-grid">
+            <!-- Deferred: Start Date OR Scheduled Date (mutually exclusive) -->
+            <div class="detail-date-row">
+              <label class="detail-date-label">Deferred</label>
+              <!-- Display mode -->
+              <div v-if="editingField !== 'deferred'" class="detail-section-wrapper">
+                <p
+                    class="detail-section-content"
+                    :class="{ 'detail-section-content--empty': !hasDeferredDate }"
+                    @click="startDeferredEdit"
+                >{{ deferredDisplay }}</p>
+              </div>
+              <!-- Edit mode -->
+              <div v-else class="detail-date-edit-wrapper">
+                <div class="detail-date-type-selector">
+                  <label class="detail-date-radio">
+                    <input type="radio" v-model="dateEdit.deferType" value="scheduled" :disabled="savingField === 'deferred'" />
+                    <span>Scheduled for</span>
+                  </label>
+                  <label class="detail-date-radio">
+                    <input type="radio" v-model="dateEdit.deferType" value="start" :disabled="savingField === 'deferred'" />
+                    <span>Start after</span>
+                  </label>
+                </div>
+                <div class="detail-date-inputs">
+                  <input
+                      ref="deferredDateInput"
+                      type="date"
+                      v-model="dateEdit.date"
+                      class="detail-input"
+                      :disabled="savingField === 'deferred'"
+                      @keyup.esc="cancelEdit"
+                  />
+                  <span v-if="!dateEdit.showTime" class="detail-link" @click="dateEdit.showTime = true">Add time</span>
+                  <input
+                      v-else
+                      type="time"
+                      v-model="dateEdit.time"
+                      class="detail-input detail-input--time"
+                      :disabled="savingField === 'deferred'"
+                      @keyup.esc="cancelEdit"
+                  />
+                </div>
+                <div class="detail-section-actions">
+                  <Btn variant="primary" size="sm" :loading="savingField === 'deferred'" @mousedown.prevent @click="saveDeferredField">Save</Btn>
+                  <Btn variant="ghost" size="sm" :disabled="savingField === 'deferred'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                  <Btn v-if="hasDeferredDate" variant="ghost-danger" size="sm" :disabled="savingField === 'deferred'" @mousedown.prevent @click="clearDeferredField">Clear</Btn>
+                </div>
+              </div>
+            </div>
+
+            <!-- Due Date -->
+            <div class="detail-date-row">
+              <label class="detail-date-label">Due</label>
+              <!-- Display mode -->
+              <div v-if="editingField !== 'due_date'" class="detail-section-wrapper">
+                <p
+                    class="detail-section-content"
+                    :class="{ 'detail-section-content--empty': !action.due_date }"
+                    @click="startDateEdit('due_date')"
+                >{{ formatDateTimeDisplay(action.due_date, action.due_time) || 'Not set' }}</p>
+              </div>
+              <!-- Edit mode -->
+              <div v-else class="detail-date-edit-wrapper">
+                <div class="detail-date-inputs">
+                  <input
+                      ref="dueDateInput"
+                      type="date"
+                      v-model="dateEdit.date"
+                      class="detail-input"
+                      :disabled="savingField === 'due_date'"
+                      @keyup.esc="cancelEdit"
+                  />
+                  <span v-if="!dateEdit.showTime" class="detail-link" @click="dateEdit.showTime = true">Add time</span>
+                  <input
+                      v-else
+                      type="time"
+                      v-model="dateEdit.time"
+                      class="detail-input detail-input--time"
+                      :disabled="savingField === 'due_date'"
+                      @keyup.esc="cancelEdit"
+                  />
+                </div>
+                <div class="detail-section-actions">
+                  <Btn variant="primary" size="sm" :loading="savingField === 'due_date'" @mousedown.prevent @click="saveDateField('due_date')">Save</Btn>
+                  <Btn variant="ghost" size="sm" :disabled="savingField === 'due_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                  <Btn v-if="action.due_date" variant="ghost-danger" size="sm" :disabled="savingField === 'due_date'" @mousedown.prevent @click="clearDateField('due_date')">Clear</Btn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
@@ -184,7 +286,7 @@ import Dropdown from '../components/Dropdown.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
-import apiClient from '../scripts/apiClient.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate } from '../scripts/apiClient.js'
 import ActionIcon from '../assets/ActionIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import TodayIcon from '../assets/TodayIcon.vue'
@@ -217,6 +319,12 @@ const descriptionInput = ref(null)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
 
+// Date section state
+const datesExpanded = ref(false)
+const dateEdit = ref({ date: '', time: '', showTime: false, deferType: 'scheduled' })
+const deferredDateInput = ref(null)
+const dueDateInput = ref(null)
+
 // Navigation state
 const currentPosition = ref(0)
 const totalItems = ref(1)
@@ -229,6 +337,41 @@ const backLabel = computed(() => {
   if (isCompleted.value) return 'Completed'
   if (isSomeday.value) return 'Someday / Maybe'
   return 'Next'
+})
+
+// Date section computed
+const hasAnyDate = computed(() =>
+  action.value?.start_date || action.value?.scheduled_date || action.value?.due_date
+)
+
+const hasDeferredDate = computed(() =>
+  action.value?.start_date || action.value?.scheduled_date
+)
+
+const deferredDisplay = computed(() => {
+  if (action.value?.scheduled_date) {
+    const display = formatDateTimeDisplay(action.value.scheduled_date, action.value.scheduled_time)
+    return `Scheduled for ${display}`
+  }
+  if (action.value?.start_date) {
+    const display = formatDateTimeDisplay(action.value.start_date, action.value.start_time)
+    return `Start after ${display}`
+  }
+  return 'Not set'
+})
+
+const datesSummary = computed(() => {
+  const parts = []
+  if (action.value?.due_date) {
+    parts.push(`Due: ${formatShortDate(action.value.due_date)}`)
+  }
+  if (action.value?.scheduled_date) {
+    parts.push(`Scheduled: ${formatShortDate(action.value.scheduled_date)}`)
+  }
+  if (action.value?.start_date) {
+    parts.push(`Starts: ${formatShortDate(action.value.start_date)}`)
+  }
+  return parts.join(' · ')
 })
 
 watch(error, (err) => {
@@ -358,6 +501,226 @@ async function onMoveTo(newState) {
 function formatDate(dateStr) {
   if (!dateStr) return '—'
   return new Date(dateStr).toLocaleString()
+}
+
+// Date section functions
+function toggleDatesSection() {
+  datesExpanded.value = !datesExpanded.value
+}
+
+function formatShortDate(date) {
+  if (!date) return ''
+  return new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric'
+  })
+}
+
+function formatDateTimeDisplay(date, time) {
+  if (!date) return null
+  const dateObj = new Date(date + 'T00:00:00')
+  const dateStr = dateObj.toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+  })
+  if (time) {
+    const [h, m] = time.split(':')
+    const hour = parseInt(h)
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    return `${dateStr} at ${hour % 12 || 12}:${m} ${ampm}`
+  }
+  return dateStr
+}
+
+function startDeferredEdit() {
+  if (savingField.value) return
+  editingField.value = 'deferred'
+
+  // Determine which type is currently set (default to scheduled)
+  let deferType = 'scheduled'
+  let date = ''
+  let time = ''
+
+  if (action.value.scheduled_date) {
+    deferType = 'scheduled'
+    date = action.value.scheduled_date
+    time = action.value.scheduled_time || ''
+  } else if (action.value.start_date) {
+    deferType = 'start'
+    date = action.value.start_date
+    time = action.value.start_time || ''
+  }
+
+  dateEdit.value = {
+    date,
+    time,
+    showTime: !!time,
+    deferType
+  }
+
+  nextTick(() => {
+    deferredDateInput.value?.focus()
+  })
+}
+
+async function saveDeferredField() {
+  if (editingField.value !== 'deferred' || savingField.value) return
+
+  const newDate = dateEdit.value.date || null
+  const newTime = dateEdit.value.showTime ? (dateEdit.value.time || null) : null
+  const deferType = dateEdit.value.deferType // 'scheduled' or 'start'
+
+  // If no date, this is a clear operation
+  if (!newDate) {
+    await clearDeferredField()
+    return
+  }
+
+  // Save old values for rollback
+  const oldStartDate = action.value.start_date
+  const oldStartTime = action.value.start_time
+  const oldScheduledDate = action.value.scheduled_date
+  const oldScheduledTime = action.value.scheduled_time
+  const oldState = action.value.state
+
+  // Update local state optimistically
+  if (deferType === 'scheduled') {
+    action.value.scheduled_date = newDate
+    action.value.scheduled_time = newTime
+    action.value.start_date = null
+    action.value.start_time = null
+  } else {
+    action.value.start_date = newDate
+    action.value.start_time = newTime
+    action.value.scheduled_date = null
+    action.value.scheduled_time = null
+  }
+  action.value.state = 'CALENDAR'
+
+  savingField.value = 'deferred'
+
+  try {
+    await deferAction(action.value.id, deferType, newDate, newTime)
+    editingField.value = null
+  } catch {
+    // Rollback on error
+    action.value.start_date = oldStartDate
+    action.value.start_time = oldStartTime
+    action.value.scheduled_date = oldScheduledDate
+    action.value.scheduled_time = oldScheduledTime
+    action.value.state = oldState
+  } finally {
+    savingField.value = null
+  }
+}
+
+async function clearDeferredField() {
+  if (savingField.value) return
+
+  // Save old values for rollback
+  const oldStartDate = action.value.start_date
+  const oldStartTime = action.value.start_time
+  const oldScheduledDate = action.value.scheduled_date
+  const oldScheduledTime = action.value.scheduled_time
+  const oldState = action.value.state
+
+  // Update local state optimistically
+  action.value.start_date = null
+  action.value.start_time = null
+  action.value.scheduled_date = null
+  action.value.scheduled_time = null
+  action.value.state = 'NEXT'
+
+  savingField.value = 'deferred'
+
+  try {
+    await undeferAction(action.value.id)
+    editingField.value = null
+    dateEdit.value = { date: '', time: '', showTime: false, deferType: 'scheduled' }
+  } catch {
+    // Rollback on error
+    action.value.start_date = oldStartDate
+    action.value.start_time = oldStartTime
+    action.value.scheduled_date = oldScheduledDate
+    action.value.scheduled_time = oldScheduledTime
+    action.value.state = oldState
+  } finally {
+    savingField.value = null
+  }
+}
+
+function startDateEdit(field) {
+  if (savingField.value) return
+  editingField.value = field
+  const timeField = field.replace('_date', '_time')
+  const existingTime = action.value[timeField] || ''
+  dateEdit.value = {
+    date: action.value[field] || '',
+    time: existingTime,
+    showTime: !!existingTime,
+    deferType: 'scheduled'
+  }
+  nextTick(() => {
+    dueDateInput.value?.focus()
+  })
+}
+
+async function saveDateField(field) {
+  if (editingField.value !== field || savingField.value) return
+
+  const newDate = dateEdit.value.date || null
+  const newTime = dateEdit.value.showTime ? (dateEdit.value.time || null) : null
+
+  // If no date, this is a clear operation
+  if (!newDate) {
+    await clearDateField(field)
+    return
+  }
+
+  // Only handle due_date for now
+  if (field !== 'due_date') return
+
+  const oldDate = action.value.due_date
+  const oldTime = action.value.due_time
+
+  // Update local state optimistically
+  action.value.due_date = newDate
+  action.value.due_time = newTime
+  savingField.value = field
+
+  try {
+    await setDueDate(action.value.id, newDate, newTime)
+    editingField.value = null
+  } catch {
+    action.value.due_date = oldDate
+    action.value.due_time = oldTime
+  } finally {
+    savingField.value = null
+  }
+}
+
+async function clearDateField(field) {
+  if (savingField.value) return
+
+  // Only handle due_date for now
+  if (field !== 'due_date') return
+
+  const oldDate = action.value.due_date
+  const oldTime = action.value.due_time
+
+  // Update local state optimistically
+  action.value.due_date = null
+  action.value.due_time = null
+  savingField.value = field
+
+  try {
+    await clearDueDate(action.value.id)
+    editingField.value = null
+    dateEdit.value = { ...dateEdit.value, date: '', time: '', showTime: false }
+  } catch {
+    action.value.due_date = oldDate
+    action.value.due_time = oldTime
+  } finally {
+    savingField.value = null
+  }
 }
 
 // Navigation functions
@@ -774,6 +1137,140 @@ async function onActivate() {
   gap: 8px;
 }
 
+/* ── Collapsible section header ── */
+.detail-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 4px;
+}
+
+.detail-section-header:hover {
+  background: var(--color-bg-secondary);
+}
+
+.detail-section-header .detail-section-label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.detail-section-toggle {
+  font-size: var(--font-size-footnote);
+  color: var(--color-text-tertiary);
+  margin-left: auto;
+}
+
+.detail-section-content--inline {
+  min-height: auto;
+  padding: 0;
+  border: none;
+}
+
+.detail-section-content--inline:hover {
+  background: none;
+}
+
+/* ── Date grid ── */
+.detail-dates-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+  padding-bottom: 4px;
+}
+
+.detail-date-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-date-label {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.detail-date-edit-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-date-type-selector {
+  display: flex;
+  gap: 24px;
+}
+
+.detail-date-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.detail-date-radio input {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.detail-date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detail-input {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  padding: 8px 12px;
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+}
+
+.detail-input:focus {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  outline: none;
+}
+
+.detail-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detail-input--time {
+  width: 120px;
+}
+
+.detail-link {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-link-text);
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.detail-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.detail-date-row .detail-section-actions {
+  margin-top: 4px;
+}
+
 /* ── Metadata section ── */
 .detail-metadata {
   display: flex;
@@ -855,6 +1352,24 @@ async function onActivate() {
 
   .detail-metadata {
     padding: 12px 16px 16px 50px;
+  }
+
+  .detail-date-type-selector {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-date-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detail-input {
+    width: 100%;
+  }
+
+  .detail-input--time {
+    width: 100%;
   }
 }
 </style>
