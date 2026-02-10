@@ -199,14 +199,27 @@
                       @keyup.esc="cancelEdit"
                   />
                   <span v-if="!dateEdit.showTime" class="detail-link" @click="dateEdit.showTime = true">Add time</span>
-                  <input
-                      v-else
-                      type="time"
-                      v-model="dateEdit.time"
-                      class="detail-input detail-input--time"
-                      :disabled="savingField === 'deferred'"
-                      @keyup.esc="cancelEdit"
-                  />
+                  <template v-else>
+                    <input
+                        type="time"
+                        v-model="dateEdit.time"
+                        class="detail-input detail-input--time"
+                        :disabled="savingField === 'deferred'"
+                        @keyup.esc="cancelEdit"
+                    />
+                    <div v-if="dateEdit.deferType === 'scheduled'" class="detail-duration-input">
+                      <input
+                          type="number"
+                          v-model.number="dateEdit.duration"
+                          class="detail-input detail-input--duration"
+                          min="5"
+                          step="5"
+                          :disabled="savingField === 'deferred'"
+                          @keyup.esc="cancelEdit"
+                      />
+                      <span class="detail-duration-label">min</span>
+                    </div>
+                  </template>
                 </div>
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'deferred'" @mousedown.prevent @click="saveDeferredField">Save</Btn>
@@ -284,6 +297,7 @@ import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
+import { todayModel } from '../scripts/todayModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate } from '../scripts/apiClient.js'
@@ -299,6 +313,9 @@ const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
 
+const nextModel = nextActionModel()
+const todayMdl = todayModel()
+
 const {
   error,
   getAction,
@@ -307,7 +324,10 @@ const {
   trashAction,
   completeAction,
   changeActionState,
-} = nextActionModel()
+} = nextModel
+
+// Source tracking (next, today, etc.)
+const fromSource = ref(null)
 
 const action = ref(null)
 const pageLoading = ref(true)
@@ -321,7 +341,7 @@ const showMoveDialog = ref(false)
 
 // Date section state
 const datesExpanded = ref(false)
-const dateEdit = ref({ date: '', time: '', showTime: false, deferType: 'scheduled' })
+const dateEdit = ref({ date: '', time: '', showTime: false, deferType: 'scheduled', duration: 15 })
 const deferredDateInput = ref(null)
 const dueDateInput = ref(null)
 
@@ -333,9 +353,11 @@ const navigating = ref(false)
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
+const isToday = computed(() => fromSource.value === 'today')
 const backLabel = computed(() => {
   if (isCompleted.value) return 'Completed'
   if (isSomeday.value) return 'Someday / Maybe'
+  if (isToday.value) return 'Today'
   return 'Next'
 })
 
@@ -350,7 +372,10 @@ const hasDeferredDate = computed(() =>
 
 const deferredDisplay = computed(() => {
   if (action.value?.scheduled_date) {
-    const display = formatDateTimeDisplay(action.value.scheduled_date, action.value.scheduled_time)
+    let display = formatDateTimeDisplay(action.value.scheduled_date, action.value.scheduled_time)
+    if (action.value.scheduled_time && action.value.scheduled_duration) {
+      display += ` (${action.value.scheduled_duration} min)`
+    }
     return `Scheduled for ${display}`
   }
   if (action.value?.start_date) {
@@ -382,6 +407,9 @@ watch(error, (err) => {
 
 onMounted(async () => {
   try {
+    // Track source for navigation
+    fromSource.value = route.query.from || null
+
     const data = await getAction(route.params.id)
     action.value = { ...data }
 
@@ -401,6 +429,8 @@ function goBack() {
     router.push({ name: 'completed' })
   } else if (isSomeday.value) {
     router.push({ name: 'someday' })
+  } else if (isToday.value) {
+    router.push({ name: 'today' })
   } else {
     router.push({ name: 'next' })
   }
@@ -538,11 +568,13 @@ function startDeferredEdit() {
   let deferType = 'scheduled'
   let date = ''
   let time = ''
+  let duration = 15 // default 15 minutes
 
   if (action.value.scheduled_date) {
     deferType = 'scheduled'
     date = action.value.scheduled_date
     time = action.value.scheduled_time || ''
+    duration = action.value.scheduled_duration || 15
   } else if (action.value.start_date) {
     deferType = 'start'
     date = action.value.start_date
@@ -553,7 +585,8 @@ function startDeferredEdit() {
     date,
     time,
     showTime: !!time,
-    deferType
+    deferType,
+    duration
   }
 
   nextTick(() => {
@@ -567,6 +600,7 @@ async function saveDeferredField() {
   const newDate = dateEdit.value.date || null
   const newTime = dateEdit.value.showTime ? (dateEdit.value.time || null) : null
   const deferType = dateEdit.value.deferType // 'scheduled' or 'start'
+  const duration = dateEdit.value.duration || 15
 
   // If no date, this is a clear operation
   if (!newDate) {
@@ -579,12 +613,14 @@ async function saveDeferredField() {
   const oldStartTime = action.value.start_time
   const oldScheduledDate = action.value.scheduled_date
   const oldScheduledTime = action.value.scheduled_time
+  const oldScheduledDuration = action.value.scheduled_duration
   const oldState = action.value.state
 
   // Update local state optimistically
   if (deferType === 'scheduled') {
     action.value.scheduled_date = newDate
     action.value.scheduled_time = newTime
+    action.value.scheduled_duration = newTime ? duration : null
     action.value.start_date = null
     action.value.start_time = null
   } else {
@@ -592,13 +628,14 @@ async function saveDeferredField() {
     action.value.start_time = newTime
     action.value.scheduled_date = null
     action.value.scheduled_time = null
+    action.value.scheduled_duration = null
   }
   action.value.state = 'CALENDAR'
 
   savingField.value = 'deferred'
 
   try {
-    await deferAction(action.value.id, deferType, newDate, newTime)
+    await deferAction(action.value.id, deferType, newDate, newTime, duration)
     editingField.value = null
   } catch {
     // Rollback on error
@@ -606,6 +643,7 @@ async function saveDeferredField() {
     action.value.start_time = oldStartTime
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
+    action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
   } finally {
     savingField.value = null
@@ -620,6 +658,7 @@ async function clearDeferredField() {
   const oldStartTime = action.value.start_time
   const oldScheduledDate = action.value.scheduled_date
   const oldScheduledTime = action.value.scheduled_time
+  const oldScheduledDuration = action.value.scheduled_duration
   const oldState = action.value.state
 
   // Update local state optimistically
@@ -627,6 +666,7 @@ async function clearDeferredField() {
   action.value.start_time = null
   action.value.scheduled_date = null
   action.value.scheduled_time = null
+  action.value.scheduled_duration = null
   action.value.state = 'NEXT'
 
   savingField.value = 'deferred'
@@ -634,13 +674,14 @@ async function clearDeferredField() {
   try {
     await undeferAction(action.value.id)
     editingField.value = null
-    dateEdit.value = { date: '', time: '', showTime: false, deferType: 'scheduled' }
+    dateEdit.value = { date: '', time: '', showTime: false, deferType: 'scheduled', duration: 15 }
   } catch {
     // Rollback on error
     action.value.start_date = oldStartDate
     action.value.start_time = oldStartTime
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
+    action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
   } finally {
     savingField.value = null
@@ -730,7 +771,11 @@ async function navigateToPosition(position) {
 
   navigating.value = true
   try {
-    const data = await getActionByPosition(position)
+    // Use correct model based on source
+    const getByPosition = isToday.value
+      ? todayMdl.getActionByPosition
+      : getActionByPosition
+    const data = await getByPosition(position)
     action.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
@@ -739,7 +784,7 @@ async function navigateToPosition(position) {
     router.replace({
       name: 'action-detail',
       params: { id: data.id },
-      query: { position: data.position, total: totalItems.value }
+      query: { position: data.position, total: totalItems.value, from: fromSource.value }
     })
   } catch {
     toaster.push('Failed to load action')
@@ -785,25 +830,31 @@ async function onMarkDone() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
+  const backRoute = isToday.value ? 'today' : 'next'
+
   if (newTotal <= 0) {
-    router.push({ name: 'next' })
+    router.push({ name: backRoute })
     return
   }
 
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    const data = await getActionByPosition(nextPos)
+    // Use correct model based on source
+    const getByPosition = isToday.value
+      ? todayMdl.getActionByPosition
+      : getActionByPosition
+    const data = await getByPosition(nextPos)
     action.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
     router.replace({
       name: 'action-detail',
       params: { id: data.id },
-      query: { position: data.position, total: totalItems.value }
+      query: { position: data.position, total: totalItems.value, from: fromSource.value }
     })
   } catch {
-    router.push({ name: 'next' })
+    router.push({ name: backRoute })
   }
 }
 
@@ -1254,6 +1305,23 @@ async function onActivate() {
   width: 120px;
 }
 
+.detail-duration-input {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detail-input--duration {
+  width: 70px;
+  text-align: center;
+}
+
+.detail-duration-label {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
+}
+
 .detail-link {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
@@ -1370,6 +1438,16 @@ async function onActivate() {
 
   .detail-input--time {
     width: 100%;
+  }
+
+  .detail-duration-input {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .detail-input--duration {
+    flex: 1;
+    width: auto;
   }
 }
 </style>
