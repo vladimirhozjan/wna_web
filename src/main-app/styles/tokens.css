@@ -29,6 +29,26 @@
     --color-success: #16a34a;
     --color-success-light: #dcfce7;
 
+    /* Calendar colors */
+    --color-calendar-scheduled: #bae6fd;
+    --color-calendar-scheduled-border: #0284c7;
+    --color-calendar-scheduled-text: #0c4a6e;
+    --color-calendar-deferred: #e0f2fe;
+    --color-calendar-deferred-border: #38bdf8;
+    --color-calendar-deferred-text: #075985;
+    --color-calendar-today-bg: #fef3c7;
+    --color-calendar-today-border: #f59e0b;
+    --color-calendar-grid-line: #e5e7eb;
+    --color-calendar-hour-text: #9ca3af;
+    --color-calendar-weekend-bg: #f9fafb;
+
+    /* Heat map colors for year view */
+    --color-heat-0: #f3f4f6;
+    --color-heat-1: #e0f2fe;
+    --color-heat-2: #bae6fd;
+    --color-heat-3: #7dd3fc;
+    --color-heat-4: #38bdf8;
+
     --color-btn-loader-top: #fff;
     --color-btn-loader-fade-1: rgba(255,255,255,0.3);
 
