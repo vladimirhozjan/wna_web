@@ -468,10 +468,11 @@ export async function moveAction(actionId, destination) {
     }
 }
 
-export async function deferAction(actionId, type, date, time = null) {
+export async function deferAction(actionId, type, date, time = null, duration = null) {
     try {
         const body = { type, date }
         if (time) body.time = time
+        if (type === 'scheduled' && time && duration) body.duration = duration
         const res = await httpApi.post(`/v1/action/${actionId}/defer`, body, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
@@ -517,6 +518,48 @@ export async function nextActionCount() {
     }
 }
 
+// ── Today API ──
+
+export async function listTodayActions({limit = 10, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/today', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function todayCount() {
+    try {
+        const res = await httpApi.get('/v1/today/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function todayAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/today`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getTodayActionByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/today/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getActionByPosition(position) {
     try {
         const res = await httpApi.get(`/v1/nextActions/pos/${position}`, {headers: authHeaders()})
@@ -542,7 +585,11 @@ export async function changeActionState(actionId, state, title) {
             const res = await httpApi.post(`/v1/action/${actionId}/someday`, {}, {headers: authHeaders()})
             return res.data
         }
-        // For other states, use PUT with title
+        if (state === 'TODAY') {
+            const res = await httpApi.post(`/v1/action/${actionId}/today`, {}, {headers: authHeaders()})
+            return res.data
+        }
+        // For other states (NEXT, CALENDAR, WAITING), use PUT with title
         const res = await httpApi.put(`/v1/action/${actionId}`, {title, state}, {headers: authHeaders()})
         return res.data
     } catch (err) {
@@ -882,6 +929,12 @@ const apiClient = {
     changeActionState,
     somedayAction,
     somedayProject,
+    // Today API
+    listTodayActions,
+    todayCount,
+    todayAction,
+    getTodayActionByPosition,
+    // Project API
     addProject,
     updateProject,
     getProject,

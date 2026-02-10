@@ -12,6 +12,11 @@ export function errorModel() {
     let nextId = 1;
 
     function push(message, type = 'error') {
+        // Log errors to console
+        if (type === 'error') {
+            console.error('[Toast]', message);
+        }
+
         // Remove duplicates
         const existing = state.errors.find(e => e.message === message);
         if (existing) return;
