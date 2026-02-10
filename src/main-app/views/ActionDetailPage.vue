@@ -333,7 +333,10 @@ const navigating = ref(false)
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
+const fromCalendar = computed(() => !!history.state?.calendarItem)
+
 const backLabel = computed(() => {
+  if (fromCalendar.value) return 'Calendar'
   if (isCompleted.value) return 'Completed'
   if (isSomeday.value) return 'Someday / Maybe'
   return 'Next'
@@ -389,15 +392,28 @@ onMounted(async () => {
     totalItems.value = Number(route.query.total) || 1
 
   } catch {
-    toaster.push('Failed to load action')
-    router.push({ name: 'next' })
+    // Check if we have calendar item data passed via router state (for mock data)
+    const calendarItem = history.state?.calendarItem
+    if (calendarItem) {
+      action.value = {
+        ...calendarItem,
+        description: calendarItem.description || '',
+        created: calendarItem.created || new Date().toISOString(),
+        updated: calendarItem.updated || new Date().toISOString(),
+      }
+    } else {
+      toaster.push('Failed to load action')
+      router.push({ name: 'next' })
+    }
   } finally {
     pageLoading.value = false
   }
 })
 
 function goBack() {
-  if (isCompleted.value) {
+  if (fromCalendar.value) {
+    router.push({ name: 'calendar' })
+  } else if (isCompleted.value) {
     router.push({ name: 'completed' })
   } else if (isSomeday.value) {
     router.push({ name: 'someday' })
