@@ -249,7 +249,7 @@ onUnmounted(() => {
 }
 
 .time-grid__row--outside-business {
-  background: var(--color-bg-secondary);
+  background: var(--color-calendar-outside-business);
 }
 
 .time-grid__row--outside-business .time-grid__label {

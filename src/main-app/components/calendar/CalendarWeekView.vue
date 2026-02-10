@@ -540,7 +540,7 @@ onUnmounted(() => {
 }
 
 .week-view__cell--outside-business {
-  background: var(--color-bg-secondary);
+  background: var(--color-calendar-outside-business);
 }
 
 .week-view__items {

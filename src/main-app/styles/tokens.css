@@ -41,6 +41,7 @@
     --color-calendar-grid-line: #e5e7eb;
     --color-calendar-hour-text: #9ca3af;
     --color-calendar-weekend-bg: #f9fafb;
+    --color-calendar-outside-business: #f8f9fa;
 
     /* Heat map colors for year view */
     --color-heat-0: #fafbfc;
