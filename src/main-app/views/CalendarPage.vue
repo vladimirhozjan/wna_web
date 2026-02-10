@@ -112,7 +112,7 @@ function onItemClick(item) {
   router.push({
     name: 'action-detail',
     params: { id: item.id },
-    state: { calendarItem: item }
+    query: { from: 'calendar' }
   })
 }
 

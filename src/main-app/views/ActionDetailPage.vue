@@ -354,7 +354,7 @@ const navigating = ref(false)
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
 const isToday = computed(() => fromSource.value === 'today')
-const fromCalendar = computed(() => !!history.state?.calendarItem)
+const fromCalendar = computed(() => fromSource.value === 'calendar')
 
 const backLabel = computed(() => {
   if (fromCalendar.value) return 'Calendar'
@@ -420,19 +420,8 @@ onMounted(async () => {
     totalItems.value = Number(route.query.total) || 1
 
   } catch {
-    // Check if we have calendar item data passed via router state (for mock data)
-    const calendarItem = history.state?.calendarItem
-    if (calendarItem) {
-      action.value = {
-        ...calendarItem,
-        description: calendarItem.description || '',
-        created: calendarItem.created || new Date().toISOString(),
-        updated: calendarItem.updated || new Date().toISOString(),
-      }
-    } else {
-      toaster.push('Failed to load action')
-      router.push({ name: 'next' })
-    }
+    toaster.push('Failed to load action')
+    router.push({ name: 'next' })
   } finally {
     pageLoading.value = false
   }
