@@ -8,7 +8,7 @@
           <a class="detail-back-link" @click="goBack">&lt;</a>
           <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="action" class="detail-header-right">
+        <div v-if="action && !fromCalendar" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
