@@ -277,10 +277,12 @@ const timeFormatOptions = [
   { value: '24h', label: '24-hour' }
 ]
 
-const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+const hourOptions = computed(() => Array.from({ length: 24 }, (_, i) => ({
   value: i,
-  label: i === 0 ? '12:00 AM' : i < 12 ? `${i}:00 AM` : i === 12 ? '12:00 PM' : `${i - 12}:00 PM`
-}))
+  label: timeFormat.value === '24h'
+      ? `${String(i).padStart(2, '0')}:00`
+      : i === 0 ? '12:00 AM' : i < 12 ? `${i}:00 AM` : i === 12 ? '12:00 PM' : `${i - 12}:00 PM`
+})))
 
 const dayOptions = [
   { value: 0, label: 'Sun' },
