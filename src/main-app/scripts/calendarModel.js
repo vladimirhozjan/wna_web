@@ -144,9 +144,23 @@ export function calendarModel() {
             }
 
             const created = await addAction(actionData)
-            const transformedItem = transformItem(created)
-            items.value.push(transformedItem)
-            return transformedItem
+
+            // API only returns { id, state, type }, so construct full item locally
+            const newItem = {
+                id: created.id,
+                title,
+                type: created.type || 'ACTION',
+                state: created.state || 'CALENDAR',
+                scheduled_date: date,
+                scheduled_time: time || null,
+                start_date: null,
+                start_time: null,
+                duration: null,
+                due_date: null,
+            }
+
+            items.value = [...items.value, newItem]
+            return newItem
         } catch (err) {
             error.value = err
             throw err
