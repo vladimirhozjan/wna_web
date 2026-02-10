@@ -201,11 +201,18 @@ function getTimedItemsForDate(date) {
 }
 
 function getPositionedItemsForDate(date) {
+  const minHeight = hourHeight / 4  // 15 minutes minimum
+  const defaultDuration = 15  // 15 minutes default
+
   return getTimedItemsForDate(date).map(item => {
     const time = calendar.getItemTime(item)
     const [hours, minutes] = time.split(':').map(Number)
     const top = (hours * hourHeight) + (minutes / 60) * hourHeight
-    const height = Math.max(hourHeight / 2, 30)
+
+    // Calculate duration in minutes
+    const duration = item.duration || defaultDuration
+    const durationHeight = (duration / 60) * hourHeight
+    const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
 
     return {
       ...item,
@@ -392,7 +399,7 @@ onUnmounted(() => {
 .week-view__all-day {
   display: flex;
   border-bottom: 1px solid var(--color-calendar-grid-line);
-  min-height: 48px;
+  height: 80px;
   flex-shrink: 0;
   position: sticky;
   top: 58px; /* Below header */
@@ -403,7 +410,7 @@ onUnmounted(() => {
 .week-view__all-day-label {
   flex-shrink: 0;
   width: 64px;
-  padding: 4px 8px;
+  padding: 8px 8px;
   font-family: var(--font-family-default);
   font-size: var(--font-size-footnote);
   color: var(--color-calendar-hour-text);
@@ -414,13 +421,20 @@ onUnmounted(() => {
 
 .week-view__all-day-cell {
   flex: 1;
+  min-width: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 4px;
   padding: 4px;
   border-right: 1px solid var(--color-calendar-grid-line);
   cursor: pointer;
   transition: background 0.15s;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.week-view__all-day-cell > * {
+  flex-shrink: 0;
 }
 
 .week-view__all-day-cell:last-of-type {
@@ -497,6 +511,9 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--color-calendar-grid-line);
   cursor: pointer;
   transition: background 0.15s;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
 .week-view__cell:hover {
@@ -516,6 +533,7 @@ onUnmounted(() => {
   right: 4px;
   bottom: 0;
   pointer-events: none;
+  z-index: 5;
 }
 
 .week-view__item-wrapper {
@@ -523,6 +541,10 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   pointer-events: auto;
+}
+
+.week-view__item-wrapper > * {
+  height: 100%;
 }
 
 .week-view__now {

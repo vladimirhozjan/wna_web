@@ -132,7 +132,7 @@ const showCurrentTime = computed(() => {
 
 const positionedItems = computed(() => {
   const minHeight = props.hourHeight / 4  // 15 minutes minimum
-  const defaultDuration = 30  // 30 minutes default
+  const defaultDuration = 15  // 15 minutes default
 
   return props.items
       .filter(item => calendar.hasTime(item))

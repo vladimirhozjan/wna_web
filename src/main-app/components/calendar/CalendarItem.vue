@@ -86,6 +86,7 @@ function onDragEnd(e) {
   overflow: hidden;
   border-left: 3px solid transparent;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .calendar-item:active {
