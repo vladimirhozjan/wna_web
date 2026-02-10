@@ -74,17 +74,16 @@ function onDragEnd(e) {
 <style scoped>
 .calendar-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
   font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
+  font-size: var(--font-size-footnote);
+  line-height: 1.3;
   cursor: grab;
   transition: opacity 0.15s, transform 0.15s;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   border-left: 3px solid transparent;
   user-select: none;
 }
@@ -127,6 +126,9 @@ function onDragEnd(e) {
 .calendar-item__title {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 </style>

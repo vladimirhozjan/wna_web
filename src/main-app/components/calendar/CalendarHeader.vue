@@ -132,10 +132,10 @@ const title = computed(() => {
 }
 
 .calendar-header__title-wrapper {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   min-width: 200px;
 }
 
@@ -148,22 +148,13 @@ const title = computed(() => {
 }
 
 .calendar-header__spinner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-bg-primary);
-}
-
-.calendar-header__spinner::after {
-  content: '';
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 2px solid var(--color-border-light);
   border-top-color: var(--color-action);
   border-radius: 50%;
   animation: header-spin 0.8s linear infinite;
+  flex-shrink: 0;
 }
 
 @keyframes header-spin {

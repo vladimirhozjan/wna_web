@@ -87,7 +87,7 @@ function onDragEnd() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 600px;
+  min-height: 500px;
   border: 1px solid var(--color-calendar-grid-line);
   border-radius: 8px;
   overflow: hidden;

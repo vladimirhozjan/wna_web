@@ -26,6 +26,7 @@ function generateMockData() {
         type: 'ACTION',
         scheduled_date: formatDate(today),
         scheduled_time: '09:00',
+        duration: 15,  // 15 minutes
     })
 
     mockItems.push({
@@ -34,6 +35,7 @@ function generateMockData() {
         type: 'ACTION',
         scheduled_date: formatDate(today),
         scheduled_time: '14:30',
+        duration: 60,  // 1 hour
     })
 
     mockItems.push({
@@ -42,6 +44,7 @@ function generateMockData() {
         type: 'ACTION',
         scheduled_date: formatDate(addDays(today, 1)),
         scheduled_time: '10:00',
+        duration: 90,  // 1.5 hours
     })
 
     mockItems.push({
@@ -50,6 +53,7 @@ function generateMockData() {
         type: 'ACTION',
         start_date: formatDate(addDays(today, 2)),
         start_time: '08:00',
+        duration: 120,  // 2 hours
     })
 
     mockItems.push({
@@ -66,6 +70,7 @@ function generateMockData() {
         type: 'ACTION',
         scheduled_date: formatDate(addDays(today, 3)),
         scheduled_time: '11:00',
+        duration: 45,  // 45 minutes
     })
 
     mockItems.push({
@@ -74,6 +79,7 @@ function generateMockData() {
         type: 'ACTION',
         scheduled_date: formatDate(addDays(today, -1)),
         scheduled_time: '15:00',
+        duration: 30,  // 30 minutes
     })
 
     mockItems.push({
@@ -82,6 +88,7 @@ function generateMockData() {
         type: 'ACTION',
         start_date: formatDate(addDays(today, 5)),
         start_time: '09:00',
+        duration: 180,  // 3 hours
     })
 
     mockItems.push({
@@ -98,6 +105,7 @@ function generateMockData() {
         type: 'ACTION',
         scheduled_date: formatDate(addDays(today, 7)),
         scheduled_time: '10:30',
+        duration: 60,  // 1 hour
     })
 
     for (let i = 11; i <= 18; i++) {
@@ -106,6 +114,8 @@ function generateMockData() {
         const hasTime = Math.random() > 0.3
         const hour = 8 + Math.floor(Math.random() * 10)
         const minute = Math.random() > 0.5 ? '00' : '30'
+        const durations = [15, 30, 45, 60, 90, 120]
+        const duration = durations[Math.floor(Math.random() * durations.length)]
 
         if (isScheduled) {
             mockItems.push({
@@ -114,6 +124,7 @@ function generateMockData() {
                 type: 'ACTION',
                 scheduled_date: formatDate(addDays(today, dayOffset)),
                 scheduled_time: hasTime ? `${String(hour).padStart(2, '0')}:${minute}` : null,
+                duration: hasTime ? duration : undefined,
             })
         } else {
             mockItems.push({
@@ -122,6 +133,7 @@ function generateMockData() {
                 type: 'ACTION',
                 start_date: formatDate(addDays(today, dayOffset)),
                 start_time: hasTime ? `${String(hour).padStart(2, '0')}:${minute}` : null,
+                duration: hasTime ? duration : undefined,
             })
         }
     }

@@ -174,7 +174,7 @@ function onDrop(day, event) {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 600px;
+  min-height: 500px;
 }
 
 .month-view__header {

@@ -105,7 +105,8 @@ function onDrop(event) {
 .all-day-section {
   display: flex;
   border-bottom: 1px solid var(--color-calendar-grid-line);
-  min-height: 48px;
+  min-height: 100px;
+  max-height: 120px;
   background: var(--color-bg-primary);
   transition: background 0.15s;
 }
@@ -119,25 +120,26 @@ function onDrop(event) {
 .all-day-section__label {
   flex-shrink: 0;
   width: 64px;
-  padding: 4px 8px;
+  padding: 8px 8px;
   font-family: var(--font-family-default);
   font-size: var(--font-size-footnote);
   color: var(--color-calendar-hour-text);
   text-align: right;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
 }
 
 .all-day-section__content {
   flex: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 4px;
   padding: 8px;
   cursor: pointer;
   border-left: 1px solid var(--color-calendar-grid-line);
+  overflow-y: auto;
 }
 
 .all-day-section__empty {

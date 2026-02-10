@@ -131,7 +131,8 @@ const showCurrentTime = computed(() => {
 })
 
 const positionedItems = computed(() => {
-  const halfHourHeight = props.hourHeight / 2
+  const minHeight = props.hourHeight / 4  // 15 minutes minimum
+  const defaultDuration = 30  // 30 minutes default
 
   return props.items
       .filter(item => calendar.hasTime(item))
@@ -139,7 +140,11 @@ const positionedItems = computed(() => {
         const time = calendar.getItemTime(item)
         const [hours, minutes] = time.split(':').map(Number)
         const top = (hours * props.hourHeight) + (minutes / 60) * props.hourHeight
-        const height = halfHourHeight - 4
+
+        // Calculate duration in minutes
+        const duration = item.duration || defaultDuration
+        const durationHeight = (duration / 60) * props.hourHeight
+        const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
 
         return {
           ...item,
@@ -237,6 +242,7 @@ onUnmounted(() => {
   display: flex;
   border-bottom: 1px solid var(--color-calendar-grid-line);
   position: relative;
+  box-sizing: border-box;
 }
 
 .time-grid__row::after {

@@ -31,6 +31,7 @@ const emit = defineEmits(['submit', 'cancel'])
 
 const title = ref('')
 const inputRef = ref(null)
+const submitted = ref(false)
 
 onMounted(() => {
   nextTick(() => {
@@ -39,8 +40,10 @@ onMounted(() => {
 })
 
 function onSubmit() {
+  if (submitted.value) return
   const trimmedTitle = title.value.trim()
   if (trimmedTitle) {
+    submitted.value = true
     emit('submit', {
       title: trimmedTitle,
       date: props.date,
@@ -52,12 +55,15 @@ function onSubmit() {
 }
 
 function onCancel() {
+  if (submitted.value) return
   emit('cancel')
 }
 
 function onBlur() {
+  if (submitted.value) return
   const trimmedTitle = title.value.trim()
   if (trimmedTitle) {
+    submitted.value = true
     emit('submit', {
       title: trimmedTitle,
       date: props.date,
