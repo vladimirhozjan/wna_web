@@ -14,6 +14,32 @@ function loadSavedViewMode() {
     return saved && validViewModes.includes(saved) ? saved : 'month'
 }
 
+function getCalendarSettings() {
+    return {
+        timeFormat: localStorage.getItem('calendar_time_format') || '12h',
+        businessHoursStart: parseInt(localStorage.getItem('calendar_business_hours_start')) || 9,
+        businessHoursEnd: parseInt(localStorage.getItem('calendar_business_hours_end')) || 17,
+        businessDays: JSON.parse(localStorage.getItem('calendar_business_days') || '[1,2,3,4,5]'),
+    }
+}
+
+function formatHour(hour, format) {
+    if (format === '24h') {
+        return `${String(hour).padStart(2, '0')}:00`
+    }
+    const period = hour >= 12 ? 'PM' : 'AM'
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+    return `${displayHour} ${period}`
+}
+
+function isBusinessHour(hour, settings) {
+    return hour >= settings.businessHoursStart && hour < settings.businessHoursEnd
+}
+
+function isBusinessDay(dayOfWeek, settings) {
+    return settings.businessDays.includes(dayOfWeek)
+}
+
 const items = ref([])
 const densityData = ref({})
 const currentDate = ref(new Date())
@@ -257,6 +283,12 @@ export function calendarModel() {
         goToNext,
         setViewMode,
         setCurrentDate,
+
+        // Settings
+        getCalendarSettings,
+        formatHour,
+        isBusinessHour,
+        isBusinessDay,
     }
 
     return instance

@@ -103,6 +103,52 @@
           </div>
         </div>
 
+        <!-- Calendar Section -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Calendar</h2>
+
+          <div class="settings-row">
+            <span class="settings-label">Time format</span>
+            <Select
+                v-model="timeFormat"
+                :options="timeFormatOptions"
+                title="Time format"
+            />
+          </div>
+
+          <div class="settings-row">
+            <span class="settings-label">Business hours start</span>
+            <Select
+                v-model="businessHoursStart"
+                :options="hourOptions"
+                title="Start hour"
+            />
+          </div>
+
+          <div class="settings-row">
+            <span class="settings-label">Business hours end</span>
+            <Select
+                v-model="businessHoursEnd"
+                :options="hourOptions"
+                title="End hour"
+            />
+          </div>
+
+          <div class="settings-row settings-row--column">
+            <span class="settings-label">Business days</span>
+            <div class="settings-days">
+              <label v-for="day in dayOptions" :key="day.value" class="settings-day-checkbox">
+                <input
+                    type="checkbox"
+                    :value="day.value"
+                    v-model="businessDays"
+                />
+                <span>{{ day.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- About Section -->
         <div class="settings-section">
           <h2 class="settings-section-title">About</h2>
@@ -220,6 +266,32 @@ const positionOptions = [
   { value: 'beginning', label: 'Beginning' }
 ]
 
+// Calendar preferences
+const timeFormat = ref(localStorage.getItem('calendar_time_format') || '12h')
+const businessHoursStart = ref(parseInt(localStorage.getItem('calendar_business_hours_start')) || 9)
+const businessHoursEnd = ref(parseInt(localStorage.getItem('calendar_business_hours_end')) || 17)
+const businessDays = ref(JSON.parse(localStorage.getItem('calendar_business_days') || '[1,2,3,4,5]'))
+
+const timeFormatOptions = [
+  { value: '12h', label: '12-hour (AM/PM)' },
+  { value: '24h', label: '24-hour' }
+]
+
+const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+  value: i,
+  label: i === 0 ? '12:00 AM' : i < 12 ? `${i}:00 AM` : i === 12 ? '12:00 PM' : `${i - 12}:00 PM`
+}))
+
+const dayOptions = [
+  { value: 0, label: 'Sun' },
+  { value: 1, label: 'Mon' },
+  { value: 2, label: 'Tue' },
+  { value: 3, label: 'Wed' },
+  { value: 4, label: 'Thu' },
+  { value: 5, label: 'Fri' },
+  { value: 6, label: 'Sat' }
+]
+
 // Password modal state
 const showPasswordModal = ref(false)
 const currentPassword = ref('')
@@ -264,6 +336,22 @@ watch(debugMode, (val) => {
   // Notify App.vue about the change
   window.dispatchEvent(new CustomEvent('debug-mode-changed', { detail: val }))
 })
+
+watch(timeFormat, (val) => {
+  localStorage.setItem('calendar_time_format', val)
+})
+
+watch(businessHoursStart, (val) => {
+  localStorage.setItem('calendar_business_hours_start', val.toString())
+})
+
+watch(businessHoursEnd, (val) => {
+  localStorage.setItem('calendar_business_hours_end', val.toString())
+})
+
+watch(businessDays, (val) => {
+  localStorage.setItem('calendar_business_days', JSON.stringify(val))
+}, { deep: true })
 
 // Lifecycle
 onMounted(() => {
@@ -674,6 +762,48 @@ async function onLogout() {
 
 .settings-toggle input:checked + .settings-toggle-slider::before {
   transform: translateX(20px);
+}
+
+/* Business days */
+.settings-row--column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.settings-days {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settings-day-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
+  transition: all 0.15s;
+}
+
+.settings-day-checkbox:hover {
+  border-color: var(--color-action);
+}
+
+.settings-day-checkbox:has(input:checked) {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: white;
+}
+
+.settings-day-checkbox input {
+  display: none;
 }
 
 /* Password Modal */

@@ -95,7 +95,8 @@
               :class="[
                 'week-view__cell',
                 {
-                  'week-view__cell--drag-over': dragOverDate === day.dateStr && dragOverTime?.hour === hour
+                  'week-view__cell--drag-over': dragOverDate === day.dateStr && dragOverTime?.hour === hour,
+                  'week-view__cell--outside-business': !isBusinessHour(hour) || !isBusinessDay(day.date.getDay())
                 }
               ]"
               :style="{ height: hourHeight + 'px' }"
@@ -223,9 +224,18 @@ function getPositionedItemsForDate(date) {
 }
 
 function formatHour(hour) {
-  const period = hour >= 12 ? 'PM' : 'AM'
-  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-  return `${displayHour} ${period}`
+  const settings = calendar.getCalendarSettings()
+  return calendar.formatHour(hour, settings.timeFormat)
+}
+
+function isBusinessHour(hour) {
+  const settings = calendar.getCalendarSettings()
+  return calendar.isBusinessHour(hour, settings)
+}
+
+function isBusinessDay(dayOfWeek) {
+  const settings = calendar.getCalendarSettings()
+  return calendar.isBusinessDay(dayOfWeek, settings)
 }
 
 function formatTimeSlot(hour) {
@@ -524,6 +534,10 @@ onUnmounted(() => {
   background: var(--color-calendar-deferred) !important;
   outline: 2px dashed var(--color-action);
   outline-offset: -2px;
+}
+
+.week-view__cell--outside-business {
+  background: var(--color-bg-secondary);
 }
 
 .week-view__items {

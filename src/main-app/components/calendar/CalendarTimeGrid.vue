@@ -4,7 +4,7 @@
     <div
         v-for="hour in hours"
         :key="hour"
-        class="time-grid__row"
+        :class="['time-grid__row', { 'time-grid__row--outside-business': !isBusinessHour(hour) }]"
         :style="{ height: hourHeight + 'px' }"
     >
       <div class="time-grid__label">
@@ -155,9 +155,13 @@ const positionedItems = computed(() => {
 })
 
 function formatHour(hour) {
-  const period = hour >= 12 ? 'PM' : 'AM'
-  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-  return `${displayHour} ${period}`
+  const settings = calendar.getCalendarSettings()
+  return calendar.formatHour(hour, settings.timeFormat)
+}
+
+function isBusinessHour(hour) {
+  const settings = calendar.getCalendarSettings()
+  return calendar.isBusinessHour(hour, settings)
 }
 
 function formatTimeSlot(hour, minutes) {
@@ -243,6 +247,14 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--color-calendar-grid-line);
   position: relative;
   box-sizing: border-box;
+}
+
+.time-grid__row--outside-business {
+  background: var(--color-bg-secondary);
+}
+
+.time-grid__row--outside-business .time-grid__label {
+  color: var(--color-text-tertiary);
 }
 
 .time-grid__row::after {
