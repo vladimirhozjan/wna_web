@@ -1,10 +1,10 @@
 <template>
-  <div class="year-view">
+  <div class="year-view" ref="yearViewRef">
     <div class="year-view__grid">
       <div
           v-for="month in months"
           :key="month.monthIndex"
-          class="year-view__month"
+          :class="['year-view__month', { 'year-view__month--current': isCurrentMonth(month.monthIndex) }]"
       >
         <div class="year-view__month-header" @click="onMonthClick(month)">
           {{ month.name }}
@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import {
   getYearMonths,
   getMonthDays,
@@ -77,6 +77,32 @@ const props = defineProps({
 const emit = defineEmits(['item-click', 'day-click', 'month-click'])
 
 const calendar = calendarModel()
+const yearViewRef = ref(null)
+
+function isCurrentMonth(monthIndex) {
+  const now = new Date()
+  return props.currentDate.getFullYear() === now.getFullYear() && monthIndex === now.getMonth()
+}
+
+function scrollToCurrentMonth() {
+  nextTick(() => {
+    if (yearViewRef.value) {
+      const currentMonthEl = yearViewRef.value.querySelector('.year-view__month--current')
+      if (currentMonthEl) {
+        currentMonthEl.scrollIntoView({ block: 'center', behavior: 'instant' })
+      }
+    }
+  })
+}
+
+onMounted(() => {
+  scrollToCurrentMonth()
+})
+
+// Scroll when year changes
+watch(() => props.currentDate, () => {
+  scrollToCurrentMonth()
+})
 
 const weekdayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
@@ -141,6 +167,9 @@ function onMonthClick(month) {
 <style scoped>
 .year-view {
   padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .year-view__grid {

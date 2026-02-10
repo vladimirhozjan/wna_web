@@ -1,38 +1,95 @@
 <template>
   <div class="month-view">
-    <!-- Weekday headers -->
-    <div class="month-view__header">
-      <div
-          v-for="day in weekDays"
-          :key="day"
-          class="month-view__header-cell"
-      >
-        {{ day }}
+    <!-- Desktop: Grid view -->
+    <template v-if="!isMobile">
+      <!-- Weekday headers -->
+      <div class="month-view__header">
+        <div
+            v-for="day in weekDays"
+            :key="day"
+            class="month-view__header-cell"
+        >
+          {{ day }}
+        </div>
       </div>
-    </div>
 
-    <!-- Calendar grid -->
-    <div class="month-view__grid">
+      <!-- Calendar grid -->
+      <div class="month-view__grid">
+        <div
+            v-for="(day, index) in calendarDays"
+            :key="index"
+            :class="[
+              'month-view__cell',
+              {
+                'month-view__cell--other-month': !isSameMonth(day, currentDate),
+                'month-view__cell--today': isToday(day),
+                'month-view__cell--weekend': isWeekend(day),
+                'month-view__cell--drag-over': dragOverDate === formatDate(day),
+              }
+            ]"
+            @click="onCellClick(day, $event)"
+            @dragover.prevent="onDragOver(day)"
+            @dragleave="onDragLeave"
+            @drop="onDrop(day, $event)"
+        >
+          <div class="month-view__day-number">{{ formatDayNumber(day) }}</div>
+
+          <div class="month-view__items">
+            <template v-if="quickFormDate === formatDate(day)">
+              <CalendarQuickForm
+                  :date="quickFormDate"
+                  @submit="onQuickFormSubmit"
+                  @cancel="onQuickFormCancel"
+              />
+            </template>
+
+            <CalendarItem
+                v-for="item in getItemsForDay(day).slice(0, maxItemsPerDay)"
+                :key="item.id"
+                :item="item"
+                :compact="true"
+                :show-time="false"
+                @click="onItemClick"
+                @drag-start="onItemDragStart"
+                @drag-end="onItemDragEnd"
+            />
+
+            <div
+                v-if="getItemsForDay(day).length > maxItemsPerDay"
+                class="month-view__more"
+                @click.stop="onMoreClick(day)"
+            >
+              +{{ getItemsForDay(day).length - maxItemsPerDay }} more
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Mobile: List by days -->
+    <div v-else class="month-view__list" ref="listRef">
       <div
-          v-for="(day, index) in calendarDays"
-          :key="index"
+          v-for="day in currentMonthDays"
+          :key="formatDate(day)"
           :class="[
-            'month-view__cell',
-            {
-              'month-view__cell--other-month': !isSameMonth(day, currentDate),
-              'month-view__cell--today': isToday(day),
-              'month-view__cell--weekend': isWeekend(day),
-              'month-view__cell--drag-over': dragOverDate === formatDate(day),
-            }
+            'month-view__list-day',
+            { 'month-view__list-day--today': isToday(day) }
           ]"
-          @click="onCellClick(day, $event)"
-          @dragover.prevent="onDragOver(day)"
-          @dragleave="onDragLeave"
-          @drop="onDrop(day, $event)"
       >
-        <div class="month-view__day-number">{{ formatDayNumber(day) }}</div>
+        <div
+            class="month-view__list-header"
+            @click="onMobileHeaderClick(day)"
+        >
+          <span class="month-view__list-weekday">{{ formatWeekdayShort(day) }}</span>
+          <span :class="['month-view__list-date', { 'month-view__list-date--today': isToday(day) }]">
+            {{ formatDayNumber(day) }}
+          </span>
+          <span class="month-view__list-count" v-if="getItemsForDay(day).length > 0">
+            {{ getItemsForDay(day).length }} {{ getItemsForDay(day).length === 1 ? 'item' : 'items' }}
+          </span>
+        </div>
 
-        <div class="month-view__items">
+        <div class="month-view__list-items" v-if="getItemsForDay(day).length > 0">
           <template v-if="quickFormDate === formatDate(day)">
             <CalendarQuickForm
                 :date="quickFormDate"
@@ -42,23 +99,17 @@
           </template>
 
           <CalendarItem
-              v-for="item in getItemsForDay(day).slice(0, maxItemsPerDay)"
+              v-for="item in getItemsForDay(day)"
               :key="item.id"
               :item="item"
               :compact="true"
-              :show-time="false"
+              :show-time="true"
               @click="onItemClick"
-              @drag-start="onItemDragStart"
-              @drag-end="onItemDragEnd"
           />
+        </div>
 
-          <div
-              v-if="getItemsForDay(day).length > maxItemsPerDay"
-              class="month-view__more"
-              @click.stop="onMoreClick(day)"
-          >
-            +{{ getItemsForDay(day).length - maxItemsPerDay }} more
-          </div>
+        <div class="month-view__list-empty" v-else @click="onMobileDayClick(day)">
+          Tap to add
         </div>
       </div>
     </div>
@@ -66,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import {
   getMonthDays,
   formatDayNumber,
@@ -94,6 +145,39 @@ const maxItemsPerDay = 3
 const quickFormDate = ref(null)
 const dragOverDate = ref(null)
 const draggingItem = ref(null)
+const isMobile = ref(false)
+const listRef = ref(null)
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+function scrollToToday() {
+  nextTick(() => {
+    if (isMobile.value && listRef.value) {
+      // Find today's element in the list
+      const todayEl = listRef.value.querySelector('.month-view__list-day--today')
+      if (todayEl) {
+        todayEl.scrollIntoView({ block: 'start', behavior: 'instant' })
+      }
+    }
+  })
+}
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+  scrollToToday()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
+
+// Scroll to today when currentDate changes
+watch(() => props.currentDate, () => {
+  scrollToToday()
+})
 
 const weekDays = computed(() => {
   const days = getWeekDays(new Date())
@@ -101,6 +185,11 @@ const weekDays = computed(() => {
 })
 
 const calendarDays = computed(() => getMonthDays(props.currentDate))
+
+// For mobile list view - only show days in current month
+const currentMonthDays = computed(() => {
+  return calendarDays.value.filter(day => isSameMonth(day, props.currentDate))
+})
 
 function isWeekend(date) {
   const day = date.getDay()
@@ -124,6 +213,14 @@ function onItemClick(item) {
 
 function onMoreClick(day) {
   emit('day-click', day)
+}
+
+function onMobileHeaderClick(day) {
+  emit('day-click', day)
+}
+
+function onMobileDayClick(day) {
+  quickFormDate.value = formatDate(day)
 }
 
 function onQuickFormSubmit({ title, date, time }) {
@@ -300,5 +397,87 @@ function onDrop(day, event) {
     font-size: var(--font-size-footnote);
     padding: 2px 4px;
   }
+}
+
+/* Mobile list view styles */
+.month-view__list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.month-view__list-day {
+  border-bottom: 1px solid var(--color-calendar-grid-line);
+}
+
+.month-view__list-day--today {
+  background: var(--color-calendar-today-bg);
+}
+
+.month-view__list-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.month-view__list-header:hover {
+  background: var(--color-bg-secondary);
+}
+
+.month-view__list-weekday {
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-s);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  width: 36px;
+}
+
+.month-view__list-date {
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-m);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.month-view__list-date--today {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-action);
+  color: white;
+  border-radius: 50%;
+}
+
+.month-view__list-count {
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+  margin-left: auto;
+}
+
+.month-view__list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px 12px;
+}
+
+.month-view__list-empty {
+  padding: 8px 16px 12px;
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+}
+
+.month-view__list-empty:hover {
+  color: var(--color-action);
 }
 </style>
