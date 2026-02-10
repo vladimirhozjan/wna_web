@@ -1,29 +1,31 @@
 <template>
   <div class="week-view">
     <div class="week-view__scroll">
-      <!-- Day headers (sticky) -->
-      <div class="week-view__header">
-        <div class="week-view__header-spacer"></div>
-        <div
-            v-for="day in weekDays"
-            :key="day.dateStr"
-            :class="[
-              'week-view__header-cell',
-              {
-                'week-view__header-cell--today': day.isToday,
-                'week-view__header-cell--weekend': day.isWeekend,
-              }
-            ]"
-        >
-          <div class="week-view__header-weekday">{{ day.weekday }}</div>
-          <div :class="['week-view__header-date', { 'week-view__header-date--today': day.isToday }]">
-            {{ day.dayNumber }}
+      <!-- Sticky header container (header + all-day) -->
+      <div class="week-view__sticky-header">
+        <!-- Day headers -->
+        <div class="week-view__header">
+          <div class="week-view__header-spacer"></div>
+          <div
+              v-for="day in weekDays"
+              :key="day.dateStr"
+              :class="[
+                'week-view__header-cell',
+                {
+                  'week-view__header-cell--today': day.isToday,
+                  'week-view__header-cell--weekend': day.isWeekend,
+                }
+              ]"
+          >
+            <div class="week-view__header-weekday">{{ day.weekday }}</div>
+            <div :class="['week-view__header-date', { 'week-view__header-date--today': day.isToday }]">
+              {{ day.dayNumber }}
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- All-day section (sticky) -->
-      <div class="week-view__all-day">
+        <!-- All-day section -->
+        <div class="week-view__all-day">
         <div class="week-view__all-day-label">All day</div>
         <div
             v-for="day in weekDays"
@@ -60,6 +62,7 @@
               @drag-end="onItemDragEnd"
           />
         </div>
+      </div>
       </div>
 
       <!-- Time grid -->
@@ -348,14 +351,17 @@ onUnmounted(() => {
   background: var(--color-bg-primary);
 }
 
-.week-view__header {
-  display: flex;
-  border-bottom: 1px solid var(--color-calendar-grid-line);
-  flex-shrink: 0;
+.week-view__sticky-header {
   position: sticky;
   top: 0;
   z-index: 20;
   background: var(--color-bg-primary);
+}
+
+.week-view__header {
+  display: flex;
+  border-bottom: 1px solid var(--color-calendar-grid-line);
+  flex-shrink: 0;
 }
 
 .week-view__header-spacer {
@@ -411,10 +417,6 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--color-calendar-grid-line);
   height: 80px;
   flex-shrink: 0;
-  position: sticky;
-  top: 58px; /* Below header */
-  z-index: 19;
-  background: var(--color-bg-primary);
 }
 
 .week-view__all-day-label {
@@ -476,7 +478,6 @@ onUnmounted(() => {
 
 .week-view__grid {
   display: flex;
-  position: relative;
 }
 
 .week-view__hours {
@@ -496,13 +497,15 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
-  margin-top: -6px;
+  box-sizing: border-box;
+  transform: translateY(-6px);
 }
 
 .week-view__column {
   flex: 1;
   position: relative;
   border-right: 1px solid var(--color-calendar-grid-line);
+  transform: translateZ(0);
 }
 
 .week-view__column:last-child {

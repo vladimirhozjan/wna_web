@@ -244,7 +244,6 @@ onUnmounted(() => {
 
 .time-grid__row {
   display: flex;
-  border-bottom: 1px solid var(--color-calendar-grid-line);
   position: relative;
   box-sizing: border-box;
 }
@@ -288,6 +287,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--color-calendar-grid-line);
+  border-bottom: 1px solid var(--color-calendar-grid-line);
   position: relative;
 }
 
