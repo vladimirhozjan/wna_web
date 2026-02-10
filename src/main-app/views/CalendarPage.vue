@@ -71,7 +71,14 @@ const loading = computed(() => calendar.loading.value)
 async function loadData() {
   try {
     const { start, end } = calendar.dateRange.value
-    await calendar.loadCalendarItems(start, end)
+
+    if (viewMode.value === 'year') {
+      // For year view, load density data for efficient rendering
+      await calendar.loadDensity(start, end)
+    } else {
+      // For other views, load full items
+      await calendar.loadCalendarItems(start, end)
+    }
   } catch (err) {
     toaster.push('Failed to load calendar items')
   }

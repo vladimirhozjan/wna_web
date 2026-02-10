@@ -3,12 +3,11 @@ import {
     formatDate,
     navigateDate,
     getDateRange,
-    isSameDay,
-    parseISO,
-    addDays,
 } from './dateUtils.js'
+import { listCalendar, getCalendarDensity, addAction, deferAction } from './apiClient.js'
 
 const items = ref([])
+const densityData = ref({})
 const currentDate = ref(new Date())
 const viewMode = ref('month')
 const loading = ref(false)
@@ -16,129 +15,26 @@ const error = ref(null)
 
 let instance = null
 
-function generateMockData() {
-    const today = new Date()
-    const mockItems = []
-
-    mockItems.push({
-        id: 'mock-1',
-        title: 'Team standup meeting',
-        type: 'ACTION',
-        scheduled_date: formatDate(today),
-        scheduled_time: '09:00',
-        duration: 15,  // 15 minutes
-    })
-
-    mockItems.push({
-        id: 'mock-2',
-        title: 'Review quarterly report',
-        type: 'ACTION',
-        scheduled_date: formatDate(today),
-        scheduled_time: '14:30',
-        duration: 60,  // 1 hour
-    })
-
-    mockItems.push({
-        id: 'mock-3',
-        title: 'Client presentation',
-        type: 'ACTION',
-        scheduled_date: formatDate(addDays(today, 1)),
-        scheduled_time: '10:00',
-        duration: 90,  // 1.5 hours
-    })
-
-    mockItems.push({
-        id: 'mock-4',
-        title: 'Start new project research',
-        type: 'ACTION',
-        start_date: formatDate(addDays(today, 2)),
-        start_time: '08:00',
-        duration: 120,  // 2 hours
-    })
-
-    mockItems.push({
-        id: 'mock-5',
-        title: 'Follow up with vendor',
-        type: 'ACTION',
-        start_date: formatDate(today),
-        start_time: null,
-    })
-
-    mockItems.push({
-        id: 'mock-6',
-        title: 'Doctor appointment',
-        type: 'ACTION',
-        scheduled_date: formatDate(addDays(today, 3)),
-        scheduled_time: '11:00',
-        duration: 45,  // 45 minutes
-    })
-
-    mockItems.push({
-        id: 'mock-7',
-        title: 'Code review session',
-        type: 'ACTION',
-        scheduled_date: formatDate(addDays(today, -1)),
-        scheduled_time: '15:00',
-        duration: 30,  // 30 minutes
-    })
-
-    mockItems.push({
-        id: 'mock-8',
-        title: 'Prepare slides for workshop',
-        type: 'ACTION',
-        start_date: formatDate(addDays(today, 5)),
-        start_time: '09:00',
-        duration: 180,  // 3 hours
-    })
-
-    mockItems.push({
-        id: 'mock-9',
-        title: 'All-day planning session',
-        type: 'ACTION',
-        scheduled_date: formatDate(addDays(today, 4)),
-        scheduled_time: null,
-    })
-
-    mockItems.push({
-        id: 'mock-10',
-        title: 'Weekly sync',
-        type: 'ACTION',
-        scheduled_date: formatDate(addDays(today, 7)),
-        scheduled_time: '10:30',
-        duration: 60,  // 1 hour
-    })
-
-    for (let i = 11; i <= 18; i++) {
-        const dayOffset = Math.floor(Math.random() * 30) - 15
-        const isScheduled = Math.random() > 0.3
-        const hasTime = Math.random() > 0.3
-        const hour = 8 + Math.floor(Math.random() * 10)
-        const minute = Math.random() > 0.5 ? '00' : '30'
-        const durations = [15, 30, 45, 60, 90, 120]
-        const duration = durations[Math.floor(Math.random() * durations.length)]
-
-        if (isScheduled) {
-            mockItems.push({
-                id: `mock-${i}`,
-                title: `Task ${i}`,
-                type: 'ACTION',
-                scheduled_date: formatDate(addDays(today, dayOffset)),
-                scheduled_time: hasTime ? `${String(hour).padStart(2, '0')}:${minute}` : null,
-                duration: hasTime ? duration : undefined,
-            })
-        } else {
-            mockItems.push({
-                id: `mock-${i}`,
-                title: `Deferred task ${i}`,
-                type: 'ACTION',
-                start_date: formatDate(addDays(today, dayOffset)),
-                start_time: hasTime ? `${String(hour).padStart(2, '0')}:${minute}` : null,
-                duration: hasTime ? duration : undefined,
-            })
-        }
+// Transform API item to calendar item format
+function transformItem(apiItem) {
+    // Convert time from HH:MM:SS to HH:MM
+    const formatTime = (time) => {
+        if (!time) return null
+        return time.substring(0, 5)  // "09:00:00" -> "09:00"
     }
 
-    return mockItems
+    return {
+        id: apiItem.id,
+        title: apiItem.title,
+        type: apiItem.type,
+        state: apiItem.state,
+        scheduled_date: apiItem.scheduled_date || null,
+        scheduled_time: formatTime(apiItem.scheduled_time),
+        start_date: apiItem.start_date || null,
+        start_time: formatTime(apiItem.start_time),
+        duration: apiItem.scheduled_duration || null,
+        due_date: apiItem.due_date || null,
+    }
 }
 
 export function calendarModel() {
@@ -174,6 +70,11 @@ export function calendarModel() {
     }
 
     function getItemCountForDate(date) {
+        const dateStr = formatDate(date)
+        // Use density data if available for year view
+        if (densityData.value[dateStr] !== undefined) {
+            return densityData.value[dateStr]
+        }
         return getItemsForDate(date).length
     }
 
@@ -202,10 +103,10 @@ export function calendarModel() {
         error.value = null
 
         try {
-            // TODO: Replace with actual API call when backend is ready
-            // const data = await apiClient.listCalendarActions({ start: startDate, end: endDate })
-            await new Promise(resolve => setTimeout(resolve, 300))
-            items.value = generateMockData()
+            const start = formatDate(startDate)
+            const end = formatDate(endDate)
+            const data = await listCalendar({ start, end })
+            items.value = (data.items || []).map(transformItem)
             return items.value
         } catch (err) {
             error.value = err
@@ -215,27 +116,37 @@ export function calendarModel() {
         }
     }
 
+    async function loadDensity(startDate, endDate) {
+        try {
+            const start = formatDate(startDate)
+            const end = formatDate(endDate)
+            const data = await getCalendarDensity({ start, end })
+            densityData.value = data.density || {}
+            return densityData.value
+        } catch (err) {
+            console.error('Failed to load density:', err)
+            return {}
+        }
+    }
+
     async function createScheduledAction(date, time, title) {
         loading.value = true
         error.value = null
 
         try {
-            // TODO: Replace with actual API call
-            // const created = await apiClient.addAction({
-            //     title,
-            //     scheduled_date: date,
-            //     scheduled_time: time
-            // })
-            await new Promise(resolve => setTimeout(resolve, 200))
-            const created = {
-                id: `mock-${Date.now()}`,
+            // Create action with scheduled date/time
+            const actionData = {
                 title,
-                type: 'ACTION',
                 scheduled_date: date,
-                scheduled_time: time,
             }
-            items.value.push(created)
-            return created
+            if (time) {
+                actionData.scheduled_time = time
+            }
+
+            const created = await addAction(actionData)
+            const transformedItem = transformItem(created)
+            items.value.push(transformedItem)
+            return transformedItem
         } catch (err) {
             error.value = err
             throw err
@@ -249,18 +160,19 @@ export function calendarModel() {
         error.value = null
 
         try {
-            // TODO: Replace with actual API call
-            // await apiClient.updateAction(actionId, {
-            //     scheduled_date: newDate,
-            //     scheduled_time: newTime
-            // })
-            await new Promise(resolve => setTimeout(resolve, 200))
+            // Use defer API to reschedule
+            const type = 'scheduled'
+            await deferAction(actionId, type, newDate, newTime)
+
+            // Update local state
             items.value = items.value.map(item => {
                 if (item.id === actionId) {
-                    if (item.scheduled_date) {
-                        return { ...item, scheduled_date: newDate, scheduled_time: newTime }
-                    } else {
-                        return { ...item, start_date: newDate, start_time: newTime }
+                    return {
+                        ...item,
+                        scheduled_date: newDate,
+                        scheduled_time: newTime,
+                        start_date: null,
+                        start_time: null,
                     }
                 }
                 return item
@@ -295,6 +207,7 @@ export function calendarModel() {
 
     instance = {
         items,
+        densityData,
         currentDate,
         viewMode,
         loading,
@@ -313,6 +226,7 @@ export function calendarModel() {
         getItemDate,
 
         loadCalendarItems,
+        loadDensity,
         createScheduledAction,
         rescheduleAction,
         goToToday,

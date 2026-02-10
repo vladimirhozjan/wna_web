@@ -767,6 +767,28 @@ export async function uncompleteProject(projectId) {
     }
 }
 
+// ── Calendar API ──
+
+export async function listCalendar({ start, end }) {
+    try {
+        const params = { start, end }
+        const res = await httpApi.get('/v1/calendar', { params, headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getCalendarDensity({ start, end }) {
+    try {
+        const params = { start, end }
+        const res = await httpApi.get('/v1/calendar/density', { params, headers: authHeaders() })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Trash API ──
 
 export async function listTrash({limit = 10, cursor = null} = {}) {
@@ -884,6 +906,8 @@ const apiClient = {
     uncompleteStuff,
     uncompleteAction,
     uncompleteProject,
+    listCalendar,
+    getCalendarDensity,
 }
 
 export default apiClient
