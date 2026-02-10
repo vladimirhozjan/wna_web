@@ -149,5 +149,6 @@ async function onReschedule({ actionId, newDate, newTime }) {
 .calendar-page__content {
   flex: 1;
   min-height: 0;
+  margin-bottom: 10px;
 }
 </style>

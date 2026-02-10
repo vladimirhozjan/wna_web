@@ -78,11 +78,13 @@ function onBlur() {
 <style scoped>
 .quick-form {
   padding: 2px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .quick-form__input {
   width: 100%;
-  padding: 6px 8px;
+  padding: 4px 8px;
   border: 1px solid var(--color-action);
   border-radius: 4px;
   font-family: var(--font-family-default);
@@ -90,7 +92,7 @@ function onBlur() {
   color: var(--color-text-primary);
   background: var(--color-bg-primary);
   outline: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .quick-form__input::placeholder {

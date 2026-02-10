@@ -133,6 +133,7 @@ function onDrop(event) {
 
 .all-day-section__content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -140,6 +141,11 @@ function onDrop(event) {
   cursor: pointer;
   border-left: 1px solid var(--color-calendar-grid-line);
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.all-day-section__content > * {
+  flex-shrink: 0;
 }
 
 .all-day-section__empty {

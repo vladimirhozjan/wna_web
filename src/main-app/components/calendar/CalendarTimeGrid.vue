@@ -276,12 +276,15 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--color-calendar-grid-line);
+  position: relative;
 }
 
 .time-grid__cell {
   flex: 1;
   cursor: pointer;
   transition: background 0.15s;
+  position: relative;
+  overflow: hidden;
 }
 
 .time-grid__cell:hover {
