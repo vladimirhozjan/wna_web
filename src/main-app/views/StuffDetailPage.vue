@@ -357,6 +357,7 @@ async function saveField(field) {
     editingField.value = null
   } catch {
     item.value[field] = oldValue
+    toaster.push('Failed to save changes')
     setTimeout(() => {
       if (field === 'title') {
         titleInput.value?.focus()

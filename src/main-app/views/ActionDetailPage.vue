@@ -492,6 +492,7 @@ async function saveField(field) {
     editingField.value = null
   } catch {
     action.value[field] = oldValue
+    toaster.push('Failed to save changes')
     setTimeout(() => {
       if (field === 'title') {
         titleInput.value?.focus()
@@ -650,6 +651,7 @@ async function saveDeferredField() {
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
+    toaster.push('Failed to save deferred date')
   } finally {
     savingField.value = null
   }
@@ -688,6 +690,7 @@ async function clearDeferredField() {
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
+    toaster.push('Failed to clear deferred date')
   } finally {
     savingField.value = null
   }
@@ -738,6 +741,7 @@ async function saveDateField(field) {
   } catch {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
+    toaster.push('Failed to save due date')
   } finally {
     savingField.value = null
   }
@@ -764,6 +768,7 @@ async function clearDateField(field) {
   } catch {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
+    toaster.push('Failed to clear due date')
   } finally {
     savingField.value = null
   }
