@@ -6,10 +6,18 @@ import {
 } from './dateUtils.js'
 import { listCalendar, getCalendarDensity, addAction, deferAction } from './apiClient.js'
 
+const STORAGE_KEY = 'calendar_view_mode'
+const validViewModes = ['day', 'week', 'month', 'year']
+
+function loadSavedViewMode() {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    return saved && validViewModes.includes(saved) ? saved : 'month'
+}
+
 const items = ref([])
 const densityData = ref({})
 const currentDate = ref(new Date())
-const viewMode = ref('month')
+const viewMode = ref(loadSavedViewMode())
 const loading = ref(false)
 const error = ref(null)
 
@@ -213,6 +221,7 @@ export function calendarModel() {
 
     function setViewMode(mode) {
         viewMode.value = mode
+        localStorage.setItem(STORAGE_KEY, mode)
     }
 
     function setCurrentDate(date) {
