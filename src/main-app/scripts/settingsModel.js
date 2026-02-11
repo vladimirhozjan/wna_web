@@ -43,6 +43,16 @@ export function settingsModel() {
         loading: false,
         loaded: false,
         error: null,
+
+        // Saving state per setting (for showing spinners)
+        saving: {
+            newItemsPosition: false,
+            timeFormat: false,
+            businessHoursStart: false,
+            businessHoursEnd: false,
+            businessDays: false,
+            debugEnabled: false,
+        },
     })
 
     // Parse HH:MM to hour number
@@ -151,43 +161,104 @@ export function settingsModel() {
 
     // Update application settings
     async function setNewItemsPosition(value) {
+        const oldValue = state.newItemsPosition
         state.newItemsPosition = value
+        state.saving.newItemsPosition = true
         saveToLocalStorage()
-        await save('application', { new_items_position: value })
+        try {
+            await save('application', { new_items_position: value })
+        } catch (err) {
+            state.newItemsPosition = oldValue
+            saveToLocalStorage()
+            throw err
+        } finally {
+            state.saving.newItemsPosition = false
+        }
     }
 
     // Update calendar settings
     async function setTimeFormat(value) {
+        const oldValue = state.timeFormat
         state.timeFormat = value
+        state.saving.timeFormat = true
         saveToLocalStorage()
-        await save('calendar', { time_format: value })
+        try {
+            await save('calendar', { time_format: value })
+        } catch (err) {
+            state.timeFormat = oldValue
+            saveToLocalStorage()
+            throw err
+        } finally {
+            state.saving.timeFormat = false
+        }
     }
 
     async function setBusinessHoursStart(value) {
+        const oldValue = state.businessHoursStart
         state.businessHoursStart = value
+        state.saving.businessHoursStart = true
         saveToLocalStorage()
-        await save('calendar', { business_hours_start: formatHour(value) })
+        try {
+            await save('calendar', { business_hours_start: formatHour(value) })
+        } catch (err) {
+            state.businessHoursStart = oldValue
+            saveToLocalStorage()
+            throw err
+        } finally {
+            state.saving.businessHoursStart = false
+        }
     }
 
     async function setBusinessHoursEnd(value) {
+        const oldValue = state.businessHoursEnd
         state.businessHoursEnd = value
+        state.saving.businessHoursEnd = true
         saveToLocalStorage()
-        await save('calendar', { business_hours_end: formatHour(value) })
+        try {
+            await save('calendar', { business_hours_end: formatHour(value) })
+        } catch (err) {
+            state.businessHoursEnd = oldValue
+            saveToLocalStorage()
+            throw err
+        } finally {
+            state.saving.businessHoursEnd = false
+        }
     }
 
     async function setBusinessDays(value) {
+        const oldValue = [...state.businessDays]
         state.businessDays = value
+        state.saving.businessDays = true
         saveToLocalStorage()
-        await save('calendar', { business_days: dayNumbersToNames(value) })
+        try {
+            await save('calendar', { business_days: dayNumbersToNames(value) })
+        } catch (err) {
+            state.businessDays = oldValue
+            saveToLocalStorage()
+            throw err
+        } finally {
+            state.saving.businessDays = false
+        }
     }
 
     // Update debug settings
     async function setDebugEnabled(value) {
+        const oldValue = state.debugEnabled
         state.debugEnabled = value
+        state.saving.debugEnabled = true
         saveToLocalStorage()
         // Notify App.vue about the change
         window.dispatchEvent(new CustomEvent('debug-mode-changed', { detail: value }))
-        await save('debug', { enabled: value })
+        try {
+            await save('debug', { enabled: value })
+        } catch (err) {
+            state.debugEnabled = oldValue
+            saveToLocalStorage()
+            window.dispatchEvent(new CustomEvent('debug-mode-changed', { detail: oldValue }))
+            throw err
+        } finally {
+            state.saving.debugEnabled = false
+        }
     }
 
     // Get calendar settings object (for calendarModel compatibility)
