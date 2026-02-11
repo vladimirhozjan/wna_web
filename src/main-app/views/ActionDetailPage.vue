@@ -79,6 +79,24 @@
               Activate
             </Btn>
           </template>
+          <template v-else-if="isWaiting">
+            <Btn
+                variant="primary"
+                size="sm"
+                :loading="actionLoading === 'unwait'"
+                @click="onGotIt"
+            >
+              Got it
+            </Btn>
+            <Btn
+                variant="ghost"
+                size="sm"
+                :loading="actionLoading === 'done'"
+                @click="onMarkDone"
+            >
+              Done
+            </Btn>
+          </template>
           <template v-else>
             <Btn
                 variant="ghost"
@@ -153,6 +171,17 @@
                   @click="cancelEdit"
               >Cancel</Btn>
             </div>
+          </div>
+        </div>
+
+        <!-- Waiting For section (only for WAITING state) -->
+        <div v-if="isWaiting" class="detail-section-area">
+          <label class="detail-section-label">Waiting on</label>
+          <div class="detail-section-wrapper">
+            <p class="detail-section-content">
+              <span class="detail-waiting-for">{{ action.waiting_for || 'Unknown' }}</span>
+              <span v-if="action.waiting_since" class="detail-waiting-since">{{ formatWaitingDuration(action.waiting_since) }}</span>
+            </p>
           </div>
         </div>
 
@@ -287,6 +316,28 @@
       </div>
 
     </div>
+
+    <!-- Waiting For Input Modal -->
+    <Teleport to="body">
+      <div v-if="showWaitingInput" class="waiting-modal-overlay" @click.self="onCancelWaiting">
+        <div class="waiting-modal">
+          <h3 class="waiting-modal-title">Who/what are you waiting on?</h3>
+          <input
+              ref="waitingInputRef"
+              v-model="waitingForValue"
+              type="text"
+              class="waiting-modal-input"
+              placeholder="e.g., Sarah from Legal"
+              @keyup.enter="onConfirmWaiting"
+              @keyup.esc="onCancelWaiting"
+          />
+          <div class="waiting-modal-actions">
+            <Btn variant="ghost" size="sm" @click="onCancelWaiting">Cancel</Btn>
+            <Btn variant="primary" size="sm" @click="onConfirmWaiting" :disabled="!waitingForValue.trim()">Save</Btn>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </DashboardLayout>
 </template>
 
@@ -298,9 +349,10 @@ import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { todayModel } from '../scripts/todayModel.js'
+import { waitingModel } from '../scripts/waitingModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
-import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate } from '../scripts/apiClient.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction } from '../scripts/apiClient.js'
 import ActionIcon from '../assets/ActionIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import TodayIcon from '../assets/TodayIcon.vue'
@@ -315,6 +367,7 @@ const confirm = confirmModel()
 
 const nextModel = nextActionModel()
 const todayMdl = todayModel()
+const waitingMdl = waitingModel()
 
 const {
   error,
@@ -339,6 +392,11 @@ const descriptionInput = ref(null)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
 
+// Waiting For modal state
+const showWaitingInput = ref(false)
+const waitingForValue = ref('')
+const waitingInputRef = ref(null)
+
 // Date section state
 const datesExpanded = ref(false)
 const dateEdit = ref({ date: '', time: '', showTime: false, deferType: 'scheduled', duration: 15 })
@@ -353,13 +411,16 @@ const navigating = ref(false)
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
+const isWaiting = computed(() => action.value?.state === 'WAITING')
 const isToday = computed(() => fromSource.value === 'today')
 const fromCalendar = computed(() => fromSource.value === 'calendar')
+const fromWaiting = computed(() => fromSource.value === 'waiting')
 
 const backLabel = computed(() => {
   if (fromCalendar.value) return 'Calendar'
   if (isCompleted.value) return 'Completed'
   if (isSomeday.value) return 'Someday / Maybe'
+  if (isWaiting.value || fromWaiting.value) return 'Waiting For'
   if (isToday.value) return 'Today'
   return 'Next'
 })
@@ -434,6 +495,8 @@ function goBack() {
     router.push({ name: 'completed' })
   } else if (isSomeday.value) {
     router.push({ name: 'someday' })
+  } else if (isWaiting.value || fromWaiting.value) {
+    router.push({ name: 'waiting-for' })
   } else if (isToday.value) {
     router.push({ name: 'today' })
   } else {
@@ -492,6 +555,7 @@ async function saveField(field) {
     editingField.value = null
   } catch {
     action.value[field] = oldValue
+    toaster.push('Failed to save changes')
     setTimeout(() => {
       if (field === 'title') {
         titleInput.value?.focus()
@@ -508,6 +572,16 @@ async function onMoveTo(newState) {
   showMoveDialog.value = false
   const currentState = action.value.state || 'NEXT'
   if (newState === currentState) return
+
+  // Special handling for WAITING - need to prompt for waiting_for
+  if (newState === 'WAITING') {
+    waitingForValue.value = action.value.waiting_for || ''
+    showWaitingInput.value = true
+    nextTick(() => {
+      waitingInputRef.value?.focus()
+    })
+    return
+  }
 
   actionLoading.value = 'move'
   const oldState = action.value.state
@@ -527,6 +601,64 @@ async function onMoveTo(newState) {
     await navigateToNextOrPrev()
   } catch {
     action.value.state = oldState
+    toaster.push('Failed to move action')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onConfirmWaiting() {
+  const waitingFor = waitingForValue.value.trim()
+  if (!waitingFor) {
+    toaster.push('Please enter who/what you are waiting on')
+    return
+  }
+
+  showWaitingInput.value = false
+  actionLoading.value = 'move'
+  const oldState = action.value.state
+  const oldWaitingFor = action.value.waiting_for
+  action.value.state = 'WAITING'
+  action.value.waiting_for = waitingFor
+
+  try {
+    await waitAction(action.value.id, waitingFor)
+    toaster.success(`"${truncateTitle(action.value.title)}" moved to Waiting For`)
+    await navigateToNextOrPrev()
+  } catch {
+    action.value.state = oldState
+    action.value.waiting_for = oldWaitingFor
+    toaster.push('Failed to move action')
+  } finally {
+    actionLoading.value = null
+    waitingForValue.value = ''
+  }
+}
+
+function onCancelWaiting() {
+  showWaitingInput.value = false
+  waitingForValue.value = ''
+}
+
+async function onGotIt() {
+  actionLoading.value = 'unwait'
+  const oldState = action.value.state
+  const oldWaitingFor = action.value.waiting_for
+  const oldWaitingSince = action.value.waiting_since
+
+  try {
+    const result = await unwaitAction(action.value.id)
+    action.value.state = result?.state || 'NEXT'
+    action.value.waiting_for = null
+    action.value.waiting_since = null
+    const stateLabel = action.value.state === 'CALENDAR' ? 'Calendar' : 'Next Actions'
+    toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabel}`)
+    // Navigate back to waiting list since item is no longer there
+    router.push({ name: 'waiting-for' })
+  } catch {
+    action.value.state = oldState
+    action.value.waiting_for = oldWaitingFor
+    action.value.waiting_since = oldWaitingSince
     toaster.push('Failed to move action')
   } finally {
     actionLoading.value = null
@@ -563,6 +695,24 @@ function formatDateTimeDisplay(date, time) {
     return `${dateStr} at ${hour % 12 || 12}:${m} ${ampm}`
   }
   return dateStr
+}
+
+function formatWaitingDuration(waitingSince) {
+  if (!waitingSince) return ''
+  const since = new Date(waitingSince)
+  const now = new Date()
+  const diffMs = now - since
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return 'since today'
+  if (diffDays === 1) return 'for 1 day'
+  if (diffDays < 7) return `for ${diffDays} days`
+  if (diffDays < 14) return 'for 1 week'
+  const weeks = Math.floor(diffDays / 7)
+  if (diffDays < 30) return `for ${weeks} weeks`
+  const months = Math.floor(diffDays / 30)
+  if (months === 1) return 'for 1 month'
+  return `for ${months} months`
 }
 
 function startDeferredEdit() {
@@ -650,6 +800,7 @@ async function saveDeferredField() {
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
+    toaster.push('Failed to save deferred date')
   } finally {
     savingField.value = null
   }
@@ -688,6 +839,7 @@ async function clearDeferredField() {
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
+    toaster.push('Failed to clear deferred date')
   } finally {
     savingField.value = null
   }
@@ -738,6 +890,7 @@ async function saveDateField(field) {
   } catch {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
+    toaster.push('Failed to save due date')
   } finally {
     savingField.value = null
   }
@@ -764,6 +917,7 @@ async function clearDateField(field) {
   } catch {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
+    toaster.push('Failed to clear due date')
   } finally {
     savingField.value = null
   }
@@ -777,9 +931,14 @@ async function navigateToPosition(position) {
   navigating.value = true
   try {
     // Use correct model based on source
-    const getByPosition = isToday.value
-      ? todayMdl.getActionByPosition
-      : getActionByPosition
+    let getByPosition
+    if (fromWaiting.value) {
+      getByPosition = waitingMdl.getWaitingByPosition
+    } else if (isToday.value) {
+      getByPosition = todayMdl.getActionByPosition
+    } else {
+      getByPosition = getActionByPosition
+    }
     const data = await getByPosition(position)
     action.value = { ...data }
     currentPosition.value = data.position
@@ -835,7 +994,12 @@ async function onMarkDone() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
-  const backRoute = isToday.value ? 'today' : 'next'
+  let backRoute = 'next'
+  if (fromWaiting.value) {
+    backRoute = 'waiting-for'
+  } else if (isToday.value) {
+    backRoute = 'today'
+  }
 
   if (newTotal <= 0) {
     router.push({ name: backRoute })
@@ -846,9 +1010,14 @@ async function navigateToNextOrPrev() {
 
   try {
     // Use correct model based on source
-    const getByPosition = isToday.value
-      ? todayMdl.getActionByPosition
-      : getActionByPosition
+    let getByPosition
+    if (fromWaiting.value) {
+      getByPosition = waitingMdl.getWaitingByPosition
+    } else if (isToday.value) {
+      getByPosition = todayMdl.getActionByPosition
+    } else {
+      getByPosition = getActionByPosition
+    }
     const data = await getByPosition(nextPos)
     action.value = { ...data }
     currentPosition.value = data.position
@@ -1454,5 +1623,77 @@ async function onActivate() {
     flex: 1;
     width: auto;
   }
+}
+
+/* ── Waiting For section ── */
+.detail-waiting-for {
+  color: var(--color-text-primary);
+}
+
+.detail-waiting-since {
+  color: var(--color-text-tertiary);
+  margin-left: 8px;
+}
+
+.detail-waiting-since::before {
+  content: '·';
+  margin-right: 8px;
+}
+
+/* ── Waiting Modal ── */
+.waiting-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.waiting-modal {
+  background: var(--color-bg-primary);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  margin: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.waiting-modal-title {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-h3);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 16px 0;
+}
+
+.waiting-modal-input {
+  width: 100%;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  padding: 12px;
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  box-sizing: border-box;
+}
+
+.waiting-modal-input:focus {
+  outline: none;
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.waiting-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
 }
 </style>

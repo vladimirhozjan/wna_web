@@ -1,5 +1,5 @@
 const devFallback = {
-    API_DOMAIN: 'http://localhost:8000'
+    API_DOMAIN: '' // Empty for Vite proxy in development
 };
 
 export function getDomains() {

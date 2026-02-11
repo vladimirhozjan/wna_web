@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { formatMonthYear, formatDate, format } from '../../scripts/dateUtils.js'
 
 const props = defineProps({
@@ -54,12 +54,35 @@ const props = defineProps({
 
 defineEmits(['prev', 'next', 'today', 'view-change'])
 
-const views = [
+const isMobile = ref(false)
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 640
+}
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
+
+const allViews = [
   { value: 'day', label: 'Day' },
   { value: 'week', label: 'Week' },
   { value: 'month', label: 'Month' },
   { value: 'year', label: 'Year' },
 ]
+
+// Filter out week view on mobile
+const views = computed(() => {
+  if (isMobile.value) {
+    return allViews.filter(v => v.value !== 'week')
+  }
+  return allViews
+})
 
 const title = computed(() => {
   switch (props.viewMode) {

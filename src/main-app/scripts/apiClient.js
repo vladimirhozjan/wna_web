@@ -834,6 +834,66 @@ export async function uncompleteProject(projectId) {
     }
 }
 
+// ── Waiting For API ──
+
+export async function listWaiting({limit = 10, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/waiting', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function waitingCount() {
+    try {
+        const res = await httpApi.get('/v1/waiting/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getWaitingByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/waiting/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function moveWaitingPosition(actionId, position) {
+    try {
+        const res = await httpApi.post(`/v1/waiting/${actionId}/move`, {position}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function waitAction(actionId, waitingFor) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/wait`, {waiting_for: waitingFor}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function unwaitAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/unwait`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Calendar API ──
 
 export async function listCalendar({ start, end }) {
@@ -981,6 +1041,13 @@ const apiClient = {
     uncompleteProject,
     listCalendar,
     getCalendarDensity,
+    // Waiting For API
+    listWaiting,
+    waitingCount,
+    getWaitingByPosition,
+    moveWaitingPosition,
+    waitAction,
+    unwaitAction,
 }
 
 export default apiClient

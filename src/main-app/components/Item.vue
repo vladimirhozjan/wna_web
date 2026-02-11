@@ -18,8 +18,8 @@
     </div>
 
     <!-- Content -->
-    <div class="item__content" @click.stop="onClick">
-      <span v-if="isEditing" class="item__input-wrapper">
+    <div class="item__content">
+      <span v-if="isEditing" class="item__input-wrapper" @click.stop>
         <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
         <input
             ref="editInput"
@@ -32,7 +32,10 @@
             @click.stop
         />
       </span>
-      <span v-else class="item__title">{{ title }}</span>
+      <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
+      <span v-if="$slots.subtitle" class="item__subtitle">
+        <slot name="subtitle" />
+      </span>
     </div>
 
     <!-- Spinner overlay -->
@@ -223,6 +226,15 @@ function onCheck(e) {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item__subtitle {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

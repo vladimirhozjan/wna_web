@@ -19,7 +19,9 @@
       "Bash(trash:*)",
       "Bash(Trash \" /Users/vladimirhozjan/Documents/wna_backend/API.md)",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(git update-index:*)",
+      "Bash(git stash:*)"
     ]
   }
 }

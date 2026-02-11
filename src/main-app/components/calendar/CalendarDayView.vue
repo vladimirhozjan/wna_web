@@ -1,6 +1,6 @@
 <template>
   <div class="day-view">
-    <div class="day-view__scroll">
+    <div class="day-view__scroll" ref="scrollRef">
       <!-- All-day section (sticky) -->
       <div class="day-view__all-day-wrapper">
         <CalendarAllDaySection
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { formatDate } from '../../scripts/dateUtils.js'
 import { calendarModel } from '../../scripts/calendarModel.js'
 import CalendarAllDaySection from './CalendarAllDaySection.vue'
@@ -48,6 +48,23 @@ const emit = defineEmits(['item-click', 'create', 'reschedule'])
 const calendar = calendarModel()
 const hourHeight = 60
 const draggingItem = ref(null)
+const scrollRef = ref(null)
+
+function scrollToBusinessHours() {
+  if (!scrollRef.value) return
+  const settings = calendar.getCalendarSettings()
+  const scrollPosition = settings.businessHoursStart * hourHeight
+  scrollRef.value.scrollTop = scrollPosition
+}
+
+onMounted(() => {
+  scrollToBusinessHours()
+})
+
+// Scroll to business hours when date changes
+watch(() => props.currentDate, () => {
+  scrollToBusinessHours()
+})
 
 const dateStr = computed(() => formatDate(props.currentDate))
 

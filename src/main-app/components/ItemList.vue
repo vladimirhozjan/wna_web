@@ -50,6 +50,9 @@
           <template v-if="$slots.prefix" #prefix>
             <slot name="prefix" :item="item" />
           </template>
+          <template v-if="$slots.subtitle" #subtitle>
+            <slot name="subtitle" :item="item" />
+          </template>
           <template #actions>
             <slot name="actions" :item="item">
               <ActionBtn @click="emit('delete', item.id)" />
