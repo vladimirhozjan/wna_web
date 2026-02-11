@@ -33,6 +33,9 @@
         />
       </span>
       <span v-else class="item__title">{{ title }}</span>
+      <span v-if="$slots.subtitle" class="item__subtitle">
+        <slot name="subtitle" />
+      </span>
     </div>
 
     <!-- Spinner overlay -->
@@ -223,6 +226,15 @@ function onCheck(e) {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item__subtitle {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

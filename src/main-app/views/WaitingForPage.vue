@@ -18,6 +18,10 @@
             @move="onMove"
             @load-more="loadMore"
         >
+          <template #subtitle="{ item }">
+            <span v-if="item.waiting_for" class="waiting-info">{{ item.waiting_for }}</span>
+            <span v-if="item.waiting_since" class="waiting-duration">{{ formatWaitingDuration(item.waiting_since) }}</span>
+          </template>
           <template #actions="{ item }">
             <ActionBtn @click="onTrash(item.id)" />
           </template>
@@ -117,6 +121,24 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…'
 }
 
+function formatWaitingDuration(waitingSince) {
+  if (!waitingSince) return ''
+  const since = new Date(waitingSince)
+  const now = new Date()
+  const diffMs = now - since
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return 'today'
+  if (diffDays === 1) return '1 day'
+  if (diffDays < 7) return `${diffDays} days`
+  if (diffDays < 14) return '1 week'
+  const weeks = Math.floor(diffDays / 7)
+  if (diffDays < 30) return `${weeks} weeks`
+  const months = Math.floor(diffDays / 30)
+  if (months === 1) return '1 month'
+  return `${months} months`
+}
+
 async function onItemCheck(id, checked) {
   if (!checked) return
 
@@ -188,6 +210,19 @@ h1 {
   min-height: 0;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+}
+
+.waiting-info {
+  color: var(--color-text-secondary);
+}
+
+.waiting-duration {
+  color: var(--color-text-tertiary);
+}
+
+.waiting-duration::before {
+  content: '·';
+  margin: 0 6px;
 }
 
 .empty-state__icon {
