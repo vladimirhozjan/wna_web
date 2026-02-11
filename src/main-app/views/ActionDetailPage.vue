@@ -174,17 +174,6 @@
           </div>
         </div>
 
-        <!-- Waiting For section (only for WAITING state) -->
-        <div v-if="isWaiting" class="detail-section-area">
-          <label class="detail-section-label">Waiting on</label>
-          <div class="detail-section-wrapper">
-            <p class="detail-section-content">
-              <span class="detail-waiting-for">{{ action.waiting_for || 'Unknown' }}</span>
-              <span v-if="action.waiting_since" class="detail-waiting-since">{{ formatWaitingDuration(action.waiting_since) }}</span>
-            </p>
-          </div>
-        </div>
-
         <!-- Dates Section (collapsible) -->
         <div class="detail-section-area">
           <div class="detail-section-header" @click="toggleDatesSection">
@@ -695,24 +684,6 @@ function formatDateTimeDisplay(date, time) {
     return `${dateStr} at ${hour % 12 || 12}:${m} ${ampm}`
   }
   return dateStr
-}
-
-function formatWaitingDuration(waitingSince) {
-  if (!waitingSince) return ''
-  const since = new Date(waitingSince)
-  const now = new Date()
-  const diffMs = now - since
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'since today'
-  if (diffDays === 1) return 'for 1 day'
-  if (diffDays < 7) return `for ${diffDays} days`
-  if (diffDays < 14) return 'for 1 week'
-  const weeks = Math.floor(diffDays / 7)
-  if (diffDays < 30) return `for ${weeks} weeks`
-  const months = Math.floor(diffDays / 30)
-  if (months === 1) return 'for 1 month'
-  return `for ${months} months`
 }
 
 function startDeferredEdit() {
@@ -1623,21 +1594,6 @@ async function onActivate() {
     flex: 1;
     width: auto;
   }
-}
-
-/* ── Waiting For section ── */
-.detail-waiting-for {
-  color: var(--color-text-primary);
-}
-
-.detail-waiting-since {
-  color: var(--color-text-tertiary);
-  margin-left: 8px;
-}
-
-.detail-waiting-since::before {
-  content: '·';
-  margin-right: 8px;
 }
 
 /* ── Waiting Modal ── */
