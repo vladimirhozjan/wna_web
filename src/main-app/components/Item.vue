@@ -18,8 +18,8 @@
     </div>
 
     <!-- Content -->
-    <div class="item__content" @click.stop="onClick">
-      <span v-if="isEditing" class="item__input-wrapper">
+    <div class="item__content">
+      <span v-if="isEditing" class="item__input-wrapper" @click.stop>
         <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
         <input
             ref="editInput"
@@ -32,7 +32,7 @@
             @click.stop
         />
       </span>
-      <span v-else class="item__title">{{ title }}</span>
+      <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
       <span v-if="$slots.subtitle" class="item__subtitle">
         <slot name="subtitle" />
       </span>
