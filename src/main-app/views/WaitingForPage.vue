@@ -5,29 +5,6 @@
         <h1 class="text-h1 color-text-primary">Waiting For</h1>
       </div>
 
-      <!-- Add Form -->
-      <div class="waiting-add-form">
-        <div class="waiting-add-row">
-          <Inpt
-              ref="titleInput"
-              v-model="newTitle"
-              type="text"
-              placeholder="What are you waiting for?"
-              @keyup.enter="onAdd"
-              :disabled="adding"
-          />
-          <Btn
-              @click="onAdd"
-              :disabled="adding || !newTitle.trim()"
-              :loading="adding"
-              variant="primary"
-              size="sm"
-          >
-            Add
-          </Btn>
-        </div>
-      </div>
-
       <div class="waiting-content">
         <!-- Loading state -->
         <div v-if="loading && items.length === 0" class="loading-state">
@@ -39,7 +16,7 @@
           <WaitingIcon class="empty-state__icon" />
           <h2 class="empty-state__title">Nothing waiting</h2>
           <p class="empty-state__text">
-            Track things you're waiting on from others. Add items above or move actions here.
+            Track things you're waiting on from others. Move actions here from Next or Today.
           </p>
         </div>
 
@@ -96,13 +73,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import WaitingItem from '../components/WaitingItem.vue'
 import Btn from '../components/Btn.vue'
-import Inpt from '../components/Inpt.vue'
 import ActionBtn from '../components/ActionBtn.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
 import { waitingModel } from '../scripts/waitingModel.js'
@@ -118,7 +94,6 @@ const {
   hasMore,
   totalItems,
   loadWaiting,
-  addWaiting,
   updateWaiting,
   trashWaiting,
   moveWaiting,
@@ -128,11 +103,6 @@ const {
 
 const toaster = errorModel()
 const confirm = confirmModel()
-
-// Add form state
-const newTitle = ref('')
-const adding = ref(false)
-const titleInput = ref(null)
 
 // Loading states
 const updatingId = ref(null)
@@ -166,25 +136,6 @@ onMounted(() => {
 
 async function loadMore() {
   await loadWaiting()
-}
-
-async function onAdd() {
-  const title = newTitle.value.trim()
-  if (!title) return
-
-  adding.value = true
-  try {
-    await addWaiting(title, null)
-    newTitle.value = ''
-    toaster.success('Added to Waiting For')
-    nextTick(() => {
-      titleInput.value?.focus()
-    })
-  } catch (err) {
-    toaster.push(err.message || 'Failed to add item')
-  } finally {
-    adding.value = false
-  }
 }
 
 function onItemClick(item, index) {
@@ -311,20 +262,6 @@ async function onDragEnd(evt) {
 h1 {
   padding: 10px;
   margin: 0;
-}
-
-.waiting-add-form {
-  flex-shrink: 0;
-  padding: 0 10px 16px 10px;
-}
-
-.waiting-add-row {
-  display: flex;
-  gap: 10px;
-}
-
-.waiting-add-row :deep(.inpt) {
-  flex: 1;
 }
 
 .waiting-content {
