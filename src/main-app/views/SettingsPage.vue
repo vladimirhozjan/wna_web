@@ -232,7 +232,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
@@ -242,6 +242,7 @@ import Select from '../components/Select.vue'
 import { authModel } from '../scripts/authModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import { settingsModel } from '../scripts/settingsModel.js'
 import { isValidPassword } from '../scripts/authTools.js'
 import { mapApiError, ErrorScenario } from '../scripts/errorMapper.js'
 import { changePassword, listSessions, revokeSession, revokeAllSessions } from '../scripts/apiClient.js'
@@ -250,6 +251,7 @@ const router = useRouter()
 const auth = authModel()
 const toaster = errorModel()
 const confirm = confirmModel()
+const settings = settingsModel()
 
 // User data
 const userEmail = computed(() => auth.currentUser.value?.email || '')
@@ -257,20 +259,42 @@ const userEmail = computed(() => auth.currentUser.value?.email || '')
 // App version from Vite define
 const appVersion = __APP_VERSION__
 
-// Preferences
-const addPosition = ref(localStorage.getItem('pref-add-position') || 'end')
-const debugMode = ref(localStorage.getItem('debug-window') !== null)
+// Preferences - computed from settings model
+const addPosition = computed({
+  get: () => settings.state.newItemsPosition,
+  set: (val) => settings.setNewItemsPosition(val).catch(err => toaster.push('Failed to save setting'))
+})
+
+const debugMode = computed({
+  get: () => settings.state.debugEnabled,
+  set: (val) => settings.setDebugEnabled(val).catch(err => toaster.push('Failed to save setting'))
+})
 
 const positionOptions = [
   { value: 'end', label: 'End' },
   { value: 'beginning', label: 'Beginning' }
 ]
 
-// Calendar preferences
-const timeFormat = ref(localStorage.getItem('calendar_time_format') || '12h')
-const businessHoursStart = ref(parseInt(localStorage.getItem('calendar_business_hours_start')) || 9)
-const businessHoursEnd = ref(parseInt(localStorage.getItem('calendar_business_hours_end')) || 17)
-const businessDays = ref(JSON.parse(localStorage.getItem('calendar_business_days') || '[1,2,3,4,5]'))
+// Calendar preferences - computed from settings model
+const timeFormat = computed({
+  get: () => settings.state.timeFormat === '12-hour' ? '12h' : '24h',
+  set: (val) => settings.setTimeFormat(val === '12h' ? '12-hour' : '24-hour').catch(err => toaster.push('Failed to save setting'))
+})
+
+const businessHoursStart = computed({
+  get: () => settings.state.businessHoursStart,
+  set: (val) => settings.setBusinessHoursStart(val).catch(err => toaster.push('Failed to save setting'))
+})
+
+const businessHoursEnd = computed({
+  get: () => settings.state.businessHoursEnd,
+  set: (val) => settings.setBusinessHoursEnd(val).catch(err => toaster.push('Failed to save setting'))
+})
+
+const businessDays = computed({
+  get: () => settings.state.businessDays,
+  set: (val) => settings.setBusinessDays(val).catch(err => toaster.push('Failed to save setting'))
+})
 
 const timeFormatOptions = [
   { value: '12h', label: '12-hour (AM/PM)' },
@@ -324,42 +348,15 @@ const canChangePassword = computed(() => {
       !changingPassword.value
 })
 
-// Watch preferences and sync to localStorage
-watch(addPosition, (val) => {
-  localStorage.setItem('pref-add-position', val)
-})
-
-watch(debugMode, (val) => {
-  if (val) {
-    localStorage.setItem('debug-window', 'true')
-  } else {
-    localStorage.removeItem('debug-window')
-  }
-  // Notify App.vue about the change
-  window.dispatchEvent(new CustomEvent('debug-mode-changed', { detail: val }))
-})
-
-watch(timeFormat, (val) => {
-  localStorage.setItem('calendar_time_format', val)
-})
-
-watch(businessHoursStart, (val) => {
-  localStorage.setItem('calendar_business_hours_start', val.toString())
-})
-
-watch(businessHoursEnd, (val) => {
-  localStorage.setItem('calendar_business_hours_end', val.toString())
-})
-
-watch(businessDays, (val) => {
-  localStorage.setItem('calendar_business_days', JSON.stringify(val))
-}, { deep: true })
-
 // Lifecycle
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
   loadSessions()
+  // Load settings from API
+  settings.load().catch(() => {
+    // Settings will fall back to localStorage, no need to show error
+  })
 })
 
 onUnmounted(() => {

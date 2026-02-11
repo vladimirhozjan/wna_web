@@ -967,6 +967,26 @@ export async function restoreProject(projectId) {
     }
 }
 
+// ── Settings API ──
+
+export async function getSettings() {
+    try {
+        const res = await httpApi.get('/v1/user/settings', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateSettings(settings) {
+    try {
+        const res = await httpApi.put('/v1/user/settings', settings, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,
@@ -1048,6 +1068,9 @@ const apiClient = {
     moveWaitingPosition,
     waitAction,
     unwaitAction,
+    // Settings API
+    getSettings,
+    updateSettings,
 }
 
 export default apiClient
