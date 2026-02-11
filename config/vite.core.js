@@ -72,6 +72,15 @@ export function createViteConfig(mode, envVars, appConfig) {
                 },
                 mangle: true
             }
+        },
+
+        server: {
+            proxy: {
+                '/v1': {
+                    target: 'http://localhost:8000',
+                    changeOrigin: true,
+                }
+            }
         }
     }
 }
