@@ -38,8 +38,12 @@ export function clarifyModel() {
         actionData: {
             title: '',
             description: '',
+            deferType: null,
+            deferDate: null,
+            deferTime: null,
+            deferDuration: null,
             dueDate: null,
-            deferUntil: null,
+            dueTime: null,
         },
         projectData: {
             title: '',
@@ -83,8 +87,12 @@ export function clarifyModel() {
         state.actionData = {
             title: '',
             description: '',
+            deferType: null,
+            deferDate: null,
+            deferTime: null,
+            deferDuration: null,
             dueDate: null,
-            deferUntil: null,
+            dueTime: null,
         }
         state.projectData = {
             title: '',

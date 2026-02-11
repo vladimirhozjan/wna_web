@@ -316,11 +316,31 @@ export async function clarifyToAction(stuffId, actionData) {
             title: actionData.title,
         }
         if (actionData.description) body.description = actionData.description
-        if (actionData.dueDate) body.due_date = actionData.dueDate
-        if (actionData.deferUntil) body.start_date = actionData.deferUntil
+
+        // Deferred dates
+        if (actionData.deferType === 'scheduled' && actionData.deferDate) {
+            body.scheduled_date = actionData.deferDate
+            if (actionData.deferTime) body.scheduled_time = actionData.deferTime
+        } else if (actionData.deferType === 'start' && actionData.deferDate) {
+            body.start_date = actionData.deferDate
+            if (actionData.deferTime) body.start_time = actionData.deferTime
+        }
+
+        // Due date
+        if (actionData.dueDate) {
+            body.due_date = actionData.dueDate
+            if (actionData.dueTime) body.due_time = actionData.dueTime
+        }
 
         const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, {headers: authHeaders()})
-        return res.data
+        const result = res.data
+
+        // Transform API doesn't support duration, so call defer endpoint if duration is set
+        if (actionData.deferType === 'scheduled' && actionData.deferDate && actionData.deferTime && actionData.deferDuration && result.id) {
+            await deferAction(result.id, 'scheduled', actionData.deferDate, actionData.deferTime, actionData.deferDuration)
+        }
+
+        return result
     } catch (err) {
         throw normalizeError(err)
     }
