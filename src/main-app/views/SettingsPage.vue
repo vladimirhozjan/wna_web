@@ -649,25 +649,23 @@ async function onLogout() {
   display: inline-block;
 }
 
-.settings-days-control .settings-saving-spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 .settings-saving-spinner {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.settings-saving-spinner::after {
+  content: '';
   width: 18px;
   height: 18px;
   border: 2px solid rgba(37, 99, 235, 0.2);
   border-top-color: var(--color-action);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  z-index: 1;
 }
 
 /* Loading, error, empty states */
