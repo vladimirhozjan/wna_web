@@ -95,7 +95,7 @@
 
           <div class="settings-row">
             <span class="settings-label">New items position in the list</span>
-            <div class="settings-control">
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
               <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"></span>
               <Select
                   v-model="addPosition"
@@ -112,7 +112,7 @@
 
           <div class="settings-row">
             <span class="settings-label">Time format</span>
-            <div class="settings-control">
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timeFormat }">
               <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"></span>
               <Select
                   v-model="timeFormat"
@@ -124,7 +124,7 @@
 
           <div class="settings-row">
             <span class="settings-label">Business hours start</span>
-            <div class="settings-control">
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursStart }">
               <span v-if="settings.state.saving.businessHoursStart" class="settings-saving-spinner"></span>
               <Select
                   v-model="businessHoursStart"
@@ -136,7 +136,7 @@
 
           <div class="settings-row">
             <span class="settings-label">Business hours end</span>
-            <div class="settings-control">
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursEnd }">
               <span v-if="settings.state.saving.businessHoursEnd" class="settings-saving-spinner"></span>
               <Select
                   v-model="businessHoursEnd"
@@ -147,19 +147,19 @@
           </div>
 
           <div class="settings-row settings-row--column">
-            <div class="settings-label-row">
-              <span class="settings-label">Business days</span>
+            <span class="settings-label">Business days</span>
+            <div class="settings-days-control" :class="{ 'settings-control--saving': settings.state.saving.businessDays }">
               <span v-if="settings.state.saving.businessDays" class="settings-saving-spinner"></span>
-            </div>
-            <div class="settings-days">
-              <label v-for="day in dayOptions" :key="day.value" class="settings-day-checkbox">
-                <input
-                    type="checkbox"
-                    :value="day.value"
-                    v-model="businessDays"
-                />
-                <span>{{ day.label }}</span>
-              </label>
+              <div class="settings-days">
+                <label v-for="day in dayOptions" :key="day.value" class="settings-day-checkbox">
+                  <input
+                      type="checkbox"
+                      :value="day.value"
+                      v-model="businessDays"
+                  />
+                  <span>{{ day.label }}</span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -175,7 +175,7 @@
 
           <div class="settings-row">
             <span class="settings-label">Debug Mode</span>
-            <div class="settings-control">
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.debugEnabled }">
               <span v-if="settings.state.saving.debugEnabled" class="settings-saving-spinner"></span>
               <label class="settings-toggle">
                 <input type="checkbox" v-model="debugMode" />
@@ -631,25 +631,43 @@ async function onLogout() {
 }
 
 .settings-control {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
 }
 
-.settings-label-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.settings-control--saving {
+  pointer-events: none;
+}
+
+.settings-control--saving > *:not(.settings-saving-spinner) {
+  opacity: 0.5;
+}
+
+.settings-days-control {
+  position: relative;
+  display: inline-block;
+}
+
+.settings-days-control .settings-saving-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .settings-saving-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--color-border-light);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(37, 99, 235, 0.2);
   border-top-color: var(--color-action);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  flex-shrink: 0;
+  z-index: 1;
 }
 
 /* Loading, error, empty states */
