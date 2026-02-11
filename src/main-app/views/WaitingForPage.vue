@@ -6,67 +6,29 @@
       </div>
 
       <div class="waiting-content">
-        <!-- Loading state -->
-        <div v-if="loading && items.length === 0" class="loading-state">
-          <span class="loading-spinner"></span>
-        </div>
-
-        <!-- Empty state -->
-        <div v-else-if="!loading && items.length === 0" class="empty-state">
-          <WaitingIcon class="empty-state__icon" />
-          <h2 class="empty-state__title">Nothing waiting</h2>
-          <p class="empty-state__text">
-            Track things you're waiting on from others. Move actions here from Next or Today.
-          </p>
-        </div>
-
-        <!-- List -->
-        <VueDraggable
-            v-else
+        <ItemList
             v-model="items"
-            :delay="100"
-            :animation="150"
-            :chosen-class="'waiting-item-wrapper-chosen'"
-            :ghost-class="'waiting-item-wrapper-ghost'"
-            @start="onDragStart"
-            @end="onDragEnd"
+            :loading="loading"
+            :has-more="hasMore"
+            :loading-ids="loadingIds"
+            @update="onItemUpdate"
+            @check="onItemCheck"
+            @click="onItemClick"
+            @delete="onTrash"
+            @move="onMove"
+            @load-more="loadMore"
         >
-          <div
-              v-for="(item, index) in items"
-              :key="item.id"
-              class="waiting-item-wrapper"
-              @click="onItemClick(item, index)"
-          >
-            <WaitingItem
-                :id="item.id"
-                :title="item.title"
-                :waiting-for="item.waiting_for"
-                :waiting-since="item.waiting_since"
-                :loading="loadingIdSet.has(item.id)"
-                :editable="true"
-                :no-hover="isDragging"
-                @update="onItemUpdate"
-                @check="onItemCheck"
-            >
-              <template #actions>
-                <Btn variant="link" size="sm" @click.stop="onGotIt(item.id)">Got it</Btn>
-                <ActionBtn @click.stop="onTrash(item.id)" />
-              </template>
-            </WaitingItem>
-          </div>
-        </VueDraggable>
-
-        <!-- Load more -->
-        <div class="load-more" v-if="hasMore && items.length > 0">
-          <Btn
-              variant="ghost"
-              size="sm"
-              :loading="loading"
-              @click="loadMore"
-          >
-            Load more
-          </Btn>
-        </div>
+          <template #actions="{ item }">
+            <ActionBtn @click="onTrash(item.id)" />
+          </template>
+          <template #empty>
+            <WaitingIcon class="empty-state__icon" />
+            <h2 class="empty-state__title">Nothing waiting</h2>
+            <p class="empty-state__text">
+              Move actions here when you're waiting on someone or something.
+            </p>
+          </template>
+        </ItemList>
       </div>
     </div>
   </DashboardLayout>
@@ -75,10 +37,8 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { VueDraggable } from 'vue-draggable-plus'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
-import WaitingItem from '../components/WaitingItem.vue'
-import Btn from '../components/Btn.vue'
+import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
 import { waitingModel } from '../scripts/waitingModel.js'
@@ -98,31 +58,22 @@ const {
   trashWaiting,
   moveWaiting,
   completeWaiting,
-  unwaitAction,
 } = waitingModel()
 
 const toaster = errorModel()
 const confirm = confirmModel()
 
-// Loading states
 const updatingId = ref(null)
 const deletingId = ref(null)
 const movingId = ref(null)
-const unwaitingId = ref(null)
 
-const loadingIdSet = computed(() => {
-  const ids = new Set()
-  if (updatingId.value) ids.add(updatingId.value)
-  if (deletingId.value) ids.add(deletingId.value)
-  if (movingId.value) ids.add(movingId.value)
-  if (unwaitingId.value) ids.add(unwaitingId.value)
+const loadingIds = computed(() => {
+  const ids = []
+  if (updatingId.value) ids.push(updatingId.value)
+  if (deletingId.value) ids.push(deletingId.value)
+  if (movingId.value) ids.push(movingId.value)
   return ids
 })
-
-// Drag state
-const isDragging = ref(false)
-let draggedItemId = null
-let originalIndex = null
 
 watch(error, (err) => {
   if (!err) return
@@ -139,7 +90,6 @@ async function loadMore() {
 }
 
 function onItemClick(item, index) {
-  if (isDragging.value) return
   router.push({
     name: 'action-detail',
     params: { id: item.id },
@@ -164,7 +114,7 @@ async function onItemUpdate(id, { title }) {
 
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title
-  return title.slice(0, maxLen).trim() + '...'
+  return title.slice(0, maxLen).trim() + '…'
 }
 
 async function onItemCheck(id, checked) {
@@ -177,25 +127,7 @@ async function onItemCheck(id, checked) {
     await completeWaiting(id)
     toaster.success(`"${title}" completed`)
   } catch (err) {
-    toaster.push(err.message || 'Failed to complete item')
-  }
-}
-
-async function onGotIt(id) {
-  const item = items.value.find(i => i.id === id)
-  const title = truncateTitle(item?.title)
-
-  unwaitingId.value = id
-  try {
-    const result = await unwaitAction(id)
-    // Server returns the new state - check if it went to CALENDAR or NEXT
-    const newState = result?.state || 'NEXT'
-    const stateLabel = newState === 'CALENDAR' ? 'Calendar' : 'Next Actions'
-    toaster.success(`"${title}" moved to ${stateLabel}`)
-  } catch (err) {
-    toaster.push(err.message || 'Failed to move item')
-  } finally {
-    unwaitingId.value = null
+    toaster.push(err.message || 'Failed to complete action')
   }
 }
 
@@ -205,7 +137,7 @@ async function onTrash(id) {
 
   const confirmed = await confirm.show({
     title: 'Move to Trash',
-    message: 'Are you sure you want to move this item to trash?',
+    message: 'Are you sure you want to move this action to trash?',
     confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
@@ -221,29 +153,15 @@ async function onTrash(id) {
   }
 }
 
-function onDragStart(evt) {
-  originalIndex = evt.oldIndex
-  draggedItemId = items.value[evt.oldIndex]?.id
-  isDragging.value = true
-}
-
-async function onDragEnd(evt) {
-  isDragging.value = false
-  const newIndex = evt.newIndex
-
-  if (originalIndex !== newIndex && draggedItemId) {
-    movingId.value = draggedItemId
-    try {
-      await moveWaiting(draggedItemId, newIndex)
-    } catch (e) {
-      await loadWaiting({ reset: true })
-    } finally {
-      movingId.value = null
-    }
+async function onMove(id, newIndex) {
+  movingId.value = id
+  try {
+    await moveWaiting(id, newIndex)
+  } catch (e) {
+    await loadWaiting({ reset: true })
+  } finally {
+    movingId.value = null
   }
-
-  draggedItemId = null
-  originalIndex = null
 }
 </script>
 
@@ -257,11 +175,11 @@ async function onDragEnd(evt) {
 .waiting-header {
   flex-shrink: 0;
   background: var(--color-bg-primary);
+  margin-bottom: 10px;
 }
 
 h1 {
   padding: 10px;
-  margin: 0;
 }
 
 .waiting-content {
@@ -270,53 +188,6 @@ h1 {
   min-height: 0;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-}
-
-.waiting-item-wrapper {
-  cursor: pointer;
-}
-
-.waiting-item-wrapper-chosen .waiting-item {
-  background-color: var(--color-bg-hover);
-}
-
-.waiting-item-wrapper-ghost .waiting-item {
-  background-color: var(--color-btn-ghost-hover);
-}
-
-.waiting-item-wrapper-ghost .waiting-item > * {
-  opacity: 0;
-}
-
-.load-more {
-  display: flex;
-  justify-content: center;
-  margin: 16px 0;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-}
-
-.loading-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
 }
 
 .empty-state__icon {
@@ -340,9 +211,5 @@ h1 {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 </style>
