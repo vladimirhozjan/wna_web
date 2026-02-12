@@ -107,19 +107,16 @@
               </Btn>
             </template>
             <button class="dropdown-item" @click="onMoveTo('action')"><NextIcon class="dropdown-item-icon" /> Next Actions</button>
+            <button class="dropdown-item" @click="onMoveTo('today')"><TodayIcon class="dropdown-item-icon" /> Today</button>
+            <button class="dropdown-item" @click="onMoveTo('calendar')"><CalendarIcon class="dropdown-item-icon" /> Calendar</button>
+            <button class="dropdown-item" @click="onMoveTo('waiting')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
             <button class="dropdown-item" @click="onMoveTo('project')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
             <button class="dropdown-item" @click="onMoveTo('someday')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
             <button class="dropdown-item" @click="onMoveTo('reference')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" @click="onMoveTo('completed')"><CompletedIcon class="dropdown-item-icon" /> Completed</button>
+            <button class="dropdown-item dropdown-item--danger" @click="onMoveTo('trash')"><TrashIcon class="dropdown-item-icon" /> Trash</button>
           </Dropdown>
-          <Btn
-              v-if="!isCompleted"
-              variant="ghost-danger"
-              size="sm"
-              :loading="actionLoading === 'trash'"
-              @click="onTrash"
-          >
-            Trash
-          </Btn>
         </div>
 
         <!-- Description area -->
@@ -217,16 +214,23 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import { clarifyModel } from '../scripts/clarifyModel.js'
 import apiClient from '../scripts/apiClient.js'
+import { moveModel } from '../scripts/moveModel.js'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
+import TodayIcon from '../assets/TodayIcon.vue'
+import CalendarIcon from '../assets/CalendarIcon.vue'
+import WaitingIcon from '../assets/WaitingIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 import ReferenceIcon from '../assets/ReferenceIcon.vue'
+import CompletedIcon from '../assets/CompletedIcon.vue'
+import TrashIcon from '../assets/TrashIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+const mover = moveModel()
 
 const {
   error,
@@ -496,14 +500,92 @@ async function navigateToNextOrPrev() {
 
 async function onMoveTo(destination) {
   showMoveDialog.value = false
-  actionLoading.value = 'move'
 
   const destinationLabels = {
     action: 'Next Actions',
+    today: 'Today',
+    calendar: 'Calendar',
+    waiting: 'Waiting For',
     project: 'Projects',
     someday: 'Someday',
-    reference: 'Reference'
+    reference: 'Reference',
+    completed: 'Completed',
+    trash: 'Trash'
   }
+
+  // Special handling for calendar - need date input
+  if (destination === 'calendar') {
+    const scheduleData = await mover.showSchedule({ date: '', time: '', duration: 15 })
+    if (!scheduleData || !scheduleData.date) return // User cancelled
+
+    actionLoading.value = 'move'
+    try {
+      await apiClient.clarifyToAction(item.value.id, {
+        title: item.value.title,
+        description: item.value.description || '',
+        deferType: 'scheduled',
+        deferDate: scheduleData.date,
+        deferTime: scheduleData.time || null,
+        deferDuration: scheduleData.duration || null
+      })
+      toaster.success(`"${truncateTitle(item.value.title)}" moved to Calendar`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
+  // Special handling for waiting - need waiting_for input
+  if (destination === 'waiting') {
+    const waitingFor = await mover.showWaiting({ waitingFor: '' })
+    if (!waitingFor) return // User cancelled
+
+    actionLoading.value = 'move'
+    try {
+      const result = await apiClient.clarifyToAction(item.value.id, {
+        title: item.value.title,
+        description: item.value.description || ''
+      })
+      await apiClient.waitAction(result.id, waitingFor)
+      toaster.success(`"${truncateTitle(item.value.title)}" moved to Waiting For`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
+  // Special handling for today - transform to action then mark today
+  if (destination === 'today') {
+    actionLoading.value = 'move'
+    try {
+      const result = await apiClient.clarifyToAction(item.value.id, {
+        title: item.value.title,
+        description: item.value.description || ''
+      })
+      await apiClient.todayAction(result.id)
+      toaster.success(`"${truncateTitle(item.value.title)}" moved to Today`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
+  // Special handling for trash - use confirmation
+  if (destination === 'trash') {
+    await onTrash()
+    return
+  }
+
+  actionLoading.value = 'move'
 
   try {
     switch (destination) {
@@ -524,6 +606,9 @@ async function onMoveTo(destination) {
         break
       case 'reference':
         await apiClient.clarifyToReference(item.value.id)
+        break
+      case 'completed':
+        await apiClient.completeStuff(item.value.id)
         break
     }
     toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
@@ -916,6 +1001,21 @@ async function onActivate() {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Dropdown styles ── */
+.dropdown-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--color-border-light);
+}
+
+.dropdown-item--danger {
+  color: var(--color-danger);
+}
+
+.dropdown-item--danger:hover {
+  background: var(--color-danger-bg);
 }
 
 /* ── Clarify Slide-over ── */

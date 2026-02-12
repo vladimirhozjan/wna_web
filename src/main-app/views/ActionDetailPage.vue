@@ -107,7 +107,7 @@
               Done
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="ghost"
@@ -119,9 +119,10 @@
             </template>
             <button v-if="action.state !== 'NEXT'" class="dropdown-item" @click="onMoveTo('NEXT')"><NextIcon class="dropdown-item-icon" /> Next Actions</button>
             <button v-if="action.state !== 'TODAY'" class="dropdown-item" @click="onMoveTo('TODAY')"><TodayIcon class="dropdown-item-icon" /> Today</button>
-            <button v-if="action.state !== 'WAITING'" class="dropdown-item" @click="onMoveTo('WAITING')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
             <button v-if="action.state !== 'CALENDAR'" class="dropdown-item" @click="onMoveTo('CALENDAR')"><CalendarIcon class="dropdown-item-icon" /> Calendar</button>
+            <button v-if="action.state !== 'WAITING'" class="dropdown-item" @click="onMoveTo('WAITING')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
             <button v-if="action.state !== 'SOMEDAY'" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+            <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
           </Dropdown>
           <Btn
               v-if="!isCompleted"
@@ -317,27 +318,6 @@
 
     </div>
 
-    <!-- Waiting For Input Modal -->
-    <Teleport to="body">
-      <div v-if="showWaitingInput" class="waiting-modal-overlay" @click.self="onCancelWaiting">
-        <div class="waiting-modal">
-          <h3 class="waiting-modal-title">Who/what are you waiting on?</h3>
-          <input
-              ref="waitingInputRef"
-              v-model="waitingForValue"
-              type="text"
-              class="waiting-modal-input"
-              placeholder="e.g., Sarah from Legal"
-              @keyup.enter="onConfirmWaiting"
-              @keyup.esc="onCancelWaiting"
-          />
-          <div class="waiting-modal-actions">
-            <Btn variant="ghost" size="sm" @click="onCancelWaiting">Cancel</Btn>
-            <Btn variant="primary" size="sm" @click="onConfirmWaiting" :disabled="!waitingForValue.trim()">Save</Btn>
-          </div>
-        </div>
-      </div>
-    </Teleport>
   </DashboardLayout>
 </template>
 
@@ -352,18 +332,21 @@ import { todayModel } from '../scripts/todayModel.js'
 import { waitingModel } from '../scripts/waitingModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
-import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction } from '../scripts/apiClient.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, todayAction, activateAction } from '../scripts/apiClient.js'
+import { moveModel } from '../scripts/moveModel.js'
 import ActionIcon from '../assets/ActionIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import TodayIcon from '../assets/TodayIcon.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
 import CalendarIcon from '../assets/CalendarIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
+import ProjectsIcon from '../assets/ProjectsIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+const mover = moveModel()
 
 const nextModel = nextActionModel()
 const todayMdl = todayModel()
@@ -391,11 +374,6 @@ const titleInput = ref(null)
 const descriptionInput = ref(null)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
-
-// Waiting For modal state
-const showWaitingInput = ref(false)
-const waitingForValue = ref('')
-const waitingInputRef = ref(null)
 
 // Date section state
 const datesExpanded = ref(false)
@@ -573,13 +551,94 @@ async function onMoveTo(newState) {
   const currentState = action.value.state || 'NEXT'
   if (newState === currentState) return
 
+  const stateLabels = {
+    NEXT: 'Next Actions',
+    TODAY: 'Today',
+    WAITING: 'Waiting For',
+    CALENDAR: 'Calendar',
+    SOMEDAY: 'Someday',
+    PROJECT: 'Projects'
+  }
+
+  // Special handling for PROJECT - transform action to project
+  if (newState === 'PROJECT') {
+    actionLoading.value = 'move'
+    try {
+      await apiClient.addProject({
+        title: action.value.title,
+        description: action.value.description || ''
+      })
+      await trashAction(action.value.id)
+      toaster.success(`"${truncateTitle(action.value.title)}" converted to project`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to convert to project')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
   // Special handling for WAITING - need to prompt for waiting_for
   if (newState === 'WAITING') {
-    waitingForValue.value = action.value.waiting_for || ''
-    showWaitingInput.value = true
-    nextTick(() => {
-      waitingInputRef.value?.focus()
+    const waitingFor = await mover.showWaiting({
+      waitingFor: action.value.waiting_for || ''
     })
+    if (!waitingFor) return // User cancelled
+
+    actionLoading.value = 'move'
+    const oldState = action.value.state
+    const oldWaitingFor = action.value.waiting_for
+    action.value.state = 'WAITING'
+    action.value.waiting_for = waitingFor
+
+    try {
+      await waitAction(action.value.id, waitingFor)
+      toaster.success(`"${truncateTitle(action.value.title)}" moved to Waiting For`)
+      await navigateToNextOrPrev()
+    } catch {
+      action.value.state = oldState
+      action.value.waiting_for = oldWaitingFor
+      toaster.push('Failed to move action')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
+  // Special handling for CALENDAR - need to prompt for date
+  if (newState === 'CALENDAR') {
+    const scheduleData = await mover.showSchedule({
+      date: action.value.scheduled_date || '',
+      time: action.value.scheduled_time || '',
+      duration: action.value.scheduled_duration || 15
+    })
+    if (!scheduleData || !scheduleData.date) return // User cancelled
+
+    actionLoading.value = 'move'
+    const oldState = action.value.state
+    const oldScheduledDate = action.value.scheduled_date
+    const oldScheduledTime = action.value.scheduled_time
+    const oldScheduledDuration = action.value.scheduled_duration
+
+    action.value.state = 'CALENDAR'
+    action.value.scheduled_date = scheduleData.date
+    action.value.scheduled_time = scheduleData.time
+    action.value.scheduled_duration = scheduleData.duration
+
+    try {
+      await deferAction(action.value.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration)
+      toaster.success(`"${truncateTitle(action.value.title)}" moved to Calendar`)
+      await navigateToNextOrPrev()
+    } catch {
+      action.value.state = oldState
+      action.value.scheduled_date = oldScheduledDate
+      action.value.scheduled_time = oldScheduledTime
+      action.value.scheduled_duration = oldScheduledDuration
+      toaster.push('Failed to move action')
+    } finally {
+      actionLoading.value = null
+    }
     return
   }
 
@@ -587,16 +646,28 @@ async function onMoveTo(newState) {
   const oldState = action.value.state
   action.value.state = newState
 
-  const stateLabels = {
-    NEXT: 'Next Actions',
-    TODAY: 'Today',
-    WAITING: 'Waiting For',
-    CALENDAR: 'Calendar',
-    SOMEDAY: 'Someday'
-  }
-
   try {
-    await changeActionState(action.value.id, newState, action.value.title)
+    // Use appropriate API based on current state and destination
+    if (currentState === 'SOMEDAY') {
+      // From Someday: need to activate first, then move if needed
+      await activateAction(action.value.id)
+      if (newState === 'TODAY') {
+        await todayAction(action.value.id)
+      }
+    } else if (newState === 'TODAY') {
+      await todayAction(action.value.id)
+    } else if (newState === 'NEXT') {
+      // Moving to NEXT - if from CALENDAR, need to undefer
+      if (currentState === 'CALENDAR') {
+        await undeferAction(action.value.id)
+      } else {
+        await changeActionState(action.value.id, newState, action.value.title)
+      }
+    } else if (newState === 'SOMEDAY') {
+      await apiClient.somedayAction(action.value.id)
+    } else {
+      await changeActionState(action.value.id, newState, action.value.title)
+    }
     toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabels[newState]}`)
     await navigateToNextOrPrev()
   } catch {
@@ -605,39 +676,6 @@ async function onMoveTo(newState) {
   } finally {
     actionLoading.value = null
   }
-}
-
-async function onConfirmWaiting() {
-  const waitingFor = waitingForValue.value.trim()
-  if (!waitingFor) {
-    toaster.push('Please enter who/what you are waiting on')
-    return
-  }
-
-  showWaitingInput.value = false
-  actionLoading.value = 'move'
-  const oldState = action.value.state
-  const oldWaitingFor = action.value.waiting_for
-  action.value.state = 'WAITING'
-  action.value.waiting_for = waitingFor
-
-  try {
-    await waitAction(action.value.id, waitingFor)
-    toaster.success(`"${truncateTitle(action.value.title)}" moved to Waiting For`)
-    await navigateToNextOrPrev()
-  } catch {
-    action.value.state = oldState
-    action.value.waiting_for = oldWaitingFor
-    toaster.push('Failed to move action')
-  } finally {
-    actionLoading.value = null
-    waitingForValue.value = ''
-  }
-}
-
-function onCancelWaiting() {
-  showWaitingInput.value = false
-  waitingForValue.value = ''
 }
 
 async function onGotIt() {
@@ -1566,6 +1604,21 @@ async function onActivate() {
   to { transform: rotate(360deg); }
 }
 
+/* ── Dropdown styles ── */
+.dropdown-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--color-border-light);
+}
+
+.dropdown-item--danger {
+  color: var(--color-danger);
+}
+
+.dropdown-item--danger:hover {
+  background: var(--color-danger-bg);
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .detail-header {
@@ -1640,60 +1693,4 @@ async function onActivate() {
   margin-right: 8px;
 }
 
-/* ── Waiting Modal ── */
-.waiting-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.waiting-modal {
-  background: var(--color-bg-primary);
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  max-width: 400px;
-  margin: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-}
-
-.waiting-modal-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0 0 16px 0;
-}
-
-.waiting-modal-input {
-  width: 100%;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  padding: 12px;
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  background: var(--color-bg-primary);
-  box-sizing: border-box;
-}
-
-.waiting-modal-input:focus {
-  outline: none;
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.waiting-modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
-}
 </style>

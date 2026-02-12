@@ -129,7 +129,8 @@ function onDragStart(evt) {
       id: item.id,
       title: item.title,
       description: item.description || '',
-      sourceType: props.sourceType
+      sourceType: props.sourceType,
+      state: item.state || null
     }))
   }
 }
@@ -162,7 +163,8 @@ function onNativeDragStart(evt, item) {
     id: item.id,
     title: item.title,
     description: item.description || '',
-    sourceType: props.sourceType
+    sourceType: props.sourceType,
+    state: item.state || null
   }))
 }
 

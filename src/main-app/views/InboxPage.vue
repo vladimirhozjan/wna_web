@@ -66,6 +66,12 @@
               @load-more="loadMore"
           >
             <template #actions="{ item }">
+              <ItemMoveDropdown
+                  v-if="!clarifyMode"
+                  :item-id="item.id"
+                  item-type="stuff"
+                  @move="onMoveToSection"
+              />
               <ActionBtn v-if="!clarifyMode" @click="onTrash(item.id)" />
             </template>
             <template #empty>
@@ -112,11 +118,13 @@ import { useRouter } from 'vue-router'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
+import { moveModel } from '../scripts/moveModel.js'
 import apiClient from '../scripts/apiClient.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import ItemMoveDropdown from '../components/ItemMoveDropdown.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import ClarifyPanel from '../components/ClarifyPanel.vue'
 
@@ -137,6 +145,7 @@ const {
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+const mover = moveModel()
 
 // local UI state
 const new_stuff_title = ref('')
@@ -327,6 +336,127 @@ function onClarifyDone(processedItem) {
     exitClarifyMode()
   } else if (currentClarifyIndex.value >= items.value.length) {
     currentClarifyIndex.value = items.value.length - 1
+  }
+}
+
+const destinationLabels = {
+  action: 'Next Actions',
+  today: 'Today',
+  calendar: 'Calendar',
+  waiting: 'Waiting For',
+  project: 'Projects',
+  someday: 'Someday',
+  reference: 'Reference',
+  completed: 'Completed',
+  trash: 'Trash'
+}
+
+async function onMoveToSection(id, destination) {
+  const item = items.value.find(i => i.id === id)
+  const title = truncateTitle(item?.title)
+
+  // Special handling for calendar - need date input
+  if (destination === 'calendar') {
+    const scheduleData = await mover.showSchedule({ date: '', time: '', duration: 15 })
+    if (!scheduleData || !scheduleData.date) return // User cancelled
+
+    movingId.value = id
+    try {
+      // Transform to action with scheduled_date
+      await apiClient.clarifyToAction(id, {
+        title: item.title,
+        description: item.description || '',
+        deferType: 'scheduled',
+        deferDate: scheduleData.date,
+        deferTime: scheduleData.time || null,
+        deferDuration: scheduleData.duration || null
+      })
+      items.value = items.value.filter(i => i.id !== id)
+      toaster.success(`"${title}" moved to Calendar`)
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      movingId.value = null
+    }
+    return
+  }
+
+  // Special handling for waiting - need waiting_for input
+  if (destination === 'waiting') {
+    const waitingFor = await mover.showWaiting({ waitingFor: '' })
+    if (!waitingFor) return // User cancelled
+
+    movingId.value = id
+    try {
+      // Transform to action first, then set waiting
+      const result = await apiClient.clarifyToAction(id, {
+        title: item.title,
+        description: item.description || ''
+      })
+      await apiClient.waitAction(result.id, waitingFor)
+      items.value = items.value.filter(i => i.id !== id)
+      toaster.success(`"${title}" moved to Waiting For`)
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      movingId.value = null
+    }
+    return
+  }
+
+  // Special handling for today - transform to action then mark today
+  if (destination === 'today') {
+    movingId.value = id
+    try {
+      const result = await apiClient.clarifyToAction(id, {
+        title: item.title,
+        description: item.description || ''
+      })
+      await apiClient.todayAction(result.id)
+      items.value = items.value.filter(i => i.id !== id)
+      toaster.success(`"${title}" moved to Today`)
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      movingId.value = null
+    }
+    return
+  }
+
+  movingId.value = id
+  try {
+    switch (destination) {
+      case 'action':
+        await apiClient.clarifyToAction(id, {
+          title: item.title,
+          description: item.description || ''
+        })
+        break
+      case 'project':
+        await apiClient.clarifyToProject(id, {
+          title: item.title,
+          description: item.description || ''
+        })
+        break
+      case 'someday':
+        await apiClient.clarifyToSomeday(id)
+        break
+      case 'reference':
+        await apiClient.clarifyToReference(id)
+        break
+      case 'completed':
+        await apiClient.completeStuff(id)
+        break
+      case 'trash':
+        await apiClient.trashStuff(id)
+        break
+    }
+    items.value = items.value.filter(i => i.id !== id)
+    toaster.success(`"${title}" moved to ${destinationLabels[destination]}`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move item')
+  } finally {
+    movingId.value = null
   }
 }
 </script>

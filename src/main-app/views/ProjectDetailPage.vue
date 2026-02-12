@@ -89,6 +89,18 @@
               Complete
             </Btn>
           </template>
+          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
+            <template #trigger>
+              <Btn
+                  variant="ghost"
+                  size="sm"
+                  :loading="actionLoading === 'move'"
+              >
+                Move
+              </Btn>
+            </template>
+            <button class="dropdown-item" @click="onMoveToSomeday"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+          </Dropdown>
           <Btn
               v-if="!isCompleted"
               variant="ghost-danger"
@@ -204,11 +216,13 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
+import Dropdown from '../components/Dropdown.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient from '../scripts/apiClient.js'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
+import SomedayIcon from '../assets/SomedayIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -233,6 +247,7 @@ const titleInput = ref(null)
 const descriptionInput = ref(null)
 const outcomeInput = ref(null)
 const actionLoading = ref(null)
+const showMoveDialog = ref(false)
 
 // Navigation state
 const currentPosition = ref(0)
@@ -504,6 +519,25 @@ async function onActivate() {
     router.push({ name: 'someday' })
   } catch (err) {
     toaster.push(err.message || 'Failed to activate project')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
+async function onMoveToSomeday() {
+  showMoveDialog.value = false
+  actionLoading.value = 'move'
+  const title = truncateTitle(project.value.title)
+  const oldState = project.value.state
+  project.value.state = 'SOMEDAY'
+
+  try {
+    await apiClient.somedayProject(project.value.id)
+    toaster.success(`"${title}" moved to Someday`)
+    await navigateToNextOrPrev()
+  } catch (err) {
+    project.value.state = oldState
+    toaster.push(err.message || 'Failed to move project')
   } finally {
     actionLoading.value = null
   }

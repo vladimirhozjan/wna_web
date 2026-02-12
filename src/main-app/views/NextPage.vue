@@ -11,6 +11,7 @@
             :loading="loading"
             :has-more="hasMore"
             :loading-ids="loadingIds"
+            source-type="action"
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
@@ -19,6 +20,12 @@
             @load-more="loadMore"
         >
           <template #actions="{ item }">
+            <ItemMoveDropdown
+                :item-id="item.id"
+                item-type="action"
+                current-state="NEXT"
+                @move="onMoveToSection"
+            />
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
@@ -40,7 +47,10 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import ItemMoveDropdown from '../components/ItemMoveDropdown.vue'
 import ActionIcon from '../assets/ActionIcon.vue'
+import { moveModel } from '../scripts/moveModel.js'
+import apiClient from '../scripts/apiClient.js'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -62,6 +72,7 @@ const {
 
 const toaster = errorModel()
 const confirm = confirmModel()
+const mover = moveModel()
 
 const updatingId = ref(null)
 const deletingId = ref(null)
@@ -159,6 +170,91 @@ async function onMove(id, newIndex) {
     await moveAction(id, newIndex)
   } catch (e) {
     await loadActions({ reset: true })
+  } finally {
+    movingId.value = null
+  }
+}
+
+const stateLabels = {
+  NEXT: 'Next Actions',
+  TODAY: 'Today',
+  WAITING: 'Waiting For',
+  CALENDAR: 'Calendar',
+  SOMEDAY: 'Someday',
+  PROJECT: 'Projects'
+}
+
+async function onMoveToSection(id, destination) {
+  const item = items.value.find(i => i.id === id)
+  const title = truncateTitle(item?.title)
+
+  // Special handling for WAITING - need to prompt for waiting_for
+  if (destination === 'WAITING') {
+    const waitingFor = await mover.showWaiting({ waitingFor: '' })
+    if (!waitingFor) return // User cancelled
+
+    movingId.value = id
+    try {
+      await apiClient.waitAction(id, waitingFor)
+      items.value = items.value.filter(i => i.id !== id)
+      toaster.success(`"${title}" moved to Waiting For`)
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move action')
+    } finally {
+      movingId.value = null
+    }
+    return
+  }
+
+  // Special handling for CALENDAR - need to prompt for date
+  if (destination === 'CALENDAR') {
+    const scheduleData = await mover.showSchedule({ date: '', time: '', duration: 15 })
+    if (!scheduleData || !scheduleData.date) return // User cancelled
+
+    movingId.value = id
+    try {
+      await apiClient.deferAction(id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration)
+      items.value = items.value.filter(i => i.id !== id)
+      toaster.success(`"${title}" moved to Calendar`)
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move action')
+    } finally {
+      movingId.value = null
+    }
+    return
+  }
+
+  // Special handling for PROJECT - transform action to project
+  if (destination === 'PROJECT') {
+    movingId.value = id
+    try {
+      await apiClient.addProject({
+        title: item.title,
+        description: item.description || ''
+      })
+      await apiClient.trashAction(id)
+      items.value = items.value.filter(i => i.id !== id)
+      toaster.success(`"${title}" converted to project`)
+    } catch (err) {
+      toaster.push(err.message || 'Failed to convert to project')
+    } finally {
+      movingId.value = null
+    }
+    return
+  }
+
+  // Other destinations
+  movingId.value = id
+  try {
+    if (destination === 'TODAY') {
+      await apiClient.todayAction(id)
+    } else if (destination === 'SOMEDAY') {
+      await apiClient.somedayAction(id)
+    }
+    items.value = items.value.filter(i => i.id !== id)
+    toaster.success(`"${title}" moved to ${stateLabels[destination]}`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move action')
   } finally {
     movingId.value = null
   }
