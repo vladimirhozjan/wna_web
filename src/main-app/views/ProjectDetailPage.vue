@@ -171,29 +171,33 @@
             <template v-else>
               <!-- Collapsed: Next action card -->
               <template v-if="!actionsExpanded">
-                <div v-if="nextAction" class="next-action-card">
+                <div v-if="nextAction" class="next-action-card" @click="goToActionDetail(nextAction)">
                   <input
                       type="checkbox"
                       class="next-action-checkbox"
                       :checked="false"
                       :disabled="completingActionId === nextAction.id"
+                      @click.stop
                       @change="onCompleteNextAction"
                   />
                   <span
                       v-if="editingActionId !== nextAction.id"
                       class="next-action-title"
-                      @click="startEditAction(nextAction)"
+                      @click.stop="startEditAction(nextAction)"
                   >{{ nextAction.title }}</span>
-                  <input
-                      v-else
-                      ref="actionTitleInput"
-                      v-model="editActionValue"
-                      class="next-action-input"
-                      @keyup.enter="saveActionTitle(nextAction.id)"
-                      @keyup.esc="cancelEditAction"
-                      @blur="saveActionTitle(nextAction.id)"
-                  />
-                  <div class="next-action-actions">
+                  <span v-else class="action-input-wrapper" @click.stop>
+                    <span ref="actionInputMeasure" class="action-input-measure">{{ editActionValue || ' ' }}</span>
+                    <input
+                        ref="actionTitleInput"
+                        v-model="editActionValue"
+                        class="action-input-auto"
+                        :style="{ width: actionInputWidth + 'px' }"
+                        @keyup.enter="saveActionTitle(nextAction.id)"
+                        @keyup.esc="cancelEditAction"
+                        @blur="saveActionTitle(nextAction.id)"
+                    />
+                  </span>
+                  <div class="next-action-actions" @click.stop>
                     <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
                   </div>
                   <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
@@ -217,6 +221,7 @@
                         v-for="(action, index) in orderedActions"
                         :key="action.id"
                         :class="index === 0 ? 'next-action-card next-action-card--in-list' : 'action-item'"
+                        @click="goToActionDetail(action)"
                     >
                       <!-- First item: next action card style -->
                       <template v-if="index === 0">
@@ -225,23 +230,27 @@
                             class="next-action-checkbox"
                             :checked="false"
                             :disabled="completingActionId === action.id"
+                            @click.stop
                             @change="onCompleteNextAction"
                         />
                         <span
                             v-if="editingActionId !== action.id"
                             class="next-action-title"
-                            @click="startEditAction(action)"
+                            @click.stop="startEditAction(action)"
                         >{{ action.title }}</span>
-                        <input
-                            v-else
-                            ref="actionTitleInput"
-                            v-model="editActionValue"
-                            class="next-action-input"
-                            @keyup.enter="saveActionTitle(action.id)"
-                            @keyup.esc="cancelEditAction"
-                            @blur="saveActionTitle(action.id)"
-                        />
-                        <div class="next-action-actions">
+                        <span v-else class="action-input-wrapper" @click.stop>
+                          <span ref="actionInputMeasure" class="action-input-measure">{{ editActionValue || ' ' }}</span>
+                          <input
+                              ref="actionTitleInput"
+                              v-model="editActionValue"
+                              class="action-input-auto"
+                              :style="{ width: actionInputWidth + 'px' }"
+                              @keyup.enter="saveActionTitle(action.id)"
+                              @keyup.esc="cancelEditAction"
+                              @blur="saveActionTitle(action.id)"
+                          />
+                        </span>
+                        <div class="next-action-actions" @click.stop>
                           <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
                           <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
                         </div>
@@ -252,18 +261,21 @@
                         <span
                             v-if="editingActionId !== action.id"
                             class="action-title"
-                            @click="startEditAction(action)"
+                            @click.stop="startEditAction(action)"
                         >{{ action.title }}</span>
-                        <input
-                            v-else
-                            ref="actionTitleInput"
-                            v-model="editActionValue"
-                            class="action-input"
-                            @keyup.enter="saveActionTitle(action.id)"
-                            @keyup.esc="cancelEditAction"
-                            @blur="saveActionTitle(action.id)"
-                        />
-                        <div class="action-item-actions">
+                        <span v-else class="action-input-wrapper" @click.stop>
+                          <span ref="actionInputMeasure" class="action-input-measure">{{ editActionValue || ' ' }}</span>
+                          <input
+                              ref="actionTitleInput"
+                              v-model="editActionValue"
+                              class="action-input-auto"
+                              :style="{ width: actionInputWidth + 'px' }"
+                              @keyup.enter="saveActionTitle(action.id)"
+                              @keyup.esc="cancelEditAction"
+                              @blur="saveActionTitle(action.id)"
+                          />
+                        </span>
+                        <div class="action-item-actions" @click.stop>
                           <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
                         </div>
                       </template>
@@ -396,6 +408,8 @@ const actionsExpanded = ref(false)
 const editingActionId = ref(null)
 const editActionValue = ref('')
 const actionTitleInput = ref(null)
+const actionInputMeasure = ref(null)
+const actionInputWidth = ref(50)
 const completingActionId = ref(null)
 const trashingActionId = ref(null)
 const newActionTitle = ref('')
@@ -423,6 +437,17 @@ watch(error, (err) => {
   if (!err) return
   const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
   toaster.push(msg)
+})
+
+watch(editActionValue, () => {
+  nextTick(() => {
+    const measure = Array.isArray(actionInputMeasure.value)
+      ? actionInputMeasure.value[0]
+      : actionInputMeasure.value
+    if (measure) {
+      actionInputWidth.value = Math.max(50, measure.offsetWidth + 2)
+    }
+  })
 })
 
 onMounted(async () => {
@@ -731,18 +756,22 @@ async function loadProjectActions() {
 }
 
 function startEditAction(action) {
+  actionInputWidth.value = 50
   editingActionId.value = action.id
   editActionValue.value = action.title
   nextTick(() => {
-    if (actionTitleInput.value) {
-      // Handle array of refs from v-for
-      const input = Array.isArray(actionTitleInput.value)
-        ? actionTitleInput.value[0]
-        : actionTitleInput.value
-      if (input) {
-        input.focus()
-        input.select()
-      }
+    const measure = Array.isArray(actionInputMeasure.value)
+      ? actionInputMeasure.value[0]
+      : actionInputMeasure.value
+    if (measure) {
+      actionInputWidth.value = Math.max(50, measure.offsetWidth + 2)
+    }
+    const input = Array.isArray(actionTitleInput.value)
+      ? actionTitleInput.value[0]
+      : actionTitleInput.value
+    if (input) {
+      input.focus()
+      input.select()
     }
   })
 }
@@ -789,6 +818,14 @@ async function onCompleteNextAction() {
   } finally {
     completingActionId.value = null
   }
+}
+
+function goToActionDetail(act) {
+  router.push({
+    name: 'action-detail',
+    params: { id: act.id },
+    query: { from: 'project', project_id: project.value.id, project_title: project.value.title }
+  })
 }
 
 function goToNextActions() {
@@ -1250,22 +1287,34 @@ async function onAddAction() {
   text-decoration: underline;
 }
 
-.next-action-input {
+/* ── Auto-sizing action input (matches Item component) ── */
+.action-input-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.action-input-measure {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+}
+
+.action-input-auto {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 4px;
-  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-action);
+  padding: 0;
+  margin: 0;
   outline: none;
-  flex: 1;
-  min-width: 0;
-}
-
-.next-action-input:focus {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  min-width: 50px;
+  max-width: 100%;
 }
 
 .next-action-actions {
@@ -1331,6 +1380,7 @@ async function onAddAction() {
 .actions-list-scroll {
   max-height: 420px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .next-action-card--in-list {
@@ -1391,23 +1441,6 @@ async function onAddAction() {
   text-decoration: underline;
 }
 
-.action-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-input-border);
-  border-radius: 4px;
-  padding: 4px 8px;
-  outline: none;
-  flex: 1;
-  min-width: 0;
-}
-
-.action-input:focus {
-  border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
 
 .action-item-actions {
   display: flex;
