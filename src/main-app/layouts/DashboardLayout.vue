@@ -31,14 +31,23 @@ import TopNav from "../components/TopNav.vue";
 import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
 import { authModel } from "../scripts/authModel.js";
+import { settingsModel } from "../scripts/settingsModel.js";
 import router from "../router/router.js";
 
 const auth = authModel();
+const settings = settingsModel();
 const isSidebarOpen = ref(false);
 
 onMounted(() => {
   if (!auth.isAuthenticated.value) {
     router.push({ name: "landing" });
+  } else {
+    // Load user settings from API when entering dashboard
+    if (!settings.state.loaded) {
+      settings.load().catch(() => {
+        // Settings will fall back to localStorage, no need to show error
+      });
+    }
   }
 });
 

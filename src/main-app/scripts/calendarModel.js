@@ -5,6 +5,7 @@ import {
     getDateRange,
 } from './dateUtils.js'
 import { listCalendar, getCalendarDensity, addAction, deferAction } from './apiClient.js'
+import { settingsModel } from './settingsModel.js'
 
 const STORAGE_KEY = 'calendar_view_mode'
 const validViewModes = ['day', 'week', 'month', 'year']
@@ -15,12 +16,8 @@ function loadSavedViewMode() {
 }
 
 function getCalendarSettings() {
-    return {
-        timeFormat: localStorage.getItem('calendar_time_format') || '12h',
-        businessHoursStart: parseInt(localStorage.getItem('calendar_business_hours_start')) || 9,
-        businessHoursEnd: parseInt(localStorage.getItem('calendar_business_hours_end')) || 17,
-        businessDays: JSON.parse(localStorage.getItem('calendar_business_days') || '[1,2,3,4,5]'),
-    }
+    const settings = settingsModel()
+    return settings.getCalendarSettings()
 }
 
 function formatHour(hour, format) {
