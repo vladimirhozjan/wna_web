@@ -152,6 +152,120 @@
           </div>
         </div>
 
+        <!-- Next Action section -->
+        <div v-if="!isCompleted" class="detail-section-area">
+          <div class="next-action-header">
+            <label class="detail-section-label">Next Action</label>
+            <button
+                v-if="orderedActions.length > 0 || !actionsLoading"
+                class="next-action-expand-btn"
+                @click="actionsExpanded = !actionsExpanded"
+            >
+              {{ actionsExpanded ? '▲' : '▼' }} {{ backlogItems.length > 0 ? `+${backlogItems.length}` : '' }}
+            </button>
+          </div>
+          <div class="next-action-wrapper">
+            <div v-if="actionsLoading" class="next-action-loading">
+              <span class="detail-spinner-sm"></span>
+            </div>
+            <template v-else>
+              <!-- Next action card -->
+              <div v-if="nextAction" class="next-action-card">
+                <input
+                    type="checkbox"
+                    class="next-action-checkbox"
+                    :checked="false"
+                    :disabled="completingActionId === nextAction.id"
+                    @change="onCompleteNextAction"
+                />
+                <span
+                    v-if="editingActionId !== nextAction.id"
+                    class="next-action-title"
+                    @click="startEditAction(nextAction)"
+                >{{ nextAction.title }}</span>
+                <input
+                    v-else
+                    ref="actionTitleInput"
+                    v-model="editActionValue"
+                    class="next-action-input"
+                    @keyup.enter="saveActionTitle(nextAction.id)"
+                    @keyup.esc="cancelEditAction"
+                    @blur="saveActionTitle(nextAction.id)"
+                />
+                <div class="next-action-actions">
+                  <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
+                </div>
+                <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
+              </div>
+              <p v-else-if="!actionsExpanded" class="next-action-empty">No next action defined</p>
+
+              <!-- Expanded: backlog items + quick add -->
+              <div v-if="actionsExpanded" class="actions-expanded">
+                <!-- Quick-add input -->
+                <div class="actions-quick-add">
+                  <input
+                      v-model="newActionTitle"
+                      class="actions-quick-add-input"
+                      type="text"
+                      placeholder="+ Add action..."
+                      :disabled="addingAction"
+                      @keydown.enter="onAddAction"
+                  />
+                  <span v-if="addingAction" class="actions-quick-add-spinner"></span>
+                </div>
+
+                <!-- Backlog items -->
+                <VueDraggable
+                    v-if="visibleOrderedActions.length > 0"
+                    v-model="orderedActions"
+                    :delay="100"
+                    :animation="150"
+                    chosen-class="action-item--chosen"
+                    ghost-class="action-item--ghost"
+                    @end="onBacklogReorder"
+                >
+                  <div
+                      v-for="(action, index) in visibleOrderedActions"
+                      :key="action.id"
+                      class="action-item"
+                      :class="{ 'action-item--next': index === 0 && action.id === nextAction?.id }"
+                  >
+                    <span
+                        v-if="editingActionId !== action.id"
+                        class="action-title"
+                        @click="startEditAction(action)"
+                    >{{ action.title }}</span>
+                    <input
+                        v-else
+                        ref="actionTitleInput"
+                        v-model="editActionValue"
+                        class="action-input"
+                        @keyup.enter="saveActionTitle(action.id)"
+                        @keyup.esc="cancelEditAction"
+                        @blur="saveActionTitle(action.id)"
+                    />
+                    <div class="action-item-actions">
+                      <ActionBtn v-if="index === 0 && action.id === nextAction?.id" variant="primary">Next</ActionBtn>
+                      <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
+                    </div>
+                  </div>
+                </VueDraggable>
+
+                <!-- Load more -->
+                <div v-if="backlogItems.length > backlogLimit" class="actions-load-more">
+                  <Btn
+                      variant="ghost"
+                      size="sm"
+                      @click="backlogLimit += 10"
+                  >
+                    Show more ({{ backlogItems.length - backlogLimit }} remaining)
+                  </Btn>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
         <!-- Description area -->
         <div class="detail-section-area">
           <label class="detail-section-label">Description</label>
@@ -214,9 +328,11 @@
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { VueDraggable } from 'vue-draggable-plus'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
+import ActionBtn from '../components/ActionBtn.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -236,6 +352,7 @@ const {
   updateProject,
   trashProject,
   completeProject,
+  getProjectActions,
 } = projectModel()
 
 const project = ref(null)
@@ -249,6 +366,19 @@ const outcomeInput = ref(null)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
 
+// Actions state
+const actionsLoading = ref(false)
+const orderedActions = ref([])
+const actionsExpanded = ref(false)
+const backlogLimit = ref(10)
+const editingActionId = ref(null)
+const editActionValue = ref('')
+const actionTitleInput = ref(null)
+const completingActionId = ref(null)
+const trashingActionId = ref(null)
+const newActionTitle = ref('')
+const addingAction = ref(false)
+
 // Navigation state
 const currentPosition = ref(0)
 const totalItems = ref(1)
@@ -256,6 +386,9 @@ const navigating = ref(false)
 
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
+const nextAction = computed(() => orderedActions.value[0] || null)
+const backlogItems = computed(() => orderedActions.value.slice(1))
+const visibleOrderedActions = computed(() => orderedActions.value.slice(0, backlogLimit.value + 1))
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
 const backLabel = computed(() => {
   if (isCompleted.value) return 'Completed'
@@ -276,6 +409,9 @@ onMounted(async () => {
 
     currentPosition.value = Number(route.query.position) || 0
     totalItems.value = Number(route.query.total) || 1
+
+    // Load project actions
+    await loadProjectActions()
 
   } catch {
     toaster.push('Failed to load project')
@@ -395,6 +531,8 @@ async function navigateToPosition(position) {
       params: { id: data.id },
       query: { position: data.position, total: totalItems.value }
     })
+    // Reload actions for new project
+    await loadProjectActions()
   } catch {
     toaster.push('Failed to load project')
   } finally {
@@ -540,6 +678,166 @@ async function onMoveToSomeday() {
     toaster.push(err.message || 'Failed to move project')
   } finally {
     actionLoading.value = null
+  }
+}
+
+// ── Project Actions functions ──
+
+async function loadProjectActions() {
+  if (!project.value?.id) return
+
+  actionsLoading.value = true
+  try {
+    const actions = await getProjectActions(project.value.id)
+    const next = actions.find(a => a.state === 'NEXT')
+    const backlog = actions.filter(a => a.state === 'BACKLOG')
+
+    // If no NEXT action but there are backlog items, treat first backlog as next action
+    if (!next && backlog.length > 0) {
+      orderedActions.value = backlog
+    } else if (next) {
+      orderedActions.value = [next, ...backlog]
+    } else {
+      orderedActions.value = []
+    }
+  } catch {
+    toaster.push('Failed to load project actions')
+  } finally {
+    actionsLoading.value = false
+  }
+}
+
+function startEditAction(action) {
+  editingActionId.value = action.id
+  editActionValue.value = action.title
+  nextTick(() => {
+    if (actionTitleInput.value) {
+      // Handle array of refs from v-for
+      const input = Array.isArray(actionTitleInput.value)
+        ? actionTitleInput.value[0]
+        : actionTitleInput.value
+      if (input) {
+        input.focus()
+        input.select()
+      }
+    }
+  })
+}
+
+function cancelEditAction() {
+  editingActionId.value = null
+  editActionValue.value = ''
+}
+
+async function saveActionTitle(actionId) {
+  if (editingActionId.value !== actionId) return
+
+  const newTitle = editActionValue.value.trim()
+  const action = orderedActions.value.find(a => a.id === actionId)
+
+  if (!newTitle || newTitle === action?.title) {
+    editingActionId.value = null
+    return
+  }
+
+  try {
+    await apiClient.updateAction(actionId, { title: newTitle })
+    const idx = orderedActions.value.findIndex(a => a.id === actionId)
+    if (idx >= 0) orderedActions.value[idx].title = newTitle
+    editingActionId.value = null
+  } catch {
+    toaster.push('Failed to update action')
+  }
+}
+
+async function onCompleteNextAction() {
+  if (!nextAction.value) return
+
+  completingActionId.value = nextAction.value.id
+  const title = truncateTitle(nextAction.value.title)
+
+  try {
+    await apiClient.completeAction(nextAction.value.id)
+    toaster.success(`"${title}" completed`)
+    // Reload actions - backend auto-promotes first backlog item
+    await loadProjectActions()
+  } catch {
+    toaster.push('Failed to complete action')
+  } finally {
+    completingActionId.value = null
+  }
+}
+
+function goToNextActions() {
+  router.push({ name: 'next' })
+}
+
+async function onTrashAction(action) {
+  const confirmed = await confirm.show({
+    title: 'Move to Trash',
+    message: `Are you sure you want to move "${action.title}" to trash?`,
+    confirmText: 'Move to Trash',
+    cancelText: 'Cancel'
+  })
+
+  if (!confirmed) return
+
+  trashingActionId.value = action.id
+  try {
+    await apiClient.trashAction(action.id)
+    toaster.success(`"${truncateTitle(action.title)}" moved to trash`)
+    if (action.id === nextAction.value?.id) {
+      await loadProjectActions()
+    } else {
+      orderedActions.value = orderedActions.value.filter(a => a.id !== action.id)
+    }
+  } catch {
+    toaster.push('Failed to move action to trash')
+  } finally {
+    trashingActionId.value = null
+  }
+}
+
+async function onBacklogReorder(evt) {
+  if (evt.oldIndex === evt.newIndex) return
+
+  // If position 0 changed, update the project's next action
+  if (evt.oldIndex === 0 || evt.newIndex === 0) {
+    const newNextAction = orderedActions.value[0]
+    if (!newNextAction) return
+
+    try {
+      await updateProject(project.value.id, {
+        title: project.value.title,
+        description: project.value.description,
+        outcome: project.value.outcome,
+        next_action_id: newNextAction.id,
+      })
+    } catch {
+      toaster.push('Failed to update next action')
+      await loadProjectActions()
+    }
+  }
+}
+
+async function onAddAction() {
+  const title = newActionTitle.value.trim()
+  if (!title || !project.value?.id) return
+
+  addingAction.value = true
+  try {
+    const created = await apiClient.addAction({
+      title,
+      project_id: project.value.id
+    })
+    // Reload actions to get correct state (NEXT or BACKLOG)
+    await loadProjectActions()
+    newActionTitle.value = ''
+    toaster.success(`"${truncateTitle(title)}" added`)
+  } catch {
+    toaster.push('Failed to add action')
+  } finally {
+    addingAction.value = false
   }
 }
 </script>
@@ -867,8 +1165,279 @@ async function onMoveToSomeday() {
   animation: spin 0.8s linear infinite;
 }
 
+.detail-spinner-sm {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Next Action section ── */
+.next-action-wrapper {
+  margin-top: 4px;
+}
+
+.next-action-loading {
+  padding: 12px 0;
+}
+
+.next-action-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+}
+
+.next-action-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-action);
+  flex-shrink: 0;
+}
+
+.next-action-title {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.next-action-title:hover {
+  text-decoration: underline;
+}
+
+.next-action-input {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.next-action-input:focus {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.next-action-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.next-action-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  background: var(--color-bg-secondary);
+}
+
+.next-action-empty {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
+}
+
+/* ── Next Action header with expand button ── */
+.next-action-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.next-action-expand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.next-action-expand-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+/* ── Expanded actions area ── */
+.actions-expanded {
+  margin-top: 8px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background 0.15s ease;
+  cursor: grab;
+  user-select: none;
+}
+
+.action-item:first-of-type {
+  border-top: 1px solid var(--color-border-light);
+}
+
+.action-item:hover {
+  background: var(--color-bg-hover);
+}
+
+.action-item:active {
+  cursor: grabbing;
+}
+
+.action-item--chosen {
+  background: var(--color-bg-hover);
+}
+
+.action-item--ghost {
+  background: var(--color-btn-ghost-hover);
+  opacity: 0.5;
+}
+
+.action-item--next {
+  background: var(--color-bg-secondary);
+}
+
+.action-title {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.action-title:hover {
+  text-decoration: underline;
+}
+
+.action-input {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.action-input:focus {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.action-item-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.action-item:hover .action-item-actions {
+  opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .action-item-actions {
+    opacity: 1;
+  }
+}
+
+.actions-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+/* ── Actions quick-add ── */
+.actions-quick-add {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.actions-quick-add-input {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  padding: 10px 12px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.actions-quick-add-input:focus {
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.actions-quick-add-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actions-quick-add-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.actions-quick-add-spinner {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  margin-top: -8px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-action);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 /* ── Responsive ── */

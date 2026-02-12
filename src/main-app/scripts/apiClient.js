@@ -655,6 +655,7 @@ export async function updateProject(projectId, data) {
         const body = {title: data.title}
         if (data.description !== undefined) body.description = data.description
         if (data.outcome !== undefined) body.outcome = data.outcome
+        if (data.next_action_id !== undefined) body.next_action_id = data.next_action_id
 
         const res = await httpApi.put(`/v1/project/${projectId}`, body, {headers: authHeaders()})
         return res.data
@@ -733,6 +734,19 @@ export async function getProjectByPosition(position) {
 export async function completeProject(projectId) {
     try {
         const res = await httpApi.post(`/v1/project/${projectId}/complete`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listProjectActions(projectId, {limit = 100, cursor = null} = {}) {
+    try {
+        const params = {project_id: projectId}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/project/action', {params, headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1045,6 +1059,7 @@ const apiClient = {
     projectsCount,
     getProjectByPosition,
     completeProject,
+    listProjectActions,
     listSomeday,
     activateStuff,
     activateAction,

@@ -208,6 +208,18 @@ export function projectModel() {
         }
     }
 
+    async function getProjectActions(projectId) {
+        error.value = null
+
+        try {
+            const data = await apiClient.listProjectActions(projectId)
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
     return {
         items,
         current,
@@ -227,5 +239,6 @@ export function projectModel() {
         trashProject,
         moveProject,
         completeProject,
+        getProjectActions,
     }
 }
