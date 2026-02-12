@@ -129,6 +129,17 @@ export function somedayModel() {
         }
     }
 
+    async function moveItem(itemId, toIndex) {
+        error.value = null
+
+        try {
+            await apiClient.moveSomeday(itemId, toIndex)
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
     return {
         items,
         loading,
@@ -141,5 +152,6 @@ export function somedayModel() {
         activateItem,
         trashItem,
         updateItem,
+        moveItem,
     }
 }

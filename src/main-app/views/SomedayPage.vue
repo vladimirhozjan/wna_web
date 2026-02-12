@@ -13,9 +13,11 @@
             :loading-ids="loadingIds"
             :editable="true"
             :no-checkbox="true"
+            source-type="someday"
             @update="onItemUpdate"
             @click="onItemClick"
             @delete="onTrash"
+            @move="onMove"
             @load-more="loadMore"
         >
           <template #prefix="{ item }">
@@ -68,6 +70,7 @@ const {
   activateItem,
   trashItem,
   updateItem,
+  moveItem,
 } = somedayModel()
 
 const toaster = errorModel()
@@ -76,12 +79,14 @@ const confirm = confirmModel()
 const updatingId = ref(null)
 const deletingId = ref(null)
 const activatingId = ref(null)
+const movingId = ref(null)
 
 const loadingIds = computed(() => {
   const ids = []
   if (updatingId.value) ids.push(updatingId.value)
   if (deletingId.value) ids.push(deletingId.value)
   if (activatingId.value) ids.push(activatingId.value)
+  if (movingId.value) ids.push(movingId.value)
   return ids
 })
 
@@ -97,6 +102,17 @@ onMounted(() => {
 
 async function loadMore() {
   await loadSomeday()
+}
+
+async function onMove(id, newIndex) {
+  movingId.value = id
+  try {
+    await moveItem(id, newIndex)
+  } catch (e) {
+    await loadSomeday({ reset: true })
+  } finally {
+    movingId.value = null
+  }
 }
 
 function typeIconClass(type) {

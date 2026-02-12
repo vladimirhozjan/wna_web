@@ -754,6 +754,15 @@ export async function listSomeday({limit = 10, cursor = null} = {}) {
     }
 }
 
+export async function moveSomeday(itemId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/someday/${itemId}/move`, {destination}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function activateStuff(stuffId) {
     try {
         const res = await httpApi.post(`/v1/stuff/${stuffId}/activate`, {}, {headers: authHeaders()})
@@ -1046,6 +1055,7 @@ const apiClient = {
     getProjectByPosition,
     completeProject,
     listSomeday,
+    moveSomeday,
     activateStuff,
     activateAction,
     activateProject,
