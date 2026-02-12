@@ -169,41 +169,112 @@
               <span class="detail-spinner-sm"></span>
             </div>
             <template v-else>
-              <!-- Next action card -->
-              <div v-if="nextAction" class="next-action-card">
-                <input
-                    type="checkbox"
-                    class="next-action-checkbox"
-                    :checked="false"
-                    :disabled="completingActionId === nextAction.id"
-                    @change="onCompleteNextAction"
-                />
-                <span
-                    v-if="editingActionId !== nextAction.id"
-                    class="next-action-title"
-                    @click="startEditAction(nextAction)"
-                >{{ nextAction.title }}</span>
-                <input
-                    v-else
-                    ref="actionTitleInput"
-                    v-model="editActionValue"
-                    class="next-action-input"
-                    @keyup.enter="saveActionTitle(nextAction.id)"
-                    @keyup.esc="cancelEditAction"
-                    @blur="saveActionTitle(nextAction.id)"
-                />
-                <div class="next-action-actions">
-                  <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
+              <!-- Collapsed: Next action card -->
+              <template v-if="!actionsExpanded">
+                <div v-if="nextAction" class="next-action-card">
+                  <input
+                      type="checkbox"
+                      class="next-action-checkbox"
+                      :checked="false"
+                      :disabled="completingActionId === nextAction.id"
+                      @change="onCompleteNextAction"
+                  />
+                  <span
+                      v-if="editingActionId !== nextAction.id"
+                      class="next-action-title"
+                      @click="startEditAction(nextAction)"
+                  >{{ nextAction.title }}</span>
+                  <input
+                      v-else
+                      ref="actionTitleInput"
+                      v-model="editActionValue"
+                      class="next-action-input"
+                      @keyup.enter="saveActionTitle(nextAction.id)"
+                      @keyup.esc="cancelEditAction"
+                      @blur="saveActionTitle(nextAction.id)"
+                  />
+                  <div class="next-action-actions">
+                    <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
+                  </div>
+                  <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
                 </div>
-                <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
-              </div>
-              <p v-else-if="!actionsExpanded" class="next-action-empty">No next action defined</p>
+                <p v-else class="next-action-empty">No next action defined</p>
+              </template>
 
-              <!-- Expanded: backlog items + quick add -->
-              <div v-if="actionsExpanded" class="actions-expanded">
-                <!-- Quick-add input -->
+              <!-- Expanded: full action list -->
+              <div v-else class="actions-expanded">
+                <div ref="actionsScrollRef" class="actions-list-scroll">
+                  <VueDraggable
+                      v-if="orderedActions.length > 0"
+                      v-model="orderedActions"
+                      :delay="100"
+                      :animation="150"
+                      chosen-class="action-item--chosen"
+                      ghost-class="action-item--ghost"
+                      @end="onBacklogReorder"
+                  >
+                    <div
+                        v-for="(action, index) in orderedActions"
+                        :key="action.id"
+                        :class="index === 0 ? 'next-action-card next-action-card--in-list' : 'action-item'"
+                    >
+                      <!-- First item: next action card style -->
+                      <template v-if="index === 0">
+                        <input
+                            type="checkbox"
+                            class="next-action-checkbox"
+                            :checked="false"
+                            :disabled="completingActionId === action.id"
+                            @change="onCompleteNextAction"
+                        />
+                        <span
+                            v-if="editingActionId !== action.id"
+                            class="next-action-title"
+                            @click="startEditAction(action)"
+                        >{{ action.title }}</span>
+                        <input
+                            v-else
+                            ref="actionTitleInput"
+                            v-model="editActionValue"
+                            class="next-action-input"
+                            @keyup.enter="saveActionTitle(action.id)"
+                            @keyup.esc="cancelEditAction"
+                            @blur="saveActionTitle(action.id)"
+                        />
+                        <div class="next-action-actions">
+                          <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
+                          <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
+                        </div>
+                        <span v-if="completingActionId === action.id" class="next-action-spinner"></span>
+                      </template>
+                      <!-- Other items: regular backlog style -->
+                      <template v-else>
+                        <span
+                            v-if="editingActionId !== action.id"
+                            class="action-title"
+                            @click="startEditAction(action)"
+                        >{{ action.title }}</span>
+                        <input
+                            v-else
+                            ref="actionTitleInput"
+                            v-model="editActionValue"
+                            class="action-input"
+                            @keyup.enter="saveActionTitle(action.id)"
+                            @keyup.esc="cancelEditAction"
+                            @blur="saveActionTitle(action.id)"
+                        />
+                        <div class="action-item-actions">
+                          <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
+                        </div>
+                      </template>
+                    </div>
+                  </VueDraggable>
+                </div>
+
+                <!-- Quick-add at bottom -->
                 <div class="actions-quick-add">
                   <input
+                      ref="quickAddInput"
                       v-model="newActionTitle"
                       class="actions-quick-add-input"
                       type="text"
@@ -212,54 +283,6 @@
                       @keydown.enter="onAddAction"
                   />
                   <span v-if="addingAction" class="actions-quick-add-spinner"></span>
-                </div>
-
-                <!-- Backlog items -->
-                <VueDraggable
-                    v-if="visibleOrderedActions.length > 0"
-                    v-model="orderedActions"
-                    :delay="100"
-                    :animation="150"
-                    chosen-class="action-item--chosen"
-                    ghost-class="action-item--ghost"
-                    @end="onBacklogReorder"
-                >
-                  <div
-                      v-for="(action, index) in visibleOrderedActions"
-                      :key="action.id"
-                      class="action-item"
-                      :class="{ 'action-item--next': index === 0 && action.id === nextAction?.id }"
-                  >
-                    <span
-                        v-if="editingActionId !== action.id"
-                        class="action-title"
-                        @click="startEditAction(action)"
-                    >{{ action.title }}</span>
-                    <input
-                        v-else
-                        ref="actionTitleInput"
-                        v-model="editActionValue"
-                        class="action-input"
-                        @keyup.enter="saveActionTitle(action.id)"
-                        @keyup.esc="cancelEditAction"
-                        @blur="saveActionTitle(action.id)"
-                    />
-                    <div class="action-item-actions">
-                      <ActionBtn v-if="index === 0 && action.id === nextAction?.id" variant="primary">Next</ActionBtn>
-                      <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
-                    </div>
-                  </div>
-                </VueDraggable>
-
-                <!-- Load more -->
-                <div v-if="backlogItems.length > backlogLimit" class="actions-load-more">
-                  <Btn
-                      variant="ghost"
-                      size="sm"
-                      @click="backlogLimit += 10"
-                  >
-                    Show more ({{ backlogItems.length - backlogLimit }} remaining)
-                  </Btn>
                 </div>
               </div>
             </template>
@@ -370,7 +393,6 @@ const showMoveDialog = ref(false)
 const actionsLoading = ref(false)
 const orderedActions = ref([])
 const actionsExpanded = ref(false)
-const backlogLimit = ref(10)
 const editingActionId = ref(null)
 const editActionValue = ref('')
 const actionTitleInput = ref(null)
@@ -378,6 +400,8 @@ const completingActionId = ref(null)
 const trashingActionId = ref(null)
 const newActionTitle = ref('')
 const addingAction = ref(false)
+const actionsScrollRef = ref(null)
+const quickAddInput = ref(null)
 
 // Navigation state
 const currentPosition = ref(0)
@@ -388,7 +412,6 @@ const navigating = ref(false)
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
 const nextAction = computed(() => orderedActions.value[0] || null)
 const backlogItems = computed(() => orderedActions.value.slice(1))
-const visibleOrderedActions = computed(() => orderedActions.value.slice(0, backlogLimit.value + 1))
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
 const backLabel = computed(() => {
   if (isCompleted.value) return 'Completed'
@@ -826,14 +849,20 @@ async function onAddAction() {
 
   addingAction.value = true
   try {
-    const created = await apiClient.addAction({
+    await apiClient.addAction({
       title,
       project_id: project.value.id
     })
-    // Reload actions to get correct state (NEXT or BACKLOG)
     await loadProjectActions()
     newActionTitle.value = ''
     toaster.success(`"${truncateTitle(title)}" added`)
+    // Scroll to bottom and keep focus for next entry
+    nextTick(() => {
+      if (actionsScrollRef.value) {
+        actionsScrollRef.value.scrollTop = actionsScrollRef.value.scrollHeight
+      }
+      quickAddInput.value?.focus()
+    })
   } catch {
     toaster.push('Failed to add action')
   } finally {
@@ -1299,6 +1328,21 @@ async function onAddAction() {
   margin-top: 8px;
 }
 
+.actions-list-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.next-action-card--in-list {
+  cursor: grab;
+  user-select: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.next-action-card--in-list:active {
+  cursor: grabbing;
+}
+
 .action-item {
   display: flex;
   align-items: center;
@@ -1330,10 +1374,6 @@ async function onAddAction() {
 .action-item--ghost {
   background: var(--color-btn-ghost-hover);
   opacity: 0.5;
-}
-
-.action-item--next {
-  background: var(--color-bg-secondary);
 }
 
 .action-title {
@@ -1386,12 +1426,6 @@ async function onAddAction() {
   .action-item-actions {
     opacity: 1;
   }
-}
-
-.actions-load-more {
-  display: flex;
-  justify-content: center;
-  margin-top: 12px;
 }
 
 /* ── Actions quick-add ── */
