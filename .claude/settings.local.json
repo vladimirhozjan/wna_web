@@ -21,7 +21,8 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(git update-index:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(curl:*)"
     ]
   }
 }
