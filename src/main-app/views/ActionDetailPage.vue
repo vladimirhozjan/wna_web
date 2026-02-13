@@ -8,7 +8,7 @@
           <a class="detail-back-link" @click="goBack">&lt;</a>
           <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="action && !fromCalendar" class="detail-header-right">
+        <div v-if="action && !fromCalendar && !fromProject" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
@@ -393,8 +393,10 @@ const isWaiting = computed(() => action.value?.state === 'WAITING')
 const isToday = computed(() => fromSource.value === 'today')
 const fromCalendar = computed(() => fromSource.value === 'calendar')
 const fromWaiting = computed(() => fromSource.value === 'waiting')
+const fromProject = computed(() => fromSource.value === 'project')
 
 const backLabel = computed(() => {
+  if (fromProject.value) return route.query.project_title || 'Project'
   if (fromCalendar.value) return 'Calendar'
   if (isCompleted.value) return 'Completed'
   if (isSomeday.value) return 'Someday / Maybe'
@@ -467,7 +469,9 @@ onMounted(async () => {
 })
 
 function goBack() {
-  if (fromCalendar.value) {
+  if (fromProject.value) {
+    router.push({ name: 'project-detail', params: { id: route.query.project_id } })
+  } else if (fromCalendar.value) {
     router.push({ name: 'calendar' })
   } else if (isCompleted.value) {
     router.push({ name: 'completed' })
