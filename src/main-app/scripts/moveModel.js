@@ -22,6 +22,8 @@ export function moveModel() {
         duration: 15,
         // Waiting fields
         waitingFor: '',
+        // Outcome fields
+        outcome: '',
         // Callbacks
         onConfirm: null,
         onCancel: null,
@@ -84,10 +86,35 @@ export function moveModel() {
         })
     }
 
+    /**
+     * Show outcome input modal (for converting to project)
+     * @param {Object} options - Initial values
+     * @returns {Promise<string | null>} - The outcome value or null if cancelled
+     */
+    function showOutcome(options = {}) {
+        return new Promise((resolve) => {
+            state.type = 'outcome'
+            state.title = options.title || 'What does done look like?'
+            state.outcome = options.outcome || ''
+            state.visible = true
+
+            state.onConfirm = () => {
+                const value = state.outcome.trim()
+                state.visible = false
+                resolve(value || null)
+            }
+
+            state.onCancel = () => {
+                state.visible = false
+                resolve(null)
+            }
+        })
+    }
+
     function close() {
         if (state.onCancel) state.onCancel()
     }
 
-    instance = { state, showSchedule, showWaiting, close }
+    instance = { state, showSchedule, showWaiting, showOutcome, close }
     return instance
 }

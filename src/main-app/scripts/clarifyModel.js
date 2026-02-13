@@ -47,6 +47,7 @@ export function clarifyModel() {
         },
         projectData: {
             title: '',
+            outcome: '',
             nextActionTitle: '',
             description: '',
         },
@@ -96,6 +97,7 @@ export function clarifyModel() {
         }
         state.projectData = {
             title: '',
+            outcome: '',
             nextActionTitle: '',
             description: '',
         }

@@ -176,18 +176,23 @@ async function onDropToNextAction(data) {
 }
 
 async function onDropToProjects(data) {
+  const outcome = await mover.showOutcome()
+  if (!outcome) return
+
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.clarifyToProject(data.id, {
         title: data.title,
-        description: data.description || ''
+        description: data.description || '',
+        outcome
       });
       removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
       // Transform action to project: create project, then trash action
       await apiClient.addProject({
         title: data.title,
-        description: data.description || ''
+        description: data.description || '',
+        outcome
       });
       await apiClient.trashAction(data.id);
       removeFromActions(data.id);

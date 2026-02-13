@@ -18,6 +18,18 @@
       </div>
 
       <div class="clarify-field">
+        <label class="clarify-label" for="project-outcome">Outcome *</label>
+        <textarea
+            id="project-outcome"
+            v-model="form.outcome"
+            class="clarify-textarea"
+            placeholder="What does done look like?"
+            rows="2"
+            required
+        ></textarea>
+      </div>
+
+      <div class="clarify-field">
         <label class="clarify-label" for="project-description">Description</label>
         <textarea
             id="project-description"
@@ -33,7 +45,7 @@
             type="submit"
             variant="primary"
             size="md"
-            :disabled="!form.title.trim()"
+            :disabled="!form.title.trim() || !form.outcome.trim()"
         >
           Continue
         </Btn>
@@ -59,6 +71,7 @@ const titleInput = ref(null)
 
 const form = reactive({
   title: props.initialData.title || '',
+  outcome: props.initialData.outcome || '',
   description: props.initialData.description || '',
 })
 
@@ -67,9 +80,10 @@ onMounted(() => {
 })
 
 function onSubmit() {
-  if (!form.title.trim()) return
+  if (!form.title.trim() || !form.outcome.trim()) return
   emit('submit', {
     title: form.title.trim(),
+    outcome: form.outcome.trim(),
     description: form.description.trim(),
   })
 }

@@ -566,11 +566,15 @@ async function onMoveTo(newState) {
 
   // Special handling for PROJECT - transform action to project
   if (newState === 'PROJECT') {
+    const outcome = await mover.showOutcome()
+    if (!outcome) return
+
     actionLoading.value = 'move'
     try {
       await apiClient.addProject({
         title: action.value.title,
-        description: action.value.description || ''
+        description: action.value.description || '',
+        outcome
       })
       await trashAction(action.value.id)
       toaster.success(`"${truncateTitle(action.value.title)}" converted to project`)

@@ -585,18 +585,34 @@ async function onMoveTo(destination) {
     return
   }
 
+  // Special handling for project - prompt for outcome
+  if (destination === 'project') {
+    const outcome = await mover.showOutcome()
+    if (!outcome) return
+
+    actionLoading.value = 'move'
+    try {
+      await apiClient.clarifyToProject(item.value.id, {
+        title: item.value.title,
+        description: item.value.description || '',
+        outcome
+      })
+      toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
   actionLoading.value = 'move'
 
   try {
     switch (destination) {
       case 'action':
         await apiClient.clarifyToAction(item.value.id, {
-          title: item.value.title,
-          description: item.value.description || ''
-        })
-        break
-      case 'project':
-        await apiClient.clarifyToProject(item.value.id, {
           title: item.value.title,
           description: item.value.description || ''
         })

@@ -65,6 +65,20 @@
             </div>
           </template>
 
+          <!-- Outcome Modal -->
+          <template v-else-if="move.state.type === 'outcome'">
+            <div class="form-group">
+              <textarea
+                  ref="outcomeInput"
+                  v-model="move.state.outcome"
+                  class="input input--textarea"
+                  placeholder="Describe the successful outcome..."
+                  rows="3"
+                  @keyup.esc="move.close"
+              ></textarea>
+            </div>
+          </template>
+
           <div class="actions">
             <Btn variant="ghost" size="sm" @click="move.close">
               Cancel
@@ -92,6 +106,7 @@ import Btn from './Btn.vue'
 const move = moveModel()
 const dateInput = ref(null)
 const waitingInput = ref(null)
+const outcomeInput = ref(null)
 
 const isValid = computed(() => {
   if (move.state.type === 'schedule') {
@@ -100,12 +115,16 @@ const isValid = computed(() => {
   if (move.state.type === 'waiting') {
     return !!move.state.waitingFor.trim()
   }
+  if (move.state.type === 'outcome') {
+    return !!move.state.outcome.trim()
+  }
   return false
 })
 
 const confirmText = computed(() => {
   if (move.state.type === 'schedule') return 'Schedule'
   if (move.state.type === 'waiting') return 'Save'
+  if (move.state.type === 'outcome') return 'Create Project'
   return 'Confirm'
 })
 
@@ -127,6 +146,8 @@ watch(() => move.state.visible, (visible) => {
         dateInput.value.focus()
       } else if (move.state.type === 'waiting' && waitingInput.value) {
         waitingInput.value.focus()
+      } else if (move.state.type === 'outcome' && outcomeInput.value) {
+        outcomeInput.value.focus()
       }
     })
   }
@@ -191,6 +212,11 @@ watch(() => move.state.visible, (visible) => {
   outline: none;
   border-color: var(--color-input-border-focus);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.input--textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .input--time {
