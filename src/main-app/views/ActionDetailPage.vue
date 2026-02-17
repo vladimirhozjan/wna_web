@@ -394,6 +394,7 @@ const isToday = computed(() => fromSource.value === 'today')
 const fromCalendar = computed(() => fromSource.value === 'calendar')
 const fromWaiting = computed(() => fromSource.value === 'waiting')
 const fromProject = computed(() => fromSource.value === 'project')
+const fromCompleted = computed(() => fromSource.value === 'completed')
 
 const backLabel = computed(() => {
   if (fromProject.value) return route.query.project_title || 'Project'
@@ -978,7 +979,9 @@ async function navigateToPosition(position) {
   try {
     // Use correct model based on source
     let getByPosition
-    if (fromWaiting.value) {
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromWaiting.value) {
       getByPosition = waitingMdl.getWaitingByPosition
     } else if (isToday.value) {
       getByPosition = todayMdl.getActionByPosition
@@ -986,6 +989,15 @@ async function navigateToPosition(position) {
       getByPosition = getActionByPosition
     }
     const data = await getByPosition(position)
+
+    // Completed list has mixed types - redirect if type changed
+    if (fromCompleted.value && data.type !== 'ACTION') {
+      const query = { position: data.position, total: data.total_items || totalItems.value, from: 'completed' }
+      const name = data.type === 'STUFF' ? 'stuff-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     action.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
@@ -1041,7 +1053,9 @@ async function onMarkDone() {
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
   let backRoute = 'next'
-  if (fromWaiting.value) {
+  if (fromCompleted.value) {
+    backRoute = 'completed'
+  } else if (fromWaiting.value) {
     backRoute = 'waiting-for'
   } else if (isToday.value) {
     backRoute = 'today'
@@ -1057,7 +1071,9 @@ async function navigateToNextOrPrev() {
   try {
     // Use correct model based on source
     let getByPosition
-    if (fromWaiting.value) {
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromWaiting.value) {
       getByPosition = waitingMdl.getWaitingByPosition
     } else if (isToday.value) {
       getByPosition = todayMdl.getActionByPosition
@@ -1065,6 +1081,15 @@ async function navigateToNextOrPrev() {
       getByPosition = getActionByPosition
     }
     const data = await getByPosition(nextPos)
+
+    // Completed list has mixed types - redirect if type changed
+    if (fromCompleted.value && data.type !== 'ACTION') {
+      const query = { position: data.position, total: data.total_items ?? newTotal, from: 'completed' }
+      const name = data.type === 'STUFF' ? 'stuff-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     action.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal

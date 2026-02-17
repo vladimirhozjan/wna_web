@@ -258,12 +258,14 @@ const showMoveDialog = ref(false)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
+const fromSource = ref(null)
 
 // Computed
 const isCompleted = computed(() => item.value?.state === 'COMPLETED')
 const isSomeday = computed(() => item.value?.state === 'SOMEDAY')
+const fromCompleted = computed(() => fromSource.value === 'completed')
 const backLabel = computed(() => {
-  if (isCompleted.value) return 'Completed'
+  if (fromCompleted.value || isCompleted.value) return 'Completed'
   if (isSomeday.value) return 'Someday / Maybe'
   return 'Inbox'
 })
@@ -279,11 +281,13 @@ onMounted(async () => {
   window.addEventListener('resize', checkMobile)
 
   try {
+    fromSource.value = route.query.from || null
+
     const data = await getStuff(route.params.id)
     item.value = { ...data }
 
-    currentPosition.value = Number(route.query.position)
-    totalItems.value = Number(route.query.total)
+    currentPosition.value = Number(route.query.position) || 0
+    totalItems.value = Number(route.query.total) || 1
 
   } catch {
     toaster.push('Failed to load item')
@@ -301,7 +305,7 @@ function checkMobile() {
 }
 
 function goBack() {
-  if (isCompleted.value) {
+  if (fromCompleted.value || isCompleted.value) {
     router.push({ name: 'completed' })
   } else if (isSomeday.value) {
     router.push({ name: 'someday' })
@@ -386,7 +390,19 @@ async function navigateToPosition(position) {
 
   navigating.value = true
   try {
-    const data = await getStuffByPosition(position)
+    const getByPosition = fromCompleted.value
+      ? apiClient.getCompletedByPosition
+      : getStuffByPosition
+    const data = await getByPosition(position)
+
+    // Completed list has mixed types - redirect if type changed
+    if (fromCompleted.value && data.type !== 'STUFF') {
+      const query = { position: data.position, total: data.total_items || totalItems.value, from: 'completed' }
+      const name = data.type === 'ACTION' ? 'action-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     item.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
@@ -396,7 +412,7 @@ async function navigateToPosition(position) {
     router.replace({
       name: 'stuff-detail',
       params: { id: data.id },
-      query: { position: data.position, total: totalItems.value }
+      query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
   } catch {
     toaster.push('Failed to load item')
@@ -486,8 +502,10 @@ async function onMarkDone() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
+  const backRoute = fromCompleted.value ? 'completed' : 'inbox'
+
   if (newTotal <= 0) {
-    router.push({ name: 'inbox' })
+    router.push({ name: backRoute })
     return
   }
 
@@ -496,17 +514,29 @@ async function navigateToNextOrPrev() {
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    const data = await getStuffByPosition(nextPos)
+    const getByPosition = fromCompleted.value
+      ? apiClient.getCompletedByPosition
+      : getStuffByPosition
+    const data = await getByPosition(nextPos)
+
+    // Completed list has mixed types - redirect if type changed
+    if (fromCompleted.value && data.type !== 'STUFF') {
+      const query = { position: data.position, total: data.total_items ?? newTotal, from: 'completed' }
+      const name = data.type === 'ACTION' ? 'action-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     item.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
     router.replace({
       name: 'stuff-detail',
       params: { id: data.id },
-      query: { position: data.position, total: totalItems.value }
+      query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
   } catch {
-    router.push({ name: 'inbox' })
+    router.push({ name: backRoute })
   }
 }
 

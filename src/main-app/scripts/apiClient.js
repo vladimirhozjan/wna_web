@@ -819,6 +819,15 @@ export async function listCompleted({limit = 10, cursor = null} = {}) {
     }
 }
 
+export async function getCompletedByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/completed/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function completedCount() {
     try {
         const res = await httpApi.get('/v1/completed/count', {headers: authHeaders()})
@@ -1081,6 +1090,7 @@ const apiClient = {
     restoreProject,
     listCompleted,
     completedCount,
+    getCompletedByPosition,
     uncompleteStuff,
     uncompleteAction,
     uncompleteProject,
