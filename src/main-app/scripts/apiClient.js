@@ -777,6 +777,15 @@ export async function moveSomeday(itemId, destination) {
     }
 }
 
+export async function getSomedayByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/someday/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function activateStuff(stuffId) {
     try {
         const res = await httpApi.post(`/v1/stuff/${stuffId}/activate`, {}, {headers: authHeaders()})
@@ -1080,6 +1089,7 @@ const apiClient = {
     listProjectActions,
     listSomeday,
     moveSomeday,
+    getSomedayByPosition,
     activateStuff,
     activateAction,
     activateProject,

@@ -130,15 +130,22 @@ function truncateTitle(title, maxLen = 30) {
 }
 
 function onItemClick(item) {
+  const idx = items.value.findIndex(i => i.id === item.id)
+  const query = {
+    position: idx >= 0 ? idx : 0,
+    total: items.value.length,
+    from: 'someday'
+  }
+
   switch (item.type) {
     case 'STUFF':
-      router.push({ name: 'stuff-detail', params: { id: item.id } })
+      router.push({ name: 'stuff-detail', params: { id: item.id }, query })
       break
     case 'ACTION':
-      router.push({ name: 'action-detail', params: { id: item.id } })
+      router.push({ name: 'action-detail', params: { id: item.id }, query })
       break
     case 'PROJECT':
-      router.push({ name: 'project-detail', params: { id: item.id } })
+      router.push({ name: 'project-detail', params: { id: item.id }, query })
       break
   }
 }

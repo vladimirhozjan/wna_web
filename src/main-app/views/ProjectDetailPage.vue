@@ -429,9 +429,11 @@ const nextAction = computed(() => orderedActions.value[0] || null)
 const backlogItems = computed(() => orderedActions.value.slice(1))
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
 const fromCompleted = computed(() => fromSource.value === 'completed')
+const fromSomeday = computed(() => fromSource.value === 'someday')
+const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 const backLabel = computed(() => {
   if (fromCompleted.value || isCompleted.value) return 'Completed'
-  if (isSomeday.value) return 'Someday / Maybe'
+  if (fromSomeday.value || isSomeday.value) return 'Someday / Maybe'
   return 'Projects'
 })
 
@@ -476,7 +478,7 @@ onMounted(async () => {
 function goBack() {
   if (fromCompleted.value || isCompleted.value) {
     router.push({ name: 'completed' })
-  } else if (isSomeday.value) {
+  } else if (fromSomeday.value || isSomeday.value) {
     router.push({ name: 'someday' })
   } else {
     router.push({ name: 'projects' })
@@ -572,14 +574,19 @@ async function navigateToPosition(position) {
 
   navigating.value = true
   try {
-    const getByPosition = fromCompleted.value
-      ? apiClient.getCompletedByPosition
-      : getProjectByPosition
+    let getByPosition
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromSomeday.value) {
+      getByPosition = apiClient.getSomedayByPosition
+    } else {
+      getByPosition = getProjectByPosition
+    }
     const data = await getByPosition(position)
 
-    // Completed list has mixed types - redirect if type changed
-    if (fromCompleted.value && data.type !== 'PROJECT') {
-      const query = { position: data.position, total: data.total_items || totalItems.value, from: 'completed' }
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'PROJECT') {
+      const query = { position: data.position, total: data.total_items || totalItems.value, from: fromSource.value }
       const name = data.type === 'STUFF' ? 'stuff-detail' : 'action-detail'
       router.replace({ name, params: { id: data.id }, query })
       return
@@ -650,7 +657,12 @@ async function onComplete() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
-  const backRoute = fromCompleted.value ? 'completed' : 'projects'
+  let backRoute = 'projects'
+  if (fromCompleted.value) {
+    backRoute = 'completed'
+  } else if (fromSomeday.value) {
+    backRoute = 'someday'
+  }
 
   if (newTotal <= 0) {
     router.push({ name: backRoute })
@@ -660,14 +672,19 @@ async function navigateToNextOrPrev() {
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    const getByPosition = fromCompleted.value
-      ? apiClient.getCompletedByPosition
-      : getProjectByPosition
+    let getByPosition
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromSomeday.value) {
+      getByPosition = apiClient.getSomedayByPosition
+    } else {
+      getByPosition = getProjectByPosition
+    }
     const data = await getByPosition(nextPos)
 
-    // Completed list has mixed types - redirect if type changed
-    if (fromCompleted.value && data.type !== 'PROJECT') {
-      const query = { position: data.position, total: data.total_items ?? newTotal, from: 'completed' }
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'PROJECT') {
+      const query = { position: data.position, total: data.total_items ?? newTotal, from: fromSource.value }
       const name = data.type === 'STUFF' ? 'stuff-detail' : 'action-detail'
       router.replace({ name, params: { id: data.id }, query })
       return
