@@ -78,6 +78,14 @@
             >
               Activate
             </Btn>
+            <Btn
+                variant="ghost-danger"
+                size="sm"
+                :loading="actionLoading === 'trash'"
+                @click="onTrash"
+            >
+              Trash
+            </Btn>
           </template>
           <template v-else-if="isWaiting">
             <Btn
@@ -107,7 +115,7 @@
               Done
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="ghost"
@@ -125,7 +133,7 @@
             <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
           </Dropdown>
           <Btn
-              v-if="!isCompleted"
+              v-if="!isCompleted && !isSomeday"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"

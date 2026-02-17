@@ -113,10 +113,15 @@
             <button class="dropdown-item" @click="onMoveTo('project')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
             <button class="dropdown-item" @click="onMoveTo('someday')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
             <button class="dropdown-item" @click="onMoveTo('reference')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item" @click="onMoveTo('completed')"><CompletedIcon class="dropdown-item-icon" /> Completed</button>
-            <button class="dropdown-item dropdown-item--danger" @click="onMoveTo('trash')"><TrashIcon class="dropdown-item-icon" /> Trash</button>
           </Dropdown>
+          <Btn
+              variant="ghost-danger"
+              size="sm"
+              :loading="actionLoading === 'trash'"
+              @click="onTrash"
+          >
+            Trash
+          </Btn>
         </div>
 
         <!-- Description area -->
@@ -223,8 +228,6 @@ import WaitingIcon from '../assets/WaitingIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 import ReferenceIcon from '../assets/ReferenceIcon.vue'
-import CompletedIcon from '../assets/CompletedIcon.vue'
-import TrashIcon from '../assets/TrashIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -554,9 +557,7 @@ async function onMoveTo(destination) {
     waiting: 'Waiting For',
     project: 'Projects',
     someday: 'Someday',
-    reference: 'Reference',
-    completed: 'Completed',
-    trash: 'Trash'
+    reference: 'Reference'
   }
 
   // Special handling for calendar - need date input
@@ -625,12 +626,6 @@ async function onMoveTo(destination) {
     return
   }
 
-  // Special handling for trash - use confirmation
-  if (destination === 'trash') {
-    await onTrash()
-    return
-  }
-
   // Special handling for project - prompt for outcome
   if (destination === 'project') {
     const outcome = await mover.showOutcome()
@@ -668,9 +663,6 @@ async function onMoveTo(destination) {
         break
       case 'reference':
         await apiClient.clarifyToReference(item.value.id)
-        break
-      case 'completed':
-        await apiClient.completeStuff(item.value.id)
         break
     }
     toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
@@ -1063,21 +1055,6 @@ async function onActivate() {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* ── Dropdown styles ── */
-.dropdown-divider {
-  height: 1px;
-  margin: 4px 0;
-  background: var(--color-border-light);
-}
-
-.dropdown-item--danger {
-  color: var(--color-danger);
-}
-
-.dropdown-item--danger:hover {
-  background: var(--color-danger-bg);
 }
 
 /* ── Clarify Slide-over ── */
