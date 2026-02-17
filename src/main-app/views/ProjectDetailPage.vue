@@ -157,18 +157,11 @@
           <div class="next-action-header">
             <label class="detail-section-label">Next Action</label>
             <button
-                v-if="orderedActions.length > 0"
+                v-if="orderedActions.length > 0 || !actionsLoading"
                 class="next-action-expand-btn"
                 @click="actionsExpanded = !actionsExpanded"
             >
               {{ actionsExpanded ? '▲' : '▼' }} {{ backlogItems.length > 0 ? `+${backlogItems.length}` : '' }}
-            </button>
-            <button
-                v-else-if="!actionsLoading"
-                class="next-action-add-btn"
-                @click="onAddFirstAction"
-            >
-              +
             </button>
           </div>
           <div class="next-action-wrapper">
@@ -209,7 +202,7 @@
                   </div>
                   <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
                 </div>
-                <p v-else class="next-action-empty next-action-empty--clickable" @click="onAddFirstAction">No next action defined</p>
+                <p v-else class="detail-section-content detail-section-content--empty" @click="onExpandAndFocus">Add a next action...</p>
               </template>
 
               <!-- Expanded: full action list -->
@@ -887,7 +880,7 @@ async function onBacklogReorder(evt) {
   }
 }
 
-function onAddFirstAction() {
+function onExpandAndFocus() {
   actionsExpanded.value = true
   nextTick(() => {
     quickAddInput.value?.focus()
@@ -1362,16 +1355,7 @@ async function onAddAction() {
   padding: 8px 0;
 }
 
-.next-action-empty--clickable {
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 8px;
-}
 
-.next-action-empty--clickable:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-link-text);
-}
 
 /* ── Next Action header with expand button ── */
 .next-action-header {
@@ -1397,22 +1381,6 @@ async function onAddAction() {
   color: var(--color-text-secondary);
 }
 
-.next-action-add-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  font-weight: 600;
-  color: var(--color-text-tertiary);
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.next-action-add-btn:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-action);
-}
 
 /* ── Expanded actions area ── */
 .actions-expanded {
