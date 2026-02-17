@@ -393,7 +393,11 @@ async function navigateToPosition(position) {
       totalItems.value = data.total_items
     }
     // Update URL without adding history entry
-    router.replace({ params: { id: data.id, totalItems: data.totalItems } })
+    router.replace({
+      name: 'stuff-detail',
+      params: { id: data.id },
+      query: { position: data.position, total: totalItems.value }
+    })
   } catch {
     toaster.push('Failed to load item')
   } finally {
@@ -444,7 +448,11 @@ async function onClarifyDone() {
     item.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
-    router.replace({ params: { id: data.id } })
+    router.replace({
+      name: 'stuff-detail',
+      params: { id: data.id },
+      query: { position: data.position, total: totalItems.value }
+    })
 
     // Restart clarify for the new item
     const clarify = clarifyModel()
@@ -492,7 +500,11 @@ async function navigateToNextOrPrev() {
     item.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
-    router.replace({ params: { id: data.id } })
+    router.replace({
+      name: 'stuff-detail',
+      params: { id: data.id },
+      query: { position: data.position, total: totalItems.value }
+    })
   } catch {
     router.push({ name: 'inbox' })
   }
