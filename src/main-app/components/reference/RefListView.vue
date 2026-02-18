@@ -27,7 +27,7 @@
           <td class="col-actions" @click.stop>
             <Dropdown align="right" title="Folder actions">
               <template #trigger>
-                <button class="row-menu-btn" type="button">&#8230;</button>
+                <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
               </template>
               <template #default="{ close }">
                 <button class="dropdown-item" @click="close(); $emit('rename-folder', folder)">
@@ -57,7 +57,7 @@
           <td class="col-actions" @click.stop>
             <Dropdown align="right" title="File actions">
               <template #trigger>
-                <button class="row-menu-btn" type="button">&#8230;</button>
+                <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
               </template>
               <template #default="{ close }">
                 <button class="dropdown-item" @click="close(); $emit('download-file', file)">
@@ -84,6 +84,7 @@
 <script setup>
 import FolderIcon from '../../assets/FolderIcon.vue'
 import RefFileIcon from './RefFileIcon.vue'
+import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import Btn from '../Btn.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
@@ -187,18 +188,20 @@ function formatDate(dateStr) {
 }
 
 .col-size {
-  width: 80px;
+  width: 60px;
   color: var(--color-text-secondary);
 }
 
 .col-modified {
-  width: 120px;
+  width: 60px;
   color: var(--color-text-secondary);
+  padding-right: 4px;
 }
 
 .col-actions {
-  width: 40px;
-  text-align: center;
+  width: 28px;
+  padding-left: 0;
+  padding-right: 4px;
 }
 
 .row-icon {
@@ -214,14 +217,22 @@ function formatDate(dateStr) {
 .row-menu-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text-tertiary);
   cursor: pointer;
-  padding: 2px 8px;
+  padding: 0;
   border-radius: 4px;
-  line-height: 1;
   opacity: 0;
   transition: opacity 0.15s;
+}
+
+.menu-btn-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .list-row:hover .row-menu-btn {

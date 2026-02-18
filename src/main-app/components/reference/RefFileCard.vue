@@ -6,7 +6,7 @@
     <div class="file-card__actions" @click.stop>
       <Dropdown align="right" title="File actions">
         <template #trigger>
-          <button class="file-card__menu-btn" type="button">&#8230;</button>
+          <button class="file-card__menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
         </template>
         <template #default="{ close }">
           <button class="dropdown-item" @click="close(); $emit('download', file)">
@@ -26,6 +26,7 @@
 
 <script setup>
 import RefFileIcon from './RefFileIcon.vue'
+import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
@@ -111,12 +112,20 @@ function formatSize(bytes) {
 .file-card__menu-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text-tertiary);
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 0;
   border-radius: 4px;
-  line-height: 1;
+}
+
+.menu-btn-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .file-card__menu-btn:hover {

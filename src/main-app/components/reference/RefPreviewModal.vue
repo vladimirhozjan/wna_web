@@ -6,7 +6,7 @@
           <span class="preview-filename">{{ preview.file?.name }}</span>
           <div class="preview-header-actions">
             <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
-            <Btn variant="icon" size="sm" class="preview-close-btn" @click="$emit('close')">&times;</Btn>
+            <Btn variant="ghost-danger" size="sm" @click="$emit('close')">Close</Btn>
           </div>
         </div>
         <div class="preview-body">
@@ -107,15 +107,6 @@ const isText = computed(() =>
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-}
-
-.preview-close-btn {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 24px;
-}
-
-.preview-close-btn:hover {
-  color: #fff;
 }
 
 .preview-body {
