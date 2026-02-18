@@ -1,14 +1,17 @@
 <template>
   <nav class="breadcrumb">
-    <button class="breadcrumb__item" @click="$emit('navigate', null)">My Files</button>
+    <Btn variant="link" size="sm" class="breadcrumb__btn" @click="$emit('navigate', null)">My Files</Btn>
     <template v-for="crumb in breadcrumbs" :key="crumb.id">
-      <span class="breadcrumb__sep">/</span>
-      <button class="breadcrumb__item" @click="$emit('navigate', crumb.id)">{{ crumb.name }}</button>
+      <ChevronRightIcon class="breadcrumb__chevron" />
+      <Btn variant="link" size="sm" class="breadcrumb__btn" @click="$emit('navigate', crumb.id)">{{ crumb.name }}</Btn>
     </template>
   </nav>
 </template>
 
 <script setup>
+import Btn from '../Btn.vue'
+import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
+
 defineProps({
   breadcrumbs: {
     type: Array,
@@ -23,39 +26,27 @@ defineEmits(['navigate'])
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   flex-wrap: wrap;
   min-width: 0;
 }
 
-.breadcrumb__item {
-  background: none;
-  border: none;
-  padding: 4px 6px;
-  border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
+.breadcrumb__btn {
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.breadcrumb__item:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text-primary);
-}
-
-.breadcrumb__item:last-child {
-  color: var(--color-text-primary);
+.breadcrumb__btn:last-child {
   font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-.breadcrumb__sep {
+.breadcrumb__chevron {
+  width: 16px;
+  height: 16px;
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-s);
-  user-select: none;
+  flex-shrink: 0;
 }
 </style>
