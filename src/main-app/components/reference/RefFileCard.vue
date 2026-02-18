@@ -1,0 +1,140 @@
+<template>
+  <div class="file-card" @click="$emit('preview', file)">
+    <FileIcon class="file-card__icon" :style="{ color: iconColor }" />
+    <span class="file-card__name" :title="file.name">{{ file.name }}</span>
+    <span class="file-card__size">{{ formatSize(file.size) }}</span>
+    <div class="file-card__actions" @click.stop>
+      <Dropdown align="right" title="File actions">
+        <template #trigger>
+          <button class="file-card__menu-btn" type="button">&#8230;</button>
+        </template>
+        <template #default="{ close }">
+          <button class="dropdown-item" @click="close(); $emit('download', file)">
+            Download
+          </button>
+          <button class="dropdown-item" @click="close(); $emit('rename', file)">
+            Rename
+          </button>
+          <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash', file)">
+            Move to Trash
+          </button>
+        </template>
+      </Dropdown>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import {computed} from 'vue'
+import FileIcon from '../../assets/FileIcon.vue'
+import Dropdown from '../Dropdown.vue'
+
+const props = defineProps({
+  file: {
+    type: Object,
+    required: true,
+  },
+})
+
+defineEmits(['preview', 'download', 'rename', 'trash'])
+
+const iconColor = computed(() => {
+  const mime = props.file.mime_type || ''
+  if (mime.startsWith('image/')) return '#059669'
+  if (mime === 'application/pdf') return '#dc2626'
+  if (mime.startsWith('text/') || mime.includes('javascript') || mime.includes('xml')) return '#2563eb'
+  if (mime === 'application/json') return '#d97706'
+  if (mime.includes('spreadsheet') || mime.includes('csv') || mime.includes('excel')) return '#16a34a'
+  if (mime.includes('document') || mime.includes('word') || mime.includes('rtf')) return '#2563eb'
+  if (mime.includes('zip') || mime.includes('tar') || mime.includes('compress') || mime.includes('archive')) return '#6B7280'
+  return '#6B7280'
+})
+
+function formatSize(bytes) {
+  if (!bytes && bytes !== 0) return ''
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB'
+}
+</script>
+
+<style scoped>
+.file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+
+.file-card:hover {
+  background: var(--color-bg-hover);
+}
+
+.file-card__icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.file-card__name {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.file-card__size {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+.file-card__actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.file-card:hover .file-card__actions {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .file-card__actions {
+    opacity: 1;
+  }
+}
+
+.file-card__menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.file-card__menu-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.file-card :deep(.dropdown-item) {
+  padding: 8px 12px;
+}
+</style>

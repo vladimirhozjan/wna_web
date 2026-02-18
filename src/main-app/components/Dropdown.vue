@@ -275,6 +275,14 @@ onUnmounted(() => {
   color: var(--color-action);
 }
 
+.dropdown-item--danger {
+  color: #dc2626;
+}
+
+.dropdown-item--danger:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
 /* Mobile-specific item styles */
 @media (max-width: 768px) {
   .dropdown-item {
