@@ -45,7 +45,7 @@
             @click="$emit('preview-file', file)"
         >
           <td class="col-icon">
-            <FileIcon class="row-icon" :style="{ color: fileIconColor(file) }" />
+            <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
           </td>
           <td class="col-name">{{ file.name }}</td>
           <td class="col-size">{{ formatSize(file.size) }}</td>
@@ -73,7 +73,7 @@
 
 <script setup>
 import FolderIcon from '../../assets/FolderIcon.vue'
-import FileIcon from '../../assets/FileIcon.vue'
+import RefFileIcon from './RefFileIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import Btn from '../Btn.vue'
 
@@ -102,18 +102,6 @@ defineEmits([
   'trash-file',
   'load-more',
 ])
-
-function fileIconColor(file) {
-  const mime = file.mime_type || ''
-  if (mime.startsWith('image/')) return '#059669'
-  if (mime === 'application/pdf') return '#dc2626'
-  if (mime.startsWith('text/') || mime.includes('javascript') || mime.includes('xml')) return '#2563eb'
-  if (mime === 'application/json') return '#d97706'
-  if (mime.includes('spreadsheet') || mime.includes('csv') || mime.includes('excel')) return '#16a34a'
-  if (mime.includes('document') || mime.includes('word') || mime.includes('rtf')) return '#2563eb'
-  if (mime.includes('zip') || mime.includes('tar') || mime.includes('compress') || mime.includes('archive')) return '#6B7280'
-  return '#6B7280'
-}
 
 function formatSize(bytes) {
   if (!bytes && bytes !== 0) return ''

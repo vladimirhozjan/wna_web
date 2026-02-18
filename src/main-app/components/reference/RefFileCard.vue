@@ -1,6 +1,6 @@
 <template>
   <div class="file-card" @click="$emit('preview', file)">
-    <FileIcon class="file-card__icon" :style="{ color: iconColor }" />
+    <RefFileIcon class="file-card__icon" :mime-type="file.mime_type" />
     <span class="file-card__name" :title="file.name">{{ file.name }}</span>
     <span class="file-card__size">{{ formatSize(file.size) }}</span>
     <div class="file-card__actions" @click.stop>
@@ -25,11 +25,10 @@
 </template>
 
 <script setup>
-import {computed} from 'vue'
-import FileIcon from '../../assets/FileIcon.vue'
+import RefFileIcon from './RefFileIcon.vue'
 import Dropdown from '../Dropdown.vue'
 
-const props = defineProps({
+defineProps({
   file: {
     type: Object,
     required: true,
@@ -37,18 +36,6 @@ const props = defineProps({
 })
 
 defineEmits(['preview', 'download', 'rename', 'trash'])
-
-const iconColor = computed(() => {
-  const mime = props.file.mime_type || ''
-  if (mime.startsWith('image/')) return '#059669'
-  if (mime === 'application/pdf') return '#dc2626'
-  if (mime.startsWith('text/') || mime.includes('javascript') || mime.includes('xml')) return '#2563eb'
-  if (mime === 'application/json') return '#d97706'
-  if (mime.includes('spreadsheet') || mime.includes('csv') || mime.includes('excel')) return '#16a34a'
-  if (mime.includes('document') || mime.includes('word') || mime.includes('rtf')) return '#2563eb'
-  if (mime.includes('zip') || mime.includes('tar') || mime.includes('compress') || mime.includes('archive')) return '#6B7280'
-  return '#6B7280'
-})
 
 function formatSize(bytes) {
   if (!bytes && bytes !== 0) return ''

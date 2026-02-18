@@ -5,8 +5,8 @@
         <div class="preview-header">
           <span class="preview-filename">{{ preview.file?.name }}</span>
           <div class="preview-header-actions">
-            <Btn variant="ghost" size="sm" @click="$emit('download')">Download</Btn>
-            <button class="preview-close" @click="$emit('close')">&times;</button>
+            <Btn variant="ghost" size="sm" class="preview-btn" @click="$emit('download')">Download</Btn>
+            <Btn variant="icon" size="sm" class="preview-close-btn" @click="$emit('close')">&times;</Btn>
           </div>
         </div>
         <div class="preview-body">
@@ -98,19 +98,22 @@ const isText = computed(() =>
   flex-shrink: 0;
 }
 
-.preview-close {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 4px 8px;
-  line-height: 1;
-  opacity: 0.8;
+.preview-btn {
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.preview-close:hover {
-  opacity: 1;
+.preview-btn:hover {
+  color: #fff;
+}
+
+.preview-close-btn {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 24px;
+}
+
+.preview-close-btn:hover {
+  color: #fff;
 }
 
 .preview-body {
