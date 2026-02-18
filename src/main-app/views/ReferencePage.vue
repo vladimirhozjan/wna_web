@@ -144,7 +144,7 @@
             <tbody>
               <tr v-for="file in trashModel_.files.value" :key="file.id" class="trash-row">
                 <td class="col-name">{{ file.name }}</td>
-                <td class="col-size">{{ formatSize(file.size) }}</td>
+                <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
                 <td class="col-actions">
                   <Btn variant="link" size="sm" @click="onRestoreFile(file)">Restore</Btn>
                   <Btn variant="link" size="sm" class="danger-link" @click="onPermanentDelete(file)">Delete</Btn>

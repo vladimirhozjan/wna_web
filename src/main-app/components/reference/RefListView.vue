@@ -52,7 +52,7 @@
             <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
           </td>
           <td class="col-name">{{ file.name }}</td>
-          <td class="col-size">{{ formatSize(file.size) }}</td>
+          <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
           <td class="col-modified">{{ formatDate(file.created_at) }}</td>
           <td class="col-actions" @click.stop>
             <Dropdown align="right" title="File actions">

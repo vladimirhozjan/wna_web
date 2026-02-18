@@ -2,7 +2,7 @@
   <div class="file-card" @click="$emit('preview', file)">
     <RefFileIcon class="file-card__icon" :mime-type="file.mime_type" />
     <span class="file-card__name" :title="file.name">{{ file.name }}</span>
-    <span class="file-card__size">{{ formatSize(file.size) }}</span>
+    <span class="file-card__size">{{ formatSize(file.size_bytes) }}</span>
     <div class="file-card__actions" @click.stop>
       <Dropdown align="right" title="File actions">
         <template #trigger>
