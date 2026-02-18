@@ -25,7 +25,7 @@ httpApi.interceptors.request.use(async (req) => {
     const now = Math.floor(Date.now() / 1000)
     const expiresIn = payload.exp - now
 
-    if (expiresIn < 0) {
+    if (expiresIn < 60) {
         try {
             const refreshed = await apiClient.refreshToken()
             const newToken = refreshed.access_token
