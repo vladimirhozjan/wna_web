@@ -777,6 +777,15 @@ export async function moveSomeday(itemId, destination) {
     }
 }
 
+export async function getSomedayByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/someday/pos/${position}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function activateStuff(stuffId) {
     try {
         const res = await httpApi.post(`/v1/stuff/${stuffId}/activate`, {}, {headers: authHeaders()})
@@ -813,6 +822,15 @@ export async function listCompleted({limit = 10, cursor = null} = {}) {
         if (cursor) params.cursor = cursor
 
         const res = await httpApi.get('/v1/completed', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getCompletedByPosition(position) {
+    try {
+        const res = await httpApi.get(`/v1/completed/pos/${position}`, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -990,6 +1008,195 @@ export async function restoreProject(projectId) {
     }
 }
 
+// ── Reference API ──
+
+export async function createRefFolder({name, parent_id = null}) {
+    try {
+        const body = {name}
+        if (parent_id) body.parent_id = parent_id
+        const res = await httpApi.post('/v1/reference/folders', body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listRefFolders(parent_id = null) {
+    try {
+        const params = {}
+        if (parent_id) params.parent_id = parent_id
+        const res = await httpApi.get('/v1/reference/folders', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getRefFolder(id) {
+    try {
+        const res = await httpApi.get(`/v1/reference/folders/${id}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateRefFolder(id, {name, parent_id}) {
+    try {
+        const body = {}
+        if (name !== undefined) body.name = name
+        if (parent_id !== undefined) body.parent_id = parent_id
+        const res = await httpApi.patch(`/v1/reference/folders/${id}`, body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteRefFolder(id) {
+    try {
+        const res = await httpApi.delete(`/v1/reference/folders/${id}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function uploadRefFile(file, folder_id = null, onProgress = null) {
+    try {
+        const formData = new FormData()
+        formData.append('file', file)
+        if (folder_id) formData.append('folder_id', folder_id)
+
+        const res = await httpApi.post('/v1/reference/files', formData, {
+            headers: {
+                ...authHeaders(),
+                'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress: onProgress ? (e) => {
+                const pct = Math.round((e.loaded * 100) / (e.total || 1))
+                onProgress(pct)
+            } : undefined,
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listRefFiles({folder_id = null, type = null, q = null, limit = 20, offset = 0} = {}) {
+    try {
+        const params = {limit, offset}
+        if (folder_id) params.folder_id = folder_id
+        if (type) params.type = type
+        if (q) params.q = q
+        const res = await httpApi.get('/v1/reference/files', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getRefFile(id) {
+    try {
+        const res = await httpApi.get(`/v1/reference/files/${id}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateRefFile(id, {name, folder_id}) {
+    try {
+        const body = {}
+        if (name !== undefined) body.name = name
+        if (folder_id !== undefined) body.folder_id = folder_id
+        const res = await httpApi.patch(`/v1/reference/files/${id}`, body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function trashRefFile(id) {
+    try {
+        const res = await httpApi.delete(`/v1/reference/files/${id}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function downloadRefFile(id) {
+    try {
+        const res = await httpApi.get(`/v1/reference/files/${id}/download`, {
+            headers: authHeaders(),
+            responseType: 'blob',
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function previewRefFile(id) {
+    try {
+        const res = await httpApi.get(`/v1/reference/files/${id}/preview`, {
+            headers: authHeaders(),
+            responseType: 'blob',
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getRefQuota() {
+    try {
+        const res = await httpApi.get('/v1/reference/quota', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listRefTrash({limit = 20, offset = 0} = {}) {
+    try {
+        const params = {limit, offset}
+        const res = await httpApi.get('/v1/reference/trash', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function restoreRefFile(id) {
+    try {
+        const res = await httpApi.post(`/v1/reference/trash/${id}/restore`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function permanentDeleteRefFile(id) {
+    try {
+        const res = await httpApi.delete(`/v1/reference/trash/${id}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function emptyRefTrash() {
+    try {
+        const res = await httpApi.delete('/v1/reference/trash', {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Settings API ──
 
 export async function getSettings() {
@@ -1071,6 +1278,7 @@ const apiClient = {
     listProjectActions,
     listSomeday,
     moveSomeday,
+    getSomedayByPosition,
     activateStuff,
     activateAction,
     activateProject,
@@ -1081,6 +1289,7 @@ const apiClient = {
     restoreProject,
     listCompleted,
     completedCount,
+    getCompletedByPosition,
     uncompleteStuff,
     uncompleteAction,
     uncompleteProject,
@@ -1096,6 +1305,24 @@ const apiClient = {
     // Settings API
     getSettings,
     updateSettings,
+    // Reference API
+    createRefFolder,
+    listRefFolders,
+    getRefFolder,
+    updateRefFolder,
+    deleteRefFolder,
+    uploadRefFile,
+    listRefFiles,
+    getRefFile,
+    updateRefFile,
+    trashRefFile,
+    downloadRefFile,
+    previewRefFile,
+    getRefQuota,
+    listRefTrash,
+    restoreRefFile,
+    permanentDeleteRefFile,
+    emptyRefTrash,
 }
 
 export default apiClient

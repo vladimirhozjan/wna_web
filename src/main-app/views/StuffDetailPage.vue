@@ -113,10 +113,15 @@
             <button class="dropdown-item" @click="onMoveTo('project')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
             <button class="dropdown-item" @click="onMoveTo('someday')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
             <button class="dropdown-item" @click="onMoveTo('reference')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item" @click="onMoveTo('completed')"><CompletedIcon class="dropdown-item-icon" /> Completed</button>
-            <button class="dropdown-item dropdown-item--danger" @click="onMoveTo('trash')"><TrashIcon class="dropdown-item-icon" /> Trash</button>
           </Dropdown>
+          <Btn
+              variant="ghost-danger"
+              size="sm"
+              :loading="actionLoading === 'trash'"
+              @click="onTrash"
+          >
+            Trash
+          </Btn>
         </div>
 
         <!-- Description area -->
@@ -223,8 +228,6 @@ import WaitingIcon from '../assets/WaitingIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 import ReferenceIcon from '../assets/ReferenceIcon.vue'
-import CompletedIcon from '../assets/CompletedIcon.vue'
-import TrashIcon from '../assets/TrashIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -258,13 +261,17 @@ const showMoveDialog = ref(false)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
+const fromSource = ref(null)
 
 // Computed
 const isCompleted = computed(() => item.value?.state === 'COMPLETED')
 const isSomeday = computed(() => item.value?.state === 'SOMEDAY')
+const fromCompleted = computed(() => fromSource.value === 'completed')
+const fromSomeday = computed(() => fromSource.value === 'someday')
+const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 const backLabel = computed(() => {
-  if (isCompleted.value) return 'Completed'
-  if (isSomeday.value) return 'Someday / Maybe'
+  if (fromCompleted.value || isCompleted.value) return 'Completed'
+  if (fromSomeday.value || isSomeday.value) return 'Someday / Maybe'
   return 'Inbox'
 })
 
@@ -279,11 +286,13 @@ onMounted(async () => {
   window.addEventListener('resize', checkMobile)
 
   try {
+    fromSource.value = route.query.from || null
+
     const data = await getStuff(route.params.id)
     item.value = { ...data }
 
-    currentPosition.value = Number(route.query.position)
-    totalItems.value = Number(route.query.total)
+    currentPosition.value = Number(route.query.position) || 0
+    totalItems.value = Number(route.query.total) || 1
 
   } catch {
     toaster.push('Failed to load item')
@@ -301,9 +310,9 @@ function checkMobile() {
 }
 
 function goBack() {
-  if (isCompleted.value) {
+  if (fromCompleted.value || isCompleted.value) {
     router.push({ name: 'completed' })
-  } else if (isSomeday.value) {
+  } else if (fromSomeday.value || isSomeday.value) {
     router.push({ name: 'someday' })
   } else {
     router.push({ name: 'inbox' })
@@ -386,14 +395,30 @@ async function navigateToPosition(position) {
 
   navigating.value = true
   try {
-    const data = await getStuffByPosition(position)
+    let getByPosition = getStuffByPosition
+    if (fromCompleted.value) getByPosition = apiClient.getCompletedByPosition
+    else if (fromSomeday.value) getByPosition = apiClient.getSomedayByPosition
+    const data = await getByPosition(position)
+
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'STUFF') {
+      const query = { position: data.position, total: data.total_items || totalItems.value, from: fromSource.value }
+      const name = data.type === 'ACTION' ? 'action-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     item.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
       totalItems.value = data.total_items
     }
     // Update URL without adding history entry
-    router.replace({ params: { id: data.id, totalItems: data.totalItems } })
+    router.replace({
+      name: 'stuff-detail',
+      params: { id: data.id },
+      query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
+    })
   } catch {
     toaster.push('Failed to load item')
   } finally {
@@ -444,7 +469,11 @@ async function onClarifyDone() {
     item.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
-    router.replace({ params: { id: data.id } })
+    router.replace({
+      name: 'stuff-detail',
+      params: { id: data.id },
+      query: { position: data.position, total: totalItems.value }
+    })
 
     // Restart clarify for the new item
     const clarify = clarifyModel()
@@ -478,8 +507,12 @@ async function onMarkDone() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
+  let backRoute = 'inbox'
+  if (fromCompleted.value) backRoute = 'completed'
+  else if (fromSomeday.value) backRoute = 'someday'
+
   if (newTotal <= 0) {
-    router.push({ name: 'inbox' })
+    router.push({ name: backRoute })
     return
   }
 
@@ -488,13 +521,29 @@ async function navigateToNextOrPrev() {
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    const data = await getStuffByPosition(nextPos)
+    let getByPosition = getStuffByPosition
+    if (fromCompleted.value) getByPosition = apiClient.getCompletedByPosition
+    else if (fromSomeday.value) getByPosition = apiClient.getSomedayByPosition
+    const data = await getByPosition(nextPos)
+
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'STUFF') {
+      const query = { position: data.position, total: data.total_items ?? newTotal, from: fromSource.value }
+      const name = data.type === 'ACTION' ? 'action-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     item.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
-    router.replace({ params: { id: data.id } })
+    router.replace({
+      name: 'stuff-detail',
+      params: { id: data.id },
+      query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
+    })
   } catch {
-    router.push({ name: 'inbox' })
+    router.push({ name: backRoute })
   }
 }
 
@@ -508,9 +557,7 @@ async function onMoveTo(destination) {
     waiting: 'Waiting For',
     project: 'Projects',
     someday: 'Someday',
-    reference: 'Reference',
-    completed: 'Completed',
-    trash: 'Trash'
+    reference: 'Reference'
   }
 
   // Special handling for calendar - need date input
@@ -579,12 +626,6 @@ async function onMoveTo(destination) {
     return
   }
 
-  // Special handling for trash - use confirmation
-  if (destination === 'trash') {
-    await onTrash()
-    return
-  }
-
   // Special handling for project - prompt for outcome
   if (destination === 'project') {
     const outcome = await mover.showOutcome()
@@ -622,9 +663,6 @@ async function onMoveTo(destination) {
         break
       case 'reference':
         await apiClient.clarifyToReference(item.value.id)
-        break
-      case 'completed':
-        await apiClient.completeStuff(item.value.id)
         break
     }
     toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
@@ -1017,21 +1055,6 @@ async function onActivate() {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* ── Dropdown styles ── */
-.dropdown-divider {
-  height: 1px;
-  margin: 4px 0;
-  background: var(--color-border-light);
-}
-
-.dropdown-item--danger {
-  color: var(--color-danger);
-}
-
-.dropdown-item--danger:hover {
-  background: var(--color-danger-bg);
 }
 
 /* ── Clarify Slide-over ── */

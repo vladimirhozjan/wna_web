@@ -157,18 +157,11 @@
           <div class="next-action-header">
             <label class="detail-section-label">Next Action</label>
             <button
-                v-if="orderedActions.length > 0"
+                v-if="orderedActions.length > 0 || !actionsLoading"
                 class="next-action-expand-btn"
                 @click="actionsExpanded = !actionsExpanded"
             >
               {{ actionsExpanded ? '▲' : '▼' }} {{ backlogItems.length > 0 ? `+${backlogItems.length}` : '' }}
-            </button>
-            <button
-                v-else-if="!actionsLoading"
-                class="next-action-add-btn"
-                @click="onAddFirstAction"
-            >
-              +
             </button>
           </div>
           <div class="next-action-wrapper">
@@ -209,7 +202,7 @@
                   </div>
                   <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
                 </div>
-                <p v-else class="next-action-empty next-action-empty--clickable" @click="onAddFirstAction">No next action defined</p>
+                <p v-else class="detail-section-content detail-section-content--empty" @click="onExpandAndFocus">Add a next action...</p>
               </template>
 
               <!-- Expanded: full action list -->
@@ -428,15 +421,19 @@ const quickAddInput = ref(null)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
+const fromSource = ref(null)
 
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
 const nextAction = computed(() => orderedActions.value[0] || null)
 const backlogItems = computed(() => orderedActions.value.slice(1))
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
+const fromCompleted = computed(() => fromSource.value === 'completed')
+const fromSomeday = computed(() => fromSource.value === 'someday')
+const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 const backLabel = computed(() => {
-  if (isCompleted.value) return 'Completed'
-  if (isSomeday.value) return 'Someday / Maybe'
+  if (fromCompleted.value || isCompleted.value) return 'Completed'
+  if (fromSomeday.value || isSomeday.value) return 'Someday / Maybe'
   return 'Projects'
 })
 
@@ -459,6 +456,8 @@ watch(editActionValue, () => {
 
 onMounted(async () => {
   try {
+    fromSource.value = route.query.from || null
+
     const data = await getProject(route.params.id)
     project.value = { ...data }
 
@@ -477,9 +476,9 @@ onMounted(async () => {
 })
 
 function goBack() {
-  if (isCompleted.value) {
+  if (fromCompleted.value || isCompleted.value) {
     router.push({ name: 'completed' })
-  } else if (isSomeday.value) {
+  } else if (fromSomeday.value || isSomeday.value) {
     router.push({ name: 'someday' })
   } else {
     router.push({ name: 'projects' })
@@ -575,7 +574,24 @@ async function navigateToPosition(position) {
 
   navigating.value = true
   try {
-    const data = await getProjectByPosition(position)
+    let getByPosition
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromSomeday.value) {
+      getByPosition = apiClient.getSomedayByPosition
+    } else {
+      getByPosition = getProjectByPosition
+    }
+    const data = await getByPosition(position)
+
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'PROJECT') {
+      const query = { position: data.position, total: data.total_items || totalItems.value, from: fromSource.value }
+      const name = data.type === 'STUFF' ? 'stuff-detail' : 'action-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     project.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
@@ -584,7 +600,7 @@ async function navigateToPosition(position) {
     router.replace({
       name: 'project-detail',
       params: { id: data.id },
-      query: { position: data.position, total: totalItems.value }
+      query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
     // Reload actions for new project
     await loadProjectActions()
@@ -641,25 +657,49 @@ async function onComplete() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
+  let backRoute = 'projects'
+  if (fromCompleted.value) {
+    backRoute = 'completed'
+  } else if (fromSomeday.value) {
+    backRoute = 'someday'
+  }
+
   if (newTotal <= 0) {
-    router.push({ name: 'projects' })
+    router.push({ name: backRoute })
     return
   }
 
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    const data = await getProjectByPosition(nextPos)
+    let getByPosition
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromSomeday.value) {
+      getByPosition = apiClient.getSomedayByPosition
+    } else {
+      getByPosition = getProjectByPosition
+    }
+    const data = await getByPosition(nextPos)
+
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'PROJECT') {
+      const query = { position: data.position, total: data.total_items ?? newTotal, from: fromSource.value }
+      const name = data.type === 'STUFF' ? 'stuff-detail' : 'action-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     project.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal
     router.replace({
       name: 'project-detail',
       params: { id: data.id },
-      query: { position: data.position, total: totalItems.value }
+      query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
   } catch {
-    router.push({ name: 'projects' })
+    router.push({ name: backRoute })
   }
 }
 
@@ -887,7 +927,7 @@ async function onBacklogReorder(evt) {
   }
 }
 
-function onAddFirstAction() {
+function onExpandAndFocus() {
   actionsExpanded.value = true
   nextTick(() => {
     quickAddInput.value?.focus()
@@ -1362,16 +1402,7 @@ async function onAddAction() {
   padding: 8px 0;
 }
 
-.next-action-empty--clickable {
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 8px;
-}
 
-.next-action-empty--clickable:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-link-text);
-}
 
 /* ── Next Action header with expand button ── */
 .next-action-header {
@@ -1397,22 +1428,6 @@ async function onAddAction() {
   color: var(--color-text-secondary);
 }
 
-.next-action-add-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  font-weight: 600;
-  color: var(--color-text-tertiary);
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.next-action-add-btn:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-action);
-}
 
 /* ── Expanded actions area ── */
 .actions-expanded {

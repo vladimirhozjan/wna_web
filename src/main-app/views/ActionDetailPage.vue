@@ -78,6 +78,14 @@
             >
               Activate
             </Btn>
+            <Btn
+                variant="ghost-danger"
+                size="sm"
+                :loading="actionLoading === 'trash'"
+                @click="onTrash"
+            >
+              Trash
+            </Btn>
           </template>
           <template v-else-if="isWaiting">
             <Btn
@@ -107,7 +115,7 @@
               Done
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="ghost"
@@ -125,7 +133,7 @@
             <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
           </Dropdown>
           <Btn
-              v-if="!isCompleted"
+              v-if="!isCompleted && !isSomeday"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -394,12 +402,15 @@ const isToday = computed(() => fromSource.value === 'today')
 const fromCalendar = computed(() => fromSource.value === 'calendar')
 const fromWaiting = computed(() => fromSource.value === 'waiting')
 const fromProject = computed(() => fromSource.value === 'project')
+const fromCompleted = computed(() => fromSource.value === 'completed')
+const fromSomeday = computed(() => fromSource.value === 'someday')
+const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 
 const backLabel = computed(() => {
   if (fromProject.value) return route.query.project_title || 'Project'
   if (fromCalendar.value) return 'Calendar'
-  if (isCompleted.value) return 'Completed'
-  if (isSomeday.value) return 'Someday / Maybe'
+  if (fromCompleted.value || isCompleted.value) return 'Completed'
+  if (fromSomeday.value || isSomeday.value) return 'Someday / Maybe'
   if (isWaiting.value || fromWaiting.value) return 'Waiting For'
   if (isToday.value) return 'Today'
   return 'Next'
@@ -473,9 +484,9 @@ function goBack() {
     router.push({ name: 'project-detail', params: { id: route.query.project_id } })
   } else if (fromCalendar.value) {
     router.push({ name: 'calendar' })
-  } else if (isCompleted.value) {
+  } else if (fromCompleted.value || isCompleted.value) {
     router.push({ name: 'completed' })
-  } else if (isSomeday.value) {
+  } else if (fromSomeday.value || isSomeday.value) {
     router.push({ name: 'someday' })
   } else if (isWaiting.value || fromWaiting.value) {
     router.push({ name: 'waiting-for' })
@@ -978,7 +989,11 @@ async function navigateToPosition(position) {
   try {
     // Use correct model based on source
     let getByPosition
-    if (fromWaiting.value) {
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromSomeday.value) {
+      getByPosition = apiClient.getSomedayByPosition
+    } else if (fromWaiting.value) {
       getByPosition = waitingMdl.getWaitingByPosition
     } else if (isToday.value) {
       getByPosition = todayMdl.getActionByPosition
@@ -986,6 +1001,15 @@ async function navigateToPosition(position) {
       getByPosition = getActionByPosition
     }
     const data = await getByPosition(position)
+
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'ACTION') {
+      const query = { position: data.position, total: data.total_items || totalItems.value, from: fromSource.value }
+      const name = data.type === 'STUFF' ? 'stuff-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     action.value = { ...data }
     currentPosition.value = data.position
     if (typeof data.total_items === 'number') {
@@ -1041,7 +1065,11 @@ async function onMarkDone() {
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
   let backRoute = 'next'
-  if (fromWaiting.value) {
+  if (fromCompleted.value) {
+    backRoute = 'completed'
+  } else if (fromSomeday.value) {
+    backRoute = 'someday'
+  } else if (fromWaiting.value) {
     backRoute = 'waiting-for'
   } else if (isToday.value) {
     backRoute = 'today'
@@ -1057,7 +1085,11 @@ async function navigateToNextOrPrev() {
   try {
     // Use correct model based on source
     let getByPosition
-    if (fromWaiting.value) {
+    if (fromCompleted.value) {
+      getByPosition = apiClient.getCompletedByPosition
+    } else if (fromSomeday.value) {
+      getByPosition = apiClient.getSomedayByPosition
+    } else if (fromWaiting.value) {
       getByPosition = waitingMdl.getWaitingByPosition
     } else if (isToday.value) {
       getByPosition = todayMdl.getActionByPosition
@@ -1065,6 +1097,15 @@ async function navigateToNextOrPrev() {
       getByPosition = getActionByPosition
     }
     const data = await getByPosition(nextPos)
+
+    // Mixed-type lists - redirect if type changed
+    if (fromMixedList.value && data.type !== 'ACTION') {
+      const query = { position: data.position, total: data.total_items ?? newTotal, from: fromSource.value }
+      const name = data.type === 'STUFF' ? 'stuff-detail' : 'project-detail'
+      router.replace({ name, params: { id: data.id }, query })
+      return
+    }
+
     action.value = { ...data }
     currentPosition.value = data.position
     totalItems.value = data.total_items ?? newTotal

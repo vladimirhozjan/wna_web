@@ -1,0 +1,91 @@
+<template>
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="visible" class="overlay" @click.self="$emit('close')">
+        <div class="dialog" :style="dialogStyle">
+          <h3 class="title">{{ title }}</h3>
+          <slot />
+          <div class="actions">
+            <slot name="actions" />
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
+
+<script setup>
+import {computed} from 'vue'
+
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  title: {
+    type: String,
+    default: '',
+  },
+  maxWidth: {
+    type: String,
+    default: '400px',
+  },
+})
+
+defineEmits(['close'])
+
+const dialogStyle = computed(() => ({
+  maxWidth: props.maxWidth,
+}))
+</script>
+
+<style scoped>
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  padding-bottom: 48px;
+  justify-content: center;
+  z-index: 99998;
+}
+
+.dialog {
+  background: var(--color-bg-primary);
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 320px;
+  width: 90vw;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.title {
+  margin: 0 0 16px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-h3);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
