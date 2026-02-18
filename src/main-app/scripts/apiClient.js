@@ -1197,6 +1197,30 @@ export async function emptyRefTrash() {
     }
 }
 
+// ── Comments API ──
+
+export async function listComments(entityType, itemId, {limit = 50, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get(`/v1/${entityType}/${itemId}/comments`, {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createComment(entityType, itemId, message) {
+    try {
+        const res = await httpApi.post(`/v1/${entityType}/${itemId}/comments`, {message}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Settings API ──
 
 export async function getSettings() {
@@ -1323,6 +1347,9 @@ const apiClient = {
     restoreRefFile,
     permanentDeleteRefFile,
     emptyRefTrash,
+    // Comments API
+    listComments,
+    createComment,
 }
 
 export default apiClient

@@ -309,6 +309,9 @@
           </div>
         </div>
 
+        <!-- Comments section -->
+        <CommentSection v-if="action.id" :entity-type="'action'" :item-id="action.id" />
+
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
@@ -335,6 +338,7 @@ import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
+import CommentSection from '../components/CommentSection.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { todayModel } from '../scripts/todayModel.js'
 import { waitingModel } from '../scripts/waitingModel.js'

@@ -341,6 +341,9 @@
           </div>
         </div>
 
+        <!-- Comments section -->
+        <CommentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" />
+
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
@@ -368,6 +371,7 @@ import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import CommentSection from '../components/CommentSection.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
