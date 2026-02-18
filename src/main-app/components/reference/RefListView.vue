@@ -6,7 +6,7 @@
           <th class="col-icon"></th>
           <th class="col-name">Name</th>
           <th class="col-size">Size</th>
-          <th class="col-modified">Modified</th>
+          <th class="col-modified">Created</th>
           <th class="col-actions"></th>
         </tr>
       </thead>
@@ -23,15 +23,19 @@
           </td>
           <td class="col-name">{{ folder.name }}</td>
           <td class="col-size">&mdash;</td>
-          <td class="col-modified">{{ formatDate(folder.updated_at || folder.created_at) }}</td>
+          <td class="col-modified">{{ formatDate(folder.created_at) }}</td>
           <td class="col-actions" @click.stop>
             <Dropdown align="right" title="Folder actions">
               <template #trigger>
                 <button class="row-menu-btn" type="button">&#8230;</button>
               </template>
               <template #default="{ close }">
-                <button class="dropdown-item" @click="close(); $emit('rename-folder', folder)">Rename</button>
-                <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('delete-folder', folder)">Delete</button>
+                <button class="dropdown-item" @click="close(); $emit('rename-folder', folder)">
+                  <RenameIcon class="dropdown-item-icon" /> Rename
+                </button>
+                <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('delete-folder', folder)">
+                  <TrashIcon class="dropdown-item-icon" /> Delete
+                </button>
               </template>
             </Dropdown>
           </td>
@@ -49,16 +53,22 @@
           </td>
           <td class="col-name">{{ file.name }}</td>
           <td class="col-size">{{ formatSize(file.size) }}</td>
-          <td class="col-modified">{{ formatDate(file.updated_at || file.created_at) }}</td>
+          <td class="col-modified">{{ formatDate(file.created_at) }}</td>
           <td class="col-actions" @click.stop>
             <Dropdown align="right" title="File actions">
               <template #trigger>
                 <button class="row-menu-btn" type="button">&#8230;</button>
               </template>
               <template #default="{ close }">
-                <button class="dropdown-item" @click="close(); $emit('download-file', file)">Download</button>
-                <button class="dropdown-item" @click="close(); $emit('rename-file', file)">Rename</button>
-                <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash-file', file)">Move to Trash</button>
+                <button class="dropdown-item" @click="close(); $emit('download-file', file)">
+                  <DownloadIcon class="dropdown-item-icon" /> Download
+                </button>
+                <button class="dropdown-item" @click="close(); $emit('rename-file', file)">
+                  <RenameIcon class="dropdown-item-icon" /> Rename
+                </button>
+                <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash-file', file)">
+                  <TrashIcon class="dropdown-item-icon" /> Move to Trash
+                </button>
               </template>
             </Dropdown>
           </td>
@@ -76,6 +86,9 @@ import FolderIcon from '../../assets/FolderIcon.vue'
 import RefFileIcon from './RefFileIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import Btn from '../Btn.vue'
+import DownloadIcon from '../../assets/DownloadIcon.vue'
+import RenameIcon from '../../assets/RenameIcon.vue'
+import TrashIcon from '../../assets/TrashIcon.vue'
 
 defineProps({
   folders: {
@@ -230,11 +243,6 @@ function formatDate(dateStr) {
   display: flex;
   justify-content: center;
   padding: 16px;
-}
-
-/* Dropdown items with no icon need padding */
-.list-view :deep(.dropdown-item) {
-  padding: 8px 12px;
 }
 
 /* Hide size and modified columns on mobile */

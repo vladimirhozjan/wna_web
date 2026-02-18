@@ -9,10 +9,10 @@
         </template>
         <template #default="{ close }">
           <button class="dropdown-item" @click="close(); $emit('rename', folder)">
-            Rename
+            <RenameIcon class="dropdown-item-icon" /> Rename
           </button>
           <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('delete', folder)">
-            Delete
+            <TrashIcon class="dropdown-item-icon" /> Delete
           </button>
         </template>
       </Dropdown>
@@ -23,6 +23,8 @@
 <script setup>
 import FolderIcon from '../../assets/FolderIcon.vue'
 import Dropdown from '../Dropdown.vue'
+import RenameIcon from '../../assets/RenameIcon.vue'
+import TrashIcon from '../../assets/TrashIcon.vue'
 
 defineProps({
   folder: {
@@ -104,7 +106,4 @@ defineEmits(['navigate', 'rename', 'delete'])
   color: var(--color-text-primary);
 }
 
-.folder-card :deep(.dropdown-item) {
-  padding: 8px 12px;
-}
 </style>

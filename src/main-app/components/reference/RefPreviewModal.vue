@@ -1,41 +1,45 @@
 <template>
-  <Modal :visible="preview.visible" :title="preview.file?.name || ''" max-width="900px" @close="$emit('close')">
-    <div v-if="preview.loading" class="preview-loading">
-      <span class="spinner"></span>
-    </div>
-    <template v-else>
-      <img
-          v-if="isImage"
-          :src="preview.url"
-          :alt="preview.file?.name"
-          class="preview-image"
-      />
-      <iframe
-          v-else-if="isPdf"
-          :src="preview.url"
-          class="preview-iframe"
-      ></iframe>
-      <pre v-else-if="isText" class="preview-text">{{ preview.text }}</pre>
-      <div v-else class="preview-unsupported">
-        <FileIcon class="empty-state__icon" />
-        <h2 class="empty-state__title">Preview not available</h2>
-        <p class="empty-state__text">This file type cannot be previewed.</p>
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="preview.visible" class="preview-overlay" @keydown.esc="$emit('close')" tabindex="0" ref="overlayRef">
+        <div class="preview-header">
+          <span class="preview-filename">{{ preview.file?.name }}</span>
+          <div class="preview-header-actions">
+            <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
+            <Btn variant="icon" size="sm" class="preview-close-btn" @click="$emit('close')">&times;</Btn>
+          </div>
+        </div>
+        <div class="preview-body">
+          <div v-if="preview.loading" class="preview-loading">
+            <span class="spinner"></span>
+          </div>
+          <template v-else>
+            <img
+                v-if="isImage"
+                :src="preview.url"
+                :alt="preview.file?.name"
+                class="preview-image"
+            />
+            <iframe
+                v-else-if="isPdf"
+                :src="preview.url"
+                class="preview-iframe"
+            ></iframe>
+            <pre v-else-if="isText" class="preview-text">{{ preview.text }}</pre>
+            <div v-else class="preview-unsupported">
+              <FileIcon class="preview-unsupported-icon" />
+              <p>Preview not available for this file type.</p>
+              <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
+            </div>
+          </template>
+        </div>
       </div>
-    </template>
-    <template #actions>
-      <Btn variant="ghost" size="sm" @click="$emit('close')">
-        Close
-      </Btn>
-      <Btn variant="primary" size="sm" @click="$emit('download')">
-        Download
-      </Btn>
-    </template>
-  </Modal>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
-import {computed} from 'vue'
-import Modal from '../Modal.vue'
+import {computed, ref, watch, nextTick} from 'vue'
 import Btn from '../Btn.vue'
 import FileIcon from '../../assets/FileIcon.vue'
 
@@ -48,6 +52,16 @@ const props = defineProps({
 
 defineEmits(['close', 'download'])
 
+const overlayRef = ref(null)
+
+watch(() => props.preview.visible, (visible) => {
+  if (visible) {
+    nextTick(() => {
+      overlayRef.value?.focus()
+    })
+  }
+})
+
 const mime = computed(() => props.preview.file?.mime_type || '')
 
 const isImage = computed(() => mime.value.startsWith('image/'))
@@ -58,18 +72,73 @@ const isText = computed(() =>
 </script>
 
 <style scoped>
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.preview-filename {
+  color: #fff;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.preview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.preview-close-btn {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 24px;
+}
+
+.preview-close-btn:hover {
+  color: #fff;
+}
+
+.preview-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 20px;
+  min-height: 0;
+}
+
 .preview-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 200px;
 }
 
 .spinner {
-  width: 28px;
-  height: 28px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -80,66 +149,58 @@ const isText = computed(() =>
 
 .preview-image {
   max-width: 100%;
-  max-height: 60vh;
+  max-height: 100%;
   object-fit: contain;
   border-radius: 4px;
-  display: block;
 }
 
 .preview-iframe {
   width: 100%;
-  min-height: 500px;
+  height: 100%;
   border: none;
   border-radius: 4px;
+  background: #fff;
 }
 
 .preview-text {
   width: 100%;
-  min-height: 200px;
-  max-height: 60vh;
+  height: 100%;
   margin: 0;
-  padding: 16px;
-  background: var(--color-bg-secondary);
+  padding: 20px;
+  background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: monospace;
   font-size: var(--font-size-body-s);
   line-height: 1.6;
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  box-sizing: border-box;
 }
 
 .preview-unsupported {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: 8px;
-  padding: 24px 0;
-}
-
-.empty-state__icon {
-  width: 80px;
-  height: 80px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 8px;
-}
-
-.empty-state__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.empty-state__text {
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.7);
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
+}
+
+.preview-unsupported-icon {
+  width: 64px;
+  height: 64px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

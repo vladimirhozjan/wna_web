@@ -10,13 +10,13 @@
         </template>
         <template #default="{ close }">
           <button class="dropdown-item" @click="close(); $emit('download', file)">
-            Download
+            <DownloadIcon class="dropdown-item-icon" /> Download
           </button>
           <button class="dropdown-item" @click="close(); $emit('rename', file)">
-            Rename
+            <RenameIcon class="dropdown-item-icon" /> Rename
           </button>
           <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash', file)">
-            Move to Trash
+            <TrashIcon class="dropdown-item-icon" /> Move to Trash
           </button>
         </template>
       </Dropdown>
@@ -27,6 +27,9 @@
 <script setup>
 import RefFileIcon from './RefFileIcon.vue'
 import Dropdown from '../Dropdown.vue'
+import DownloadIcon from '../../assets/DownloadIcon.vue'
+import RenameIcon from '../../assets/RenameIcon.vue'
+import TrashIcon from '../../assets/TrashIcon.vue'
 
 defineProps({
   file: {
@@ -83,8 +86,8 @@ function formatSize(bytes) {
 
 .file-card__size {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
-  color: var(--color-text-tertiary);
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
 }
 
 .file-card__actions {
@@ -121,7 +124,4 @@ function formatSize(bytes) {
   color: var(--color-text-primary);
 }
 
-.file-card :deep(.dropdown-item) {
-  padding: 8px 12px;
-}
 </style>

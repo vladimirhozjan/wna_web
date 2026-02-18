@@ -322,6 +322,13 @@ async function onDeleteFolder(folder) {
 }
 
 async function onTrashFile(file) {
+  const confirmed = await confirm.show({
+    title: 'Move to Trash',
+    message: `Are you sure you want to move "${file.name}" to trash?`,
+    confirmText: 'Move to Trash',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
   try {
     await model.trashFile(file.id)
     toaster.success(`"${file.name}" moved to trash`)
