@@ -210,10 +210,17 @@ function formatBytes(bytes) {
   .toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
   }
 
   .toolbar__right {
-    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .toolbar__search {
+    flex: 1 1 100%;
+    order: -1;
   }
 
   .search-input {

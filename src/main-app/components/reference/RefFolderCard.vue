@@ -1,7 +1,7 @@
 <template>
   <div class="folder-card" @click="$emit('navigate', folder.id)">
     <FolderIcon class="folder-card__icon" />
-    <span class="folder-card__name" :title="folder.name">{{ folder.name }}</span>
+    <FileName class="folder-card__name" :name="folder.name" />
     <div class="folder-card__actions" @click.stop>
       <Dropdown align="right" title="Folder actions">
         <template #trigger>
@@ -22,6 +22,7 @@
 
 <script setup>
 import FolderIcon from '../../assets/FolderIcon.vue'
+import FileName from './FileName.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
@@ -67,9 +68,6 @@ defineEmits(['navigate', 'rename', 'delete'])
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   max-width: 100%;
 }
 
