@@ -1,7 +1,7 @@
 <template>
   <div class="file-card" @click="$emit('preview', file)">
     <RefFileIcon class="file-card__icon" :mime-type="file.mime_type" />
-    <span class="file-card__name" :title="file.name">{{ file.name }}</span>
+    <FileName class="file-card__name" :name="file.name" />
     <span class="file-card__size">{{ formatSize(file.size_bytes) }}</span>
     <div class="file-card__actions" @click.stop>
       <Dropdown align="right" title="File actions">
@@ -26,6 +26,7 @@
 
 <script setup>
 import RefFileIcon from './RefFileIcon.vue'
+import FileName from './FileName.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
@@ -79,9 +80,6 @@ function formatSize(bytes) {
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   max-width: 100%;
 }
 

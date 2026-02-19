@@ -4,22 +4,11 @@
       <!-- Header with title and tabs -->
       <div class="ref-header">
         <h1 class="text-h1 color-text-primary">Reference</h1>
-        <div class="ref-tabs">
-          <button
-              class="ref-tab"
-              :class="{ 'ref-tab--active': activeTab === 'files' }"
-              @click="switchTab('files')"
-          >
-            Files
-          </button>
-          <button
-              class="ref-tab"
-              :class="{ 'ref-tab--active': activeTab === 'trash' }"
-              @click="switchTab('trash')"
-          >
-            Trash
-          </button>
-        </div>
+        <SegmentSwitch
+            :options="[{ value: 'files', label: 'Files' }, { value: 'trash', label: 'Trash' }]"
+            :model-value="activeTab"
+            @update:model-value="switchTab"
+        />
       </div>
 
       <!-- Files Tab -->
@@ -143,7 +132,7 @@
             </thead>
             <tbody>
               <tr v-for="file in trashModel_.files.value" :key="file.id" class="trash-row">
-                <td class="col-name">{{ file.name }}</td>
+                <td class="col-name"><FileName :name="file.name" /></td>
                 <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
                 <td class="col-actions">
                   <Btn variant="link" size="sm" @click="onRestoreFile(file)">Restore</Btn>
@@ -189,6 +178,8 @@ import ReferenceIcon from '../assets/ReferenceIcon.vue'
 import TrashIcon from '../assets/TrashIcon.vue'
 import {referenceModel} from '../scripts/referenceModel.js'
 import {referenceTrashModel} from '../scripts/referenceTrashModel.js'
+import SegmentSwitch from '../components/SegmentSwitch.vue'
+import FileName from '../components/reference/FileName.vue'
 import {errorModel} from '../scripts/errorModel.js'
 import {confirmModel} from '../scripts/confirmModel.js'
 
@@ -428,33 +419,6 @@ function formatSize(bytes) {
   margin: 0;
 }
 
-.ref-tabs {
-  display: flex;
-  gap: 4px;
-}
-
-.ref-tab {
-  background: none;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.ref-tab:hover {
-  background: var(--color-bg-hover);
-}
-
-.ref-tab--active {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
 
 .ref-content {
   flex: 1;
@@ -596,6 +560,7 @@ function formatSize(bytes) {
 .trash-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
 }
@@ -615,14 +580,35 @@ function formatSize(bytes) {
   color: var(--color-text-primary);
 }
 
-.trash-row .col-size {
-  color: var(--color-text-secondary);
+.trash-table .col-name {
+  overflow: hidden;
+}
+
+.trash-table .col-name :deep(.filename) {
+  display: flex;
+  width: 100%;
+}
+
+.trash-table .col-size {
   width: 80px;
 }
 
-.trash-row .col-actions {
+.trash-table .col-actions {
   width: 160px;
+}
+
+.trash-row .col-size {
+  color: var(--color-text-secondary);
+}
+
+.trash-row .col-actions {
   white-space: nowrap;
+  text-align: right;
+  padding-right: 4px;
+}
+
+.trash-table thead .col-actions {
+  text-align: right;
 }
 
 .danger-link {
@@ -636,12 +622,12 @@ function formatSize(bytes) {
 }
 
 @media (max-width: 600px) {
-  .trash-row .col-size {
+  .trash-table .col-size {
     display: none;
   }
 
-  .trash-table thead .col-size {
-    display: none;
+  .trash-table .col-actions {
+    width: 120px;
   }
 }
 </style>

@@ -21,7 +21,7 @@
           <td class="col-icon">
             <FolderIcon class="row-icon row-icon--folder" />
           </td>
-          <td class="col-name">{{ folder.name }}</td>
+          <td class="col-name"><FileName :name="folder.name" /></td>
           <td class="col-size">&mdash;</td>
           <td class="col-modified">{{ formatDate(folder.created_at) }}</td>
           <td class="col-actions" @click.stop>
@@ -51,7 +51,7 @@
           <td class="col-icon">
             <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
           </td>
-          <td class="col-name">{{ file.name }}</td>
+          <td class="col-name"><FileName :name="file.name" /></td>
           <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
           <td class="col-modified">{{ formatDate(file.created_at) }}</td>
           <td class="col-actions" @click.stop>
@@ -84,6 +84,7 @@
 <script setup>
 import FolderIcon from '../../assets/FolderIcon.vue'
 import RefFileIcon from './RefFileIcon.vue'
+import FileName from './FileName.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import Btn from '../Btn.vue'
@@ -146,6 +147,7 @@ function formatDate(dateStr) {
 .list-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
 }
@@ -181,10 +183,12 @@ function formatDate(dateStr) {
 }
 
 .col-name {
-  min-width: 200px;
-  max-width: 400px;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.col-name :deep(.filename) {
+  display: flex;
+  width: 100%;
 }
 
 .col-size {
