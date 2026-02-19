@@ -97,7 +97,7 @@
       <template v-if="activeTab === 'trash'">
         <div class="trash-toolbar">
           <Btn
-              variant="ghost-danger"
+              variant="ghost"
               size="sm"
               @click="onEmptyTrash"
               :disabled="trashModel_.files.value.length === 0"

@@ -131,8 +131,8 @@ export function authModel() {
         }
     }
 
-    function logoutUser() {
-        apiClient.logoutUser()
+    async function logoutUser() {
+        await apiClient.logoutUser()
         currentUser.value = null
 
         localStorage.removeItem('current_user')
@@ -168,7 +168,7 @@ export function authModel() {
             cancelText: 'Cancel',
         })
         if (!confirmed) return false
-        logoutUser()
+        await logoutUser()
         return true
     }
 

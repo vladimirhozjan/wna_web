@@ -301,7 +301,19 @@ export async function inboxCount() {
     }
 }
 
-export function logoutUser() {
+export async function logoutUser() {
+    // Revoke the current session on the server before clearing local state
+    const refreshToken = localStorage.getItem('refresh_token')
+    if (refreshToken) {
+        try {
+            await httpApi.post('/v1/user/logout', {refresh_token: refreshToken}, {
+                headers: {'Authorization': `Bearer ${refreshToken}`}
+            })
+        } catch {
+            // Server revocation failed — still clear local state
+        }
+    }
+
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
     delete httpApi.defaults.headers.Authorization

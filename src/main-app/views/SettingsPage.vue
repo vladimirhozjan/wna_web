@@ -596,7 +596,7 @@ async function onLogout() {
   if (!confirmed) return
 
   loggingOut.value = true
-  auth.logoutUser()
+  await auth.logoutUser()
   router.push({ name: 'login' })
 }
 </script>
