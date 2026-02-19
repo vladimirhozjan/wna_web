@@ -68,12 +68,12 @@ export function projectModel() {
         }
     }
 
-    async function addProject(title, description = '') {
+    async function addProject(title, description = '', outcome = '') {
         loading.value = true
         error.value = null
 
         try {
-            const created = await apiClient.addProject({ title, description })
+            const created = await apiClient.addProject({ title, description, outcome })
             await loadProjects({ reset: true })
             return created
         } catch (err) {

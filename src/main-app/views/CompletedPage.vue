@@ -155,7 +155,7 @@ async function onItemCheck(id, checked) {
   justify-content: space-between;
   align-items: center;
   background: var(--color-bg-primary);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .completed-header h1 {

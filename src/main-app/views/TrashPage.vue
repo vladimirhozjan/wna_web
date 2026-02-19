@@ -140,7 +140,7 @@ async function onEmptyTrash() {
   justify-content: space-between;
   align-items: center;
   background: var(--color-bg-primary);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .trash-header h1 {

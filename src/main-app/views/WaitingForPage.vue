@@ -2,7 +2,37 @@
   <DashboardLayout>
     <div class="waiting-page">
       <div class="waiting-header">
-        <h1 class="text-h1 color-text-primary">Waiting For</h1>
+        <div class="header-row">
+          <h1 class="text-h1 color-text-primary">Waiting For</h1>
+          <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+        </div>
+        <div class="add-input" v-if="showAdd">
+          <div class="add-fields">
+            <Inpt
+                ref="add_input"
+                v-model="newTitle"
+                type="text"
+                placeholder="Add new action"
+                @keyup.enter="onAdd"
+                :disabled="loading"
+            />
+            <Inpt
+                v-model="newWaitingFor"
+                type="text"
+                placeholder="Waiting for..."
+                @keyup.enter="onAdd"
+                :disabled="loading"
+            />
+          </div>
+          <Btn @click="onAdd"
+               :disabled="loading || !newTitle.trim() || !newWaitingFor.trim()"
+               :loading="loading"
+               class="add-button"
+               variant="primary"
+               size="sm">
+            Add
+          </Btn>
+        </div>
       </div>
 
       <div class="waiting-content">
@@ -40,11 +70,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import Btn from '../components/Btn.vue'
+import Inpt from '../components/Inpt.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
 import { waitingModel } from '../scripts/waitingModel.js'
 import { errorModel } from '../scripts/errorModel.js'
@@ -59,6 +91,7 @@ const {
   hasMore,
   totalItems,
   loadWaiting,
+  addWaiting,
   updateWaiting,
   trashWaiting,
   moveWaiting,
@@ -67,6 +100,11 @@ const {
 
 const toaster = errorModel()
 const confirm = confirmModel()
+
+const showAdd = ref(false)
+const newTitle = ref('')
+const newWaitingFor = ref('')
+const add_input = ref(null)
 
 const updatingId = ref(null)
 const deletingId = ref(null)
@@ -93,6 +131,20 @@ onMounted(() => {
 async function loadMore() {
   await loadWaiting()
 }
+
+async function onAdd() {
+  const t = newTitle.value.trim()
+  const w = newWaitingFor.value.trim()
+  if (!t || !w) return
+  await addWaiting(t, w)
+  newTitle.value = ''
+  newWaitingFor.value = ''
+  nextTick(() => add_input.value?.focus())
+}
+
+watch(showAdd, (v) => {
+  if (v) nextTick(() => add_input.value?.focus())
+})
 
 function onItemClick(item, index) {
   router.push({
@@ -199,11 +251,36 @@ async function onMove(id, newIndex) {
 .waiting-header {
   flex-shrink: 0;
   background: var(--color-bg-primary);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 10px;
 }
 
 h1 {
   padding: 10px;
+}
+
+.add-input {
+  display: flex;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.add-fields {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 4px;
+}
+
+.add-button {
+  margin-top: 8px;
+  margin-bottom: 4px;
 }
 
 .waiting-content {

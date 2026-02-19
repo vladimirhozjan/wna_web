@@ -2,7 +2,37 @@
   <DashboardLayout>
     <div class="projects-page">
       <div class="projects-header">
-        <h1 class="text-h1 color-text-primary">Projects</h1>
+        <div class="header-row">
+          <h1 class="text-h1 color-text-primary">Projects</h1>
+          <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+        </div>
+        <div class="add-input" v-if="showAdd">
+          <div class="add-fields">
+            <Inpt
+                ref="add_input"
+                v-model="newTitle"
+                type="text"
+                placeholder="Add new project"
+                @keyup.enter="onAdd"
+                :disabled="loading"
+            />
+            <Inpt
+                v-model="newOutcome"
+                type="text"
+                placeholder="Outcome"
+                @keyup.enter="onAdd"
+                :disabled="loading"
+            />
+          </div>
+          <Btn @click="onAdd"
+               :disabled="loading || !newTitle.trim() || !newOutcome.trim()"
+               :loading="loading"
+               class="add-button"
+               variant="primary"
+               size="sm">
+            Add
+          </Btn>
+        </div>
       </div>
 
       <div class="projects-content">
@@ -36,11 +66,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import Btn from '../components/Btn.vue'
+import Inpt from '../components/Inpt.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
@@ -55,6 +87,7 @@ const {
   hasMore,
   totalItems,
   loadProjects,
+  addProject,
   updateProject,
   trashProject,
   moveProject,
@@ -62,6 +95,11 @@ const {
 
 const toaster = errorModel()
 const confirm = confirmModel()
+
+const showAdd = ref(false)
+const newTitle = ref('')
+const newOutcome = ref('')
+const add_input = ref(null)
 
 const updatingId = ref(null)
 const deletingId = ref(null)
@@ -88,6 +126,20 @@ onMounted(() => {
 async function loadMore() {
   await loadProjects()
 }
+
+async function onAdd() {
+  const t = newTitle.value.trim()
+  const o = newOutcome.value.trim()
+  if (!t || !o) return
+  await addProject(t, '', o)
+  newTitle.value = ''
+  newOutcome.value = ''
+  nextTick(() => add_input.value?.focus())
+}
+
+watch(showAdd, (v) => {
+  if (v) nextTick(() => add_input.value?.focus())
+})
 
 function onItemClick(item, index) {
   router.push({
@@ -165,11 +217,36 @@ async function onMove(id, newIndex) {
 .projects-header {
   flex-shrink: 0;
   background: var(--color-bg-primary);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 10px;
 }
 
 h1 {
   padding: 10px;
+}
+
+.add-input {
+  display: flex;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.add-fields {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 4px;
+}
+
+.add-button {
+  margin-top: 8px;
+  margin-bottom: 4px;
 }
 
 .projects-content {

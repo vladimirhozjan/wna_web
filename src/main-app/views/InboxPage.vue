@@ -366,7 +366,7 @@ function onClarifyDone(processedItem) {
 .inbox-header {
   flex-shrink: 0;
   background: var(--color-bg-primary);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   border-right: 1px solid var(--color-border-light);
 }
 

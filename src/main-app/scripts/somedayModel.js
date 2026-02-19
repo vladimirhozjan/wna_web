@@ -129,6 +129,23 @@ export function somedayModel() {
         }
     }
 
+    async function addSomeday(title) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const created = await apiClient.addStuff({ title })
+            await apiClient.clarifyToSomeday(created.id)
+            await loadSomeday({ reset: true })
+            return created
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
     async function moveItem(itemId, toIndex) {
         error.value = null
 
@@ -149,6 +166,7 @@ export function somedayModel() {
         hasMore,
 
         loadSomeday,
+        addSomeday,
         activateItem,
         trashItem,
         updateItem,

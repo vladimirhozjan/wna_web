@@ -2,7 +2,28 @@
   <DashboardLayout>
     <div class="next-page">
       <div class="next-header">
-        <h1 class="text-h1 color-text-primary">Next</h1>
+        <div class="header-row">
+          <h1 class="text-h1 color-text-primary">Next</h1>
+          <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+        </div>
+        <div class="add-input" v-if="showAdd">
+          <Inpt
+              ref="add_input"
+              v-model="newTitle"
+              type="text"
+              placeholder="Add new action"
+              @keyup.enter="onAdd"
+              :disabled="loading"
+          />
+          <Btn @click="onAdd"
+               :disabled="loading || !newTitle.trim()"
+               :loading="loading"
+               class="add-button"
+               variant="primary"
+               size="sm">
+            Add
+          </Btn>
+        </div>
       </div>
 
       <div class="next-content">
@@ -36,11 +57,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import Btn from '../components/Btn.vue'
+import Inpt from '../components/Inpt.vue'
 import ActionIcon from '../assets/ActionIcon.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { errorModel } from '../scripts/errorModel.js'
@@ -55,6 +78,7 @@ const {
   hasMore,
   totalItems,
   loadActions,
+  addAction,
   updateAction,
   trashAction,
   moveAction,
@@ -63,6 +87,10 @@ const {
 
 const toaster = errorModel()
 const confirm = confirmModel()
+
+const showAdd = ref(false)
+const newTitle = ref('')
+const add_input = ref(null)
 
 const updatingId = ref(null)
 const deletingId = ref(null)
@@ -89,6 +117,18 @@ onMounted(() => {
 async function loadMore() {
   await loadActions()
 }
+
+async function onAdd() {
+  const t = newTitle.value.trim()
+  if (!t) return
+  await addAction(t)
+  newTitle.value = ''
+  nextTick(() => add_input.value?.focus())
+}
+
+watch(showAdd, (v) => {
+  if (v) nextTick(() => add_input.value?.focus())
+})
 
 function onItemClick(item, index) {
   router.push({
@@ -177,11 +217,29 @@ async function onMove(id, newIndex) {
 .next-header {
   flex-shrink: 0;
   background: var(--color-bg-primary);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 10px;
 }
 
 h1 {
   padding: 10px;
+}
+
+.add-input {
+  display: flex;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.add-button {
+  margin-top: 8px;
+  margin-bottom: 4px;
 }
 
 .next-content {
