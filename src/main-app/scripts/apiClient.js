@@ -1236,6 +1236,77 @@ export async function createComment(entityType, itemId, message) {
     }
 }
 
+// ── Attachments API ──
+
+export async function listAttachments(entityType, itemId) {
+    try {
+        const res = await httpApi.get(`/v1/${entityType}/${itemId}/attachments`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function uploadAttachment(entityType, itemId, file, onProgress = null) {
+    try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await httpApi.post(`/v1/${entityType}/${itemId}/attachments`, formData, {
+            headers: {...authHeaders(), 'Content-Type': 'multipart/form-data'},
+            onUploadProgress: onProgress ? (e) => {
+                const pct = Math.round((e.loaded * 100) / (e.total || 1))
+                onProgress(pct)
+            } : undefined,
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function downloadAttachment(entityType, itemId, attachmentId) {
+    try {
+        const res = await httpApi.get(
+            `/v1/${entityType}/${itemId}/attachments/${attachmentId}/download`,
+            {headers: authHeaders(), responseType: 'blob'}
+        )
+        return res
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function replaceAttachment(entityType, itemId, attachmentId, file, onProgress = null) {
+    try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await httpApi.put(
+            `/v1/${entityType}/${itemId}/attachments/${attachmentId}`, formData,
+            {
+                headers: {...authHeaders(), 'Content-Type': 'multipart/form-data'},
+                onUploadProgress: onProgress ? (e) => {
+                    const pct = Math.round((e.loaded * 100) / (e.total || 1))
+                    onProgress(pct)
+                } : undefined,
+            }
+        )
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteAttachment(entityType, itemId, attachmentId) {
+    try {
+        await httpApi.delete(
+            `/v1/${entityType}/${itemId}/attachments/${attachmentId}`,
+            {headers: authHeaders()}
+        )
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Settings API ──
 
 export async function getSettings() {
@@ -1367,6 +1438,12 @@ const apiClient = {
     // Comments API
     listComments,
     createComment,
+    // Attachments API
+    listAttachments,
+    uploadAttachment,
+    downloadAttachment,
+    replaceAttachment,
+    deleteAttachment,
 }
 
 export default apiClient

@@ -345,6 +345,9 @@
           </div>
         </div>
 
+        <!-- Attachments section -->
+        <AttachmentSection v-if="action.id" :entity-type="'action'" :item-id="action.id" />
+
         <!-- Comments section -->
         <CommentSection v-if="action.id" :entity-type="'action'" :item-id="action.id" />
 
@@ -376,6 +379,7 @@ import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
 import TagInput from '../components/TagInput.vue'
 import CommentSection from '../components/CommentSection.vue'
+import AttachmentSection from '../components/AttachmentSection.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { todayModel } from '../scripts/todayModel.js'
 import { waitingModel } from '../scripts/waitingModel.js'

@@ -164,6 +164,9 @@
           </div>
         </div>
 
+        <!-- Attachments section -->
+        <AttachmentSection v-if="item.id" :entity-type="'stuff'" :item-id="item.id" />
+
         <!-- Comments section -->
         <CommentSection v-if="item.id" :entity-type="'stuff'" :item-id="item.id" />
 
@@ -218,6 +221,7 @@ import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
 import ClarifyPanel from '../components/ClarifyPanel.vue'
 import CommentSection from '../components/CommentSection.vue'
+import AttachmentSection from '../components/AttachmentSection.vue'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'

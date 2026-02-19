@@ -377,6 +377,9 @@
           </div>
         </div>
 
+        <!-- Attachments section -->
+        <AttachmentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" />
+
         <!-- Comments section -->
         <CommentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" />
 
@@ -409,6 +412,7 @@ import Dropdown from '../components/Dropdown.vue'
 import ActionBtn from '../components/ActionBtn.vue'
 import TagInput from '../components/TagInput.vue'
 import CommentSection from '../components/CommentSection.vue'
+import AttachmentSection from '../components/AttachmentSection.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
