@@ -183,6 +183,42 @@
           </div>
         </div>
 
+        <!-- Tags section -->
+        <div class="detail-section-area">
+          <label class="detail-section-label">Tags</label>
+          <div class="detail-section-wrapper">
+            <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
+              <span v-if="action.tags && action.tags.length > 0" class="detail-tags-chips">
+                <span v-for="tag in action.tags" :key="tag" class="detail-tag-chip">{{ tag }}</span>
+              </span>
+              <span v-else class="detail-section-content detail-section-content--empty">Add tags...</span>
+            </div>
+            <template v-else>
+              <TagInput
+                  v-model="editTags"
+                  :disabled="savingField === 'tags'"
+              />
+              <div class="detail-section-actions">
+                <Btn
+                    variant="primary"
+                    size="sm"
+                    :disabled="savingField === 'tags'"
+                    :loading="savingField === 'tags'"
+                    @mousedown.prevent
+                    @click="saveTags"
+                >Save</Btn>
+                <Btn
+                    variant="ghost"
+                    size="sm"
+                    :disabled="savingField === 'tags'"
+                    @mousedown.prevent
+                    @click="cancelEdit"
+                >Cancel</Btn>
+              </div>
+            </template>
+          </div>
+        </div>
+
         <!-- Waiting For section (only for WAITING state) -->
         <div v-if="isWaiting" class="detail-section-area">
           <label class="detail-section-label">Waiting on</label>
@@ -335,6 +371,7 @@ import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
+import TagInput from '../components/TagInput.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
 import { todayModel } from '../scripts/todayModel.js'
 import { waitingModel } from '../scripts/waitingModel.js'
@@ -342,6 +379,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, todayAction, activateAction } from '../scripts/apiClient.js'
 import { moveModel } from '../scripts/moveModel.js'
+import { tagModel } from '../scripts/tagModel.js'
 import ActionIcon from '../assets/ActionIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import TodayIcon from '../assets/TodayIcon.vue'
@@ -355,6 +393,7 @@ const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
 const mover = moveModel()
+const tagMdl = tagModel()
 
 const nextModel = nextActionModel()
 const todayMdl = todayModel()
@@ -382,6 +421,9 @@ const titleInput = ref(null)
 const descriptionInput = ref(null)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
+
+// Tags state
+const editTags = ref([])
 
 // Date section state
 const datesExpanded = ref(false)
@@ -556,6 +598,39 @@ async function saveField(field) {
         descriptionInput.value?.focus()
       }
     }, 100)
+  } finally {
+    savingField.value = null
+  }
+}
+
+function startTagEdit() {
+  if (savingField.value) return
+  editingField.value = 'tags'
+  editTags.value = [...(action.value.tags || [])]
+}
+
+async function saveTags() {
+  if (editingField.value !== 'tags' || savingField.value) return
+
+  const newTags = [...editTags.value]
+  const oldTags = action.value.tags || []
+
+  // No change
+  if (JSON.stringify(newTags) === JSON.stringify(oldTags)) {
+    editingField.value = null
+    return
+  }
+
+  action.value.tags = newTags
+  savingField.value = 'tags'
+
+  try {
+    await updateAction(action.value.id, { title: action.value.title, tags: newTags })
+    tagMdl.addToCache(newTags)
+    editingField.value = null
+  } catch {
+    action.value.tags = oldTags
+    toaster.push('Failed to save tags')
   } finally {
     savingField.value = null
   }
@@ -1725,6 +1800,39 @@ async function onActivate() {
     flex: 1;
     width: auto;
   }
+}
+
+/* ── Tags section ── */
+.detail-tags-display {
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 4px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.detail-tags-display:hover {
+  background: var(--color-bg-secondary);
+}
+
+.detail-tags-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  line-height: 1.4;
 }
 
 /* ── Waiting For section ── */

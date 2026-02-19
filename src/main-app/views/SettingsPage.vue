@@ -106,6 +106,24 @@
           </div>
         </div>
 
+        <!-- Tags Section -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Tags</h2>
+          <div class="settings-row settings-row--column">
+            <span class="settings-label">Quick-add presets</span>
+            <span class="settings-hint">These appear as clickable suggestions below the tag input. Leave empty to use defaults.</span>
+            <div v-if="!editingTagPresets" class="settings-tags-display" @click="startTagPresetsEdit">
+              <span v-if="settings.state.tagPresets.length > 0" class="settings-tags-chips">
+                <span v-for="tag in settings.state.tagPresets" :key="tag" class="settings-tag-chip">{{ tag }}</span>
+              </span>
+              <span v-else class="settings-tag-placeholder">Add preset tags...</span>
+            </div>
+            <div v-else class="settings-tag-edit-area" @focusout="onTagPresetsFocusout">
+              <TagInput ref="tagPresetsInput" v-model="editTagPresets" placeholder="Add preset tags..." :presetSource="defaultPresets" />
+            </div>
+          </div>
+        </div>
+
         <!-- Calendar Section -->
         <div class="settings-section">
           <h2 class="settings-section-title">Calendar</h2>
@@ -257,6 +275,8 @@ import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
 import ActionBtn from '../components/ActionBtn.vue'
 import Select from '../components/Select.vue'
+import TagInput from '../components/TagInput.vue'
+import { DEFAULT_PRESETS } from '../scripts/tagModel.js'
 import { authModel } from '../scripts/authModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -282,6 +302,41 @@ const addPosition = computed({
   get: () => settings.state.newItemsPosition,
   set: (val) => settings.setNewItemsPosition(val).catch(err => toaster.push('Failed to save setting'))
 })
+
+const editingTagPresets = ref(false)
+const editTagPresets = ref([])
+const tagPresetsInput = ref(null)
+const defaultPresets = DEFAULT_PRESETS
+
+function startTagPresetsEdit() {
+  editTagPresets.value = [...settings.state.tagPresets]
+  editingTagPresets.value = true
+  nextTick(() => {
+    tagPresetsInput.value?.focus()
+  })
+}
+
+function onTagPresetsFocusout(e) {
+  // Check if focus moved outside the edit area
+  const editArea = e.currentTarget
+  setTimeout(() => {
+    if (!editArea.contains(document.activeElement)) {
+      saveAndCloseTagPresets()
+    }
+  }, 0)
+}
+
+async function saveAndCloseTagPresets() {
+  const newValue = [...editTagPresets.value]
+  editingTagPresets.value = false
+  if (JSON.stringify(newValue) === JSON.stringify(settings.state.tagPresets)) return
+  try {
+    await settings.setTagPresets(newValue)
+  } catch {
+    toaster.push('Failed to save setting')
+  }
+}
+
 
 const debugMode = computed({
   get: () => settings.state.debugEnabled,
@@ -643,6 +698,58 @@ async function onLogout() {
 .settings-control--saving > *:not(.settings-saving-spinner) {
   opacity: 0.5;
 }
+
+.settings-hint {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-tertiary);
+  line-height: 1.4;
+}
+
+.settings-tags-display {
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.settings-tags-display:hover {
+  background: var(--color-bg-secondary);
+}
+
+.settings-tags-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.settings-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.settings-tag-placeholder {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.settings-tag-edit-area {
+  width: 100%;
+}
+
 
 .settings-days-control {
   position: relative;

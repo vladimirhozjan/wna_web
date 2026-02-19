@@ -38,6 +38,7 @@ export function clarifyModel() {
         actionData: {
             title: '',
             description: '',
+            tags: [],
             deferType: null,
             deferDate: null,
             deferTime: null,
@@ -50,6 +51,7 @@ export function clarifyModel() {
             outcome: '',
             nextActionTitle: '',
             description: '',
+            tags: [],
         },
 
         // UI state
@@ -88,6 +90,7 @@ export function clarifyModel() {
         state.actionData = {
             title: '',
             description: '',
+            tags: [],
             deferType: null,
             deferDate: null,
             deferTime: null,
@@ -100,6 +103,7 @@ export function clarifyModel() {
             outcome: '',
             nextActionTitle: '',
             description: '',
+            tags: [],
         }
         state.loading = false
         state.error = null

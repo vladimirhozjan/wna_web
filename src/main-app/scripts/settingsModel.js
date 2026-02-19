@@ -12,6 +12,9 @@ const DEFAULTS = {
         business_hours_end: '17:00',
         business_days: ['mon', 'tue', 'wed', 'thu', 'fri'],
     },
+    tags: {
+        presets: [], // empty = use tagModel defaults
+    },
     debug: {
         enabled: false,
     },
@@ -36,6 +39,9 @@ export function settingsModel() {
         businessHoursEnd: 17,
         businessDays: [1, 2, 3, 4, 5], // 0=Sun, 1=Mon, ...
 
+        // Tag settings
+        tagPresets: [],
+
         // Debug settings
         debugEnabled: false,
 
@@ -51,6 +57,7 @@ export function settingsModel() {
             businessHoursStart: false,
             businessHoursEnd: false,
             businessDays: false,
+            tagPresets: false,
             debugEnabled: false,
         },
     })
@@ -90,6 +97,9 @@ export function settingsModel() {
             state.businessHoursEnd = parseHour(settings.calendar.business_hours_end)
             state.businessDays = dayNamesToNumbers(settings.calendar.business_days)
         }
+        if (settings.tags) {
+            state.tagPresets = Array.isArray(settings.tags.presets) ? settings.tags.presets : []
+        }
         if (settings.debug) {
             state.debugEnabled = settings.debug.enabled ?? DEFAULTS.debug.enabled
         }
@@ -105,6 +115,7 @@ export function settingsModel() {
         state.businessHoursStart = parseInt(localStorage.getItem('calendar_business_hours_start')) || 9
         state.businessHoursEnd = parseInt(localStorage.getItem('calendar_business_hours_end')) || 17
         state.businessDays = JSON.parse(localStorage.getItem('calendar_business_days') || '[1,2,3,4,5]')
+        state.tagPresets = JSON.parse(localStorage.getItem('tag_presets') || '[]')
         state.debugEnabled = localStorage.getItem('debug-window') !== null
     }
 
@@ -119,6 +130,8 @@ export function settingsModel() {
         localStorage.setItem('calendar_business_hours_start', state.businessHoursStart.toString())
         localStorage.setItem('calendar_business_hours_end', state.businessHoursEnd.toString())
         localStorage.setItem('calendar_business_days', JSON.stringify(state.businessDays))
+
+        localStorage.setItem('tag_presets', JSON.stringify(state.tagPresets))
 
         if (state.debugEnabled) {
             localStorage.setItem('debug-window', 'true')
@@ -241,6 +254,23 @@ export function settingsModel() {
         }
     }
 
+    // Update tag settings
+    async function setTagPresets(value) {
+        const oldValue = [...state.tagPresets]
+        state.tagPresets = value
+        state.saving.tagPresets = true
+        saveToLocalStorage()
+        try {
+            await save('tags', { presets: value })
+        } catch (err) {
+            state.tagPresets = oldValue
+            saveToLocalStorage()
+            throw err
+        } finally {
+            state.saving.tagPresets = false
+        }
+    }
+
     // Update debug settings
     async function setDebugEnabled(value) {
         const oldValue = state.debugEnabled
@@ -283,6 +313,7 @@ export function settingsModel() {
         setBusinessHoursStart,
         setBusinessHoursEnd,
         setBusinessDays,
+        setTagPresets,
         setDebugEnabled,
         getCalendarSettings,
     }

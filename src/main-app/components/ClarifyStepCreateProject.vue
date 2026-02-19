@@ -40,6 +40,11 @@
         ></textarea>
       </div>
 
+      <div class="clarify-field">
+        <label class="clarify-label">Tags</label>
+        <TagInput v-model="form.tags" placeholder="Add context tags (optional)" />
+      </div>
+
       <div class="clarify-form-actions">
         <Btn
             type="submit"
@@ -57,6 +62,7 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import Btn from './Btn.vue'
+import TagInput from './TagInput.vue'
 
 const props = defineProps({
   initialData: {
@@ -73,6 +79,7 @@ const form = reactive({
   title: props.initialData.title || '',
   outcome: props.initialData.outcome || '',
   description: props.initialData.description || '',
+  tags: props.initialData.tags || [],
 })
 
 onMounted(() => {
@@ -85,6 +92,7 @@ function onSubmit() {
     title: form.title.trim(),
     outcome: form.outcome.trim(),
     description: form.description.trim(),
+    tags: form.tags,
   })
 }
 </script>

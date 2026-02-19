@@ -316,6 +316,7 @@ export async function clarifyToAction(stuffId, actionData) {
             title: actionData.title,
         }
         if (actionData.description) body.description = actionData.description
+        if (actionData.tags?.length) body.tags = actionData.tags
 
         // Deferred dates
         if (actionData.deferType === 'scheduled' && actionData.deferDate) {
@@ -354,6 +355,7 @@ export async function clarifyToProject(stuffId, projectData) {
         }
         if (projectData.description) body.description = projectData.description
         if (projectData.outcome) body.outcome = projectData.outcome
+        if (projectData.tags?.length) body.tags = projectData.tags
 
         const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, {headers: authHeaders()})
         return res.data
@@ -405,7 +407,7 @@ export async function addAction(data) {
         if (data.waiting_for) body.waiting_for = data.waiting_for
         if (data.waiting_since) body.waiting_since = data.waiting_since
         if (data.comments_json) body.comments_json = data.comments_json
-        if (data.tags) body.tags = data.tags
+        if (data.tags !== undefined) body.tags = data.tags
 
         const res = await httpApi.post('/v1/action', body, {headers: authHeaders()})
         return res.data
@@ -430,7 +432,7 @@ export async function updateAction(actionId, data) {
         if (data.waiting_for) body.waiting_for = data.waiting_for
         if (data.waiting_since) body.waiting_since = data.waiting_since
         if (data.comments_json) body.comments_json = data.comments_json
-        if (data.tags) body.tags = data.tags
+        if (data.tags !== undefined) body.tags = data.tags
 
         const res = await httpApi.put(`/v1/action/${actionId}`, body, {headers: authHeaders()})
         return res.data
@@ -642,6 +644,7 @@ export async function addProject(data) {
         const body = {title: data.title}
         if (data.description) body.description = data.description
         if (data.outcome) body.outcome = data.outcome
+        if (data.tags !== undefined) body.tags = data.tags
 
         const res = await httpApi.post('/v1/project', body, {headers: authHeaders()})
         return res.data
@@ -656,6 +659,7 @@ export async function updateProject(projectId, data) {
         if (data.description !== undefined) body.description = data.description
         if (data.outcome !== undefined) body.outcome = data.outcome
         if (data.next_action_id !== undefined) body.next_action_id = data.next_action_id
+        if (data.tags !== undefined) body.tags = data.tags
 
         const res = await httpApi.put(`/v1/project/${projectId}`, body, {headers: authHeaders()})
         return res.data
@@ -1197,6 +1201,17 @@ export async function emptyRefTrash() {
     }
 }
 
+// ── Tags API ──
+
+export async function getTags() {
+    try {
+        const res = await httpApi.get('/v1/tags', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Settings API ──
 
 export async function getSettings() {
@@ -1302,6 +1317,8 @@ const apiClient = {
     moveWaitingPosition,
     waitAction,
     unwaitAction,
+    // Tags API
+    getTags,
     // Settings API
     getSettings,
     updateSettings,

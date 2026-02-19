@@ -341,6 +341,42 @@
           </div>
         </div>
 
+        <!-- Tags section -->
+        <div class="detail-section-area">
+          <label class="detail-section-label">Tags</label>
+          <div class="detail-section-wrapper">
+            <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
+              <span v-if="project.tags && project.tags.length > 0" class="detail-tags-chips">
+                <span v-for="tag in project.tags" :key="tag" class="detail-tag-chip">{{ tag }}</span>
+              </span>
+              <span v-else class="detail-section-content detail-section-content--empty">Add tags...</span>
+            </div>
+            <template v-else>
+              <TagInput
+                  v-model="editTags"
+                  :disabled="savingField === 'tags'"
+              />
+              <div class="detail-section-actions">
+                <Btn
+                    variant="primary"
+                    size="sm"
+                    :disabled="savingField === 'tags'"
+                    :loading="savingField === 'tags'"
+                    @mousedown.prevent
+                    @click="saveTags"
+                >Save</Btn>
+                <Btn
+                    variant="ghost"
+                    size="sm"
+                    :disabled="savingField === 'tags'"
+                    @mousedown.prevent
+                    @click="cancelEdit"
+                >Cancel</Btn>
+              </div>
+            </template>
+          </div>
+        </div>
+
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
@@ -368,10 +404,12 @@ import DashboardLayout from '../layouts/DashboardLayout.vue'
 import Btn from '../components/Btn.vue'
 import Dropdown from '../components/Dropdown.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import TagInput from '../components/TagInput.vue'
 import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient from '../scripts/apiClient.js'
+import { tagModel } from '../scripts/tagModel.js'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 
@@ -379,6 +417,7 @@ const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+const tagMdl = tagModel()
 
 const {
   error,
@@ -400,6 +439,7 @@ const descriptionInput = ref(null)
 const outcomeInput = ref(null)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
+const editTags = ref([])
 
 // Actions state
 const actionsLoading = ref(false)
@@ -557,6 +597,43 @@ async function saveField(field) {
         outcomeInput.value?.focus()
       }
     }, 100)
+  } finally {
+    savingField.value = null
+  }
+}
+
+function startTagEdit() {
+  if (savingField.value) return
+  editingField.value = 'tags'
+  editTags.value = [...(project.value.tags || [])]
+}
+
+async function saveTags() {
+  if (editingField.value !== 'tags' || savingField.value) return
+
+  const newTags = [...editTags.value]
+  const oldTags = project.value.tags || []
+
+  if (JSON.stringify(newTags) === JSON.stringify(oldTags)) {
+    editingField.value = null
+    return
+  }
+
+  project.value.tags = newTags
+  savingField.value = 'tags'
+
+  try {
+    await updateProject(project.value.id, {
+      title: project.value.title,
+      description: project.value.description,
+      outcome: project.value.outcome,
+      tags: newTags,
+    })
+    tagMdl.addToCache(newTags)
+    editingField.value = null
+  } catch {
+    project.value.tags = oldTags
+    toaster.push('Failed to save tags')
   } finally {
     savingField.value = null
   }
@@ -1234,6 +1311,39 @@ async function onAddAction() {
 .detail-section-actions {
   display: flex;
   gap: 8px;
+}
+
+/* ── Tags section ── */
+.detail-tags-display {
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 4px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.detail-tags-display:hover {
+  background: var(--color-bg-secondary);
+}
+
+.detail-tags-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  line-height: 1.4;
 }
 
 /* ── Metadata section ── */

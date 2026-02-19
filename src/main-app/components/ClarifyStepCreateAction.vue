@@ -28,6 +28,11 @@
         ></textarea>
       </div>
 
+      <div class="clarify-field">
+        <label class="clarify-label">Tags</label>
+        <TagInput v-model="form.tags" placeholder="Add context tags (optional)" />
+      </div>
+
       <!-- Dates Section (collapsible, closed by default) -->
       <div class="clarify-dates-section">
         <div class="clarify-dates-header" @click="toggleDates">
@@ -103,6 +108,7 @@
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue'
 import Btn from './Btn.vue'
+import TagInput from './TagInput.vue'
 
 const props = defineProps({
   initialData: {
@@ -122,6 +128,7 @@ const showDuration = ref(false)
 const form = reactive({
   title: props.initialData.title || '',
   description: props.initialData.description || '',
+  tags: props.initialData.tags || [],
   deferType: null,
   deferDate: null,
   deferTime: null,
@@ -185,6 +192,7 @@ function onSubmit() {
   emit('submit', {
     title: form.title.trim(),
     description: form.description.trim(),
+    tags: form.tags,
     deferType: form.deferType,
     deferDate: form.deferDate,
     deferTime: form.deferTime,
