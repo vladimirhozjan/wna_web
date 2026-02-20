@@ -386,6 +386,7 @@ import { waitingModel } from '../scripts/waitingModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, todayAction, activateAction } from '../scripts/apiClient.js'
+import { statsModel } from '../scripts/statsModel.js'
 import { moveModel } from '../scripts/moveModel.js'
 import { tagModel } from '../scripts/tagModel.js'
 import ActionIcon from '../assets/ActionIcon.vue'
@@ -671,6 +672,7 @@ async function onMoveTo(newState) {
         outcome
       })
       await trashAction(action.value.id)
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(action.value.title)}" converted to project`)
       await navigateToNextOrPrev()
     } catch (err) {
@@ -696,6 +698,7 @@ async function onMoveTo(newState) {
 
     try {
       await waitAction(action.value.id, waitingFor)
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(action.value.title)}" moved to Waiting For`)
       await navigateToNextOrPrev()
     } catch {
@@ -730,6 +733,7 @@ async function onMoveTo(newState) {
 
     try {
       await deferAction(action.value.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration)
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(action.value.title)}" moved to Calendar`)
       await navigateToNextOrPrev()
     } catch {
@@ -759,17 +763,14 @@ async function onMoveTo(newState) {
     } else if (newState === 'TODAY') {
       await todayAction(action.value.id)
     } else if (newState === 'NEXT') {
-      // Moving to NEXT - if from CALENDAR, need to undefer
-      if (currentState === 'CALENDAR') {
-        await undeferAction(action.value.id)
-      } else {
-        await changeActionState(action.value.id, newState, action.value.title)
-      }
+      // undefer works from any active state (TODAY, CALENDAR, WAITING, SOMEDAY) → NEXT
+      await undeferAction(action.value.id)
     } else if (newState === 'SOMEDAY') {
       await apiClient.somedayAction(action.value.id)
     } else {
       await changeActionState(action.value.id, newState, action.value.title)
     }
+    statsModel().refreshStats()
     toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabels[newState]}`)
     await navigateToNextOrPrev()
   } catch {
@@ -791,6 +792,7 @@ async function onGotIt() {
     action.value.state = result?.state || 'NEXT'
     action.value.waiting_for = null
     action.value.waiting_since = null
+    statsModel().refreshStats()
     const stateLabel = action.value.state === 'CALENDAR' ? 'Calendar' : 'Next Actions'
     toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabel}`)
     // Navigate back to waiting list since item is no longer there
@@ -931,6 +933,7 @@ async function saveDeferredField() {
 
   try {
     await deferAction(action.value.id, deferType, newDate, newTime, duration)
+    statsModel().refreshStats()
     editingField.value = null
   } catch {
     // Rollback on error
@@ -969,6 +972,7 @@ async function clearDeferredField() {
 
   try {
     await undeferAction(action.value.id)
+    statsModel().refreshStats()
     editingField.value = null
     dateEdit.value = { date: '', time: '', showTime: false, deferType: 'scheduled', duration: 15 }
   } catch {
@@ -1026,6 +1030,7 @@ async function saveDateField(field) {
 
   try {
     await setDueDate(action.value.id, newDate, newTime)
+    statsModel().refreshStats()
     editingField.value = null
   } catch {
     action.value.due_date = oldDate
@@ -1052,6 +1057,7 @@ async function clearDateField(field) {
 
   try {
     await clearDueDate(action.value.id)
+    statsModel().refreshStats()
     editingField.value = null
     dateEdit.value = { ...dateEdit.value, date: '', time: '', showTime: false }
   } catch {
@@ -1233,6 +1239,7 @@ async function onUndo() {
   const title = truncateTitle(action.value.title)
   try {
     await apiClient.uncompleteAction(action.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" restored to next actions`)
     router.push({ name: 'completed' })
   } catch (err) {
@@ -1247,6 +1254,7 @@ async function onActivate() {
   const title = truncateTitle(action.value.title)
   try {
     await apiClient.activateAction(action.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" moved to Next Actions`)
     router.push({ name: 'someday' })
   } catch (err) {

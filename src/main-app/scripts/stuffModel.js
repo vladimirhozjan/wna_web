@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 const items = ref([])
 const current = ref(null)
@@ -94,6 +95,7 @@ export function stuffModel() {
         try {
             const created = await apiClient.addStuff({ title, description, position })
             await loadStuff({ reset: true })
+            statsModel().refreshStats()
             return created
         } catch (err) {
             error.value = err
@@ -139,8 +141,6 @@ export function stuffModel() {
             await apiClient.trashStuff(stuffId)
             items.value = items.value.filter(i => i.id !== stuffId)
 
-            // If the trashed item was the cursor (last loaded item),
-            // update cursor to the new last item so "Load more" works
             if (cursor.value === stuffId) {
                 const last = items.value[items.value.length - 1]
                 cursor.value = last ? last.id : null
@@ -149,6 +149,7 @@ export function stuffModel() {
             if (current.value?.id === stuffId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err

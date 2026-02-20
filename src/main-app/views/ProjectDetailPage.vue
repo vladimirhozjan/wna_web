@@ -417,6 +417,7 @@ import { projectModel } from '../scripts/projectModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient from '../scripts/apiClient.js'
+import { statsModel } from '../scripts/statsModel.js'
 import { tagModel } from '../scripts/tagModel.js'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
@@ -819,6 +820,7 @@ async function onUndo() {
   const title = truncateTitle(project.value.title)
   try {
     await apiClient.uncompleteProject(project.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" restored to projects`)
     router.push({ name: 'completed' })
   } catch (err) {
@@ -833,6 +835,7 @@ async function onActivate() {
   const title = truncateTitle(project.value.title)
   try {
     await apiClient.activateProject(project.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" moved to Projects`)
     router.push({ name: 'someday' })
   } catch (err) {
@@ -851,6 +854,7 @@ async function onMoveToSomeday() {
 
   try {
     await apiClient.somedayProject(project.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" moved to Someday`)
     await navigateToNextOrPrev()
   } catch (err) {
@@ -942,6 +946,7 @@ async function onCompleteNextAction() {
 
   try {
     await apiClient.completeAction(nextAction.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" completed`)
     // Reload actions - backend auto-promotes first backlog item
     await loadProjectActions()
@@ -977,6 +982,7 @@ async function onTrashAction(action) {
   trashingActionId.value = action.id
   try {
     await apiClient.trashAction(action.id)
+    statsModel().refreshStats()
     toaster.success(`"${truncateTitle(action.title)}" moved to trash`)
     if (action.id === nextAction.value?.id) {
       await loadProjectActions()
@@ -1031,6 +1037,7 @@ async function onAddAction() {
     })
     await loadProjectActions()
     newActionTitle.value = ''
+    statsModel().refreshStats()
     toaster.success(`"${truncateTitle(title)}" added`)
     // Scroll to bottom and keep focus for next entry
     nextTick(() => {

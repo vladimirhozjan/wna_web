@@ -1339,6 +1339,17 @@ export async function updateSettings(settings) {
     }
 }
 
+// ── Stats API ──
+
+export async function getStats() {
+    try {
+        const res = await httpApi.get('/v1/stats/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,
@@ -1379,6 +1390,10 @@ const apiClient = {
     getActionByPosition,
     completeAction,
     changeActionState,
+    deferAction,
+    undeferAction,
+    setDueDate,
+    clearDueDate,
     somedayAction,
     somedayProject,
     // Today API
@@ -1456,6 +1471,8 @@ const apiClient = {
     downloadAttachment,
     replaceAttachment,
     deleteAttachment,
+    // Stats API
+    getStats,
 }
 
 export default apiClient

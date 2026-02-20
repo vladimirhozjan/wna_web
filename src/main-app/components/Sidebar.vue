@@ -5,28 +5,35 @@
       <SidebarMenuItem
           label="Next Action"
           :to="{ name: 'next' }"
+          :count="stats?.next?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToNextAction"
       >
-        <template #icon><NextIcon/></template>
+        <template #icon><NextIcon :overdue="stats?.next?.overdue > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
           label="Today"
           :to="{ name: 'today' }"
+          :count="stats?.today?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToToday"
       >
-        <template #icon><TodayIcon/></template>
+        <template #icon><TodayIcon :overdue="stats?.today?.overdue > 0"/></template>
       </SidebarMenuItem>
 
-      <SidebarMenuItem label="Inbox" :to="{ name: 'inbox' }">
+      <SidebarMenuItem
+          label="Inbox"
+          :to="{ name: 'inbox' }"
+          :count="stats?.inbox?.count"
+      >
         <template #icon><InboxIcon/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
           label="Projects"
           :to="{ name: 'projects' }"
+          :count="stats?.projects?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToProjects"
       >
@@ -36,24 +43,27 @@
       <SidebarMenuItem
           label="Calendar"
           :to="{ name: 'calendar' }"
+          :count="stats?.calendar?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToCalendar"
       >
-        <template #icon><CalendarIcon /></template>
+        <template #icon><CalendarIcon :overdue="stats?.calendar?.overdue > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
           label="Waiting For"
           :to="{ name: 'waiting-for' }"
+          :count="stats?.waiting?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToWaitingFor"
       >
-        <template #icon><WaitingIcon /></template>
+        <template #icon><WaitingIcon :overdue="stats?.waiting?.overdue > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
           label="Someday / Maybe"
           :to="{ name: 'someday' }"
+          :count="stats?.someday?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToSomeday"
       >
@@ -63,6 +73,7 @@
       <SidebarMenuItem
           label="Reference"
           :to="{ name: 'reference' }"
+          :badge="referenceLabel"
           :accept-drop="['stuff']"
           @drop="onDropToReference"
       >
@@ -72,6 +83,7 @@
       <SidebarMenuItem
           label="Completed"
           :to="{ name: 'completed' }"
+          :count="stats?.completed?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToCompleted"
       >
@@ -81,6 +93,7 @@
       <SidebarMenuItem
           label="Trash"
           :to="{ name: 'trash' }"
+          :count="stats?.trash?.count"
           :accept-drop="['stuff', 'action']"
           @drop="onDropToTrash"
       >
@@ -105,6 +118,7 @@
 </template>
 
 <script setup>
+import { onMounted, computed } from "vue";
 import { authModel } from "../scripts/authModel.js";
 import { errorModel } from "../scripts/errorModel.js";
 import { stuffModel } from "../scripts/stuffModel.js";
@@ -114,6 +128,7 @@ import { waitingModel } from "../scripts/waitingModel.js";
 import { somedayModel } from "../scripts/somedayModel.js";
 import { calendarModel } from "../scripts/calendarModel.js";
 import { moveModel } from "../scripts/moveModel.js";
+import { statsModel } from "../scripts/statsModel.js";
 import apiClient from "../scripts/apiClient.js";
 import { useRouter } from "vue-router";
 
@@ -140,7 +155,26 @@ const { items: todayItems } = todayModel();
 const { items: waitingItems } = waitingModel();
 const { items: somedayItems } = somedayModel();
 const { items: calendarItems } = calendarModel();
+const { stats, loadStats, refreshStats } = statsModel();
 const router = useRouter();
+
+onMounted(loadStats);
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let i = 0;
+  let val = bytes;
+  while (val >= 1024 && i < units.length - 1) { val /= 1024; i++; }
+  return `${val < 10 ? val.toFixed(1) : Math.round(val)} ${units[i]}`;
+}
+
+const referenceLabel = computed(() => {
+  if (!stats.value?.reference) return null;
+  const used = formatBytes(stats.value.reference.used_bytes);
+  const quota = formatBytes(stats.value.reference.quota_bytes);
+  return `${used} / ${quota}`;
+});
 
 async function logout() {
   const confirmed = await auth.logoutWithConfirm();
@@ -161,15 +195,15 @@ async function onDropToNextAction(data) {
       });
       removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
-      // Skip if already in NEXT state
       if (data.state === 'NEXT') return;
-      // Use undeferAction to move to NEXT (clears dates)
+      // undefer works from any active state (TODAY, CALENDAR, WAITING, SOMEDAY) → NEXT
       await apiClient.undeferAction(data.id);
       removeFromActions(data.id);
     } else {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -200,6 +234,7 @@ async function onDropToProjects(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" converted to project`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -219,6 +254,7 @@ async function onDropToSomeday(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" moved to Someday`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -243,6 +279,7 @@ async function onDropToToday(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" moved to Today`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -280,6 +317,7 @@ async function onDropToCalendar(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" moved to Calendar`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -312,6 +350,7 @@ async function onDropToWaitingFor(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -324,6 +363,7 @@ async function onDropToReference(data) {
     await apiClient.clarifyToReference(data.id);
     removeFromInbox(data.id);
     toaster.success(`"${truncateTitle(data.title)}" moved to Reference`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -341,6 +381,7 @@ async function onDropToCompleted(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" marked as completed`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item');
   }
@@ -358,6 +399,7 @@ async function onDropToTrash(data) {
       return;
     }
     toaster.success(`"${truncateTitle(data.title)}" moved to Trash`);
+    refreshStats();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }

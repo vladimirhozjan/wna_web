@@ -227,6 +227,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import { clarifyModel } from '../scripts/clarifyModel.js'
 import apiClient from '../scripts/apiClient.js'
+import { statsModel } from '../scripts/statsModel.js'
 import { moveModel } from '../scripts/moveModel.js'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
@@ -504,6 +505,7 @@ async function onMarkDone() {
   const title = truncateTitle(item.value.title)
   try {
     await apiClient.completeStuff(item.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" completed`)
     await navigateToNextOrPrev()
   } catch (err) {
@@ -583,6 +585,7 @@ async function onMoveTo(destination) {
         deferTime: scheduleData.time || null,
         deferDuration: scheduleData.duration || null
       })
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Calendar`)
       await navigateToNextOrPrev()
     } catch (err) {
@@ -605,6 +608,7 @@ async function onMoveTo(destination) {
         description: item.value.description || ''
       })
       await apiClient.waitAction(result.id, waitingFor)
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Waiting For`)
       await navigateToNextOrPrev()
     } catch (err) {
@@ -624,6 +628,7 @@ async function onMoveTo(destination) {
         description: item.value.description || ''
       })
       await apiClient.todayAction(result.id)
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Today`)
       await navigateToNextOrPrev()
     } catch (err) {
@@ -646,6 +651,7 @@ async function onMoveTo(destination) {
         description: item.value.description || '',
         outcome
       })
+      statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
       await navigateToNextOrPrev()
     } catch (err) {
@@ -673,6 +679,7 @@ async function onMoveTo(destination) {
         await apiClient.clarifyToReference(item.value.id)
         break
     }
+    statsModel().refreshStats()
     toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
     await navigateToNextOrPrev()
   } catch (err) {
@@ -713,6 +720,7 @@ async function onUndo() {
   const title = truncateTitle(item.value.title)
   try {
     await apiClient.uncompleteStuff(item.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" restored to inbox`)
     router.push({ name: 'completed' })
   } catch (err) {
@@ -727,6 +735,7 @@ async function onActivate() {
   const title = truncateTitle(item.value.title)
   try {
     await apiClient.activateStuff(item.value.id)
+    statsModel().refreshStats()
     toaster.success(`"${title}" moved to Inbox`)
     router.push({ name: 'someday' })
   } catch (err) {

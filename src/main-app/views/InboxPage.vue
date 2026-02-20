@@ -113,6 +113,7 @@ import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 import apiClient from '../scripts/apiClient.js'
+import { statsModel } from '../scripts/statsModel.js'
 import Btn from "../components/Btn.vue";
 import Inpt from '../components/Inpt.vue'
 import ItemList from '../components/ItemList.vue'
@@ -266,6 +267,7 @@ async function onItemCheck(id, checked) {
       items.value.splice(idx, 1)
     }
     toaster.success(`"${title}" completed`)
+    statsModel().refreshStats()
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item')
   } finally {

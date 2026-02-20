@@ -1,5 +1,6 @@
 import {ref, computed} from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 let instance = null
 
@@ -56,6 +57,7 @@ export function referenceTrashModel() {
             await apiClient.restoreRefFile(id)
             files.value = files.value.filter(f => f.id !== id)
             totalFiles.value = Math.max(0, totalFiles.value - 1)
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -68,6 +70,7 @@ export function referenceTrashModel() {
             await apiClient.permanentDeleteRefFile(id)
             files.value = files.value.filter(f => f.id !== id)
             totalFiles.value = Math.max(0, totalFiles.value - 1)
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -80,6 +83,7 @@ export function referenceTrashModel() {
             await apiClient.emptyRefTrash()
             files.value = []
             totalFiles.value = 0
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err

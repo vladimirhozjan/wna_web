@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 export const ClarifyState = {
     IDLE: 'IDLE',
@@ -219,6 +220,7 @@ export function clarifyModel() {
             }
 
             state.step = ClarifyState.DONE
+            statsModel().refreshStats()
             return true
         } catch (err) {
             state.error = err.message || 'Failed to process item'

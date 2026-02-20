@@ -5,6 +5,7 @@ import {
     getDateRange,
 } from './dateUtils.js'
 import { listCalendar, getCalendarDensity, addAction, deferAction } from './apiClient.js'
+import { statsModel } from './statsModel.js'
 import { settingsModel } from './settingsModel.js'
 
 const STORAGE_KEY = 'calendar_view_mode'
@@ -191,6 +192,7 @@ export function calendarModel() {
             }
 
             items.value = [...items.value, newItem]
+            statsModel().refreshStats()
             return newItem
         } catch (err) {
             error.value = err
@@ -209,7 +211,6 @@ export function calendarModel() {
             const type = 'scheduled'
             await deferAction(actionId, type, newDate, newTime)
 
-            // Update local state
             items.value = items.value.map(item => {
                 if (item.id === actionId) {
                     return {
@@ -222,6 +223,7 @@ export function calendarModel() {
                 }
                 return item
             })
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err

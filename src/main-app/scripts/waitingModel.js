@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 const items = ref([])
 const current = ref(null)
@@ -77,8 +78,8 @@ export function waitingModel() {
             const created = await apiClient.addAction({ title })
             // Then move it to WAITING state
             await apiClient.waitAction(created.id, waitingFor)
-            // Reload the list
             await loadWaiting({ reset: true })
+            statsModel().refreshStats()
             return created
         } catch (err) {
             error.value = err
@@ -103,6 +104,7 @@ export function waitingModel() {
                 current.value = { ...current.value, ...data }
             }
 
+            statsModel().refreshStats()
             return updated
         } catch (err) {
             error.value = err
@@ -128,6 +130,7 @@ export function waitingModel() {
             if (current.value?.id === actionId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -163,6 +166,7 @@ export function waitingModel() {
             if (current.value?.id === actionId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -188,6 +192,7 @@ export function waitingModel() {
                 current.value = null
             }
 
+            statsModel().refreshStats()
             return result
         } catch (err) {
             error.value = err

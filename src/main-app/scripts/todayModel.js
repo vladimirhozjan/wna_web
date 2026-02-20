@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 const items = ref([])
 const current = ref(null)
@@ -77,6 +78,7 @@ export function todayModel() {
             const created = await apiClient.addAction({ title, description })
             await apiClient.todayAction(created.id)
             await loadActions({ reset: true })
+            statsModel().refreshStats()
             return created
         } catch (err) {
             error.value = err
@@ -101,6 +103,7 @@ export function todayModel() {
                 current.value = { ...current.value, ...data }
             }
 
+            statsModel().refreshStats()
             return updated
         } catch (err) {
             error.value = err
@@ -126,6 +129,7 @@ export function todayModel() {
             if (current.value?.id === actionId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -161,6 +165,7 @@ export function todayModel() {
             if (current.value?.id === actionId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -184,6 +189,7 @@ export function todayModel() {
             if (current.value?.id === actionId) {
                 current.value = { ...current.value, state }
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err

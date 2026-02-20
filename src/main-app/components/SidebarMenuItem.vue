@@ -18,6 +18,8 @@
         <slot name="icon" />
       </span>
       <span class="label">{{ props.label }}</span>
+      <span v-if="props.badge" class="count text-footnote">{{ props.badge }}</span>
+      <span v-else-if="props.count > 0" class="count text-footnote">{{ props.count }}</span>
     </button>
   </router-link>
 </template>
@@ -30,6 +32,8 @@ const props = defineProps({
   label: { type: String, required: true },
   to: { type: [String, Object], required: true },
   acceptDrop: { type: Array, default: () => [] },
+  count: { type: Number, default: 0 },
+  badge: { type: String, default: null },
 });
 
 const emit = defineEmits(['drop']);
@@ -110,6 +114,11 @@ function onDrop(e) {
 
 .icon {
   display: flex;
+}
+
+.count {
+  margin-left: auto;
+  color: var(--color-text-tertiary);
 }
 
 </style>

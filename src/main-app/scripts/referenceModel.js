@@ -1,5 +1,6 @@
 import {ref, reactive, computed} from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 let instance = null
 
@@ -156,6 +157,7 @@ export function referenceModel() {
             await apiClient.deleteRefFolder(id)
             folders.value = folders.value.filter(f => f.id !== id)
             folderCache.delete(id)
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -168,6 +170,7 @@ export function referenceModel() {
             await apiClient.trashRefFile(id)
             files.value = files.value.filter(f => f.id !== id)
             totalFiles.value = Math.max(0, totalFiles.value - 1)
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -196,6 +199,7 @@ export function referenceModel() {
                 files.value.unshift(result)
                 totalFiles.value++
                 loadQuota()
+                statsModel().refreshStats()
             } catch (err) {
                 entry.status = 'error'
                 entry.error = err.message || 'Upload failed'

@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 const items = ref([])
 const current = ref(null)
@@ -75,6 +76,7 @@ export function projectModel() {
         try {
             const created = await apiClient.addProject({ title, description, outcome })
             await loadProjects({ reset: true })
+            statsModel().refreshStats()
             return created
         } catch (err) {
             error.value = err
@@ -124,6 +126,7 @@ export function projectModel() {
             if (current.value?.id === projectId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -148,6 +151,7 @@ export function projectModel() {
             if (current.value?.id === projectId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -200,6 +204,7 @@ export function projectModel() {
             if (current.value?.id === projectId) {
                 current.value = null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err

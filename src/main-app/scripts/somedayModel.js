@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import apiClient from './apiClient.js'
+import { statsModel } from './statsModel.js'
 
 const items = ref([])
 const loading = ref(false)
@@ -70,6 +71,7 @@ export function somedayModel() {
                 const last = items.value[items.value.length - 1]
                 cursor.value = last ? last.id : null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -100,6 +102,7 @@ export function somedayModel() {
                 const last = items.value[items.value.length - 1]
                 cursor.value = last ? last.id : null
             }
+            statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
@@ -137,6 +140,7 @@ export function somedayModel() {
             const created = await apiClient.addStuff({ title })
             await apiClient.clarifyToSomeday(created.id)
             await loadSomeday({ reset: true })
+            statsModel().refreshStats()
             return created
         } catch (err) {
             error.value = err
