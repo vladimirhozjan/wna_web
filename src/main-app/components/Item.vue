@@ -3,53 +3,56 @@
       class="item"
       :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading, 'item--no-hover': noHover }"
   >
-    <!-- Checkbox -->
-    <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
-      <input
-          type="checkbox"
-          :checked="checked"
-          @change="onCheck"
-      />
-    </div>
-
-    <!-- Prefix slot (for icons etc.) -->
-    <div v-if="$slots.prefix" class="item__prefix">
-      <slot name="prefix" />
-    </div>
-
-    <!-- Content -->
-    <div class="item__content">
-      <span v-if="isEditing" class="item__input-wrapper" @click.stop>
-        <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
+    <div class="item__main-row">
+      <!-- Checkbox -->
+      <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
         <input
-            ref="editInput"
-            v-model="editValue"
-            class="item__input"
-            :style="{ width: inputWidth + 'px' }"
-            @keyup.enter="onSave"
-            @keyup.esc="onCancel"
-            @blur="onSave"
-            @click.stop
+            type="checkbox"
+            :checked="checked"
+            @change="onCheck"
         />
-      </span>
-      <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
-      <span v-if="$slots.subtitle" class="item__subtitle">
-        <slot name="subtitle" />
-      </span>
+      </div>
+
+      <!-- Prefix slot (for icons etc.) -->
+      <div v-if="$slots.prefix" class="item__prefix">
+        <slot name="prefix" />
+      </div>
+
+      <!-- Content -->
+      <div class="item__content">
+        <span v-if="isEditing" class="item__input-wrapper" @click.stop>
+          <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
+          <input
+              ref="editInput"
+              v-model="editValue"
+              class="item__input"
+              :style="{ width: inputWidth + 'px' }"
+              @keyup.enter="onSave"
+              @keyup.esc="onCancel"
+              @blur="onSave"
+              @click.stop
+          />
+        </span>
+        <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
+      </div>
+
+      <!-- Spinner overlay -->
+      <span v-if="loading" class="item__spinner"></span>
+
+      <div class="item__separator"></div>
+
+      <!-- Actions slot -->
+      <div class="item__actions" @click.stop>
+        <slot name="actions" />
+      </div>
+
+      <!-- Drag handle slot (right side) -->
+      <slot name="drag-handle" />
     </div>
 
-    <!-- Spinner overlay -->
-    <span v-if="loading" class="item__spinner"></span>
-
-    <div class="item__separator"></div>
-
-    <!-- Actions slot -->
-    <div class="item__actions" @click.stop>
-      <slot name="actions" />
+    <div v-if="$slots.subtitle" class="item__subtitle-row" :class="{ 'item__subtitle-row--no-checkbox': noCheckbox && !$slots.prefix, 'item__subtitle-row--prefix': noCheckbox && $slots.prefix }">
+      <slot name="subtitle" />
     </div>
-
-    <!-- Drag handle slot (right side) -->
-    <slot name="drag-handle" />
   </div>
 </template>
 
@@ -144,14 +147,23 @@ function onCheck(e) {
 .item {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
   padding: 12px 16px;
   background: var(--color-bg-primary);
   border-bottom: 1px solid var(--color-border-light);
   cursor: pointer;
   transition: background 0.15s ease;
   user-select: none;
+}
+
+.item:has(.item__subtitle-row) {
+  padding: 10px 16px 8px;
+}
+
+.item__main-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .item__actions {
@@ -215,13 +227,13 @@ function onCheck(e) {
 
 .item__content {
   min-width: 0;
-  display: flex;
-  flex-direction: column;
+  flex: 1;
 }
 
 .item__separator {
   flex: 1;
 }
+
 .item__title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
@@ -231,13 +243,19 @@ function onCheck(e) {
   text-overflow: ellipsis;
 }
 
-.item__subtitle {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  color: var(--color-text-secondary);
-  white-space: nowrap;
+.item__subtitle-row {
+  padding-left: 30px; /* 18px checkbox + 12px gap */
+  padding-top: 6px;
+  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.item__subtitle-row--no-checkbox {
+  padding-left: 0;
+}
+
+.item__subtitle-row--prefix {
+  padding-left: 44px; /* 32px prefix icon + 12px gap */
 }
 
 .item__input-wrapper {

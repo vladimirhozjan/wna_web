@@ -29,7 +29,8 @@
           class="item-wrapper"
           :class="{
             'item-wrapper--active': activeId != null && activeId === item.id,
-            'item-wrapper--dragging': nativeDraggingId === item.id
+            'item-wrapper--dragging': nativeDraggingId === item.id,
+            'item-wrapper--overdue': itemIsOverdue(item)
           }"
           :draggable="!!sourceType && !disabled"
           @dragstart.capture="onNativeDragStart($event, item)"
@@ -83,6 +84,7 @@ import Item from './Item.vue'
 import Btn from './Btn.vue'
 import ActionBtn from './ActionBtn.vue'
 import { dragModel } from '../scripts/dragModel.js'
+import { isOverdue } from '../scripts/dateUtils.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -103,6 +105,10 @@ const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-mo
 const items = defineModel({ type: Array, required: true })
 
 const loadingIdSet = computed(() => new Set(props.loadingIds))
+
+function itemIsOverdue(item) {
+  return isOverdue(item.due_date)
+}
 
 // Drag state
 const isDragging = ref(false)
@@ -179,22 +185,33 @@ function onNativeDragEnd() {
 .item-wrapper .item {
   -webkit-touch-callout: none;
   user-select: none;
+  border-left: 3px solid transparent;
 }
 
 .item-wrapper--active .item {
   background-color: var(--color-bg-secondary);
-  border-left: 3px solid var(--color-action);
+  border-left-color: var(--color-action);
+}
+
+.item-wrapper--overdue .item {
+  border-left-color: var(--color-danger);
+  background-color: rgba(254, 226, 226, 0.35);
+}
+
+.item-wrapper--overdue.item-wrapper--active .item {
+  border-left-color: var(--color-danger);
+  background-color: var(--color-bg-secondary);
 }
 
 .item-wrapper-chosen .item,
 .item-wrapper--dragging .item {
   background-color: var(--color-bg-hover);
-  border-left: none;
+  border-left-color: transparent;
 }
 
 .item-wrapper--dragging.item-wrapper--active .item {
   background-color: var(--color-bg-hover);
-  border-left: none;
+  border-left-color: transparent;
 }
 
 .item-wrapper-ghost .item {

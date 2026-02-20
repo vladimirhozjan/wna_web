@@ -143,6 +143,17 @@
           </Btn>
         </div>
 
+        <!-- Project section (if action belongs to a project) -->
+        <div v-if="action.project" class="detail-section-area">
+          <label class="detail-section-label">Project</label>
+          <div class="detail-section-wrapper">
+            <a class="detail-project-link" @click="goToProject">
+              <ProjectsIcon class="detail-project-link__icon" />
+              <span>{{ action.project.title || 'View project' }}</span>
+            </a>
+          </div>
+        </div>
+
         <!-- Description area -->
         <div class="detail-section-area">
           <label class="detail-section-label">Description</label>
@@ -546,6 +557,11 @@ function goBack() {
   } else {
     router.push({ name: 'next' })
   }
+}
+
+function goToProject() {
+  if (!action.value?.project?.id) return
+  router.push({ name: 'project-detail', params: { id: action.value.project.id } })
 }
 
 function startEdit(field, value) {
@@ -1864,6 +1880,30 @@ async function onActivate() {
 .detail-waiting-since::before {
   content: '·';
   margin-right: 8px;
+}
+
+/* ── Project link ── */
+.detail-project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-link-text);
+  cursor: pointer;
+  padding: 4px 0;
+  border-radius: 4px;
+}
+
+.detail-project-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+.detail-project-link__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 </style>

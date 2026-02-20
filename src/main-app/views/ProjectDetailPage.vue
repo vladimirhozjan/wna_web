@@ -1015,6 +1015,17 @@ async function onBacklogReorder(evt) {
       toaster.push('Failed to update next action')
       await loadProjectActions()
     }
+  } else {
+    // Backlog-to-backlog reorder: position is newIndex - 1 (index 0 is next action)
+    const movedAction = orderedActions.value[evt.newIndex]
+    if (!movedAction) return
+
+    try {
+      await apiClient.moveAction(movedAction.id, evt.newIndex - 1)
+    } catch {
+      toaster.push('Failed to reorder backlog')
+      await loadProjectActions()
+    }
   }
 }
 

@@ -1,0 +1,226 @@
+<template>
+  <div v-if="hasAnyMetadata" class="metadata-row">
+    <div class="metadata-row__indicators">
+      <!-- Waiting for -->
+      <span v-if="entityType === 'action' && item.waiting_for" class="chip">
+        <WaitingIcon class="chip__icon" />
+        <span class="chip__text">{{ item.waiting_for }}<template v-if="item.waiting_since"> · {{ waitingDuration }}</template></span>
+      </span>
+
+      <!-- Due date -->
+      <span v-if="entityType === 'action' && item.due_date" class="chip" :class="{ 'chip--danger': isItemOverdue }">
+        <CalendarIcon class="chip__icon" />
+        <span class="chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
+      </span>
+
+      <!-- Scheduled date -->
+      <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
+        <CalendarIcon class="chip__icon chip__icon--scheduled" />
+        <span class="chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
+      </span>
+
+      <!-- Start date -->
+      <span v-if="entityType === 'action' && item.start_date" class="chip">
+        <CalendarIcon class="chip__icon chip__icon--tertiary" />
+        <span class="chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
+      </span>
+
+      <!-- Project -->
+      <span v-if="entityType === 'action' && projectTitle" class="chip chip--project">
+        <ProjectsIcon class="chip__icon chip__icon--project" />
+        <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
+      </span>
+
+      <!-- Attachments -->
+      <span v-if="item.attachment_count > 0" class="chip">
+        <AttachmentIcon class="chip__icon chip__icon--tertiary" />
+        <span class="chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
+      </span>
+
+      <!-- Comments -->
+      <span v-if="item.comment_count > 0" class="chip">
+        <CommentIcon class="chip__icon chip__icon--tertiary" />
+        <span class="chip__text chip__text--tertiary">{{ item.comment_count }}</span>
+      </span>
+    </div>
+
+    <div v-if="visibleTags.length" class="metadata-row__tags">
+      <span v-for="tag in visibleTags" :key="tag" class="tag-chip">{{ tag }}</span>
+      <span v-if="hiddenTagCount > 0" class="tag-chip tag-chip--overflow">+{{ hiddenTagCount }}</span>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import WaitingIcon from '../assets/WaitingIcon.vue'
+import CalendarIcon from '../assets/CalendarIcon.vue'
+import ProjectsIcon from '../assets/ProjectsIcon.vue'
+import AttachmentIcon from '../assets/AttachmentIcon.vue'
+import CommentIcon from '../assets/CommentIcon.vue'
+import { isOverdue, formatShortDate, formatWaitingDuration } from '../scripts/dateUtils.js'
+
+const props = defineProps({
+  item: { type: Object, required: true },
+  entityType: { type: String, required: true },
+})
+
+const isItemOverdue = computed(() =>
+    props.entityType === 'action' && isOverdue(props.item.due_date)
+)
+
+const formattedDueDate = computed(() => formatShortDate(props.item.due_date))
+const formattedScheduledDate = computed(() => formatShortDate(props.item.scheduled_date))
+const formattedStartDate = computed(() => formatShortDate(props.item.start_date))
+const waitingDuration = computed(() => formatWaitingDuration(props.item.waiting_since))
+
+// Backend returns project as nested object: { id, title }
+const projectTitle = computed(() => props.item.project?.title || props.item.project_title)
+
+const MAX_PROJECT_TITLE = 20
+
+const truncatedProjectTitle = computed(() => {
+  const t = projectTitle.value
+  if (!t || t.length <= MAX_PROJECT_TITLE) return t
+  return t.slice(0, MAX_PROJECT_TITLE).trim() + '…'
+})
+
+const MAX_TAGS = 3
+
+const visibleTags = computed(() => {
+  const tags = props.item.tags
+  if (!tags || !tags.length) return []
+  return tags.slice(0, MAX_TAGS)
+})
+
+const hiddenTagCount = computed(() => {
+  const tags = props.item.tags
+  if (!tags) return 0
+  return Math.max(0, tags.length - MAX_TAGS)
+})
+
+const hasAnyMetadata = computed(() => {
+  const i = props.item
+  const isAction = props.entityType === 'action'
+
+  if (isAction && i.waiting_for) return true
+  if (isAction && i.due_date) return true
+  if (isAction && i.scheduled_date) return true
+  if (isAction && i.start_date) return true
+  if (isAction && (i.project?.title || i.project_title)) return true
+  if (i.attachment_count > 0) return true
+  if (i.comment_count > 0) return true
+  if (i.tags && i.tags.length > 0) return true
+  return false
+})
+</script>
+
+<style scoped>
+.metadata-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.metadata-row__indicators {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+
+.metadata-row__tags {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.chip--danger {
+  color: var(--color-danger);
+}
+
+.chip__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.chip__icon--scheduled {
+  color: var(--color-calendar-scheduled-text);
+}
+
+.chip__icon--tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.chip__icon--project {
+  color: var(--color-action);
+}
+
+.chip__text {
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  line-height: 1.2;
+}
+
+.chip__text--scheduled {
+  color: var(--color-calendar-scheduled-text);
+}
+
+.chip__text--tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.chip__text--project {
+  color: var(--color-action);
+}
+
+.chip--project {
+  font-weight: 500;
+}
+
+.tag-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.tag-chip--overflow {
+  color: var(--color-text-tertiary);
+  background: transparent;
+  border-color: transparent;
+  padding: 1px 2px;
+}
+
+@media (max-width: 480px) {
+  .metadata-row__tags .tag-chip:nth-child(n+3):not(.tag-chip--overflow) {
+    display: none;
+  }
+
+  .chip__text--project {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>

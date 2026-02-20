@@ -40,6 +40,9 @@
             @move="onMove"
             @load-more="loadMore"
         >
+          <template #subtitle="{ item }">
+            <MetadataRow :item="item" entity-type="action" />
+          </template>
           <template #actions="{ item }">
             <ActionBtn @click="onTrash(item.id)" />
           </template>
@@ -65,6 +68,7 @@ import ActionBtn from '../components/ActionBtn.vue'
 import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
 import TodayIcon from '../assets/TodayIcon.vue'
+import MetadataRow from '../components/MetadataRow.vue'
 import { todayModel } from '../scripts/todayModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'

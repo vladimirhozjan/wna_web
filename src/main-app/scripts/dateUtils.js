@@ -26,6 +26,7 @@ import {
     setHours,
     setMinutes,
     differenceInMinutes,
+    differenceInDays,
     startOfDay,
 } from 'date-fns'
 
@@ -177,4 +178,30 @@ export function getTimeSlotHeight(startTime, endTime, hourHeight = 60) {
     const endMinutes = timeStringToMinutes(endTime)
     const duration = endMinutes - startMinutes
     return Math.max((duration / 60) * hourHeight, hourHeight / 2)
+}
+
+export function isOverdue(dateStr) {
+    if (!dateStr) return false
+    const endOfDueDay = new Date(dateStr + 'T23:59:59')
+    return new Date() > endOfDueDay
+}
+
+export function formatShortDate(dateStr) {
+    if (!dateStr) return ''
+    return format(parseISO(dateStr), 'MMM d')
+}
+
+export function formatWaitingDuration(waitingSince) {
+    if (!waitingSince) return ''
+    const since = parseISO(waitingSince)
+    const now = new Date()
+    const days = differenceInDays(now, since)
+
+    if (days === 0) return 'today'
+    if (days === 1) return '1d'
+    if (days < 7) return `${days}d`
+    if (days < 14) return '1w'
+    if (days < 30) return `${Math.floor(days / 7)}w`
+    if (days < 60) return '1mo'
+    return `${Math.floor(days / 30)}mo`
 }

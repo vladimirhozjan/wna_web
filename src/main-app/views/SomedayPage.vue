@@ -41,6 +41,13 @@
             @move="onMove"
             @load-more="loadMore"
         >
+          <template #subtitle="{ item }">
+            <MetadataRow
+                v-if="item.type !== 'STUFF'"
+                :item="item"
+                :entity-type="item.type === 'PROJECT' ? 'project' : 'action'"
+            />
+          </template>
           <template #prefix="{ item }">
             <span class="type-icon" :class="typeIconClass(item.type)">
               <InboxIcon v-if="item.type === 'STUFF'" />
@@ -77,6 +84,7 @@ import SomedayIcon from '../assets/SomedayIcon.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
+import MetadataRow from '../components/MetadataRow.vue'
 import { somedayModel } from '../scripts/somedayModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
