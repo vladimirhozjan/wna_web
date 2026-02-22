@@ -9,25 +9,25 @@
 
       <!-- Due date -->
       <span v-if="entityType === 'action' && item.due_date" class="chip" :class="{ 'chip--danger': isItemOverdue }">
-        <CalendarIcon class="chip__icon" />
+        <CalendarIcon class="chip__icon" viewBox="10 8.5 28 31" />
         <span class="chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
       </span>
 
       <!-- Scheduled date -->
       <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
-        <CalendarIcon class="chip__icon chip__icon--scheduled" />
+        <CalendarIcon class="chip__icon chip__icon--scheduled" viewBox="10 8.5 28 31" />
         <span class="chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
       </span>
 
       <!-- Start date -->
       <span v-if="entityType === 'action' && item.start_date" class="chip">
-        <CalendarIcon class="chip__icon chip__icon--tertiary" />
+        <CalendarIcon class="chip__icon chip__icon--tertiary" viewBox="10 8.5 28 31" />
         <span class="chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
       </span>
 
       <!-- Project -->
       <span v-if="entityType === 'action' && projectTitle" class="chip chip--project">
-        <ProjectsIcon class="chip__icon chip__icon--md chip__icon--project" />
+        <ProjectsIcon class="chip__icon chip__icon--project" viewBox="11.5 11.5 25 25" />
         <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
       </span>
 
@@ -168,11 +168,6 @@ const hasAnyMetadata = computed(() => {
 .chip__icon--sm {
   width: 14px;
   height: 14px;
-}
-
-.chip__icon--md {
-  width: 16px;
-  height: 16px;
 }
 
 .chip__icon--scheduled {
