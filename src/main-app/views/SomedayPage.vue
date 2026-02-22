@@ -4,7 +4,10 @@
       <div class="someday-header">
         <div class="header-row">
           <h1 class="text-h1 color-text-primary">Someday / Maybe</h1>
-          <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+          <div class="header-actions">
+            <TagFilter v-model="filterTags" />
+            <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+          </div>
         </div>
         <div class="add-input" v-if="showAdd">
           <Inpt
@@ -78,6 +81,7 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import ItemList from '../components/ItemList.vue'
 import ActionBtn from '../components/ActionBtn.vue'
+import TagFilter from '../components/TagFilter.vue'
 import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
@@ -110,6 +114,11 @@ const confirm = confirmModel()
 const showAdd = ref(false)
 const newTitle = ref('')
 const add_input = ref(null)
+const filterTags = ref([])
+
+watch(filterTags, (tags) => {
+  loadSomeday({ reset: true, tags })
+})
 
 const updatingId = ref(null)
 const deletingId = ref(null)
@@ -281,6 +290,12 @@ async function onTrash(id) {
   align-items: center;
   justify-content: space-between;
   padding-right: 10px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .someday-header h1 {

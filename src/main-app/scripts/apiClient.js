@@ -462,11 +462,12 @@ export async function getAction(actionId) {
     }
 }
 
-export async function listActions({limit = 10, cursor = null} = {}) {
+export async function listActions({limit = 10, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
+        if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/nextActions', {params, headers: authHeaders()})
         return res.data
@@ -554,11 +555,12 @@ export async function nextActionCount() {
 
 // ── Today API ──
 
-export async function listTodayActions({limit = 10, cursor = null} = {}) {
+export async function listTodayActions({limit = 10, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
+        if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/today', {params, headers: authHeaders()})
         return res.data
@@ -689,11 +691,12 @@ export async function getProject(projectId) {
     }
 }
 
-export async function listProjects({limit = 10, cursor = null} = {}) {
+export async function listProjects({limit = 10, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
+        if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/projects', {params, headers: authHeaders()})
         return res.data
@@ -771,11 +774,12 @@ export async function listProjectActions(projectId, {limit = 100, cursor = null}
 
 // ── Someday API ──
 
-export async function listSomeday({limit = 10, cursor = null} = {}) {
+export async function listSomeday({limit = 10, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
+        if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/someday', {params, headers: authHeaders()})
         return res.data
@@ -893,11 +897,12 @@ export async function uncompleteProject(projectId) {
 
 // ── Waiting For API ──
 
-export async function listWaiting({limit = 10, cursor = null} = {}) {
+export async function listWaiting({limit = 10, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
+        if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/waiting', {params, headers: authHeaders()})
         return res.data

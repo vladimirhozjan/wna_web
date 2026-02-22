@@ -8,22 +8,30 @@ const error = ref(null)
 const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
+const activeTags = ref(null)
 
 export function somedayModel() {
 
-    async function loadSomeday({ reset = false } = {}) {
+    async function loadSomeday({ reset = false, tags = undefined } = {}) {
         loading.value = true
         error.value = null
 
         try {
+            if (tags !== undefined) {
+                activeTags.value = tags
+            }
+
             if (reset) {
                 cursor.value = null
                 hasMore.value = true
             }
 
+            const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
+
             const data = await apiClient.listSomeday({
                 limit: limit.value,
                 cursor: cursor.value,
+                tags: tagsParam,
             })
 
             if (reset) {
