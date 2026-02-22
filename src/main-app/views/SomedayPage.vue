@@ -292,6 +292,7 @@ async function onTrash(id) {
   display: flex;
   gap: 10px;
   padding: 0 10px;
+  margin-bottom: 5px;
 }
 
 .add-button {

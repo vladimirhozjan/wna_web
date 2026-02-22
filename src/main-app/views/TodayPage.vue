@@ -239,6 +239,7 @@ h1 {
   display: flex;
   gap: 10px;
   padding: 0 10px;
+  margin-bottom: 5px;
 }
 
 .add-button {

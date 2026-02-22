@@ -3,8 +3,8 @@
     <div class="metadata-row__indicators">
       <!-- Waiting for -->
       <span v-if="entityType === 'action' && item.waiting_for" class="chip">
-        <WaitingIcon class="chip__icon" />
-        <span class="chip__text">{{ item.waiting_for }}<template v-if="item.waiting_since"> · {{ waitingDuration }}</template></span>
+        <HourglassIcon class="chip__icon chip__icon--sm" />
+        <span class="chip__text">{{ item.waiting_for }}</span>
       </span>
 
       <!-- Due date -->
@@ -27,7 +27,7 @@
 
       <!-- Project -->
       <span v-if="entityType === 'action' && projectTitle" class="chip chip--project">
-        <ProjectsIcon class="chip__icon chip__icon--project" />
+        <ProjectsIcon class="chip__icon chip__icon--md chip__icon--project" />
         <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
       </span>
 
@@ -46,19 +46,20 @@
 
     <div v-if="visibleTags.length" class="metadata-row__tags">
       <span v-for="tag in visibleTags" :key="tag" class="tag-chip">{{ tag }}</span>
-      <span v-if="hiddenTagCount > 0" class="tag-chip tag-chip--overflow">+{{ hiddenTagCount }}</span>
+      <span v-if="hiddenTagCount > 0" class="tag-chip tag-chip--overflow tag-chip--desktop">+{{ hiddenTagCount }}</span>
+      <span v-if="mobileHiddenTagCount > 0" class="tag-chip tag-chip--overflow tag-chip--mobile">+{{ mobileHiddenTagCount }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import WaitingIcon from '../assets/WaitingIcon.vue'
+import HourglassIcon from '../assets/HourglassIcon.vue'
 import CalendarIcon from '../assets/CalendarIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import AttachmentIcon from '../assets/AttachmentIcon.vue'
 import CommentIcon from '../assets/CommentIcon.vue'
-import { isOverdue, formatShortDate, formatWaitingDuration } from '../scripts/dateUtils.js'
+import { isOverdue, formatShortDate } from '../scripts/dateUtils.js'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -72,8 +73,6 @@ const isItemOverdue = computed(() =>
 const formattedDueDate = computed(() => formatShortDate(props.item.due_date))
 const formattedScheduledDate = computed(() => formatShortDate(props.item.scheduled_date))
 const formattedStartDate = computed(() => formatShortDate(props.item.start_date))
-const waitingDuration = computed(() => formatWaitingDuration(props.item.waiting_since))
-
 // Backend returns project as nested object: { id, title }
 const projectTitle = computed(() => props.item.project?.title || props.item.project_title)
 
@@ -97,6 +96,14 @@ const hiddenTagCount = computed(() => {
   const tags = props.item.tags
   if (!tags) return 0
   return Math.max(0, tags.length - MAX_TAGS)
+})
+
+const MOBILE_MAX_TAGS = 2
+
+const mobileHiddenTagCount = computed(() => {
+  const tags = props.item.tags
+  if (!tags) return 0
+  return Math.max(0, tags.length - MOBILE_MAX_TAGS)
 })
 
 const hasAnyMetadata = computed(() => {
@@ -158,6 +165,16 @@ const hasAnyMetadata = computed(() => {
   flex-shrink: 0;
 }
 
+.chip__icon--sm {
+  width: 14px;
+  height: 14px;
+}
+
+.chip__icon--md {
+  width: 16px;
+  height: 16px;
+}
+
 .chip__icon--scheduled {
   color: var(--color-calendar-scheduled-text);
 }
@@ -212,9 +229,21 @@ const hasAnyMetadata = computed(() => {
   padding: 1px 2px;
 }
 
+.tag-chip--mobile {
+  display: none;
+}
+
 @media (max-width: 480px) {
   .metadata-row__tags .tag-chip:nth-child(n+3):not(.tag-chip--overflow) {
     display: none;
+  }
+
+  .tag-chip--desktop {
+    display: none;
+  }
+
+  .tag-chip--mobile {
+    display: inline-block;
   }
 
   .chip__text--project {
