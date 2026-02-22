@@ -10,22 +10,30 @@ const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
 const totalItems = ref(0)
+const activeTags = ref(null)
 
 export function projectModel() {
 
-    async function loadProjects({ reset = false } = {}) {
+    async function loadProjects({ reset = false, tags = undefined } = {}) {
         loading.value = true
         error.value = null
 
         try {
+            if (tags !== undefined) {
+                activeTags.value = tags
+            }
+
             if (reset) {
                 cursor.value = null
                 hasMore.value = true
             }
 
+            const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
+
             const data = await apiClient.listProjects({
                 limit: limit.value,
                 cursor: cursor.value,
+                tags: tagsParam,
             })
 
             if (reset) {
