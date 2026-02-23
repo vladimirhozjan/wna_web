@@ -34,6 +34,7 @@
       />
       <ClarifyStepNonActionable
           v-else-if="state.step === ClarifyState.NON_ACTIONABLE_TARGET"
+          :loading="state.loading"
           @select="onNonActionableSelect"
       />
       <ClarifyStepActionCount
@@ -43,18 +44,21 @@
       <ClarifyStepCreateAction
           v-else-if="state.step === ClarifyState.CREATE_ACTION"
           :initial-data="state.actionData"
+          :loading="state.loading"
           @submit="onActionSubmit"
+          @do-it-now="onDoItNow"
       />
       <ClarifyStepCreateProject
           v-else-if="state.step === ClarifyState.CREATE_PROJECT"
           :initial-data="state.projectData"
+          :loading="state.loading"
           @submit="onProjectSubmit"
       />
-      <ClarifyStepConfirm
-          v-else-if="state.step === ClarifyState.CONFIRM"
-          :summary="clarify.getConfirmSummary()"
+      <ClarifyStepDoItNow
+          v-else-if="state.step === ClarifyState.DO_IT_NOW"
+          :title="state.stuffItem?.title"
           :loading="state.loading"
-          @confirm="onConfirm"
+          @done="onDoItNowDone"
       />
       <div v-else-if="state.step === ClarifyState.DONE" class="clarify-done">
         <div class="clarify-done-icon">✓</div>
@@ -74,7 +78,7 @@ import ClarifyStepNonActionable from './ClarifyStepNonActionable.vue'
 import ClarifyStepActionCount from './ClarifyStepActionCount.vue'
 import ClarifyStepCreateAction from './ClarifyStepCreateAction.vue'
 import ClarifyStepCreateProject from './ClarifyStepCreateProject.vue'
-import ClarifyStepConfirm from './ClarifyStepConfirm.vue'
+import ClarifyStepDoItNow from './ClarifyStepDoItNow.vue'
 
 const props = defineProps({
   stuffItem: {
@@ -110,10 +114,10 @@ const canGoBack = computed(() => {
 })
 
 const totalSteps = computed(() => {
-  // Steps depend on path: actionable path has 4 steps, non-actionable has 3
-  if (state.isActionable === false) return 3
-  if (state.isActionable === true) return 4
-  return 4 // default before decision
+  if (state.step === ClarifyState.DO_IT_NOW) return 4
+  if (state.isActionable === false) return 2
+  if (state.isActionable === true) return 3
+  return 3 // default before decision
 })
 
 const currentStepNumber = computed(() => {
@@ -127,8 +131,8 @@ const currentStepNumber = computed(() => {
     case ClarifyState.CREATE_ACTION:
     case ClarifyState.CREATE_PROJECT:
       return 3
-    case ClarifyState.CONFIRM:
-      return state.isActionable ? 4 : 3
+    case ClarifyState.DO_IT_NOW:
+      return 4
     case ClarifyState.DONE:
       return totalSteps.value
     default:
@@ -149,8 +153,8 @@ onUnmounted(() => {
 })
 
 function handleKeydown(e) {
-  // Escape to cancel (except on CONFIRM step)
-  if (e.key === 'Escape' && state.step !== ClarifyState.CONFIRM) {
+  // Escape to cancel (except during loading or do-it-now)
+  if (e.key === 'Escape' && !state.loading && state.step !== ClarifyState.DO_IT_NOW) {
     e.preventDefault()
     onCancel()
     return
@@ -171,22 +175,36 @@ function onActionableSelect(isActionable) {
   clarify.setActionable(isActionable)
 }
 
-function onNonActionableSelect(target) {
+async function onNonActionableSelect(target) {
   clarify.setNonActionableTarget(target)
+  await executeConfirm()
 }
 
 function onActionCountSelect(isSingle) {
   clarify.setSingleAction(isSingle)
 }
 
-function onActionSubmit(data) {
+async function onActionSubmit(data) {
   clarify.setActionData(data)
-  clarify.proceedToConfirm()
+  await executeConfirm()
 }
 
-function onProjectSubmit(data) {
+function onDoItNow() {
+  clarify.proceedToDoItNow()
+}
+
+async function onDoItNowDone() {
+  const success = await clarify.doItNow()
+  if (success) {
+    const title = truncateTitle(props.stuffItem.title)
+    toaster.success(`"${title}" done`)
+    emit('done', props.stuffItem)
+  }
+}
+
+async function onProjectSubmit(data) {
   clarify.setProjectData(data)
-  clarify.proceedToConfirm()
+  await executeConfirm()
 }
 
 function truncateTitle(title, maxLen = 30) {
@@ -194,12 +212,11 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…'
 }
 
-async function onConfirm() {
+async function executeConfirm() {
   const success = await clarify.confirm()
   if (success) {
     const title = truncateTitle(props.stuffItem.title)
 
-    // Show success toast based on what was done
     if (!state.isActionable) {
       switch (state.nonActionableTarget) {
         case NonActionableTarget.REFERENCE:

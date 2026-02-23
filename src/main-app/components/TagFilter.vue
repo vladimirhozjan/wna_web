@@ -2,7 +2,7 @@
   <div class="tag-filter">
     <Dropdown ref="dropdown" title="Filter by tag" align="right">
       <template #trigger>
-        <Btn variant="icon" :class="{ 'tag-filter--active': modelValue.length > 0 }">
+        <Btn variant="icon" :class="{ 'tag-filter--active': modelValue.length > 0 || activeTag }">
           <FilterIcon />
         </Btn>
       </template>
@@ -18,9 +18,11 @@
                 :key="tag"
                 type="button"
                 class="tag-filter__item"
+                :class="{ 'tag-filter__item--context': tag === activeTag }"
+                :disabled="tag === activeTag"
                 @click="toggleTag(tag)"
             >
-              <span class="tag-filter__check">{{ modelValue.includes(tag) ? '\u2713' : '' }}</span>
+              <span class="tag-filter__check">{{ (modelValue.includes(tag) || tag === activeTag) ? '\u2713' : '' }}</span>
               <span class="tag-filter__label">{{ tag }}</span>
             </button>
             <button
@@ -36,6 +38,9 @@
       </template>
     </Dropdown>
 
+    <span v-if="activeTag" class="tag-filter__chip tag-filter__chip--context">
+      {{ activeTag }}
+    </span>
     <span v-for="tag in modelValue" :key="tag" class="tag-filter__chip">
       {{ tag }}
       <button type="button" class="tag-filter__chip-remove" @click="removeTag(tag)">&times;</button>
@@ -49,6 +54,7 @@ import Dropdown from './Dropdown.vue'
 import Btn from './Btn.vue'
 import FilterIcon from '../assets/FilterIcon.vue'
 import { tagModel } from '../scripts/tagModel.js'
+import { contextModel } from '../scripts/contextModel.js'
 
 const props = defineProps({
   modelValue: {
@@ -56,6 +62,8 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const { activeTag } = contextModel()
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -191,6 +199,17 @@ function clearAll(closeFn) {
 
 .tag-filter__chip-remove:hover {
   color: var(--color-text-primary);
+}
+
+.tag-filter__chip--context {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: #fff;
+}
+
+.tag-filter__item--context {
+  opacity: 0.5;
+  cursor: default;
 }
 
 @media (max-width: 768px) {

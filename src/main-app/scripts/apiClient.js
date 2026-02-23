@@ -377,7 +377,28 @@ export async function clarifyToProject(stuffId, projectData) {
 }
 
 export async function clarifyToReference(stuffId) {
-    throw new Error('Reference feature not implemented yet')
+    try {
+        // Fetch the stuff item to get its content
+        const stuff = await getStuff(stuffId)
+        const title = stuff.title || 'Untitled'
+        const description = stuff.description || ''
+
+        // Build a simple text note from the stuff content
+        const content = description ? `${title}\n\n${description}` : title
+        const blob = new Blob([content], { type: 'text/plain' })
+        const fileName = `${title.slice(0, 80).replace(/[/\\?%*:|"<>]/g, '_')}.txt`
+        const file = new File([blob], fileName, { type: 'text/plain' })
+
+        // Upload as a reference file
+        await uploadRefFile(file)
+
+        // Remove the original stuff item from inbox
+        await deleteStuff(stuffId)
+
+        return true
+    } catch (err) {
+        throw normalizeError(err)
+    }
 }
 
 export async function clarifyToSomeday(stuffId) {

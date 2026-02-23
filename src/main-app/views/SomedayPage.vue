@@ -63,7 +63,7 @@
             <ActionBtn @click.stop="onTrash(item.id)" />
           </template>
           <template #empty>
-            <template v-if="filterTags.length">
+            <template v-if="filterTags.length || activeTag">
               <h2 class="empty-state__title">No matching items</h2>
               <p class="empty-state__text">No items match the selected tags.</p>
             </template>
@@ -96,6 +96,7 @@ import NextIcon from '../assets/NextIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import MetadataRow from '../components/MetadataRow.vue'
 import { somedayModel } from '../scripts/somedayModel.js'
+import { contextModel } from '../scripts/contextModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
@@ -121,8 +122,17 @@ const showAdd = ref(false)
 const newTitle = ref('')
 const add_input = ref(null)
 const filterTags = ref([])
+const { activeTag } = contextModel()
 
-watch(filterTags, (tags) => {
+const effectiveTags = computed(() => {
+  const tags = [...filterTags.value]
+  if (activeTag.value && !tags.includes(activeTag.value)) {
+    tags.push(activeTag.value)
+  }
+  return tags
+})
+
+watch(effectiveTags, (tags) => {
   loadSomeday({ reset: true, tags })
 })
 
@@ -147,7 +157,7 @@ watch(error, (err) => {
 })
 
 onMounted(() => {
-  loadSomeday({ reset: true }).catch(() => {})
+  loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
 })
 
 async function loadMore() {

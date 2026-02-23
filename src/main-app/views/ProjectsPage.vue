@@ -59,7 +59,7 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <template v-if="filterTags.length">
+            <template v-if="filterTags.length || activeTag">
               <h2 class="empty-state__title">No matching projects</h2>
               <p class="empty-state__text">No projects match the selected tags.</p>
             </template>
@@ -89,6 +89,7 @@ import Inpt from '../components/Inpt.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import MetadataRow from '../components/MetadataRow.vue'
 import { projectModel } from '../scripts/projectModel.js'
+import { contextModel } from '../scripts/contextModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
@@ -115,8 +116,17 @@ const newTitle = ref('')
 const newOutcome = ref('')
 const add_input = ref(null)
 const filterTags = ref([])
+const { activeTag } = contextModel()
 
-watch(filterTags, (tags) => {
+const effectiveTags = computed(() => {
+  const tags = [...filterTags.value]
+  if (activeTag.value && !tags.includes(activeTag.value)) {
+    tags.push(activeTag.value)
+  }
+  return tags
+})
+
+watch(effectiveTags, (tags) => {
   loadProjects({ reset: true, tags })
 })
 
@@ -139,7 +149,7 @@ watch(error, (err) => {
 })
 
 onMounted(() => {
-  loadProjects({ reset: true }).catch(() => {})
+  loadProjects({ reset: true, tags: effectiveTags.value }).catch(() => {})
 })
 
 async function loadMore() {

@@ -2,6 +2,8 @@
   <aside class="sidebar">
     <nav class="sidebar-nav">
 
+      <ContextFilter />
+
       <SidebarMenuItem
           label="Next Action"
           :to="{ name: 'next' }"
@@ -133,6 +135,7 @@ import apiClient from "../scripts/apiClient.js";
 import { useRouter } from "vue-router";
 
 import SidebarMenuItem from "./SidebarMenuItem.vue";
+import ContextFilter from "./ContextFilter.vue";
 import NextIcon from "../assets/NextIcon.vue";
 import CalendarIcon from "../assets/CalendarIcon.vue";
 import TodayIcon from "../assets/TodayIcon.vue";

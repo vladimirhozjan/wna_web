@@ -10,7 +10,7 @@ export const ClarifyState = {
     ACTION_COUNT_DECISION: 'ACTION_COUNT_DECISION',
     CREATE_ACTION: 'CREATE_ACTION',
     CREATE_PROJECT: 'CREATE_PROJECT',
-    CONFIRM: 'CONFIRM',
+    DO_IT_NOW: 'DO_IT_NOW',
     DONE: 'DONE',
 }
 
@@ -60,25 +60,18 @@ export function clarifyModel() {
         error: null,
     })
 
-    // Progress tracking
-    const stepOrder = [
-        ClarifyState.ACTIONABLE_DECISION,
-        ClarifyState.NON_ACTIONABLE_TARGET,
-        ClarifyState.ACTION_COUNT_DECISION,
-        ClarifyState.CREATE_ACTION,
-        ClarifyState.CREATE_PROJECT,
-        ClarifyState.CONFIRM,
-    ]
-
     function getProgress() {
-        const idx = stepOrder.indexOf(state.step)
-        if (idx === -1) return 0
-        // Calculate based on path taken
-        if (state.step === ClarifyState.CONFIRM) return 100
-        if (state.step === ClarifyState.NON_ACTIONABLE_TARGET) return 50
-        if (state.step === ClarifyState.CREATE_ACTION || state.step === ClarifyState.CREATE_PROJECT) return 66
-        if (state.step === ClarifyState.ACTION_COUNT_DECISION) return 33
-        if (state.step === ClarifyState.ACTIONABLE_DECISION) return 16
+        if (state.step === ClarifyState.DONE) return 100
+        if (state.step === ClarifyState.DO_IT_NOW) return 100
+        if (state.isActionable === false) {
+            // Non-actionable: 2 steps
+            if (state.step === ClarifyState.ACTIONABLE_DECISION) return 50
+            return 100
+        }
+        // Actionable: 3 steps
+        if (state.step === ClarifyState.ACTIONABLE_DECISION) return 33
+        if (state.step === ClarifyState.ACTION_COUNT_DECISION) return 66
+        if (state.step === ClarifyState.CREATE_ACTION || state.step === ClarifyState.CREATE_PROJECT) return 100
         return 0
     }
 
@@ -134,7 +127,6 @@ export function clarifyModel() {
 
     function setNonActionableTarget(target) {
         state.nonActionableTarget = target
-        state.step = ClarifyState.CONFIRM
     }
 
     function setSingleAction(isSingle) {
@@ -154,8 +146,8 @@ export function clarifyModel() {
         Object.assign(state.projectData, data)
     }
 
-    function proceedToConfirm() {
-        state.step = ClarifyState.CONFIRM
+    function proceedToDoItNow() {
+        state.step = ClarifyState.DO_IT_NOW
     }
 
     function back() {
@@ -176,15 +168,8 @@ export function clarifyModel() {
                 state.step = ClarifyState.ACTION_COUNT_DECISION
                 state.isSingleAction = null
                 break
-            case ClarifyState.CONFIRM:
-                // Go back to previous form/selection based on path taken
-                if (!state.isActionable) {
-                    state.step = ClarifyState.NON_ACTIONABLE_TARGET
-                } else if (state.isSingleAction) {
-                    state.step = ClarifyState.CREATE_ACTION
-                } else {
-                    state.step = ClarifyState.CREATE_PROJECT
-                }
+            case ClarifyState.DO_IT_NOW:
+                state.step = ClarifyState.CREATE_ACTION
                 break
             default:
                 break
@@ -224,6 +209,24 @@ export function clarifyModel() {
             return true
         } catch (err) {
             state.error = err.message || 'Failed to process item'
+            return false
+        } finally {
+            state.loading = false
+        }
+    }
+
+    async function doItNow() {
+        state.loading = true
+        state.error = null
+
+        try {
+            const stuffId = state.stuffItem?.id
+            await apiClient.completeStuff(stuffId)
+            state.step = ClarifyState.DONE
+            statsModel().refreshStats()
+            return true
+        } catch (err) {
+            state.error = err.message || 'Failed to complete item'
             return false
         } finally {
             state.loading = false
@@ -278,9 +281,10 @@ export function clarifyModel() {
         setSingleAction,
         setActionData,
         setProjectData,
-        proceedToConfirm,
+        proceedToDoItNow,
         back,
         confirm,
+        doItNow,
         cancel,
         reset,
         getConfirmSummary,

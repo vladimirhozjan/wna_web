@@ -50,7 +50,7 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <template v-if="filterTags.length">
+            <template v-if="filterTags.length || activeTag">
               <h2 class="empty-state__title">No matching actions</h2>
               <p class="empty-state__text">No actions match the selected tags.</p>
             </template>
@@ -80,6 +80,7 @@ import Inpt from '../components/Inpt.vue'
 import ActionIcon from '../assets/ActionIcon.vue'
 import MetadataRow from '../components/MetadataRow.vue'
 import { nextActionModel } from '../scripts/nextActionModel.js'
+import { contextModel } from '../scripts/contextModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
@@ -106,8 +107,17 @@ const showAdd = ref(false)
 const newTitle = ref('')
 const add_input = ref(null)
 const filterTags = ref([])
+const { activeTag } = contextModel()
 
-watch(filterTags, (tags) => {
+const effectiveTags = computed(() => {
+  const tags = [...filterTags.value]
+  if (activeTag.value && !tags.includes(activeTag.value)) {
+    tags.push(activeTag.value)
+  }
+  return tags
+})
+
+watch(effectiveTags, (tags) => {
   loadActions({ reset: true, tags })
 })
 
@@ -130,7 +140,7 @@ watch(error, (err) => {
 })
 
 onMounted(() => {
-  loadActions({ reset: true }).catch(() => {})
+  loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
 })
 
 async function loadMore() {

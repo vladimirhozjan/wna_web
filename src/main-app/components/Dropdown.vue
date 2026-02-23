@@ -60,11 +60,30 @@ const menuStyle = ref({})
 // Support both controlled (v-model) and uncontrolled usage
 const isOpen = ref(false)
 
+function prePosition() {
+  if (!wrapperRef.value) return
+  const rect = wrapperRef.value.getBoundingClientRect()
+  const alignRight = props.align === 'right'
+  menuStyle.value = {
+    position: 'fixed',
+    ...(alignRight
+        ? { right: `${window.innerWidth - rect.right}px` }
+        : { left: `${rect.left}px` }
+    ),
+    top: `${rect.bottom + 2}px`
+  }
+}
+
+function schedulePosition() {
+  prePosition()
+  nextTick(() => requestAnimationFrame(() => positionMenu()))
+}
+
 watch(() => props.modelValue, (val) => {
   if (val !== undefined) {
     isOpen.value = val
     if (val && !isMobile.value) {
-      nextTick(() => positionMenu())
+      schedulePosition()
     }
   }
 }, { immediate: true })
@@ -86,7 +105,7 @@ function toggle() {
     internalOpen.value = !internalOpen.value
     isOpen.value = internalOpen.value
     if (isOpen.value && !isMobile.value) {
-      nextTick(() => positionMenu())
+      schedulePosition()
     }
   }
 }
@@ -98,7 +117,7 @@ function open() {
     internalOpen.value = true
     isOpen.value = true
     if (!isMobile.value) {
-      nextTick(() => positionMenu())
+      schedulePosition()
     }
   }
 }

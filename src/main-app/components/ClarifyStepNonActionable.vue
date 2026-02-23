@@ -6,6 +6,7 @@
     <div class="clarify-options">
       <button
           class="clarify-option"
+          :disabled="loading"
           @click="select('REFERENCE')"
       >
         <div class="clarify-option-content">
@@ -16,6 +17,7 @@
       </button>
       <button
           class="clarify-option"
+          :disabled="loading"
           @click="select('SOMEDAY')"
       >
         <div class="clarify-option-content">
@@ -26,6 +28,7 @@
       </button>
       <button
           class="clarify-option clarify-option--danger"
+          :disabled="loading"
           @click="select('TRASH')"
       >
         <div class="clarify-option-content">
@@ -41,6 +44,13 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
 
+const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+})
+
 const emit = defineEmits(['select'])
 
 function select(target) {
@@ -48,6 +58,7 @@ function select(target) {
 }
 
 function handleKeydown(e) {
+  if (props.loading) return
   const key = e.key.toLowerCase()
   if (key === 'r') {
     e.preventDefault()

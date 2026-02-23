@@ -59,7 +59,7 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <template v-if="filterTags.length">
+            <template v-if="filterTags.length || activeTag">
               <h2 class="empty-state__title">No matching actions</h2>
               <p class="empty-state__text">No actions match the selected tags.</p>
             </template>
@@ -89,6 +89,7 @@ import Inpt from '../components/Inpt.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
 import MetadataRow from '../components/MetadataRow.vue'
 import { waitingModel } from '../scripts/waitingModel.js'
+import { contextModel } from '../scripts/contextModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
 
@@ -116,8 +117,17 @@ const newTitle = ref('')
 const newWaitingFor = ref('')
 const add_input = ref(null)
 const filterTags = ref([])
+const { activeTag } = contextModel()
 
-watch(filterTags, (tags) => {
+const effectiveTags = computed(() => {
+  const tags = [...filterTags.value]
+  if (activeTag.value && !tags.includes(activeTag.value)) {
+    tags.push(activeTag.value)
+  }
+  return tags
+})
+
+watch(effectiveTags, (tags) => {
   loadWaiting({ reset: true, tags })
 })
 
@@ -140,7 +150,7 @@ watch(error, (err) => {
 })
 
 onMounted(() => {
-  loadWaiting({ reset: true }).catch(() => {})
+  loadWaiting({ reset: true, tags: effectiveTags.value }).catch(() => {})
 })
 
 async function loadMore() {

@@ -50,9 +50,10 @@
             type="submit"
             variant="primary"
             size="md"
-            :disabled="!form.title.trim() || !form.outcome.trim()"
+            :disabled="!form.title.trim() || !form.outcome.trim() || loading"
+            :loading="loading"
         >
-          Continue
+          Create Project
         </Btn>
       </div>
     </form>
@@ -68,7 +69,11 @@ const props = defineProps({
   initialData: {
     type: Object,
     default: () => ({})
-  }
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['submit'])
