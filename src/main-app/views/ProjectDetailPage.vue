@@ -211,7 +211,8 @@
                   <VueDraggable
                       v-if="orderedActions.length > 0"
                       v-model="orderedActions"
-                      :delay="100"
+                      :delay="150"
+                      :delay-on-touch-only="true"
                       :animation="150"
                       chosen-class="action-item--chosen"
                       ghost-class="action-item--ghost"
