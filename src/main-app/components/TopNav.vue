@@ -24,7 +24,7 @@
 
     <!-- AUTHENTICATED -->
     <div v-else class="topnav-auth-right">
-      <QuickAddBtn v-if="context === 'dashboard'" @add="onQuickAdd" />
+      <QuickAddBtn @add="onQuickAdd" />
 
       <!-- Dashboard mobile: hamburger -->
       <Btn
