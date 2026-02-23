@@ -14,7 +14,8 @@
     <VueDraggable
         v-else
         v-model="items"
-        :delay="100"
+        :delay="150"
+        :delay-on-touch-only="true"
         :animation="150"
         :chosen-class="'item-wrapper-chosen'"
         :ghost-class="'item-wrapper-ghost'"
