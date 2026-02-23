@@ -63,11 +63,17 @@
             <ActionBtn @click.stop="onTrash(item.id)" />
           </template>
           <template #empty>
-            <SomedayIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">No someday items</h2>
-            <p class="empty-state__text">
-              Items you're not ready to act on yet will appear here. Clarify inbox items to someday or defer actions.
-            </p>
+            <template v-if="filterTags.length">
+              <h2 class="empty-state__title">No matching items</h2>
+              <p class="empty-state__text">No items match the selected tags.</p>
+            </template>
+            <template v-else>
+              <SomedayIcon class="empty-state__icon" />
+              <h2 class="empty-state__title">No someday items</h2>
+              <p class="empty-state__text">
+                Items you're not ready to act on yet will appear here. Clarify inbox items to someday or defer actions.
+              </p>
+            </template>
           </template>
         </ItemList>
       </div>

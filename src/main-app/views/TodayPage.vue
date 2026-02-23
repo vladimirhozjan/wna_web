@@ -50,11 +50,17 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <TodayIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">No actions for today</h2>
-            <p class="empty-state__text">
-              Move actions here to focus on what matters most today.
-            </p>
+            <template v-if="filterTags.length">
+              <h2 class="empty-state__title">No matching actions</h2>
+              <p class="empty-state__text">No actions match the selected tags.</p>
+            </template>
+            <template v-else>
+              <TodayIcon class="empty-state__icon" />
+              <h2 class="empty-state__title">No actions for today</h2>
+              <p class="empty-state__text">
+                Move actions here to focus on what matters most today.
+              </p>
+            </template>
           </template>
         </ItemList>
       </div>

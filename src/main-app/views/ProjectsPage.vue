@@ -59,11 +59,17 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <ProjectsIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">No projects</h2>
-            <p class="empty-state__text">
-              Projects are created when you clarify inbox items that require multiple actions.
-            </p>
+            <template v-if="filterTags.length">
+              <h2 class="empty-state__title">No matching projects</h2>
+              <p class="empty-state__text">No projects match the selected tags.</p>
+            </template>
+            <template v-else>
+              <ProjectsIcon class="empty-state__icon" />
+              <h2 class="empty-state__title">No projects</h2>
+              <p class="empty-state__text">
+                Projects are created when you clarify inbox items that require multiple actions.
+              </p>
+            </template>
           </template>
         </ItemList>
       </div>
