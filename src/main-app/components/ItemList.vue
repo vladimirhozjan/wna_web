@@ -10,9 +10,9 @@
       <slot name="empty" />
     </div>
 
+    <template v-else>
     <!-- Draggable list -->
     <VueDraggable
-        v-else
         v-model="items"
         :delay="150"
         :delay-on-touch-only="true"
@@ -31,7 +31,8 @@
           :class="{
             'item-wrapper--active': activeId != null && activeId === item.id,
             'item-wrapper--dragging': nativeDraggingId === item.id,
-            'item-wrapper--overdue': itemIsOverdue(item)
+            'item-wrapper--overdue': itemIsOverdue(item),
+            'item-wrapper--wiggle': showHint && index === 0
           }"
           :draggable="!!sourceType && !disabled"
           @dragstart.capture="onNativeDragStart($event, item)"
@@ -63,6 +64,13 @@
         </Item>
       </div>
     </VueDraggable>
+    </template>
+
+    <!-- Drag hint (centered overlay) -->
+    <div v-if="showHint && items.length >= 2" class="drag-hint">
+      <span class="drag-hint__icon">↕</span>
+      <span>Drag to reorder</span>
+    </div>
 
     <!-- Load more -->
     <div class="load-more" v-if="hasMore && items.length > 0">
@@ -79,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import Item from './Item.vue'
 import Btn from './Btn.vue'
@@ -107,6 +115,21 @@ const items = defineModel({ type: Array, required: true })
 
 const loadingIdSet = computed(() => new Set(props.loadingIds))
 
+// Drag discoverability hint
+const HINT_KEY = 'drag_hint_dismissed'
+const showHint = ref(false)
+
+onMounted(() => {
+  if (!props.disabled && !localStorage.getItem(HINT_KEY)) {
+    showHint.value = true
+  }
+})
+
+function dismissHint() {
+  showHint.value = false
+  localStorage.setItem(HINT_KEY, '1')
+}
+
 function itemIsOverdue(item) {
   return isOverdue(item.due_date)
 }
@@ -125,6 +148,7 @@ function onDragStart(evt) {
   originalIndex = evt.oldIndex
   draggedItemId = items.value[evt.oldIndex]?.id
   isDragging.value = true
+  if (showHint.value) dismissHint()
 
   // Set native drag data for cross-component drops
   const item = items.value[evt.oldIndex]
@@ -256,5 +280,51 @@ function onNativeDragEnd() {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Drag hint overlay */
+.item-list {
+  position: relative;
+}
+
+.drag-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+  opacity: 0;
+  animation: hint-show 5s ease 0.4s forwards;
+}
+
+.drag-hint__icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+@keyframes hint-show {
+  5%   { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Wiggle animation on first item */
+.item-wrapper--wiggle {
+  animation: wiggle 0.5s ease-in-out 0.3s 1;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
 }
 </style>
