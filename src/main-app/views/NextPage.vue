@@ -139,7 +139,9 @@ watch(error, (err) => {
   toaster.push(msg)
 })
 
+// Clear stale items immediately on mount to prevent showing old data
 onMounted(() => {
+  items.value = []
   loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
 })
 

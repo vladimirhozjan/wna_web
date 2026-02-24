@@ -12,11 +12,15 @@ const hasMore = ref(true)
 const totalItems = ref(0)
 const activeTags = ref(null)
 
+let loadVersion = 0
+
 export function todayModel() {
 
     async function loadActions({ reset = false, tags = undefined } = {}) {
         loading.value = true
         error.value = null
+
+        const myVersion = ++loadVersion
 
         try {
             if (tags !== undefined) {
@@ -36,6 +40,8 @@ export function todayModel() {
                 tags: tagsParam,
             })
 
+            if (myVersion !== loadVersion) return data
+
             if (reset) {
                 items.value = data
             } else if (data.length > 0) {
@@ -49,19 +55,24 @@ export function todayModel() {
             hasMore.value = data.length >= limit.value
 
             const count_data = await apiClient.todayCount()
-            totalItems.value = count_data.count
+            if (myVersion === loadVersion) {
+                totalItems.value = count_data.count
+            }
 
             return data
         } catch (err) {
-            error.value = err
+            if (myVersion === loadVersion) {
+                error.value = err
+            }
             throw err
         } finally {
-            loading.value = false
+            if (myVersion === loadVersion) {
+                loading.value = false
+            }
         }
     }
 
     async function getAction(actionId) {
-        loading.value = true
         error.value = null
 
         try {
@@ -72,8 +83,6 @@ export function todayModel() {
             error.value = err
             current.value = null
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
@@ -97,7 +106,6 @@ export function todayModel() {
     }
 
     async function updateAction(actionId, data) {
-        loading.value = true
         error.value = null
 
         try {
@@ -116,13 +124,10 @@ export function todayModel() {
         } catch (err) {
             error.value = err
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
     async function trashAction(actionId) {
-        loading.value = true
         error.value = null
 
         try {
@@ -141,8 +146,6 @@ export function todayModel() {
         } catch (err) {
             error.value = err
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
@@ -158,7 +161,6 @@ export function todayModel() {
     }
 
     async function completeAction(actionId) {
-        loading.value = true
         error.value = null
 
         try {
@@ -177,8 +179,6 @@ export function todayModel() {
         } catch (err) {
             error.value = err
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
@@ -205,7 +205,6 @@ export function todayModel() {
     }
 
     async function getActionByPosition(position) {
-        loading.value = true
         error.value = null
 
         try {
@@ -216,8 +215,6 @@ export function todayModel() {
             error.value = err
             current.value = null
             throw err
-        } finally {
-            loading.value = false
         }
     }
 

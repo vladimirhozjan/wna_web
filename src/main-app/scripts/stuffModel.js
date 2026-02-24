@@ -11,11 +11,15 @@ const limit = ref(10)
 const hasMore = ref(true)
 const totalItems = ref(0)
 
+let loadVersion = 0
+
 export function stuffModel() {
 
     async function loadStuff({ reset = false } = {}) {
         loading.value = true
         error.value = null
+
+        const myVersion = ++loadVersion
 
         try {
             if (reset) {
@@ -27,6 +31,8 @@ export function stuffModel() {
                 limit: limit.value,
                 cursor: cursor.value,
             })
+
+            if (myVersion !== loadVersion) return data
 
             if (reset) {
                 // Replace items in one operation (no flicker)
@@ -43,19 +49,24 @@ export function stuffModel() {
             hasMore.value = data.length >= limit.value
 
             const count_data = await apiClient.inboxCount()
-            totalItems.value = count_data.count
+            if (myVersion === loadVersion) {
+                totalItems.value = count_data.count
+            }
 
             return data
         } catch (err) {
-            error.value = err
+            if (myVersion === loadVersion) {
+                error.value = err
+            }
             throw err
         } finally {
-            loading.value = false
+            if (myVersion === loadVersion) {
+                loading.value = false
+            }
         }
     }
 
     async function getStuff(stuffId) {
-        loading.value = true
         error.value = null
 
         try {
@@ -66,13 +77,10 @@ export function stuffModel() {
             error.value = err
             current.value = null
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
     async function getStuffByPosition(position) {
-        loading.value = true
         error.value = null
 
         try {
@@ -83,8 +91,6 @@ export function stuffModel() {
             error.value = err
             current.value = null
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
@@ -106,7 +112,6 @@ export function stuffModel() {
     }
 
     async function updateStuff(stuffId, { title, description = '' }) {
-        loading.value = true
         error.value = null
 
         try {
@@ -128,13 +133,10 @@ export function stuffModel() {
         } catch (err) {
             error.value = err
             throw err
-        } finally {
-            loading.value = false
         }
     }
 
     async function trashStuff(stuffId) {
-        loading.value = true
         error.value = null
 
         try {
@@ -153,8 +155,6 @@ export function stuffModel() {
         } catch (err) {
             error.value = err
             throw err
-        } finally {
-            loading.value = false
         }
     }
 

@@ -175,6 +175,7 @@ watch(error, (err) => {
 
 // lifecycle
 onMounted(async () => {
+  items.value = []
   await loadStuff({ reset: true })
   focusAddInput()
   checkMobile()

@@ -1118,10 +1118,7 @@ export async function uploadRefFile(file, folder_id = null, onProgress = null) {
         if (folder_id) formData.append('folder_id', folder_id)
 
         const res = await httpApi.post('/v1/reference/files', formData, {
-            headers: {
-                ...authHeaders(),
-                'Content-Type': 'multipart/form-data',
-            },
+            headers: authHeaders(),
             onUploadProgress: onProgress ? (e) => {
                 const pct = Math.round((e.loaded * 100) / (e.total || 1))
                 onProgress(pct)
@@ -1297,7 +1294,7 @@ export async function uploadAttachment(entityType, itemId, file, onProgress = nu
         const formData = new FormData()
         formData.append('file', file)
         const res = await httpApi.post(`/v1/${entityType}/${itemId}/attachments`, formData, {
-            headers: {...authHeaders(), 'Content-Type': 'multipart/form-data'},
+            headers: authHeaders(),
             onUploadProgress: onProgress ? (e) => {
                 const pct = Math.round((e.loaded * 100) / (e.total || 1))
                 onProgress(pct)
@@ -1328,7 +1325,7 @@ export async function replaceAttachment(entityType, itemId, attachmentId, file, 
         const res = await httpApi.put(
             `/v1/${entityType}/${itemId}/attachments/${attachmentId}`, formData,
             {
-                headers: {...authHeaders(), 'Content-Type': 'multipart/form-data'},
+                headers: authHeaders(),
                 onUploadProgress: onProgress ? (e) => {
                     const pct = Math.round((e.loaded * 100) / (e.total || 1))
                     onProgress(pct)

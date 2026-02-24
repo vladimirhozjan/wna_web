@@ -140,6 +140,7 @@ watch(error, (err) => {
 })
 
 onMounted(() => {
+  items.value = []
   loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
 })
 
