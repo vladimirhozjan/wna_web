@@ -208,11 +208,7 @@ async function onAdd() {
   const t = (new_stuff_title.value ?? '').toString().trim()
   if (!t) return
 
-  // Read position preference: 'beginning' or 'end' (default)
-  const positionPref = localStorage.getItem('pref-add-position') || 'end'
-  const position = positionPref === 'beginning' ? 0 : null
-
-  await addStuff(t, '', position)
+  await addStuff(t)
   new_stuff_title.value = ''
   focusAddInput()
 }

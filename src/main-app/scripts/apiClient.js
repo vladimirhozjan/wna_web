@@ -44,6 +44,10 @@ function authHeaders() {
     return {Authorization: `Bearer ${token}`}
 }
 
+function addToTop() {
+    return localStorage.getItem('pref-add-position') === 'beginning'
+}
+
 export async function registerUser({email, password}) {
     try {
         const res = await httpApi.post('/v1/user/register', {email, password})
@@ -214,10 +218,9 @@ export async function revokeAllSessions() {
     }
 }
 
-export async function addStuff({title, description = "", position = null}) {
+export async function addStuff({title, description = ""}) {
     try {
-        const body = {title, description}
-        if (position !== null) body.position = position
+        const body = {title, description, add_to_top: addToTop()}
         const res = await httpApi.post('/v1/stuff', body, {headers: authHeaders()})
         return res.data
     } catch (err) {
@@ -326,6 +329,7 @@ export async function clarifyToAction(stuffId, actionData) {
         const body = {
             target: 'action',
             title: actionData.title,
+            add_to_top: addToTop(),
         }
         if (actionData.description) body.description = actionData.description
         if (actionData.tags?.length) body.tags = actionData.tags
@@ -364,6 +368,7 @@ export async function clarifyToProject(stuffId, projectData) {
         const body = {
             target: 'project',
             title: projectData.title,
+            add_to_top: addToTop(),
         }
         if (projectData.description) body.description = projectData.description
         if (projectData.outcome) body.outcome = projectData.outcome
@@ -403,7 +408,7 @@ export async function clarifyToReference(stuffId) {
 
 export async function clarifyToSomeday(stuffId) {
     try {
-        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'someday'}, {headers: authHeaders()})
+        const res = await httpApi.patch(`/v1/stuff/${stuffId}`, {state: 'someday', add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -441,6 +446,7 @@ export async function addAction(data) {
         if (data.waiting_since) body.waiting_since = data.waiting_since
         if (data.comments_json) body.comments_json = data.comments_json
         if (data.tags !== undefined) body.tags = data.tags
+        body.add_to_top = addToTop()
 
         const res = await httpApi.post('/v1/action', body, {headers: authHeaders()})
         return res.data
@@ -526,7 +532,7 @@ export async function moveAction(actionId, destination) {
 
 export async function deferAction(actionId, type, date, time = null, duration = null) {
     try {
-        const body = { type, date }
+        const body = { type, date, add_to_top: addToTop() }
         if (time) body.time = time
         if (type === 'scheduled' && time && duration) body.duration = duration
         const res = await httpApi.post(`/v1/action/${actionId}/defer`, body, {headers: authHeaders()})
@@ -538,7 +544,7 @@ export async function deferAction(actionId, type, date, time = null, duration = 
 
 export async function undeferAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/undefer`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/undefer`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -601,7 +607,7 @@ export async function todayCount() {
 
 export async function todayAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/today`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/today`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -639,11 +645,11 @@ export async function changeActionState(actionId, state, title) {
     try {
         // Use dedicated endpoints for specific states
         if (state === 'SOMEDAY') {
-            const res = await httpApi.post(`/v1/action/${actionId}/someday`, {}, {headers: authHeaders()})
+            const res = await httpApi.post(`/v1/action/${actionId}/someday`, {add_to_top: addToTop()}, {headers: authHeaders()})
             return res.data
         }
         if (state === 'TODAY') {
-            const res = await httpApi.post(`/v1/action/${actionId}/today`, {}, {headers: authHeaders()})
+            const res = await httpApi.post(`/v1/action/${actionId}/today`, {add_to_top: addToTop()}, {headers: authHeaders()})
             return res.data
         }
         // For other states (NEXT, CALENDAR, WAITING), use PUT with title
@@ -656,7 +662,7 @@ export async function changeActionState(actionId, state, title) {
 
 export async function somedayAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/someday`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/someday`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -665,7 +671,7 @@ export async function somedayAction(actionId) {
 
 export async function somedayProject(projectId) {
     try {
-        const res = await httpApi.post(`/v1/project/${projectId}/someday`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/project/${projectId}/someday`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -680,6 +686,7 @@ export async function addProject(data) {
         if (data.description) body.description = data.description
         if (data.outcome) body.outcome = data.outcome
         if (data.tags !== undefined) body.tags = data.tags
+        body.add_to_top = addToTop()
 
         const res = await httpApi.post('/v1/project', body, {headers: authHeaders()})
         return res.data
@@ -829,7 +836,7 @@ export async function getSomedayByPosition(position) {
 
 export async function activateStuff(stuffId) {
     try {
-        const res = await httpApi.post(`/v1/stuff/${stuffId}/activate`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/activate`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -838,7 +845,7 @@ export async function activateStuff(stuffId) {
 
 export async function activateAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/activate`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/activate`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -847,7 +854,7 @@ export async function activateAction(actionId) {
 
 export async function activateProject(projectId) {
     try {
-        const res = await httpApi.post(`/v1/project/${projectId}/activate`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/project/${projectId}/activate`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -891,7 +898,7 @@ export async function completedCount() {
 
 export async function uncompleteStuff(stuffId) {
     try {
-        const res = await httpApi.post(`/v1/stuff/${stuffId}/uncomplete`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/uncomplete`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -900,7 +907,7 @@ export async function uncompleteStuff(stuffId) {
 
 export async function uncompleteAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/uncomplete`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/uncomplete`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -909,7 +916,7 @@ export async function uncompleteAction(actionId) {
 
 export async function uncompleteProject(projectId) {
     try {
-        const res = await httpApi.post(`/v1/project/${projectId}/uncomplete`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/project/${projectId}/uncomplete`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -961,7 +968,7 @@ export async function moveWaitingPosition(actionId, position) {
 
 export async function waitAction(actionId, waitingFor) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/wait`, {waiting_for: waitingFor}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/wait`, {waiting_for: waitingFor, add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -970,7 +977,7 @@ export async function waitAction(actionId, waitingFor) {
 
 export async function unwaitAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/unwait`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/unwait`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1025,7 +1032,7 @@ export async function emptyTrash() {
 
 export async function restoreStuff(stuffId) {
     try {
-        const res = await httpApi.post(`/v1/stuff/${stuffId}/restore`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/restore`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -1034,7 +1041,7 @@ export async function restoreStuff(stuffId) {
 
 export async function restoreAction(actionId) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/restore`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/restore`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -1043,7 +1050,7 @@ export async function restoreAction(actionId) {
 
 export async function restoreProject(projectId) {
     try {
-        const res = await httpApi.post(`/v1/project/${projectId}/restore`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/project/${projectId}/restore`, {add_to_top: addToTop()}, {headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)

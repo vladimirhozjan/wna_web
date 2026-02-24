@@ -88,12 +88,12 @@ export function stuffModel() {
         }
     }
 
-    async function addStuff(title, description = '', position = null) {
+    async function addStuff(title, description = '') {
         loading.value = true
         error.value = null
 
         try {
-            const created = await apiClient.addStuff({ title, description, position })
+            const created = await apiClient.addStuff({ title, description })
             await loadStuff({ reset: true })
             statsModel().refreshStats()
             return created
