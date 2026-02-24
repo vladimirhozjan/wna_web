@@ -196,8 +196,13 @@ export function referenceModel() {
                 })
                 entry.status = 'done'
                 entry.progress = 100
-                files.value.unshift(result)
-                totalFiles.value++
+                if (result && result.id) {
+                    files.value.unshift(result)
+                    totalFiles.value++
+                } else {
+                    console.warn('[referenceModel] Unexpected upload response, reloading:', result)
+                    await loadContents({reset: true})
+                }
                 loadQuota()
                 statsModel().refreshStats()
             } catch (err) {

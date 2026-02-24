@@ -156,7 +156,12 @@ async function uploadFile(file) {
     const attachment = await uploadAttachment(props.entityType, props.itemId, file, (pct) => {
       progress.value = pct
     })
-    attachments.value.push(attachment)
+    if (attachment && attachment.id) {
+      attachments.value.push(attachment)
+    } else {
+      console.warn('[AttachmentSection] Unexpected upload response, reloading:', attachment)
+      await loadAttachments()
+    }
     toaster.success('File attached')
   } catch (err) {
     if (err.status === 409) {
