@@ -8,7 +8,7 @@
           <a class="detail-back-link" @click="goBack">&lt;</a>
           <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="action && !fromCalendar && !fromProject && !fromRecurring" class="detail-header-right">
+        <div v-if="action && !fromCalendar && !fromProject && !fromRecurring && !fromEngage" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
@@ -484,9 +484,11 @@ const fromProject = computed(() => fromSource.value === 'project')
 const fromCompleted = computed(() => fromSource.value === 'completed')
 const fromSomeday = computed(() => fromSource.value === 'someday')
 const fromRecurring = computed(() => fromSource.value === 'recurring')
+const fromEngage = computed(() => fromSource.value === 'engage')
 const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 
 const backLabel = computed(() => {
+  if (fromEngage.value) return 'Dashboard'
   if (fromRecurring.value) return 'Recurring'
   if (fromProject.value) return route.query.project_title || 'Project'
   if (fromCalendar.value) return 'Calendar'
@@ -561,7 +563,9 @@ onMounted(async () => {
 })
 
 function goBack() {
-  if (fromRecurring.value) {
+  if (fromEngage.value) {
+    router.push({ name: 'engage' })
+  } else if (fromRecurring.value) {
     router.push({ name: 'recurring-detail', params: { id: route.query.recurring_id } })
   } else if (fromProject.value) {
     router.push({ name: 'project-detail', params: { id: route.query.project_id } })

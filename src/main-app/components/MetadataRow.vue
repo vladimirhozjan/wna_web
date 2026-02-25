@@ -37,6 +37,11 @@
         <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
       </span>
 
+      <!-- Description -->
+      <span v-if="item.description" class="chip">
+        <DescriptionIcon class="chip__icon chip__icon--tertiary" />
+      </span>
+
       <!-- Attachments -->
       <span v-if="item.attachment_count > 0" class="chip">
         <AttachmentIcon class="chip__icon chip__icon--tertiary" />
@@ -66,6 +71,7 @@ import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import AttachmentIcon from '../assets/AttachmentIcon.vue'
 import CommentIcon from '../assets/CommentIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
+import DescriptionIcon from '../assets/DescriptionIcon.vue'
 import { isOverdue, formatShortDate } from '../scripts/dateUtils.js'
 import { describeRRule } from '../scripts/rruleUtils.js'
 
@@ -147,6 +153,7 @@ const hasAnyMetadata = computed(() => {
   if (isAction && i.scheduled_date) return true
   if (isAction && i.start_date) return true
   if (isAction && (i.project?.title || i.project_title)) return true
+  if (i.description) return true
   if (i.attachment_count > 0) return true
   if (i.comment_count > 0) return true
   if (i.tags && i.tags.length > 0) return true
@@ -190,6 +197,7 @@ const hasAnyMetadata = computed(() => {
 .chip--danger {
   color: var(--color-danger);
 }
+
 
 .chip__icon {
   width: 20px;

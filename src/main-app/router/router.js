@@ -18,6 +18,7 @@ import TrashPage from '../views/TrashPage.vue'
 import WaitingForPage from '../views/WaitingForPage.vue'
 import RecurringDetailPage from '../views/RecurringDetailPage.vue'
 import ReviewPage from '../views/ReviewPage.vue'
+import EngagePage from '../views/EngagePage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
     {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}},
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
     {path: '/reset', name: 'reset', component: LandingPage, props: {mode: 'reset'}},
+    {path: '/engage', name: 'engage', component: EngagePage},
     {path: '/next', name: 'next', component: NextPage},
     {path: '/calendar', name: 'calendar', component: CalendarPage},
     {path: '/inbox', name: 'inbox', component: InboxPage},

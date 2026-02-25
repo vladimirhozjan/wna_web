@@ -46,7 +46,7 @@ function closeAuth() {
 
 function onSuccess() {
   closeAuth()
-  router.push({name: 'next'})
+  router.push({name: 'engage'})
 }
 
 function onSuccessPasswordReset() {
