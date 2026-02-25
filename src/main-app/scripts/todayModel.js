@@ -91,9 +91,7 @@ export function todayModel() {
         error.value = null
 
         try {
-            // Create action and move to Today
-            const created = await apiClient.addAction({ title, description })
-            await apiClient.todayAction(created.id)
+            const created = await apiClient.addAction({ title, description, state: 'TODAY' })
             await loadActions({ reset: true })
             statsModel().refreshStats()
             return created

@@ -166,13 +166,15 @@ export function calendarModel() {
         error.value = null
 
         try {
-            // Create action with scheduled date/time
+            // Create action with scheduled date/time and CALENDAR state in one call
             const actionData = {
                 title,
+                state: 'CALENDAR',
                 scheduled_date: date,
             }
             if (time) {
                 actionData.scheduled_time = time
+                // scheduled_duration defaults to 30 on backend
             }
 
             const created = await addAction(actionData)
@@ -187,7 +189,7 @@ export function calendarModel() {
                 scheduled_time: time || null,
                 start_date: null,
                 start_time: null,
-                duration: null,
+                duration: time ? 30 : null,
                 due_date: null,
             }
 

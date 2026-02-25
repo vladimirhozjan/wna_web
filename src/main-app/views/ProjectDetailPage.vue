@@ -1045,7 +1045,8 @@ async function onAddAction() {
   try {
     await apiClient.addAction({
       title,
-      project_id: project.value.id
+      project_id: project.value.id,
+      state: 'NEXT',
     })
     await loadProjectActions()
     newActionTitle.value = ''

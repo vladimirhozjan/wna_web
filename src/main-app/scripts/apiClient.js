@@ -218,9 +218,9 @@ export async function revokeAllSessions() {
     }
 }
 
-export async function addStuff({title, description = ""}) {
+export async function addStuff({title, description = "", state = "INBOX"}) {
     try {
-        const body = {title, description, add_to_top: addToTop()}
+        const body = {title, description, state, add_to_top: addToTop()}
         const res = await httpApi.post('/v1/stuff', body, {headers: authHeaders()})
         return res.data
     } catch (err) {
@@ -446,6 +446,8 @@ export async function addAction(data) {
         if (data.waiting_since) body.waiting_since = data.waiting_since
         if (data.comments_json) body.comments_json = data.comments_json
         if (data.tags !== undefined) body.tags = data.tags
+        if (data.state) body.state = data.state
+        if (data.scheduled_duration) body.scheduled_duration = data.scheduled_duration
         body.add_to_top = addToTop()
 
         const res = await httpApi.post('/v1/action', body, {headers: authHeaders()})

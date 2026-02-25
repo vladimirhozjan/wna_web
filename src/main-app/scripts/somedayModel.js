@@ -145,8 +145,7 @@ export function somedayModel() {
         error.value = null
 
         try {
-            const created = await apiClient.addStuff({ title })
-            await apiClient.clarifyToSomeday(created.id)
+            const created = await apiClient.addStuff({ title, state: 'SOMEDAY' })
             await loadSomeday({ reset: true })
             statsModel().refreshStats()
             return created
