@@ -1,6 +1,12 @@
 <template>
   <div v-if="hasAnyMetadata" class="metadata-row">
     <div class="metadata-row__indicators">
+      <!-- No next action warning (projects only) -->
+      <span v-if="missingNextAction" class="chip chip--warning">
+        <WarningIcon class="chip__icon chip__icon--warning" viewBox="0 0 48 48" />
+        <span class="chip__text chip__text--warning">No next action</span>
+      </span>
+
       <!-- Recurrence rule -->
       <span v-if="item.recurrence_rule" class="chip">
         <RecurringIcon class="chip__icon chip__icon--tertiary" viewBox="0 0 48 48" />
@@ -66,6 +72,7 @@ import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import AttachmentIcon from '../assets/AttachmentIcon.vue'
 import CommentIcon from '../assets/CommentIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
+import WarningIcon from '../assets/WarningIcon.vue'
 import { isOverdue, formatShortDate } from '../scripts/dateUtils.js'
 import { describeRRule } from '../scripts/rruleUtils.js'
 
@@ -76,6 +83,10 @@ const props = defineProps({
 
 const isItemOverdue = computed(() =>
     props.entityType === 'action' && isOverdue(props.item.due_date)
+)
+
+const missingNextAction = computed(() =>
+    props.entityType === 'project' && !props.item.next_action_id
 )
 
 const recurrenceDescription = computed(() => {
@@ -141,6 +152,7 @@ const hasAnyMetadata = computed(() => {
   const i = props.item
   const isAction = props.entityType === 'action'
 
+  if (missingNextAction.value) return true
   if (i.recurrence_rule) return true
   if (isAction && i.waiting_for) return true
   if (isAction && i.due_date) return true
@@ -191,6 +203,10 @@ const hasAnyMetadata = computed(() => {
   color: var(--color-danger);
 }
 
+.chip--warning {
+  color: var(--color-warning);
+}
+
 .chip__icon {
   width: 20px;
   height: 20px;
@@ -200,6 +216,10 @@ const hasAnyMetadata = computed(() => {
 .chip__icon--sm {
   width: 14px;
   height: 14px;
+}
+
+.chip__icon--warning {
+  color: var(--color-warning);
 }
 
 .chip__icon--scheduled {
@@ -218,6 +238,10 @@ const hasAnyMetadata = computed(() => {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   line-height: 1.2;
+}
+
+.chip__text--warning {
+  color: var(--color-warning);
 }
 
 .chip__text--scheduled {

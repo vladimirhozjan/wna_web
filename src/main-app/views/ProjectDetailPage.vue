@@ -202,7 +202,13 @@
                   </div>
                   <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
                 </div>
-                <p v-else class="detail-section-content detail-section-content--empty" @click="onExpandAndFocus">Add a next action...</p>
+                <div v-else class="next-action-prompt" @click="onExpandAndFocus">
+                  <WarningIcon class="next-action-prompt__icon" viewBox="0 0 48 48" />
+                  <div class="next-action-prompt__text">
+                    <strong>What's the next physical step?</strong>
+                    <span>Every active project needs a next action.</span>
+                  </div>
+                </div>
               </template>
 
               <!-- Expanded: full action list -->
@@ -422,6 +428,7 @@ import { statsModel } from '../scripts/statsModel.js'
 import { tagModel } from '../scripts/tagModel.js'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
+import WarningIcon from '../assets/WarningIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -1538,6 +1545,46 @@ async function onAddAction() {
   font-style: italic;
   margin: 0;
   padding: 8px 0;
+}
+
+.next-action-prompt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-warning-light);
+  border-left: 3px solid var(--color-warning);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.next-action-prompt:hover {
+  background: #fde68a;
+}
+
+.next-action-prompt__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-warning);
+}
+
+.next-action-prompt__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-family-default), sans-serif;
+}
+
+.next-action-prompt__text strong {
+  font-size: var(--font-size-body-m);
+  color: var(--color-text-primary);
+}
+
+.next-action-prompt__text span {
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-secondary);
 }
 
 
