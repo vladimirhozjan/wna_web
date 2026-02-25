@@ -11,9 +11,16 @@ const DEFAULTS = {
         business_hours_start: '09:00',
         business_hours_end: '17:00',
         business_days: ['mon', 'tue', 'wed', 'thu', 'fri'],
+        week_start: 'mon',
     },
     tags: {
-        presets: [], // empty = use tagModel defaults
+        presets: [],
+    },
+    review: {
+        enabled: true,
+        template_id: null,
+        last_review_date: null,
+        dismissed_tips: [],
     },
     debug: {
         enabled: false,
@@ -38,9 +45,16 @@ export function settingsModel() {
         businessHoursStart: 9,
         businessHoursEnd: 17,
         businessDays: [1, 2, 3, 4, 5], // 0=Sun, 1=Mon, ...
+        weekStart: 'mon',
 
         // Tag settings
         tagPresets: [],
+
+        // Review settings
+        reviewEnabled: true,
+        reviewTemplateId: null,
+        reviewLastDate: null,
+        dismissedTips: [],
 
         // Debug settings
         debugEnabled: false,
@@ -57,7 +71,12 @@ export function settingsModel() {
             businessHoursStart: false,
             businessHoursEnd: false,
             businessDays: false,
+            weekStart: false,
             tagPresets: false,
+            reviewEnabled: false,
+            reviewTemplateId: false,
+            reviewLastDate: false,
+            dismissedTips: false,
             debugEnabled: false,
         },
     })
@@ -96,9 +115,16 @@ export function settingsModel() {
             state.businessHoursStart = parseHour(settings.calendar.business_hours_start)
             state.businessHoursEnd = parseHour(settings.calendar.business_hours_end)
             state.businessDays = dayNamesToNumbers(settings.calendar.business_days)
+            state.weekStart = settings.calendar.week_start || DEFAULTS.calendar.week_start
         }
         if (settings.tags) {
             state.tagPresets = Array.isArray(settings.tags.presets) ? settings.tags.presets : []
+        }
+        if (settings.review) {
+            state.reviewEnabled = settings.review.enabled ?? DEFAULTS.review.enabled
+            state.reviewTemplateId = settings.review.template_id ?? DEFAULTS.review.template_id
+            state.reviewLastDate = settings.review.last_review_date ?? DEFAULTS.review.last_review_date
+            state.dismissedTips = Array.isArray(settings.review.dismissed_tips) ? settings.review.dismissed_tips : []
         }
         if (settings.debug) {
             state.debugEnabled = settings.debug.enabled ?? DEFAULTS.debug.enabled
@@ -254,6 +280,20 @@ export function settingsModel() {
         }
     }
 
+    async function setWeekStart(value) {
+        const oldValue = state.weekStart
+        state.weekStart = value
+        state.saving.weekStart = true
+        try {
+            await save('calendar', { week_start: value })
+        } catch (err) {
+            state.weekStart = oldValue
+            throw err
+        } finally {
+            state.saving.weekStart = false
+        }
+    }
+
     // Update tag settings
     async function setTagPresets(value) {
         const oldValue = [...state.tagPresets]
@@ -269,6 +309,68 @@ export function settingsModel() {
         } finally {
             state.saving.tagPresets = false
         }
+    }
+
+    // Update review settings
+    async function setReviewEnabled(value) {
+        const oldValue = state.reviewEnabled
+        state.reviewEnabled = value
+        state.saving.reviewEnabled = true
+        try {
+            await save('review', { enabled: value })
+        } catch (err) {
+            state.reviewEnabled = oldValue
+            throw err
+        } finally {
+            state.saving.reviewEnabled = false
+        }
+    }
+
+    async function setReviewTemplateId(id) {
+        const oldValue = state.reviewTemplateId
+        state.reviewTemplateId = id
+        state.saving.reviewTemplateId = true
+        try {
+            await save('review', { template_id: id })
+        } catch (err) {
+            state.reviewTemplateId = oldValue
+            throw err
+        } finally {
+            state.saving.reviewTemplateId = false
+        }
+    }
+
+    async function setReviewLastDate(date) {
+        const oldValue = state.reviewLastDate
+        state.reviewLastDate = date
+        state.saving.reviewLastDate = true
+        try {
+            await save('review', { last_review_date: date })
+        } catch (err) {
+            state.reviewLastDate = oldValue
+            throw err
+        } finally {
+            state.saving.reviewLastDate = false
+        }
+    }
+
+    async function dismissTip(key) {
+        if (state.dismissedTips.includes(key)) return
+        const oldValue = [...state.dismissedTips]
+        state.dismissedTips = [...state.dismissedTips, key]
+        state.saving.dismissedTips = true
+        try {
+            await save('review', { dismissed_tips: state.dismissedTips })
+        } catch (err) {
+            state.dismissedTips = oldValue
+            throw err
+        } finally {
+            state.saving.dismissedTips = false
+        }
+    }
+
+    function isTipDismissed(key) {
+        return state.dismissedTips.includes(key)
     }
 
     // Update debug settings
@@ -313,7 +415,13 @@ export function settingsModel() {
         setBusinessHoursStart,
         setBusinessHoursEnd,
         setBusinessDays,
+        setWeekStart,
         setTagPresets,
+        setReviewEnabled,
+        setReviewTemplateId,
+        setReviewLastDate,
+        dismissTip,
+        isTipDismissed,
         setDebugEnabled,
         getCalendarSettings,
     }

@@ -9,7 +9,7 @@ import { statsModel } from './statsModel.js'
 import { settingsModel } from './settingsModel.js'
 
 const STORAGE_KEY = 'calendar_view_mode'
-const validViewModes = ['day', 'week', 'month', 'year']
+const validViewModes = ['day', 'week', 'month', 'year', 'recurring']
 
 function loadSavedViewMode() {
     const saved = localStorage.getItem(STORAGE_KEY)

@@ -44,7 +44,7 @@ const props = defineProps({
   viewMode: {
     type: String,
     required: true,
-    validator: v => ['day', 'week', 'month', 'year'].includes(v)
+    validator: v => ['day', 'week', 'month', 'year', 'recurring'].includes(v)
   },
   loading: {
     type: Boolean,
@@ -74,6 +74,7 @@ const allViews = [
   { value: 'week', label: 'Week' },
   { value: 'month', label: 'Month' },
   { value: 'year', label: 'Year' },
+  { value: 'recurring', label: 'Recurring' },
 ]
 
 // Filter out week view on mobile
@@ -94,6 +95,8 @@ const title = computed(() => {
       return formatMonthYear(props.currentDate)
     case 'year':
       return format(props.currentDate, 'yyyy')
+    case 'recurring':
+      return 'Recurring Actions'
     default:
       return formatMonthYear(props.currentDate)
   }

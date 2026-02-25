@@ -83,6 +83,16 @@
       </SidebarMenuItem>
 
       <SidebarMenuItem
+          v-if="settingsMdl.state.reviewEnabled"
+          label="Review"
+          :to="{ name: 'review' }"
+          :badge="reviewBadge"
+          :badge-color="reviewBadgeColor"
+      >
+        <template #icon><ReviewIcon/></template>
+      </SidebarMenuItem>
+
+      <SidebarMenuItem
           label="Completed"
           :to="{ name: 'completed' }"
           :count="stats?.completed?.count"
@@ -148,6 +158,9 @@ import CompletedIcon from "../assets/CompletedIcon.vue";
 import TrashIcon from "../assets/TrashIcon.vue";
 import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
+import ReviewIcon from "../assets/ReviewIcon.vue";
+import { reviewModel } from "../scripts/reviewModel.js";
+import { settingsModel } from "../scripts/settingsModel.js";
 
 const auth = authModel();
 const toaster = errorModel();
@@ -160,6 +173,21 @@ const { items: somedayItems } = somedayModel();
 const { items: calendarItems } = calendarModel();
 const { stats, loadStats, refreshStats } = statsModel();
 const router = useRouter();
+const { daysSinceReview } = reviewModel();
+const settingsMdl = settingsModel();
+
+const reviewBadge = computed(() => {
+  const days = daysSinceReview.value;
+  if (days === null || days < 1) return null;
+  return `${days}d`;
+});
+
+const reviewBadgeColor = computed(() => {
+  const days = daysSinceReview.value;
+  if (days >= 14) return 'var(--color-danger)';
+  if (days >= 7) return '#ea580c';
+  return null;
+});
 
 onMounted(loadStats);
 

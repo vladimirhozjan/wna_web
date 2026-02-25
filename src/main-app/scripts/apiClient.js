@@ -1369,6 +1369,64 @@ export async function updateSettings(settings) {
     }
 }
 
+// ── Recurring API ──
+
+export async function listRecurring() {
+    try {
+        const res = await httpApi.get('/v1/recurring', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createRecurring(data) {
+    try {
+        const res = await httpApi.post('/v1/recurring', data, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getRecurring(id) {
+    try {
+        const res = await httpApi.get(`/v1/recurring/${id}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateRecurring(id, data) {
+    try {
+        const res = await httpApi.put(`/v1/recurring/${id}`, data, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteRecurring(id, deleteActiveInstance = false) {
+    try {
+        const params = {}
+        if (deleteActiveInstance) params.delete_active_instance = true
+        const res = await httpApi.delete(`/v1/recurring/${id}`, {params, headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function spawnRecurring(id) {
+    try {
+        const res = await httpApi.post(`/v1/recurring/${id}/spawn`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Stats API ──
 
 export async function getStats() {
@@ -1501,6 +1559,13 @@ const apiClient = {
     downloadAttachment,
     replaceAttachment,
     deleteAttachment,
+    // Recurring API
+    listRecurring,
+    createRecurring,
+    getRecurring,
+    updateRecurring,
+    deleteRecurring,
+    spawnRecurring,
     // Stats API
     getStats,
 }

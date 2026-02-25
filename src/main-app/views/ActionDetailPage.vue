@@ -8,7 +8,7 @@
           <a class="detail-back-link" @click="goBack">&lt;</a>
           <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="action && !fromCalendar && !fromProject" class="detail-header-right">
+        <div v-if="action && !fromCalendar && !fromProject && !fromRecurring" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
@@ -55,6 +55,20 @@
                 rows="1"
             ></textarea>
           </div>
+        </div>
+
+        <!-- Recurring indicator -->
+        <div v-if="action.recurring_parent_id" class="detail-recurring-badge" @click="goToRecurring">
+          <svg class="detail-recurring-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+          </svg>
+          <span>Recurring</span>
+        </div>
+
+        <!-- Weekly Review link -->
+        <div v-if="action.recurring_parent_id && action.recurring_parent_id === reviewTemplateId" class="detail-review-badge" @click="goToReview">
+          <ReviewIcon class="detail-review-badge__icon" />
+          <span>Start Weekly Review</span>
         </div>
 
         <!-- Action buttons -->
@@ -407,6 +421,8 @@ import WaitingIcon from '../assets/WaitingIcon.vue'
 import CalendarIcon from '../assets/CalendarIcon.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
+import ReviewIcon from '../assets/ReviewIcon.vue'
+import { reviewModel } from '../scripts/reviewModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -414,6 +430,7 @@ const toaster = errorModel()
 const confirm = confirmModel()
 const mover = moveModel()
 const tagMdl = tagModel()
+const { reviewTemplateId } = reviewModel()
 
 const nextModel = nextActionModel()
 const todayMdl = todayModel()
@@ -466,9 +483,11 @@ const fromWaiting = computed(() => fromSource.value === 'waiting')
 const fromProject = computed(() => fromSource.value === 'project')
 const fromCompleted = computed(() => fromSource.value === 'completed')
 const fromSomeday = computed(() => fromSource.value === 'someday')
+const fromRecurring = computed(() => fromSource.value === 'recurring')
 const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 
 const backLabel = computed(() => {
+  if (fromRecurring.value) return 'Recurring'
   if (fromProject.value) return route.query.project_title || 'Project'
   if (fromCalendar.value) return 'Calendar'
   if (fromCompleted.value || isCompleted.value) return 'Completed'
@@ -542,7 +561,9 @@ onMounted(async () => {
 })
 
 function goBack() {
-  if (fromProject.value) {
+  if (fromRecurring.value) {
+    router.push({ name: 'recurring-detail', params: { id: route.query.recurring_id } })
+  } else if (fromProject.value) {
     router.push({ name: 'project-detail', params: { id: route.query.project_id } })
   } else if (fromCalendar.value) {
     router.push({ name: 'calendar' })
@@ -562,6 +583,15 @@ function goBack() {
 function goToProject() {
   if (!action.value?.project?.id) return
   router.push({ name: 'project-detail', params: { id: action.value.project.id } })
+}
+
+function goToRecurring() {
+  if (!action.value?.recurring_parent_id) return
+  router.push({ name: 'recurring-detail', params: { id: action.value.recurring_parent_id } })
+}
+
+function goToReview() {
+  router.push({ name: 'review' })
 }
 
 function startEdit(field, value) {
@@ -1474,6 +1504,57 @@ async function onActivate() {
 .detail-title-input:focus {
   border-color: var(--color-input-border-focus);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* ── Recurring badge ── */
+.detail-recurring-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  margin: 8px 0 0 50px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-link-text);
+  cursor: pointer;
+}
+
+.detail-recurring-badge:hover {
+  color: var(--color-link-hover);
+  border-color: var(--color-text-tertiary);
+}
+
+.detail-recurring-icon {
+  flex-shrink: 0;
+}
+
+.detail-review-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  margin: 6px 0 0 50px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  font-family: var(--font-family-default), sans-serif;
+  font-size: var(--font-size-body-s);
+  color: var(--color-link-text);
+  cursor: pointer;
+}
+
+.detail-review-badge:hover {
+  color: var(--color-link-hover);
+  border-color: var(--color-text-tertiary);
+}
+
+.detail-review-badge__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* ── Action buttons ── */

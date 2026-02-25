@@ -182,6 +182,25 @@
           </div>
         </div>
 
+        <!-- Review Section -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Review</h2>
+
+          <div class="settings-row">
+            <div>
+              <span class="settings-label">Weekly Review</span>
+              <p class="settings-hint">Show the Weekly Review section in the sidebar</p>
+            </div>
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.reviewEnabled }">
+              <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"></span>
+              <label class="settings-toggle">
+                <input type="checkbox" v-model="reviewEnabled" />
+                <span class="settings-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- About Section -->
         <div class="settings-section">
           <h2 class="settings-section-title">About</h2>
@@ -337,6 +356,11 @@ async function saveAndCloseTagPresets() {
   }
 }
 
+
+const reviewEnabled = computed({
+  get: () => settings.state.reviewEnabled,
+  set: (val) => settings.setReviewEnabled(val).catch(err => toaster.push('Failed to save setting'))
+})
 
 const debugMode = computed({
   get: () => settings.state.debugEnabled,

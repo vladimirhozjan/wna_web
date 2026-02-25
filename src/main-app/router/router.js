@@ -16,6 +16,8 @@ import ProjectDetailPage from '../views/ProjectDetailPage.vue'
 import CompletedPage from '../views/CompletedPage.vue'
 import TrashPage from '../views/TrashPage.vue'
 import WaitingForPage from '../views/WaitingForPage.vue'
+import RecurringDetailPage from '../views/RecurringDetailPage.vue'
+import ReviewPage from '../views/ReviewPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
@@ -35,9 +37,12 @@ const routes = [
     {path: '/completed', name: 'completed', component: CompletedPage},
     {path: '/trash', name: 'trash', component: TrashPage},
     {path: '/waiting-for', name: 'waiting-for', component: WaitingForPage},
+    {path: '/review', name: 'review', component: ReviewPage},
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
+    {path: '/recurring/new', name: 'recurring-new', component: RecurringDetailPage},
+    {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 

@@ -4,7 +4,7 @@
       <CalendarHeader
           :current-date="currentDate"
           :view-mode="viewMode"
-          :loading="loading"
+          :loading="viewMode === 'recurring' ? recurringLoading : loading"
           @prev="onPrev"
           @next="onNext"
           @today="onToday"
@@ -43,6 +43,10 @@
               @day-click="onDayClick"
               @month-click="onMonthClick"
           />
+
+          <CalendarRecurringView
+              v-else-if="viewMode === 'recurring'"
+          />
       </div>
     </div>
   </DashboardLayout>
@@ -57,18 +61,24 @@ import CalendarDayView from '../components/calendar/CalendarDayView.vue'
 import CalendarWeekView from '../components/calendar/CalendarWeekView.vue'
 import CalendarMonthView from '../components/calendar/CalendarMonthView.vue'
 import CalendarYearView from '../components/calendar/CalendarYearView.vue'
+import CalendarRecurringView from '../components/calendar/CalendarRecurringView.vue'
 import { calendarModel } from '../scripts/calendarModel.js'
 import { errorModel } from '../scripts/errorModel.js'
+import { recurringModel } from '../scripts/recurringModel.js'
 
 const router = useRouter()
 const calendar = calendarModel()
 const toaster = errorModel()
+
+const { loading: recurringLoading } = recurringModel()
 
 const currentDate = computed(() => calendar.currentDate.value)
 const viewMode = computed(() => calendar.viewMode.value)
 const loading = computed(() => calendar.loading.value)
 
 async function loadData() {
+  if (viewMode.value === 'recurring') return
+
   try {
     const { start, end } = calendar.dateRange.value
 

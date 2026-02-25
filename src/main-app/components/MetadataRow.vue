@@ -1,6 +1,12 @@
 <template>
   <div v-if="hasAnyMetadata" class="metadata-row">
     <div class="metadata-row__indicators">
+      <!-- Recurrence rule -->
+      <span v-if="item.recurrence_rule" class="chip">
+        <RecurringIcon class="chip__icon chip__icon--tertiary" viewBox="0 0 48 48" />
+        <span class="chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
+      </span>
+
       <!-- Waiting for -->
       <span v-if="entityType === 'action' && item.waiting_for" class="chip">
         <HourglassIcon class="chip__icon chip__icon--sm" />
@@ -59,7 +65,9 @@ import CalendarIcon from '../assets/CalendarIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import AttachmentIcon from '../assets/AttachmentIcon.vue'
 import CommentIcon from '../assets/CommentIcon.vue'
+import RecurringIcon from '../assets/RecurringIcon.vue'
 import { isOverdue, formatShortDate } from '../scripts/dateUtils.js'
+import { describeRRule } from '../scripts/rruleUtils.js'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -70,6 +78,29 @@ const isItemOverdue = computed(() =>
     props.entityType === 'action' && isOverdue(props.item.due_date)
 )
 
+const recurrenceDescription = computed(() => {
+  let desc = describeRRule(props.item.recurrence_rule)
+  if (!desc) return ''
+
+  const time = props.item.scheduled_time
+  if (time) {
+    const [h, m] = time.split(':')
+    desc += ` at ${h}:${m}`
+  }
+
+  const dur = props.item.scheduled_duration
+  if (dur) {
+    if (dur >= 60 && dur % 60 === 0) {
+      desc += ` for ${dur / 60}h`
+    } else if (dur >= 60) {
+      desc += ` for ${Math.floor(dur / 60)}h ${dur % 60}m`
+    } else {
+      desc += ` for ${dur}m`
+    }
+  }
+
+  return desc
+})
 const formattedDueDate = computed(() => formatShortDate(props.item.due_date))
 const formattedScheduledDate = computed(() => formatShortDate(props.item.scheduled_date))
 const formattedStartDate = computed(() => formatShortDate(props.item.start_date))
@@ -110,6 +141,7 @@ const hasAnyMetadata = computed(() => {
   const i = props.item
   const isAction = props.entityType === 'action'
 
+  if (i.recurrence_rule) return true
   if (isAction && i.waiting_for) return true
   if (isAction && i.due_date) return true
   if (isAction && i.scheduled_date) return true
