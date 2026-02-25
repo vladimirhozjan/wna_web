@@ -99,7 +99,7 @@ export function stuffModel() {
         error.value = null
 
         try {
-            const created = await apiClient.addStuff({ title, description })
+            const created = await apiClient.addStuff({ title, description, state: 'INBOX' })
             await loadStuff({ reset: true })
             statsModel().refreshStats()
             return created

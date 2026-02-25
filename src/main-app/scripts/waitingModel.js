@@ -82,10 +82,7 @@ export function waitingModel() {
         error.value = null
 
         try {
-            // First create the action
-            const created = await apiClient.addAction({ title })
-            // Then move it to WAITING state
-            await apiClient.waitAction(created.id, waitingFor)
+            const created = await apiClient.addAction({ title, state: 'WAITING', waiting_for: waitingFor })
             await loadWaiting({ reset: true })
             statsModel().refreshStats()
             return created

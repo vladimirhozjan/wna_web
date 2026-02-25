@@ -94,7 +94,7 @@ export function nextActionModel() {
         error.value = null
 
         try {
-            const created = await apiClient.addAction({ title, description })
+            const created = await apiClient.addAction({ title, description, state: 'NEXT' })
             await loadActions({ reset: true })
             statsModel().refreshStats()
             return created
