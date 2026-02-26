@@ -1,6 +1,12 @@
 <template>
   <LandingLayout class="page" @open-login="openAuth('login')" @open-register="openAuth('register')">
-    <UnderConstruction/>
+    <HeroSection @open-register="openAuth('register')" />
+    <HowItWorksSection />
+    <FeaturesSection />
+    <WhyUsSection />
+    <TestimonySection />
+    <BookSection />
+    <CtaBanner @open-register="openAuth('register')" />
   </LandingLayout>
   <AuthDialog
       v-model:mode="authMode"
@@ -15,7 +21,13 @@ import {ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
-import UnderConstruction from "../../components/UnderConstruction.vue";
+import HeroSection from '../../components/public/HeroSection.vue'
+import HowItWorksSection from '../../components/public/HowItWorksSection.vue'
+import FeaturesSection from '../../components/public/FeaturesSection.vue'
+import WhyUsSection from '../../components/public/WhyUsSection.vue'
+import TestimonySection from '../../components/public/TestimonySection.vue'
+import BookSection from '../../components/public/BookSection.vue'
+import CtaBanner from '../../components/public/CtaBanner.vue'
 
 const props = defineProps({
   mode: {

@@ -133,4 +133,14 @@
     --card-padding: 24px;
     --card-border: 1px solid var(--color-border-light);
     --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+    /* Dark sections (landing page) */
+    --color-bg-dark: #1E293B;
+    --color-bg-dark-card: #283548;
+    --color-text-on-dark: #F1F5F9;
+    --color-text-on-dark-secondary: #94A3B8;
+    --color-border-dark: rgba(148, 163, 184, 0.15);
+
+    /* Light accent background */
+    --color-bg-accent-light: #EDF3FC;
 }
