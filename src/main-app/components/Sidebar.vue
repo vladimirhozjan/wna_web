@@ -2,6 +2,13 @@
   <aside class="sidebar">
     <nav class="sidebar-nav">
 
+      <SidebarMenuItem
+          label="Dashboard"
+          :to="{ name: 'engage' }"
+      >
+        <template #icon><EngageIcon/></template>
+      </SidebarMenuItem>
+
       <ContextFilter />
 
       <SidebarMenuItem
@@ -159,6 +166,7 @@ import TrashIcon from "../assets/TrashIcon.vue";
 import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 import ReviewIcon from "../assets/ReviewIcon.vue";
+import EngageIcon from "../assets/EngageIcon.vue";
 import { reviewModel } from "../scripts/reviewModel.js";
 import { settingsModel } from "../scripts/settingsModel.js";
 

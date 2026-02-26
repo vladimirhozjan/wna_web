@@ -108,7 +108,7 @@
 <script setup>
 import DashboardLayout from "../layouts/DashboardLayout.vue";
 import {ref, onMounted, nextTick, watch, computed, onUnmounted} from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { stuffModel } from '../scripts/stuffModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { confirmModel } from '../scripts/confirmModel.js'
@@ -136,6 +136,7 @@ const {
 } = stuffModel()
 
 const router = useRouter()
+const route = useRoute()
 const toaster = errorModel()
 const confirm = confirmModel()
 
@@ -177,7 +178,12 @@ watch(error, (err) => {
 onMounted(async () => {
   items.value = []
   await loadStuff({ reset: true })
-  focusAddInput()
+  if (route.query.clarify && items.value.length > 0) {
+    onClarify()
+    router.replace({ name: 'inbox' })
+  } else {
+    focusAddInput()
+  }
   checkMobile()
   window.addEventListener('resize', checkMobile)
 })
