@@ -155,7 +155,7 @@ import SidebarMenuItem from "./SidebarMenuItem.vue";
 import ContextFilter from "./ContextFilter.vue";
 import NextIcon from "../assets/NextIcon.vue";
 import CalendarIcon from "../assets/CalendarIcon.vue";
-
+import TodayIcon from "../assets/TodayIcon.vue";
 import InboxIcon from "../assets/InboxIcon.vue";
 import ProjectsIcon from "../assets/ProjectsIcon.vue";
 import SomedayIcon from "../assets/SomedayIcon.vue";
