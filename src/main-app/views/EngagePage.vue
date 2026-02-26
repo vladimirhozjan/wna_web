@@ -223,8 +223,20 @@ const reviewLabel = computed(() => {
     return `Last reviewed ${days} days ago`
 })
 
+const hasAnythingToReview = computed(() => {
+    if (!stats.value) return false
+    return inboxCount.value > 0
+        || todayCount.value > 0
+        || nextCount.value > 0
+        || waitingCount.value > 0
+        || (stats.value?.projects?.count ?? 0) > 0
+        || (stats.value?.someday?.count ?? 0) > 0
+})
+
 const reviewNudgeVisible = computed(() => {
-    return reviewEnabled.value && (daysSinceReview.value === null || daysSinceReview.value >= 6)
+    return reviewEnabled.value
+        && hasAnythingToReview.value
+        && (daysSinceReview.value === null || daysSinceReview.value >= 6)
 })
 
 const hasNudges = computed(() => {
