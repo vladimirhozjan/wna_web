@@ -45,12 +45,22 @@ const routes = [
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
     {path: '/recurring/new', name: 'recurring-new', component: RecurringDetailPage},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
+    {path: '/pricing', name: 'pricing', component: () => import('../views/PricingPage.vue')},
+    {path: '/help', name: 'help', component: () => import('../views/HelpPage.vue')},
+    {path: '/legal', name: 'legal', redirect: '/legal/terms'},
+    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/LegalPage.vue'), props: {doc: 'terms'}},
+    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/LegalPage.vue'), props: {doc: 'privacy'}},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
+    scrollBehavior(to, from, savedPosition) {
+        if (to.hash) return {el: to.hash, behavior: 'smooth'}
+        if (savedPosition) return savedPosition
+        return {top: 0}
+    },
 })
 
 export default router

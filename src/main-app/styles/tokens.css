@@ -121,4 +121,16 @@
     --lh-body-s: 150%;
     --lh-footnote: 150%;
     --lh-label: 140%;
+
+    /* Public page section spacing */
+    --section-py: 64px;
+    --section-py-mobile: 40px;
+    --section-max-width: 900px;
+    --section-px: 20px;
+
+    /* Card styling */
+    --card-radius: 12px;
+    --card-padding: 24px;
+    --card-border: 1px solid var(--color-border-light);
+    --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
 }

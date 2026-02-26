@@ -5,6 +5,14 @@
       <span class="text-h3 color-text-primary">WhatsNextAction</span>
     </div>
 
+    <!-- Center nav links (landing/public context, desktop only) -->
+    <nav v-if="context === 'landing' && !authenticated" class="topnav-center desktop-only">
+      <a href="/#why-gtd" class="nav-link text-body-s">Why GTD</a>
+      <a href="/#features" class="nav-link text-body-s">Features</a>
+      <router-link to="/pricing" class="nav-link text-body-s">Pricing</router-link>
+      <router-link to="/help" class="nav-link text-body-s">Help</router-link>
+    </nav>
+
     <!-- GUEST (not authenticated) -->
     <div v-if="!authenticated">
       <div class="topnav-right desktop-only">
@@ -17,6 +25,11 @@
       </div>
 
       <div v-if="showMobile" class="user-menu">
+        <a href="/#why-gtd" class="dropdown-item" @click="showMobile = false">Why GTD</a>
+        <a href="/#features" class="dropdown-item" @click="showMobile = false">Features</a>
+        <router-link to="/pricing" class="dropdown-item" @click="showMobile = false">Pricing</router-link>
+        <router-link to="/help" class="dropdown-item" @click="showMobile = false">Help</router-link>
+        <hr class="dropdown-divider" />
         <button class="dropdown-item" @click="clickRegister">Start Here</button>
         <button class="dropdown-item" @click="clickLogin">Sign In</button>
       </div>
@@ -224,6 +237,7 @@ onBeforeUnmount(() => {
 }
 
 .dropdown-item {
+  display: block;
   width: 100%;
   padding: 10px 18px;
   text-align: left;
@@ -231,9 +245,34 @@ onBeforeUnmount(() => {
   background: none;
   border: none;
   white-space: nowrap;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-s);
 }
 
 .dropdown-item:hover {
   background: rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-divider {
+  border: none;
+  border-top: 1px solid var(--color-border-light);
+  margin: 4px 0;
+}
+
+.topnav-center {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.nav-link:hover {
+  color: var(--color-action);
 }
 </style>
