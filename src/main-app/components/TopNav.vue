@@ -100,7 +100,7 @@ function clickLogin() {
 
 function goToDashboard() {
   showDropdown.value = false;
-  router.push("/next");
+  router.push("/engage");
 }
 
 function goToSettings() {
