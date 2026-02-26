@@ -180,11 +180,15 @@ watch(() => props.currentDate, () => {
 })
 
 const weekDays = computed(() => {
-  const days = getWeekDays(new Date())
+  const settings = calendar.getCalendarSettings()
+  const days = getWeekDays(new Date(), settings.weekStartsOn)
   return days.map(d => formatWeekdayShort(d))
 })
 
-const calendarDays = computed(() => getMonthDays(props.currentDate))
+const calendarDays = computed(() => {
+  const settings = calendar.getCalendarSettings()
+  return getMonthDays(props.currentDate, settings.weekStartsOn)
+})
 
 // For mobile list view - only show days in current month
 const currentMonthDays = computed(() => {

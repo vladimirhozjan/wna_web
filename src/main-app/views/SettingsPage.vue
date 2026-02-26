@@ -129,6 +129,14 @@
           <h2 class="settings-section-title">Calendar</h2>
 
           <div class="settings-row">
+            <span class="settings-label">Week starts on</span>
+            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.weekStart }">
+              <span v-if="settings.state.saving.weekStart" class="settings-saving-spinner"></span>
+              <Select v-model="weekStart" :options="weekStartOptions" title="Week starts on" />
+            </div>
+          </div>
+
+          <div class="settings-row">
             <span class="settings-label">Time format</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timeFormat }">
               <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"></span>
@@ -373,6 +381,16 @@ const positionOptions = [
 ]
 
 // Calendar preferences - computed from settings model
+const weekStart = computed({
+  get: () => settings.state.weekStart,
+  set: (val) => settings.setWeekStart(val).catch(() => toaster.push('Failed to save setting'))
+})
+
+const weekStartOptions = [
+  { value: 'mon', label: 'Monday' },
+  { value: 'sun', label: 'Sunday' },
+]
+
 const timeFormat = computed({
   get: () => settings.state.timeFormat === '12-hour' ? '12h' : '24h',
   set: (val) => settings.setTimeFormat(val === '12h' ? '12-hour' : '24-hour').catch(err => toaster.push('Failed to save setting'))

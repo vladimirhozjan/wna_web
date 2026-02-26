@@ -104,17 +104,24 @@ watch(() => props.currentDate, () => {
   scrollToCurrentMonth()
 })
 
-const weekdayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+const weekdayLabels = computed(() => {
+  const settings = calendar.getCalendarSettings()
+  const allLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+  const start = settings.weekStartsOn
+  return [...allLabels.slice(start), ...allLabels.slice(0, start)]
+})
 
 const months = computed(() => {
+  const settings = calendar.getCalendarSettings()
+  const weekStartsOn = settings.weekStartsOn
   const yearMonths = getYearMonths(props.currentDate)
 
   return yearMonths.map((monthDate, monthIndex) => {
     const monthStart = startOfMonth(monthDate)
     const daysInGrid = []
 
-    // Get the day of week the month starts on (0 = Sunday)
-    const startDay = monthStart.getDay()
+    // Get the day of week the month starts on, offset by weekStartsOn
+    const startDay = (monthStart.getDay() - weekStartsOn + 7) % 7
 
     // Add empty cells for days before the month starts
     for (let i = 0; i < startDay; i++) {
@@ -122,7 +129,7 @@ const months = computed(() => {
     }
 
     // Add all days of the month
-    const monthDays = getMonthDays(monthDate)
+    const monthDays = getMonthDays(monthDate, weekStartsOn)
     const actualMonthDays = monthDays.filter(d => isSameMonth(d, monthDate))
     daysInGrid.push(...actualMonthDays)
 

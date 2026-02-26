@@ -185,7 +185,8 @@ const currentTimePosition = ref(null)
 let timeUpdateInterval = null
 
 const weekDays = computed(() => {
-  const days = getWeekDays(props.currentDate)
+  const settings = calendar.getCalendarSettings()
+  const days = getWeekDays(props.currentDate, settings.weekStartsOn)
   return days.map(date => ({
     date,
     dateStr: formatDate(date),

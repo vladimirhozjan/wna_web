@@ -114,18 +114,18 @@ export function formatYear(date) {
     return format(date, 'yyyy')
 }
 
-export function getDateRange(date, viewMode) {
+export function getDateRange(date, viewMode, weekStartsOn = 0) {
     switch (viewMode) {
         case 'day':
             return { start: startOfDay(date), end: addDays(startOfDay(date), 1) }
         case 'week':
-            return { start: startOfWeek(date), end: endOfWeek(date) }
+            return { start: startOfWeek(date, { weekStartsOn }), end: endOfWeek(date, { weekStartsOn }) }
         case 'month': {
             const monthStart = startOfMonth(date)
             const monthEnd = endOfMonth(date)
             return {
-                start: startOfWeek(monthStart),
-                end: endOfWeek(monthEnd)
+                start: startOfWeek(monthStart, { weekStartsOn }),
+                end: endOfWeek(monthEnd, { weekStartsOn })
             }
         }
         case 'year':

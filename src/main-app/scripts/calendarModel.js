@@ -80,9 +80,10 @@ export function calendarModel() {
         items.value.filter(i => i.start_date && !i.scheduled_date)
     )
 
-    const dateRange = computed(() =>
-        getDateRange(currentDate.value, viewMode.value)
-    )
+    const dateRange = computed(() => {
+        const settings = getCalendarSettings()
+        return getDateRange(currentDate.value, viewMode.value, settings.weekStartsOn)
+    })
 
     function getItemsForDate(date) {
         const dateStr = formatDate(date)

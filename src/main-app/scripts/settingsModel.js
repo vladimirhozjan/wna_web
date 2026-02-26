@@ -400,6 +400,7 @@ export function settingsModel() {
             businessHoursStart: state.businessHoursStart,
             businessHoursEnd: state.businessHoursEnd,
             businessDays: state.businessDays,
+            weekStartsOn: DAY_NAME_TO_NUM[state.weekStart] ?? 1,
         }
     }
 
