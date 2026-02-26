@@ -210,7 +210,7 @@ const hasAnyMetadata = computed(() => {
   color: var(--color-danger);
 }
 
-(.chip--warning {
+.chip--warning {
   color: var(--color-warning);
 }
 
