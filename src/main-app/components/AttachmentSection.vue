@@ -85,9 +85,9 @@ import RefFileIcon from './reference/RefFileIcon.vue'
 import RefPreviewModal from './reference/RefPreviewModal.vue'
 import DownloadIcon from '../assets/DownloadIcon.vue'
 import TrashIcon from '../assets/TrashIcon.vue'
-import { listAttachments, uploadAttachment, downloadAttachment, deleteAttachment } from '../scripts/apiClient.js'
-import { errorModel } from '../scripts/errorModel.js'
-import { confirmModel } from '../scripts/confirmModel.js'
+import { listAttachments, uploadAttachment, downloadAttachment, deleteAttachment } from '../scripts/core/apiClient.js'
+import { errorModel } from '../scripts/core/errorModel.js'
+import { confirmModel } from '../scripts/core/confirmModel.js'
 
 const props = defineProps({
   entityType: { type: String, required: true },

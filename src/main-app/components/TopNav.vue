@@ -72,8 +72,8 @@ import { useRouter } from "vue-router";
 import Btn from "./Btn.vue";
 import UserAvatar from "./UserAvatar.vue";
 import QuickAddBtn from "./QuickAddBtn.vue";
-import { stuffModel } from "../scripts/stuffModel.js";
-import { errorModel } from "../scripts/errorModel.js";
+import { stuffModel } from "../scripts/models/stuffModel.js";
+import { errorModel } from "../scripts/core/errorModel.js";
 
 defineProps({
   authenticated: {

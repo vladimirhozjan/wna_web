@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import {errorModel} from "../scripts/errorModel.js";
+import {errorModel} from "../scripts/core/errorModel.js";
 
 const error = errorModel()
 </script>

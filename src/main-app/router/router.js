@@ -1,24 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { authModel } from '../scripts/authModel.js'
+import { authModel } from '../scripts/core/authModel.js'
 
-import LandingPage from '../views/LandingPage.vue'
-import NextPage from '../views/NextPage.vue'
-import CalendarPage from '../views/CalendarPage.vue'
-import InboxPage from '../views/InboxPage.vue'
-import ProjectsPage from '../views/ProjectsPage.vue'
-import ReferencePage from '../views/ReferencePage.vue'
-import SettingsPage from '../views/SettingsPage.vue'
-import TodayPage from '../views/TodayPage.vue'
-import SomedayPage from '../views/SomedayPage.vue'
-import StuffDetailPage from '../views/StuffDetailPage.vue'
-import ActionDetailPage from '../views/ActionDetailPage.vue'
-import ProjectDetailPage from '../views/ProjectDetailPage.vue'
-import CompletedPage from '../views/CompletedPage.vue'
-import TrashPage from '../views/TrashPage.vue'
-import WaitingForPage from '../views/WaitingForPage.vue'
-import RecurringDetailPage from '../views/RecurringDetailPage.vue'
-import ReviewPage from '../views/ReviewPage.vue'
-import EngagePage from '../views/EngagePage.vue'
+import LandingPage from '../views/public/LandingPage.vue'
+import NextPage from '../views/dashboard/NextPage.vue'
+import CalendarPage from '../views/dashboard/CalendarPage.vue'
+import InboxPage from '../views/dashboard/InboxPage.vue'
+import ProjectsPage from '../views/dashboard/ProjectsPage.vue'
+import ReferencePage from '../views/dashboard/ReferencePage.vue'
+import SettingsPage from '../views/dashboard/SettingsPage.vue'
+import TodayPage from '../views/dashboard/TodayPage.vue'
+import SomedayPage from '../views/dashboard/SomedayPage.vue'
+import StuffDetailPage from '../views/dashboard/StuffDetailPage.vue'
+import ActionDetailPage from '../views/dashboard/ActionDetailPage.vue'
+import ProjectDetailPage from '../views/dashboard/ProjectDetailPage.vue'
+import CompletedPage from '../views/dashboard/CompletedPage.vue'
+import TrashPage from '../views/dashboard/TrashPage.vue'
+import WaitingForPage from '../views/dashboard/WaitingForPage.vue'
+import RecurringDetailPage from '../views/dashboard/RecurringDetailPage.vue'
+import ReviewPage from '../views/dashboard/ReviewPage.vue'
+import EngagePage from '../views/dashboard/EngagePage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
@@ -45,11 +45,11 @@ const routes = [
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
     {path: '/recurring/new', name: 'recurring-new', component: RecurringDetailPage},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
-    {path: '/pricing', name: 'pricing', component: () => import('../views/PricingPage.vue')},
-    {path: '/help', name: 'help', component: () => import('../views/HelpPage.vue')},
+    {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue')},
+    {path: '/help', name: 'help', component: () => import('../views/public/HelpPage.vue')},
     {path: '/legal', name: 'legal', redirect: '/legal/terms'},
-    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/LegalPage.vue'), props: {doc: 'terms'}},
-    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/LegalPage.vue'), props: {doc: 'privacy'}},
+    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'terms'}},
+    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'privacy'}},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 

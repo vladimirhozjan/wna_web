@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { formatMonthYear, formatDate, format } from '../../scripts/dateUtils.js'
+import { formatMonthYear, formatDate, format } from '../../scripts/core/dateUtils.js'
 
 const props = defineProps({
   currentDate: {

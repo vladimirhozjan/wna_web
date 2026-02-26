@@ -14,11 +14,11 @@
 
 <script setup>
 import {ref, onMounted, onUnmounted, computed} from "vue"
-import {authModel} from "./scripts/authModel.js";
+import {authModel} from "./scripts/core/authModel.js";
 import ErrorToaster from "./components/ErrorToaster.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
 import MoveModal from "./components/MoveModal.vue";
-import {getDomains}  from "./scripts/domains.js";
+import {getDomains}  from "./scripts/core/domains.js";
 
 const width = ref(window.innerWidth)
 const height = ref(window.innerHeight)

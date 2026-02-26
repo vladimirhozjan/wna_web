@@ -100,7 +100,7 @@
 
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
-import { moveModel } from '../scripts/moveModel.js'
+import { moveModel } from '../scripts/models/moveModel.js'
 import Btn from './Btn.vue'
 
 const move = moveModel()

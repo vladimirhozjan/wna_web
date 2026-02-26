@@ -48,8 +48,8 @@
 import { computed, onMounted } from 'vue'
 import Dropdown from './Dropdown.vue'
 import FilterIcon from '../assets/FilterIcon.vue'
-import { tagModel } from '../scripts/tagModel.js'
-import { contextModel } from '../scripts/contextModel.js'
+import { tagModel } from '../scripts/models/tagModel.js'
+import { contextModel } from '../scripts/models/contextModel.js'
 
 const { tags, loadTags, getPresets } = tagModel()
 const { activeTag, setTag, clear } = contextModel()

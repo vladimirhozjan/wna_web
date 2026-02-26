@@ -79,8 +79,8 @@ import CommentIcon from '../assets/CommentIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
 import WarningIcon from '../assets/WarningIcon.vue'
 import DescriptionIcon from '../assets/DescriptionIcon.vue'
-import { isOverdue, formatShortDate } from '../scripts/dateUtils.js'
-import { describeRRule } from '../scripts/rruleUtils.js'
+import { isOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
+import { describeRRule } from '../scripts/core/rruleUtils.js'
 
 const props = defineProps({
   item: { type: Object, required: true },

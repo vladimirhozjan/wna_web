@@ -20,7 +20,7 @@
 <script setup>
 import TopNav from '../components/TopNav.vue'
 import PublicFooter from '../components/public/PublicFooter.vue'
-import {authModel} from "../scripts/authModel.js";
+import {authModel} from "../scripts/core/authModel.js";
 defineEmits(['open-login', 'open-register'])
 const auth = authModel()
 </script>

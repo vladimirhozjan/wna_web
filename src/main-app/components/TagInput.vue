@@ -60,7 +60,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { tagModel } from '../scripts/tagModel.js'
+import { tagModel } from '../scripts/models/tagModel.js'
 
 const props = defineProps({
   modelValue: {

@@ -138,17 +138,17 @@
 
 <script setup>
 import { onMounted, computed } from "vue";
-import { authModel } from "../scripts/authModel.js";
-import { errorModel } from "../scripts/errorModel.js";
-import { stuffModel } from "../scripts/stuffModel.js";
-import { nextActionModel } from "../scripts/nextActionModel.js";
-import { todayModel } from "../scripts/todayModel.js";
-import { waitingModel } from "../scripts/waitingModel.js";
-import { somedayModel } from "../scripts/somedayModel.js";
-import { calendarModel } from "../scripts/calendarModel.js";
-import { moveModel } from "../scripts/moveModel.js";
-import { statsModel } from "../scripts/statsModel.js";
-import apiClient from "../scripts/apiClient.js";
+import { authModel } from "../scripts/core/authModel.js";
+import { errorModel } from "../scripts/core/errorModel.js";
+import { stuffModel } from "../scripts/models/stuffModel.js";
+import { nextActionModel } from "../scripts/models/nextActionModel.js";
+import { todayModel } from "../scripts/models/todayModel.js";
+import { waitingModel } from "../scripts/models/waitingModel.js";
+import { somedayModel } from "../scripts/models/somedayModel.js";
+import { calendarModel } from "../scripts/models/calendarModel.js";
+import { moveModel } from "../scripts/models/moveModel.js";
+import { statsModel } from "../scripts/models/statsModel.js";
+import apiClient from "../scripts/core/apiClient.js";
 import { useRouter } from "vue-router";
 
 import SidebarMenuItem from "./SidebarMenuItem.vue";
@@ -167,8 +167,8 @@ import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 import ReviewIcon from "../assets/ReviewIcon.vue";
 import EngageIcon from "../assets/EngageIcon.vue";
-import { reviewModel } from "../scripts/reviewModel.js";
-import { settingsModel } from "../scripts/settingsModel.js";
+import { reviewModel } from "../scripts/models/reviewModel.js";
+import { settingsModel } from "../scripts/models/settingsModel.js";
 
 const auth = authModel();
 const toaster = errorModel();

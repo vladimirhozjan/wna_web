@@ -31,8 +31,8 @@
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue'
-import { formatDate } from '../../scripts/dateUtils.js'
-import { calendarModel } from '../../scripts/calendarModel.js'
+import { formatDate } from '../../scripts/core/dateUtils.js'
+import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarAllDaySection from './CalendarAllDaySection.vue'
 import CalendarTimeGrid from './CalendarTimeGrid.vue'
 

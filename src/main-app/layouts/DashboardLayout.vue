@@ -30,8 +30,8 @@ import { ref, watch, onMounted } from "vue";
 import TopNav from "../components/TopNav.vue";
 import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
-import { authModel } from "../scripts/authModel.js";
-import { settingsModel } from "../scripts/settingsModel.js";
+import { authModel } from "../scripts/core/authModel.js";
+import { settingsModel } from "../scripts/models/settingsModel.js";
 import router from "../router/router.js";
 
 const auth = authModel();

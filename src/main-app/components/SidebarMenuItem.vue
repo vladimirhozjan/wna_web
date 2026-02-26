@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { dragModel } from "../scripts/dragModel.js";
+import { dragModel } from "../scripts/models/dragModel.js";
 
 const props = defineProps({
   label: { type: String, required: true },

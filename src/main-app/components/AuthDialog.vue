@@ -79,10 +79,10 @@ import {computed, ref, watch} from 'vue'
 import Inpt from './Inpt.vue'
 import Btn from './Btn.vue'
 import Lnk from './Lnk.vue'
-import {isValidEmail, isValidPassword} from '../scripts/authTools.js'
-import {authModel} from '../scripts/authModel.js'
-import {errorModel} from '../scripts/errorModel.js'
-import {mapApiError, ErrorScenario} from '../scripts/errorMapper.js'
+import {isValidEmail, isValidPassword} from '../scripts/core/authTools.js'
+import {authModel} from '../scripts/core/authModel.js'
+import {errorModel} from '../scripts/core/errorModel.js'
+import {mapApiError, ErrorScenario} from '../scripts/core/errorMapper.js'
 
 const auth = authModel()
 const error = errorModel()

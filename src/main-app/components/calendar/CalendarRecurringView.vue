@@ -63,9 +63,9 @@ import ActionBtn from '../ActionBtn.vue'
 import Btn from '../Btn.vue'
 import Inpt from '../Inpt.vue'
 import MetadataRow from '../MetadataRow.vue'
-import { recurringModel } from '../../scripts/recurringModel.js'
-import { errorModel } from '../../scripts/errorModel.js'
-import { confirmModel } from '../../scripts/confirmModel.js'
+import { recurringModel } from '../../scripts/models/recurringModel.js'
+import { errorModel } from '../../scripts/core/errorModel.js'
+import { confirmModel } from '../../scripts/core/confirmModel.js'
 
 const router = useRouter()
 const toaster = errorModel()

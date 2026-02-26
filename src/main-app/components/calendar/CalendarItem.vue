@@ -24,7 +24,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { calendarModel } from '../../scripts/calendarModel.js'
+import { calendarModel } from '../../scripts/models/calendarModel.js'
 
 const props = defineProps({
   item: {

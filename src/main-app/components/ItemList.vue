@@ -92,8 +92,8 @@ import { VueDraggable } from 'vue-draggable-plus'
 import Item from './Item.vue'
 import Btn from './Btn.vue'
 import ActionBtn from './ActionBtn.vue'
-import { dragModel } from '../scripts/dragModel.js'
-import { isOverdue } from '../scripts/dateUtils.js'
+import { dragModel } from '../scripts/models/dragModel.js'
+import { isOverdue } from '../scripts/core/dateUtils.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },

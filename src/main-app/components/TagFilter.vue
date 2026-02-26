@@ -53,8 +53,8 @@ import { onMounted } from 'vue'
 import Dropdown from './Dropdown.vue'
 import Btn from './Btn.vue'
 import FilterIcon from '../assets/FilterIcon.vue'
-import { tagModel } from '../scripts/tagModel.js'
-import { contextModel } from '../scripts/contextModel.js'
+import { tagModel } from '../scripts/models/tagModel.js'
+import { contextModel } from '../scripts/models/contextModel.js'
 
 const props = defineProps({
   modelValue: {

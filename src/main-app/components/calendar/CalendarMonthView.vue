@@ -126,8 +126,8 @@ import {
   isSameMonth,
   isToday,
   getWeekDays,
-} from '../../scripts/dateUtils.js'
-import { calendarModel } from '../../scripts/calendarModel.js'
+} from '../../scripts/core/dateUtils.js'
+import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
 

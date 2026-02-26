@@ -91,8 +91,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { isToday, parseISO } from '../../scripts/dateUtils.js'
-import { calendarModel } from '../../scripts/calendarModel.js'
+import { isToday, parseISO } from '../../scripts/core/dateUtils.js'
+import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
 

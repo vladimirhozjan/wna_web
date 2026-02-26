@@ -81,9 +81,9 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import Btn from './Btn.vue'
 import UserAvatar from './UserAvatar.vue'
-import { listComments, createComment } from '../scripts/apiClient.js'
-import { errorModel } from '../scripts/errorModel.js'
-import { authModel } from '../scripts/authModel.js'
+import { listComments, createComment } from '../scripts/core/apiClient.js'
+import { errorModel } from '../scripts/core/errorModel.js'
+import { authModel } from '../scripts/core/authModel.js'
 
 const props = defineProps({
   entityType: { type: String, required: true },

@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { confirmModel } from '../scripts/confirmModel.js'
+import { confirmModel } from '../scripts/core/confirmModel.js'
 import Btn from './Btn.vue'
 
 const confirm = confirmModel()

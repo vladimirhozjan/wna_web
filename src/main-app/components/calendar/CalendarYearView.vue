@@ -64,8 +64,8 @@ import {
   isSameMonth,
   startOfMonth,
   startOfWeek,
-} from '../../scripts/dateUtils.js'
-import { calendarModel } from '../../scripts/calendarModel.js'
+} from '../../scripts/core/dateUtils.js'
+import { calendarModel } from '../../scripts/models/calendarModel.js'
 
 const props = defineProps({
   currentDate: {

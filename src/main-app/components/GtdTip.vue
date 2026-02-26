@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { settingsModel } from '../scripts/settingsModel.js'
+import { settingsModel } from '../scripts/models/settingsModel.js'
 
 const props = defineProps({
   storageKey: { type: String, required: true },

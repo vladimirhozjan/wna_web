@@ -113,7 +113,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { FREQUENCIES, WEEKDAYS, parseRRule, buildRRule, describeRRule } from '../scripts/rruleUtils.js'
+import { FREQUENCIES, WEEKDAYS, parseRRule, buildRRule, describeRRule } from '../scripts/core/rruleUtils.js'
 
 const props = defineProps({
   modelValue: {
