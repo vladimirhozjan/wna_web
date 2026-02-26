@@ -93,15 +93,6 @@
 
       <div class="clarify-form-actions">
         <Btn
-            type="button"
-            variant="ghost"
-            size="md"
-            :disabled="loading"
-            @click="onDoItNow"
-        >
-          Do it now
-        </Btn>
-        <Btn
             type="submit"
             variant="primary"
             size="md"
@@ -131,7 +122,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['submit', 'do-it-now'])
+const emit = defineEmits(['submit'])
 
 const titleInput = ref(null)
 const datesExpanded = ref(false)
@@ -200,10 +191,6 @@ function clearDue() {
 onMounted(() => {
   titleInput.value?.focus()
 })
-
-function onDoItNow() {
-  emit('do-it-now')
-}
 
 function onSubmit() {
   if (!form.title.trim()) return
@@ -307,7 +294,7 @@ function onSubmit() {
 
 .clarify-form-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 8px;
 }
 

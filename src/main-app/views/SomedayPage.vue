@@ -64,8 +64,9 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <h2 class="empty-state__title">No matching items</h2>
-              <p class="empty-state__text">No items match the selected tags.</p>
+              <FilterLargeIcon class="empty-state__icon" />
+              <h2 class="empty-state__title">No items for this context</h2>
+              <p class="empty-state__text">Nothing tagged with "{{ effectiveTags.join(', ') }}" needs attention right now.</p>
             </template>
             <template v-else>
               <SomedayIcon class="empty-state__icon" />
@@ -91,6 +92,7 @@ import TagFilter from '../components/TagFilter.vue'
 import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
 import SomedayIcon from '../assets/SomedayIcon.vue'
+import FilterLargeIcon from '../assets/FilterLargeIcon.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'

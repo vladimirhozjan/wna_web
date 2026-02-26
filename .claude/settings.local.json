@@ -23,7 +23,8 @@
       "Bash(git update-index:*)",
       "Bash(git stash:*)",
       "Bash(curl:*)",
-      "Bash(/Users/vladimirhozjan/.local/share/claude/versions/2.1.56 --ripgrep \"scheduled_duration\" /Users/vladimirhozjan/Documents/wna_web/develop-b/src/main-app/scripts/apiClient.js)"
+      "Bash(/Users/vladimirhozjan/.local/share/claude/versions/2.1.56 --ripgrep \"scheduled_duration\" /Users/vladimirhozjan/Documents/wna_web/develop-b/src/main-app/scripts/apiClient.js)",
+      "Bash(grep:*)"
     ]
   }
 }

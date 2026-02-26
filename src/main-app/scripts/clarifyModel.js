@@ -8,6 +8,7 @@ export const ClarifyState = {
     ACTIONABLE_DECISION: 'ACTIONABLE_DECISION',
     NON_ACTIONABLE_TARGET: 'NON_ACTIONABLE_TARGET',
     ACTION_COUNT_DECISION: 'ACTION_COUNT_DECISION',
+    TWO_MINUTE_DECISION: 'TWO_MINUTE_DECISION',
     CREATE_ACTION: 'CREATE_ACTION',
     CREATE_PROJECT: 'CREATE_PROJECT',
     DO_IT_NOW: 'DO_IT_NOW',
@@ -68,9 +69,11 @@ export function clarifyModel() {
             if (state.step === ClarifyState.ACTIONABLE_DECISION) return 50
             return 100
         }
-        // Actionable: 3 steps
-        if (state.step === ClarifyState.ACTIONABLE_DECISION) return 33
-        if (state.step === ClarifyState.ACTION_COUNT_DECISION) return 66
+        // Actionable single action: 4 steps (actionable → count → two-minute → create/do-it-now)
+        // Actionable project: 3 steps
+        if (state.step === ClarifyState.ACTIONABLE_DECISION) return 25
+        if (state.step === ClarifyState.ACTION_COUNT_DECISION) return 50
+        if (state.step === ClarifyState.TWO_MINUTE_DECISION) return 75
         if (state.step === ClarifyState.CREATE_ACTION || state.step === ClarifyState.CREATE_PROJECT) return 100
         return 0
     }
@@ -132,9 +135,17 @@ export function clarifyModel() {
     function setSingleAction(isSingle) {
         state.isSingleAction = isSingle
         if (isSingle) {
-            state.step = ClarifyState.CREATE_ACTION
+            state.step = ClarifyState.TWO_MINUTE_DECISION
         } else {
             state.step = ClarifyState.CREATE_PROJECT
+        }
+    }
+
+    function setTwoMinuteDecision(canDoNow) {
+        if (canDoNow) {
+            state.step = ClarifyState.DO_IT_NOW
+        } else {
+            state.step = ClarifyState.CREATE_ACTION
         }
     }
 
@@ -150,6 +161,7 @@ export function clarifyModel() {
         state.step = ClarifyState.DO_IT_NOW
     }
 
+
     function back() {
         switch (state.step) {
             case ClarifyState.NON_ACTIONABLE_TARGET:
@@ -160,16 +172,19 @@ export function clarifyModel() {
                 state.step = ClarifyState.ACTIONABLE_DECISION
                 state.isActionable = null
                 break
-            case ClarifyState.CREATE_ACTION:
+            case ClarifyState.TWO_MINUTE_DECISION:
                 state.step = ClarifyState.ACTION_COUNT_DECISION
                 state.isSingleAction = null
+                break
+            case ClarifyState.CREATE_ACTION:
+                state.step = ClarifyState.TWO_MINUTE_DECISION
                 break
             case ClarifyState.CREATE_PROJECT:
                 state.step = ClarifyState.ACTION_COUNT_DECISION
                 state.isSingleAction = null
                 break
             case ClarifyState.DO_IT_NOW:
-                state.step = ClarifyState.CREATE_ACTION
+                state.step = ClarifyState.TWO_MINUTE_DECISION
                 break
             default:
                 break
@@ -279,6 +294,7 @@ export function clarifyModel() {
         setActionable,
         setNonActionableTarget,
         setSingleAction,
+        setTwoMinuteDecision,
         setActionData,
         setProjectData,
         proceedToDoItNow,

@@ -41,12 +41,15 @@
           v-else-if="state.step === ClarifyState.ACTION_COUNT_DECISION"
           @select="onActionCountSelect"
       />
+      <ClarifyStepTwoMinute
+          v-else-if="state.step === ClarifyState.TWO_MINUTE_DECISION"
+          @select="onTwoMinuteSelect"
+      />
       <ClarifyStepCreateAction
           v-else-if="state.step === ClarifyState.CREATE_ACTION"
           :initial-data="state.actionData"
           :loading="state.loading"
           @submit="onActionSubmit"
-          @do-it-now="onDoItNow"
       />
       <ClarifyStepCreateProject
           v-else-if="state.step === ClarifyState.CREATE_PROJECT"
@@ -76,6 +79,7 @@ import { errorModel } from '../scripts/errorModel.js'
 import ClarifyStepActionable from './ClarifyStepActionable.vue'
 import ClarifyStepNonActionable from './ClarifyStepNonActionable.vue'
 import ClarifyStepActionCount from './ClarifyStepActionCount.vue'
+import ClarifyStepTwoMinute from './ClarifyStepTwoMinute.vue'
 import ClarifyStepCreateAction from './ClarifyStepCreateAction.vue'
 import ClarifyStepCreateProject from './ClarifyStepCreateProject.vue'
 import ClarifyStepDoItNow from './ClarifyStepDoItNow.vue'
@@ -114,10 +118,10 @@ const canGoBack = computed(() => {
 })
 
 const totalSteps = computed(() => {
-  if (state.step === ClarifyState.DO_IT_NOW) return 4
   if (state.isActionable === false) return 2
-  if (state.isActionable === true) return 3
-  return 3 // default before decision
+  if (state.isSingleAction === true) return 4 // actionable → count → two-minute → create/do-it-now
+  if (state.isSingleAction === false) return 3 // actionable → count → project
+  return 3 // default before single/project decision
 })
 
 const currentStepNumber = computed(() => {
@@ -128,11 +132,13 @@ const currentStepNumber = computed(() => {
       return 2
     case ClarifyState.ACTION_COUNT_DECISION:
       return 2
-    case ClarifyState.CREATE_ACTION:
-    case ClarifyState.CREATE_PROJECT:
+    case ClarifyState.TWO_MINUTE_DECISION:
       return 3
+    case ClarifyState.CREATE_ACTION:
     case ClarifyState.DO_IT_NOW:
       return 4
+    case ClarifyState.CREATE_PROJECT:
+      return 3
     case ClarifyState.DONE:
       return totalSteps.value
     default:
@@ -189,8 +195,8 @@ async function onActionSubmit(data) {
   await executeConfirm()
 }
 
-function onDoItNow() {
-  clarify.proceedToDoItNow()
+function onTwoMinuteSelect(canDoNow) {
+  clarify.setTwoMinuteDecision(canDoNow)
 }
 
 async function onDoItNowDone() {

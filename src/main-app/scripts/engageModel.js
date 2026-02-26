@@ -16,16 +16,16 @@ export function engageModel() {
     const review = reviewModel()
     const settings = settingsModel()
 
-    async function loadDashboard() {
-        if (loading.value) return
+    async function loadDashboard({ tags = null } = {}) {
         loading.value = true
         try {
+            const tagsParam = tags?.length ? tags.join(',') : null
             const results = await Promise.allSettled([
                 loadStats(),
-                apiClient.listTodayActions({ limit: 5 }),
-                apiClient.listActions({ limit: 5 }),
-                apiClient.listWaiting({ limit: 5 }),
-                apiClient.listProjects({ limit: 100 }),
+                apiClient.listTodayActions({ limit: 5, tags: tagsParam }),
+                apiClient.listActions({ limit: 5, tags: tagsParam }),
+                apiClient.listWaiting({ limit: 5, tags: tagsParam }),
+                apiClient.listProjects({ limit: 100, tags: tagsParam }),
             ])
 
             if (results[1].status === 'fulfilled') {

@@ -30,26 +30,22 @@
               </router-link>
               <router-link :to="{ name: 'today' }" class="section__link">View all</router-link>
             </div>
-            <div class="section__list">
-              <div
-                  v-for="(action, index) in topToday"
-                  :key="action.id"
-                  class="item-wrapper"
-                  :class="{ 'item-wrapper--overdue': isItemOverdue(action) }"
-                  @click="onTodayClick(action, index)"
-              >
-                <Item
-                    :id="action.id"
-                    :title="action.title"
-                    :editable="false"
-                    @check="onCheck"
-                >
-                  <template #subtitle>
-                    <MetadataRow :item="action" entity-type="action" />
-                  </template>
-                </Item>
-              </div>
-            </div>
+            <ItemList
+                v-model="topToday"
+                :loading="false"
+                :has-more="false"
+                :loading-ids="loadingIds"
+                source-type="action"
+                @update="onUpdate"
+                @check="onCheck"
+                @click="onTodayClick"
+                @move="onTodayMove"
+            >
+              <template #subtitle="{ item }">
+                <MetadataRow :item="item" entity-type="action" />
+              </template>
+              <template #actions></template>
+            </ItemList>
           </div>
 
           <!-- Next Actions section -->
@@ -61,26 +57,22 @@
               </router-link>
               <router-link :to="{ name: 'next' }" class="section__link">View all</router-link>
             </div>
-            <div class="section__list">
-              <div
-                  v-for="(action, index) in topActions"
-                  :key="action.id"
-                  class="item-wrapper"
-                  :class="{ 'item-wrapper--overdue': isItemOverdue(action) }"
-                  @click="onNextClick(action, index)"
-              >
-                <Item
-                    :id="action.id"
-                    :title="action.title"
-                    :editable="false"
-                    @check="onCheck"
-                >
-                  <template #subtitle>
-                    <MetadataRow :item="action" entity-type="action" />
-                  </template>
-                </Item>
-              </div>
-            </div>
+            <ItemList
+                v-model="topActions"
+                :loading="false"
+                :has-more="false"
+                :loading-ids="loadingIds"
+                source-type="action"
+                @update="onUpdate"
+                @check="onCheck"
+                @click="onNextClick"
+                @move="onNextMove"
+            >
+              <template #subtitle="{ item }">
+                <MetadataRow :item="item" entity-type="action" />
+              </template>
+              <template #actions></template>
+            </ItemList>
           </div>
 
           <!-- Waiting For section -->
@@ -92,25 +84,22 @@
               </router-link>
               <router-link :to="{ name: 'waiting-for' }" class="section__link">View all</router-link>
             </div>
-            <div class="section__list">
-              <div
-                  v-for="(action, index) in topWaiting"
-                  :key="action.id"
-                  class="item-wrapper"
-                  @click="onWaitingClick(action, index)"
-              >
-                <Item
-                    :id="action.id"
-                    :title="action.title"
-                    :editable="false"
-                    @check="onCheck"
-                >
-                  <template #subtitle>
-                    <MetadataRow :item="action" entity-type="action" />
-                  </template>
-                </Item>
-              </div>
-            </div>
+            <ItemList
+                v-model="topWaiting"
+                :loading="false"
+                :has-more="false"
+                :loading-ids="loadingIds"
+                source-type="action"
+                @update="onUpdate"
+                @check="onCheck"
+                @click="onWaitingClick"
+                @move="onWaitingMove"
+            >
+              <template #subtitle="{ item }">
+                <MetadataRow :item="item" entity-type="action" />
+              </template>
+              <template #actions></template>
+            </ItemList>
           </div>
 
           <!-- Secondary nudges (low priority) -->
@@ -124,17 +113,29 @@
               <span class="nudge__text">{{ stuckProjects.length }} project{{ stuckProjects.length !== 1 ? 's' : '' }} need a next action</span>
               <router-link :to="{ name: 'projects' }" class="nudge__link" @click.stop>View</router-link>
             </div>
-            <div v-if="reviewEnabled" class="nudge" @click="router.push({ name: 'review' })">
+            <div v-if="reviewNudgeVisible" class="nudge" @click="router.push({ name: 'review' })">
               <span class="nudge__text">{{ reviewLabel }}</span>
               <router-link :to="{ name: 'review' }" class="nudge__link" @click.stop>Review</router-link>
             </div>
           </div>
 
-          <!-- Empty state -->
-          <div v-if="isEmpty" class="empty-state">
+          <!-- Empty state: filtered -->
+          <div v-if="noActionItems && activeTag" class="empty-state">
+            <FilterLargeIcon class="empty-state__icon" />
+            <h2 class="empty-state__title">No actions for this context</h2>
+            <p class="empty-state__text">Nothing tagged with "{{ activeTag }}" needs attention right now.</p>
+          </div>
+
+          <!-- Empty state: truly empty -->
+          <div v-else-if="isEmpty" class="empty-state">
             <EngageIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">All clear</h2>
-            <p class="empty-state__text">Nothing needs your attention right now.</p>
+            <h2 class="empty-state__title">Ready to get things done?</h2>
+            <p class="empty-state__text">
+              Capture what's on your mind and let your system take care of the rest.
+            </p>
+            <Btn variant="primary" size="sm" class="empty-state__btn" @click="router.push({ name: 'inbox' })">
+              Go to Inbox
+            </Btn>
           </div>
 
         </template>
@@ -146,22 +147,24 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
-import Item from '../components/Item.vue'
+import ItemList from '../components/ItemList.vue'
 import Btn from '../components/Btn.vue'
 import MetadataRow from '../components/MetadataRow.vue'
 import EngageIcon from '../assets/EngageIcon.vue'
+import FilterLargeIcon from '../assets/FilterLargeIcon.vue'
 import { engageModel } from '../scripts/engageModel.js'
+import { contextModel } from '../scripts/contextModel.js'
 import { errorModel } from '../scripts/errorModel.js'
 import { statsModel } from '../scripts/statsModel.js'
 import apiClient from '../scripts/apiClient.js'
-import { isOverdue } from '../scripts/dateUtils.js'
 
 const router = useRouter()
 const toaster = errorModel()
 const { refreshStats } = statsModel()
+const { activeTag } = contextModel()
 
 const {
     stats,
@@ -176,7 +179,29 @@ const {
     reviewEnabled,
 } = engageModel()
 
-onMounted(loadDashboard)
+const effectiveTags = computed(() => {
+    if (!activeTag.value) return []
+    return [activeTag.value]
+})
+
+onMounted(() => {
+    loadDashboard({ tags: effectiveTags.value })
+})
+
+watch(effectiveTags, (tags) => {
+    loadDashboard({ tags })
+})
+
+// Loading state tracking
+const movingId = ref(null)
+const updatingId = ref(null)
+
+const loadingIds = computed(() => {
+    const ids = []
+    if (movingId.value) ids.push(movingId.value)
+    if (updatingId.value) ids.push(updatingId.value)
+    return ids
+})
 
 const inboxCount = computed(() => stats.value?.inbox?.count ?? 0)
 const todayCount = computed(() => stats.value?.today?.count ?? 0)
@@ -198,24 +223,32 @@ const reviewLabel = computed(() => {
     return `Last reviewed ${days} days ago`
 })
 
+const reviewNudgeVisible = computed(() => {
+    return reviewEnabled.value && (daysSinceReview.value === null || daysSinceReview.value >= 6)
+})
+
 const hasNudges = computed(() => {
     return stuckProjects.value.length > 0
         || inboxCount.value > 0
-        || reviewEnabled.value
+        || reviewNudgeVisible.value
 })
 
-const isEmpty = computed(() => {
+const noActionItems = computed(() => {
     return !loading.value
-        && overdueCount.value === 0
-        && !hasNudges.value
         && topToday.value.length === 0
         && topActions.value.length === 0
         && topWaiting.value.length === 0
 })
 
+const isEmpty = computed(() => {
+    return noActionItems.value
+        && overdueCount.value === 0
+        && !hasNudges.value
+})
+
 function truncateTitle(title, maxLen = 30) {
     if (!title || title.length <= maxLen) return title
-    return title.slice(0, maxLen).trim() + '…'
+    return title.slice(0, maxLen).trim() + '\u2026'
 }
 
 function removeFromList(list, id) {
@@ -243,6 +276,51 @@ async function onCheck(id, checked) {
     }
 }
 
+async function onUpdate(id, { title }) {
+    updatingId.value = id
+    try {
+        await apiClient.updateAction(id, { title })
+    } catch (e) {
+        await loadDashboard({ tags: effectiveTags.value })
+    } finally {
+        updatingId.value = null
+    }
+}
+
+// Move handlers per section
+async function onTodayMove(id, newIndex) {
+    movingId.value = id
+    try {
+        await apiClient.moveAction(id, newIndex)
+    } catch (e) {
+        await loadDashboard({ tags: effectiveTags.value })
+    } finally {
+        movingId.value = null
+    }
+}
+
+async function onNextMove(id, newIndex) {
+    movingId.value = id
+    try {
+        await apiClient.moveAction(id, newIndex)
+    } catch (e) {
+        await loadDashboard({ tags: effectiveTags.value })
+    } finally {
+        movingId.value = null
+    }
+}
+
+async function onWaitingMove(id, newIndex) {
+    movingId.value = id
+    try {
+        await apiClient.moveWaitingPosition(id, newIndex)
+    } catch (e) {
+        await loadDashboard({ tags: effectiveTags.value })
+    } finally {
+        movingId.value = null
+    }
+}
+
 function onTodayClick(item) {
     router.push({ name: 'action-detail', params: { id: item.id }, query: { from: 'engage' } })
 }
@@ -253,10 +331,6 @@ function onNextClick(item) {
 
 function onWaitingClick(item) {
     router.push({ name: 'action-detail', params: { id: item.id }, query: { from: 'engage' } })
-}
-
-function isItemOverdue(item) {
-    return isOverdue(item.due_date)
 }
 </script>
 
@@ -336,20 +410,6 @@ h1 {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
-}
-
-/* Item wrappers - matching ItemList patterns */
-.item-wrapper {
-  cursor: pointer;
-}
-
-.item-wrapper :deep(.item) {
-  border-left: 3px solid transparent;
-}
-
-.item-wrapper--overdue :deep(.item) {
-  border-left-color: var(--color-danger);
-  background-color: rgba(254, 226, 226, 0.35);
 }
 
 /* Section headers */
@@ -474,5 +534,9 @@ h1 {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
+}
+
+.empty-state__btn {
+  margin-top: 16px;
 }
 </style>

@@ -60,8 +60,9 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <h2 class="empty-state__title">No matching actions</h2>
-              <p class="empty-state__text">No actions match the selected tags.</p>
+              <FilterLargeIcon class="empty-state__icon" />
+              <h2 class="empty-state__title">No actions for this context</h2>
+              <p class="empty-state__text">Nothing tagged with "{{ effectiveTags.join(', ') }}" needs attention right now.</p>
             </template>
             <template v-else>
               <WaitingIcon class="empty-state__icon" />
@@ -87,6 +88,7 @@ import TagFilter from '../components/TagFilter.vue'
 import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
 import WaitingIcon from '../assets/WaitingIcon.vue'
+import FilterLargeIcon from '../assets/FilterLargeIcon.vue'
 import MetadataRow from '../components/MetadataRow.vue'
 import { waitingModel } from '../scripts/waitingModel.js'
 import { contextModel } from '../scripts/contextModel.js'
