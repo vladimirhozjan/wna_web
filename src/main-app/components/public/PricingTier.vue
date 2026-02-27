@@ -32,9 +32,7 @@
 
     <ul class="tier__features">
       <li v-for="(feat, i) in features" :key="i" class="tier__feature text-body-s">
-        <svg class="tier__check" viewBox="0 0 20 20" fill="none">
-          <path d="M4 10.5l4 4 8-8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <CheckIcon class="tier__check" />
         {{ feat }}
       </li>
     </ul>
@@ -43,6 +41,7 @@
 
 <script setup>
 import Btn from '../Btn.vue'
+import CheckIcon from '../../assets/CheckIcon.vue'
 
 defineProps({
   name:        { type: String, required: true },

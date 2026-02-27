@@ -27,11 +27,7 @@
             title="List view"
             type="button"
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <rect x="1" y="2" width="16" height="2" rx="1" fill="currentColor"/>
-            <rect x="1" y="8" width="16" height="2" rx="1" fill="currentColor"/>
-            <rect x="1" y="14" width="16" height="2" rx="1" fill="currentColor"/>
-          </svg>
+          <ListViewIcon />
         </button>
         <button
             class="view-btn"
@@ -40,12 +36,7 @@
             title="Grid view"
             type="button"
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
-            <rect x="11" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
-            <rect x="1" y="11" width="6" height="6" rx="1.5" fill="currentColor"/>
-            <rect x="11" y="11" width="6" height="6" rx="1.5" fill="currentColor"/>
-          </svg>
+          <GridViewIcon />
         </button>
       </div>
       <div v-if="quota" class="toolbar__quota">
@@ -62,6 +53,8 @@
 import {computed} from 'vue'
 import RefBreadcrumb from './RefBreadcrumb.vue'
 import Btn from '../Btn.vue'
+import ListViewIcon from '../../assets/ListViewIcon.vue'
+import GridViewIcon from '../../assets/GridViewIcon.vue'
 
 const props = defineProps({
   breadcrumbs: {

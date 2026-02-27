@@ -61,9 +61,7 @@
             <tr v-for="row in comparisonRows" :key="row.feature">
               <td class="text-body-s compare-feature">{{ row.feature }}</td>
               <td class="text-body-s compare-value" v-for="val in [row.free, row.pro, row.business]" :key="val">
-                <svg v-if="val === true" class="icon-check" viewBox="0 0 20 20" fill="none">
-                  <path d="M4 10.5l4 4 8-8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <CheckIcon v-if="val === true" class="icon-check" />
                 <span v-else-if="val === false" class="icon-dash">—</span>
                 <span v-else>{{ val }}</span>
               </td>
@@ -78,9 +76,7 @@
             <div class="compare-card__values">
               <div v-for="(val, plan) in { Free: row.free, Pro: row.pro, Business: row.business }" :key="plan" class="compare-card__cell">
                 <span class="text-footnote compare-card__plan">{{ plan }}</span>
-                <svg v-if="val === true" class="icon-check" viewBox="0 0 20 20" fill="none">
-                  <path d="M4 10.5l4 4 8-8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <CheckIcon v-if="val === true" class="icon-check" />
                 <span v-else-if="val === false" class="icon-dash">—</span>
                 <span v-else class="text-body-s">{{ val }}</span>
               </div>
@@ -110,6 +106,7 @@ import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import PricingTier from '../../components/public/PricingTier.vue'
 import CtaBanner from '../../components/public/CtaBanner.vue'
+import CheckIcon from '../../assets/CheckIcon.vue'
 
 const router = useRouter()
 const authMode = ref(null)

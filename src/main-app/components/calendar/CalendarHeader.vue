@@ -2,15 +2,11 @@
   <div class="calendar-header">
     <div class="calendar-header__nav">
       <button class="calendar-header__nav-btn" @click="$emit('prev')" aria-label="Previous">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <ChevronLeftIcon class="calendar-header__nav-icon" />
       </button>
       <button class="calendar-header__today-btn" @click="$emit('today')">Today</button>
       <button class="calendar-header__nav-btn" @click="$emit('next')" aria-label="Next">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <ArrowRightSmallIcon class="calendar-header__nav-icon" />
       </button>
     </div>
 
@@ -35,6 +31,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { formatMonthYear, formatDate, format } from '../../scripts/core/dateUtils.js'
+import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
+import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
 
 const props = defineProps({
   currentDate: {
@@ -137,6 +135,11 @@ const title = computed(() => {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
   border-color: var(--color-text-tertiary);
+}
+
+.calendar-header__nav-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .calendar-header__today-btn {
