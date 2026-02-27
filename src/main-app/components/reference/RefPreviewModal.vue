@@ -182,6 +182,8 @@ const isText = computed(() =>
 .preview-unsupported-icon {
   width: 64px;
   height: 64px;
+  padding: 10px;
+  box-sizing: border-box;
   color: rgba(255, 255, 255, 0.4);
 }
 

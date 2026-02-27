@@ -457,8 +457,8 @@ function formatSize(bytes) {
 }
 
 .empty-state__icon {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }

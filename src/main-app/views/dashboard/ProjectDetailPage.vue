@@ -1193,15 +1193,16 @@ async function onAddAction() {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 4px; /* 4px centers 42px icon in 50px space */
+  padding: 24px 24px 0 50px;
+  position: relative;
 }
 
 .detail-type-icon {
-  width: 42px;
-  height: 42px;
+  position: absolute;
+  left: 14px;
+  width: 22px;
+  height: 22px;
   color: var(--color-text-tertiary);
-  flex-shrink: 0;
-  align-self: center;
 }
 
 .detail-title-wrapper {
@@ -1566,6 +1567,8 @@ async function onAddAction() {
 .next-action-prompt__icon {
   width: 24px;
   height: 24px;
+  padding: 4px;
+  box-sizing: border-box;
   flex-shrink: 0;
   color: var(--color-warning);
 }
@@ -1764,7 +1767,7 @@ async function onAddAction() {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 4px;
+    padding: 16px 16px 0 50px;
   }
 
   .detail-actions {

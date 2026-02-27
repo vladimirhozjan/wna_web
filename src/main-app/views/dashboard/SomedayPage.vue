@@ -52,11 +52,7 @@
             />
           </template>
           <template #prefix="{ item }">
-            <span class="type-icon" :class="typeIconClass(item.type)">
-              <InboxIcon v-if="item.type === 'STUFF'" />
-              <NextIcon v-else-if="item.type === 'ACTION'" />
-              <ProjectsIcon v-else-if="item.type === 'PROJECT'" />
-            </span>
+            <ItemTypeIcon :type="item.type" />
           </template>
           <template #actions="{ item }">
             <Btn variant="link" size="sm" @click.stop="onActivate(item.id)">Activate</Btn>
@@ -64,9 +60,7 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterLargeIcon class="empty-state__icon" />
-              <h2 class="empty-state__title">No items for this context</h2>
-              <p class="empty-state__text">Nothing tagged with "{{ effectiveTags.join(', ') }}" needs attention right now.</p>
+              <FilterEmptyState title="No items for this context" :tags="effectiveTags" />
             </template>
             <template v-else>
               <SomedayIcon class="empty-state__icon" />
@@ -92,10 +86,8 @@ import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import SomedayIcon from '../../assets/SomedayIcon.vue'
-import FilterLargeIcon from '../../assets/FilterLargeIcon.vue'
-import InboxIcon from '../../assets/InboxIcon.vue'
-import NextIcon from '../../assets/NextIcon.vue'
-import ProjectsIcon from '../../assets/ProjectsIcon.vue'
+import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
+import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { somedayModel } from '../../scripts/models/somedayModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
@@ -186,15 +178,6 @@ async function onMove(id, newIndex) {
     await loadSomeday({ reset: true })
   } finally {
     movingId.value = null
-  }
-}
-
-function typeIconClass(type) {
-  switch (type) {
-    case 'STUFF': return 'type-icon--stuff'
-    case 'ACTION': return 'type-icon--action'
-    case 'PROJECT': return 'type-icon--project'
-    default: return ''
   }
 }
 
@@ -342,8 +325,8 @@ async function onTrash(id) {
 }
 
 .empty-state__icon {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }
@@ -364,26 +347,4 @@ async function onTrash(id) {
   max-width: 300px;
 }
 
-.type-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.type-icon :deep(svg) {
-  width: 32px;
-  height: 32px;
-}
-
-.type-icon--stuff {
-  color: var(--color-text-secondary);
-}
-
-.type-icon--action {
-  color: var(--color-action);
-}
-
-.type-icon--project {
-  color: #b45309;
-}
 </style>

@@ -140,6 +140,8 @@ const title = computed(() => {
 .calendar-header__nav-icon {
   width: 20px;
   height: 20px;
+  padding: 2px;
+  box-sizing: border-box;
 }
 
 .calendar-header__today-btn {

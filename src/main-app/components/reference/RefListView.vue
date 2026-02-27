@@ -209,8 +209,10 @@ function formatDate(dateStr) {
 }
 
 .row-icon {
-  width: 28px;
-  height: 28px;
+  width: 35px;
+  height: 35px;
+  padding: 4px;
+  box-sizing: border-box;
   display: block;
 }
 
@@ -237,6 +239,8 @@ function formatDate(dateStr) {
 .menu-btn-icon {
   width: 18px;
   height: 18px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .list-row:hover .row-menu-btn {

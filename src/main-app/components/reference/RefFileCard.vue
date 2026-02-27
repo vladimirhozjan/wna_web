@@ -70,8 +70,10 @@ function formatSize(bytes) {
 }
 
 .file-card__icon {
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
+  padding: 8px;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 
@@ -124,6 +126,8 @@ function formatSize(bytes) {
 .menu-btn-icon {
   width: 18px;
   height: 18px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .file-card__menu-btn:hover {

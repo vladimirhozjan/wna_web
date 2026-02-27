@@ -3,7 +3,7 @@
     <Dropdown ref="dropdown" title="Filter by tag" align="right">
       <template #trigger>
         <Btn variant="icon" :class="{ 'tag-filter--active': modelValue.length > 0 || activeTag }">
-          <FilterIcon />
+          <FilterIcon class="tag-filter-icon" />
         </Btn>
       </template>
 
@@ -97,6 +97,13 @@ function clearAll(closeFn) {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+.tag-filter-icon {
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  box-sizing: border-box;
 }
 
 .tag-filter--active {

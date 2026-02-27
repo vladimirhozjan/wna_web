@@ -870,15 +870,16 @@ async function onActivate() {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 4px; /* 4px centers 42px icon in 50px space */
+  padding: 24px 24px 0 50px;
+  position: relative;
 }
 
 .detail-type-icon {
-  width: 42px;
-  height: 42px;
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
   color: var(--color-text-tertiary);
-  flex-shrink: 0;
-  align-self: center;
 }
 
 .detail-title-wrapper {
@@ -1117,7 +1118,7 @@ async function onActivate() {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 4px;
+    padding: 16px 16px 0 50px;
   }
 
   .detail-actions {

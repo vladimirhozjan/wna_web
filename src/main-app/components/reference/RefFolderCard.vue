@@ -59,6 +59,8 @@ defineEmits(['navigate', 'rename', 'delete'])
 .folder-card__icon {
   width: 48px;
   height: 48px;
+  padding: 8px;
+  box-sizing: border-box;
   color: var(--color-action);
   flex-shrink: 0;
 }
@@ -106,6 +108,8 @@ defineEmits(['navigate', 'rename', 'delete'])
 .menu-btn-icon {
   width: 18px;
   height: 18px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .folder-card__menu-btn:hover {

@@ -1,23 +1,11 @@
 <template>
-  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <g transform="translate(24,24) scale(0.55) translate(-24,-24)">
-      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-            d="M34 6l6 6-6 6"/>
-      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-            d="M6 18v-2a6 6 0 0 1 6-6h28"/>
-      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-            d="M14 42l-6-6 6-6"/>
-      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-            d="M42 30v2a6 6 0 0 1-6 6H8"/>
-    </g>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M70.56 7.38L84.1 20.92L70.56 34.46"/>
+    <path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M7.38 34.46L7.38 29.95A13.54 13.54 0 0 1 20.92 16.41L84.1 16.41"/>
+    <path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M25.44 88.62L11.9 75.08L25.44 61.54"/>
+    <path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M88.62 61.54L88.62 66.05A13.54 13.54 0 0 1 75.08 79.59L11.9 79.59"/>
   </svg>
 </template>
 
-<style scoped>
-.icon {
-  width: 48px;
-  height: 48px;
-}
-</style>
-<script setup lang="ts">
+<script setup>
 </script>

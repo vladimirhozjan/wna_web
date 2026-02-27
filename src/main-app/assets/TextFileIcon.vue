@@ -1,20 +1,12 @@
 <template>
-  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <!-- Document outline with folded corner -->
-    <path fill="currentColor" d="M16 40C15.45 40 14.98 39.8 14.59 39.41C14.2 39.02 14 38.55 14 38V10C14 9.45 14.2 8.98 14.59 8.59C14.98 8.2 15.45 8 16 8H28L34 14V38C34 38.55 33.8 39.02 33.41 39.41C33.02 39.8 32.55 40 32 40H16ZM27 15V10H16V38H32V15H27Z"/>
-    <!-- Text lines -->
-    <rect fill="currentColor" x="19" y="21" width="10" height="1.5" rx="0.75"/>
-    <rect fill="currentColor" x="19" y="25" width="8" height="1.5" rx="0.75"/>
-    <rect fill="currentColor" x="19" y="29" width="10" height="1.5" rx="0.75"/>
-    <rect fill="currentColor" x="19" y="33" width="6" height="1.5" rx="0.75"/>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/>
+    <rect x="34.25" y="39.75" width="27.5" height="4.13" rx="2.06" fill="currentColor"/>
+    <rect x="34.25" y="50.75" width="22" height="4.13" rx="2.06" fill="currentColor"/>
+    <rect x="34.25" y="61.75" width="27.5" height="4.13" rx="2.06" fill="currentColor"/>
+    <rect x="34.25" y="72.75" width="16.5" height="4.13" rx="2.06" fill="currentColor"/>
   </svg>
 </template>
 
-<style scoped>
-.icon {
-  width: 48px;
-  height: 48px;
-}
-</style>
 <script setup>
 </script>

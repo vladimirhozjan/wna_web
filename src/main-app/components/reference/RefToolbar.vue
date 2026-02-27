@@ -159,6 +159,13 @@ function formatBytes(bytes) {
   transition: background 0.15s, color 0.15s;
 }
 
+.view-btn :deep(svg) {
+  width: 18px;
+  height: 18px;
+  padding: 1px;
+  box-sizing: border-box;
+}
+
 .view-btn:hover {
   background: var(--color-bg-hover);
 }

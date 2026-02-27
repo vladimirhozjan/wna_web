@@ -3,13 +3,13 @@
     <div class="metadata-row__indicators">
       <!-- No next action warning (projects only) -->
       <span v-if="missingNextAction" class="chip chip--warning">
-        <WarningIcon class="chip__icon chip__icon--warning" viewBox="0 0 48 48" />
+        <WarningIcon class="chip__icon chip__icon--warning" />
         <span class="chip__text chip__text--warning">No next action</span>
       </span>
 
       <!-- Recurrence rule -->
       <span v-if="item.recurrence_rule" class="chip">
-        <RecurringIcon class="chip__icon chip__icon--tertiary" viewBox="0 0 48 48" />
+        <RecurringIcon class="chip__icon chip__icon--tertiary" />
         <span class="chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
       </span>
 
@@ -21,31 +21,26 @@
 
       <!-- Due date -->
       <span v-if="entityType === 'action' && item.due_date" class="chip" :class="{ 'chip--danger': isItemOverdue }">
-        <CalendarIcon class="chip__icon" viewBox="10 8.5 28 31" />
+        <CalendarIcon class="chip__icon" />
         <span class="chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
       </span>
 
       <!-- Scheduled date -->
       <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
-        <CalendarIcon class="chip__icon chip__icon--scheduled" viewBox="10 8.5 28 31" />
+        <CalendarIcon class="chip__icon chip__icon--scheduled" />
         <span class="chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
       </span>
 
       <!-- Start date -->
       <span v-if="entityType === 'action' && item.start_date" class="chip">
-        <CalendarIcon class="chip__icon chip__icon--tertiary" viewBox="10 8.5 28 31" />
+        <CalendarIcon class="chip__icon chip__icon--tertiary" />
         <span class="chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
       </span>
 
       <!-- Project -->
       <span v-if="entityType === 'action' && projectTitle" class="chip chip--project">
-        <ProjectsIcon class="chip__icon chip__icon--project" viewBox="11.5 11.5 25 25" />
+        <ProjectsIcon class="chip__icon chip__icon--project" />
         <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
-      </span>
-
-      <!-- Description -->
-      <span v-if="item.description" class="chip">
-        <DescriptionIcon class="chip__icon chip__icon--tertiary" />
       </span>
 
       <!-- Attachments -->
@@ -58,6 +53,11 @@
       <span v-if="item.comment_count > 0" class="chip">
         <CommentIcon class="chip__icon chip__icon--tertiary" />
         <span class="chip__text chip__text--tertiary">{{ item.comment_count }}</span>
+      </span>
+
+      <!-- Description -->
+      <span v-if="item.description" class="chip">
+        <DescriptionIcon class="chip__icon chip__icon--tertiary" />
       </span>
     </div>
 
@@ -217,12 +217,15 @@ const hasAnyMetadata = computed(() => {
 .chip__icon {
   width: 20px;
   height: 20px;
+  padding: 4px;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 
 .chip__icon--sm {
   width: 14px;
   height: 14px;
+  padding: 3px;
 }
 
 .chip__icon--warning {

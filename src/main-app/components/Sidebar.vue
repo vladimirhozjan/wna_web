@@ -127,10 +127,9 @@
         <template #icon><SettingsIcon/></template>
       </SidebarMenuItem>
 
-      <div class="logout" @click="logout">
-        <span><LogoutIcon/></span>
-        <span class="label text-body-m">Logout</span>
-      </div>
+      <SidebarMenuItem label="Logout" @click="logout">
+        <template #icon><LogoutIcon/></template>
+      </SidebarMenuItem>
 
     </div>
   </aside>
@@ -489,6 +488,7 @@ function removeFromActions(id) {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  row-gap: 10px;
 }
 
 .sidebar-footer {
@@ -497,23 +497,8 @@ function removeFromActions(id) {
   padding: 10px;
   display: flex;
   flex-direction: column;
+  row-gap: 12px;
 }
 
-.logout {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: 0.15s ease;
-  color: var(--color-menu-item-default-text);
-}
-
-.logout:hover {
-  background: var(--color-menu-item-hover-bg);
-  color: var(--color-menu-item-hover-txt);
-}
-
-.label {
-  display: block;
-}
 
 </style>

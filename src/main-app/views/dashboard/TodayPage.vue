@@ -51,9 +51,7 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterLargeIcon class="empty-state__icon" />
-              <h2 class="empty-state__title">No actions for this context</h2>
-              <p class="empty-state__text">Nothing tagged with "{{ effectiveTags.join(', ') }}" needs attention right now.</p>
+              <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
             </template>
             <template v-else>
               <TodayIcon class="empty-state__icon" />
@@ -79,7 +77,7 @@ import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import TodayIcon from '../../assets/TodayIcon.vue'
-import FilterLargeIcon from '../../assets/FilterLargeIcon.vue'
+import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { todayModel } from '../../scripts/models/todayModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
@@ -290,8 +288,8 @@ h1 {
 }
 
 .empty-state__icon {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }

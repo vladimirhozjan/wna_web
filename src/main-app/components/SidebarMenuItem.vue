@@ -1,5 +1,6 @@
 <template>
   <router-link
+      v-if="props.to"
       :to="props.to"
       custom
       v-slot="{ navigate, isActive }"
@@ -22,6 +23,17 @@
       <span v-else-if="props.count > 0" class="count text-footnote">{{ props.count }}</span>
     </button>
   </router-link>
+  <button
+      v-else
+      type="button"
+      class="menu-item text-body-m"
+      @click="$emit('click')"
+  >
+    <span class="icon">
+      <slot name="icon" />
+    </span>
+    <span class="label">{{ props.label }}</span>
+  </button>
 </template>
 
 <script setup>
@@ -30,14 +42,14 @@ import { dragModel } from "../scripts/models/dragModel.js";
 
 const props = defineProps({
   label: { type: String, required: true },
-  to: { type: [String, Object], required: true },
+  to: { type: [String, Object], default: null },
   acceptDrop: { type: Array, default: () => [] },
   count: { type: Number, default: 0 },
   badge: { type: String, default: null },
   badgeColor: { type: String, default: null },
 });
 
-const emit = defineEmits(['drop']);
+const emit = defineEmits(['drop', 'click']);
 
 const drag = dragModel();
 const isOver = ref(false);
@@ -95,6 +107,7 @@ function onDrop(e) {
   transition: 0.15s ease;
   padding: 0;
   color: var(--color-menu-item-default-text);
+  column-gap: 12px;
 }
 
 .menu-item:hover {
@@ -115,6 +128,13 @@ function onDrop(e) {
 
 .icon {
   display: flex;
+}
+
+.icon :deep(svg) {
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .count {

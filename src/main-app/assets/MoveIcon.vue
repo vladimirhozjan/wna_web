@@ -1,16 +1,9 @@
 <template>
-  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <g transform="translate(24,24) scale(0.55) translate(-32,-32)">
-      <!-- Arrow right with box outline (move/export icon) -->
-      <path fill="currentColor" d="M38 32L26 44V36H10V28H26V20L38 32Z"/>
-      <path fill="none" stroke="currentColor" stroke-width="3" d="M18 16H46V48H18V40M18 24V16"/>
-    </g>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M70.56 48L43.49 75.08L43.49 57.03L7.38 57.03L7.38 38.97L43.49 38.97L43.49 20.92L70.56 48Z"/>
+    <path fill="none" stroke="currentColor" stroke-width="6.77" d="M25.44 11.9L88.62 11.9L88.62 84.1L25.44 84.1L25.44 66.05M25.44 29.95L25.44 11.9"/>
   </svg>
 </template>
 
-<style scoped>
-.icon {
-  width: 48px;
-  height: 48px;
-}
-</style>
+<script setup>
+</script>

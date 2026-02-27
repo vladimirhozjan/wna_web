@@ -18,11 +18,7 @@
             @check="onItemCheck"
         >
           <template #prefix="{ item }">
-            <span class="type-icon" :class="typeIconClass(item.type)">
-              <InboxIcon v-if="item.type === 'STUFF'" />
-              <NextIcon v-else-if="item.type === 'ACTION'" />
-              <ProjectsIcon v-else-if="item.type === 'PROJECT'" />
-            </span>
+            <ItemTypeIcon :type="item.type" />
           </template>
           <template #actions><span></span></template>
           <template #empty>
@@ -44,9 +40,7 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import CompletedIcon from '../../assets/CompletedIcon.vue'
-import InboxIcon from '../../assets/InboxIcon.vue'
-import NextIcon from '../../assets/NextIcon.vue'
-import ProjectsIcon from '../../assets/ProjectsIcon.vue'
+import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { completedModel } from '../../scripts/models/completedModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 
@@ -83,15 +77,6 @@ onMounted(() => {
 
 async function loadMore() {
   await loadCompleted()
-}
-
-function typeIconClass(type) {
-  switch (type) {
-    case 'STUFF': return 'type-icon--stuff'
-    case 'ACTION': return 'type-icon--action'
-    case 'PROJECT': return 'type-icon--project'
-    default: return ''
-  }
 }
 
 function truncateTitle(title, maxLen = 30) {
@@ -172,8 +157,8 @@ async function onItemCheck(id, checked) {
 }
 
 .empty-state__icon {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }
@@ -192,29 +177,6 @@ async function onItemCheck(id, checked) {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
-}
-
-.type-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.type-icon :deep(svg) {
-  width: 32px;
-  height: 32px;
-}
-
-.type-icon--stuff {
-  color: var(--color-text-secondary);
-}
-
-.type-icon--action {
-  color: var(--color-action);
-}
-
-.type-icon--project {
-  color: #b45309;
 }
 
 </style>

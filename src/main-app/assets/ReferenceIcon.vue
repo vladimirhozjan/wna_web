@@ -1,15 +1,8 @@
 <template>
-  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <path fill="currentColor"
-          d="M17 35V16C17 15.45 17.2 14.98 17.59 14.59C17.98 14.2 18.45 14 19 14H29C29.55 14 30.02 14.2 30.41 14.59C30.8 14.98 31 15.45 31 16V35L24 31.5L17 35ZM19 31.85L24 29.35L29 31.85V16H19V31.85Z"/>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M18.67 92L18.67 12.38C18.67 10.08 19.5 8.11 21.14 6.47C22.77 4.84 24.74 4 27.05 4L68.95 4C71.26 4 73.23 4.84 74.86 6.47C76.5 8.11 77.33 10.08 77.33 12.38L77.33 92L48 77.33L18.67 92ZM27.05 78.8L48 68.32L68.95 78.8L68.95 12.38L27.05 12.38L27.05 78.8Z"/>
   </svg>
 </template>
 
-<style scoped>
-.icon {
-  width: 48px;
-  height: 48px;
-}
-</style>
-<script setup lang="ts">
+<script setup>
 </script>

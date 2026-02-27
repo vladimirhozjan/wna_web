@@ -1,20 +1,12 @@
 <template>
-  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <path stroke="currentColor" stroke-width="2" fill="none"
-          d="M24 15V12M24 36V33M33 24H36M12 24H15M30.35 17.65L32.5 15.5M15.5 32.5L17.65 30.35M30.35 30.35L32.5 32.5M15.5 15.5L17.65 17.65M24 20C26.2 20 28 21.8 28 24C28 26.2 26.2 28 24 28C21.8 28 20 26.2 20 24C20 21.8 21.8 20 24 20Z"/>
-    <circle v-if="overdue" cx="36" cy="13" r="4" fill="var(--color-danger)"/>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" stroke="currentColor" stroke-width="6.77" d="M48 17.54L48 7.38M48 88.62L48 78.46M78.46 48L88.62 48M7.38 48L17.54 48M69.49 26.51L76.77 19.23M19.23 76.77L26.51 69.49M69.49 69.49L76.77 76.77M19.23 19.23L26.51 26.51M48 34.46C55.45 34.46 61.54 40.55 61.54 48C61.54 55.45 55.45 61.54 48 61.54C40.55 61.54 34.46 55.45 34.46 48C34.46 40.55 40.55 34.46 48 34.46Z"/>
+    <circle v-if="overdue" cx="84" cy="12" r="8" fill="var(--color-danger)"/>
   </svg>
 </template>
 
 <script setup>
 defineProps({
   overdue: { type: Boolean, default: false },
-});
+})
 </script>
-
-<style scoped>
-.icon {
-  width: 48px;
-  height: 48px;
-}
-</style>

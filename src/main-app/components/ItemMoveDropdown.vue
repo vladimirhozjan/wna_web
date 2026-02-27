@@ -131,6 +131,8 @@ function onMove(destination) {
 .move-icon {
   width: 18px;
   height: 18px;
+  padding: 4px;
+  box-sizing: border-box;
   color: var(--color-text-tertiary);
 }
 

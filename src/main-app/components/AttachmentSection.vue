@@ -427,12 +427,14 @@ function formatSize(bytes) {
 .attachment-item-icon {
   width: 24px;
   height: 24px;
+  padding: 2px;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 
-.attachment-item-icon :deep(.icon) {
-  width: 24px;
-  height: 24px;
+.attachment-item-icon :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 .attachment-item-info {
@@ -503,11 +505,13 @@ function formatSize(bytes) {
 .attachment-action-icon {
   width: 36px;
   height: 36px;
+  padding: 6px;
+  box-sizing: border-box;
 }
 
-.attachment-action-icon :deep(.icon) {
-  width: 36px;
-  height: 36px;
+.attachment-action-icon :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 /* ── Upload progress ── */

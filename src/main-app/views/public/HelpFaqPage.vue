@@ -86,6 +86,8 @@ function onSuccessPasswordReset() { authMode.value = null; router.push({ name: '
 .back-link__icon {
   width: 16px;
   height: 16px;
+  padding: 1px;
+  box-sizing: border-box;
 }
 
 .heading {

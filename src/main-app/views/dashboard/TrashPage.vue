@@ -21,11 +21,7 @@
             @load-more="loadMore"
         >
           <template #prefix="{ item }">
-            <span class="type-icon" :class="typeIconClass(item.type)">
-              <InboxIcon v-if="item.type === 'STUFF'" />
-              <NextIcon v-else-if="item.type === 'ACTION'" />
-              <ProjectsIcon v-else-if="item.type === 'PROJECT'" />
-            </span>
+            <ItemTypeIcon :type="item.type" />
           </template>
           <template #actions="{ item }">
             <Btn variant="link" size="sm" @click="onRestoreOne(item)">Restore</Btn>
@@ -49,9 +45,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
-import InboxIcon from '../../assets/InboxIcon.vue'
-import NextIcon from '../../assets/NextIcon.vue'
-import ProjectsIcon from '../../assets/ProjectsIcon.vue'
+import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { trashModel } from '../../scripts/models/trashModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
@@ -81,15 +75,6 @@ onMounted(() => {
 
 async function loadMore() {
   await loadTrash()
-}
-
-function typeIconClass(type) {
-  switch (type) {
-    case 'STUFF': return 'type-icon--stuff'
-    case 'ACTION': return 'type-icon--action'
-    case 'PROJECT': return 'type-icon--project'
-    default: return ''
-  }
 }
 
 function truncateTitle(title, maxLen = 30) {
@@ -163,8 +148,8 @@ async function onEmptyTrash() {
 }
 
 .empty-state__icon {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }
@@ -183,29 +168,6 @@ async function onEmptyTrash() {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
-}
-
-.type-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.type-icon :deep(svg) {
-  width: 32px;
-  height: 32px;
-}
-
-.type-icon--stuff {
-  color: var(--color-text-secondary);
-}
-
-.type-icon--action {
-  color: var(--color-action);
-}
-
-.type-icon--project {
-  color: #b45309;
 }
 
 /* Remove action color on click/active */

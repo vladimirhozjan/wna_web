@@ -252,6 +252,8 @@ function contactSupport() {
 .search-icon {
   width: 20px;
   height: 20px;
+  padding: 2px;
+  box-sizing: border-box;
   color: var(--color-text-tertiary);
   flex-shrink: 0;
 }
@@ -289,6 +291,8 @@ function contactSupport() {
 .section-heading__icon {
   width: 28px;
   height: 28px;
+  padding: 3px;
+  box-sizing: border-box;
   color: var(--color-action);
   flex-shrink: 0;
 }
@@ -366,6 +370,8 @@ function contactSupport() {
 .show-more__chevron {
   width: 16px;
   height: 16px;
+  padding: 1px;
+  box-sizing: border-box;
 }
 
 /* Desktop: show in header row, hide bottom link */

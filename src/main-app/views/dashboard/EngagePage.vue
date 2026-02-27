@@ -121,9 +121,7 @@
 
           <!-- Empty state: filtered -->
           <div v-if="noActionItems && activeTag" class="empty-state">
-            <FilterLargeIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">No actions for this context</h2>
-            <p class="empty-state__text">Nothing tagged with "{{ activeTag }}" needs attention right now.</p>
+            <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
           </div>
 
           <!-- Empty state: truly empty -->
@@ -154,7 +152,7 @@ import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import EngageIcon from '../../assets/EngageIcon.vue'
-import FilterLargeIcon from '../../assets/FilterLargeIcon.vue'
+import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
@@ -526,8 +524,8 @@ h1 {
 }
 
 .empty-state__icon {
-  width: 80px;
-  height: 80px;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-tertiary);
   margin-bottom: 16px;
 }

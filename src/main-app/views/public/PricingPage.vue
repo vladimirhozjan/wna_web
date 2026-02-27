@@ -402,6 +402,8 @@ const comparisonRows = [
 .icon-check {
   width: 18px;
   height: 18px;
+  padding: 2px;
+  box-sizing: border-box;
   color: var(--color-success);
   display: inline-block;
   vertical-align: middle;

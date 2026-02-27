@@ -285,6 +285,8 @@ onUnmounted(() => {
 .dropdown-item-icon {
   width: 32px;
   height: 32px;
+  padding: 5px;
+  box-sizing: border-box;
   margin-right: 4px;
   color: var(--color-text-tertiary);
   flex-shrink: 0;

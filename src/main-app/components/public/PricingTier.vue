@@ -154,6 +154,8 @@ defineEmits(['cta-click'])
 .tier__check {
   width: 18px;
   height: 18px;
+  padding: 2px;
+  box-sizing: border-box;
   flex-shrink: 0;
   color: var(--color-success);
 }

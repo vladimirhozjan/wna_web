@@ -20,7 +20,7 @@
 
         <!-- Title area -->
         <div class="detail-title-area">
-          <RecurringIcon class="detail-type-icon" viewBox="0 0 48 48" />
+          <RecurringIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <span class="detail-spinner"></span>
@@ -604,15 +604,16 @@ function formatDate(dateStr) {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 4px;
+  padding: 24px 24px 0 50px;
+  position: relative;
 }
 
 .detail-type-icon {
-  width: 42px;
-  height: 42px;
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
   color: var(--color-text-tertiary);
-  flex-shrink: 0;
-  align-self: center;
 }
 
 .detail-title-wrapper {
@@ -711,6 +712,8 @@ function formatDate(dateStr) {
 .detail-instance-badge__icon {
   width: 22px;
   height: 22px;
+  padding: 4px;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 
@@ -939,7 +942,7 @@ function formatDate(dateStr) {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 4px;
+    padding: 16px 16px 0 50px;
   }
 
   .detail-actions {

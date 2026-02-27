@@ -1,14 +1,8 @@
 <template>
-  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <path d="M17.5 17.5L13.875 13.875M15.833 9.167a6.667 6.667 0 1 1-13.333 0 6.667 6.667 0 0 1 13.333 0Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M88 87.78L68.67 68.45M79.11 43.34A35.56 35.56 0 1 1 8 43.34A35.56 35.56 0 0 1 79.11 43.34Z"/>
   </svg>
 </template>
 
-<style scoped>
-.icon {
-  width: 20px;
-  height: 20px;
-}
-</style>
 <script setup>
 </script>

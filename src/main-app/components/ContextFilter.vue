@@ -3,8 +3,8 @@
     <Dropdown ref="dropdown" title="Context filter" align="left">
       <template #trigger>
         <button type="button" class="context-trigger" :class="{ 'context-trigger--active': activeTag }">
-          <FilterIcon />
-          <span v-if="!activeTag" class="context-trigger__label">Work where you are</span>
+          <span class="context-trigger__icon"><FilterIcon /></span>
+          <span v-if="!activeTag" class="context-trigger__hint">Filter by context</span>
         </button>
       </template>
 
@@ -84,29 +84,26 @@ function onClear(closeFn) {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 6px;
+  padding-bottom: 10px;
   margin-bottom: 4px;
   border-bottom: 1px solid var(--color-border-light);
-  flex-wrap: wrap;
 }
 
 .context-trigger {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   background: none;
   border: none;
-  padding: 6px 8px;
-  border-radius: 6px;
+  padding: 0;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
+  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: 0.15s ease;
 }
 
 .context-trigger:hover {
-  background: var(--color-bg-secondary);
   color: var(--color-text-primary);
 }
 
@@ -114,8 +111,23 @@ function onClear(closeFn) {
   color: var(--color-action);
 }
 
-.context-trigger__label {
+.context-trigger__icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.context-trigger__icon :deep(svg) {
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.context-trigger__hint {
   white-space: nowrap;
+  font-style: italic;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-body-s);
 }
 
 .context-filter__menu {

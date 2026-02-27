@@ -1,16 +1,8 @@
 <template>
-  <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
-    <g transform="translate(24,24) scale(0.55) translate(-24,-24)">
-      <path fill="currentColor" d="M24 4L2 42h44L24 4zm0 6.5L39.5 39h-31L24 10.5zM22 20v10h4V20h-4zm0 14v4h4v-4h-4z"/>
-    </g>
+  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M48 10L4 86L92 86L48 10ZM48 23L79 80L17 80L48 23ZM44 42L44 62L52 62L52 42L44 42ZM44 70L44 78L52 78L52 70L44 70Z"/>
   </svg>
 </template>
 
-<style scoped>
-.icon {
-  width: 48px;
-  height: 48px;
-}
-</style>
-<script setup lang="ts">
+<script setup>
 </script>

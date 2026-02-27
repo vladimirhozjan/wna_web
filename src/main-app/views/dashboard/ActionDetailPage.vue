@@ -1439,15 +1439,16 @@ async function onActivate() {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 4px; /* 4px centers 42px icon in 50px space */
+  padding: 24px 24px 0 50px;
+  position: relative;
 }
 
 .detail-type-icon {
-  width: 42px;
-  height: 42px;
+  position: absolute;
+  left: 11px;
+  width: 28px;
+  height: 28px;
   color: var(--color-text-tertiary);
-  flex-shrink: 0;
-  align-self: center;
 }
 
 .detail-title-wrapper {
@@ -1558,6 +1559,8 @@ async function onActivate() {
 .detail-review-badge__icon {
   width: 16px;
   height: 16px;
+  padding: 2px;
+  box-sizing: border-box;
   flex-shrink: 0;
 }
 
@@ -1875,7 +1878,7 @@ async function onActivate() {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 4px;
+    padding: 16px 16px 0 50px;
   }
 
   .detail-actions {

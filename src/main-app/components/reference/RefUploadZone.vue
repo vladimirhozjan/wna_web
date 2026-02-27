@@ -73,6 +73,8 @@ function onDrop(e) {
 .upload-overlay__icon {
   width: 64px;
   height: 64px;
+  padding: 10px;
+  box-sizing: border-box;
   color: var(--color-action);
   margin-bottom: 12px;
 }
