@@ -6,7 +6,7 @@
     </div>
 
     <!-- Center nav links (landing/public context, desktop only) -->
-    <nav v-if="context === 'landing' && !authenticated" class="topnav-center desktop-only">
+    <nav v-if="context === 'landing'" class="topnav-center desktop-only">
       <a href="/#why-gtd" class="nav-link text-body-s">Why GTD</a>
       <a href="/#features" class="nav-link text-body-s">Features</a>
       <router-link to="/pricing" class="nav-link text-body-s">Pricing</router-link>
@@ -24,22 +24,20 @@
         <Btn class="hamburger" variant="ghost" size="sm" @click="toggleMobile">☰</Btn>
       </div>
 
-      <div v-if="showMobile" class="user-menu">
-        <a href="/#why-gtd" class="dropdown-item" @click="showMobile = false">Why GTD</a>
-        <a href="/#features" class="dropdown-item" @click="showMobile = false">Features</a>
-        <router-link to="/pricing" class="dropdown-item" @click="showMobile = false">Pricing</router-link>
-        <router-link to="/help" class="dropdown-item" @click="showMobile = false">Help</router-link>
-        <hr class="dropdown-divider" />
-        <button class="dropdown-item" @click="clickRegister">Start Here</button>
-        <button class="dropdown-item" @click="clickLogin">Sign In</button>
-      </div>
+      <TopNavDropdown
+        v-if="showMobile"
+        :authenticated="false"
+        @close="showMobile = false"
+        @open-register="clickRegister"
+        @open-login="clickLogin"
+      />
     </div>
 
     <!-- AUTHENTICATED -->
     <div v-else class="topnav-auth-right">
       <QuickAddBtn @add="onQuickAdd" />
 
-      <!-- Dashboard mobile: hamburger -->
+      <!-- Dashboard mobile: hamburger opens sidebar -->
       <Btn
         v-if="context === 'dashboard'"
         class="hamburger mobile-only"
@@ -56,11 +54,14 @@
           :avatar-url="user?.avatarUrl"
           @toggle-menu="showDropdown = !showDropdown"
         />
-        <div v-if="showDropdown" class="user-menu">
-          <button v-if="context === 'landing'" class="dropdown-item" @click="goToDashboard">My Dashboard</button>
-          <button class="dropdown-item" @click="goToSettings">Settings</button>
-          <button class="dropdown-item" @click="handleLogout">Logout</button>
-        </div>
+        <TopNavDropdown
+          v-if="showDropdown"
+          :authenticated="true"
+          @close="showDropdown = false"
+          @go-dashboard="goToDashboard"
+          @go-settings="goToSettings"
+          @logout="handleLogout"
+        />
       </div>
     </div>
   </nav>
@@ -72,6 +73,7 @@ import { useRouter } from "vue-router";
 import Btn from "./Btn.vue";
 import UserAvatar from "./UserAvatar.vue";
 import QuickAddBtn from "./QuickAddBtn.vue";
+import TopNavDropdown from "./TopNavDropdown.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
 
@@ -196,21 +198,6 @@ onBeforeUnmount(() => {
   margin-right: 2px;
 }
 
-.user-menu {
-  position: absolute;
-  top: 44px;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: white;
-  padding: 8px 0;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  min-width: 160px;
-}
-
 .desktop-only {
   display: flex;
   gap: 16px;
@@ -222,7 +209,7 @@ onBeforeUnmount(() => {
 
 @media (max-width: 768px) {
   .desktop-only {
-    display: none;
+    display: none !important;
   }
   .mobile-only {
     display: block;
@@ -236,34 +223,10 @@ onBeforeUnmount(() => {
   }
 }
 
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 10px 18px;
-  text-align: left;
-  cursor: pointer;
-  background: none;
-  border: none;
-  white-space: nowrap;
-  text-decoration: none;
-  color: var(--color-text-primary);
-  font-size: var(--font-size-body-s);
-}
-
-.dropdown-item:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.dropdown-divider {
-  border: none;
-  border-top: 1px solid var(--color-border-light);
-  margin: 4px 0;
-}
-
 .topnav-center {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: clamp(8px, 2vw, 24px);
 }
 
 .nav-link {
