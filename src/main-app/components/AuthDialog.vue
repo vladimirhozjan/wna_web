@@ -18,6 +18,16 @@
                   v-model:error="passwordError"/>
             <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
                   placeholder="Confirm your password" v-model:error="confirmError"/>
+            <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
+              <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
+              <span class="text-body-s">
+                I agree to the
+                <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
+                and
+                <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
+              </span>
+            </label>
+            <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
             <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
             <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
           </section>
@@ -107,6 +117,8 @@ const confirm = ref('')
 const emailError = ref('')
 const passwordError = ref('')
 const confirmError = ref('')
+const agreeTerms = ref(false)
+const agreeError = ref('')
 
 const reset_token = ref('')
 
@@ -122,10 +134,12 @@ function clearForm() {
   email.value = ''
   password.value = ''
   confirm.value = ''
+  agreeTerms.value = false
 
   emailError.value = ''
   passwordError.value = ''
   confirmError.value = ''
+  agreeError.value = ''
 }
 
 function closeAll() {
@@ -158,6 +172,7 @@ function clearErrors() {
   emailError.value = ''
   passwordError.value = ''
   confirmError.value = ''
+  agreeError.value = ''
 }
 
 async function doLogin() {
@@ -202,7 +217,11 @@ async function doRegister() {
     confirmError.value = 'Passwords do not match'
   }
 
-  if (emailError.value || passwordError.value || confirmError.value) {
+  if (!agreeTerms.value) {
+    agreeError.value = 'You must agree to the Terms and Privacy Policy'
+  }
+
+  if (emailError.value || passwordError.value || confirmError.value || agreeError.value) {
     return
   }
 
@@ -266,7 +285,7 @@ async function doReset() {
 }
 
 const disableLogin = computed(() => !email.value || !password.value)
-const disableRegister = computed(() => !email.value || !password.value || !confirm.value)
+const disableRegister = computed(() => !email.value || !password.value || !confirm.value || !agreeTerms.value)
 const disableForgot = computed(() => !email.value)
 const disableReset = computed(() => !password.value || !confirm.value)
 </script>
@@ -316,6 +335,47 @@ h2 {
 .subtitle {
   text-align: center;
   margin: 10px 20px 0 20px;
+}
+
+.agree-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  margin-top: -8px;
+}
+
+.agree-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  cursor: pointer;
+  accent-color: var(--color-action);
+  flex-shrink: 0;
+}
+
+.agree-checkbox span {
+  color: var(--color-text-secondary);
+  line-height: 150%;
+}
+
+.agree-checkbox a {
+  color: var(--color-link-text);
+  text-decoration: underline;
+}
+
+.agree-checkbox a:hover {
+  color: var(--color-link-hover);
+}
+
+.agree-checkbox--error input[type="checkbox"] {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 1px;
+}
+
+.agree-error {
+  color: var(--color-text-error);
+  margin-top: -14px;
 }
 
 .auth-fade-enter-active,
