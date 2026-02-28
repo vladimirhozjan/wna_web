@@ -34,9 +34,9 @@ const colorClass = computed(() => {
 }
 
 .item-type-icon :deep(svg) {
-  width: 40px;
-  height: 40px;
-  padding: 5px;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
   box-sizing: border-box;
 }
 
