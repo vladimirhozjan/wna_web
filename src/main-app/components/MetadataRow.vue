@@ -15,7 +15,7 @@
 
       <!-- Waiting for -->
       <span v-if="entityType === 'action' && item.waiting_for" class="chip">
-        <HourglassIcon class="chip__icon chip__icon--sm" />
+        <HourglassIcon class="chip__icon" />
         <span class="chip__text">{{ item.waiting_for }}</span>
       </span>
 
@@ -220,12 +220,6 @@ const hasAnyMetadata = computed(() => {
   padding: 4px;
   box-sizing: border-box;
   flex-shrink: 0;
-}
-
-.chip__icon--sm {
-  width: 14px;
-  height: 14px;
-  padding: 3px;
 }
 
 .chip__icon--warning {
