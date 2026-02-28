@@ -185,7 +185,7 @@ async function onItemUpdate(id, { title }) {
 
   updatingId.value = id
   try {
-    await updateProject(id, { title })
+    await updateProject(id, { title, outcome: item.outcome || '' })
   } catch (e) {
     if (item) item.title = oldTitle
   } finally {
