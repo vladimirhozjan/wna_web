@@ -8,6 +8,7 @@ window.addEventListener('storage', (event) => {
         isAuthenticated.value = false
         localStorage.removeItem('auth_token')
         localStorage.removeItem('refresh_token')
+        localStorage.removeItem('refresh_token_hash')
         localStorage.removeItem('current_user')
     }
 })

@@ -43,6 +43,7 @@ httpApi.interceptors.request.use(async (req) => {
             if (e.status === 404 || e.status === 401) {
                 localStorage.removeItem('auth_token')
                 localStorage.removeItem('refresh_token')
+                localStorage.removeItem('refresh_token_hash')
                 localStorage.removeItem('current_user')
                 localStorage.setItem('logout', Date.now().toString())
                 window.location.href = '/'
