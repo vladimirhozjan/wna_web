@@ -524,10 +524,15 @@ function formatSessionTime(dateStr) {
 }
 
 async function onRevokeSession(sessionId) {
+  const session = sessions.value.find(s => s.id === sessionId)
+  const isCurrent = session?.is_current
+
   const confirmed = await confirm.show({
-    title: 'End Session',
-    message: 'Are you sure you want to end this session? The device will be signed out within the next hour.',
-    confirmText: 'End Session',
+    title: isCurrent ? 'Log out' : 'End Session',
+    message: isCurrent
+        ? 'Are you sure you want to log out?'
+        : 'Are you sure you want to end this session? The device will be signed out within the next hour.',
+    confirmText: isCurrent ? 'Log out' : 'End Session',
     cancelText: 'Cancel'
   })
 
@@ -536,8 +541,13 @@ async function onRevokeSession(sessionId) {
   revokingId.value = sessionId
   try {
     await revokeSession(sessionId)
-    sessions.value = sessions.value.filter(s => s.id !== sessionId)
-    toaster.success('Session ended')
+    if (isCurrent) {
+      await auth.logoutUser()
+      router.push({ name: 'login' })
+    } else {
+      sessions.value = sessions.value.filter(s => s.id !== sessionId)
+      toaster.success('Session ended')
+    }
   } catch (err) {
     toaster.push(err.message || 'Failed to end session')
   } finally {

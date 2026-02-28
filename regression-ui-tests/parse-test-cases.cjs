@@ -158,23 +158,14 @@ while (i < lines.length) {
 fs.writeFileSync(outputFile, JSON.stringify(testCases, null, 2));
 console.log(`Parsed ${testCases.length} test cases into ${path.basename(outputFile)}`);
 
-// Embed test data into index.html so it works offline (double-click, no server)
-const htmlFile = path.resolve(__dirname, 'index.html');
-let html = fs.readFileSync(htmlFile, 'utf-8');
+// Write test data into test-data.js so it works offline (double-click, no server)
+const dataFile = path.resolve(__dirname, 'test-data.js');
 const startMarker = '/* __TEST_CASES_DATA__ */';
 const endMarker = '/* __END_TEST_CASES_DATA__ */';
 const dataLine = `const TEST_CASES_DATA = ${JSON.stringify(testCases)};`;
-const startIdx = html.indexOf(startMarker);
-const endIdx = html.indexOf(endMarker);
-
-if (startIdx !== -1 && endIdx !== -1) {
-  html = html.substring(0, startIdx) + startMarker + '\n' + dataLine + '\n' + html.substring(endIdx);
-  fs.writeFileSync(htmlFile, html);
-  console.log(`Embedded ${testCases.length} test cases into index.html`);
-} else {
-  console.error('ERROR: Could not find data markers in index.html');
-  process.exit(1);
-}
+const dataContent = startMarker + '\n' + dataLine + '\n' + endMarker + '\n';
+fs.writeFileSync(dataFile, dataContent);
+console.log(`Wrote ${testCases.length} test cases into test-data.js`);
 
 // Print summary by section
 const bySec = {};
