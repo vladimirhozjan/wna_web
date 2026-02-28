@@ -75,7 +75,7 @@ const isText = computed(() =>
 .preview-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--color-overlay-opaque);
   z-index: 99999;
   display: flex;
   flex-direction: column;
@@ -87,15 +87,15 @@ const isText = computed(() =>
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-overlay);
   flex-shrink: 0;
 }
 
 .preview-filename {
-  color: #fff;
+  color: var(--color-text-inverse);
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -128,7 +128,7 @@ const isText = computed(() =>
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid var(--color-overlay-white-subtle);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -161,9 +161,9 @@ const isText = computed(() =>
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
   border-radius: 8px;
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-size: var(--font-size-body-s);
-  line-height: 1.6;
+  line-height: var(--lh-loose);
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
@@ -174,7 +174,7 @@ const isText = computed(() =>
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-overlay-white);
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
 }
@@ -184,7 +184,7 @@ const isText = computed(() =>
   height: 64px;
   padding: 10px;
   box-sizing: border-box;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--color-overlay-white-muted);
 }
 
 .fade-enter-active,

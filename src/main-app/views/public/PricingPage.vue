@@ -256,7 +256,7 @@ const comparisonRows = [
   padding: 12px 28px;
   font-family: var(--font-family-default), serif;
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   border: 1px solid var(--color-border-light);
   background: var(--color-bg-primary);
   color: var(--color-text-secondary);
@@ -276,7 +276,7 @@ const comparisonRows = [
 
 .toggle-btn--active {
   background: var(--color-action);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   border-color: var(--color-action);
 }
 
@@ -292,9 +292,9 @@ const comparisonRows = [
   color: var(--color-success);
   padding: 2px 8px;
   border-radius: 20px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
-  line-height: 1.4;
+  line-height: var(--lh-normal);
 }
 
 /* Tier grid */
@@ -335,7 +335,7 @@ const comparisonRows = [
 .compare-table th {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .compare-table th:first-child,
@@ -345,7 +345,7 @@ const comparisonRows = [
 
 .compare-feature {
   color: var(--color-text-primary);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .compare-value {
@@ -374,7 +374,7 @@ const comparisonRows = [
 .compare-card__feature {
   display: block;
   color: var(--color-text-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   margin-bottom: 10px;
 }
 
@@ -393,7 +393,7 @@ const comparisonRows = [
 
 .compare-card__plan {
   color: var(--color-text-tertiary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -411,6 +411,6 @@ const comparisonRows = [
 
 .icon-dash {
   color: var(--color-text-tertiary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 </style>

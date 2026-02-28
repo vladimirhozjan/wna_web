@@ -191,7 +191,7 @@ onUnmounted(() => {
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-dropdown);
   z-index: 1000;
   overflow: hidden;
   min-width: 160px;
@@ -202,7 +202,7 @@ onUnmounted(() => {
 .dropdown-sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay-light);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -238,18 +238,18 @@ onUnmounted(() => {
 .dropdown-sheet-title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-l);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .dropdown-sheet-close {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   color: var(--color-text-tertiary);
   cursor: pointer;
   padding: 4px 8px;
-  line-height: 1;
+  line-height: var(--lh-none);
 }
 
 .dropdown-sheet-close:hover {
@@ -297,7 +297,7 @@ onUnmounted(() => {
 }
 
 .dropdown-item--danger {
-  color: #dc2626;
+  color: var(--color-text-danger);
 }
 
 .dropdown-item--danger:hover {

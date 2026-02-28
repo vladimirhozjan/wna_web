@@ -25,11 +25,11 @@ defineEmits(['open-register'])
 }
 
 .cta-heading {
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .cta-subtitle {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-on-dark-muted);
   margin-top: 8px;
 }
 
@@ -43,7 +43,7 @@ defineEmits(['open-register'])
   color: var(--color-action);
   font-family: var(--font-family-default), serif;
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   border: none;
   border-radius: 6px;
   cursor: pointer;

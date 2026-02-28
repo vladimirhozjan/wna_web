@@ -66,7 +66,7 @@ defineProps({
 
 .sidebar-link.active {
   color: var(--color-action);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 @media (min-width: 769px) {

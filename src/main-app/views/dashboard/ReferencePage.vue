@@ -466,7 +466,7 @@ function formatSize(bytes) {
 .empty-state__title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
@@ -501,7 +501,7 @@ function formatSize(bytes) {
 }
 
 .upload-item--error {
-  border-color: #dc2626;
+  border-color: var(--color-text-danger);
 }
 
 .upload-item__name {
@@ -532,15 +532,15 @@ function formatSize(bytes) {
 
 .upload-item__done {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
-  color: #059669;
-  font-weight: 500;
+  font-size: var(--font-size-footnote);
+  color: var(--color-text-success);
+  font-weight: var(--font-weight-medium);
 }
 
 .upload-item__error {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
-  color: #dc2626;
+  font-size: var(--font-size-footnote);
+  color: var(--color-text-danger);
 }
 
 /* Trash tab */
@@ -569,7 +569,7 @@ function formatSize(bytes) {
   text-align: left;
   padding: 8px 12px;
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   border-bottom: 1px solid var(--color-border-light);
 }
@@ -612,7 +612,7 @@ function formatSize(bytes) {
 }
 
 .danger-link {
-  color: #dc2626 !important;
+  color: var(--color-text-danger) !important;
 }
 
 .load-more {

@@ -317,7 +317,7 @@ function formatSize(bytes) {
   display: block;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -339,7 +339,7 @@ function formatSize(bytes) {
   border: 1px solid transparent;
   white-space: pre-wrap;
   word-break: break-word;
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
   min-height: 32px;
   box-sizing: border-box;
 }

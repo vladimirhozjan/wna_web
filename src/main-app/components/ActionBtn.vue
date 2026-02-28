@@ -39,7 +39,7 @@ const classes = computed(() => [
   background: var(--color-bg-secondary);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
 .action-btn:hover {
@@ -59,7 +59,7 @@ const classes = computed(() => [
 }
 
 .action-btn--primary:hover {
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--color-action-bg-light);
 }
 
 .action-btn-spinner {

@@ -70,15 +70,15 @@ defineExpose({ dismiss, visible })
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
 }
 
 .gtd-tip__close {
   flex-shrink: 0;
   background: none;
   border: none;
-  font-size: 18px;
-  line-height: 1;
+  font-size: var(--font-size-lg);
+  line-height: var(--lh-none);
   color: var(--color-text-tertiary);
   cursor: pointer;
   padding: 0 2px;

@@ -286,7 +286,7 @@ function onCancel() {
 .clarify-header-title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -305,7 +305,7 @@ function onCancel() {
   justify-content: center;
   border: none;
   background: none;
-  font-size: 16px;
+  font-size: var(--font-size-md);
   color: var(--color-text-tertiary);
   cursor: pointer;
   border-radius: 4px;
@@ -356,7 +356,7 @@ function onCancel() {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
   color: var(--color-text-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Content */
@@ -384,7 +384,7 @@ function onCancel() {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   margin-bottom: 16px;
 }
 

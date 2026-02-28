@@ -185,7 +185,7 @@ function formatBytes(bytes) {
 
 .quota-text {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
+  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
   white-space: nowrap;
 }

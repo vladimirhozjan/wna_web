@@ -309,7 +309,7 @@ const disableReset = computed(() => !password.value || !confirm.value)
   border-radius: 12px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--shadow-auth);
 }
 
 section {

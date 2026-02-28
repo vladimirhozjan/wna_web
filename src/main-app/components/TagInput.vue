@@ -209,7 +209,7 @@ defineExpose({ focus: focusInput })
 
 .tag-input-container--focused {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .tag-input-container--disabled {
@@ -228,7 +228,7 @@ defineExpose({ focus: focusInput })
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
-  line-height: 1.4;
+  line-height: var(--lh-normal);
   white-space: nowrap;
 }
 
@@ -240,8 +240,8 @@ defineExpose({ focus: focusInput })
   border: none;
   cursor: pointer;
   padding: 0;
-  font-size: 14px;
-  line-height: 1;
+  font-size: var(--font-size-sm);
+  line-height: var(--lh-none);
   color: var(--color-text-tertiary);
 }
 
@@ -315,7 +315,7 @@ defineExpose({ focus: focusInput })
   font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   cursor: pointer;
-  line-height: 1.4;
+  line-height: var(--lh-normal);
   white-space: nowrap;
   transition: all 0.15s;
 }

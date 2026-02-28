@@ -99,7 +99,7 @@ const classes = computed(() => ([
 /* VARIANTS */
 .base-btn--primary {
   background: var(--color-btn-primary-bg);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-btn-primary-text);
 }
 .base-btn--primary:hover:not(:disabled) {
@@ -117,7 +117,7 @@ const classes = computed(() => ([
   background: var(--color-btn-ghost-bg);
   color: var(--color-btn-ghost-text);
   border: 1px solid var(--color-btn-ghost-border);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 .base-btn--ghost:hover:not(:disabled) {
   background: var(--color-btn-ghost-hover);
@@ -134,7 +134,7 @@ const classes = computed(() => ([
 .base-btn--danger {
   background: var(--color-btn-danger-bg);
   color: var(--color-btn-danger-text);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 .base-btn--danger:hover:not(:disabled) {
   background: var(--color-btn-danger-hover);
@@ -151,7 +151,7 @@ const classes = computed(() => ([
   background: var(--color-btn-ghost-danger-bg);
   color: var(--color-btn-ghost-danger-text);
   border: 1px solid var(--color-btn-ghost-danger-border);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 .base-btn--ghost-danger:hover:not(:disabled) {
   background: var(--color-btn-ghost-danger-hover);
@@ -186,7 +186,7 @@ const classes = computed(() => ([
 .base-btn--link {
   background: transparent;
   color: var(--color-link-text);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   padding: 4px 8px;
 }
 .base-btn--link:hover:not(:disabled) {

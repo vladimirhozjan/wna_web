@@ -213,7 +213,7 @@ function onMonthClick(month) {
 .year-view__month-header {
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 8px;
   cursor: pointer;
@@ -233,7 +233,7 @@ function onMonthClick(month) {
 
 .year-view__weekday {
   font-family: var(--font-family-default);
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   color: var(--color-text-tertiary);
   text-align: center;
 }
@@ -292,7 +292,7 @@ function onMonthClick(month) {
 
 .year-view__day-number {
   font-family: var(--font-family-default);
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
   color: var(--color-text-secondary);
 }
 

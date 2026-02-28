@@ -357,7 +357,7 @@ function contactSupport() {
   cursor: pointer;
   color: var(--color-action);
   font-family: var(--font-family-default), serif;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   min-height: 44px;
   text-decoration: none;
   white-space: nowrap;

@@ -82,7 +82,7 @@ function onDrop(e) {
 .upload-overlay__text {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-l);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-action);
   margin: 0;
 }

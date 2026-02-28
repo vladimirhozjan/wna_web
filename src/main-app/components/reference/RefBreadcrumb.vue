@@ -39,7 +39,7 @@ defineEmits(['navigate'])
 }
 
 .breadcrumb__btn:last-child {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 

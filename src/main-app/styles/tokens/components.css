@@ -1,0 +1,87 @@
+:root {
+    /* Button loader */
+    --color-btn-loader-top: #fff;
+    --color-btn-loader-fade-1: rgba(255,255,255,0.3);
+
+    /* Button: primary */
+    --color-btn-primary-bg: #4185DE;
+    --color-btn-primary-text: #FFFFFF;
+    --color-btn-primary-hover: #236ac7;
+    --color-btn-primary-active: #1c539c;
+    --color-btn-primary-dis-bg: #acbfd7;
+    --color-btn-primary-dis-txt: #f2f2f2;
+
+    /* Button: ghost */
+    --color-btn-ghost-bg: #ecf3fc;
+    --color-btn-ghost-text: #356dc0;
+    --color-btn-ghost-border: #c6daf6;
+    --color-btn-ghost-hover: #c1d8f5;
+    --color-btn-ghost-active: #95bcee;
+    --color-btn-ghost-dis-bg: #f1f4f8;
+    --color-btn-ghost-dis-txt: #95a9c6;
+    --color-btn-ghost-dis-brd: #d2dce9;
+
+    /* Button: danger */
+    --color-btn-danger-bg: #ef4444;
+    --color-btn-danger-text: #FFFFFF;
+    --color-btn-danger-hover: #eb1414;
+    --color-btn-danger-active: #bc1010;
+    --color-btn-danger-dis-bg: #e1b7b7;
+    --color-btn-danger-dis-txt: #f2f2f2;
+
+    /* Button: ghost-danger */
+    --color-btn-ghost-danger-bg: #fef2f2;
+    --color-btn-ghost-danger-text: #dc2626;
+    --color-btn-ghost-danger-border: #fecaca;
+    --color-btn-ghost-danger-hover: #fee2e2;
+    --color-btn-ghost-danger-active: #fecaca;
+    --color-btn-ghost-danger-dis-bg: #fef2f2;
+    --color-btn-ghost-danger-dis-txt: #f87171;
+    --color-btn-ghost-danger-dis-brd: #fecaca;
+
+    /* Menu items */
+    --color-menu-item-default-text: var(--color-text-primary);
+    --color-menu-item-hover-bg: white;
+    --color-menu-item-hover-txt: #236ac7;
+    --color-menu-item-active-bg: white;
+    --color-menu-item-active-txt: var(--color-action);
+
+    /* Inputs */
+    --color-input-border: #D1D5DB;
+    --color-input-border-focus: #4185DE;
+    --color-input-border-error: #f9c6c6;
+    --color-input-background-error: #fef2f2;
+    --color-popup-background: #FFFFFF;
+    --color-sidebar-background: #FFFFFF;
+
+    /* Links */
+    --color-link-text: #4185DE;
+    --color-link-hover: #0951ae;
+
+    /* Toasts */
+    --color-toast-error-bg: #fecaca;
+    --color-toast-error-text: #7f1c1d;
+    --color-toast-success-bg: #d1fae5;
+    --color-toast-success-text: #065f46;
+
+    /* Calendar */
+    --color-calendar-scheduled: #bae6fd;
+    --color-calendar-scheduled-border: #0284c7;
+    --color-calendar-scheduled-text: #0c4a6e;
+    --color-calendar-deferred: #e0f2fe;
+    --color-calendar-deferred-border: #38bdf8;
+    --color-calendar-deferred-text: #075985;
+    --color-calendar-today-bg: #fef3c7;
+    --color-calendar-today-border: #f59e0b;
+    --color-calendar-grid-line: #e5e7eb;
+    --color-calendar-hour-text: #9ca3af;
+    --color-calendar-weekend-bg: #f9fafb;
+    --color-calendar-outside-business: #f8f9fa;
+
+    /* Heat map */
+    --color-heat-0: #fafbfc;
+    --color-heat-1: #e0f2fe;
+    --color-heat-2: #bae6fd;
+    --color-heat-3: #7dd3fc;
+    --color-heat-4: #38bdf8;
+}

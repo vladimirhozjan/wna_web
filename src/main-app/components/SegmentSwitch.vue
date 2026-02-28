@@ -46,7 +46,7 @@ defineEmits(['update:modelValue'])
   border-radius: 6px;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
@@ -65,7 +65,7 @@ defineEmits(['update:modelValue'])
 .segment-switch__option--active {
   background: var(--color-btn-ghost-bg);
   color: var(--color-action);
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(65, 133, 222, 0.12);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: 0 1px 3px var(--color-action-shadow);
 }
 </style>

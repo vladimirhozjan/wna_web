@@ -19,7 +19,7 @@ defineEmits(["close"]);
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay-light);
   backdrop-filter: blur(2px);
   z-index: 900;
 }

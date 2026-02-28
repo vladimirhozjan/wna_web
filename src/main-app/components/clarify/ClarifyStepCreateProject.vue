@@ -111,7 +111,7 @@ function onSubmit() {
 .clarify-step-question {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h4);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
   text-align: center;
@@ -140,7 +140,7 @@ function onSubmit() {
 .clarify-label {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -164,7 +164,7 @@ function onSubmit() {
 
 .clarify-input:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .clarify-input::placeholder {
@@ -186,7 +186,7 @@ function onSubmit() {
 
 .clarify-textarea:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .clarify-textarea::placeholder {

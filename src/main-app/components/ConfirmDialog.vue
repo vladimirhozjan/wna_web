@@ -30,7 +30,7 @@ const confirm = confirmModel()
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   padding-bottom: 48px;
@@ -44,14 +44,14 @@ const confirm = confirmModel()
   padding: 24px;
   min-width: 300px;
   max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-dropdown);
 }
 
 .title {
   margin: 0 0 12px;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-l);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -60,7 +60,7 @@ const confirm = confirmModel()
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
 }
 
 .actions {

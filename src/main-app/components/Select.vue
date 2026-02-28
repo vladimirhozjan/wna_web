@@ -188,7 +188,7 @@ onUnmounted(() => {
 
 .select-arrow {
   color: var(--color-text-tertiary);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   transition: transform 0.2s;
 }
 
@@ -207,7 +207,7 @@ onUnmounted(() => {
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-dropdown);
   z-index: 1000;
   overflow-y: auto;
   max-height: 300px;
@@ -233,14 +233,14 @@ onUnmounted(() => {
 .select-option--selected {
   background: var(--color-bg-secondary);
   color: var(--color-action);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 /* Mobile action sheet */
 .select-sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay-light);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -276,18 +276,18 @@ onUnmounted(() => {
 .select-sheet-title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-l);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .select-sheet-close {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   color: var(--color-text-tertiary);
   cursor: pointer;
   padding: 4px 8px;
-  line-height: 1;
+  line-height: var(--lh-none);
 }
 
 .select-sheet-close:hover {
@@ -320,11 +320,11 @@ onUnmounted(() => {
 
 .select-sheet-option--selected {
   color: var(--color-action);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .select-sheet-check {
   color: var(--color-action);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 </style>

@@ -1,0 +1,23 @@
+:root {
+    /* Shadows */
+    --shadow-dropdown: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.15);
+    --shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --shadow-focus-ring: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    --shadow-focus-ring-wide: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    --shadow-focus-ring-danger: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    --shadow-auth: 0 18px 50px rgba(15, 23, 42, 0.2);
+
+    /* Cards */
+    --card-radius: 12px;
+    --card-padding: 24px;
+    --card-border: 1px solid var(--color-border-light);
+    --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+    /* Section spacing */
+    --section-py: 64px;
+    --section-py-mobile: 40px;
+    --section-max-width: 900px;
+    --section-px: 20px;
+}

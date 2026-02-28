@@ -63,7 +63,7 @@ function scrollToFeatures() {
   padding: 14px 20px;
   font-family: var(--font-family-default), serif;
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-on-dark);
   background: transparent;
   border: 1px solid var(--color-text-on-dark-secondary);
@@ -75,7 +75,7 @@ function scrollToFeatures() {
 }
 
 .hero-ghost-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-on-dark-glass);
   border-color: var(--color-text-on-dark);
 }
 

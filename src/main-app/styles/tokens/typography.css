@@ -1,0 +1,57 @@
+:root {
+    /* Font families */
+    --font-family-default: 'Inter', sans-serif;
+    --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+    /* Font sizes: responsive content scale */
+    --font-size-display: clamp(32px, 6vw, 48px);
+    --font-size-subtitle: clamp(15px, 2.2vw, 18px);
+    --font-size-h1: clamp(26px, 5vw, 36px);
+    --font-size-h2: clamp(24px, 4vw, 30px);
+    --font-size-h3: clamp(20px, 3.5vw, 24px);
+    --font-size-h4: clamp(18px, 2.8vw, 20px);
+    --font-size-body-l: clamp(17px, 2.2vw, 18px);
+    --font-size-body-m: clamp(15px, 2vw, 16px);
+    --font-size-body-s: clamp(13px, 1.8vw, 14px);
+    --font-size-footnote: 11px;
+    --font-size-label: 13px;
+
+    /* Font sizes: fixed UI chrome scale */
+    --font-size-2xs: 10px;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 28px;
+    --font-size-icon-jumbo: 48px;
+
+    /* Font weights */
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Line heights: content (%) */
+    --lh-display: 120%;
+    --lh-subtitle: 150%;
+    --lh-h1:   125%;
+    --lh-h2:   130%;
+    --lh-h3:   135%;
+    --lh-h4:   140%;
+    --lh-body-m: 150%;
+    --lh-body-s: 150%;
+    --lh-footnote: 150%;
+    --lh-label: 140%;
+
+    /* Line heights: component (decimal) */
+    --lh-none: 1;
+    --lh-tight: 1.2;
+    --lh-snug: 1.3;
+    --lh-normal: 1.4;
+    --lh-relaxed: 1.5;
+    --lh-loose: 1.6;
+    --lh-legal: 1.7;
+}

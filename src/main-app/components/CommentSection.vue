@@ -194,7 +194,7 @@ function formatRelativeTime(dateStr) {
   display: block;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -216,7 +216,7 @@ function formatRelativeTime(dateStr) {
   border: 1px solid transparent;
   white-space: pre-wrap;
   word-break: break-word;
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
   min-height: 32px;
   box-sizing: border-box;
 }
@@ -296,7 +296,7 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-avatar-wrap :deep(.avatar-fallback) {
-  font-size: 11px;
+  font-size: var(--font-size-footnote);
 }
 
 .comment-body {
@@ -321,7 +321,7 @@ function formatRelativeTime(dateStr) {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
   background: var(--color-bg-secondary);
   border-radius: 6px;
   padding: 8px 12px;
@@ -346,12 +346,12 @@ function formatRelativeTime(dateStr) {
   resize: none;
   background: var(--color-bg-primary);
   box-sizing: border-box;
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
 }
 
 .comment-textarea:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .comment-textarea:disabled {

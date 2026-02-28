@@ -49,7 +49,7 @@ const open = ref(false)
 }
 
 .faq-question__text {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .faq-chevron {

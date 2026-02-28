@@ -693,7 +693,7 @@ async function onLogout() {
 .settings-section-title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -745,7 +745,7 @@ async function onLogout() {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
-  line-height: 1.4;
+  line-height: var(--lh-normal);
 }
 
 .settings-tags-display {
@@ -777,7 +777,7 @@ async function onLogout() {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
-  line-height: 1.4;
+  line-height: var(--lh-normal);
   white-space: nowrap;
 }
 
@@ -811,7 +811,7 @@ async function onLogout() {
   content: '';
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(37, 99, 235, 0.2);
+  border: 2px solid var(--color-action-ring);
   border-top-color: var(--color-action);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -886,22 +886,22 @@ async function onLogout() {
 }
 
 .session-icon {
-  font-size: 16px;
+  font-size: var(--font-size-md);
 }
 
 .session-name {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }
 
 .session-badge {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--font-size-footnote);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-action);
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--color-action-subtle);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -1003,7 +1003,7 @@ async function onLogout() {
 .settings-day-checkbox:has(input:checked) {
   background: var(--color-action);
   border-color: var(--color-action);
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .settings-day-checkbox input {
@@ -1014,7 +1014,7 @@ async function onLogout() {
 .password-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-overlay-light);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -1032,7 +1032,7 @@ async function onLogout() {
   border-radius: 12px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-elevated);
   display: flex;
   flex-direction: column;
 }
@@ -1055,7 +1055,7 @@ async function onLogout() {
 .password-modal-title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -1063,11 +1063,11 @@ async function onLogout() {
 .password-modal-close {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: var(--font-size-2xl);
   color: var(--color-text-tertiary);
   cursor: pointer;
   padding: 4px 8px;
-  line-height: 1;
+  line-height: var(--lh-none);
 }
 
 .password-modal-close:hover {

@@ -61,10 +61,10 @@ const steps = [
   height: 48px;
   border-radius: 50%;
   background: var(--color-action);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   font-family: var(--font-family-default), serif;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   display: flex;
   align-items: center;
   justify-content: center;

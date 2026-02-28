@@ -156,7 +156,7 @@ function formatDate(dateStr) {
   text-align: left;
   padding: 8px 12px;
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   border-bottom: 1px solid var(--color-border-light);
   white-space: nowrap;

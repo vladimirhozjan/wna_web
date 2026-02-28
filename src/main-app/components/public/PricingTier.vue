@@ -78,10 +78,10 @@ defineEmits(['cta-click'])
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-action);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   padding: 4px 16px;
   border-radius: 20px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
 }
 
@@ -101,13 +101,13 @@ defineEmits(['cta-click'])
 .tier__price .text-display {
   font-size: var(--font-size-display);
   line-height: var(--lh-display);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
 }
 
 .tier__currency {
   font-size: var(--font-size-h2);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 

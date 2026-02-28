@@ -70,7 +70,7 @@ input {
 input:focus {
   outline: none;
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 1px var(--color-action-ring);
 }
 
 input::placeholder {

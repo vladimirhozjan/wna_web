@@ -49,6 +49,6 @@ const colorClass = computed(() => {
 }
 
 .item-type-icon--project {
-  color: #b45309;
+  color: var(--color-project);
 }
 </style>

@@ -57,11 +57,11 @@ onUnmounted(() => {
   position: fixed;
   bottom: 10px;
   right: 10px;
-  background: rgba(0,0,0,0.6);
-  color: white;
+  background: var(--color-overlay-heavy);
+  color: var(--color-text-inverse);
   padding: 6px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   z-index: 9999;
   pointer-events: none;
 }

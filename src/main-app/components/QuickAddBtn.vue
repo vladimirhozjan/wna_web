@@ -68,9 +68,9 @@ function submit() {
 }
 
 .quick-add-icon {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--lh-none);
   color: var(--color-btn-ghost-text);
 }
 

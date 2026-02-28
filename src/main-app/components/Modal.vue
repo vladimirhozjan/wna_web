@@ -43,7 +43,7 @@ const dialogStyle = computed(() => ({
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   padding-bottom: 48px;
@@ -57,14 +57,14 @@ const dialogStyle = computed(() => ({
   padding: 24px;
   min-width: 320px;
   width: 90vw;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-modal);
 }
 
 .title {
   margin: 0 0 16px;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;

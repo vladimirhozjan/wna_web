@@ -152,7 +152,7 @@ const title = computed(() => {
   color: var(--color-text-primary);
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -173,7 +173,7 @@ const title = computed(() => {
 .calendar-header__title {
   font-family: var(--font-family-default);
   font-size: var(--font-size-h4);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -209,7 +209,7 @@ const title = computed(() => {
   color: var(--color-text-secondary);
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
@@ -225,12 +225,12 @@ const title = computed(() => {
 
 .calendar-header__view-btn--active {
   background: var(--color-action);
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .calendar-header__view-btn--active:hover {
   background: var(--color-btn-primary-hover);
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 @media (max-width: 640px) {

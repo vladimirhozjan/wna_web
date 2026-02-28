@@ -89,7 +89,7 @@ onUnmounted(() => {
 .clarify-step-question {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h4);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
@@ -130,7 +130,7 @@ onUnmounted(() => {
 .clarify-option:focus {
   outline: none;
   border-color: var(--color-action);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring-wide);
 }
 
 .clarify-option--danger:hover {
@@ -140,7 +140,7 @@ onUnmounted(() => {
 
 .clarify-option--danger:focus {
   border-color: var(--color-danger);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  box-shadow: var(--shadow-focus-ring-danger);
 }
 
 .clarify-option-content {
@@ -152,7 +152,7 @@ onUnmounted(() => {
 .clarify-option-label {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 

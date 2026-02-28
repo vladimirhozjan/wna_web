@@ -255,7 +255,7 @@ function onChanged() {
 .recurrence-label {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   min-width: 90px;
   flex-shrink: 0;
@@ -274,7 +274,7 @@ function onChanged() {
 
 .recurrence-select:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .recurrence-interval {
@@ -304,7 +304,7 @@ function onChanged() {
 
 .recurrence-number-input:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .recurrence-date-input {
@@ -320,7 +320,7 @@ function onChanged() {
 
 .recurrence-date-input:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .recurrence-day-picker {
@@ -348,7 +348,7 @@ function onChanged() {
 
 .recurrence-day-btn--active {
   background: var(--color-action);
-  color: white;
+  color: var(--color-text-inverse);
   border-color: var(--color-action);
 }
 

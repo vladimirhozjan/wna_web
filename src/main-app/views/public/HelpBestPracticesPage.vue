@@ -72,7 +72,7 @@ function onSuccessPasswordReset() { authMode.value = null; router.push({ name: '
   gap: 4px;
   color: var(--color-action);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   min-height: 44px;
 }
 

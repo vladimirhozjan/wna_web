@@ -118,7 +118,7 @@ function onDrop(e) {
 .menu-item.active {
   background: var(--color-menu-item-active-bg);
   color: var(--color-menu-item-active-txt);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .menu-item.drop-target {

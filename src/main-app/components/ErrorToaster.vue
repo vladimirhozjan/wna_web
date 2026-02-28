@@ -43,7 +43,7 @@ const error = errorModel()
   font-family: var(--font-family-default), serif;
   font-size: var(--font-size-body-s);
   line-height: var(--lh-body-s);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   margin-bottom: 10px;
   cursor: pointer;
   white-space: nowrap;

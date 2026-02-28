@@ -289,7 +289,7 @@ function onDrop(day, event) {
   text-align: center;
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
 }
 
@@ -329,7 +329,7 @@ function onDrop(day, event) {
 }
 
 .month-view__cell--today:hover {
-  background: #fef08a;
+  background: var(--color-highlight-yellow);
 }
 
 .month-view__cell--weekend {
@@ -337,7 +337,7 @@ function onDrop(day, event) {
 }
 
 .month-view__cell--weekend.month-view__cell--other-month {
-  background: #f3f4f6;
+  background: var(--color-bg-secondary);
 }
 
 .month-view__cell--drag-over {
@@ -349,7 +349,7 @@ function onDrop(day, event) {
 .month-view__day-number {
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   padding: 4px 8px;
 }
@@ -361,7 +361,7 @@ function onDrop(day, event) {
   width: 28px;
   height: 28px;
   background: var(--color-action);
-  color: white;
+  color: var(--color-text-inverse);
   border-radius: 50%;
   padding: 0;
 }
@@ -435,7 +435,7 @@ function onDrop(day, event) {
 .month-view__list-weekday {
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   width: 36px;
@@ -444,7 +444,7 @@ function onDrop(day, event) {
 .month-view__list-date {
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -455,7 +455,7 @@ function onDrop(day, event) {
   width: 28px;
   height: 28px;
   background: var(--color-action);
-  color: white;
+  color: var(--color-text-inverse);
   border-radius: 50%;
 }
 

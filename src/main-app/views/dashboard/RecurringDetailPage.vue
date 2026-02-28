@@ -628,7 +628,7 @@ function formatDate(dateStr) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-overlay-white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -639,13 +639,13 @@ function formatDate(dateStr) {
 .detail-title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h2);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
   border: 1px solid transparent;
   border-radius: 6px;
-  line-height: 1.4;
+  line-height: var(--lh-normal);
   word-break: break-word;
   cursor: pointer;
 }
@@ -665,13 +665,13 @@ function formatDate(dateStr) {
   right: 0;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h2);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
   border: 1px solid var(--color-input-border);
   border-radius: 6px;
-  line-height: 1.4;
+  line-height: var(--lh-normal);
   box-sizing: border-box;
   outline: none;
   background: var(--color-bg-primary);
@@ -685,7 +685,7 @@ function formatDate(dateStr) {
 
 .detail-title-input:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 /* ── Active instance badge ── */
@@ -734,7 +734,7 @@ function formatDate(dateStr) {
   display: block;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -756,7 +756,7 @@ function formatDate(dateStr) {
   border: 1px solid transparent;
   white-space: pre-wrap;
   word-break: break-word;
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
   min-height: 32px;
   box-sizing: border-box;
 }
@@ -790,14 +790,14 @@ function formatDate(dateStr) {
   resize: none;
   background: var(--color-bg-primary);
   box-sizing: border-box;
-  line-height: 1.5;
+  line-height: var(--lh-relaxed);
   min-height: 32px;
   field-sizing: content;
 }
 
 .detail-section-textarea:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .detail-section-actions {
@@ -825,7 +825,7 @@ function formatDate(dateStr) {
 
 .detail-input:focus {
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
   outline: none;
 }
 
@@ -885,7 +885,7 @@ function formatDate(dateStr) {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
-  line-height: 1.4;
+  line-height: var(--lh-normal);
 }
 
 /* ── Metadata section ── */
@@ -906,19 +906,19 @@ function formatDate(dateStr) {
 
 .detail-metadata-label {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
+  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .detail-metadata-value {
   font-family: var(--font-family-default), sans-serif;
-  font-size: 11px;
+  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
 }
 
 .detail-metadata-separator {
   color: var(--color-text-tertiary);
-  font-size: 11px;
+  font-size: var(--font-size-footnote);
 }
 
 /* ── Spinners ── */

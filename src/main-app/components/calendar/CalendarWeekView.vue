@@ -397,7 +397,7 @@ onUnmounted(() => {
 .week-view__header-date {
   font-family: var(--font-family-default);
   font-size: var(--font-size-body-m);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-top: 4px;
 }
@@ -409,7 +409,7 @@ onUnmounted(() => {
   width: 32px;
   height: 32px;
   background: var(--color-action);
-  color: white;
+  color: var(--color-text-inverse);
   border-radius: 50%;
 }
 
@@ -492,7 +492,7 @@ onUnmounted(() => {
   padding: 0 8px;
   font-family: var(--font-family-default);
   font-size: var(--font-size-footnote);
-  line-height: 1;
+  line-height: var(--lh-none);
   color: var(--color-calendar-hour-text);
   text-align: right;
   display: flex;

@@ -146,7 +146,7 @@ function clearAll(closeFn) {
   width: 18px;
   text-align: center;
   color: var(--color-action);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
 
@@ -198,8 +198,8 @@ function clearAll(closeFn) {
   border: none;
   padding: 0;
   margin-left: 2px;
-  font-size: 14px;
-  line-height: 1;
+  font-size: var(--font-size-sm);
+  line-height: var(--lh-none);
   color: var(--color-text-tertiary);
   cursor: pointer;
 }
@@ -211,7 +211,7 @@ function clearAll(closeFn) {
 .tag-filter__chip--context {
   background: var(--color-action);
   border-color: var(--color-action);
-  color: #fff;
+  color: var(--color-text-inverse);
 }
 
 .tag-filter__item--context {

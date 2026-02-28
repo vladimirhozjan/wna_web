@@ -49,7 +49,7 @@ defineEmits(['close', 'open-login', 'open-register', 'go-dashboard', 'go-setting
   background: white;
   padding: 8px 0;
   border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-popover);
   z-index: 1000;
   min-width: 160px;
 }

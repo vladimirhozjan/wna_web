@@ -436,7 +436,7 @@ h1 {
   gap: 6px;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -448,7 +448,7 @@ h1 {
 }
 
 .section__count {
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   color: var(--color-text-tertiary);
 }
 
@@ -472,7 +472,7 @@ h1 {
 .nudges__title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -533,7 +533,7 @@ h1 {
 .empty-state__title {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }

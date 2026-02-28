@@ -220,7 +220,7 @@ function onNativeDragEnd() {
 
 .item-wrapper--overdue .item {
   border-left-color: var(--color-danger);
-  background-color: rgba(254, 226, 226, 0.35);
+  background-color: var(--color-danger-bg-subtle);
 }
 
 .item-wrapper--overdue.item-wrapper--active .item {
@@ -305,8 +305,8 @@ function onNativeDragEnd() {
 }
 
 .drag-hint__icon {
-  font-size: 28px;
-  line-height: 1;
+  font-size: var(--font-size-3xl);
+  line-height: var(--lh-none);
 }
 
 @keyframes hint-show {

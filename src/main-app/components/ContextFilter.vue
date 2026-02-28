@@ -166,7 +166,7 @@ function onClear(closeFn) {
 .context-filter__item--active {
   background: var(--color-bg-secondary);
   color: var(--color-action);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .context-filter__clear {
@@ -210,8 +210,8 @@ function onClear(closeFn) {
   border: none;
   padding: 0;
   margin-left: 2px;
-  font-size: 14px;
-  line-height: 1;
+  font-size: var(--font-size-sm);
+  line-height: var(--lh-none);
   color: var(--color-text-tertiary);
   cursor: pointer;
 }

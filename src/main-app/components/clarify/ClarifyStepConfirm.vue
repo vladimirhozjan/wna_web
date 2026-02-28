@@ -69,7 +69,7 @@ function formatDate(dateStr) {
 .clarify-step-question {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h4);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 24px 0;
 }
@@ -84,7 +84,7 @@ function formatDate(dateStr) {
 .clarify-summary-action {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-l);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-action);
   margin-bottom: 8px;
 }

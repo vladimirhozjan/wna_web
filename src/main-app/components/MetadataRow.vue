@@ -247,7 +247,7 @@ const hasAnyMetadata = computed(() => {
 .chip__text {
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  line-height: 1.2;
+  line-height: var(--lh-tight);
 }
 
 .chip__text--warning {
@@ -267,7 +267,7 @@ const hasAnyMetadata = computed(() => {
 }
 
 .chip--project {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .tag-chip {
@@ -275,7 +275,7 @@ const hasAnyMetadata = computed(() => {
   padding: 1px 6px;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  line-height: 1.4;
+  line-height: var(--lh-normal);
   color: var(--color-text-secondary);
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);

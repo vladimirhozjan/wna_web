@@ -158,7 +158,7 @@ watch(() => move.state.visible, (visible) => {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   padding-bottom: 48px;
@@ -172,14 +172,14 @@ watch(() => move.state.visible, (visible) => {
   padding: 24px;
   min-width: 320px;
   max-width: 400px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-modal);
 }
 
 .title {
   margin: 0 0 16px;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -191,7 +191,7 @@ watch(() => move.state.visible, (visible) => {
   display: block;
   font-family: var(--font-family-default), sans-serif;
   font-size: var(--font-size-body-s);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
   margin-bottom: 6px;
 }
@@ -211,7 +211,7 @@ watch(() => move.state.visible, (visible) => {
 .input:focus {
   outline: none;
   border-color: var(--color-input-border-focus);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: var(--shadow-focus-ring);
 }
 
 .input--textarea {

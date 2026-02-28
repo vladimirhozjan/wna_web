@@ -83,7 +83,7 @@ function onDragEnd(e) {
   border-radius: 4px;
   font-family: var(--font-family-default);
   font-size: var(--font-size-footnote);
-  line-height: 1.3;
+  line-height: var(--lh-snug);
   cursor: grab;
   transition: opacity 0.15s, transform 0.15s;
   overflow: hidden;
@@ -123,7 +123,7 @@ function onDragEnd(e) {
 }
 
 .calendar-item__time {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
 

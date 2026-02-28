@@ -272,7 +272,7 @@ onUnmounted(() => {
   padding: 0 8px;
   font-family: var(--font-family-default);
   font-size: var(--font-size-footnote);
-  line-height: 1;
+  line-height: var(--lh-none);
   color: var(--color-calendar-hour-text);
   text-align: right;
   box-sizing: border-box;

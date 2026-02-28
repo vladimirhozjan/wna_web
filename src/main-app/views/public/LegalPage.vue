@@ -109,7 +109,7 @@ function onSuccessPasswordReset() {
 
 .prose :deep(h1) {
   font-size: var(--font-size-h1);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   line-height: var(--lh-h1);
   color: var(--color-text-primary);
   margin: 0 0 8px;
@@ -117,7 +117,7 @@ function onSuccessPasswordReset() {
 
 .prose :deep(h2) {
   font-size: var(--font-size-h3);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   line-height: var(--lh-h3);
   color: var(--color-text-primary);
   margin: 40px 0 12px;
@@ -125,7 +125,7 @@ function onSuccessPasswordReset() {
 
 .prose :deep(h3) {
   font-size: var(--font-size-h4);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: var(--lh-h4);
   color: var(--color-text-primary);
   margin: 28px 0 8px;
@@ -171,7 +171,7 @@ function onSuccessPasswordReset() {
 }
 
 .prose :deep(strong) {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -197,7 +197,7 @@ function onSuccessPasswordReset() {
 }
 
 .prose :deep(th) {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   white-space: nowrap;
 }
