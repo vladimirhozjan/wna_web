@@ -9,6 +9,8 @@ export const httpApi = axios.create({
     timeout: 30000,
 })
 
+let refreshPromise = null
+
 httpApi.interceptors.request.use(async (req) => {
     const access_token = localStorage.getItem('auth_token')
     if (!access_token) return req
@@ -16,7 +18,7 @@ httpApi.interceptors.request.use(async (req) => {
     if (req.url && req.url.startsWith('/v1/user/refresh')) {
         const refresh_token = localStorage.getItem('refresh_token')
         if (!refresh_token) return req
-        
+
         req.headers.Authorization = `Bearer ${refresh_token}`
         return req
     }
@@ -27,13 +29,17 @@ httpApi.interceptors.request.use(async (req) => {
 
     if (expiresIn < 60) {
         try {
-            const refreshed = await apiClient.refreshToken()
+            if (!refreshPromise) {
+                refreshPromise = apiClient.refreshToken().finally(() => {
+                    refreshPromise = null
+                })
+            }
+            const refreshed = await refreshPromise
             const newToken = refreshed.access_token
             req.headers.Authorization = `Bearer ${newToken}`
             return req
         } catch (e) {
             console.error("Refresh failed:", e)
-            // If refresh token is invalid (404), logout and redirect
             if (e.status === 404 || e.status === 401) {
                 localStorage.removeItem('auth_token')
                 localStorage.removeItem('refresh_token')
