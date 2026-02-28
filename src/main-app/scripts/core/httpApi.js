@@ -30,6 +30,16 @@ httpApi.interceptors.request.use(async (req) => {
             const refreshed = await apiClient.refreshToken()
             const newToken = refreshed.access_token
             req.headers.Authorization = `Bearer ${newToken}`
+
+            // Refresh token was rotated — recompute hash if request carries one
+            if (req.params?.refresh_token_hash) {
+                const newRefresh = localStorage.getItem('refresh_token')
+                if (newRefresh) {
+                    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(newRefresh))
+                    req.params.refresh_token_hash = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+                }
+            }
+
             return req
         } catch (e) {
             console.error("Refresh failed:", e)
