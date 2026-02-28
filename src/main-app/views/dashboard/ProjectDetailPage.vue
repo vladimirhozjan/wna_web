@@ -5,14 +5,14 @@
       <!-- Header -->
       <div class="detail-header">
         <div class="detail-header-left">
-          <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
+          <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
+          <span class="text-body-s detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
         <div v-if="project" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
-            <span class="detail-position">
+            <span class="text-body-s detail-position">
               <span class="detail-nav-spinner" v-if="navigating"></span>
               {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
@@ -38,7 +38,7 @@
               <span class="detail-spinner"></span>
             </div>
             <h2
-                class="detail-title"
+                class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
                 @click="startEdit('title', project.title)"
             >{{ project.title }}</h2>
@@ -46,7 +46,7 @@
                 v-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editValue"
-                class="detail-title-input"
+                class="text-h2 detail-title-input"
                 :disabled="savingField === 'title'"
                 @keydown.enter.prevent="saveField('title')"
                 @keyup.esc="cancelEdit"
@@ -114,11 +114,11 @@
 
         <!-- Outcome area -->
         <div class="detail-section-area detail-section-area--no-border">
-          <label class="detail-section-label">Outcome</label>
+          <label class="text-body-s fw-semibold detail-section-label">Outcome</label>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'outcome'"
-                class="detail-section-content"
+                class="text-body-m detail-section-content"
                 :class="{ 'detail-section-content--empty': !project.outcome }"
                 @click="startEdit('outcome', project.outcome || '')"
             >{{ project.outcome || 'What does done look like?' }}</p>
@@ -126,7 +126,7 @@
                 v-else
                 ref="outcomeInput"
                 v-model="editValue"
-                class="detail-section-textarea"
+                class="text-body-m detail-section-textarea"
                 :disabled="savingField === 'outcome'"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('outcome')"
@@ -155,10 +155,10 @@
         <!-- Next Action section -->
         <div v-if="!isCompleted" class="detail-section-area">
           <div class="next-action-header">
-            <label class="detail-section-label">Next Action</label>
+            <label class="text-body-s fw-semibold detail-section-label">Next Action</label>
             <button
                 v-if="orderedActions.length > 0 || !actionsLoading"
-                class="next-action-expand-btn"
+                class="text-body-s next-action-expand-btn"
                 @click="actionsExpanded = !actionsExpanded"
             >
               {{ actionsExpanded ? '▲' : '▼' }} {{ backlogItems.length > 0 ? `+${backlogItems.length}` : '' }}
@@ -182,15 +182,15 @@
                   />
                   <span
                       v-if="editingActionId !== nextAction.id"
-                      class="next-action-title"
+                      class="text-body-m next-action-title"
                       @click.stop="startEditAction(nextAction)"
                   >{{ nextAction.title }}</span>
                   <span v-else class="action-input-wrapper" @click.stop>
-                    <span ref="actionInputMeasure" class="action-input-measure">{{ editActionValue || ' ' }}</span>
+                    <span ref="actionInputMeasure" class="text-body-m action-input-measure">{{ editActionValue || ' ' }}</span>
                     <input
                         ref="actionTitleInput"
                         v-model="editActionValue"
-                        class="action-input-auto"
+                        class="text-body-m action-input-auto"
                         :style="{ width: actionInputWidth + 'px' }"
                         @keyup.enter="saveActionTitle(nextAction.id)"
                         @keyup.esc="cancelEditAction"
@@ -205,8 +205,8 @@
                 <div v-else class="next-action-prompt" @click="onExpandAndFocus">
                   <WarningIcon class="next-action-prompt__icon" viewBox="0 0 48 48" />
                   <div class="next-action-prompt__text">
-                    <strong>What's the next physical step?</strong>
-                    <span>Every active project needs a next action.</span>
+                    <strong class="text-body-m fw-bold">What's the next physical step?</strong>
+                    <span class="text-body-s">Every active project needs a next action.</span>
                   </div>
                 </div>
               </template>
@@ -242,15 +242,15 @@
                         />
                         <span
                             v-if="editingActionId !== action.id"
-                            class="next-action-title"
+                            class="text-body-m next-action-title"
                             @click.stop="startEditAction(action)"
                         >{{ action.title }}</span>
                         <span v-else class="action-input-wrapper" @click.stop>
-                          <span ref="actionInputMeasure" class="action-input-measure">{{ editActionValue || ' ' }}</span>
+                          <span ref="actionInputMeasure" class="text-body-m action-input-measure">{{ editActionValue || ' ' }}</span>
                           <input
                               ref="actionTitleInput"
                               v-model="editActionValue"
-                              class="action-input-auto"
+                              class="text-body-m action-input-auto"
                               :style="{ width: actionInputWidth + 'px' }"
                               @keyup.enter="saveActionTitle(action.id)"
                               @keyup.esc="cancelEditAction"
@@ -267,15 +267,15 @@
                       <template v-else>
                         <span
                             v-if="editingActionId !== action.id"
-                            class="action-title"
+                            class="text-body-m action-title"
                             @click.stop="startEditAction(action)"
                         >{{ action.title }}</span>
                         <span v-else class="action-input-wrapper" @click.stop>
-                          <span ref="actionInputMeasure" class="action-input-measure">{{ editActionValue || ' ' }}</span>
+                          <span ref="actionInputMeasure" class="text-body-m action-input-measure">{{ editActionValue || ' ' }}</span>
                           <input
                               ref="actionTitleInput"
                               v-model="editActionValue"
-                              class="action-input-auto"
+                              class="text-body-m action-input-auto"
                               :style="{ width: actionInputWidth + 'px' }"
                               @keyup.enter="saveActionTitle(action.id)"
                               @keyup.esc="cancelEditAction"
@@ -295,7 +295,7 @@
                   <input
                       ref="quickAddInput"
                       v-model="newActionTitle"
-                      class="actions-quick-add-input"
+                      class="text-body-m actions-quick-add-input"
                       type="text"
                       placeholder="+ Add action..."
                       :disabled="addingAction"
@@ -310,11 +310,11 @@
 
         <!-- Description area -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Description</label>
+          <label class="text-body-s fw-semibold detail-section-label">Description</label>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'description'"
-                class="detail-section-content"
+                class="text-body-m detail-section-content"
                 :class="{ 'detail-section-content--empty': !project.description }"
                 @click="startEdit('description', project.description || '')"
             >{{ project.description || 'Add a description...' }}</p>
@@ -322,7 +322,7 @@
                 v-else
                 ref="descriptionInput"
                 v-model="editValue"
-                class="detail-section-textarea"
+                class="text-body-m detail-section-textarea"
                 :disabled="savingField === 'description'"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('description')"
@@ -350,13 +350,13 @@
 
         <!-- Tags section -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Tags</label>
+          <label class="text-body-s fw-semibold detail-section-label">Tags</label>
           <div class="detail-section-wrapper">
             <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
               <span v-if="project.tags && project.tags.length > 0" class="detail-tags-chips">
-                <span v-for="tag in project.tags" :key="tag" class="detail-tag-chip">{{ tag }}</span>
+                <span v-for="tag in project.tags" :key="tag" class="text-body-s detail-tag-chip">{{ tag }}</span>
               </span>
-              <span v-else class="detail-section-content detail-section-content--empty">Add tags...</span>
+              <span v-else class="text-body-m detail-section-content detail-section-content--empty">Add tags...</span>
             </div>
             <template v-else>
               <TagInput
@@ -393,13 +393,13 @@
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Created</span>
-            <span class="detail-metadata-value">{{ formatDate(project.created) }}</span>
+            <span class="text-footnote detail-metadata-label">Created</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(project.created) }}</span>
           </span>
-          <span class="detail-metadata-separator">·</span>
+          <span class="text-footnote detail-metadata-separator">·</span>
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Updated</span>
-            <span class="detail-metadata-value">{{ formatDate(project.updated) }}</span>
+            <span class="text-footnote detail-metadata-label">Updated</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(project.updated) }}</span>
           </span>
         </div>
 
@@ -1103,8 +1103,6 @@ async function onAddAction() {
 }
 
 .detail-back-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-link-text);
   cursor: pointer;
   padding: 4px 8px;
@@ -1117,8 +1115,6 @@ async function onAddAction() {
 }
 
 .detail-meta-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
 }
@@ -1130,8 +1126,6 @@ async function onAddAction() {
 
 .detail-position {
   position: relative;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   min-width: 60px;
   text-align: center;
@@ -1212,9 +1206,6 @@ async function onAddAction() {
 }
 
 .detail-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -1244,9 +1235,6 @@ async function onAddAction() {
   top: 0;
   left: 0;
   right: 0;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -1284,9 +1272,6 @@ async function onAddAction() {
 
 .detail-section-label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -1298,8 +1283,6 @@ async function onAddAction() {
 }
 
 .detail-section-content {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
@@ -1323,8 +1306,6 @@ async function onAddAction() {
 }
 
 .detail-section-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
@@ -1376,8 +1357,6 @@ async function onAddAction() {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   line-height: var(--lh-normal);
 }
@@ -1399,20 +1378,15 @@ async function onAddAction() {
 }
 
 .detail-metadata-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .detail-metadata-value {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
 }
 
 .detail-metadata-separator {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-footnote);
 }
 
 .detail-section-textarea:disabled,
@@ -1473,8 +1447,6 @@ async function onAddAction() {
 }
 
 .next-action-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   min-width: 0;
   white-space: nowrap;
@@ -1499,13 +1471,9 @@ async function onAddAction() {
   position: absolute;
   visibility: hidden;
   white-space: pre;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
 }
 
 .action-input-auto {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   background: transparent;
   border: none;
@@ -1540,8 +1508,6 @@ async function onAddAction() {
 }
 
 .next-action-empty {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-tertiary);
   font-style: italic;
   margin: 0;
@@ -1577,16 +1543,13 @@ async function onAddAction() {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-family: var(--font-family-default), sans-serif;
 }
 
 .next-action-prompt__text strong {
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
 }
 
 .next-action-prompt__text span {
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 
@@ -1604,8 +1567,6 @@ async function onAddAction() {
   background: none;
   border: none;
   cursor: pointer;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   padding: 4px 8px;
   border-radius: 4px;
@@ -1672,8 +1633,6 @@ async function onAddAction() {
 }
 
 .action-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   min-width: 0;
   white-space: nowrap;
@@ -1713,8 +1672,6 @@ async function onAddAction() {
 }
 
 .actions-quick-add-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);

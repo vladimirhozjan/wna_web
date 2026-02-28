@@ -2,15 +2,15 @@
   <div class="context-filter">
     <Dropdown ref="dropdown" title="Context filter" align="left">
       <template #trigger>
-        <button type="button" class="context-trigger" :class="{ 'context-trigger--active': activeTag }">
+        <button type="button" class="text-body-m context-trigger" :class="{ 'context-trigger--active': activeTag }">
           <span class="context-trigger__icon"><FilterIcon /></span>
-          <span v-if="!activeTag" class="context-trigger__hint">Filter by context</span>
+          <span v-if="!activeTag" class="text-body-s context-trigger__hint">Filter by context</span>
         </button>
       </template>
 
       <template #default="{ close }">
         <div class="context-filter__menu">
-          <div v-if="allTags.length === 0" class="context-filter__empty">
+          <div v-if="allTags.length === 0" class="text-body-s context-filter__empty">
             No tags yet
           </div>
           <template v-else>
@@ -18,7 +18,7 @@
                 v-for="tag in allTags"
                 :key="tag"
                 type="button"
-                class="context-filter__item"
+                class="text-body-m context-filter__item"
                 :class="{ 'context-filter__item--active': activeTag === tag }"
                 @click="onSelect(tag)"
             >
@@ -27,7 +27,7 @@
             <button
                 v-if="activeTag"
                 type="button"
-                class="context-filter__clear"
+                class="text-body-s context-filter__clear"
                 @click="onClear(close)"
             >
               Clear
@@ -37,7 +37,7 @@
       </template>
     </Dropdown>
 
-    <span v-if="activeTag" class="context-filter__chip">
+    <span v-if="activeTag" class="text-body-s context-filter__chip">
       {{ activeTag }}
       <button type="button" class="context-filter__chip-remove" @click="clear">&times;</button>
     </span>
@@ -96,8 +96,6 @@ function onClear(closeFn) {
   background: none;
   border: none;
   padding: 0;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: 0.15s ease;
@@ -127,7 +125,6 @@ function onClear(closeFn) {
   white-space: nowrap;
   font-style: italic;
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-s);
 }
 
 .context-filter__menu {
@@ -139,8 +136,6 @@ function onClear(closeFn) {
 .context-filter__empty {
   padding: 12px 16px;
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-s);
-  font-family: var(--font-family-default), sans-serif;
 }
 
 .context-filter__item {
@@ -150,8 +145,6 @@ function onClear(closeFn) {
   background: none;
   border: none;
   text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
   overflow: hidden;
@@ -177,8 +170,6 @@ function onClear(closeFn) {
   border: none;
   border-top: 1px solid var(--color-border-light);
   text-align: center;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   cursor: pointer;
   margin-top: 4px;
@@ -196,8 +187,6 @@ function onClear(closeFn) {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 12px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   white-space: nowrap;
 }

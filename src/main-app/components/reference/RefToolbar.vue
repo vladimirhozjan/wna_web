@@ -10,7 +10,7 @@
       <div class="toolbar__search">
         <input
             type="text"
-            class="search-input"
+            class="text-body-s search-input"
             placeholder="Search files..."
             :value="searchQuery"
             @input="$emit('search', $event.target.value)"
@@ -40,7 +40,7 @@
         </button>
       </div>
       <div v-if="quota" class="toolbar__quota">
-        <span class="quota-text">{{ formatBytes(quota.used_bytes) }} / {{ formatBytes(quota.quota_bytes) }}</span>
+        <span class="text-footnote quota-text">{{ formatBytes(quota.used_bytes) }} / {{ formatBytes(quota.quota_bytes) }}</span>
         <div class="quota-bar">
           <div class="quota-bar__fill" :style="{ width: quotaPercent + '%' }"></div>
         </div>
@@ -122,8 +122,6 @@ function formatBytes(bytes) {
   padding: 6px 10px;
   border: 1px solid var(--color-border-light);
   border-radius: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   background: var(--color-bg-primary);
   width: 160px;
@@ -184,8 +182,6 @@ function formatBytes(bytes) {
 }
 
 .quota-text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
   white-space: nowrap;
 }

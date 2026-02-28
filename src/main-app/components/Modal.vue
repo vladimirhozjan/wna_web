@@ -3,7 +3,7 @@
     <Transition name="fade">
       <div v-if="visible" class="overlay" @click.self="$emit('close')">
         <div class="dialog" :style="dialogStyle">
-          <h3 class="title">{{ title }}</h3>
+          <h3 class="text-h3 title">{{ title }}</h3>
           <slot />
           <div class="actions">
             <slot name="actions" />
@@ -62,9 +62,6 @@ const dialogStyle = computed(() => ({
 
 .title {
   margin: 0 0 16px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;

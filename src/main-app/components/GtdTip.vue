@@ -4,7 +4,7 @@
       <div class="gtd-tip__icon" v-if="$slots.icon">
         <slot name="icon" />
       </div>
-      <div class="gtd-tip__content">
+      <div class="text-body-m gtd-tip__content">
         <slot />
       </div>
       <button v-if="dismissible" class="gtd-tip__close" @click="dismiss" aria-label="Dismiss tip">
@@ -67,8 +67,6 @@ defineExpose({ dismiss, visible })
 
 .gtd-tip__content {
   flex: 1;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   line-height: var(--lh-relaxed);
 }

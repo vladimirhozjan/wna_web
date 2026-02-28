@@ -9,7 +9,7 @@
     <Transition name="fade">
       <div v-if="isDragging" class="upload-overlay">
         <UploadIcon class="upload-overlay__icon" />
-        <p class="upload-overlay__text">Drop files here to upload</p>
+        <p class="text-body-l fw-medium upload-overlay__text">Drop files here to upload</p>
       </div>
     </Transition>
   </div>
@@ -80,9 +80,6 @@ function onDrop(e) {
 }
 
 .upload-overlay__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-medium);
   color: var(--color-action);
   margin: 0;
 }

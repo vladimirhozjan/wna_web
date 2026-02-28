@@ -4,7 +4,7 @@
       <div
           v-for="e in error.state.errors"
           :key="e.id"
-          class="toast"
+          class="text-body-s toast"
           :class="`toast--${e.type || 'error'}`"
           @click="error.remove(e.id)"
       >
@@ -40,10 +40,6 @@ const error = errorModel()
   padding: 8px 12px;
   border-radius: 6px;
   text-align: center;
-  font-family: var(--font-family-default), serif;
-  font-size: var(--font-size-body-s);
-  line-height: var(--lh-body-s);
-  font-weight: var(--font-weight-normal);
   margin-bottom: 10px;
   cursor: pointer;
   white-space: nowrap;

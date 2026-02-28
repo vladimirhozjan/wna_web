@@ -3,7 +3,7 @@
     <button
         v-for="option in options"
         :key="option.value"
-        class="segment-switch__option"
+        class="text-body-s fw-medium segment-switch__option"
         :class="{ 'segment-switch__option--active': modelValue === option.value }"
         role="tab"
         :aria-selected="modelValue === option.value"
@@ -44,9 +44,6 @@ defineEmits(['update:modelValue'])
   border: none;
   padding: 6px 16px;
   border-radius: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;

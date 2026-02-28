@@ -8,7 +8,7 @@
       <span
           v-for="tag in modelValue"
           :key="tag"
-          class="tag-chip"
+          class="text-body-s tag-chip"
       >
         {{ tag }}
         <button
@@ -22,7 +22,7 @@
           ref="inputEl"
           v-model="inputValue"
           type="text"
-          class="tag-input-field"
+          class="text-body-m tag-input-field"
           :placeholder="modelValue.length === 0 ? placeholder : ''"
           :disabled="disabled"
           @focus="onFocus"
@@ -37,7 +37,7 @@
         <div
             v-for="(suggestion, index) in suggestions"
             :key="suggestion"
-            class="tag-suggestion-item"
+            class="text-body-m tag-suggestion-item"
             :class="{ 'tag-suggestion-item--active': index === highlightedIndex }"
             @mousedown.prevent="selectSuggestion(suggestion)"
         >
@@ -50,7 +50,7 @@
           v-for="preset in availablePresets"
           :key="preset"
           type="button"
-          class="tag-preset-chip"
+          class="text-body-s tag-preset-chip"
           @mousedown.prevent
           @click="addPreset(preset)"
       >+ {{ preset }}</button>
@@ -225,8 +225,6 @@ defineExpose({ focus: focusInput })
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   line-height: var(--lh-normal);
   white-space: nowrap;
@@ -255,8 +253,6 @@ defineExpose({ focus: focusInput })
   border: none;
   outline: none;
   background: transparent;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 2px 0;
 }
@@ -286,8 +282,6 @@ defineExpose({ focus: focusInput })
 
 .tag-suggestion-item {
   padding: 8px 12px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -311,8 +305,6 @@ defineExpose({ focus: focusInput })
   border: 1px dashed var(--color-border-light);
   border-radius: 4px;
   background: none;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   cursor: pointer;
   line-height: var(--lh-normal);

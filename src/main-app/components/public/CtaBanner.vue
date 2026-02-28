@@ -3,7 +3,7 @@
     <div class="cta-inner">
       <h2 class="text-h2 cta-heading">Ready to Get Things Done?</h2>
       <p class="text-body-m cta-subtitle">Start organizing your life for free today.</p>
-      <button class="cta-btn" @click="$emit('open-register')">Start Free</button>
+      <button class="text-body-m fw-semibold cta-btn" @click="$emit('open-register')">Start Free</button>
     </div>
   </section>
 </template>
@@ -41,9 +41,6 @@ defineEmits(['open-register'])
   padding: 14px 28px;
   background: #ffffff;
   color: var(--color-action);
-  font-family: var(--font-family-default), serif;
-  font-size: var(--font-size-body-m);
-  font-weight: var(--font-weight-semibold);
   border: none;
   border-radius: 6px;
   cursor: pointer;

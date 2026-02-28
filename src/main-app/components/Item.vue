@@ -21,11 +21,11 @@
       <!-- Content -->
       <div class="item__content">
         <span v-if="isEditing" class="item__input-wrapper" @click.stop>
-          <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
+          <span ref="inputMeasure" class="text-body-m item__measure">{{ editValue || ' ' }}</span>
           <input
               ref="editInput"
               v-model="editValue"
-              class="item__input"
+              class="text-body-m item__input"
               :style="{ width: inputWidth + 'px' }"
               @keyup.enter="onSave"
               @keyup.esc="onCancel"
@@ -33,7 +33,7 @@
               @click.stop
           />
         </span>
-        <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
+        <span v-else class="text-body-m item__title" @click.stop="onClick">{{ title }}</span>
       </div>
 
       <!-- Spinner overlay -->
@@ -235,8 +235,6 @@ function onCheck(e) {
 }
 
 .item__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -267,13 +265,9 @@ function onCheck(e) {
   position: absolute;
   visibility: hidden;
   white-space: pre;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
 }
 
 .item__input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   background: transparent;
   border: none;

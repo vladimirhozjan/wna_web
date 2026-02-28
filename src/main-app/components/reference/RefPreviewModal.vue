@@ -3,7 +3,7 @@
     <Transition name="fade">
       <div v-if="preview.visible" class="preview-overlay" @keydown.esc="$emit('close')" tabindex="0" ref="overlayRef">
         <div class="preview-header">
-          <span class="preview-filename">{{ preview.file?.name }}</span>
+          <span class="text-body-m fw-medium preview-filename">{{ preview.file?.name }}</span>
           <div class="preview-header-actions">
             <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
             <Btn variant="ghost-danger" size="sm" @click="$emit('close')">Close</Btn>
@@ -25,8 +25,8 @@
                 :src="preview.url"
                 class="preview-iframe"
             ></iframe>
-            <pre v-else-if="isText" class="preview-text">{{ preview.text }}</pre>
-            <div v-else class="preview-unsupported">
+            <pre v-else-if="isText" class="text-body-s preview-text">{{ preview.text }}</pre>
+            <div v-else class="text-body-m preview-unsupported">
               <FileIcon class="preview-unsupported-icon" />
               <p>Preview not available for this file type.</p>
               <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
@@ -93,9 +93,6 @@ const isText = computed(() =>
 
 .preview-filename {
   color: var(--color-text-inverse);
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  font-weight: var(--font-weight-medium);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -162,7 +159,6 @@ const isText = computed(() =>
   color: var(--color-text-primary);
   border-radius: 8px;
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-body-s);
   line-height: var(--lh-loose);
   overflow: auto;
   white-space: pre-wrap;
@@ -175,8 +171,6 @@ const isText = computed(() =>
   align-items: center;
   gap: 12px;
   color: var(--color-overlay-white);
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
 }
 
 .preview-unsupported-icon {

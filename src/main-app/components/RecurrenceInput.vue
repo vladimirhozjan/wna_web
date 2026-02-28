@@ -2,38 +2,38 @@
   <div class="recurrence-input">
     <!-- Frequency -->
     <div class="recurrence-row">
-      <label class="recurrence-label">Repeat</label>
-      <select v-model="parts.freq" class="recurrence-select" :disabled="disabled" @change="onFreqChanged">
+      <label class="text-body-s fw-semibold recurrence-label">Repeat</label>
+      <select v-model="parts.freq" class="text-body-m recurrence-select" :disabled="disabled" @change="onFreqChanged">
         <option v-for="f in FREQUENCIES" :key="f" :value="f">{{ freqLabel(f) }}</option>
       </select>
     </div>
 
     <!-- Interval -->
     <div class="recurrence-row">
-      <label class="recurrence-label">Every</label>
+      <label class="text-body-s fw-semibold recurrence-label">Every</label>
       <div class="recurrence-interval">
         <input
             type="number"
             v-model.number="parts.interval"
             min="1"
             max="99"
-            class="recurrence-number-input"
+            class="text-body-m recurrence-number-input"
             :disabled="disabled"
             @change="onChanged"
         />
-        <span class="recurrence-interval-unit">{{ intervalUnit }}</span>
+        <span class="text-body-m recurrence-interval-unit">{{ intervalUnit }}</span>
       </div>
     </div>
 
     <!-- Day picker (weekly only) -->
     <div v-if="parts.freq === 'WEEKLY'" class="recurrence-row">
-      <label class="recurrence-label">On</label>
+      <label class="text-body-s fw-semibold recurrence-label">On</label>
       <div class="recurrence-day-picker">
         <button
             v-for="day in WEEKDAYS"
             :key="day.value"
             type="button"
-            :class="['recurrence-day-btn', { 'recurrence-day-btn--active': parts.byday.includes(day.value) }]"
+            :class="['text-body-s', 'recurrence-day-btn', { 'recurrence-day-btn--active': parts.byday.includes(day.value) }]"
             :disabled="disabled"
             @click="toggleDay(day.value)"
         >{{ day.label }}</button>
@@ -42,13 +42,13 @@
 
     <!-- Day of month (monthly only) -->
     <div v-if="parts.freq === 'MONTHLY'" class="recurrence-row">
-      <label class="recurrence-label">Day of month</label>
+      <label class="text-body-s fw-semibold recurrence-label">Day of month</label>
       <input
           type="number"
           v-model.number="parts.bymonthday"
           min="1"
           max="31"
-          class="recurrence-number-input"
+          class="text-body-m recurrence-number-input"
           :disabled="disabled"
           @change="onChanged"
       />
@@ -56,19 +56,19 @@
 
     <!-- Month and day (yearly only) -->
     <div v-if="parts.freq === 'YEARLY'" class="recurrence-row">
-      <label class="recurrence-label">Month</label>
-      <select v-model.number="parts.bymonth" class="recurrence-select" :disabled="disabled" @change="onChanged">
+      <label class="text-body-s fw-semibold recurrence-label">Month</label>
+      <select v-model.number="parts.bymonth" class="text-body-m recurrence-select" :disabled="disabled" @change="onChanged">
         <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
       </select>
     </div>
     <div v-if="parts.freq === 'YEARLY'" class="recurrence-row">
-      <label class="recurrence-label">Day of month</label>
+      <label class="text-body-s fw-semibold recurrence-label">Day of month</label>
       <input
           type="number"
           v-model.number="parts.bymonthday"
           min="1"
           :max="maxDayForMonth"
-          class="recurrence-number-input"
+          class="text-body-m recurrence-number-input"
           :disabled="disabled"
           @change="onChanged"
       />
@@ -76,9 +76,9 @@
 
     <!-- End condition -->
     <div class="recurrence-row">
-      <label class="recurrence-label">Ends</label>
+      <label class="text-body-s fw-semibold recurrence-label">Ends</label>
       <div class="recurrence-end">
-        <select v-model="endType" class="recurrence-select" :disabled="disabled" @change="onEndTypeChanged">
+        <select v-model="endType" class="text-body-m recurrence-select" :disabled="disabled" @change="onEndTypeChanged">
           <option value="never">Never</option>
           <option value="count">After N times</option>
           <option value="until">Until date</option>
@@ -89,7 +89,7 @@
             v-model.number="parts.count"
             min="1"
             max="999"
-            class="recurrence-number-input"
+            class="text-body-m recurrence-number-input"
             :disabled="disabled"
             @change="onChanged"
         />
@@ -97,7 +97,7 @@
             v-if="endType === 'until'"
             type="date"
             v-model="untilDate"
-            class="recurrence-date-input"
+            class="text-body-m recurrence-date-input"
             :disabled="disabled"
             @change="onUntilChanged"
         />
@@ -105,7 +105,7 @@
     </div>
 
     <!-- Summary -->
-    <div v-if="summary" class="recurrence-summary">
+    <div v-if="summary" class="text-body-s recurrence-summary">
       {{ summary }}
     </div>
   </div>
@@ -253,17 +253,12 @@ function onChanged() {
 }
 
 .recurrence-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   min-width: 90px;
   flex-shrink: 0;
 }
 
 .recurrence-select {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 6px 10px;
   border: 1px solid var(--color-input-border);
@@ -284,14 +279,10 @@ function onChanged() {
 }
 
 .recurrence-interval-unit {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
 }
 
 .recurrence-number-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 6px 10px;
   border: 1px solid var(--color-input-border);
@@ -308,8 +299,6 @@ function onChanged() {
 }
 
 .recurrence-date-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 6px 10px;
   border: 1px solid var(--color-input-border);
@@ -335,8 +324,6 @@ function onChanged() {
   border-radius: 6px;
   background: var(--color-bg-primary);
   color: var(--color-text-secondary);
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
@@ -364,8 +351,6 @@ function onChanged() {
 }
 
 .recurrence-summary {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   font-style: italic;
   padding: 4px 0;

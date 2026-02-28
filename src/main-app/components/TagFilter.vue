@@ -9,7 +9,7 @@
 
       <template #default="{ close }">
         <div class="tag-filter__menu">
-          <div v-if="tags.length === 0" class="tag-filter__empty">
+          <div v-if="tags.length === 0" class="text-body-s tag-filter__empty">
             No tags yet
           </div>
           <template v-else>
@@ -17,18 +17,18 @@
                 v-for="tag in tags"
                 :key="tag"
                 type="button"
-                class="tag-filter__item"
+                class="text-body-m tag-filter__item"
                 :class="{ 'tag-filter__item--context': tag === activeTag }"
                 :disabled="tag === activeTag"
                 @click="toggleTag(tag)"
             >
-              <span class="tag-filter__check">{{ (modelValue.includes(tag) || tag === activeTag) ? '\u2713' : '' }}</span>
+              <span class="fw-semibold tag-filter__check">{{ (modelValue.includes(tag) || tag === activeTag) ? '\u2713' : '' }}</span>
               <span class="tag-filter__label">{{ tag }}</span>
             </button>
             <button
                 v-if="modelValue.length > 0"
                 type="button"
-                class="tag-filter__clear"
+                class="text-body-s tag-filter__clear"
                 @click="clearAll(close)"
             >
               Clear all
@@ -38,10 +38,10 @@
       </template>
     </Dropdown>
 
-    <span v-if="activeTag" class="tag-filter__chip tag-filter__chip--context">
+    <span v-if="activeTag" class="text-body-s tag-filter__chip tag-filter__chip--context">
       {{ activeTag }}
     </span>
-    <span v-for="tag in modelValue" :key="tag" class="tag-filter__chip">
+    <span v-for="tag in modelValue" :key="tag" class="text-body-s tag-filter__chip">
       {{ tag }}
       <button type="button" class="tag-filter__chip-remove" @click="removeTag(tag)">&times;</button>
     </span>
@@ -119,8 +119,6 @@ function clearAll(closeFn) {
 .tag-filter__empty {
   padding: 12px 16px;
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-body-s);
-  font-family: var(--font-family-default), sans-serif;
 }
 
 .tag-filter__item {
@@ -131,8 +129,6 @@ function clearAll(closeFn) {
   background: none;
   border: none;
   text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
   gap: 8px;
@@ -146,7 +142,6 @@ function clearAll(closeFn) {
   width: 18px;
   text-align: center;
   color: var(--color-action);
-  font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
 
@@ -165,8 +160,6 @@ function clearAll(closeFn) {
   border: none;
   border-top: 1px solid var(--color-border-light);
   text-align: center;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   cursor: pointer;
   margin-top: 4px;
@@ -184,8 +177,6 @@ function clearAll(closeFn) {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 12px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   white-space: nowrap;
 }

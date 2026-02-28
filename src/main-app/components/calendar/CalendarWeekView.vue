@@ -17,8 +17,8 @@
                 }
               ]"
           >
-            <div class="week-view__header-weekday">{{ day.weekday }}</div>
-            <div :class="['week-view__header-date', { 'week-view__header-date--today': day.isToday }]">
+            <div class="text-footnote week-view__header-weekday">{{ day.weekday }}</div>
+            <div :class="['text-body-m fw-semibold week-view__header-date', { 'week-view__header-date--today': day.isToday }]">
               {{ day.dayNumber }}
             </div>
           </div>
@@ -26,7 +26,7 @@
 
         <!-- All-day section -->
         <div class="week-view__all-day">
-        <div class="week-view__all-day-label">All day</div>
+        <div class="text-footnote week-view__all-day-label">All day</div>
         <div
             v-for="day in weekDays"
             :key="`allday-${day.dateStr}`"
@@ -72,7 +72,7 @@
           <div
               v-for="hour in hours"
               :key="hour"
-              class="week-view__hour-label"
+              class="text-footnote week-view__hour-label"
               :style="{ height: hourHeight + 'px' }"
           >
             {{ formatHour(hour) }}
@@ -388,16 +388,11 @@ onUnmounted(() => {
 }
 
 .week-view__header-weekday {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
   text-transform: uppercase;
 }
 
 .week-view__header-date {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-m);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-top: 4px;
 }
@@ -424,8 +419,6 @@ onUnmounted(() => {
   flex-shrink: 0;
   width: 64px;
   padding: 8px 8px;
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   color: var(--color-calendar-hour-text);
   text-align: right;
   border-right: 1px solid var(--color-calendar-grid-line);
@@ -490,8 +483,6 @@ onUnmounted(() => {
 
 .week-view__hour-label {
   padding: 0 8px;
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   line-height: var(--lh-none);
   color: var(--color-calendar-hour-text);
   text-align: right;

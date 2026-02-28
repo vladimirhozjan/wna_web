@@ -3,7 +3,7 @@
     <section class="section">
       <div class="section-inner legal-layout">
         <LegalSidebar :doc="doc" />
-        <article class="legal-content prose" v-html="renderedContent"></article>
+        <article class="text-body-m legal-content prose" v-html="renderedContent"></article>
       </div>
     </section>
   </LandingLayout>
@@ -102,9 +102,7 @@ function onSuccessPasswordReset() {
 .prose {
   text-align: left;
   color: var(--color-text-secondary);
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  line-height: 170%;
+  line-height: var(--lh-legal);
 }
 
 .prose :deep(h1) {

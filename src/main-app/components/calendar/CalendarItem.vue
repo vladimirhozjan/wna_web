@@ -1,7 +1,7 @@
 <template>
   <div
       :class="[
-        'calendar-item',
+        'text-footnote calendar-item',
         {
           'calendar-item--scheduled': isScheduled,
           'calendar-item--deferred': !isScheduled,
@@ -14,7 +14,7 @@
       @dragstart="onDragStart"
       @dragend="onDragEnd"
   >
-    <span v-if="showTime && time" class="calendar-item__time">{{ time }}</span>
+    <span v-if="showTime && time" class="fw-semibold calendar-item__time">{{ time }}</span>
     <svg v-if="item.recurring_parent_id" class="calendar-item__recurring" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
     </svg>
@@ -81,8 +81,6 @@ function onDragEnd(e) {
   gap: 6px;
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   line-height: var(--lh-snug);
   cursor: grab;
   transition: opacity 0.15s, transform 0.15s;
@@ -119,11 +117,9 @@ function onDragEnd(e) {
 
 .calendar-item--compact {
   padding: 2px 6px;
-  font-size: var(--font-size-footnote);
 }
 
 .calendar-item__time {
-  font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
 

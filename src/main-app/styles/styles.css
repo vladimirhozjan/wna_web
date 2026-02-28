@@ -42,6 +42,13 @@
     font-weight: var(--font-weight-medium);
 }
 
+.text-body-l {
+    font-family: var(--font-family-default), serif;
+    font-size: var(--font-size-body-l);
+    line-height: var(--lh-body-m);
+    font-weight: var(--font-weight-normal);
+}
+
 .text-body-m {
     font-family: var(--font-family-default), serif;
     font-size: var(--font-size-body-m);

@@ -27,7 +27,7 @@
             <RocketIcon class="section-heading__icon" />
             Getting Started
           </h2>
-          <router-link v-if="!isSearching && gettingStarted.length > STARTED_LIMIT" to="/help/getting-started" class="show-more show-more--desktop text-body-s">
+          <router-link v-if="!isSearching && gettingStarted.length > STARTED_LIMIT" to="/help/getting-started" class="text-body-s fw-medium show-more show-more--desktop">
             Show all
             <ArrowRightSmallIcon class="show-more__chevron" />
           </router-link>
@@ -39,7 +39,7 @@
           </div>
         </div>
         <div v-if="!isSearching && gettingStarted.length > STARTED_LIMIT" class="show-more-wrap show-more-wrap--mobile">
-          <router-link to="/help/getting-started" class="show-more text-body-s">
+          <router-link to="/help/getting-started" class="text-body-s fw-medium show-more">
             Show all
             <ArrowRightSmallIcon class="show-more__chevron" />
           </router-link>
@@ -55,7 +55,7 @@
             <QuizIcon class="section-heading__icon" />
             Frequently Asked Questions
           </h2>
-          <router-link v-if="!isSearching && faq.length > FAQ_LIMIT" to="/help/faq" class="show-more show-more--desktop text-body-s">
+          <router-link v-if="!isSearching && faq.length > FAQ_LIMIT" to="/help/faq" class="text-body-s fw-medium show-more show-more--desktop">
             Show all
             <ArrowRightSmallIcon class="show-more__chevron" />
           </router-link>
@@ -69,7 +69,7 @@
           />
         </div>
         <div v-if="!isSearching && faq.length > FAQ_LIMIT" class="show-more-wrap show-more-wrap--mobile">
-          <router-link to="/help/faq" class="show-more text-body-s">
+          <router-link to="/help/faq" class="text-body-s fw-medium show-more">
             Show all
             <ArrowRightSmallIcon class="show-more__chevron" />
           </router-link>
@@ -85,7 +85,7 @@
             <ThumbUpIcon class="section-heading__icon" />
             GTD Best Practices
           </h2>
-          <router-link v-if="!isSearching && bestPractices.length > PRACTICES_LIMIT" to="/help/best-practices" class="show-more show-more--desktop text-body-s">
+          <router-link v-if="!isSearching && bestPractices.length > PRACTICES_LIMIT" to="/help/best-practices" class="text-body-s fw-medium show-more show-more--desktop">
             Show all
             <ArrowRightSmallIcon class="show-more__chevron" />
           </router-link>
@@ -97,7 +97,7 @@
           </div>
         </div>
         <div v-if="!isSearching && bestPractices.length > PRACTICES_LIMIT" class="show-more-wrap show-more-wrap--mobile">
-          <router-link to="/help/best-practices" class="show-more text-body-s">
+          <router-link to="/help/best-practices" class="text-body-s fw-medium show-more">
             Show all
             <ArrowRightSmallIcon class="show-more__chevron" />
           </router-link>
@@ -265,7 +265,6 @@ function contactSupport() {
   outline: none;
   padding: 0 12px;
   color: var(--color-text-primary);
-  font-family: var(--font-family-default), serif;
 }
 
 .search-input::placeholder {
@@ -356,8 +355,6 @@ function contactSupport() {
   border: none;
   cursor: pointer;
   color: var(--color-action);
-  font-family: var(--font-family-default), serif;
-  font-weight: var(--font-weight-medium);
   min-height: 44px;
   text-decoration: none;
   white-space: nowrap;

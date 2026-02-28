@@ -2,27 +2,27 @@
   <div class="dropdown-menu">
     <!-- Authenticated: My Dashboard on top -->
     <template v-if="authenticated">
-      <button class="dropdown-item" @click="$emit('go-dashboard')">My Dashboard</button>
+      <button class="text-body-s dropdown-item" @click="$emit('go-dashboard')">My Dashboard</button>
       <hr class="dropdown-divider" />
     </template>
 
     <!-- Nav links (guest: always, authenticated: mobile only) -->
-    <a href="/#why-gtd" :class="['dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Why GTD</a>
-    <a href="/#features" :class="['dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Features</a>
-    <router-link to="/pricing" :class="['dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Pricing</router-link>
-    <router-link to="/help" :class="['dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Help</router-link>
+    <a href="/#why-gtd" :class="['text-body-s', 'dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Why GTD</a>
+    <a href="/#features" :class="['text-body-s', 'dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Features</a>
+    <router-link to="/pricing" :class="['text-body-s', 'dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Pricing</router-link>
+    <router-link to="/help" :class="['text-body-s', 'dropdown-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Help</router-link>
     <hr :class="['dropdown-divider', { 'mobile-only': authenticated }]" />
 
     <!-- Authenticated: Settings + Logout -->
     <template v-if="authenticated">
-      <button class="dropdown-item" @click="$emit('go-settings')">Settings</button>
-      <button class="dropdown-item" @click="$emit('logout')">Logout</button>
+      <button class="text-body-s dropdown-item" @click="$emit('go-settings')">Settings</button>
+      <button class="text-body-s dropdown-item" @click="$emit('logout')">Logout</button>
     </template>
 
     <!-- Guest: Start Here + Sign In -->
     <template v-else>
-      <button class="dropdown-item" @click="$emit('open-register')">Start Here</button>
-      <button class="dropdown-item" @click="$emit('open-login')">Sign In</button>
+      <button class="text-body-s dropdown-item" @click="$emit('open-register')">Start Here</button>
+      <button class="text-body-s dropdown-item" @click="$emit('open-login')">Sign In</button>
     </template>
   </div>
 </template>
@@ -65,7 +65,6 @@ defineEmits(['close', 'open-login', 'open-register', 'go-dashboard', 'go-setting
   white-space: nowrap;
   text-decoration: none;
   color: var(--color-text-primary);
-  font-size: var(--font-size-body-s);
 }
 
 .dropdown-item:hover {

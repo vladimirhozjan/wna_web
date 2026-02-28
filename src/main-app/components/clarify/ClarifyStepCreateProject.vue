@@ -1,28 +1,28 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">Create Project</h3>
-    <p class="clarify-step-hint">Define the project outcome.</p>
+    <h3 class="text-h4 fw-semibold clarify-step-question">Create Project</h3>
+    <p class="text-body-m clarify-step-hint">Define the project outcome.</p>
 
     <form class="clarify-form" @submit.prevent="onSubmit">
       <div class="clarify-field">
-        <label class="clarify-label" for="project-title">Project Title *</label>
+        <label class="text-body-s fw-semibold clarify-label" for="project-title">Project Title *</label>
         <input
             id="project-title"
             ref="titleInput"
             v-model="form.title"
             type="text"
-            class="clarify-input"
+            class="text-body-m clarify-input"
             placeholder="What's the desired outcome?"
             required
         />
       </div>
 
       <div class="clarify-field">
-        <label class="clarify-label" for="project-outcome">Outcome *</label>
+        <label class="text-body-s fw-semibold clarify-label" for="project-outcome">Outcome *</label>
         <textarea
             id="project-outcome"
             v-model="form.outcome"
-            class="clarify-textarea"
+            class="text-body-m clarify-textarea"
             placeholder="What does done look like?"
             rows="2"
             required
@@ -30,18 +30,18 @@
       </div>
 
       <div class="clarify-field">
-        <label class="clarify-label" for="project-description">Description</label>
+        <label class="text-body-s fw-semibold clarify-label" for="project-description">Description</label>
         <textarea
             id="project-description"
             v-model="form.description"
-            class="clarify-textarea"
+            class="text-body-m clarify-textarea"
             placeholder="Project notes and context (optional)"
             rows="3"
         ></textarea>
       </div>
 
       <div class="clarify-field">
-        <label class="clarify-label">Tags</label>
+        <label class="text-body-s fw-semibold clarify-label">Tags</label>
         <TagInput v-model="form.tags" placeholder="Add context tags (optional)" />
       </div>
 
@@ -109,17 +109,12 @@ function onSubmit() {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
   text-align: center;
 }
 
 .clarify-step-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0 0 24px 0;
   text-align: center;
@@ -138,22 +133,15 @@ function onSubmit() {
 }
 
 .clarify-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .clarify-field-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   font-style: italic;
 }
 
 .clarify-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 10px 12px;
   border: 1px solid var(--color-input-border);
@@ -172,8 +160,6 @@ function onSubmit() {
 }
 
 .clarify-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 10px 12px;
   border: 1px solid var(--color-input-border);

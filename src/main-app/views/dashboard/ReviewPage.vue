@@ -39,7 +39,7 @@
               />
             </label>
             <div class="review-step__body">
-              <span class="review-step__title text-body-m">{{ step.title }}</span>
+              <span class="text-body-m fw-semibold review-step__title">{{ step.title }}</span>
               <span class="review-step__hint text-body-s">{{ step.hint }}</span>
             </div>
             <span v-if="stepCount(step.statsKey) != null" class="review-step__count text-footnote">
@@ -243,7 +243,6 @@ function onComplete() {
 }
 
 .review-step__title {
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 

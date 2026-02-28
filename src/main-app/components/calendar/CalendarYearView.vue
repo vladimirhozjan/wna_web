@@ -6,7 +6,7 @@
           :key="month.monthIndex"
           :class="['year-view__month', { 'year-view__month--current': isCurrentMonth(month.monthIndex) }]"
       >
-        <div class="year-view__month-header" @click="onMonthClick(month)">
+        <div class="text-body-s fw-semibold year-view__month-header" @click="onMonthClick(month)">
           {{ month.name }}
         </div>
 
@@ -41,13 +41,13 @@
 
     <!-- Legend -->
     <div class="year-view__legend">
-      <span class="year-view__legend-label">Less</span>
+      <span class="text-footnote year-view__legend-label">Less</span>
       <div class="year-view__legend-item year-view__day--heat-0"></div>
       <div class="year-view__legend-item year-view__day--heat-1"></div>
       <div class="year-view__legend-item year-view__day--heat-2"></div>
       <div class="year-view__legend-item year-view__day--heat-3"></div>
       <div class="year-view__legend-item year-view__day--heat-4"></div>
-      <span class="year-view__legend-label">More</span>
+      <span class="text-footnote year-view__legend-label">More</span>
     </div>
   </div>
 </template>
@@ -211,9 +211,6 @@ function onMonthClick(month) {
 }
 
 .year-view__month-header {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 8px;
   cursor: pointer;
@@ -312,8 +309,6 @@ function onMonthClick(month) {
 }
 
 .year-view__legend-label {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
   margin: 0 8px;
 }

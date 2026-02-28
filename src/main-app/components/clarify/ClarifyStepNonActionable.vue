@@ -1,7 +1,7 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">What would you like to do with it?</h3>
-    <p class="clarify-step-hint">This item is not actionable. Choose where to store it.</p>
+    <h3 class="text-h4 fw-semibold clarify-step-question">What would you like to do with it?</h3>
+    <p class="text-body-m clarify-step-hint">This item is not actionable. Choose where to store it.</p>
 
     <div class="clarify-options">
       <button
@@ -10,10 +10,10 @@
           @click="select('REFERENCE')"
       >
         <div class="clarify-option-content">
-          <span class="clarify-option-label">Reference</span>
-          <span class="clarify-option-desc">Save as reference material</span>
+          <span class="text-body-m fw-semibold clarify-option-label">Reference</span>
+          <span class="text-body-s clarify-option-desc">Save as reference material</span>
         </div>
-        <span class="clarify-option-key">R</span>
+        <span class="text-body-s clarify-option-key">R</span>
       </button>
       <button
           class="clarify-option"
@@ -21,10 +21,10 @@
           @click="select('SOMEDAY')"
       >
         <div class="clarify-option-content">
-          <span class="clarify-option-label">Someday</span>
-          <span class="clarify-option-desc">Maybe do this later</span>
+          <span class="text-body-m fw-semibold clarify-option-label">Someday</span>
+          <span class="text-body-s clarify-option-desc">Maybe do this later</span>
         </div>
-        <span class="clarify-option-key">S</span>
+        <span class="text-body-s clarify-option-key">S</span>
       </button>
       <button
           class="clarify-option clarify-option--danger"
@@ -32,10 +32,10 @@
           @click="select('TRASH')"
       >
         <div class="clarify-option-content">
-          <span class="clarify-option-label">Trash</span>
-          <span class="clarify-option-desc">Move to trash</span>
+          <span class="text-body-m fw-semibold clarify-option-label">Trash</span>
+          <span class="text-body-s clarify-option-desc">Move to trash</span>
         </div>
-        <span class="clarify-option-key">T</span>
+        <span class="text-body-s clarify-option-key">T</span>
       </button>
     </div>
   </div>
@@ -87,16 +87,11 @@ onUnmounted(() => {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
 .clarify-step-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0 0 32px 0;
 }
@@ -150,21 +145,14 @@ onUnmounted(() => {
 }
 
 .clarify-option-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .clarify-option-desc {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 
 .clarify-option-key {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   padding: 2px 8px;
   background: var(--color-bg-secondary);

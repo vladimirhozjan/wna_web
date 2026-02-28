@@ -1,68 +1,68 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">Create Action</h3>
-    <p class="clarify-step-hint">Define the next physical action you can take.</p>
+    <h3 class="text-h4 fw-semibold clarify-step-question">Create Action</h3>
+    <p class="text-body-m clarify-step-hint">Define the next physical action you can take.</p>
 
     <form class="clarify-form" @submit.prevent="onSubmit">
       <div class="clarify-field">
-        <label class="clarify-label" for="action-title">Title *</label>
+        <label class="text-body-s fw-semibold clarify-label" for="action-title">Title *</label>
         <input
             id="action-title"
             ref="titleInput"
             v-model="form.title"
             type="text"
-            class="clarify-input"
+            class="text-body-m clarify-input"
             placeholder="What's the next action?"
             required
         />
       </div>
 
       <div class="clarify-field">
-        <label class="clarify-label" for="action-description">Description</label>
+        <label class="text-body-s fw-semibold clarify-label" for="action-description">Description</label>
         <textarea
             id="action-description"
             v-model="form.description"
-            class="clarify-textarea"
+            class="text-body-m clarify-textarea"
             placeholder="Additional details (optional)"
             rows="3"
         ></textarea>
       </div>
 
       <div class="clarify-field">
-        <label class="clarify-label">Tags</label>
+        <label class="text-body-s fw-semibold clarify-label">Tags</label>
         <TagInput v-model="form.tags" placeholder="Add context tags (optional)" />
       </div>
 
       <!-- Dates Section (collapsible, closed by default) -->
       <div class="clarify-dates-section">
         <div class="clarify-dates-header" @click="toggleDates">
-          <span class="clarify-dates-label">Dates</span>
-          <span v-if="!datesExpanded && !hasAnyDate" class="clarify-dates-hint">Add dates...</span>
-          <span v-else-if="!datesExpanded" class="clarify-dates-summary">{{ datesSummary }}</span>
+          <span class="text-body-s fw-semibold clarify-dates-label">Dates</span>
+          <span v-if="!datesExpanded && !hasAnyDate" class="text-body-s clarify-dates-hint">Add dates...</span>
+          <span v-else-if="!datesExpanded" class="text-body-s clarify-dates-summary">{{ datesSummary }}</span>
           <span class="clarify-dates-toggle">{{ datesExpanded ? '&#9660;' : '&#9654;' }}</span>
         </div>
 
         <div v-if="datesExpanded" class="clarify-dates-content">
           <!-- Deferred (Scheduled for / Start after) -->
           <div class="clarify-date-field">
-            <label class="clarify-label">Deferred</label>
+            <label class="text-body-s fw-semibold clarify-label">Deferred</label>
             <div class="clarify-date-type-selector">
-              <label class="clarify-radio">
+              <label class="text-body-m clarify-radio">
                 <input type="radio" v-model="form.deferType" value="scheduled" />
                 <span>Scheduled for</span>
               </label>
-              <label class="clarify-radio">
+              <label class="text-body-m clarify-radio">
                 <input type="radio" v-model="form.deferType" value="start" />
                 <span>Start after</span>
               </label>
             </div>
             <div v-if="form.deferType" class="clarify-date-inputs">
-              <input type="date" v-model="form.deferDate" class="clarify-input" />
-              <span v-if="!showDeferTime" class="clarify-link" @click="showDeferTime = true">Add time</span>
-              <input v-else type="time" v-model="form.deferTime" class="clarify-input clarify-input--time" />
+              <input type="date" v-model="form.deferDate" class="text-body-m clarify-input" />
+              <span v-if="!showDeferTime" class="text-body-s clarify-link" @click="showDeferTime = true">Add time</span>
+              <input v-else type="time" v-model="form.deferTime" class="text-body-m clarify-input clarify-input--time" />
               <template v-if="form.deferType === 'scheduled' && form.deferTime">
-                <span v-if="!showDuration" class="clarify-link" @click="showDuration = true">Add duration</span>
-                <select v-else v-model="form.deferDuration" class="clarify-input clarify-input--duration">
+                <span v-if="!showDuration" class="text-body-s clarify-link" @click="showDuration = true">Add duration</span>
+                <select v-else v-model="form.deferDuration" class="text-body-m clarify-input clarify-input--duration">
                   <option :value="null">No duration</option>
                   <option value="15">15 min</option>
                   <option value="30">30 min</option>
@@ -75,18 +75,18 @@
                 </select>
               </template>
             </div>
-            <button v-if="form.deferType" type="button" class="clarify-clear-btn" @click="clearDeferred">Clear</button>
+            <button v-if="form.deferType" type="button" class="text-body-s clarify-clear-btn" @click="clearDeferred">Clear</button>
           </div>
 
           <!-- Due Date -->
           <div class="clarify-date-field">
-            <label class="clarify-label">Due</label>
+            <label class="text-body-s fw-semibold clarify-label">Due</label>
             <div class="clarify-date-inputs">
-              <input type="date" v-model="form.dueDate" class="clarify-input" />
-              <span v-if="form.dueDate && !showDueTime" class="clarify-link" @click="showDueTime = true">Add time</span>
-              <input v-if="form.dueDate && showDueTime" type="time" v-model="form.dueTime" class="clarify-input clarify-input--time" />
+              <input type="date" v-model="form.dueDate" class="text-body-m clarify-input" />
+              <span v-if="form.dueDate && !showDueTime" class="text-body-s clarify-link" @click="showDueTime = true">Add time</span>
+              <input v-if="form.dueDate && showDueTime" type="time" v-model="form.dueTime" class="text-body-m clarify-input clarify-input--time" />
             </div>
-            <button v-if="form.dueDate" type="button" class="clarify-clear-btn" @click="clearDue">Clear</button>
+            <button v-if="form.dueDate" type="button" class="text-body-s clarify-clear-btn" @click="clearDue">Clear</button>
           </div>
         </div>
       </div>
@@ -215,17 +215,12 @@ function onSubmit() {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
   text-align: center;
 }
 
 .clarify-step-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0 0 24px 0;
   text-align: center;
@@ -244,15 +239,10 @@ function onSubmit() {
 }
 
 .clarify-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .clarify-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 10px 12px;
   border: 1px solid var(--color-input-border);
@@ -271,8 +261,6 @@ function onSubmit() {
 }
 
 .clarify-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 10px 12px;
   border: 1px solid var(--color-input-border);
@@ -320,22 +308,15 @@ function onSubmit() {
 }
 
 .clarify-dates-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .clarify-dates-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   font-style: italic;
 }
 
 .clarify-dates-summary {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 
@@ -367,8 +348,6 @@ function onSubmit() {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -394,8 +373,6 @@ function onSubmit() {
 }
 
 .clarify-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
 }
@@ -407,8 +384,6 @@ function onSubmit() {
 
 .clarify-clear-btn {
   align-self: flex-start;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   background: none;
   border: none;

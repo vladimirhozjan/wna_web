@@ -4,55 +4,55 @@
       <!-- No next action warning (projects only) -->
       <span v-if="missingNextAction" class="chip chip--warning">
         <WarningIcon class="chip__icon chip__icon--warning" />
-        <span class="chip__text chip__text--warning">No next action</span>
+        <span class="text-body-s chip__text chip__text--warning">No next action</span>
       </span>
 
       <!-- Recurrence rule -->
       <span v-if="item.recurrence_rule" class="chip">
         <RecurringIcon class="chip__icon chip__icon--tertiary" />
-        <span class="chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
+        <span class="text-body-s chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
       </span>
 
       <!-- Waiting for -->
       <span v-if="entityType === 'action' && item.waiting_for" class="chip">
         <HourglassIcon class="chip__icon chip__icon--sm" />
-        <span class="chip__text">{{ item.waiting_for }}</span>
+        <span class="text-body-s chip__text">{{ item.waiting_for }}</span>
       </span>
 
       <!-- Due date -->
       <span v-if="entityType === 'action' && item.due_date" class="chip" :class="{ 'chip--danger': isItemOverdue }">
         <CalendarIcon class="chip__icon" />
-        <span class="chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
+        <span class="text-body-s chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
       </span>
 
       <!-- Scheduled date -->
       <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
         <CalendarIcon class="chip__icon chip__icon--scheduled" />
-        <span class="chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
+        <span class="text-body-s chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
       </span>
 
       <!-- Start date -->
       <span v-if="entityType === 'action' && item.start_date" class="chip">
         <CalendarIcon class="chip__icon chip__icon--tertiary" />
-        <span class="chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
+        <span class="text-body-s chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
       </span>
 
       <!-- Project -->
-      <span v-if="entityType === 'action' && projectTitle" class="chip chip--project">
+      <span v-if="entityType === 'action' && projectTitle" class="fw-medium chip chip--project">
         <ProjectsIcon class="chip__icon chip__icon--project" />
-        <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
+        <span class="text-body-s chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
       </span>
 
       <!-- Attachments -->
       <span v-if="item.attachment_count > 0" class="chip">
         <AttachmentIcon class="chip__icon chip__icon--tertiary" />
-        <span class="chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
+        <span class="text-body-s chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
       </span>
 
       <!-- Comments -->
       <span v-if="item.comment_count > 0" class="chip">
         <CommentIcon class="chip__icon chip__icon--tertiary" />
-        <span class="chip__text chip__text--tertiary">{{ item.comment_count }}</span>
+        <span class="text-body-s chip__text chip__text--tertiary">{{ item.comment_count }}</span>
       </span>
 
       <!-- Description -->
@@ -62,9 +62,9 @@
     </div>
 
     <div v-if="visibleTags.length" class="metadata-row__tags">
-      <span v-for="tag in visibleTags" :key="tag" class="tag-chip">{{ tag }}</span>
-      <span v-if="hiddenTagCount > 0" class="tag-chip tag-chip--overflow tag-chip--desktop">+{{ hiddenTagCount }}</span>
-      <span v-if="mobileHiddenTagCount > 0" class="tag-chip tag-chip--overflow tag-chip--mobile">+{{ mobileHiddenTagCount }}</span>
+      <span v-for="tag in visibleTags" :key="tag" class="text-body-s tag-chip">{{ tag }}</span>
+      <span v-if="hiddenTagCount > 0" class="text-body-s tag-chip tag-chip--overflow tag-chip--desktop">+{{ hiddenTagCount }}</span>
+      <span v-if="mobileHiddenTagCount > 0" class="text-body-s tag-chip tag-chip--overflow tag-chip--mobile">+{{ mobileHiddenTagCount }}</span>
     </div>
   </div>
 </template>
@@ -245,8 +245,6 @@ const hasAnyMetadata = computed(() => {
 }
 
 .chip__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   line-height: var(--lh-tight);
 }
 
@@ -266,15 +264,9 @@ const hasAnyMetadata = computed(() => {
   color: var(--color-action);
 }
 
-.chip--project {
-  font-weight: var(--font-weight-medium);
-}
-
 .tag-chip {
   display: inline-block;
   padding: 1px 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   line-height: var(--lh-normal);
   color: var(--color-text-secondary);
   background: var(--color-bg-secondary);

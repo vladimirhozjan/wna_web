@@ -52,7 +52,6 @@ const classes = computed(() => ([
 <style scoped>
 .base-btn {
   position: relative;
-  font-family: var(--font-family-default),serif;
   border-radius: 6px;
   border: none;
   cursor: pointer;

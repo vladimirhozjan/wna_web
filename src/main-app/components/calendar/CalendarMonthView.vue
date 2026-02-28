@@ -7,7 +7,7 @@
         <div
             v-for="day in weekDays"
             :key="day"
-            class="month-view__header-cell"
+            class="text-body-s fw-semibold month-view__header-cell"
         >
           {{ day }}
         </div>
@@ -32,7 +32,7 @@
             @dragleave="onDragLeave"
             @drop="onDrop(day, $event)"
         >
-          <div class="month-view__day-number">{{ formatDayNumber(day) }}</div>
+          <div class="text-body-s fw-medium month-view__day-number">{{ formatDayNumber(day) }}</div>
 
           <div class="month-view__items">
             <template v-if="quickFormDate === formatDate(day)">
@@ -56,7 +56,7 @@
 
             <div
                 v-if="getItemsForDay(day).length > maxItemsPerDay"
-                class="month-view__more"
+                class="text-footnote month-view__more"
                 @click.stop="onMoreClick(day)"
             >
               +{{ getItemsForDay(day).length - maxItemsPerDay }} more
@@ -80,11 +80,11 @@
             class="month-view__list-header"
             @click="onMobileHeaderClick(day)"
         >
-          <span class="month-view__list-weekday">{{ formatWeekdayShort(day) }}</span>
-          <span :class="['month-view__list-date', { 'month-view__list-date--today': isToday(day) }]">
+          <span class="text-body-s fw-semibold month-view__list-weekday">{{ formatWeekdayShort(day) }}</span>
+          <span :class="['text-body-m fw-semibold month-view__list-date', { 'month-view__list-date--today': isToday(day) }]">
             {{ formatDayNumber(day) }}
           </span>
-          <span class="month-view__list-count" v-if="getItemsForDay(day).length > 0">
+          <span class="text-body-s month-view__list-count" v-if="getItemsForDay(day).length > 0">
             {{ getItemsForDay(day).length }} {{ getItemsForDay(day).length === 1 ? 'item' : 'items' }}
           </span>
         </div>
@@ -108,7 +108,7 @@
           />
         </div>
 
-        <div class="month-view__list-empty" v-else @click="onMobileDayClick(day)">
+        <div class="text-body-s month-view__list-empty" v-else @click="onMobileDayClick(day)">
           Tap to add
         </div>
       </div>
@@ -287,9 +287,6 @@ function onDrop(day, event) {
 .month-view__header-cell {
   padding: 12px 8px;
   text-align: center;
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
 }
 
@@ -347,9 +344,6 @@ function onDrop(day, event) {
 }
 
 .month-view__day-number {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   padding: 4px 8px;
 }
@@ -374,8 +368,6 @@ function onDrop(day, event) {
 }
 
 .month-view__more {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
   padding: 2px 6px;
   cursor: pointer;
@@ -433,18 +425,12 @@ function onDrop(day, event) {
 }
 
 .month-view__list-weekday {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   width: 36px;
 }
 
 .month-view__list-date {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-m);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -460,8 +446,6 @@ function onDrop(day, event) {
 }
 
 .month-view__list-count {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   margin-left: auto;
 }
@@ -475,8 +459,6 @@ function onDrop(day, event) {
 
 .month-view__list-empty {
   padding: 8px 16px 12px;
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   cursor: pointer;
 }

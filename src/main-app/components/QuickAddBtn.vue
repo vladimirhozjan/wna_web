@@ -1,6 +1,6 @@
 <template>
   <div class="quick-add">
-    <button v-if="!expanded" class="quick-add-btn" @click="expand">
+    <button v-if="!expanded" class="text-body-s quick-add-btn" @click="expand">
       <span class="quick-add-icon">+</span>
       <span class="quick-add-label">Quick Add</span>
     </button>
@@ -8,7 +8,7 @@
       v-else
       ref="inputRef"
       v-model="title"
-      class="quick-add-input"
+      class="text-body-s quick-add-input"
       type="text"
       placeholder="Add new stuff"
       @keydown.enter="submit"
@@ -55,8 +55,6 @@ function submit() {
   border: 1px solid var(--color-border-light);
   background: var(--color-btn-ghost-bg);
   color: var(--color-btn-ghost-text);
-  font-size: var(--font-size-body-s);
-  font-family: var(--font-family-default);
   cursor: text;
   white-space: nowrap;
   transition: background 0.15s;
@@ -80,8 +78,6 @@ function submit() {
   border: 1px solid var(--color-border-light);
   background: var(--color-btn-ghost-bg);
   color: var(--color-text-primary);
-  font-size: var(--font-size-body-s);
-  font-family: var(--font-family-default);
   outline: none;
   width: 200px;
 }

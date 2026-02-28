@@ -1,7 +1,7 @@
 <template>
   <div :class="['faq-item', { 'faq-item--open': open }]">
     <button class="faq-question" @click="open = !open">
-      <span class="text-body-m faq-question__text">{{ question }}</span>
+      <span class="text-body-m fw-semibold faq-question__text">{{ question }}</span>
       <ChevronDownIcon class="faq-chevron" />
     </button>
     <Transition name="faq-expand">
@@ -45,11 +45,6 @@ const open = ref(false)
   cursor: pointer;
   text-align: left;
   color: var(--color-text-primary);
-  font-family: var(--font-family-default), serif;
-}
-
-.faq-question__text {
-  font-weight: var(--font-weight-semibold);
 }
 
 .faq-chevron {
@@ -70,7 +65,7 @@ const open = ref(false)
 
 .faq-answer__text {
   color: var(--color-text-secondary);
-  line-height: 160%;
+  line-height: var(--lh-loose);
 }
 
 /* Expand/collapse transition */

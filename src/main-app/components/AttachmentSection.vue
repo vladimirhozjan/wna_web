@@ -1,8 +1,8 @@
 <template>
   <div class="detail-section-area attachment-section">
     <div class="attachment-header">
-      <label class="detail-section-label">Attachments</label>
-      <span v-if="!loading && attachments.length > 0" class="attachment-count">{{ attachments.length }} / 10</span>
+      <label class="text-body-s fw-semibold detail-section-label">Attachments</label>
+      <span v-if="!loading && attachments.length > 0" class="text-footnote attachment-count">{{ attachments.length }} / 10</span>
     </div>
 
     <!-- Loading state -->
@@ -14,7 +14,7 @@
       <!-- Empty state (drop target) -->
       <div v-if="attachments.length === 0 && !uploading" class="detail-section-wrapper">
         <p
-            class="detail-section-content detail-section-content--empty attachment-drop-zone"
+            class="text-body-m detail-section-content detail-section-content--empty attachment-drop-zone"
             :class="{ 'attachment-drop-zone--active': dragover }"
             @click="triggerUpload"
             @dragover.prevent="onDragOver"
@@ -28,8 +28,8 @@
         <div v-for="att in attachments" :key="att.id" class="attachment-item" @click="openPreview(att)">
           <RefFileIcon :mime-type="att.mime_type" class="attachment-item-icon" />
           <div class="attachment-item-info">
-            <span class="attachment-item-name">{{ att.file_name }}</span>
-            <span class="attachment-item-size">{{ formatSize(att.size_bytes) }}</span>
+            <span class="text-body-m attachment-item-name">{{ att.file_name }}</span>
+            <span class="text-body-s attachment-item-size">{{ formatSize(att.size_bytes) }}</span>
           </div>
           <div class="attachment-item-actions">
             <button class="attachment-action-btn" title="Download" @click.stop="download(att)">
@@ -47,13 +47,13 @@
         <div class="attachment-progress-track">
           <div class="attachment-progress-bar" :style="{ width: progress + '%' }"></div>
         </div>
-        <span class="attachment-progress-text">{{ progress }}%</span>
+        <span class="text-footnote attachment-progress-text">{{ progress }}%</span>
       </div>
 
       <!-- Add more (drop target) -->
       <p
           v-if="attachments.length > 0 && !atLimit && !uploading"
-          class="detail-section-content detail-section-content--empty attachment-drop-zone"
+          class="text-body-m detail-section-content detail-section-content--empty attachment-drop-zone"
           :class="{ 'attachment-drop-zone--active': dragover }"
           @click="triggerUpload"
           @dragover.prevent="onDragOver"
@@ -62,7 +62,7 @@
       >{{ dragover ? 'Drop file to attach' : 'Attach another file...' }}</p>
 
       <!-- Limit notice -->
-      <div v-if="atLimit" class="attachment-limit-notice">
+      <div v-if="atLimit" class="text-body-s attachment-limit-notice">
         Attachment limit reached (10 / 10)
       </div>
     </template>
@@ -315,9 +315,6 @@ function formatSize(bytes) {
 /* ── Reuse detail-section styles ── */
 .detail-section-label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -329,8 +326,6 @@ function formatSize(bytes) {
 }
 
 .detail-section-content {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
@@ -364,8 +359,6 @@ function formatSize(bytes) {
 }
 
 .attachment-count {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
@@ -446,8 +439,6 @@ function formatSize(bytes) {
 }
 
 .attachment-item-name {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -455,8 +446,6 @@ function formatSize(bytes) {
 }
 
 .attachment-item-size {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   flex-shrink: 0;
 }
@@ -538,8 +527,6 @@ function formatSize(bytes) {
 }
 
 .attachment-progress-text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
   min-width: 32px;
   text-align: right;
@@ -547,8 +534,6 @@ function formatSize(bytes) {
 
 /* ── Limit notice ── */
 .attachment-limit-notice {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   text-align: center;
   padding: 8px 0;

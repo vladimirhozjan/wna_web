@@ -5,7 +5,7 @@
       <p class="text-subtitle hero-subtitle">Achieve stress-free productivity with the GTD methodology.</p>
       <div class="hero-actions">
         <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
-        <button class="hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
+        <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
       </div>
     </div>
   </section>
@@ -61,9 +61,6 @@ function scrollToFeatures() {
   align-items: center;
   justify-content: center;
   padding: 14px 20px;
-  font-family: var(--font-family-default), serif;
-  font-size: var(--font-size-body-m);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-on-dark);
   background: transparent;
   border: 1px solid var(--color-text-on-dark-secondary);

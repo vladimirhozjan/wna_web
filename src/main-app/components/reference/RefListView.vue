@@ -1,13 +1,13 @@
 <template>
   <div class="list-view">
-    <table class="list-table">
+    <table class="text-body-m list-table">
       <thead>
         <tr>
-          <th class="col-icon"></th>
-          <th class="col-name">Name</th>
-          <th class="col-size">Size</th>
-          <th class="col-modified">Created</th>
-          <th class="col-actions"></th>
+          <th class="text-body-s fw-medium col-icon"></th>
+          <th class="text-body-s fw-medium col-name">Name</th>
+          <th class="text-body-s fw-medium col-size">Size</th>
+          <th class="text-body-s fw-medium col-modified">Created</th>
+          <th class="text-body-s fw-medium col-actions"></th>
         </tr>
       </thead>
       <tbody>
@@ -148,15 +148,11 @@ function formatDate(dateStr) {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
 }
 
 .list-table thead th {
   text-align: left;
   padding: 8px 12px;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   border-bottom: 1px solid var(--color-border-light);
   white-space: nowrap;

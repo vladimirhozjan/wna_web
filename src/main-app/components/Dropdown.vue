@@ -18,7 +18,7 @@
         <div class="dropdown-sheet-overlay" @click="close">
           <div class="dropdown-sheet" @click.stop>
             <div class="dropdown-sheet-header">
-              <span class="dropdown-sheet-title">{{ title }}</span>
+              <span class="text-body-l fw-semibold dropdown-sheet-title">{{ title }}</span>
               <button type="button" class="dropdown-sheet-close" @click="close">&times;</button>
             </div>
             <div class="dropdown-sheet-content">
@@ -236,9 +236,6 @@ onUnmounted(() => {
 }
 
 .dropdown-sheet-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 

@@ -4,14 +4,14 @@
       <button class="calendar-header__nav-btn" @click="$emit('prev')" aria-label="Previous">
         <ChevronLeftIcon class="calendar-header__nav-icon" />
       </button>
-      <button class="calendar-header__today-btn" @click="$emit('today')">Today</button>
+      <button class="text-body-s fw-medium calendar-header__today-btn" @click="$emit('today')">Today</button>
       <button class="calendar-header__nav-btn" @click="$emit('next')" aria-label="Next">
         <ArrowRightSmallIcon class="calendar-header__nav-icon" />
       </button>
     </div>
 
     <div class="calendar-header__title-wrapper">
-      <h2 class="calendar-header__title">{{ title }}</h2>
+      <h2 class="text-h4 fw-semibold calendar-header__title">{{ title }}</h2>
       <span v-if="loading" class="calendar-header__spinner"></span>
     </div>
 
@@ -19,7 +19,7 @@
       <button
           v-for="view in views"
           :key="view.value"
-          :class="['calendar-header__view-btn', { 'calendar-header__view-btn--active': viewMode === view.value }]"
+          :class="['text-body-s fw-medium calendar-header__view-btn', { 'calendar-header__view-btn--active': viewMode === view.value }]"
           @click="$emit('view-change', view.value)"
       >
         {{ view.label }}
@@ -150,9 +150,6 @@ const title = computed(() => {
   border-radius: 6px;
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -171,9 +168,6 @@ const title = computed(() => {
 }
 
 .calendar-header__title {
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -207,9 +201,6 @@ const title = computed(() => {
   border-right: 1px solid var(--color-border-light);
   background: var(--color-bg-primary);
   color: var(--color-text-secondary);
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }

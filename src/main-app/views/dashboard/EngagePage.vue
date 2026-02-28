@@ -17,18 +17,18 @@
 
           <!-- Overdue alert (urgent - stays at top) -->
           <div v-if="overdueCount > 0" class="status-item status-item--danger" @click="router.push({ name: 'today' })">
-            <span class="status-item__text">{{ overdueCount }} overdue item{{ overdueCount !== 1 ? 's' : '' }} need attention</span>
+            <span class="text-body-m status-item__text">{{ overdueCount }} overdue item{{ overdueCount !== 1 ? 's' : '' }} need attention</span>
             <Btn variant="ghost-danger" size="sm" @click.stop="router.push({ name: 'today' })">View</Btn>
           </div>
 
           <!-- Today section -->
           <div class="section" v-if="topToday.length > 0">
             <div class="section__header">
-              <router-link :to="{ name: 'today' }" class="section__title">
+              <router-link :to="{ name: 'today' }" class="text-body-s fw-semibold section__title">
                 Today
-                <span v-if="todayCount > 0" class="section__count">{{ todayCount }}</span>
+                <span v-if="todayCount > 0" class="fw-normal section__count">{{ todayCount }}</span>
               </router-link>
-              <router-link :to="{ name: 'today' }" class="section__link">View all</router-link>
+              <router-link :to="{ name: 'today' }" class="text-body-s section__link">View all</router-link>
             </div>
             <ItemList
                 v-model="topToday"
@@ -51,11 +51,11 @@
           <!-- Next Actions section -->
           <div class="section" v-if="topActions.length > 0">
             <div class="section__header">
-              <router-link :to="{ name: 'next' }" class="section__title">
+              <router-link :to="{ name: 'next' }" class="text-body-s fw-semibold section__title">
                 Next Actions
-                <span v-if="nextCount > 0" class="section__count">{{ nextCount }}</span>
+                <span v-if="nextCount > 0" class="fw-normal section__count">{{ nextCount }}</span>
               </router-link>
-              <router-link :to="{ name: 'next' }" class="section__link">View all</router-link>
+              <router-link :to="{ name: 'next' }" class="text-body-s section__link">View all</router-link>
             </div>
             <ItemList
                 v-model="topActions"
@@ -78,11 +78,11 @@
           <!-- Waiting For section -->
           <div class="section" v-if="topWaiting.length > 0">
             <div class="section__header">
-              <router-link :to="{ name: 'waiting-for' }" class="section__title">
+              <router-link :to="{ name: 'waiting-for' }" class="text-body-s fw-semibold section__title">
                 Waiting For
-                <span v-if="waitingCount > 0" class="section__count">{{ waitingCount }}</span>
+                <span v-if="waitingCount > 0" class="fw-normal section__count">{{ waitingCount }}</span>
               </router-link>
-              <router-link :to="{ name: 'waiting-for' }" class="section__link">View all</router-link>
+              <router-link :to="{ name: 'waiting-for' }" class="text-body-s section__link">View all</router-link>
             </div>
             <ItemList
                 v-model="topWaiting"
@@ -104,18 +104,18 @@
 
           <!-- Secondary nudges (low priority) -->
           <div v-if="hasNudges" class="nudges">
-            <div class="nudges__title">Keep your system clean</div>
+            <div class="text-body-s fw-semibold nudges__title">Keep your system clean</div>
             <div v-if="inboxCount > 0" class="nudge" @click="router.push({ name: 'inbox', query: { clarify: 1 } })">
-              <span class="nudge__text">{{ inboxCount }} item{{ inboxCount !== 1 ? 's' : '' }} in inbox to clarify</span>
-              <router-link :to="{ name: 'inbox', query: { clarify: 1 } }" class="nudge__link" @click.stop>Clarify</router-link>
+              <span class="text-body-m nudge__text">{{ inboxCount }} item{{ inboxCount !== 1 ? 's' : '' }} in inbox to clarify</span>
+              <router-link :to="{ name: 'inbox', query: { clarify: 1 } }" class="text-body-s nudge__link" @click.stop>Clarify</router-link>
             </div>
             <div v-if="stuckProjects.length > 0" class="nudge" @click="router.push({ name: 'projects' })">
-              <span class="nudge__text">{{ stuckProjects.length }} project{{ stuckProjects.length !== 1 ? 's' : '' }} need a next action</span>
-              <router-link :to="{ name: 'projects' }" class="nudge__link" @click.stop>View</router-link>
+              <span class="text-body-m nudge__text">{{ stuckProjects.length }} project{{ stuckProjects.length !== 1 ? 's' : '' }} need a next action</span>
+              <router-link :to="{ name: 'projects' }" class="text-body-s nudge__link" @click.stop>View</router-link>
             </div>
             <div v-if="reviewNudgeVisible" class="nudge" @click="router.push({ name: 'review' })">
-              <span class="nudge__text">{{ reviewLabel }}</span>
-              <router-link :to="{ name: 'review' }" class="nudge__link" @click.stop>Review</router-link>
+              <span class="text-body-m nudge__text">{{ reviewLabel }}</span>
+              <router-link :to="{ name: 'review' }" class="text-body-s nudge__link" @click.stop>Review</router-link>
             </div>
           </div>
 
@@ -127,8 +127,8 @@
           <!-- Empty state: truly empty -->
           <div v-else-if="isEmpty" class="empty-state">
             <EngageIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">Ready to get things done?</h2>
-            <p class="empty-state__text">
+            <h2 class="text-h3 empty-state__title">Ready to get things done?</h2>
+            <p class="text-body-m empty-state__text">
               Capture what's on your mind and let your system take care of the rest.
             </p>
             <Btn variant="primary" size="sm" class="empty-state__btn" @click="router.push({ name: 'inbox' })">
@@ -417,8 +417,6 @@ h1 {
 
 .status-item__text {
   flex: 1;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
 }
 
@@ -434,9 +432,6 @@ h1 {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -448,13 +443,10 @@ h1 {
 }
 
 .section__count {
-  font-weight: var(--font-weight-normal);
   color: var(--color-text-tertiary);
 }
 
 .section__link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   text-decoration: none;
 }
@@ -470,9 +462,6 @@ h1 {
 }
 
 .nudges__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -494,14 +483,10 @@ h1 {
 }
 
 .nudge__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
 }
 
 .nudge__link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   text-decoration: none;
   flex-shrink: 0;
@@ -531,16 +516,11 @@ h1 {
 }
 
 .empty-state__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-state__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;

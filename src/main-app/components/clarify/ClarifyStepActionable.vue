@@ -1,22 +1,22 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">Is it actionable?</h3>
-    <p class="clarify-step-hint">Can you take a physical action on this item?</p>
+    <h3 class="text-h4 fw-semibold clarify-step-question">Is it actionable?</h3>
+    <p class="text-body-m clarify-step-hint">Can you take a physical action on this item?</p>
 
     <div class="clarify-options">
       <button
           class="clarify-option"
           @click="select(true)"
       >
-        <span class="clarify-option-label">Yes</span>
-        <span class="clarify-option-key">Y</span>
+        <span class="text-body-l fw-semibold clarify-option-label">Yes</span>
+        <span class="text-body-s clarify-option-key">Y</span>
       </button>
       <button
           class="clarify-option"
           @click="select(false)"
       >
-        <span class="clarify-option-label">No</span>
-        <span class="clarify-option-key">N</span>
+        <span class="text-body-l fw-semibold clarify-option-label">No</span>
+        <span class="text-body-s clarify-option-key">N</span>
       </button>
     </div>
   </div>
@@ -56,16 +56,11 @@ onUnmounted(() => {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
 .clarify-step-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0 0 32px 0;
 }
@@ -104,15 +99,10 @@ onUnmounted(() => {
 }
 
 .clarify-option-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .clarify-option-key {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   padding: 2px 8px;
   background: var(--color-bg-secondary);

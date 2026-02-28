@@ -2,7 +2,7 @@
   <div class="clarify-panel" :class="[`clarify-panel--${mode}`]">
     <!-- Header -->
     <div class="clarify-header">
-      <h2 class="clarify-header-title">Clarify</h2>
+      <h2 class="text-h3 clarify-header-title">Clarify</h2>
       <div class="clarify-header-nav">
         <button
             v-if="canGoBack"
@@ -10,7 +10,7 @@
             @click="onBack"
             title="Back"
         >&lt;</button>
-        <span class="clarify-step-indicator">{{ currentStepNumber }}/{{ totalSteps }}</span>
+        <span class="text-body-s clarify-step-indicator">{{ currentStepNumber }}/{{ totalSteps }}</span>
         <button class="clarify-nav-btn" @click="onCancel" title="Close">×</button>
       </div>
     </div>
@@ -22,8 +22,8 @@
 
     <!-- Context - show item being processed -->
     <div class="clarify-context" v-if="stuffItem">
-      <span class="clarify-context-label">Processing:</span>
-      <span class="clarify-context-title">{{ stuffItem.title }}</span>
+      <span class="text-body-s clarify-context-label">Processing:</span>
+      <span class="text-h3 clarify-context-title">{{ stuffItem.title }}</span>
     </div>
 
     <!-- Step Content -->
@@ -65,7 +65,7 @@
       />
       <div v-else-if="state.step === ClarifyState.DONE" class="clarify-done">
         <div class="clarify-done-icon">✓</div>
-        <p class="clarify-done-text">Item processed successfully!</p>
+        <p class="text-body-m clarify-done-text">Item processed successfully!</p>
       </div>
     </div>
 
@@ -284,9 +284,6 @@ function onCancel() {
 }
 
 .clarify-header-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -317,8 +314,6 @@ function onCancel() {
 }
 
 .clarify-step-indicator {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   min-width: 28px;
   text-align: center;
@@ -345,18 +340,13 @@ function onCancel() {
 }
 
 .clarify-context-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   display: block;
   margin-bottom: 4px;
 }
 
 .clarify-context-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
   color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
 }
 
 /* Content */
@@ -389,8 +379,6 @@ function onCancel() {
 }
 
 .clarify-done-text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
 }

@@ -356,7 +356,6 @@ h2 {
 
 .agree-checkbox span {
   color: var(--color-text-secondary);
-  line-height: 150%;
 }
 
 .agree-checkbox a {

@@ -1,7 +1,7 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">Do it now</h3>
-    <p class="clarify-step-hint">{{ title }}</p>
+    <h3 class="text-h4 fw-semibold clarify-step-question">Do it now</h3>
+    <p class="text-body-m clarify-step-hint">{{ title }}</p>
 
     <div class="stopwatch">
       <span class="stopwatch-time">{{ formattedTime }}</span>
@@ -66,16 +66,11 @@ onUnmounted(() => {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
 .clarify-step-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0 0 32px 0;
 }

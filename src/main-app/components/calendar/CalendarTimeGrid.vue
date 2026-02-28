@@ -7,7 +7,7 @@
         :class="['time-grid__row', { 'time-grid__row--outside-business': !isBusinessHour(hour) }]"
         :style="{ height: hourHeight + 'px' }"
     >
-      <div class="time-grid__label">
+      <div class="text-footnote time-grid__label">
         {{ formatHour(hour) }}
       </div>
       <div class="time-grid__cell-container">
@@ -270,8 +270,6 @@ onUnmounted(() => {
   flex-shrink: 0;
   width: 64px;
   padding: 0 8px;
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
   line-height: var(--lh-none);
   color: var(--color-calendar-hour-text);
   text-align: right;

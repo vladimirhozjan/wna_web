@@ -1,7 +1,7 @@
 <template>
   <FilterLargeIcon class="filter-empty__icon" />
-  <h2 class="filter-empty__title">{{ title }}</h2>
-  <p class="filter-empty__text">Nothing tagged with "{{ tags.join(', ') }}" needs attention right now.</p>
+  <h2 class="text-h3 filter-empty__title">{{ title }}</h2>
+  <p class="text-body-m filter-empty__text">Nothing tagged with "{{ tags.join(', ') }}" needs attention right now.</p>
 </template>
 
 <script setup>
@@ -22,16 +22,11 @@ defineProps({
 }
 
 .filter-empty__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .filter-empty__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;

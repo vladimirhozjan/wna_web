@@ -1,8 +1,8 @@
 <template>
   <div class="detail-section-area comment-section">
     <div class="comment-header">
-      <label class="detail-section-label">Comments</label>
-      <span v-if="!loading && comments.length > 0" class="comment-count">{{ comments.length }} / 50</span>
+      <label class="text-body-s fw-semibold detail-section-label">Comments</label>
+      <span v-if="!loading && comments.length > 0" class="text-footnote comment-count">{{ comments.length }} / 50</span>
     </div>
 
     <!-- Loading state -->
@@ -14,7 +14,7 @@
     <template v-else>
       <!-- Empty state: clickable placeholder like Description -->
       <div v-if="comments.length === 0 && !editing" class="detail-section-wrapper">
-        <p class="detail-section-content detail-section-content--empty" @click="startEditing">Add a comment...</p>
+        <p class="text-body-m detail-section-content detail-section-content--empty" @click="startEditing">Add a comment...</p>
       </div>
 
       <!-- Add comment (always first, above comment list) -->
@@ -22,7 +22,7 @@
         <textarea
             ref="textareaRef"
             v-model="newMessage"
-            class="comment-textarea"
+            class="text-body-m comment-textarea"
             :rows="focused ? 3 : 1"
             placeholder="Add a comment..."
             :disabled="posting"
@@ -31,7 +31,7 @@
             @keyup.esc="onCancel"
         ></textarea>
         <div v-if="focused" class="comment-add-footer">
-          <span class="comment-char-count" :class="{ 'comment-char-count--warn': newMessage.length > 1800, 'comment-char-count--error': newMessage.length > 2000 }">
+          <span class="text-footnote comment-char-count" :class="{ 'comment-char-count--warn': newMessage.length > 1800, 'comment-char-count--error': newMessage.length > 2000 }">
             {{ newMessage.length }} / 2000
           </span>
           <div class="comment-add-actions">
@@ -55,7 +55,7 @@
       </div>
 
       <!-- Limit reached notice -->
-      <div v-if="atLimit" class="comment-limit-notice">
+      <div v-if="atLimit" class="text-body-s comment-limit-notice">
         Comment limit reached (50 / 50)
       </div>
 
@@ -67,9 +67,9 @@
           </div>
           <div class="comment-body">
             <div class="comment-meta">
-              <span class="comment-timestamp">{{ formatRelativeTime(comment.created_at) }}</span>
+              <span class="text-footnote comment-timestamp">{{ formatRelativeTime(comment.created_at) }}</span>
             </div>
-            <p class="comment-message">{{ comment.message }}</p>
+            <p class="text-body-m comment-message">{{ comment.message }}</p>
           </div>
         </div>
       </div>
@@ -192,9 +192,6 @@ function formatRelativeTime(dateStr) {
 /* ── Reuse detail-section styles (scoped in parent, so redeclare here) ── */
 .detail-section-label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -206,8 +203,6 @@ function formatRelativeTime(dateStr) {
 }
 
 .detail-section-content {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
@@ -241,14 +236,10 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-count {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .comment-limit-notice {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   text-align: center;
   padding: 8px 0;
@@ -309,14 +300,10 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-timestamp {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .comment-message {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   white-space: pre-wrap;
@@ -335,8 +322,6 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
@@ -371,8 +356,6 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-char-count {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 

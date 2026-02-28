@@ -67,7 +67,7 @@
     </template>
 
     <!-- Drag hint (centered overlay) -->
-    <div v-if="showHint && items.length >= 2" class="drag-hint">
+    <div v-if="showHint && items.length >= 2" class="text-body-m drag-hint">
       <span class="drag-hint__icon">↕</span>
       <span>Drag to reorder</span>
     </div>
@@ -296,8 +296,6 @@ function onNativeDragEnd() {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-tertiary);
   pointer-events: none;
   opacity: 0;

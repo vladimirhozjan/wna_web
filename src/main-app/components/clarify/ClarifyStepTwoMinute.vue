@@ -1,7 +1,7 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">Can you do this in under 2 minutes?</h3>
-    <p class="clarify-step-hint">If it's quick, just do it now instead of tracking it.</p>
+    <h3 class="text-h4 fw-semibold clarify-step-question">Can you do this in under 2 minutes?</h3>
+    <p class="text-body-m clarify-step-hint">If it's quick, just do it now instead of tracking it.</p>
 
     <div class="clarify-options">
       <button
@@ -9,20 +9,20 @@
           @click="select(true)"
       >
         <div class="clarify-option-content">
-          <span class="clarify-option-label">Yes, do it now</span>
-          <span class="clarify-option-desc">Complete it right away</span>
+          <span class="text-body-l fw-semibold clarify-option-label">Yes, do it now</span>
+          <span class="text-body-s clarify-option-desc">Complete it right away</span>
         </div>
-        <span class="clarify-option-key">Y</span>
+        <span class="text-body-s clarify-option-key">Y</span>
       </button>
       <button
           class="clarify-option"
           @click="select(false)"
       >
         <div class="clarify-option-content">
-          <span class="clarify-option-label">No, create action</span>
-          <span class="clarify-option-desc">Track it for later</span>
+          <span class="text-body-l fw-semibold clarify-option-label">No, create action</span>
+          <span class="text-body-s clarify-option-desc">Track it for later</span>
         </div>
-        <span class="clarify-option-key">N</span>
+        <span class="text-body-s clarify-option-key">N</span>
       </button>
     </div>
   </div>
@@ -63,16 +63,11 @@ onUnmounted(() => {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 8px 0;
 }
 
 .clarify-step-hint {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0 0 32px 0;
 }
@@ -118,21 +113,14 @@ onUnmounted(() => {
 }
 
 .clarify-option-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .clarify-option-desc {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 
 .clarify-option-key {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
   padding: 2px 8px;
   background: var(--color-bg-secondary);

@@ -3,7 +3,7 @@
 
     <section class="section">
       <div class="section-inner">
-        <router-link to="/help" class="back-link text-body-s">
+        <router-link to="/help" class="text-body-s fw-medium back-link">
           <ChevronLeftIcon class="back-link__icon" />
           Back to Help
         </router-link>
@@ -72,7 +72,6 @@ function onSuccessPasswordReset() { authMode.value = null; router.push({ name: '
   gap: 4px;
   color: var(--color-action);
   text-decoration: none;
-  font-weight: var(--font-weight-medium);
   min-height: 44px;
 }
 

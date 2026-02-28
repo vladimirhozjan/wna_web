@@ -5,14 +5,14 @@
       <!-- Header -->
       <div class="detail-header">
         <div class="detail-header-left">
-          <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
+          <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
+          <span class="text-body-s detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
         <div v-if="item" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
-            <span class="detail-position">
+            <span class="text-body-s detail-position">
               <span class="detail-nav-spinner" v-if="navigating"></span>
               {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
@@ -38,7 +38,7 @@
               <span class="detail-spinner"></span>
             </div>
             <h2
-                class="detail-title"
+                class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
                 @click="startEdit('title', item.title)"
             >{{ item.title }}</h2>
@@ -46,7 +46,7 @@
                 v-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editValue"
-                class="detail-title-input"
+                class="text-h2 detail-title-input"
                 :disabled="savingField === 'title'"
                 @keydown.enter.prevent="saveField('title')"
                 @keyup.esc="cancelEdit"
@@ -126,11 +126,11 @@
 
         <!-- Description area -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Description</label>
+          <label class="text-body-s fw-semibold detail-section-label">Description</label>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'description'"
-                class="detail-section-content"
+                class="text-body-m detail-section-content"
                 :class="{ 'detail-section-content--empty': !item.description }"
                 @click="startEdit('description', item.description || '')"
             >{{ item.description || 'Add a description...' }}</p>
@@ -138,7 +138,7 @@
                 v-else
                 ref="descriptionInput"
                 v-model="editValue"
-                class="detail-section-textarea"
+                class="text-body-m detail-section-textarea"
                 :disabled="savingField === 'description'"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('description')"
@@ -173,13 +173,13 @@
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Created</span>
-            <span class="detail-metadata-value">{{ formatDate(item.created) }}</span>
+            <span class="text-footnote detail-metadata-label">Created</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(item.created) }}</span>
           </span>
-          <span class="detail-metadata-separator">·</span>
+          <span class="text-footnote detail-metadata-separator">·</span>
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Updated</span>
-            <span class="detail-metadata-value">{{ formatDate(item.updated) }}</span>
+            <span class="text-footnote detail-metadata-label">Updated</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(item.updated) }}</span>
           </span>
         </div>
 
@@ -775,8 +775,6 @@ async function onActivate() {
 }
 
 .detail-back-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-link-text);
   cursor: pointer;
   padding: 4px 8px;
@@ -790,8 +788,6 @@ async function onActivate() {
 
 .detail-position {
   position: relative;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   min-width: 60px;
   text-align: center;
@@ -837,8 +833,6 @@ async function onActivate() {
 /* ── Meta (State / Type) ── */
 
 .detail-meta-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
   display: inline-flex;
@@ -889,9 +883,6 @@ async function onActivate() {
 }
 
 .detail-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -921,9 +912,6 @@ async function onActivate() {
   top: 0;
   left: 0;
   right: 0;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -957,9 +945,6 @@ async function onActivate() {
 
 .detail-section-label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -971,8 +956,6 @@ async function onActivate() {
 }
 
 .detail-section-content {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
@@ -996,8 +979,6 @@ async function onActivate() {
 }
 
 .detail-section-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
@@ -1039,20 +1020,15 @@ async function onActivate() {
 }
 
 .detail-metadata-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .detail-metadata-value {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
 }
 
 .detail-metadata-separator {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-footnote);
 }
 
 .detail-section-textarea:disabled,

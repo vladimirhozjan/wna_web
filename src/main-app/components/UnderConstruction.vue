@@ -2,8 +2,8 @@
   <div class="under-construction-page">
     <div class="under-construction">
       <div class="top-segment">
-        <h1 class="title">Under Construction</h1>
-        <p class="subtitle">
+        <h1 class="text-h2 title">Under Construction</h1>
+        <p class="text-subtitle subtitle">
           We're building a GTD-inspired productivity platform. Please come back later to check the progress.
         </p>
       </div>
@@ -46,15 +46,10 @@
 }
 
 .title {
-  font-family: var(--font-family-default),serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .subtitle {
-  font-size: var(--font-size-subtitle);
-  font-family: var(--font-family-default),serif;
   color: var(--color-text-primary);
 }
 

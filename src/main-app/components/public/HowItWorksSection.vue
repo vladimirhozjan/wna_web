@@ -62,7 +62,6 @@ const steps = [
   border-radius: 50%;
   background: var(--color-action);
   color: var(--color-text-inverse);
-  font-family: var(--font-family-default), serif;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   display: flex;

@@ -3,17 +3,17 @@
     <Transition name="fade">
       <div v-if="move.state.visible" class="overlay" @click.self="move.close">
         <div class="dialog">
-          <h3 class="title">{{ move.state.title }}</h3>
+          <h3 class="text-h3 title">{{ move.state.title }}</h3>
 
           <!-- Schedule Modal -->
           <template v-if="move.state.type === 'schedule'">
             <div class="form-group">
-              <label class="label">Date</label>
+              <label class="text-body-s fw-medium label">Date</label>
               <input
                   ref="dateInput"
                   type="date"
                   v-model="move.state.date"
-                  class="input"
+                  class="text-body-m input"
                   @keyup.enter="onConfirm"
                   @keyup.esc="move.close"
               />
@@ -22,14 +22,14 @@
               <div class="time-toggle">
                 <span
                     v-if="!move.state.showTime"
-                    class="link"
+                    class="text-body-s link"
                     @click="enableTime"
                 >Add time</span>
                 <template v-else>
                   <input
                       type="time"
                       v-model="move.state.time"
-                      class="input input--time"
+                      class="text-body-m input input--time"
                       @keyup.enter="onConfirm"
                       @keyup.esc="move.close"
                   />
@@ -37,13 +37,13 @@
                     <input
                         type="number"
                         v-model.number="move.state.duration"
-                        class="input input--duration"
+                        class="text-body-m input input--duration"
                         min="5"
                         step="5"
                         @keyup.enter="onConfirm"
                         @keyup.esc="move.close"
                     />
-                    <span class="duration-label">min</span>
+                    <span class="text-body-s duration-label">min</span>
                   </div>
                 </template>
               </div>
@@ -57,7 +57,7 @@
                   ref="waitingInput"
                   type="text"
                   v-model="move.state.waitingFor"
-                  class="input"
+                  class="text-body-m input"
                   placeholder="e.g., Sarah from Legal"
                   @keyup.enter="onConfirm"
                   @keyup.esc="move.close"
@@ -71,7 +71,7 @@
               <textarea
                   ref="outcomeInput"
                   v-model="move.state.outcome"
-                  class="input input--textarea"
+                  class="text-body-m input input--textarea"
                   placeholder="Describe the successful outcome..."
                   rows="3"
                   @keyup.esc="move.close"
@@ -177,9 +177,6 @@ watch(() => move.state.visible, (visible) => {
 
 .title {
   margin: 0 0 16px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -189,17 +186,12 @@ watch(() => move.state.visible, (visible) => {
 
 .label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
   margin-bottom: 6px;
 }
 
 .input {
   width: 100%;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 10px 12px;
   border: 1px solid var(--color-input-border);
@@ -235,8 +227,6 @@ watch(() => move.state.visible, (visible) => {
 }
 
 .link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
 }
@@ -253,8 +243,6 @@ watch(() => move.state.visible, (visible) => {
 }
 
 .duration-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 

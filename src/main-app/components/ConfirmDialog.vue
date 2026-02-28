@@ -3,8 +3,8 @@
     <Transition name="fade">
       <div v-if="confirm.state.visible" class="overlay" @click.self="confirm.state.onCancel">
         <div class="dialog">
-          <h3 class="title">{{ confirm.state.title }}</h3>
-          <p class="message">{{ confirm.state.message }}</p>
+          <h3 class="text-body-l fw-semibold title">{{ confirm.state.title }}</h3>
+          <p class="text-body-m message">{{ confirm.state.message }}</p>
           <div class="actions">
             <Btn variant="secondary" size="sm" @click="confirm.state.onCancel">
               {{ confirm.state.cancelText }}
@@ -49,16 +49,11 @@ const confirm = confirmModel()
 
 .title {
   margin: 0 0 12px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .message {
   margin: 0 0 20px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   line-height: var(--lh-relaxed);
 }

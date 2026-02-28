@@ -23,8 +23,8 @@
           <template #actions><span></span></template>
           <template #empty>
             <CompletedIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">No completed items</h2>
-            <p class="empty-state__text">
+            <h2 class="text-h3 empty-state__title">No completed items</h2>
+            <p class="text-body-m empty-state__text">
               Items you complete will appear here. You can restore them or move them to trash.
             </p>
           </template>
@@ -164,16 +164,11 @@ async function onItemCheck(id, checked) {
 }
 
 .empty-state__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-state__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;

@@ -1,6 +1,6 @@
 <template>
   <div :class="['tier', { 'tier--featured': featured }]">
-    <span v-if="featured" class="tier__badge text-body-s">Most Popular</span>
+    <span v-if="featured" class="text-body-s fw-semibold tier__badge">Most Popular</span>
 
     <h3 class="text-h4 tier__name">{{ name }}</h3>
 
@@ -9,9 +9,9 @@
         <span class="text-display">Free</span>
       </template>
       <template v-else>
-        <span class="tier__currency">€</span>
+        <span class="text-h2 tier__currency">€</span>
         <span class="text-display">{{ price }}</span>
-        <span class="tier__period">/{{ period === 'year' ? 'mo' : 'month' }}</span>
+        <span class="text-body-m tier__period">/{{ period === 'year' ? 'mo' : 'month' }}</span>
       </template>
     </div>
 
@@ -81,7 +81,6 @@ defineEmits(['cta-click'])
   color: var(--color-text-inverse);
   padding: 4px 16px;
   border-radius: 20px;
-  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
 }
 
@@ -99,20 +98,14 @@ defineEmits(['cta-click'])
 }
 
 .tier__price .text-display {
-  font-size: var(--font-size-display);
-  line-height: var(--lh-display);
-  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
 }
 
 .tier__currency {
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
 .tier__period {
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
 }
 

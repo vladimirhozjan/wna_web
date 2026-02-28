@@ -1,20 +1,20 @@
 <template>
   <div class="clarify-step">
-    <h3 class="clarify-step-question">Confirm</h3>
+    <h3 class="text-h4 fw-semibold clarify-step-question">Confirm</h3>
 
     <div class="clarify-summary">
-      <div class="clarify-summary-action">{{ summary.action }}</div>
-      <p class="clarify-summary-description">{{ summary.description }}</p>
+      <div class="text-body-l fw-semibold clarify-summary-action">{{ summary.action }}</div>
+      <p class="text-body-m clarify-summary-description">{{ summary.description }}</p>
 
       <!-- Show details for action/project -->
       <div v-if="summary.details" class="clarify-summary-details">
         <div v-if="summary.details.dueDate" class="clarify-detail-item">
-          <span class="clarify-detail-label">Due date:</span>
-          <span class="clarify-detail-value">{{ formatDate(summary.details.dueDate) }}</span>
+          <span class="text-body-s clarify-detail-label">Due date:</span>
+          <span class="text-body-s clarify-detail-value">{{ formatDate(summary.details.dueDate) }}</span>
         </div>
         <div v-if="summary.details.deferUntil" class="clarify-detail-item">
-          <span class="clarify-detail-label">Defer until:</span>
-          <span class="clarify-detail-value">{{ formatDate(summary.details.deferUntil) }}</span>
+          <span class="text-body-s clarify-detail-label">Defer until:</span>
+          <span class="text-body-s clarify-detail-value">{{ formatDate(summary.details.deferUntil) }}</span>
         </div>
       </div>
     </div>
@@ -67,9 +67,6 @@ function formatDate(dateStr) {
 }
 
 .clarify-step-question {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h4);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   margin: 0 0 24px 0;
 }
@@ -82,16 +79,11 @@ function formatDate(dateStr) {
 }
 
 .clarify-summary-action {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-action);
   margin-bottom: 8px;
 }
 
 .clarify-summary-description {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -110,14 +102,10 @@ function formatDate(dateStr) {
 }
 
 .clarify-detail-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-tertiary);
 }
 
 .clarify-detail-value {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
 }
 

@@ -5,8 +5,8 @@
       <!-- Header -->
       <div class="detail-header">
         <div class="detail-header-left">
-          <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">Calendar</span>
+          <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
+          <span class="text-body-s detail-meta-link" @click="goBack">Calendar</span>
         </div>
       </div>
 
@@ -27,7 +27,7 @@
             </div>
             <h2
                 v-if="!isCreate"
-                class="detail-title"
+                class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title' }"
                 @click="startEdit('title', template.title)"
             >{{ template.title }}</h2>
@@ -35,7 +35,7 @@
                 v-if="isCreate"
                 ref="titleInput"
                 v-model="createData.title"
-                class="detail-title-input detail-title-input--create"
+                class="text-h2 detail-title-input detail-title-input--create"
                 placeholder="Template title"
                 @input="autoResizeTitle"
                 rows="1"
@@ -44,7 +44,7 @@
                 v-else-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editTitle"
-                class="detail-title-input"
+                class="text-h2 detail-title-input"
                 :disabled="savingField === 'title'"
                 @keydown.enter.prevent="saveField('title')"
                 @keyup.esc="cancelEdit"
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Active instance badge -->
-        <div v-if="!isCreate && template.active_instance_id" class="detail-instance-badge" @click="goToInstance">
+        <div v-if="!isCreate && template.active_instance_id" class="text-body-s detail-instance-badge" @click="goToInstance">
           <ActionIcon class="detail-instance-badge__icon" />
           <span>Active instance</span>
         </div>
@@ -97,12 +97,12 @@
 
         <!-- Description area -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Description</label>
+          <label class="text-body-s fw-semibold detail-section-label">Description</label>
           <div class="detail-section-wrapper">
             <template v-if="isCreate">
               <textarea
                   v-model="createData.description"
-                  class="detail-section-textarea"
+                  class="text-body-m detail-section-textarea"
                   placeholder="Add a description..."
                   rows="1"
               ></textarea>
@@ -110,7 +110,7 @@
             <template v-else>
               <p
                   v-if="editingField !== 'description'"
-                  class="detail-section-content"
+                  class="text-body-m detail-section-content"
                   :class="{ 'detail-section-content--empty': !template.description }"
                   @click="startEdit('description', template.description || '')"
               >{{ template.description || 'Add a description...' }}</p>
@@ -118,7 +118,7 @@
                   v-else
                   ref="descriptionInput"
                   v-model="editValue"
-                  class="detail-section-textarea"
+                  class="text-body-m detail-section-textarea"
                   :disabled="savingField === 'description'"
                   @keyup.esc="cancelEdit"
                   @blur="saveField('description')"
@@ -134,7 +134,7 @@
 
         <!-- Recurrence rule -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Recurrence</label>
+          <label class="text-body-s fw-semibold detail-section-label">Recurrence</label>
           <div class="detail-section-wrapper">
             <RecurrenceInput
                 v-if="isCreate"
@@ -151,13 +151,13 @@
 
         <!-- Scheduled time -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Scheduled time</label>
+          <label class="text-body-s fw-semibold detail-section-label">Scheduled time</label>
           <div class="detail-section-wrapper">
             <div class="detail-date-inputs">
               <input
                   type="time"
                   :value="isCreate ? createData.scheduled_time : template.scheduled_time"
-                  class="detail-input detail-input--time"
+                  class="text-body-m detail-input detail-input--time"
                   :disabled="!isCreate && savingField === 'time'"
                   @change="onTimeChanged($event.target.value)"
               />
@@ -165,14 +165,14 @@
                 <input
                     type="number"
                     :value="isCreate ? createData.scheduled_duration : template.scheduled_duration"
-                    class="detail-input detail-input--duration"
+                    class="text-body-m detail-input detail-input--duration"
                     min="5"
                     step="5"
                     placeholder="min"
                     :disabled="!isCreate && savingField === 'time'"
                     @change="onDurationChanged(Number($event.target.value))"
                 />
-                <span class="detail-duration-label">min</span>
+                <span class="text-body-s detail-duration-label">min</span>
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@
 
         <!-- Tags section -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Tags</label>
+          <label class="text-body-s fw-semibold detail-section-label">Tags</label>
           <div class="detail-section-wrapper">
             <template v-if="isCreate">
               <TagInput v-model="createData.tags" />
@@ -188,9 +188,9 @@
             <template v-else>
               <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
                 <span v-if="template.tags && template.tags.length > 0" class="detail-tags-chips">
-                  <span v-for="tag in template.tags" :key="tag" class="detail-tag-chip">{{ tag }}</span>
+                  <span v-for="tag in template.tags" :key="tag" class="text-body-s detail-tag-chip">{{ tag }}</span>
                 </span>
-                <span v-else class="detail-section-content detail-section-content--empty">Add tags...</span>
+                <span v-else class="text-body-m detail-section-content detail-section-content--empty">Add tags...</span>
               </div>
               <template v-else>
                 <TagInput v-model="editTags" :disabled="savingField === 'tags'" />
@@ -205,22 +205,22 @@
 
         <!-- Next occurrence (edit mode only) -->
         <div v-if="!isCreate && template.next_occurrence" class="detail-section-area">
-          <label class="detail-section-label">Next occurrence</label>
+          <label class="text-body-s fw-semibold detail-section-label">Next occurrence</label>
           <div class="detail-section-wrapper">
-            <p class="detail-section-content detail-section-content--readonly">{{ formatDate(template.next_occurrence) }}</p>
+            <p class="text-body-m detail-section-content detail-section-content--readonly">{{ formatDate(template.next_occurrence) }}</p>
           </div>
         </div>
 
         <!-- Metadata (edit mode) -->
         <div v-if="!isCreate" class="detail-metadata">
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Created</span>
-            <span class="detail-metadata-value">{{ formatDate(template.created) }}</span>
+            <span class="text-footnote detail-metadata-label">Created</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(template.created) }}</span>
           </span>
-          <span class="detail-metadata-separator">&middot;</span>
+          <span class="text-footnote detail-metadata-separator">&middot;</span>
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Updated</span>
-            <span class="detail-metadata-value">{{ formatDate(template.updated) }}</span>
+            <span class="text-footnote detail-metadata-label">Updated</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(template.updated) }}</span>
           </span>
         </div>
 
@@ -559,8 +559,6 @@ function formatDate(dateStr) {
 }
 
 .detail-back-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-link-text);
   cursor: pointer;
   padding: 4px 8px;
@@ -573,8 +571,6 @@ function formatDate(dateStr) {
 }
 
 .detail-meta-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
   display: inline-flex;
@@ -637,9 +633,6 @@ function formatDate(dateStr) {
 }
 
 .detail-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -663,9 +656,6 @@ function formatDate(dateStr) {
   top: 0;
   left: 0;
   right: 0;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -698,8 +688,6 @@ function formatDate(dateStr) {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
 }
@@ -732,9 +720,6 @@ function formatDate(dateStr) {
 
 .detail-section-label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -746,8 +731,6 @@ function formatDate(dateStr) {
 }
 
 .detail-section-content {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
@@ -779,8 +762,6 @@ function formatDate(dateStr) {
 }
 
 .detail-section-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
@@ -814,8 +795,6 @@ function formatDate(dateStr) {
 }
 
 .detail-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 8px 12px;
   border: 1px solid var(--color-input-border);
@@ -850,8 +829,6 @@ function formatDate(dateStr) {
 }
 
 .detail-duration-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 
@@ -882,8 +859,6 @@ function formatDate(dateStr) {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   line-height: var(--lh-normal);
 }
@@ -905,20 +880,15 @@ function formatDate(dateStr) {
 }
 
 .detail-metadata-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .detail-metadata-value {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
 }
 
 .detail-metadata-separator {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-footnote);
 }
 
 /* ── Spinners ── */

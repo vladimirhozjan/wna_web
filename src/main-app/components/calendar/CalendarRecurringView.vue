@@ -45,8 +45,8 @@
           <svg class="recurring-view__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
           </svg>
-          <h2 class="empty-state__title">No recurring templates</h2>
-          <p class="empty-state__text">
+          <h2 class="text-h3 empty-state__title">No recurring templates</h2>
+          <p class="text-body-m empty-state__text">
             Create recurring templates to automatically schedule actions on a repeating basis.
           </p>
         </template>
@@ -207,16 +207,11 @@ async function onDelete(id) {
 }
 
 .empty-state__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-state__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;

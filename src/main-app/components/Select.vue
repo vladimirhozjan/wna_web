@@ -2,7 +2,7 @@
   <div class="select-wrapper" ref="wrapperRef">
     <button
         type="button"
-        class="select-trigger"
+        class="text-body-m select-trigger"
         :class="{ 'select-trigger--open': isOpen }"
         @click="toggle"
     >
@@ -23,7 +23,7 @@
               v-for="option in options"
               :key="option.value"
               type="button"
-              class="select-option"
+              class="text-body-m select-option"
               :class="{ 'select-option--selected': option.value === modelValue }"
               @click="select(option.value)"
           >
@@ -37,7 +37,7 @@
         <div class="select-sheet-overlay" @click="close">
           <div class="select-sheet" @click.stop>
             <div class="select-sheet-header">
-              <span class="select-sheet-title">{{ title }}</span>
+              <span class="text-body-l fw-semibold select-sheet-title">{{ title }}</span>
               <button type="button" class="select-sheet-close" @click="close">&times;</button>
             </div>
             <div class="select-sheet-options">
@@ -45,7 +45,7 @@
                   v-for="option in options"
                   :key="option.value"
                   type="button"
-                  class="select-sheet-option"
+                  class="text-body-l select-sheet-option"
                   :class="{ 'select-sheet-option--selected': option.value === modelValue }"
                   @click="select(option.value)"
               >
@@ -166,8 +166,6 @@ onUnmounted(() => {
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   border-radius: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
   min-width: 100px;
@@ -220,8 +218,6 @@ onUnmounted(() => {
   background: none;
   border: none;
   text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -274,9 +270,6 @@ onUnmounted(() => {
 }
 
 .select-sheet-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 
@@ -308,8 +301,6 @@ onUnmounted(() => {
   background: none;
   border: none;
   text-align: left;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-l);
   color: var(--color-text-primary);
   cursor: pointer;
 }

@@ -5,14 +5,14 @@
       <!-- Header -->
       <div class="detail-header">
         <div class="detail-header-left">
-          <a class="detail-back-link" @click="goBack">&lt;</a>
-          <span class="detail-meta-link" @click="goBack">{{ backLabel }}</span>
+          <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
+          <span class="text-body-s detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
         <div v-if="action && !fromCalendar && !fromProject && !fromRecurring && !fromEngage" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
-            <span class="detail-position">
+            <span class="text-body-s detail-position">
               <span class="detail-nav-spinner" v-if="navigating"></span>
               {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
@@ -38,7 +38,7 @@
               <span class="detail-spinner"></span>
             </div>
             <h2
-                class="detail-title"
+                class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
                 @click="startEdit('title', action.title)"
             >{{ action.title }}</h2>
@@ -46,7 +46,7 @@
                 v-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editValue"
-                class="detail-title-input"
+                class="text-h2 detail-title-input"
                 :disabled="savingField === 'title'"
                 @keydown.enter.prevent="saveField('title')"
                 @keyup.esc="cancelEdit"
@@ -58,7 +58,7 @@
         </div>
 
         <!-- Recurring indicator -->
-        <div v-if="action.recurring_parent_id" class="detail-recurring-badge" @click="goToRecurring">
+        <div v-if="action.recurring_parent_id" class="text-body-s detail-recurring-badge" @click="goToRecurring">
           <svg class="detail-recurring-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
           </svg>
@@ -66,7 +66,7 @@
         </div>
 
         <!-- Weekly Review link -->
-        <div v-if="action.recurring_parent_id && action.recurring_parent_id === reviewTemplateId" class="detail-review-badge" @click="goToReview">
+        <div v-if="action.recurring_parent_id && action.recurring_parent_id === reviewTemplateId" class="text-body-s detail-review-badge" @click="goToReview">
           <ReviewIcon class="detail-review-badge__icon" />
           <span>Start Weekly Review</span>
         </div>
@@ -159,9 +159,9 @@
 
         <!-- Project section (if action belongs to a project) -->
         <div v-if="action.project" class="detail-section-area">
-          <label class="detail-section-label">Project</label>
+          <label class="text-body-s fw-semibold detail-section-label">Project</label>
           <div class="detail-section-wrapper">
-            <a class="detail-project-link" @click="goToProject">
+            <a class="text-body-m detail-project-link" @click="goToProject">
               <ProjectsIcon class="detail-project-link__icon" />
               <span>{{ action.project.title || 'View project' }}</span>
             </a>
@@ -170,11 +170,11 @@
 
         <!-- Description area -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Description</label>
+          <label class="text-body-s fw-semibold detail-section-label">Description</label>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'description'"
-                class="detail-section-content"
+                class="text-body-m detail-section-content"
                 :class="{ 'detail-section-content--empty': !action.description }"
                 @click="startEdit('description', action.description || '')"
             >{{ action.description || 'Add a description...' }}</p>
@@ -182,7 +182,7 @@
                 v-else
                 ref="descriptionInput"
                 v-model="editValue"
-                class="detail-section-textarea"
+                class="text-body-m detail-section-textarea"
                 :disabled="savingField === 'description'"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('description')"
@@ -210,13 +210,13 @@
 
         <!-- Tags section -->
         <div class="detail-section-area">
-          <label class="detail-section-label">Tags</label>
+          <label class="text-body-s fw-semibold detail-section-label">Tags</label>
           <div class="detail-section-wrapper">
             <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
               <span v-if="action.tags && action.tags.length > 0" class="detail-tags-chips">
-                <span v-for="tag in action.tags" :key="tag" class="detail-tag-chip">{{ tag }}</span>
+                <span v-for="tag in action.tags" :key="tag" class="text-body-s detail-tag-chip">{{ tag }}</span>
               </span>
-              <span v-else class="detail-section-content detail-section-content--empty">Add tags...</span>
+              <span v-else class="text-body-m detail-section-content detail-section-content--empty">Add tags...</span>
             </div>
             <template v-else>
               <TagInput
@@ -246,9 +246,9 @@
 
         <!-- Waiting For section (only for WAITING state) -->
         <div v-if="isWaiting" class="detail-section-area">
-          <label class="detail-section-label">Waiting on</label>
+          <label class="text-body-s fw-semibold detail-section-label">Waiting on</label>
           <div class="detail-section-wrapper">
-            <p class="detail-section-content">
+            <p class="text-body-m detail-section-content">
               <span class="detail-waiting-for">{{ action.waiting_for || 'Unknown' }}</span>
               <span v-if="action.waiting_since" class="detail-waiting-since">{{ formatWaitingDuration(action.waiting_since) }}</span>
             </p>
@@ -258,20 +258,20 @@
         <!-- Dates Section (collapsible) -->
         <div class="detail-section-area">
           <div class="detail-section-header" @click="toggleDatesSection">
-            <label class="detail-section-label">Dates</label>
-            <span v-if="!datesExpanded && !hasAnyDate" class="detail-section-content detail-section-content--empty detail-section-content--inline">Add dates...</span>
-            <span v-else-if="!datesExpanded" class="detail-section-content detail-section-content--inline">{{ datesSummary }}</span>
-            <span class="detail-section-toggle">{{ datesExpanded ? '▼' : '▶' }}</span>
+            <label class="text-body-s fw-semibold detail-section-label">Dates</label>
+            <span v-if="!datesExpanded && !hasAnyDate" class="text-body-m detail-section-content detail-section-content--empty detail-section-content--inline">Add dates...</span>
+            <span v-else-if="!datesExpanded" class="text-body-m detail-section-content detail-section-content--inline">{{ datesSummary }}</span>
+            <span class="text-footnote detail-section-toggle">{{ datesExpanded ? '▼' : '▶' }}</span>
           </div>
 
           <div v-if="datesExpanded" class="detail-dates-grid">
             <!-- Deferred: Start Date OR Scheduled Date (mutually exclusive) -->
             <div class="detail-date-row">
-              <label class="detail-date-label">Deferred</label>
+              <label class="text-body-s fw-semibold detail-date-label">Deferred</label>
               <!-- Display mode -->
               <div v-if="editingField !== 'deferred'" class="detail-section-wrapper">
                 <p
-                    class="detail-section-content"
+                    class="text-body-m detail-section-content"
                     :class="{ 'detail-section-content--empty': !hasDeferredDate }"
                     @click="startDeferredEdit"
                 >{{ deferredDisplay }}</p>
@@ -279,11 +279,11 @@
               <!-- Edit mode -->
               <div v-else class="detail-date-edit-wrapper">
                 <div class="detail-date-type-selector">
-                  <label class="detail-date-radio">
+                  <label class="text-body-m detail-date-radio">
                     <input type="radio" v-model="dateEdit.deferType" value="scheduled" :disabled="savingField === 'deferred'" />
                     <span>Scheduled for</span>
                   </label>
-                  <label class="detail-date-radio">
+                  <label class="text-body-m detail-date-radio">
                     <input type="radio" v-model="dateEdit.deferType" value="start" :disabled="savingField === 'deferred'" />
                     <span>Start after</span>
                   </label>
@@ -293,16 +293,16 @@
                       ref="deferredDateInput"
                       type="date"
                       v-model="dateEdit.date"
-                      class="detail-input"
+                      class="text-body-m detail-input"
                       :disabled="savingField === 'deferred'"
                       @keyup.esc="cancelEdit"
                   />
-                  <span v-if="!dateEdit.showTime" class="detail-link" @click="dateEdit.showTime = true">Add time</span>
+                  <span v-if="!dateEdit.showTime" class="text-body-s detail-link" @click="dateEdit.showTime = true">Add time</span>
                   <template v-else>
                     <input
                         type="time"
                         v-model="dateEdit.time"
-                        class="detail-input detail-input--time"
+                        class="text-body-m detail-input detail-input--time"
                         :disabled="savingField === 'deferred'"
                         @keyup.esc="cancelEdit"
                     />
@@ -310,13 +310,13 @@
                       <input
                           type="number"
                           v-model.number="dateEdit.duration"
-                          class="detail-input detail-input--duration"
+                          class="text-body-m detail-input detail-input--duration"
                           min="5"
                           step="5"
                           :disabled="savingField === 'deferred'"
                           @keyup.esc="cancelEdit"
                       />
-                      <span class="detail-duration-label">min</span>
+                      <span class="text-body-s detail-duration-label">min</span>
                     </div>
                   </template>
                 </div>
@@ -330,11 +330,11 @@
 
             <!-- Due Date -->
             <div class="detail-date-row">
-              <label class="detail-date-label">Due</label>
+              <label class="text-body-s fw-semibold detail-date-label">Due</label>
               <!-- Display mode -->
               <div v-if="editingField !== 'due_date'" class="detail-section-wrapper">
                 <p
-                    class="detail-section-content"
+                    class="text-body-m detail-section-content"
                     :class="{ 'detail-section-content--empty': !action.due_date }"
                     @click="startDateEdit('due_date')"
                 >{{ formatDateTimeDisplay(action.due_date, action.due_time) || 'Not set' }}</p>
@@ -346,16 +346,16 @@
                       ref="dueDateInput"
                       type="date"
                       v-model="dateEdit.date"
-                      class="detail-input"
+                      class="text-body-m detail-input"
                       :disabled="savingField === 'due_date'"
                       @keyup.esc="cancelEdit"
                   />
-                  <span v-if="!dateEdit.showTime" class="detail-link" @click="dateEdit.showTime = true">Add time</span>
+                  <span v-if="!dateEdit.showTime" class="text-body-s detail-link" @click="dateEdit.showTime = true">Add time</span>
                   <input
                       v-else
                       type="time"
                       v-model="dateEdit.time"
-                      class="detail-input detail-input--time"
+                      class="text-body-m detail-input detail-input--time"
                       :disabled="savingField === 'due_date'"
                       @keyup.esc="cancelEdit"
                   />
@@ -379,13 +379,13 @@
         <!-- Metadata section -->
         <div class="detail-metadata">
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Created</span>
-            <span class="detail-metadata-value">{{ formatDate(action.created) }}</span>
+            <span class="text-footnote detail-metadata-label">Created</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(action.created) }}</span>
           </span>
-          <span class="detail-metadata-separator">·</span>
+          <span class="text-footnote detail-metadata-separator">·</span>
           <span class="detail-metadata-item">
-            <span class="detail-metadata-label">Updated</span>
-            <span class="detail-metadata-value">{{ formatDate(action.updated) }}</span>
+            <span class="text-footnote detail-metadata-label">Updated</span>
+            <span class="text-footnote detail-metadata-value">{{ formatDate(action.updated) }}</span>
           </span>
         </div>
 
@@ -1344,8 +1344,6 @@ async function onActivate() {
 }
 
 .detail-back-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-link-text);
   cursor: pointer;
   padding: 4px 8px;
@@ -1359,8 +1357,6 @@ async function onActivate() {
 
 .detail-position {
   position: relative;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   min-width: 60px;
   text-align: center;
@@ -1406,8 +1402,6 @@ async function onActivate() {
 /* ── Meta (State) ── */
 
 .detail-meta-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
   display: inline-flex;
@@ -1458,9 +1452,6 @@ async function onActivate() {
 }
 
 .detail-title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -1490,9 +1481,6 @@ async function onActivate() {
   top: 0;
   left: 0;
   right: 0;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h2);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
   padding: 5px 0;
@@ -1521,8 +1509,6 @@ async function onActivate() {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
 }
@@ -1545,8 +1531,6 @@ async function onActivate() {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
 }
@@ -1579,9 +1563,6 @@ async function onActivate() {
 
 .detail-section-label {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -1593,8 +1574,6 @@ async function onActivate() {
 }
 
 .detail-section-content {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   margin: 0;
   cursor: pointer;
@@ -1618,8 +1597,6 @@ async function onActivate() {
 }
 
 .detail-section-textarea {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
@@ -1664,7 +1641,6 @@ async function onActivate() {
 }
 
 .detail-section-toggle {
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
   margin-left: auto;
 }
@@ -1695,9 +1671,6 @@ async function onActivate() {
 }
 
 .detail-date-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
 }
 
@@ -1716,8 +1689,6 @@ async function onActivate() {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -1737,8 +1708,6 @@ async function onActivate() {
 }
 
 .detail-input {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-primary);
   padding: 8px 12px;
   border: 1px solid var(--color-input-border);
@@ -1773,14 +1742,10 @@ async function onActivate() {
 }
 
 .detail-duration-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-secondary);
 }
 
 .detail-link {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-link-text);
   cursor: pointer;
   padding: 8px 0;
@@ -1812,20 +1777,15 @@ async function onActivate() {
 }
 
 .detail-metadata-label {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-tertiary);
 }
 
 .detail-metadata-value {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-secondary);
 }
 
 .detail-metadata-separator {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-footnote);
 }
 
 .detail-section-textarea:disabled,
@@ -1949,8 +1909,6 @@ async function onActivate() {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   line-height: var(--lh-normal);
 }
@@ -1975,8 +1933,6 @@ async function onActivate() {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-link-text);
   cursor: pointer;
   padding: 4px 0;

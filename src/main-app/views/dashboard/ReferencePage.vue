@@ -34,10 +34,10 @@
           <!-- Empty state -->
           <div v-else-if="!model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0" class="ref-empty">
             <ReferenceIcon class="empty-state__icon" />
-            <h2 class="empty-state__title">
+            <h2 class="text-h3 empty-state__title">
               {{ model.searchQuery.value ? 'No results found' : 'No files yet' }}
             </h2>
-            <p class="empty-state__text">
+            <p class="text-body-m empty-state__text">
               {{ model.searchQuery.value ? 'Try a different search term.' : 'Upload files or create folders to organize your reference material.' }}
             </p>
           </div>
@@ -83,12 +83,12 @@
               class="upload-item"
               :class="{ 'upload-item--error': upload.status === 'error' }"
           >
-            <span class="upload-item__name">{{ upload.name }}</span>
+            <span class="text-body-s upload-item__name">{{ upload.name }}</span>
             <div v-if="upload.status === 'uploading'" class="upload-item__bar">
               <div class="upload-item__fill" :style="{ width: upload.progress + '%' }"></div>
             </div>
-            <span v-else-if="upload.status === 'done'" class="upload-item__done">Done</span>
-            <span v-else-if="upload.status === 'error'" class="upload-item__error">{{ upload.error }}</span>
+            <span v-else-if="upload.status === 'done'" class="text-footnote fw-medium upload-item__done">Done</span>
+            <span v-else-if="upload.status === 'error'" class="text-footnote upload-item__error">{{ upload.error }}</span>
           </div>
         </div>
       </template>
@@ -114,20 +114,20 @@
         <!-- Empty trash -->
         <div v-else-if="!trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-empty">
           <TrashIcon class="empty-state__icon" />
-          <h2 class="empty-state__title">Trash is empty</h2>
-          <p class="empty-state__text">
+          <h2 class="text-h3 empty-state__title">Trash is empty</h2>
+          <p class="text-body-m empty-state__text">
             Files you delete will appear here. You can restore them or permanently delete them.
           </p>
         </div>
 
         <!-- Trash file list -->
         <div v-else class="trash-list">
-          <table class="trash-table">
+          <table class="text-body-m trash-table">
             <thead>
               <tr>
-                <th class="col-name">Name</th>
-                <th class="col-size">Size</th>
-                <th class="col-actions">Actions</th>
+                <th class="text-body-s fw-medium col-name">Name</th>
+                <th class="text-body-s fw-medium col-size">Size</th>
+                <th class="text-body-s fw-medium col-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -464,16 +464,11 @@ function formatSize(bytes) {
 }
 
 .empty-state__title {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-h3);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-state__text {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
@@ -506,8 +501,6 @@ function formatSize(bytes) {
 
 .upload-item__name {
   display: block;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -531,15 +524,10 @@ function formatSize(bytes) {
 }
 
 .upload-item__done {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-success);
-  font-weight: var(--font-weight-medium);
 }
 
 .upload-item__error {
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-footnote);
   color: var(--color-text-danger);
 }
 
@@ -561,15 +549,11 @@ function formatSize(bytes) {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
 }
 
 .trash-table thead th {
   text-align: left;
   padding: 8px 12px;
-  font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-medium);
   color: var(--color-text-tertiary);
   border-bottom: 1px solid var(--color-border-light);
 }
