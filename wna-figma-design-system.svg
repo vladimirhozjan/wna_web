@@ -1,0 +1,1222 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="7800" viewBox="0 0 1440 7800">
+  <defs>
+    <style><![CDATA[
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    ]]></style>
+    <pattern id="checkerboard" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#e0e0e0"/>
+      <rect x="4" y="4" width="4" height="4" fill="#e0e0e0"/>
+      <rect x="4" width="4" height="4" fill="#ffffff"/>
+      <rect width="4" y="4" height="4" fill="#ffffff"/>
+    </pattern>
+    <!-- Shadow filters for Step 3 -->
+    <filter id="shadow-popover" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.1"/>
+    </filter>
+    <filter id="shadow-dropdown" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+    <filter id="shadow-modal" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+    <filter id="shadow-elevated" x="-25%" y="-25%" width="150%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.2"/>
+    </filter>
+    <filter id="shadow-auth" x="-30%" y="-40%" width="160%" height="220%">
+      <feDropShadow dx="0" dy="18" stdDeviation="25" flood-color="#0f172a" flood-opacity="0.2"/>
+    </filter>
+    <filter id="shadow-hover" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+    <filter id="shadow-segment-active" x="-10%" y="-20%" width="120%" height="160%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#4185DE" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="7800" fill="#f8fafc"/>
+
+  <g id="Step-01-Color-Palette">
+    <!-- Section Title -->
+    <text x="60" y="36" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Color Palette</text>
+
+    <!-- Brand -->
+    <text x="60" y="70" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">BRAND</text>
+    <rect x="60" y="84" width="40" height="40" rx="4" fill="#4185DE"/>
+    <text x="60" y="138" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action</text>
+    <text x="60" y="151" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#4185DE</text>
+    <!-- Text -->
+    <text x="60" y="194" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">TEXT</text>
+    <rect x="60" y="208" width="40" height="40" rx="4" fill="#374151"/>
+    <text x="60" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-primary</text>
+    <text x="60" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#374151</text>
+    <rect x="230" y="208" width="40" height="40" rx="4" fill="#6B7280"/>
+    <text x="230" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-secondary</text>
+    <text x="230" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#6B7280</text>
+    <rect x="400" y="208" width="40" height="40" rx="4" fill="#9CA3AF"/>
+    <text x="400" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-tertiary</text>
+    <text x="400" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#9CA3AF</text>
+    <rect x="570" y="208" width="40" height="40" rx="4" fill="#7f1c1d"/>
+    <text x="570" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-error</text>
+    <text x="570" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#7f1c1d</text>
+    <rect x="740" y="208" width="40" height="40" rx="4" fill="#dc2626"/>
+    <text x="740" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-danger</text>
+    <text x="740" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#dc2626</text>
+    <rect x="910" y="208" width="40" height="40" rx="4" fill="#059669"/>
+    <text x="910" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-success</text>
+    <text x="910" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#059669</text>
+    <rect x="1080" y="208" width="40" height="40" rx="4" fill="#ffffff" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1080" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-inverse</text>
+    <text x="1080" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#ffffff</text>
+    <rect x="1250" y="208" width="40" height="40" rx="4" fill="#D1D5DB" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1250" y="262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-prefill</text>
+    <text x="1250" y="275" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#D1D5DB</text>
+    <!-- Backgrounds -->
+    <text x="60" y="318" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">BACKGROUNDS</text>
+    <rect x="60" y="332" width="40" height="40" rx="4" fill="#f8fafc" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="386" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">app-background</text>
+    <text x="60" y="399" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f8fafc</text>
+    <rect x="230" y="332" width="40" height="40" rx="4" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="386" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">bg-primary</text>
+    <text x="230" y="399" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#FFFFFF</text>
+    <rect x="400" y="332" width="40" height="40" rx="4" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="386" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">bg-secondary</text>
+    <text x="400" y="399" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#F3F4F6</text>
+    <rect x="570" y="332" width="40" height="40" rx="4" fill="#E5E7EB" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="386" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">bg-hover</text>
+    <text x="570" y="399" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#E5E7EB</text>
+    <rect x="740" y="332" width="40" height="40" rx="4" fill="#EDF3FC" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="740" y="386" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">bg-accent-light</text>
+    <text x="740" y="399" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#EDF3FC</text>
+    <!-- Borders -->
+    <text x="60" y="442" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">BORDERS</text>
+    <rect x="60" y="456" width="40" height="40" rx="4" fill="#E3E8EF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="510" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">border-light</text>
+    <text x="60" y="523" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#E3E8EF</text>
+    <rect x="230" y="456" width="40" height="40" rx="4" fill="#dddddd" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="510" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">border-medium</text>
+    <text x="230" y="523" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#dddddd</text>
+    <!-- Status -->
+    <text x="60" y="566" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">STATUS</text>
+    <rect x="60" y="580" width="40" height="40" rx="4" fill="#ef4444"/>
+    <text x="60" y="634" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">danger</text>
+    <text x="60" y="647" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#ef4444</text>
+    <rect x="230" y="580" width="40" height="40" rx="4" fill="#FEE2E2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="634" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">danger-light</text>
+    <text x="230" y="647" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#FEE2E2</text>
+    <rect x="400" y="580" width="40" height="40" rx="4" fill="#d97706"/>
+    <text x="400" y="634" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">warning</text>
+    <text x="400" y="647" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#d97706</text>
+    <rect x="570" y="580" width="40" height="40" rx="4" fill="#fef3c7" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="634" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">warning-light</text>
+    <text x="570" y="647" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fef3c7</text>
+    <rect x="740" y="580" width="40" height="40" rx="4" fill="#16a34a"/>
+    <text x="740" y="634" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">success</text>
+    <text x="740" y="647" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#16a34a</text>
+    <rect x="910" y="580" width="40" height="40" rx="4" fill="#dcfce7" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="910" y="634" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">success-light</text>
+    <text x="910" y="647" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#dcfce7</text>
+    <!-- Semantic -->
+    <text x="60" y="690" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">SEMANTIC</text>
+    <rect x="60" y="704" width="40" height="40" rx="4" fill="#b45309"/>
+    <text x="60" y="758" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">project</text>
+    <text x="60" y="771" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#b45309</text>
+    <rect x="230" y="704" width="40" height="40" rx="4" fill="#ea580c"/>
+    <text x="230" y="758" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">review</text>
+    <text x="230" y="771" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#ea580c</text>
+    <rect x="400" y="704" width="40" height="40" rx="4" fill="#2563eb"/>
+    <text x="400" y="758" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">file-blue</text>
+    <text x="400" y="771" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#2563eb</text>
+    <rect x="570" y="704" width="40" height="40" rx="4" fill="#fde68a" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="758" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">highlight-amber</text>
+    <text x="570" y="771" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fde68a</text>
+    <rect x="740" y="704" width="40" height="40" rx="4" fill="#fef08a" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="740" y="758" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">highlight-yellow</text>
+    <text x="740" y="771" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fef08a</text>
+    <rect x="910" y="704" width="40" height="40" rx="4" fill="#777777"/>
+    <text x="910" y="758" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">avatar-fallback</text>
+    <text x="910" y="771" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#777777</text>
+    <!-- Dark Theme -->
+    <text x="60" y="814" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">DARK THEME</text>
+    <rect x="60" y="828" width="40" height="40" rx="4" fill="#1E293B"/>
+    <text x="60" y="882" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">bg-dark</text>
+    <text x="60" y="895" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#1E293B</text>
+    <rect x="230" y="828" width="40" height="40" rx="4" fill="#283548"/>
+    <text x="230" y="882" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">bg-dark-card</text>
+    <text x="230" y="895" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#283548</text>
+    <rect x="400" y="828" width="40" height="40" rx="4" fill="#F1F5F9" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="882" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-on-dark</text>
+    <text x="400" y="895" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#F1F5F9</text>
+    <rect x="570" y="828" width="40" height="40" rx="4" fill="#94A3B8"/>
+    <text x="570" y="882" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">text-on-dark-secondary</text>
+    <text x="570" y="895" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#94A3B8</text>
+    <rect x="740" y="828" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="740" y="828" width="40" height="40" rx="4" fill="rgba(148,163,184,0.15)"/>
+    <rect x="740" y="828" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="740" y="882" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">border-dark</text>
+    <text x="740" y="895" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(148,163,184,0.15)</text>
+    <!-- Overlays -->
+    <text x="60" y="938" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">OVERLAYS</text>
+    <rect x="60" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="60" y="952" width="40" height="40" rx="4" fill="rgba(0,0,0,0.5)"/>
+    <rect x="60" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay</text>
+    <text x="60" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(0,0,0,0.5)</text>
+    <rect x="230" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="230" y="952" width="40" height="40" rx="4" fill="rgba(0,0,0,0.4)"/>
+    <rect x="230" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay-light</text>
+    <text x="230" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(0,0,0,0.4)</text>
+    <rect x="400" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="400" y="952" width="40" height="40" rx="4" fill="rgba(0,0,0,0.6)"/>
+    <rect x="400" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay-heavy</text>
+    <text x="400" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(0,0,0,0.6)</text>
+    <rect x="570" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="570" y="952" width="40" height="40" rx="4" fill="rgba(0,0,0,0.9)"/>
+    <rect x="570" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay-opaque</text>
+    <text x="570" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(0,0,0,0.9)</text>
+    <rect x="740" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="740" y="952" width="40" height="40" rx="4" fill="rgba(255,255,255,0.7)"/>
+    <rect x="740" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="740" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay-white</text>
+    <text x="740" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(255,255,255,0.7)</text>
+    <rect x="910" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="910" y="952" width="40" height="40" rx="4" fill="rgba(255,255,255,0.2)"/>
+    <rect x="910" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="910" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay-white-subtle</text>
+    <text x="910" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(255,255,255,0.2)</text>
+    <rect x="1080" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="1080" y="952" width="40" height="40" rx="4" fill="rgba(255,255,255,0.4)"/>
+    <rect x="1080" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1080" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">overlay-white-muted</text>
+    <text x="1080" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(255,255,255,0.4)</text>
+    <rect x="1250" y="952" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="1250" y="952" width="40" height="40" rx="4" fill="rgba(255,255,255,0.08)"/>
+    <rect x="1250" y="952" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1250" y="1006" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">on-dark-glass</text>
+    <text x="1250" y="1019" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(255,255,255,0.08)</text>
+    <rect x="60" y="1032" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="60" y="1032" width="40" height="40" rx="4" fill="rgba(255,255,255,0.85)"/>
+    <rect x="60" y="1032" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1086" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">on-dark-muted</text>
+    <text x="60" y="1099" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(255,255,255,0.85)</text>
+    <rect x="230" y="1032" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="230" y="1032" width="40" height="40" rx="4" fill="rgba(247,249,251,0.5)"/>
+    <rect x="230" y="1032" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1086" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">popup-backdrop</text>
+    <text x="230" y="1099" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(247,249,251,0.5)</text>
+    <!-- Focus / Action -->
+    <text x="60" y="1142" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">FOCUS / ACTION</text>
+    <rect x="60" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="60" y="1156" width="40" height="40" rx="4" fill="rgba(37,99,235,0.2)"/>
+    <rect x="60" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">focus-ring</text>
+    <text x="60" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(37,99,235,0.2)</text>
+    <rect x="230" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="230" y="1156" width="40" height="40" rx="4" fill="rgba(239,68,68,0.2)"/>
+    <rect x="230" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">danger-ring</text>
+    <text x="230" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(239,68,68,0.2)</text>
+    <rect x="400" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="400" y="1156" width="40" height="40" rx="4" fill="rgba(37,99,235,0.1)"/>
+    <rect x="400" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action-subtle</text>
+    <text x="400" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(37,99,235,0.1)</text>
+    <rect x="570" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="570" y="1156" width="40" height="40" rx="4" fill="rgba(65,133,222,0.08)"/>
+    <rect x="570" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action-bg-subtle</text>
+    <text x="570" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(65,133,222,0.08)</text>
+    <rect x="740" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="740" y="1156" width="40" height="40" rx="4" fill="rgba(65,133,222,0.1)"/>
+    <rect x="740" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="740" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action-bg-light</text>
+    <text x="740" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(65,133,222,0.1)</text>
+    <rect x="910" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="910" y="1156" width="40" height="40" rx="4" fill="rgba(65,133,222,0.12)"/>
+    <rect x="910" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="910" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action-shadow</text>
+    <text x="910" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(65,133,222,0.12)</text>
+    <rect x="1080" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="1080" y="1156" width="40" height="40" rx="4" fill="rgba(65,133,222,0.15)"/>
+    <rect x="1080" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1080" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action-shadow-md</text>
+    <text x="1080" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(65,133,222,0.15)</text>
+    <rect x="1250" y="1156" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="1250" y="1156" width="40" height="40" rx="4" fill="rgba(65,133,222,0.2)"/>
+    <rect x="1250" y="1156" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1250" y="1210" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">action-ring</text>
+    <text x="1250" y="1223" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(65,133,222,0.2)</text>
+    <rect x="60" y="1236" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="60" y="1236" width="40" height="40" rx="4" fill="rgba(254,226,226,0.35)"/>
+    <rect x="60" y="1236" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1290" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">danger-bg-subtle</text>
+    <text x="60" y="1303" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(254,226,226,0.35)</text>
+    <rect x="230" y="1236" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="230" y="1236" width="40" height="40" rx="4" fill="rgba(254,226,226,0.55)"/>
+    <rect x="230" y="1236" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1290" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">danger-bg-medium</text>
+    <text x="230" y="1303" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(254,226,226,0.55)</text>
+    <!-- Button Colors -->
+    <text x="60" y="1346" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">BUTTON COLORS</text>
+    <rect x="60" y="1360" width="40" height="40" rx="4" fill="#ffffff" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-loader-top</text>
+    <text x="60" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#ffffff</text>
+    <rect x="230" y="1360" width="40" height="40" rx="4" fill="url(#checkerboard)"/>
+    <rect x="230" y="1360" width="40" height="40" rx="4" fill="rgba(255,255,255,0.3)"/>
+    <rect x="230" y="1360" width="40" height="40" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-loader-fade</text>
+    <text x="230" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">rgba(255,255,255,0.3)</text>
+    <rect x="400" y="1360" width="40" height="40" rx="4" fill="#4185DE"/>
+    <text x="400" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-primary-bg</text>
+    <text x="400" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#4185DE</text>
+    <rect x="570" y="1360" width="40" height="40" rx="4" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-primary-text</text>
+    <text x="570" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#FFFFFF</text>
+    <rect x="740" y="1360" width="40" height="40" rx="4" fill="#236ac7"/>
+    <text x="740" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-primary-hover</text>
+    <text x="740" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#236ac7</text>
+    <rect x="910" y="1360" width="40" height="40" rx="4" fill="#1c539c"/>
+    <text x="910" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-primary-active</text>
+    <text x="910" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#1c539c</text>
+    <rect x="1080" y="1360" width="40" height="40" rx="4" fill="#acbfd7"/>
+    <text x="1080" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-primary-dis-bg</text>
+    <text x="1080" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#acbfd7</text>
+    <rect x="1250" y="1360" width="40" height="40" rx="4" fill="#f2f2f2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1250" y="1414" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-primary-dis-txt</text>
+    <text x="1250" y="1427" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f2f2f2</text>
+    <rect x="60" y="1440" width="40" height="40" rx="4" fill="#ecf3fc" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-bg</text>
+    <text x="60" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#ecf3fc</text>
+    <rect x="230" y="1440" width="40" height="40" rx="4" fill="#356dc0"/>
+    <text x="230" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-text</text>
+    <text x="230" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#356dc0</text>
+    <rect x="400" y="1440" width="40" height="40" rx="4" fill="#c6daf6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-border</text>
+    <text x="400" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#c6daf6</text>
+    <rect x="570" y="1440" width="40" height="40" rx="4" fill="#c1d8f5" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-hover</text>
+    <text x="570" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#c1d8f5</text>
+    <rect x="740" y="1440" width="40" height="40" rx="4" fill="#95bcee"/>
+    <text x="740" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-active</text>
+    <text x="740" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#95bcee</text>
+    <rect x="910" y="1440" width="40" height="40" rx="4" fill="#f1f4f8" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="910" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-dis-bg</text>
+    <text x="910" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f1f4f8</text>
+    <rect x="1080" y="1440" width="40" height="40" rx="4" fill="#95a9c6"/>
+    <text x="1080" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-dis-txt</text>
+    <text x="1080" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#95a9c6</text>
+    <rect x="1250" y="1440" width="40" height="40" rx="4" fill="#d2dce9" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1250" y="1494" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-dis-brd</text>
+    <text x="1250" y="1507" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#d2dce9</text>
+    <rect x="60" y="1520" width="40" height="40" rx="4" fill="#ef4444"/>
+    <text x="60" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-danger-bg</text>
+    <text x="60" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#ef4444</text>
+    <rect x="230" y="1520" width="40" height="40" rx="4" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-danger-text</text>
+    <text x="230" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#FFFFFF</text>
+    <rect x="400" y="1520" width="40" height="40" rx="4" fill="#eb1414"/>
+    <text x="400" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-danger-hover</text>
+    <text x="400" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#eb1414</text>
+    <rect x="570" y="1520" width="40" height="40" rx="4" fill="#bc1010"/>
+    <text x="570" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-danger-active</text>
+    <text x="570" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#bc1010</text>
+    <rect x="740" y="1520" width="40" height="40" rx="4" fill="#e1b7b7"/>
+    <text x="740" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-danger-dis-bg</text>
+    <text x="740" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#e1b7b7</text>
+    <rect x="910" y="1520" width="40" height="40" rx="4" fill="#f2f2f2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="910" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-danger-dis-txt</text>
+    <text x="910" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f2f2f2</text>
+    <rect x="1080" y="1520" width="40" height="40" rx="4" fill="#fef2f2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1080" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-bg</text>
+    <text x="1080" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fef2f2</text>
+    <rect x="1250" y="1520" width="40" height="40" rx="4" fill="#dc2626"/>
+    <text x="1250" y="1574" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-text</text>
+    <text x="1250" y="1587" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#dc2626</text>
+    <rect x="60" y="1600" width="40" height="40" rx="4" fill="#fecaca" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1654" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-brd</text>
+    <text x="60" y="1667" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fecaca</text>
+    <rect x="230" y="1600" width="40" height="40" rx="4" fill="#fee2e2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="1654" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-hover</text>
+    <text x="230" y="1667" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fee2e2</text>
+    <rect x="400" y="1600" width="40" height="40" rx="4" fill="#fecaca" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="1654" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-active</text>
+    <text x="400" y="1667" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fecaca</text>
+    <rect x="570" y="1600" width="40" height="40" rx="4" fill="#fef2f2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="1654" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-dis-bg</text>
+    <text x="570" y="1667" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fef2f2</text>
+    <rect x="740" y="1600" width="40" height="40" rx="4" fill="#f87171"/>
+    <text x="740" y="1654" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-dis-txt</text>
+    <text x="740" y="1667" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f87171</text>
+    <rect x="910" y="1600" width="40" height="40" rx="4" fill="#fecaca" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="910" y="1654" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">btn-ghost-danger-dis-brd</text>
+    <text x="910" y="1667" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fecaca</text>
+    <!-- Input Colors -->
+    <text x="60" y="1710" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">INPUT COLORS</text>
+    <rect x="60" y="1724" width="40" height="40" rx="4" fill="#D1D5DB" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="1778" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">input-border</text>
+    <text x="60" y="1791" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#D1D5DB</text>
+    <rect x="230" y="1724" width="40" height="40" rx="4" fill="#4185DE"/>
+    <text x="230" y="1778" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">input-focus</text>
+    <text x="230" y="1791" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#4185DE</text>
+    <rect x="400" y="1724" width="40" height="40" rx="4" fill="#f9c6c6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="1778" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">input-error-border</text>
+    <text x="400" y="1791" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f9c6c6</text>
+    <rect x="570" y="1724" width="40" height="40" rx="4" fill="#fef2f2" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="1778" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">input-error-bg</text>
+    <text x="570" y="1791" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fef2f2</text>
+    <!-- Link Colors -->
+    <text x="60" y="1834" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">LINK COLORS</text>
+    <rect x="60" y="1848" width="40" height="40" rx="4" fill="#4185DE"/>
+    <text x="60" y="1902" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">link-text</text>
+    <text x="60" y="1915" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#4185DE</text>
+    <rect x="230" y="1848" width="40" height="40" rx="4" fill="#0951ae"/>
+    <text x="230" y="1902" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">link-hover</text>
+    <text x="230" y="1915" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#0951ae</text>
+    <!-- Toast Colors -->
+    <text x="60" y="1958" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">TOAST COLORS</text>
+    <rect x="60" y="1972" width="40" height="40" rx="4" fill="#fecaca" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="2026" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">toast-error-bg</text>
+    <text x="60" y="2039" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fecaca</text>
+    <rect x="230" y="1972" width="40" height="40" rx="4" fill="#7f1c1d"/>
+    <text x="230" y="2026" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">toast-error-text</text>
+    <text x="230" y="2039" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#7f1c1d</text>
+    <rect x="400" y="1972" width="40" height="40" rx="4" fill="#d1fae5" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="2026" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">toast-success-bg</text>
+    <text x="400" y="2039" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#d1fae5</text>
+    <rect x="570" y="1972" width="40" height="40" rx="4" fill="#065f46"/>
+    <text x="570" y="2026" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">toast-success-text</text>
+    <text x="570" y="2039" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#065f46</text>
+    <!-- Calendar Colors -->
+    <text x="60" y="2082" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">CALENDAR COLORS</text>
+    <rect x="60" y="2096" width="40" height="40" rx="4" fill="#bae6fd" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-scheduled</text>
+    <text x="60" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#bae6fd</text>
+    <rect x="230" y="2096" width="40" height="40" rx="4" fill="#0284c7"/>
+    <text x="230" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-sched-border</text>
+    <text x="230" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#0284c7</text>
+    <rect x="400" y="2096" width="40" height="40" rx="4" fill="#0c4a6e"/>
+    <text x="400" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-sched-text</text>
+    <text x="400" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#0c4a6e</text>
+    <rect x="570" y="2096" width="40" height="40" rx="4" fill="#e0f2fe" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-deferred</text>
+    <text x="570" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#e0f2fe</text>
+    <rect x="740" y="2096" width="40" height="40" rx="4" fill="#38bdf8"/>
+    <text x="740" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-def-border</text>
+    <text x="740" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#38bdf8</text>
+    <rect x="910" y="2096" width="40" height="40" rx="4" fill="#075985"/>
+    <text x="910" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-def-text</text>
+    <text x="910" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#075985</text>
+    <rect x="1080" y="2096" width="40" height="40" rx="4" fill="#fef3c7" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1080" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-today-bg</text>
+    <text x="1080" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#fef3c7</text>
+    <rect x="1250" y="2096" width="40" height="40" rx="4" fill="#f59e0b"/>
+    <text x="1250" y="2150" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-today-border</text>
+    <text x="1250" y="2163" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f59e0b</text>
+    <rect x="60" y="2176" width="40" height="40" rx="4" fill="#e5e7eb" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="60" y="2230" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-grid-line</text>
+    <text x="60" y="2243" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#e5e7eb</text>
+    <rect x="230" y="2176" width="40" height="40" rx="4" fill="#9ca3af"/>
+    <text x="230" y="2230" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-hour-text</text>
+    <text x="230" y="2243" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#9ca3af</text>
+    <rect x="400" y="2176" width="40" height="40" rx="4" fill="#f9fafb" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="400" y="2230" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-weekend-bg</text>
+    <text x="400" y="2243" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f9fafb</text>
+    <rect x="570" y="2176" width="40" height="40" rx="4" fill="#f8f9fa" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="2230" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">cal-outside-business</text>
+    <text x="570" y="2243" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#f8f9fa</text>
+    <!-- Menu Colors -->
+    <text x="60" y="2286" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">MENU COLORS</text>
+    <rect x="60" y="2300" width="40" height="40" rx="4" fill="#374151"/>
+    <text x="60" y="2354" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">menu-default-txt</text>
+    <text x="60" y="2367" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#374151</text>
+    <rect x="230" y="2300" width="40" height="40" rx="4" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="230" y="2354" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">menu-hover-bg</text>
+    <text x="230" y="2367" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#FFFFFF</text>
+    <rect x="400" y="2300" width="40" height="40" rx="4" fill="#236ac7"/>
+    <text x="400" y="2354" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">menu-hover-txt</text>
+    <text x="400" y="2367" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#236ac7</text>
+    <rect x="570" y="2300" width="40" height="40" rx="4" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="570" y="2354" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">menu-active-bg</text>
+    <text x="570" y="2367" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#FFFFFF</text>
+    <rect x="740" y="2300" width="40" height="40" rx="4" fill="#4185DE"/>
+    <text x="740" y="2354" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">menu-active-txt</text>
+    <text x="740" y="2367" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">#4185DE</text>
+  </g>
+
+  <g id="Step-02-Typography">
+    <!-- Section Title -->
+    <text x="60" y="2486" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Typography</text>
+
+    <!-- Text Styles -->
+    <text x="60" y="2530" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">TEXT STYLES</text>
+
+    <!-- display -->
+    <text x="60" y="2580" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="#374151" text-rendering="optimizeLegibility">Display Text</text>
+    <text x="60" y="2604" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-display — 48px / 700 / 120%</text>
+
+    <!-- subtitle -->
+    <text x="60" y="2644" font-family="Inter, sans-serif" font-size="18" font-weight="500" fill="#374151" text-rendering="optimizeLegibility">Subtitle text for descriptions and summaries</text>
+    <text x="60" y="2664" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-subtitle — 18px / 500 / 150%</text>
+
+    <!-- h1 -->
+    <text x="60" y="2704" font-family="Inter, sans-serif" font-size="36" font-weight="700" fill="#374151" text-rendering="optimizeLegibility">Heading One</text>
+    <text x="60" y="2734" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-h1 — 36px / 700 / 125%</text>
+
+    <!-- h2 -->
+    <text x="60" y="2774" font-family="Inter, sans-serif" font-size="30" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Heading Two</text>
+    <text x="60" y="2800" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-h2 — 30px / 600 / 130%</text>
+
+    <!-- h3 -->
+    <text x="60" y="2838" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Heading Three</text>
+    <text x="60" y="2860" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-h3 — 24px / 600 / 135%</text>
+
+    <!-- h4 -->
+    <text x="60" y="2896" font-family="Inter, sans-serif" font-size="20" font-weight="500" fill="#374151" text-rendering="optimizeLegibility">Heading Four</text>
+    <text x="60" y="2916" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-h4 — 20px / 500 / 140%</text>
+
+    <!-- body-l -->
+    <text x="60" y="2950" font-family="Inter, sans-serif" font-size="18" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Body large text for paragraphs and descriptions</text>
+    <text x="60" y="2970" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-body-l — 18px / 400 / 150%</text>
+
+    <!-- body-m -->
+    <text x="60" y="3002" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Body medium is the default text size for UI content</text>
+    <text x="60" y="3020" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-body-m — 16px / 400 / 150%</text>
+
+    <!-- body-s -->
+    <text x="60" y="3050" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Body small is used for secondary information and metadata</text>
+    <text x="60" y="3066" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-body-s — 14px / 400 / 150%</text>
+
+    <!-- footnote -->
+    <text x="60" y="3094" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Footnote text for disclaimers and fine print</text>
+    <text x="60" y="3110" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-footnote — 11px / 400 / 150%</text>
+
+    <!-- label -->
+    <text x="60" y="3138" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Form Label Text</text>
+    <text x="60" y="3154" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">.text-label — 13px / 600 / 140%</text>
+
+    <!-- Fixed UI Sizes -->
+    <text x="60" y="3200" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">FIXED UI SIZES</text>
+
+    <!-- 2xs -->
+    <text x="60" y="3244" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="60" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">2xs — 10px</text>
+
+    <!-- xs -->
+    <text x="170" y="3244" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="170" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">xs — 12px</text>
+
+    <!-- sm -->
+    <text x="280" y="3244" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="280" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">sm — 14px</text>
+
+    <!-- md -->
+    <text x="390" y="3244" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="390" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">md — 16px</text>
+
+    <!-- lg -->
+    <text x="500" y="3244" font-family="Inter, sans-serif" font-size="18" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="500" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">lg — 18px</text>
+
+    <!-- xl -->
+    <text x="620" y="3244" font-family="Inter, sans-serif" font-size="20" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="620" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">xl — 20px</text>
+
+    <!-- 2xl -->
+    <text x="740" y="3244" font-family="Inter, sans-serif" font-size="24" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="740" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">2xl — 24px</text>
+
+    <!-- 3xl -->
+    <text x="870" y="3244" font-family="Inter, sans-serif" font-size="28" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Aa</text>
+    <text x="870" y="3262" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">3xl — 28px</text>
+
+    <!-- Weight Scale -->
+    <text x="60" y="3314" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">WEIGHT SCALE</text>
+
+    <!-- Light 300 -->
+    <text x="60" y="3354" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">300</text>
+    <text x="100" y="3354" font-family="Inter, sans-serif" font-size="16" font-weight="300" fill="#374151" text-rendering="optimizeLegibility">Light — The quick brown fox jumps over the lazy dog</text>
+
+    <!-- Normal 400 -->
+    <text x="60" y="3390" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">400</text>
+    <text x="100" y="3390" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">Normal — The quick brown fox jumps over the lazy dog</text>
+
+    <!-- Medium 500 -->
+    <text x="60" y="3426" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">500</text>
+    <text x="100" y="3426" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#374151" text-rendering="optimizeLegibility">Medium — The quick brown fox jumps over the lazy dog</text>
+
+    <!-- Semibold 600 -->
+    <text x="60" y="3462" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">600</text>
+    <text x="100" y="3462" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Semibold — The quick brown fox jumps over the lazy dog</text>
+
+    <!-- Bold 700 -->
+    <text x="60" y="3498" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">700</text>
+    <text x="100" y="3498" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#374151" text-rendering="optimizeLegibility">Bold — The quick brown fox jumps over the lazy dog</text>
+  </g>
+
+  <g id="Step-03-Shadows-Cards">
+    <!-- Section Title -->
+    <text x="60" y="3636" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#374151" text-rendering="optimizeLegibility">Shadows &amp; Cards</text>
+
+    <!-- Shadow Levels -->
+    <text x="60" y="3680" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">SHADOW LEVELS</text>
+
+    <!-- Popover Shadow -->
+    <rect x="60" y="3704" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-popover)"/>
+    <text x="160" y="3750" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Card Content</text>
+    <text x="60" y="3804" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">shadow-popover</text>
+    <text x="60" y="3820" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 4px 10px rgba(0,0,0,0.1)</text>
+
+    <!-- Dropdown Shadow -->
+    <rect x="310" y="3704" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-dropdown)"/>
+    <text x="410" y="3750" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Card Content</text>
+    <text x="310" y="3804" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">shadow-dropdown</text>
+    <text x="310" y="3820" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 4px 20px rgba(0,0,0,0.15)</text>
+
+    <!-- Modal Shadow -->
+    <rect x="560" y="3704" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-modal)"/>
+    <text x="660" y="3750" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Card Content</text>
+    <text x="560" y="3804" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">shadow-modal</text>
+    <text x="560" y="3820" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 4px 24px rgba(0,0,0,0.15)</text>
+
+    <!-- Elevated Shadow -->
+    <rect x="810" y="3704" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-elevated)"/>
+    <text x="910" y="3750" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Card Content</text>
+    <text x="810" y="3804" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">shadow-elevated</text>
+    <text x="810" y="3820" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 8px 32px rgba(0,0,0,0.2)</text>
+
+    <!-- Auth Shadow -->
+    <rect x="1060" y="3704" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-auth)"/>
+    <text x="1160" y="3750" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Card Content</text>
+    <text x="1060" y="3804" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">shadow-auth</text>
+    <text x="1060" y="3820" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 18px 50px rgba(15,23,42,0.2)</text>
+
+    <!-- Focus Rings -->
+    <text x="60" y="3864" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">FOCUS RINGS</text>
+
+    <!-- Focus Ring 2px -->
+    <rect x="58" y="3886" width="204" height="84" rx="13" fill="rgba(37,99,235,0.2)"/>
+    <rect x="60" y="3888" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="160" y="3934" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Focused Element</text>
+    <text x="60" y="3992" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">focus-ring</text>
+    <text x="60" y="4008" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 0 0 2px rgba(37,99,235,0.2)</text>
+
+    <!-- Focus Ring Wide 3px -->
+    <rect x="307" y="3885" width="206" height="86" rx="14" fill="rgba(37,99,235,0.2)"/>
+    <rect x="310" y="3888" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="410" y="3934" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Focused Element</text>
+    <text x="310" y="3992" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">focus-ring-wide</text>
+    <text x="310" y="4008" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 0 0 3px rgba(37,99,235,0.2)</text>
+
+    <!-- Focus Ring Danger 3px -->
+    <rect x="557" y="3885" width="206" height="86" rx="14" fill="rgba(239,68,68,0.2)"/>
+    <rect x="560" y="3888" width="200" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="660" y="3934" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-anchor="middle" text-rendering="optimizeLegibility">Error Element</text>
+    <text x="560" y="3992" font-family="Inter, sans-serif" font-size="11" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">focus-ring-danger</text>
+    <text x="560" y="4008" font-family="Inter, sans-serif" font-size="10" font-weight="400" fill="#9CA3AF" text-rendering="optimizeLegibility">0 0 0 3px rgba(239,68,68,0.2)</text>
+
+    <!-- Card Properties -->
+    <text x="60" y="4052" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">CARD PROPERTIES</text>
+
+    <!-- Default Card -->
+    <rect x="60" y="4076" width="280" height="120" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="84" y="4104" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-rendering="optimizeLegibility">Default Card</text>
+    <text x="84" y="4126" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-rendering="optimizeLegibility">border-radius: 12px</text>
+    <text x="84" y="4146" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-rendering="optimizeLegibility">padding: 24px</text>
+    <text x="84" y="4166" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-rendering="optimizeLegibility">border: 1px solid #E3E8EF</text>
+
+    <!-- Hover Card -->
+    <rect x="400" y="4076" width="280" height="120" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-hover)"/>
+    <text x="424" y="4104" font-family="Inter, sans-serif" font-size="14" font-weight="500" fill="#374151" text-rendering="optimizeLegibility">Card :hover</text>
+    <text x="424" y="4126" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-rendering="optimizeLegibility">hover-shadow:</text>
+    <text x="424" y="4146" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#6B7280" text-rendering="optimizeLegibility">0 4px 16px rgba(0,0,0,0.08)</text>
+
+    <!-- Spacing Tokens -->
+    <text x="60" y="4252" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em" text-rendering="optimizeLegibility">SPACING TOKENS</text>
+
+    <!-- Desktop section py -->
+    <rect x="60" y="4272" width="64" height="20" rx="3" fill="#EDF3FC" stroke="#c6daf6" stroke-width="1"/>
+    <text x="136" y="4287" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">desktop section py — 64px</text>
+
+    <!-- Mobile section py -->
+    <rect x="60" y="4302" width="40" height="20" rx="3" fill="#EDF3FC" stroke="#c6daf6" stroke-width="1"/>
+    <text x="112" y="4317" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">mobile section py — 40px</text>
+
+    <!-- Max width -->
+    <rect x="60" y="4332" width="130" height="20" rx="3" fill="#EDF3FC" stroke="#c6daf6" stroke-width="1"/>
+    <text x="202" y="4347" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">max-width — 900px</text>
+
+    <!-- Section px -->
+    <rect x="60" y="4362" width="20" height="20" rx="3" fill="#EDF3FC" stroke="#c6daf6" stroke-width="1"/>
+    <text x="92" y="4377" font-family="Inter, sans-serif" font-size="12" font-weight="400" fill="#374151" text-rendering="optimizeLegibility">section px — 20px</text>
+  </g>
+
+  <g id="Step-04-Buttons">
+    <!-- Section Title -->
+    <text x="60" y="4536" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Buttons (Btn)</text>
+    <text x="60" y="4560" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">Base: border-radius 6px · inline-flex · align-items center · justify-content center</text>
+
+    <!-- State Column Headers -->
+    <text x="60" y="4594" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">SIZE</text>
+    <text x="200" y="4594" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em" text-anchor="middle">DEFAULT</text>
+    <text x="340" y="4594" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em" text-anchor="middle">HOVER</text>
+    <text x="480" y="4594" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em" text-anchor="middle">ACTIVE</text>
+    <text x="620" y="4594" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em" text-anchor="middle">DISABLED</text>
+    <text x="760" y="4594" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em" text-anchor="middle">LOADING</text>
+
+    <!-- PRIMARY -->
+    <text x="60" y="4630" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em">PRIMARY</text>
+    <text x="100" y="4665" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">sm</text>
+    <rect x="150" y="4650" width="76" height="30" rx="6" fill="#4185DE"/>
+    <text x="188" y="4665" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="290" y="4650" width="76" height="30" rx="6" fill="#236ac7"/>
+    <text x="328" y="4665" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="430" y="4650" width="76" height="30" rx="6" fill="#1c539c"/>
+    <text x="468" y="4665" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="570" y="4650" width="76" height="30" rx="6" fill="#acbfd7"/>
+    <text x="608" y="4665" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#f2f2f2" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <g opacity="0.8">
+      <rect x="710" y="4650" width="76" height="30" rx="6" fill="#4185DE"/>
+      <circle cx="748" cy="4665" r="5" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <path d="M 748 4660 A 5 5 0 0 1 753 4665" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="4729" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">md</text>
+    <rect x="150" y="4710" width="84" height="38" rx="6" fill="#4185DE"/>
+    <text x="192" y="4729" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="290" y="4710" width="84" height="38" rx="6" fill="#236ac7"/>
+    <text x="332" y="4729" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="430" y="4710" width="84" height="38" rx="6" fill="#1c539c"/>
+    <text x="472" y="4729" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="570" y="4710" width="84" height="38" rx="6" fill="#acbfd7"/>
+    <text x="612" y="4729" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#f2f2f2" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <g opacity="0.8">
+      <rect x="710" y="4710" width="84" height="38" rx="6" fill="#4185DE"/>
+      <circle cx="752" cy="4729" r="6" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <path d="M 752 4723 A 6 6 0 0 1 758 4729" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="4802" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">lg</text>
+    <rect x="150" y="4778" width="98" height="48" rx="6" fill="#4185DE"/>
+    <text x="199" y="4802" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="290" y="4778" width="98" height="48" rx="6" fill="#236ac7"/>
+    <text x="339" y="4802" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="430" y="4778" width="98" height="48" rx="6" fill="#1c539c"/>
+    <text x="479" y="4802" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#FFF" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <rect x="570" y="4778" width="98" height="48" rx="6" fill="#acbfd7"/>
+    <text x="619" y="4802" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#f2f2f2" text-anchor="middle" dominant-baseline="central">Primary</text>
+    <g opacity="0.8">
+      <rect x="710" y="4778" width="98" height="48" rx="6" fill="#4185DE"/>
+      <circle cx="759" cy="4802" r="7" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <path d="M 759 4795 A 7 7 0 0 1 766 4802" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- GHOST -->
+    <text x="60" y="4866" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em">GHOST</text>
+    <text x="100" y="4901" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">sm</text>
+    <rect x="150" y="4886" width="64" height="30" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="182" y="4901" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="290" y="4886" width="64" height="30" rx="6" fill="#c1d8f5" stroke="#c6daf6" stroke-width="1"/>
+    <text x="322" y="4901" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="430" y="4886" width="64" height="30" rx="6" fill="#95bcee" stroke="#c6daf6" stroke-width="1"/>
+    <text x="462" y="4901" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="570" y="4886" width="64" height="30" rx="6" fill="#f1f4f8" stroke="#d2dce9" stroke-width="1"/>
+    <text x="602" y="4901" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#95a9c6" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <g opacity="0.8">
+      <rect x="710" y="4886" width="64" height="30" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+      <circle cx="742" cy="4901" r="5" fill="none" stroke="rgba(53,109,192,0.2)" stroke-width="2"/>
+        <path d="M 742 4896 A 5 5 0 0 1 747 4901" fill="none" stroke="#356dc0" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="4965" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">md</text>
+    <rect x="150" y="4946" width="72" height="38" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="186" y="4965" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="290" y="4946" width="72" height="38" rx="6" fill="#c1d8f5" stroke="#c6daf6" stroke-width="1"/>
+    <text x="326" y="4965" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="430" y="4946" width="72" height="38" rx="6" fill="#95bcee" stroke="#c6daf6" stroke-width="1"/>
+    <text x="466" y="4965" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="570" y="4946" width="72" height="38" rx="6" fill="#f1f4f8" stroke="#d2dce9" stroke-width="1"/>
+    <text x="606" y="4965" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#95a9c6" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <g opacity="0.8">
+      <rect x="710" y="4946" width="72" height="38" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+      <circle cx="746" cy="4965" r="6" fill="none" stroke="rgba(53,109,192,0.2)" stroke-width="2"/>
+        <path d="M 746 4959 A 6 6 0 0 1 752 4965" fill="none" stroke="#356dc0" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5038" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">lg</text>
+    <rect x="150" y="5014" width="86" height="48" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="193" y="5038" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="290" y="5014" width="86" height="48" rx="6" fill="#c1d8f5" stroke="#c6daf6" stroke-width="1"/>
+    <text x="333" y="5038" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="430" y="5014" width="86" height="48" rx="6" fill="#95bcee" stroke="#c6daf6" stroke-width="1"/>
+    <text x="473" y="5038" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#356dc0" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <rect x="570" y="5014" width="86" height="48" rx="6" fill="#f1f4f8" stroke="#d2dce9" stroke-width="1"/>
+    <text x="613" y="5038" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#95a9c6" text-anchor="middle" dominant-baseline="central">Ghost</text>
+    <g opacity="0.8">
+      <rect x="710" y="5014" width="86" height="48" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+      <circle cx="753" cy="5038" r="7" fill="none" stroke="rgba(53,109,192,0.2)" stroke-width="2"/>
+        <path d="M 753 5031 A 7 7 0 0 1 760 5038" fill="none" stroke="#356dc0" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- DANGER -->
+    <text x="60" y="5102" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em">DANGER</text>
+    <text x="100" y="5137" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">sm</text>
+    <rect x="150" y="5122" width="72" height="30" rx="6" fill="#ef4444"/>
+    <text x="186" y="5137" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="290" y="5122" width="72" height="30" rx="6" fill="#eb1414"/>
+    <text x="326" y="5137" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="430" y="5122" width="72" height="30" rx="6" fill="#bc1010"/>
+    <text x="466" y="5137" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="570" y="5122" width="72" height="30" rx="6" fill="#e1b7b7"/>
+    <text x="606" y="5137" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#f2f2f2" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <g opacity="0.8">
+      <rect x="710" y="5122" width="72" height="30" rx="6" fill="#ef4444"/>
+      <circle cx="746" cy="5137" r="5" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <path d="M 746 5132 A 5 5 0 0 1 751 5137" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5201" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">md</text>
+    <rect x="150" y="5182" width="80" height="38" rx="6" fill="#ef4444"/>
+    <text x="190" y="5201" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="290" y="5182" width="80" height="38" rx="6" fill="#eb1414"/>
+    <text x="330" y="5201" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="430" y="5182" width="80" height="38" rx="6" fill="#bc1010"/>
+    <text x="470" y="5201" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="570" y="5182" width="80" height="38" rx="6" fill="#e1b7b7"/>
+    <text x="610" y="5201" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="700" fill="#f2f2f2" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <g opacity="0.8">
+      <rect x="710" y="5182" width="80" height="38" rx="6" fill="#ef4444"/>
+      <circle cx="750" cy="5201" r="6" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <path d="M 750 5195 A 6 6 0 0 1 756 5201" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5274" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">lg</text>
+    <rect x="150" y="5250" width="94" height="48" rx="6" fill="#ef4444"/>
+    <text x="197" y="5274" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="290" y="5250" width="94" height="48" rx="6" fill="#eb1414"/>
+    <text x="337" y="5274" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="430" y="5250" width="94" height="48" rx="6" fill="#bc1010"/>
+    <text x="477" y="5274" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="700" fill="#FFF" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <rect x="570" y="5250" width="94" height="48" rx="6" fill="#e1b7b7"/>
+    <text x="617" y="5274" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="700" fill="#f2f2f2" text-anchor="middle" dominant-baseline="central">Danger</text>
+    <g opacity="0.8">
+      <rect x="710" y="5250" width="94" height="48" rx="6" fill="#ef4444"/>
+      <circle cx="757" cy="5274" r="7" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <path d="M 757 5267 A 7 7 0 0 1 764 5274" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- GHOST-DANGER -->
+    <text x="60" y="5338" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em">GHOST-DANGER</text>
+    <text x="100" y="5373" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">sm</text>
+    <rect x="150" y="5358" width="66" height="30" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+    <text x="183" y="5373" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="290" y="5358" width="66" height="30" rx="6" fill="#fee2e2" stroke="#fecaca" stroke-width="1"/>
+    <text x="323" y="5373" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="430" y="5358" width="66" height="30" rx="6" fill="#fecaca" stroke="#fecaca" stroke-width="1"/>
+    <text x="463" y="5373" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="570" y="5358" width="66" height="30" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+    <text x="603" y="5373" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#f87171" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <g opacity="0.8">
+      <rect x="710" y="5358" width="66" height="30" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+      <circle cx="743" cy="5373" r="5" fill="none" stroke="rgba(220,38,38,0.2)" stroke-width="2"/>
+        <path d="M 743 5368 A 5 5 0 0 1 748 5373" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5437" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">md</text>
+    <rect x="150" y="5418" width="74" height="38" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+    <text x="187" y="5437" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="290" y="5418" width="74" height="38" rx="6" fill="#fee2e2" stroke="#fecaca" stroke-width="1"/>
+    <text x="327" y="5437" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="430" y="5418" width="74" height="38" rx="6" fill="#fecaca" stroke="#fecaca" stroke-width="1"/>
+    <text x="467" y="5437" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="570" y="5418" width="74" height="38" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+    <text x="607" y="5437" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#f87171" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <g opacity="0.8">
+      <rect x="710" y="5418" width="74" height="38" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+      <circle cx="747" cy="5437" r="6" fill="none" stroke="rgba(220,38,38,0.2)" stroke-width="2"/>
+        <path d="M 747 5431 A 6 6 0 0 1 753 5437" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">lg</text>
+    <rect x="150" y="5486" width="88" height="48" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+    <text x="194" y="5510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="290" y="5486" width="88" height="48" rx="6" fill="#fee2e2" stroke="#fecaca" stroke-width="1"/>
+    <text x="334" y="5510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="430" y="5486" width="88" height="48" rx="6" fill="#fecaca" stroke="#fecaca" stroke-width="1"/>
+    <text x="474" y="5510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#dc2626" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <rect x="570" y="5486" width="88" height="48" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+    <text x="614" y="5510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#f87171" text-anchor="middle" dominant-baseline="central">Delete</text>
+    <g opacity="0.8">
+      <rect x="710" y="5486" width="88" height="48" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1"/>
+      <circle cx="754" cy="5510" r="7" fill="none" stroke="rgba(220,38,38,0.2)" stroke-width="2"/>
+        <path d="M 754 5503 A 7 7 0 0 1 761 5510" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- ICON -->
+    <text x="60" y="5574" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em">ICON</text>
+    <text x="100" y="5608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">sm</text>
+    <rect x="150" y="5594" width="28" height="28" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="160" y1="5608" x2="168" y2="5608" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="164" y1="5604" x2="164" y2="5612" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="290" y="5594" width="28" height="28" rx="6" fill="#ecf3fc"/>
+    <line x1="300" y1="5608" x2="308" y2="5608" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="304" y1="5604" x2="304" y2="5612" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="430" y="5594" width="28" height="28" rx="6" fill="#c1d8f5"/>
+    <line x1="440" y1="5608" x2="448" y2="5608" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="444" y1="5604" x2="444" y2="5612" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="570" y="5594" width="28" height="28" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="580" y1="5608" x2="588" y2="5608" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+      <line x1="584" y1="5604" x2="584" y2="5612" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+    <g opacity="0.8">
+      <rect x="710" y="5594" width="28" height="28" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+      <circle cx="724" cy="5608" r="5" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+        <path d="M 724 5603 A 5 5 0 0 1 729 5608" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5669" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">md</text>
+    <rect x="150" y="5652" width="34" height="34" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="162" y1="5669" x2="172" y2="5669" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="167" y1="5664" x2="167" y2="5674" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="290" y="5652" width="34" height="34" rx="6" fill="#ecf3fc"/>
+    <line x1="302" y1="5669" x2="312" y2="5669" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="307" y1="5664" x2="307" y2="5674" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="430" y="5652" width="34" height="34" rx="6" fill="#c1d8f5"/>
+    <line x1="442" y1="5669" x2="452" y2="5669" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="447" y1="5664" x2="447" y2="5674" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="570" y="5652" width="34" height="34" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="582" y1="5669" x2="592" y2="5669" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+      <line x1="587" y1="5664" x2="587" y2="5674" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+    <g opacity="0.8">
+      <rect x="710" y="5652" width="34" height="34" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+      <circle cx="727" cy="5669" r="6" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+        <path d="M 727 5663 A 6 6 0 0 1 733 5669" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5736" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">lg</text>
+    <rect x="150" y="5716" width="40" height="40" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="164" y1="5736" x2="176" y2="5736" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="170" y1="5730" x2="170" y2="5742" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="290" y="5716" width="40" height="40" rx="6" fill="#ecf3fc"/>
+    <line x1="304" y1="5736" x2="316" y2="5736" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="310" y1="5730" x2="310" y2="5742" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="430" y="5716" width="40" height="40" rx="6" fill="#c1d8f5"/>
+    <line x1="444" y1="5736" x2="456" y2="5736" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+      <line x1="450" y1="5730" x2="450" y2="5742" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    <rect x="570" y="5716" width="40" height="40" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="584" y1="5736" x2="596" y2="5736" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+      <line x1="590" y1="5730" x2="590" y2="5742" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+    <g opacity="0.8">
+      <rect x="710" y="5716" width="40" height="40" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+      <circle cx="730" cy="5736" r="7" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+        <path d="M 730 5729 A 7 7 0 0 1 737 5736" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- LINK -->
+    <text x="60" y="5796" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#6B7280" letter-spacing="0.05em">LINK</text>
+    <text x="100" y="5828" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">sm</text>
+    <rect x="150" y="5816" width="72" height="24" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="186" y="5828" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#4185DE" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="290" y="5816" width="72" height="24" rx="6" fill="#ecf3fc"/>
+    <text x="326" y="5828" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#0951ae" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="430" y="5816" width="72" height="24" rx="6" fill="#c1d8f5"/>
+    <text x="466" y="5828" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#0951ae" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="570" y="5816" width="72" height="24" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="606" y="5828" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <g opacity="0.8">
+      <rect x="710" y="5816" width="72" height="24" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+      <circle cx="746" cy="5828" r="5" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+        <path d="M 746 5823 A 5 5 0 0 1 751 5828" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">md</text>
+    <rect x="150" y="5870" width="72" height="24" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="186" y="5882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#4185DE" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="290" y="5870" width="72" height="24" rx="6" fill="#ecf3fc"/>
+    <text x="326" y="5882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#0951ae" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="430" y="5870" width="72" height="24" rx="6" fill="#c1d8f5"/>
+    <text x="466" y="5882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#0951ae" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="570" y="5870" width="72" height="24" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="606" y="5882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <g opacity="0.8">
+      <rect x="710" y="5870" width="72" height="24" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+      <circle cx="746" cy="5882" r="6" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+        <path d="M 746 5876 A 6 6 0 0 1 752 5882" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="5938" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">lg</text>
+    <rect x="150" y="5924" width="80" height="28" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="190" y="5938" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="500" fill="#4185DE" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="290" y="5924" width="80" height="28" rx="6" fill="#ecf3fc"/>
+    <text x="330" y="5938" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="500" fill="#0951ae" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="430" y="5924" width="80" height="28" rx="6" fill="#c1d8f5"/>
+    <text x="470" y="5938" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="500" fill="#0951ae" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <rect x="570" y="5924" width="80" height="28" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="610" y="5938" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="500" fill="#9CA3AF" text-anchor="middle" dominant-baseline="central">Link Text</text>
+    <g opacity="0.8">
+      <rect x="710" y="5924" width="80" height="28" rx="6" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3,3"/>
+      <circle cx="750" cy="5938" r="7" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+        <path d="M 750 5931 A 7 7 0 0 1 757 5938" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Step 5 — Input (Inpt)                                        -->
+  <!-- ============================================================ -->
+  <g id="Step-05-Input">
+    <!-- Section Title -->
+    <text x="60" y="6086" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Input (Inpt)</text>
+    <text x="60" y="6110" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">padding: 10px · border-radius: 6px · placeholder: #D1D5DB · error text: #7f1c1d</text>
+
+    <!-- State Labels -->
+    <text x="60" y="6150" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DEFAULT</text>
+    <text x="380" y="6150" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FOCUSED</text>
+    <text x="700" y="6150" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ERROR</text>
+    <text x="1020" y="6150" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DISABLED</text>
+
+    <!-- Default Input -->
+    <text x="60" y="6182" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Email</text>
+    <rect x="60" y="6194" width="280" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="70" y="6218" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#D1D5DB">Enter your email</text>
+
+    <!-- Focused Input -->
+    <text x="380" y="6182" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Email</text>
+    <rect x="379" y="6193" width="282" height="42" rx="7" fill="none" stroke="rgba(65,133,222,0.2)" stroke-width="2"/>
+    <rect x="380" y="6194" width="280" height="40" rx="6" fill="#FFFFFF" stroke="#4185DE" stroke-width="1"/>
+    <text x="390" y="6218" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">user@example.com</text>
+
+    <!-- Error Input -->
+    <text x="700" y="6182" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Email</text>
+    <rect x="700" y="6194" width="280" height="40" rx="6" fill="#fef2f2" stroke="#f9c6c6" stroke-width="1"/>
+    <text x="710" y="6218" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">invalid-email</text>
+    <text x="700" y="6252" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#7f1c1d">Please enter a valid email</text>
+
+    <!-- Disabled Input -->
+    <g opacity="0.6">
+      <text x="1020" y="6182" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Email</text>
+      <rect x="1020" y="6194" width="280" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="1030" y="6218" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#D1D5DB">Enter your email</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Step 6 — Select                                              -->
+  <!-- ============================================================ -->
+  <g id="Step-06-Select">
+    <!-- Section Title -->
+    <text x="60" y="6336" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Select</text>
+    <text x="60" y="6360" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">trigger: padding 6px 12px · radius 6px · dropdown: radius 8px · shadow-dropdown · option: padding 10px 14px</text>
+
+    <!-- State Labels -->
+    <text x="60" y="6398" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">CLOSED</text>
+    <text x="400" y="6398" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">OPEN (SELECTED)</text>
+
+    <!-- Closed Trigger -->
+    <text x="60" y="6430" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Category</text>
+    <rect x="60" y="6442" width="240" height="34" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="72" y="6464" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">Select option</text>
+    <!-- Chevron down -->
+    <path d="M278 6454 L284 6462 L290 6454" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Open Trigger + Dropdown -->
+    <text x="400" y="6430" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Category</text>
+    <rect x="400" y="6442" width="240" height="34" rx="6" fill="#FFFFFF" stroke="#4185DE" stroke-width="1"/>
+    <text x="412" y="6464" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#4185DE">Work</text>
+    <!-- Chevron up -->
+    <path d="M618 6464 L624 6454 L630 6464" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Dropdown Panel -->
+    <rect x="400" y="6480" width="240" height="148" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-dropdown)"/>
+    <!-- Selected option -->
+    <rect x="401" y="6481" width="238" height="36" rx="7" fill="#F3F4F6"/>
+    <text x="414" y="6504" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#4185DE">Work</text>
+    <!-- Option 2 -->
+    <text x="414" y="6540" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Personal</text>
+    <!-- Option 3 -->
+    <text x="414" y="6576" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Shopping</text>
+    <!-- Option 4 -->
+    <text x="414" y="6612" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Health</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Step 7 — TagInput                                            -->
+  <!-- ============================================================ -->
+  <g id="Step-07-TagInput">
+    <!-- Section Title -->
+    <text x="60" y="6716" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Tag Input</text>
+    <text x="60" y="6740" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">container: gap 6px · padding 6px 10px · radius 6px · chip: bg #F3F4F6 radius 4px · suggestions: radius 6px shadow-popover</text>
+
+    <!-- State Labels -->
+    <text x="60" y="6778" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DEFAULT WITH CHIPS</text>
+    <text x="560" y="6778" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FOCUSED WITH SUGGESTIONS</text>
+
+    <!-- Default TagInput with 3 chips -->
+    <rect x="60" y="6792" width="440" height="38" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <!-- Chip @home -->
+    <rect x="70" y="6800" width="72" height="22" rx="4" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="80" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@home</text>
+    <text x="130" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">&#xd7;</text>
+    <!-- Chip @calls -->
+    <rect x="150" y="6800" width="70" height="22" rx="4" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="160" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@calls</text>
+    <text x="208" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">&#xd7;</text>
+    <!-- Chip @errands -->
+    <rect x="228" y="6800" width="86" height="22" rx="4" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="238" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@errands</text>
+    <text x="302" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">&#xd7;</text>
+
+    <!-- Preset chips below default -->
+    <text x="60" y="6854" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">PRESETS</text>
+    <rect x="60" y="6866" width="88" height="22" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="70" y="6881" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">+ @outdoor</text>
+    <rect x="156" y="6866" width="96" height="22" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="166" y="6881" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">+ @shopping</text>
+    <rect x="260" y="6866" width="96" height="22" rx="4" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="270" y="6881" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">+ @weekend</text>
+
+    <!-- Focused TagInput with suggestions -->
+    <rect x="559" y="6791" width="442" height="40" rx="7" fill="none" stroke="rgba(37,99,235,0.2)" stroke-width="2"/>
+    <rect x="560" y="6792" width="440" height="38" rx="6" fill="#FFFFFF" stroke="#4185DE" stroke-width="1"/>
+    <!-- Chip @home -->
+    <rect x="570" y="6800" width="72" height="22" rx="4" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="580" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@home</text>
+    <text x="630" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">&#xd7;</text>
+    <!-- Typed text -->
+    <text x="652" y="6815" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">off</text>
+    <!-- Cursor -->
+    <line x1="676" y1="6802" x2="676" y2="6822" stroke="#4185DE" stroke-width="1"/>
+
+    <!-- Suggestion dropdown -->
+    <rect x="560" y="6834" width="440" height="100" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1" filter="url(#shadow-popover)"/>
+    <!-- Option 1 -->
+    <text x="572" y="6858" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">@office</text>
+    <!-- Option 2 (highlighted) -->
+    <rect x="561" y="6866" width="438" height="32" fill="#F3F4F6"/>
+    <text x="572" y="6890" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">@offline</text>
+    <!-- Option 3 -->
+    <text x="572" y="6922" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">@offsite</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Step 8 — SegmentSwitch                                       -->
+  <!-- ============================================================ -->
+  <g id="Step-08-SegmentSwitch">
+    <!-- Section Title -->
+    <text x="60" y="7030" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Segment Switch</text>
+    <text x="60" y="7054" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">inline-flex · border: 1px solid #E3E8EF · radius: 8px · option: padding 6px 16px radius 6px · active: bg #ecf3fc color #4185DE weight 600 · shadow: 0 1px 3px rgba(65,133,222,0.12)</text>
+
+    <!-- Two-option variant (Files | Trash) -->
+    <text x="60" y="7092" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">TWO OPTIONS (FIRST ACTIVE)</text>
+
+    <!--
+      Core Text measured (Inter 14px):
+        Files: 29.6px text → 62px btn (pad 16+16)
+        Trash: 35.3px text → 67px btn
+      Container: 129px inner → 131px outer (+ 2px border)
+      Height: 33px inner (6+21+6) → 35px outer (+ 2px border)
+      Baseline from container top: 21px (1 border + 6 pad + 3.5 half-leading + 10.8 ascent)
+    -->
+    <rect x="60" y="7106" width="131" height="35" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Active "Files": 62px wide, full 33px inner height, inset 1px from border -->
+    <rect x="61" y="7107" width="62" height="33" rx="6" fill="#ecf3fc" filter="url(#shadow-segment-active)"/>
+    <!-- Files text center: x = 61 + 31 = 92 -->
+    <text x="92" y="7127" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle">Files</text>
+    <!-- Inactive "Trash": 67px wide, starts at 61+62=123, center at 123+33.5=156.5 -->
+    <text x="157" y="7127" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#9CA3AF" text-anchor="middle">Trash</text>
+
+    <!-- Three-option variant (Day | Week | Month) -->
+    <text x="280" y="7092" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">THREE OPTIONS (MIDDLE ACTIVE)</text>
+
+    <!--
+      Core Text measured (Inter 14px):
+        Day: 24.9px text → 57px btn
+        Week: 35.5px text → 68px btn
+        Month: 38.9px text → 71px btn
+      Container: 196px inner → 198px outer
+    -->
+    <rect x="280" y="7106" width="198" height="35" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Inactive "Day": 57px wide, starts at 281, center at 281+28.5=309.5 -->
+    <text x="310" y="7127" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#9CA3AF" text-anchor="middle">Day</text>
+    <!-- Active "Week": starts at 281+57=338, 68px wide -->
+    <rect x="338" y="7107" width="68" height="33" rx="6" fill="#ecf3fc" filter="url(#shadow-segment-active)"/>
+    <!-- Week text center: 338+34=372 -->
+    <text x="372" y="7127" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle">Week</text>
+    <!-- Inactive "Month": starts at 338+68=406, 71px wide, center at 406+35.5=441.5 -->
+    <text x="442" y="7127" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="500" fill="#9CA3AF" text-anchor="middle">Month</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Step 9 — Checkbox                                            -->
+  <!-- ============================================================ -->
+  <g id="Step-09-Checkbox">
+    <!-- Section Title -->
+    <text x="60" y="7210" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Checkbox</text>
+    <text x="60" y="7234" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">18&#xd7;18px · accent-color: #4185DE · unchecked border: #D1D5DB</text>
+
+    <!-- Unchecked -->
+    <text x="60" y="7272" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">UNCHECKED</text>
+    <rect x="60" y="7286" width="18" height="18" rx="3" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1.5"/>
+    <text x="88" y="7300" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Task item label</text>
+
+    <!-- Checked -->
+    <text x="280" y="7272" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">CHECKED</text>
+    <rect x="280" y="7286" width="18" height="18" rx="3" fill="#4185DE"/>
+    <!-- White checkmark -->
+    <path d="M284 7295 L287 7299 L295 7290" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="308" y="7300" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Completed task</text>
+
+    <!-- Disabled unchecked -->
+    <text x="500" y="7272" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DISABLED</text>
+    <g opacity="0.5">
+      <rect x="500" y="7286" width="18" height="18" rx="3" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1.5"/>
+      <text x="528" y="7300" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Disabled item</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- Step 10 — TopNav                                             -->
+  <!-- ============================================================ -->
+  <g id="Step-10-TopNav">
+    <!-- Section Title -->
+    <text x="60" y="7400" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="24" font-weight="600" fill="#374151">Top Navigation (TopNav)</text>
+    <text x="60" y="7424" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">flex · space-between · padding: 0 4px · border-bottom: 1px solid #E3E8EF · bg: #FFF</text>
+
+    <!-- Authenticated Variant -->
+    <text x="60" y="7462" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">AUTHENTICATED (DASHBOARD)</text>
+
+    <!-- Nav bar background -->
+    <rect x="60" y="7476" width="1320" height="56" fill="#FFFFFF"/>
+    <line x1="60" y1="7532" x2="1380" y2="7532" stroke="#E3E8EF" stroke-width="1"/>
+
+    <!-- Logo 48x48 -->
+    <svg x="64" y="7480" width="48" height="48" viewBox="0 0 64 64">
+      <path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/>
+    </svg>
+    <!-- App name -->
+    <text x="118" y="7510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">WhatsNextAction</text>
+
+    <!-- Right side: QuickAddBtn -->
+    <rect x="1120" y="7492" width="150" height="36" rx="6" fill="#ecf3fc" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="1140" y="7514" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0">+  Quick Add</text>
+    <!-- UserAvatar -->
+    <circle cx="1310" cy="7504" r="18" fill="#777777"/>
+    <text x="1310" y="7510" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">JD</text>
+
+    <!-- Guest / Landing Variant -->
+    <text x="60" y="7560" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">GUEST / LANDING</text>
+
+    <!-- Nav bar background -->
+    <rect x="60" y="7574" width="1320" height="56" fill="#FFFFFF"/>
+    <line x1="60" y1="7630" x2="1380" y2="7630" stroke="#E3E8EF" stroke-width="1"/>
+
+    <!-- Logo 48x48 -->
+    <svg x="64" y="7578" width="48" height="48" viewBox="0 0 64 64">
+      <path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/>
+    </svg>
+    <!-- App name -->
+    <text x="118" y="7608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#374151">WhatsNextAction</text>
+
+    <!-- Center: Nav links (gap: 24px) -->
+    <text x="560" y="7608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Why GTD</text>
+    <text x="660" y="7608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Features</text>
+    <text x="760" y="7608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Pricing</text>
+    <text x="840" y="7608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Help</text>
+
+    <!-- Right: Start Here (primary md) -->
+    <rect x="1160" y="7590" width="100" height="36" rx="6" fill="#4185DE"/>
+    <text x="1210" y="7612" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Start Here</text>
+    <!-- Sign In (ghost md) -->
+    <rect x="1270" y="7590" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="1310" y="7612" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle">Sign In</text>
+  </g>
+
+</svg>
