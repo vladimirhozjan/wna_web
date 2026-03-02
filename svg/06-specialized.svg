@@ -14,51 +14,6 @@
 </filter>
 
 <!-- ICON SYMBOLS (all 45) -->
-<symbol id="icon-action" viewBox="0 0 96 96"><path fill="currentColor" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/></symbol>
-<symbol id="icon-arrow-right-small" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></symbol>
-<symbol id="icon-attachment" viewBox="0 0 96 96"><path fill="currentColor" d="M48.45 92C40.77 92 34.13 89.3 28.59 83.88C23.02 78.46 20.24 71.94 20.24 64.25L20.24 23.28C20.24 17.98 22.12 13.42 25.89 9.65C29.66 5.88 34.24 4 39.55 4C44.88 4 49.41 5.88 53.18 9.65C56.94 13.42 58.83 17.98 58.83 23.28L58.83 61.56L53.03 61.56L53.03 23.28C53.03 19.57 51.73 16.41 49.12 13.8C46.51 11.19 43.32 9.8 39.55 9.8C35.84 9.8 32.68 11.19 30.07 13.8C27.46 16.41 26.04 19.57 26.04 23.28L26.04 64.25C26.04 70.31 28.15 75.47 32.36 79.74C36.56 83.97 41.78 86.11 47.96 86.11C54.1 86.11 59.32 83.97 63.58 79.74C67.82 75.47 69.96 70.31 69.96 64.25L69.96 23.28L75.76 23.28L75.76 64.25C75.76 71.94 73.01 78.46 67.5 83.88C61.99 89.3 55.41 92 48.45 92Z"/></symbol>
-<symbol id="icon-calendar" viewBox="0 0 96 96"><path fill="currentColor" d="M17.2 92C14.78 92 12.71 91.12 11 89.4C9.28 87.69 8.4 85.62 8.4 83.2L8.4 21.6C8.4 19.18 9.28 17.11 11 15.4C12.71 13.68 14.78 12.8 17.2 12.8L21.6 12.8L21.6 4L30.4 4L30.4 12.8L65.6 12.8L65.6 4L74.4 4L74.4 12.8L78.8 12.8C81.22 12.8 83.29 13.68 85 15.4C86.72 17.11 87.6 19.18 87.6 21.6L87.6 83.2C87.6 85.62 86.72 87.69 85 89.4C83.29 91.12 81.22 92 78.8 92L17.2 92ZM17.2 83.2L78.8 83.2L78.8 39.2L17.2 39.2L17.2 83.2Z"/></symbol>
-<symbol id="icon-check" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></symbol>
-<symbol id="icon-chevron-down" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M11.33 29.67L48 66.33L84.67 29.67"/></symbol>
-<symbol id="icon-chevron-left" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M66.33 84.67L29.67 48L66.33 11.33"/></symbol>
-<symbol id="icon-chevron-right" viewBox="0 0 96 96"><path fill="currentColor" d="M31.28 92L25.12 85.84L58.34 48L25.12 10.16L31.28 4L70.88 48L31.28 92Z"/></symbol>
-<symbol id="icon-code-file" viewBox="0 0 96 96"><path fill="currentColor" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><path fill="currentColor" d="M41.13 72.75C40.03 72.75 39.2 72.34 38.51 71.51L31.5 63.13L38.51 54.74C39.2 53.91 40.03 53.5 41.13 53.5C41.9 53.5 42.58 53.78 43.16 54.3C43.74 54.85 44.01 55.51 44.01 56.25C44.01 56.66 43.88 57.08 43.66 57.49L38.79 63.13L43.66 68.76C43.88 69.17 44.01 69.59 44.01 70C44.01 70.74 43.74 71.4 43.16 71.95C42.58 72.47 41.9 72.75 41.13 72.75Z"/><path fill="currentColor" d="M54.88 72.75C54.1 72.75 53.42 72.47 52.84 71.95C52.26 71.4 51.99 70.74 51.99 70C51.99 69.59 52.13 69.17 52.34 68.76L57.21 63.13L52.34 57.49C52.13 57.08 51.99 56.66 51.99 56.25C51.99 55.51 52.26 54.85 52.84 54.3C53.42 53.78 54.1 53.5 54.88 53.5C55.97 53.5 56.8 53.91 57.49 54.74L64.5 63.13L57.49 71.51C56.8 72.34 55.97 72.75 54.88 72.75Z"/></symbol>
-<symbol id="icon-comment" viewBox="0 0 96 96"><path fill="currentColor" d="M48 6.75C23.8 6.75 4 22.7 4 42.5C4 53.78 10.33 63.95 20.5 70.55L20.5 89.25L37.83 79.63C41.13 80.45 44.42 81 48 81C72.2 81 92 65.05 92 45.25C92 25.45 72.2 6.75 48 6.75ZM48 72.75C44.97 72.75 41.95 72.47 39.2 71.65L36.45 70.83L26 76.6L26 68.9L23.52 67.25C15.55 61.75 9.5 52.67 9.5 42.5C9.5 25.73 26.83 12.25 48 12.25C69.17 12.25 86.5 25.73 86.5 42.5C86.5 59.28 69.17 72.75 48 72.75Z"/></symbol>
-<symbol id="icon-completed" viewBox="0 0 96 96"><path fill="currentColor" d="M36.72 81.55L4 48.83L15.82 37L36.72 57.9L80.18 14.45L92 26.27L36.72 81.55Z"/></symbol>
-<symbol id="icon-description" viewBox="0 0 96 96"><path fill="currentColor" d="M4 16.38L92 16.38L92 24.63L4 24.63ZM4 43.88L92 43.88L92 52.13L4 52.13ZM4 71.38L64.5 71.38L64.5 79.63L4 79.63Z"/></symbol>
-<symbol id="icon-download" viewBox="0 0 96 96"><path fill="currentColor" d="M9.87 92C8.25 92 6.87 91.41 5.73 90.27C4.59 89.13 4 87.75 4 86.13L4 62.67L9.87 62.67L9.87 86.13L86.13 86.13L86.13 62.67L92 62.67L92 86.13C92 87.75 91.41 89.13 90.27 90.27C89.13 91.41 87.75 92 86.13 92L9.87 92ZM48 68.53L23.07 43.6L27.32 39.49L45.07 57.24L45.07 4L50.93 4L50.93 57.24L68.68 39.49L72.93 43.6L48 68.53Z"/></symbol>
-<symbol id="icon-engage" viewBox="0 0 96 96"><path fill="currentColor" d="M8.89 4C6.2 4 4 6.2 4 8.89L4 48C4 50.69 6.2 52.89 8.89 52.89L38.22 52.89C40.91 52.89 43.11 50.69 43.11 48L43.11 8.89C43.11 6.2 40.91 4 38.22 4L8.89 4ZM33.33 13.78L13.78 13.78L13.78 43.11L33.33 43.11L33.33 13.78ZM8.89 62.67C6.2 62.67 4 64.87 4 67.56L4 87.11C4 89.8 6.2 92 8.89 92L38.22 92C40.91 92 43.11 89.8 43.11 87.11L43.11 67.56C43.11 64.87 40.91 62.67 38.22 62.67L8.89 62.67ZM33.33 72.44L13.78 72.44L13.78 82.22L33.33 82.22L33.33 72.44ZM57.78 4C55.09 4 52.89 6.2 52.89 8.89L52.89 28.44C52.89 31.13 55.09 33.33 57.78 33.33L87.11 33.33C89.8 33.33 92 31.13 92 28.44L92 8.89C92 6.2 89.8 4 87.11 4L57.78 4ZM82.22 13.78L62.67 13.78L62.67 23.56L82.22 23.56L82.22 13.78ZM57.78 43.11C55.09 43.11 52.89 45.31 52.89 48L52.89 87.11C52.89 89.8 55.09 92 57.78 92L87.11 92C89.8 92 92 89.8 92 87.11L92 48C92 45.31 89.8 43.11 87.11 43.11L57.78 43.11ZM82.22 52.89L62.67 52.89L62.67 82.22L82.22 82.22L82.22 52.89Z"/></symbol>
-<symbol id="icon-file" viewBox="0 0 96 96"><path fill="currentColor" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/></symbol>
-<symbol id="icon-filter" viewBox="0 0 96 96"><rect x="4" y="15" width="88" height="11" rx="5.5" fill="currentColor"/><rect x="15" y="42.5" width="66" height="11" rx="5.5" fill="currentColor"/><rect x="31.5" y="70" width="33" height="11" rx="5.5" fill="currentColor"/></symbol>
-<symbol id="icon-filter-large" viewBox="0 0 96 96"><rect x="4" y="13.78" width="88" height="9.78" rx="4.89" fill="currentColor"/><rect x="18.67" y="43.11" width="58.67" height="9.78" rx="4.89" fill="currentColor"/><rect x="33.33" y="72.44" width="29.33" height="9.78" rx="4.89" fill="currentColor"/></symbol>
-<symbol id="icon-folder" viewBox="0 0 96 96"><path fill="currentColor" d="M9.5 81C7.99 81 6.7 80.45 5.62 79.38C4.55 78.31 4 77.01 4 75.5L4 20.5C4 18.99 4.55 17.7 5.62 16.62C6.7 15.55 7.99 15 9.5 15L37 15L42.5 20.5L86.5 20.5C88.01 20.5 89.31 21.05 90.38 22.12C91.45 23.2 92 24.49 92 26L92 75.5C92 77.01 91.45 78.31 90.38 79.38C89.31 80.45 88.01 81 86.5 81L9.5 81ZM9.5 75.5L86.5 75.5L86.5 26L40.16 26L34.66 20.5L9.5 20.5L9.5 75.5Z"/></symbol>
-<symbol id="icon-grid-view" viewBox="0 0 96 96"><rect x="4" y="4" width="33" height="33" rx="8.25" fill="currentColor"/><rect x="59" y="4" width="33" height="33" rx="8.25" fill="currentColor"/><rect x="4" y="59" width="33" height="33" rx="8.25" fill="currentColor"/><rect x="59" y="59" width="33" height="33" rx="8.25" fill="currentColor"/></symbol>
-<symbol id="icon-hourglass" viewBox="0 0 96 96"><path fill="currentColor" d="M21.6 4L21.6 30.4L21.64 30.4L21.6 30.44L39.2 48L21.6 65.6L21.64 65.64L21.6 65.64L21.6 92L74.4 92L74.4 65.64L74.36 65.64L74.4 65.6L56.8 48L74.4 30.44L74.36 30.4L74.4 30.4L74.4 4L21.6 4ZM65.6 67.8L65.6 83.2L30.4 83.2L30.4 67.8L48 50.2L65.6 67.8ZM48 45.8L30.4 28.2L30.4 12.8L65.6 12.8L65.6 28.2L48 45.8Z"/></symbol>
-<symbol id="icon-image-file" viewBox="0 0 96 96"><path fill="currentColor" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><path fill="currentColor" d="M31.5 75.5L43.88 59L52.13 70L57.63 63.13L64.5 75.5L31.5 75.5Z"/><circle cx="59" cy="42.5" r="6.88" fill="currentColor"/></symbol>
-<symbol id="icon-inbox" viewBox="0 0 96 96"><path fill="currentColor" d="M13.78 92C11.09 92 8.79 91.02 6.88 89.12C4.98 87.21 4 84.91 4 82.22L4 13.78C4 11.09 4.98 8.79 6.88 6.88C8.79 4.98 11.09 4 13.78 4L82.22 4C84.91 4 87.21 4.98 89.12 6.88C91.02 8.79 92 11.09 92 13.78L92 62.67L62.67 92L13.78 92ZM13.78 82.22L52.89 82.22L52.89 62.67C52.89 59.98 53.87 57.68 55.77 55.77C57.68 53.87 59.98 52.89 62.67 52.89L82.22 52.89L82.22 13.78L13.78 13.78L13.78 82.22ZM62.67 82.22L82.22 62.67L62.67 62.67L62.67 82.22Z"/></symbol>
-<symbol id="icon-list-view" viewBox="0 0 96 96"><rect x="4" y="9.5" width="88" height="11" rx="5.5" fill="currentColor"/><rect x="4" y="42.5" width="88" height="11" rx="5.5" fill="currentColor"/><rect x="4" y="75.5" width="88" height="11" rx="5.5" fill="currentColor"/></symbol>
-<symbol id="icon-logout" viewBox="0 0 96 96"><path fill="currentColor" d="M92 48L78 32L82 38L82 44L66 44L66 52L82 52L82 58L78 64ZM29.83 87.65C27.65 87.65 25.8 86.93 24.28 85.47C22.76 84.02 22 82.17 22 79.72L22 16.28C22 13.83 22.76 11.98 24.28 10.53C25.8 9.07 27.65 8.35 29.83 8.35L65.52 8.35C67.7 8.35 69.55 9.07 71.07 10.53C72.59 11.98 73.35 13.83 73.35 16.28L73.35 32.14L65.42 32.14L65.42 16.28L29.83 16.28L29.83 79.72L65.42 79.72L65.42 63.86L73.35 63.86L73.35 79.72C73.35 82.17 72.59 84.02 71.07 85.47C69.55 86.93 67.7 87.65 65.52 87.65Z"/></symbol>
-<symbol id="icon-more" viewBox="0 0 96 96"><circle cx="12.8" cy="48" r="8.8" fill="currentColor"/><circle cx="48" cy="48" r="8.8" fill="currentColor"/><circle cx="83.2" cy="48" r="8.8" fill="currentColor"/></symbol>
-<symbol id="icon-move" viewBox="0 0 96 96"><path fill="currentColor" d="M70.56 48L43.49 75.08L43.49 57.03L7.38 57.03L7.38 38.97L43.49 38.97L43.49 20.92L70.56 48Z"/><path fill="none" stroke="currentColor" stroke-width="6.77" d="M25.44 11.9L88.62 11.9L88.62 84.1L25.44 84.1L25.44 66.05M25.44 29.95L25.44 11.9"/></symbol>
-<symbol id="icon-next" viewBox="0 0 96 96"><path fill="currentColor" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/></symbol>
-<symbol id="icon-pdf-file" viewBox="0 0 96 96"><path fill="currentColor" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><text x="48" y="67.25" text-anchor="middle" fill="currentColor" font-family="Arial,sans-serif" font-size="22" font-weight="700">PDF</text></symbol>
-<symbol id="icon-projects" viewBox="0 0 96 96"><path fill="currentColor" d="M12.8 83.2C10.38 83.2 8.31 82.34 6.58 80.61C4.86 78.89 4 76.82 4 74.4L4 21.6C4 19.18 4.86 17.11 6.58 15.38C8.31 13.66 10.38 12.8 12.8 12.8L39.2 12.8L48 21.6L83.2 21.6C85.62 21.6 87.69 22.46 89.42 24.18C91.14 25.91 92 27.98 92 30.4L92 74.4C92 76.82 91.14 78.89 89.42 80.61C87.69 82.34 85.62 83.2 83.2 83.2L12.8 83.2ZM12.8 74.4L83.2 74.4L83.2 30.4L44.37 30.4L35.57 21.6L12.8 21.6L12.8 74.4Z"/></symbol>
-<symbol id="icon-quiz" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="6.14" d="M48 88.93C70.61 88.93 88.93 70.61 88.93 48C88.93 25.39 70.61 7.07 48 7.07C25.39 7.07 7.07 25.39 7.07 48C7.07 70.61 25.39 88.93 48 88.93Z"/><path fill="none" stroke="currentColor" stroke-width="6.14" stroke-linecap="round" d="M35.72 35.72A12.28 12.28 0 1 1 49.68 47.9A4.09 4.09 0 0 0 45.95 52.09L45.95 54.14"/><circle cx="48" cy="68.47" r="4.09" fill="currentColor"/></symbol>
-<symbol id="icon-recurring" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M70.56 7.38L84.1 20.92L70.56 34.46"/><path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M7.38 34.46L7.38 29.95A13.54 13.54 0 0 1 20.92 16.41L84.1 16.41"/><path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M25.44 88.62L11.9 75.08L25.44 61.54"/><path fill="none" stroke="currentColor" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M88.62 61.54L88.62 66.05A13.54 13.54 0 0 1 75.08 79.59L11.9 79.59"/></symbol>
-<symbol id="icon-reference" viewBox="0 0 96 96"><path fill="currentColor" d="M18.67 92L18.67 12.38C18.67 10.08 19.5 8.11 21.14 6.47C22.77 4.84 24.74 4 27.05 4L68.95 4C71.26 4 73.23 4.84 74.86 6.47C76.5 8.11 77.33 10.08 77.33 12.38L77.33 92L48 77.33L18.67 92ZM27.05 78.8L48 68.32L68.95 78.8L68.95 12.38L27.05 12.38L27.05 78.8Z"/></symbol>
-<symbol id="icon-rename" viewBox="0 0 96 96"><path fill="currentColor" d="M14.76 86.62L14.76 76.12L68.86 22.17L79.35 32.66L25.26 86.62L14.76 86.62ZM78.95 22.57L68.86 12.48L75.72 5.61C76.8 4.54 78.09 4 79.62 4C81.15 4 82.45 4.54 83.52 5.61L90.39 12.48C91.46 13.55 92 14.85 92 16.38C92 17.91 91.46 19.2 90.39 20.28L78.95 22.57ZM9.38 92C7.9 92 6.64 91.46 5.59 90.41C4.54 89.36 4 88.1 4 86.62L4 73.83C4 73.16 4.13 72.49 4.4 71.9C4.67 71.28 5.02 70.74 5.48 70.34L68.86 6.96L89.04 27.14L25.66 90.52C25.26 90.98 24.72 91.33 24.1 91.6C23.51 91.87 22.84 92 22.17 92L9.38 92Z"/></symbol>
-<symbol id="icon-review" viewBox="0 0 96 96"><path fill="currentColor" d="M31.08 78.46L64.92 78.46L64.92 71.69L31.08 71.69L31.08 78.46ZM31.08 64.92L64.92 64.92L64.92 58.15L31.08 58.15L31.08 64.92ZM24.31 92C22.45 92 20.86 91.32 19.54 90C18.22 88.68 17.54 87.09 17.54 85.23L17.54 17.54C17.54 15.68 18.22 14.09 19.54 12.77C20.86 11.45 22.45 10.77 24.31 10.77L38.46 10.77C39.03 8.81 40.15 7.18 41.84 5.9C43.53 4.61 45.46 4 47.66 4L48.34 4C50.54 4 52.47 4.61 54.16 5.9C55.85 7.18 56.97 8.81 57.54 10.77L71.69 10.77C73.55 10.77 75.14 11.45 76.46 12.77C77.78 14.09 78.46 15.68 78.46 17.54L78.46 85.23C78.46 87.09 77.78 88.68 76.46 90C75.14 91.32 73.55 92 71.69 92L24.31 92ZM24.31 85.23L71.69 85.23L71.69 17.54L64.92 17.54L64.92 24.31L31.08 24.31L31.08 17.54L24.31 17.54L24.31 85.23ZM37.85 24.31L58.15 24.31L58.15 17.54L37.85 17.54L37.85 24.31Z"/></symbol>
-<symbol id="icon-rocket" viewBox="0 0 96 96"><path fill="currentColor" d="M48 4C48 4 26 26 26 48C26 59 30.4 67.8 37 74.4L48 92L59 74.4C65.6 67.8 70 59 70 48C70 26 48 4 48 4ZM48 61.2A13.2 13.2 0 1 1 48 34.8A13.2 13.2 0 0 1 48 61.2Z"/></symbol>
-<symbol id="icon-search" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M88 87.78L68.67 68.45M79.11 43.34A35.56 35.56 0 1 1 8 43.34A35.56 35.56 0 0 1 79.11 43.34Z"/></symbol>
-<symbol id="icon-settings" viewBox="0 0 96 96"><path fill="currentColor" d="M35.96 91.78L34.21 77.77C33.26 77.41 32.37 76.97 31.53 76.46C30.69 75.95 29.87 75.4 29.06 74.82L16.04 80.29L4 59.49L15.27 50.96C15.2 50.44 15.16 49.95 15.16 49.48L15.16 46.52C15.16 46.05 15.2 45.56 15.27 45.04L4 36.51L16.04 15.71L29.06 21.18C29.87 20.6 30.71 20.05 31.58 19.54C32.46 19.03 33.33 18.59 34.21 18.23L35.96 4.22L60.04 4.22L61.79 18.23C62.74 18.59 63.63 19.03 64.47 19.54C65.31 20.05 66.13 20.6 66.94 21.18L79.96 15.71L92 36.51L80.73 45.04C80.8 45.56 80.84 46.05 80.84 46.52L80.84 49.48C80.84 49.95 80.76 50.44 80.62 50.96L91.89 59.49L79.85 80.29L66.94 74.82C66.13 75.4 65.29 75.95 64.42 76.46C63.54 76.97 62.67 77.41 61.79 77.77L60.04 91.78L35.96 91.78ZM43.62 83.02L52.27 83.02L53.8 71.42C56.06 70.84 58.16 69.98 60.09 68.85C62.03 67.72 63.8 66.35 65.4 64.75L76.24 69.23L80.51 61.79L71.09 54.68C71.46 53.66 71.71 52.58 71.86 51.45C72.01 50.32 72.08 49.17 72.08 48C72.08 46.83 72.01 45.68 71.86 44.55C71.71 43.42 71.46 42.34 71.09 41.32L80.51 34.21L76.24 26.77L65.4 31.36C63.8 29.69 62.03 28.28 60.09 27.15C58.16 26.02 56.06 25.16 53.8 24.58L52.38 12.98L43.73 12.98L42.2 24.58C39.94 25.16 37.84 26.02 35.91 27.15C33.97 28.28 32.2 29.65 30.6 31.25L19.76 26.77L15.49 34.21L24.91 41.21C24.54 42.31 24.29 43.4 24.14 44.5C23.99 45.59 23.92 46.76 23.92 48C23.92 49.17 23.99 50.3 24.14 51.39C24.29 52.49 24.54 53.58 24.91 54.68L15.49 61.79L19.76 69.23L30.6 64.64C32.2 66.31 33.97 67.72 35.91 68.85C37.84 69.98 39.94 70.84 42.2 71.42L43.62 83.02ZM48.22 63.32C52.45 63.32 56.06 61.83 59.05 58.84C62.05 55.84 63.54 52.23 63.54 48C63.54 43.77 62.05 40.16 59.05 37.16C56.06 34.17 52.45 32.68 48.22 32.68C43.91 32.68 40.28 34.17 37.33 37.16C34.37 40.16 32.9 43.77 32.9 48C32.9 52.23 34.37 55.84 37.33 58.84C40.28 61.83 43.91 63.32 48.22 63.32Z"/></symbol>
-<symbol id="icon-someday" viewBox="0 0 96 96"><path fill="currentColor" d="M24.71 78.28C19.01 78.28 14.15 76.25 10.11 72.21C6.07 68.17 4 63.27 4 57.58C4 52.57 5.59 48.16 8.73 44.29C11.87 40.43 15.91 38.08 20.74 37.22C22.46 31.18 25.84 26.31 30.88 22.58C35.92 18.89 41.55 17.03 47.83 17.03C55.59 17.03 62.15 19.79 67.5 25.14C72.85 30.49 75.61 37.04 75.61 44.81L75.61 47.22C80.27 47.4 84.17 49.05 87.27 52.16C90.38 55.26 92 59.13 92 63.79C92 67.93 90.38 71.52 87.17 74.49C83.96 77.49 80.09 78.97 75.61 78.97L24.71 78.28ZM24.71 71.38L75.61 71.38C78.02 71.38 80.06 70.55 81.75 68.86C83.41 67.2 84.24 65.17 84.24 62.75C84.24 60.34 83.41 58.3 81.75 56.64C80.06 54.95 78.02 54.13 75.61 54.13L67.84 54.13L67.84 44.81C67.84 39.29 65.91 34.56 62.08 30.66C58.25 26.76 53.52 24.79 47.83 24.79C42.13 24.79 37.37 26.76 33.51 30.66C29.64 34.56 27.71 39.29 27.71 44.81L24.71 44.81C21.08 44.81 18.01 46.08 15.53 48.57C13.01 51.05 11.76 54.13 11.76 57.58C11.76 61.2 13.01 64.27 15.53 66.76C18.01 69.28 21.08 70.52 24.71 70.52Z"/></symbol>
-<symbol id="icon-text-file" viewBox="0 0 96 96"><path fill="currentColor" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><rect x="34.25" y="39.75" width="27.5" height="4.13" rx="2.06" fill="currentColor"/><rect x="34.25" y="50.75" width="22" height="4.13" rx="2.06" fill="currentColor"/><rect x="34.25" y="61.75" width="27.5" height="4.13" rx="2.06" fill="currentColor"/><rect x="34.25" y="72.75" width="16.5" height="4.13" rx="2.06" fill="currentColor"/></symbol>
-<symbol id="icon-thumb-up" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="6.14" stroke-linecap="round" stroke-linejoin="round" d="M28.18 88.93L15.91 88.93A8.19 8.19 0 0 1 7.72 80.74L7.72 52.09A8.19 8.19 0 0 1 15.91 43.91L28.18 43.91M56.84 35.72L56.84 19.35A12.28 12.28 0 0 0 44.56 7.07L28.18 43.91L28.18 88.93L74.35 88.93A8.19 8.19 0 0 0 82.54 81.97L88.19 45.13A8.19 8.19 0 0 0 80 35.72L56.84 35.72Z"/></symbol>
-<symbol id="icon-today" viewBox="0 0 96 96"><path fill="none" stroke="currentColor" stroke-width="6.77" d="M48 17.54L48 7.38M48 88.62L48 78.46M78.46 48L88.62 48M7.38 48L17.54 48M69.49 26.51L76.77 19.23M19.23 76.77L26.51 69.49M69.49 69.49L76.77 76.77M19.23 19.23L26.51 26.51M48 34.46C55.45 34.46 61.54 40.55 61.54 48C61.54 55.45 55.45 61.54 48 61.54C40.55 61.54 34.46 55.45 34.46 48C34.46 40.55 40.55 34.46 48 34.46Z"/></symbol>
-<symbol id="icon-trash" viewBox="0 0 96 96"><path fill="currentColor" d="M22.53 92C20.67 92 19.05 91.31 17.66 89.92C16.27 88.53 15.58 86.91 15.58 85.05L15.58 17.89L10.95 17.89L10.95 8.63L34.11 8.63L34.11 4L61.89 4L61.89 8.63L85.05 8.63L85.05 17.89L80.42 17.89L80.42 85.05C80.42 86.91 79.73 88.53 78.34 89.92C76.95 91.31 75.33 92 73.47 92L22.53 92ZM71.16 17.89L24.84 17.89L24.84 82.74L71.16 82.74L71.16 17.89ZM34.11 73.47L43.37 73.47L43.37 27.16L34.11 27.16L34.11 73.47ZM52.63 73.47L61.89 73.47L61.89 27.16L52.63 27.16L52.63 73.47Z"/></symbol>
-<symbol id="icon-upload" viewBox="0 0 96 96"><path fill="currentColor" d="M9.87 92C8.25 92 6.87 91.41 5.73 90.27C4.59 89.13 4 87.75 4 86.13L4 62.67L9.87 62.67L9.87 86.13L86.13 86.13L86.13 62.67L92 62.67L92 86.13C92 87.75 91.41 89.13 90.27 90.27C89.13 91.41 87.75 92 86.13 92L9.87 92ZM45.07 68.53L45.07 15.29L27.32 33.04L23.07 28.93L48 4L72.93 28.93L68.68 33.04L50.93 15.29L50.93 68.53L45.07 68.53Z"/></symbol>
-<symbol id="icon-waiting" viewBox="0 0 96 96"><path fill="currentColor" d="M48 4C23.56 4 4 23.56 4 48C4 72.44 23.56 92 48 92C72.44 92 92 72.44 92 48C92 23.56 72.44 4 48 4ZM48 82.22C28.44 82.22 13.78 67.56 13.78 48C13.78 28.44 28.44 13.78 48 13.78C67.56 13.78 82.22 28.44 82.22 48C82.22 67.56 67.56 82.22 48 82.22ZM50.44 26L43.11 26L43.11 52.89L65.11 67.56L70 60.22L50.44 48L50.44 26Z"/></symbol>
-<symbol id="icon-warning" viewBox="0 0 96 96"><path fill="currentColor" d="M48 10L4 86L92 86L48 10ZM48 23L79 80L17 80L48 23ZM44 42L44 62L52 62L52 42L44 42ZM44 70L44 78L52 78L52 70L44 70Z"/></symbol>
 </defs>
 
 <!-- STEP 23: AuthDialog -->
@@ -350,7 +305,7 @@
 
 <!-- Icon (QuizIcon as info) -->
 <g transform="translate(16,14)">
-<use href="#icon-quiz" width="20" height="20" style="color:#4185DE"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="none" stroke="#4185DE" stroke-width="6.14" d="M48 88.93C70.61 88.93 88.93 70.61 88.93 48C88.93 25.39 70.61 7.07 48 7.07C25.39 7.07 7.07 25.39 7.07 48C7.07 70.61 25.39 88.93 48 88.93Z"/><path fill="none" stroke="#4185DE" stroke-width="6.14" stroke-linecap="round" d="M35.72 35.72A12.28 12.28 0 1 1 49.68 47.9A4.09 4.09 0 0 0 45.95 52.09L45.95 54.14"/><circle cx="48" cy="68.47" r="4.09" fill="#4185DE"/></svg>
 </g>
 <!-- Content text -->
 <text font-family="Inter" font-size="16" font-weight="400" fill="#374151" x="48" y="32" style="line-height:1.5">
@@ -375,7 +330,7 @@
 </text>
 <!-- Icon in tertiary color -->
 <g transform="translate(16,14)">
-<use href="#icon-quiz" width="20" height="20" style="color:#9CA3AF"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="6.14" d="M48 88.93C70.61 88.93 88.93 70.61 88.93 48C88.93 25.39 70.61 7.07 48 7.07C25.39 7.07 7.07 25.39 7.07 48C7.07 70.61 25.39 88.93 48 88.93Z"/><path fill="none" stroke="#9CA3AF" stroke-width="6.14" stroke-linecap="round" d="M35.72 35.72A12.28 12.28 0 1 1 49.68 47.9A4.09 4.09 0 0 0 45.95 52.09L45.95 54.14"/><circle cx="48" cy="68.47" r="4.09" fill="#9CA3AF"/></svg>
 </g>
 <!-- Close button -->
 <text font-family="Inter" font-size="18" font-weight="400" fill="#9CA3AF" x="476" y="24">&#215;</text>
@@ -394,7 +349,7 @@
 <g transform="translate(0,75)">
 <rect width="40" height="40" rx="4" fill="#F3F4F6"/>
 <g transform="translate(10,10)">
-<use href="#icon-inbox" width="20" height="20" style="color:#6B7280"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="#6B7280" d="M13.78 92C11.09 92 8.79 91.02 6.88 89.12C4.98 87.21 4 84.91 4 82.22L4 13.78C4 11.09 4.98 8.79 6.88 6.88C8.79 4.98 11.09 4 13.78 4L82.22 4C84.91 4 87.21 4.98 89.12 6.88C91.02 8.79 92 11.09 92 13.78L92 62.67L62.67 92L13.78 92ZM13.78 82.22L52.89 82.22L52.89 62.67C52.89 59.98 53.87 57.68 55.77 55.77C57.68 53.87 59.98 52.89 62.67 52.89L82.22 52.89L82.22 13.78L13.78 13.78L13.78 82.22ZM62.67 82.22L82.22 62.67L62.67 62.67L62.67 82.22Z"/></svg>
 </g>
 <text class="sl" text-anchor="middle" x="20" y="58">STUFF</text>
 <text font-family="Inter" font-size="11" font-weight="400" fill="#6B7280" text-anchor="middle" x="20" y="72">Inbox</text>
@@ -404,7 +359,7 @@
 <g transform="translate(70,75)">
 <rect width="40" height="40" rx="4" fill="#F3F4F6"/>
 <g transform="translate(10,10)">
-<use href="#icon-next" width="20" height="20" style="color:#4185DE"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="#4185DE" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/></svg>
 </g>
 <text class="sl" text-anchor="middle" x="20" y="58">ACTION</text>
 <text font-family="Inter" font-size="11" font-weight="400" fill="#4185DE" text-anchor="middle" x="20" y="72">Bolt</text>
@@ -414,7 +369,7 @@
 <g transform="translate(140,75)">
 <rect width="40" height="40" rx="4" fill="#F3F4F6"/>
 <g transform="translate(10,10)">
-<use href="#icon-projects" width="20" height="20" style="color:#b45309"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="#b45309" d="M12.8 83.2C10.38 83.2 8.31 82.34 6.58 80.61C4.86 78.89 4 76.82 4 74.4L4 21.6C4 19.18 4.86 17.11 6.58 15.38C8.31 13.66 10.38 12.8 12.8 12.8L39.2 12.8L48 21.6L83.2 21.6C85.62 21.6 87.69 22.46 89.42 24.18C91.14 25.91 92 27.98 92 30.4L92 74.4C92 76.82 91.14 78.89 89.42 80.61C87.69 82.34 85.62 83.2 83.2 83.2L12.8 83.2ZM12.8 74.4L83.2 74.4L83.2 30.4L44.37 30.4L35.57 21.6L12.8 21.6L12.8 74.4Z"/></svg>
 </g>
 <text class="sl" text-anchor="middle" x="20" y="58">PROJECT</text>
 <text font-family="Inter" font-size="11" font-weight="400" fill="#b45309" text-anchor="middle" x="20" y="72">Folder</text>
@@ -424,14 +379,14 @@
 <text class="gl" x="250" y="60">Actual Size (20x20)</text>
 <g transform="translate(250,75)">
 <!-- Stuff -->
-<use href="#icon-inbox" width="20" height="20" style="color:#6B7280"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="#6B7280" d="M13.78 92C11.09 92 8.79 91.02 6.88 89.12C4.98 87.21 4 84.91 4 82.22L4 13.78C4 11.09 4.98 8.79 6.88 6.88C8.79 4.98 11.09 4 13.78 4L82.22 4C84.91 4 87.21 4.98 89.12 6.88C91.02 8.79 92 11.09 92 13.78L92 62.67L62.67 92L13.78 92ZM13.78 82.22L52.89 82.22L52.89 62.67C52.89 59.98 53.87 57.68 55.77 55.77C57.68 53.87 59.98 52.89 62.67 52.89L82.22 52.89L82.22 13.78L13.78 13.78L13.78 82.22ZM62.67 82.22L82.22 62.67L62.67 62.67L62.67 82.22Z"/></svg>
 <!-- Action -->
 <g transform="translate(30,0)">
-<use href="#icon-next" width="20" height="20" style="color:#4185DE"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="#4185DE" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/></svg>
 </g>
 <!-- Project -->
 <g transform="translate(60,0)">
-<use href="#icon-projects" width="20" height="20" style="color:#b45309"/>
+<svg width="20" height="20" viewBox="0 0 96 96"><path fill="#b45309" d="M12.8 83.2C10.38 83.2 8.31 82.34 6.58 80.61C4.86 78.89 4 76.82 4 74.4L4 21.6C4 19.18 4.86 17.11 6.58 15.38C8.31 13.66 10.38 12.8 12.8 12.8L39.2 12.8L48 21.6L83.2 21.6C85.62 21.6 87.69 22.46 89.42 24.18C91.14 25.91 92 27.98 92 30.4L92 74.4C92 76.82 91.14 78.89 89.42 80.61C87.69 82.34 85.62 83.2 83.2 83.2L12.8 83.2ZM12.8 74.4L83.2 74.4L83.2 30.4L44.37 30.4L35.57 21.6L12.8 21.6L12.8 74.4Z"/></svg>
 </g>
 </g>
 </g>
@@ -447,55 +402,55 @@
 <!-- ActionIcon -->
 <g transform="translate(0,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-action" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Action</text>
 </g>
 <!-- ArrowRightSmallIcon -->
 <g transform="translate(100,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-arrow-right-small" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ArrowRight</text>
 </g>
 <!-- AttachmentIcon -->
 <g transform="translate(200,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-attachment" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M48.45 92C40.77 92 34.13 89.3 28.59 83.88C23.02 78.46 20.24 71.94 20.24 64.25L20.24 23.28C20.24 17.98 22.12 13.42 25.89 9.65C29.66 5.88 34.24 4 39.55 4C44.88 4 49.41 5.88 53.18 9.65C56.94 13.42 58.83 17.98 58.83 23.28L58.83 61.56L53.03 61.56L53.03 23.28C53.03 19.57 51.73 16.41 49.12 13.8C46.51 11.19 43.32 9.8 39.55 9.8C35.84 9.8 32.68 11.19 30.07 13.8C27.46 16.41 26.04 19.57 26.04 23.28L26.04 64.25C26.04 70.31 28.15 75.47 32.36 79.74C36.56 83.97 41.78 86.11 47.96 86.11C54.1 86.11 59.32 83.97 63.58 79.74C67.82 75.47 69.96 70.31 69.96 64.25L69.96 23.28L75.76 23.28L75.76 64.25C75.76 71.94 73.01 78.46 67.5 83.88C61.99 89.3 55.41 92 48.45 92Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Attachment</text>
 </g>
 <!-- CalendarIcon -->
 <g transform="translate(300,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-calendar" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M17.2 92C14.78 92 12.71 91.12 11 89.4C9.28 87.69 8.4 85.62 8.4 83.2L8.4 21.6C8.4 19.18 9.28 17.11 11 15.4C12.71 13.68 14.78 12.8 17.2 12.8L21.6 12.8L21.6 4L30.4 4L30.4 12.8L65.6 12.8L65.6 4L74.4 4L74.4 12.8L78.8 12.8C81.22 12.8 83.29 13.68 85 15.4C86.72 17.11 87.6 19.18 87.6 21.6L87.6 83.2C87.6 85.62 86.72 87.69 85 89.4C83.29 91.12 81.22 92 78.8 92L17.2 92ZM17.2 83.2L78.8 83.2L78.8 39.2L17.2 39.2L17.2 83.2Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Calendar</text>
 </g>
 <!-- CheckIcon -->
 <g transform="translate(400,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-check" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Check</text>
 </g>
 <!-- ChevronDownIcon -->
 <g transform="translate(500,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-chevron-down" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M11.33 29.67L48 66.33L84.67 29.67"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ChevDown</text>
 </g>
 <!-- ChevronLeftIcon -->
 <g transform="translate(600,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-chevron-left" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M66.33 84.67L29.67 48L66.33 11.33"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ChevLeft</text>
 </g>
 <!-- ChevronRightIcon -->
 <g transform="translate(700,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-chevron-right" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M31.28 92L25.12 85.84L58.34 48L25.12 10.16L31.28 4L70.88 48L31.28 92Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ChevRight</text>
 </g>
 <!-- CodeFileIcon -->
 <g transform="translate(800,0)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-code-file" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><path fill="#374151" d="M41.13 72.75C40.03 72.75 39.2 72.34 38.51 71.51L31.5 63.13L38.51 54.74C39.2 53.91 40.03 53.5 41.13 53.5C41.9 53.5 42.58 53.78 43.16 54.3C43.74 54.85 44.01 55.51 44.01 56.25C44.01 56.66 43.88 57.08 43.66 57.49L38.79 63.13L43.66 68.76C43.88 69.17 44.01 69.59 44.01 70C44.01 70.74 43.74 71.4 43.16 71.95C42.58 72.47 41.9 72.75 41.13 72.75Z"/><path fill="#374151" d="M54.88 72.75C54.1 72.75 53.42 72.47 52.84 71.95C52.26 71.4 51.99 70.74 51.99 70C51.99 69.59 52.13 69.17 52.34 68.76L57.21 63.13L52.34 57.49C52.13 57.08 51.99 56.66 51.99 56.25C51.99 55.51 52.26 54.85 52.84 54.3C53.42 53.78 54.1 53.5 54.88 53.5C55.97 53.5 56.8 53.91 57.49 54.74L64.5 63.13L57.49 71.51C56.8 72.34 55.97 72.75 54.88 72.75Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">CodeFile</text>
 </g>
 
@@ -503,55 +458,55 @@
 <!-- CommentIcon -->
 <g transform="translate(0,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-comment" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M48 6.75C23.8 6.75 4 22.7 4 42.5C4 53.78 10.33 63.95 20.5 70.55L20.5 89.25L37.83 79.63C41.13 80.45 44.42 81 48 81C72.2 81 92 65.05 92 45.25C92 25.45 72.2 6.75 48 6.75ZM48 72.75C44.97 72.75 41.95 72.47 39.2 71.65L36.45 70.83L26 76.6L26 68.9L23.52 67.25C15.55 61.75 9.5 52.67 9.5 42.5C9.5 25.73 26.83 12.25 48 12.25C69.17 12.25 86.5 25.73 86.5 42.5C86.5 59.28 69.17 72.75 48 72.75Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Comment</text>
 </g>
 <!-- CompletedIcon -->
 <g transform="translate(100,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-completed" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M36.72 81.55L4 48.83L15.82 37L36.72 57.9L80.18 14.45L92 26.27L36.72 81.55Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Completed</text>
 </g>
 <!-- DescriptionIcon -->
 <g transform="translate(200,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-description" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M4 16.38L92 16.38L92 24.63L4 24.63ZM4 43.88L92 43.88L92 52.13L4 52.13ZM4 71.38L64.5 71.38L64.5 79.63L4 79.63Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Description</text>
 </g>
 <!-- DownloadIcon -->
 <g transform="translate(300,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-download" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M9.87 92C8.25 92 6.87 91.41 5.73 90.27C4.59 89.13 4 87.75 4 86.13L4 62.67L9.87 62.67L9.87 86.13L86.13 86.13L86.13 62.67L92 62.67L92 86.13C92 87.75 91.41 89.13 90.27 90.27C89.13 91.41 87.75 92 86.13 92L9.87 92ZM48 68.53L23.07 43.6L27.32 39.49L45.07 57.24L45.07 4L50.93 4L50.93 57.24L68.68 39.49L72.93 43.6L48 68.53Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Download</text>
 </g>
 <!-- EngageIcon -->
 <g transform="translate(400,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-engage" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M8.89 4C6.2 4 4 6.2 4 8.89L4 48C4 50.69 6.2 52.89 8.89 52.89L38.22 52.89C40.91 52.89 43.11 50.69 43.11 48L43.11 8.89C43.11 6.2 40.91 4 38.22 4L8.89 4ZM33.33 13.78L13.78 13.78L13.78 43.11L33.33 43.11L33.33 13.78ZM8.89 62.67C6.2 62.67 4 64.87 4 67.56L4 87.11C4 89.8 6.2 92 8.89 92L38.22 92C40.91 92 43.11 89.8 43.11 87.11L43.11 67.56C43.11 64.87 40.91 62.67 38.22 62.67L8.89 62.67ZM33.33 72.44L13.78 72.44L13.78 82.22L33.33 82.22L33.33 72.44ZM57.78 4C55.09 4 52.89 6.2 52.89 8.89L52.89 28.44C52.89 31.13 55.09 33.33 57.78 33.33L87.11 33.33C89.8 33.33 92 31.13 92 28.44L92 8.89C92 6.2 89.8 4 87.11 4L57.78 4ZM82.22 13.78L62.67 13.78L62.67 23.56L82.22 23.56L82.22 13.78ZM57.78 43.11C55.09 43.11 52.89 45.31 52.89 48L52.89 87.11C52.89 89.8 55.09 92 57.78 92L87.11 92C89.8 92 92 89.8 92 87.11L92 48C92 45.31 89.8 43.11 87.11 43.11L57.78 43.11ZM82.22 52.89L62.67 52.89L62.67 82.22L82.22 82.22L82.22 52.89Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Engage</text>
 </g>
 <!-- FileIcon -->
 <g transform="translate(500,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-file" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">File</text>
 </g>
 <!-- FilterIcon -->
 <g transform="translate(600,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-filter" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><rect x="4" y="15" width="88" height="11" rx="5.5" fill="#374151"/><rect x="15" y="42.5" width="66" height="11" rx="5.5" fill="#374151"/><rect x="31.5" y="70" width="33" height="11" rx="5.5" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Filter</text>
 </g>
 <!-- FilterLargeIcon -->
 <g transform="translate(700,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-filter-large" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><rect x="4" y="13.78" width="88" height="9.78" rx="4.89" fill="#374151"/><rect x="18.67" y="43.11" width="58.67" height="9.78" rx="4.89" fill="#374151"/><rect x="33.33" y="72.44" width="29.33" height="9.78" rx="4.89" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">FilterLarge</text>
 </g>
 <!-- FolderIcon -->
 <g transform="translate(800,100)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-folder" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M9.5 81C7.99 81 6.7 80.45 5.62 79.38C4.55 78.31 4 77.01 4 75.5L4 20.5C4 18.99 4.55 17.7 5.62 16.62C6.7 15.55 7.99 15 9.5 15L37 15L42.5 20.5L86.5 20.5C88.01 20.5 89.31 21.05 90.38 22.12C91.45 23.2 92 24.49 92 26L92 75.5C92 77.01 91.45 78.31 90.38 79.38C89.31 80.45 88.01 81 86.5 81L9.5 81ZM9.5 75.5L86.5 75.5L86.5 26L40.16 26L34.66 20.5L9.5 20.5L9.5 75.5Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Folder</text>
 </g>
 
@@ -559,55 +514,55 @@
 <!-- GridViewIcon -->
 <g transform="translate(0,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-grid-view" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><rect x="4" y="4" width="33" height="33" rx="8.25" fill="#374151"/><rect x="59" y="4" width="33" height="33" rx="8.25" fill="#374151"/><rect x="4" y="59" width="33" height="33" rx="8.25" fill="#374151"/><rect x="59" y="59" width="33" height="33" rx="8.25" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">GridView</text>
 </g>
 <!-- HourglassIcon -->
 <g transform="translate(100,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-hourglass" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M21.6 4L21.6 30.4L21.64 30.4L21.6 30.44L39.2 48L21.6 65.6L21.64 65.64L21.6 65.64L21.6 92L74.4 92L74.4 65.64L74.36 65.64L74.4 65.6L56.8 48L74.4 30.44L74.36 30.4L74.4 30.4L74.4 4L21.6 4ZM65.6 67.8L65.6 83.2L30.4 83.2L30.4 67.8L48 50.2L65.6 67.8ZM48 45.8L30.4 28.2L30.4 12.8L65.6 12.8L65.6 28.2L48 45.8Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Hourglass</text>
 </g>
 <!-- ImageFileIcon -->
 <g transform="translate(200,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-image-file" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><path fill="#374151" d="M31.5 75.5L43.88 59L52.13 70L57.63 63.13L64.5 75.5L31.5 75.5Z"/><circle cx="59" cy="42.5" r="6.88" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ImageFile</text>
 </g>
 <!-- InboxIcon -->
 <g transform="translate(300,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-inbox" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M13.78 92C11.09 92 8.79 91.02 6.88 89.12C4.98 87.21 4 84.91 4 82.22L4 13.78C4 11.09 4.98 8.79 6.88 6.88C8.79 4.98 11.09 4 13.78 4L82.22 4C84.91 4 87.21 4.98 89.12 6.88C91.02 8.79 92 11.09 92 13.78L92 62.67L62.67 92L13.78 92ZM13.78 82.22L52.89 82.22L52.89 62.67C52.89 59.98 53.87 57.68 55.77 55.77C57.68 53.87 59.98 52.89 62.67 52.89L82.22 52.89L82.22 13.78L13.78 13.78L13.78 82.22ZM62.67 82.22L82.22 62.67L62.67 62.67L62.67 82.22Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Inbox</text>
 </g>
 <!-- ListViewIcon -->
 <g transform="translate(400,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-list-view" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><rect x="4" y="9.5" width="88" height="11" rx="5.5" fill="#374151"/><rect x="4" y="42.5" width="88" height="11" rx="5.5" fill="#374151"/><rect x="4" y="75.5" width="88" height="11" rx="5.5" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ListView</text>
 </g>
 <!-- LogoutIcon -->
 <g transform="translate(500,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-logout" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M92 48L78 32L82 38L82 44L66 44L66 52L82 52L82 58L78 64ZM29.83 87.65C27.65 87.65 25.8 86.93 24.28 85.47C22.76 84.02 22 82.17 22 79.72L22 16.28C22 13.83 22.76 11.98 24.28 10.53C25.8 9.07 27.65 8.35 29.83 8.35L65.52 8.35C67.7 8.35 69.55 9.07 71.07 10.53C72.59 11.98 73.35 13.83 73.35 16.28L73.35 32.14L65.42 32.14L65.42 16.28L29.83 16.28L29.83 79.72L65.42 79.72L65.42 63.86L73.35 63.86L73.35 79.72C73.35 82.17 72.59 84.02 71.07 85.47C69.55 86.93 67.7 87.65 65.52 87.65Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Logout</text>
 </g>
 <!-- MoreIcon -->
 <g transform="translate(600,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-more" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><circle cx="12.8" cy="48" r="8.8" fill="#374151"/><circle cx="48" cy="48" r="8.8" fill="#374151"/><circle cx="83.2" cy="48" r="8.8" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">More</text>
 </g>
 <!-- MoveIcon -->
 <g transform="translate(700,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-move" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M70.56 48L43.49 75.08L43.49 57.03L7.38 57.03L7.38 38.97L43.49 38.97L43.49 20.92L70.56 48Z"/><path fill="none" stroke="#374151" stroke-width="6.77" d="M25.44 11.9L88.62 11.9L88.62 84.1L25.44 84.1L25.44 66.05M25.44 29.95L25.44 11.9"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Move</text>
 </g>
 <!-- NextIcon -->
 <g transform="translate(800,200)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-next" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Next</text>
 </g>
 
@@ -615,55 +570,55 @@
 <!-- PdfFileIcon -->
 <g transform="translate(0,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-pdf-file" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><text x="48" y="67.25" text-anchor="middle" fill="#374151" font-family="Arial,sans-serif" font-size="22" font-weight="700">PDF</text></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">PdfFile</text>
 </g>
 <!-- ProjectsIcon -->
 <g transform="translate(100,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-projects" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M12.8 83.2C10.38 83.2 8.31 82.34 6.58 80.61C4.86 78.89 4 76.82 4 74.4L4 21.6C4 19.18 4.86 17.11 6.58 15.38C8.31 13.66 10.38 12.8 12.8 12.8L39.2 12.8L48 21.6L83.2 21.6C85.62 21.6 87.69 22.46 89.42 24.18C91.14 25.91 92 27.98 92 30.4L92 74.4C92 76.82 91.14 78.89 89.42 80.61C87.69 82.34 85.62 83.2 83.2 83.2L12.8 83.2ZM12.8 74.4L83.2 74.4L83.2 30.4L44.37 30.4L35.57 21.6L12.8 21.6L12.8 74.4Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Projects</text>
 </g>
 <!-- QuizIcon -->
 <g transform="translate(200,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-quiz" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="6.14" d="M48 88.93C70.61 88.93 88.93 70.61 88.93 48C88.93 25.39 70.61 7.07 48 7.07C25.39 7.07 7.07 25.39 7.07 48C7.07 70.61 25.39 88.93 48 88.93Z"/><path fill="none" stroke="#374151" stroke-width="6.14" stroke-linecap="round" d="M35.72 35.72A12.28 12.28 0 1 1 49.68 47.9A4.09 4.09 0 0 0 45.95 52.09L45.95 54.14"/><circle cx="48" cy="68.47" r="4.09" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Quiz</text>
 </g>
 <!-- RecurringIcon -->
 <g transform="translate(300,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-recurring" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M70.56 7.38L84.1 20.92L70.56 34.46"/><path fill="none" stroke="#374151" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M7.38 34.46L7.38 29.95A13.54 13.54 0 0 1 20.92 16.41L84.1 16.41"/><path fill="none" stroke="#374151" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M25.44 88.62L11.9 75.08L25.44 61.54"/><path fill="none" stroke="#374151" stroke-width="6.77" stroke-linecap="round" stroke-linejoin="round" d="M88.62 61.54L88.62 66.05A13.54 13.54 0 0 1 75.08 79.59L11.9 79.59"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Recurring</text>
 </g>
 <!-- ReferenceIcon -->
 <g transform="translate(400,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-reference" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M18.67 92L18.67 12.38C18.67 10.08 19.5 8.11 21.14 6.47C22.77 4.84 24.74 4 27.05 4L68.95 4C71.26 4 73.23 4.84 74.86 6.47C76.5 8.11 77.33 10.08 77.33 12.38L77.33 92L48 77.33L18.67 92ZM27.05 78.8L48 68.32L68.95 78.8L68.95 12.38L27.05 12.38L27.05 78.8Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Reference</text>
 </g>
 <!-- RenameIcon -->
 <g transform="translate(500,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-rename" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M14.76 86.62L14.76 76.12L68.86 22.17L79.35 32.66L25.26 86.62L14.76 86.62ZM78.95 22.57L68.86 12.48L75.72 5.61C76.8 4.54 78.09 4 79.62 4C81.15 4 82.45 4.54 83.52 5.61L90.39 12.48C91.46 13.55 92 14.85 92 16.38C92 17.91 91.46 19.2 90.39 20.28L78.95 22.57ZM9.38 92C7.9 92 6.64 91.46 5.59 90.41C4.54 89.36 4 88.1 4 86.62L4 73.83C4 73.16 4.13 72.49 4.4 71.9C4.67 71.28 5.02 70.74 5.48 70.34L68.86 6.96L89.04 27.14L25.66 90.52C25.26 90.98 24.72 91.33 24.1 91.6C23.51 91.87 22.84 92 22.17 92L9.38 92Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Rename</text>
 </g>
 <!-- ReviewIcon -->
 <g transform="translate(600,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-review" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M31.08 78.46L64.92 78.46L64.92 71.69L31.08 71.69L31.08 78.46ZM31.08 64.92L64.92 64.92L64.92 58.15L31.08 58.15L31.08 64.92ZM24.31 92C22.45 92 20.86 91.32 19.54 90C18.22 88.68 17.54 87.09 17.54 85.23L17.54 17.54C17.54 15.68 18.22 14.09 19.54 12.77C20.86 11.45 22.45 10.77 24.31 10.77L38.46 10.77C39.03 8.81 40.15 7.18 41.84 5.9C43.53 4.61 45.46 4 47.66 4L48.34 4C50.54 4 52.47 4.61 54.16 5.9C55.85 7.18 56.97 8.81 57.54 10.77L71.69 10.77C73.55 10.77 75.14 11.45 76.46 12.77C77.78 14.09 78.46 15.68 78.46 17.54L78.46 85.23C78.46 87.09 77.78 88.68 76.46 90C75.14 91.32 73.55 92 71.69 92L24.31 92ZM24.31 85.23L71.69 85.23L71.69 17.54L64.92 17.54L64.92 24.31L31.08 24.31L31.08 17.54L24.31 17.54L24.31 85.23ZM37.85 24.31L58.15 24.31L58.15 17.54L37.85 17.54L37.85 24.31Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Review</text>
 </g>
 <!-- RocketIcon -->
 <g transform="translate(700,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-rocket" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M48 4C48 4 26 26 26 48C26 59 30.4 67.8 37 74.4L48 92L59 74.4C65.6 67.8 70 59 70 48C70 26 48 4 48 4ZM48 61.2A13.2 13.2 0 1 1 48 34.8A13.2 13.2 0 0 1 48 61.2Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Rocket</text>
 </g>
 <!-- SearchIcon -->
 <g transform="translate(800,300)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-search" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M88 87.78L68.67 68.45M79.11 43.34A35.56 35.56 0 1 1 8 43.34A35.56 35.56 0 0 1 79.11 43.34Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Search</text>
 </g>
 
@@ -671,55 +626,55 @@
 <!-- SettingsIcon -->
 <g transform="translate(0,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-settings" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M35.96 91.78L34.21 77.77C33.26 77.41 32.37 76.97 31.53 76.46C30.69 75.95 29.87 75.4 29.06 74.82L16.04 80.29L4 59.49L15.27 50.96C15.2 50.44 15.16 49.95 15.16 49.48L15.16 46.52C15.16 46.05 15.2 45.56 15.27 45.04L4 36.51L16.04 15.71L29.06 21.18C29.87 20.6 30.71 20.05 31.58 19.54C32.46 19.03 33.33 18.59 34.21 18.23L35.96 4.22L60.04 4.22L61.79 18.23C62.74 18.59 63.63 19.03 64.47 19.54C65.31 20.05 66.13 20.6 66.94 21.18L79.96 15.71L92 36.51L80.73 45.04C80.8 45.56 80.84 46.05 80.84 46.52L80.84 49.48C80.84 49.95 80.76 50.44 80.62 50.96L91.89 59.49L79.85 80.29L66.94 74.82C66.13 75.4 65.29 75.95 64.42 76.46C63.54 76.97 62.67 77.41 61.79 77.77L60.04 91.78L35.96 91.78ZM43.62 83.02L52.27 83.02L53.8 71.42C56.06 70.84 58.16 69.98 60.09 68.85C62.03 67.72 63.8 66.35 65.4 64.75L76.24 69.23L80.51 61.79L71.09 54.68C71.46 53.66 71.71 52.58 71.86 51.45C72.01 50.32 72.08 49.17 72.08 48C72.08 46.83 72.01 45.68 71.86 44.55C71.71 43.42 71.46 42.34 71.09 41.32L80.51 34.21L76.24 26.77L65.4 31.36C63.8 29.69 62.03 28.28 60.09 27.15C58.16 26.02 56.06 25.16 53.8 24.58L52.38 12.98L43.73 12.98L42.2 24.58C39.94 25.16 37.84 26.02 35.91 27.15C33.97 28.28 32.2 29.65 30.6 31.25L19.76 26.77L15.49 34.21L24.91 41.21C24.54 42.31 24.29 43.4 24.14 44.5C23.99 45.59 23.92 46.76 23.92 48C23.92 49.17 23.99 50.3 24.14 51.39C24.29 52.49 24.54 53.58 24.91 54.68L15.49 61.79L19.76 69.23L30.6 64.64C32.2 66.31 33.97 67.72 35.91 68.85C37.84 69.98 39.94 70.84 42.2 71.42L43.62 83.02ZM48.22 63.32C52.45 63.32 56.06 61.83 59.05 58.84C62.05 55.84 63.54 52.23 63.54 48C63.54 43.77 62.05 40.16 59.05 37.16C56.06 34.17 52.45 32.68 48.22 32.68C43.91 32.68 40.28 34.17 37.33 37.16C34.37 40.16 32.9 43.77 32.9 48C32.9 52.23 34.37 55.84 37.33 58.84C40.28 61.83 43.91 63.32 48.22 63.32Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Settings</text>
 </g>
 <!-- SomedayIcon -->
 <g transform="translate(100,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-someday" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M24.71 78.28C19.01 78.28 14.15 76.25 10.11 72.21C6.07 68.17 4 63.27 4 57.58C4 52.57 5.59 48.16 8.73 44.29C11.87 40.43 15.91 38.08 20.74 37.22C22.46 31.18 25.84 26.31 30.88 22.58C35.92 18.89 41.55 17.03 47.83 17.03C55.59 17.03 62.15 19.79 67.5 25.14C72.85 30.49 75.61 37.04 75.61 44.81L75.61 47.22C80.27 47.4 84.17 49.05 87.27 52.16C90.38 55.26 92 59.13 92 63.79C92 67.93 90.38 71.52 87.17 74.49C83.96 77.49 80.09 78.97 75.61 78.97L24.71 78.28ZM24.71 71.38L75.61 71.38C78.02 71.38 80.06 70.55 81.75 68.86C83.41 67.2 84.24 65.17 84.24 62.75C84.24 60.34 83.41 58.3 81.75 56.64C80.06 54.95 78.02 54.13 75.61 54.13L67.84 54.13L67.84 44.81C67.84 39.29 65.91 34.56 62.08 30.66C58.25 26.76 53.52 24.79 47.83 24.79C42.13 24.79 37.37 26.76 33.51 30.66C29.64 34.56 27.71 39.29 27.71 44.81L24.71 44.81C21.08 44.81 18.01 46.08 15.53 48.57C13.01 51.05 11.76 54.13 11.76 57.58C11.76 61.2 13.01 64.27 15.53 66.76C18.01 69.28 21.08 70.52 24.71 70.52Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Someday</text>
 </g>
 <!-- TextFileIcon -->
 <g transform="translate(200,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-text-file" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M26 92C24.49 92 23.2 91.45 22.12 90.38C21.05 89.31 20.5 88.01 20.5 86.5L20.5 9.5C20.5 7.99 21.05 6.7 22.12 5.62C23.2 4.55 24.49 4 26 4L59 4L75.5 20.5L75.5 86.5C75.5 88.01 74.95 89.31 73.88 90.38C72.81 91.45 71.51 92 70 92L26 92ZM56.25 23.25L56.25 9.5L26 9.5L26 86.5L70 86.5L70 23.25L56.25 23.25Z"/><rect x="34.25" y="39.75" width="27.5" height="4.13" rx="2.06" fill="#374151"/><rect x="34.25" y="50.75" width="22" height="4.13" rx="2.06" fill="#374151"/><rect x="34.25" y="61.75" width="27.5" height="4.13" rx="2.06" fill="#374151"/><rect x="34.25" y="72.75" width="16.5" height="4.13" rx="2.06" fill="#374151"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">TextFile</text>
 </g>
 <!-- ThumbUpIcon -->
 <g transform="translate(300,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-thumb-up" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="6.14" stroke-linecap="round" stroke-linejoin="round" d="M28.18 88.93L15.91 88.93A8.19 8.19 0 0 1 7.72 80.74L7.72 52.09A8.19 8.19 0 0 1 15.91 43.91L28.18 43.91M56.84 35.72L56.84 19.35A12.28 12.28 0 0 0 44.56 7.07L28.18 43.91L28.18 88.93L74.35 88.93A8.19 8.19 0 0 0 82.54 81.97L88.19 45.13A8.19 8.19 0 0 0 80 35.72L56.84 35.72Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">ThumbUp</text>
 </g>
 <!-- TodayIcon -->
 <g transform="translate(400,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-today" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#374151" stroke-width="6.77" d="M48 17.54L48 7.38M48 88.62L48 78.46M78.46 48L88.62 48M7.38 48L17.54 48M69.49 26.51L76.77 19.23M19.23 76.77L26.51 69.49M69.49 69.49L76.77 76.77M19.23 19.23L26.51 26.51M48 34.46C55.45 34.46 61.54 40.55 61.54 48C61.54 55.45 55.45 61.54 48 61.54C40.55 61.54 34.46 55.45 34.46 48C34.46 40.55 40.55 34.46 48 34.46Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Today</text>
 </g>
 <!-- TrashIcon -->
 <g transform="translate(500,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-trash" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M22.53 92C20.67 92 19.05 91.31 17.66 89.92C16.27 88.53 15.58 86.91 15.58 85.05L15.58 17.89L10.95 17.89L10.95 8.63L34.11 8.63L34.11 4L61.89 4L61.89 8.63L85.05 8.63L85.05 17.89L80.42 17.89L80.42 85.05C80.42 86.91 79.73 88.53 78.34 89.92C76.95 91.31 75.33 92 73.47 92L22.53 92ZM71.16 17.89L24.84 17.89L24.84 82.74L71.16 82.74L71.16 17.89ZM34.11 73.47L43.37 73.47L43.37 27.16L34.11 27.16L34.11 73.47ZM52.63 73.47L61.89 73.47L61.89 27.16L52.63 27.16L52.63 73.47Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Trash</text>
 </g>
 <!-- UploadIcon -->
 <g transform="translate(600,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-upload" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M9.87 92C8.25 92 6.87 91.41 5.73 90.27C4.59 89.13 4 87.75 4 86.13L4 62.67L9.87 62.67L9.87 86.13L86.13 86.13L86.13 62.67L92 62.67L92 86.13C92 87.75 91.41 89.13 90.27 90.27C89.13 91.41 87.75 92 86.13 92L9.87 92ZM45.07 68.53L45.07 15.29L27.32 33.04L23.07 28.93L48 4L72.93 28.93L68.68 33.04L50.93 15.29L50.93 68.53L45.07 68.53Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Upload</text>
 </g>
 <!-- WaitingIcon -->
 <g transform="translate(700,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-waiting" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M48 4C23.56 4 4 23.56 4 48C4 72.44 23.56 92 48 92C72.44 92 92 72.44 92 48C92 23.56 72.44 4 48 4ZM48 82.22C28.44 82.22 13.78 67.56 13.78 48C13.78 28.44 28.44 13.78 48 13.78C67.56 13.78 82.22 28.44 82.22 48C82.22 67.56 67.56 82.22 48 82.22ZM50.44 26L43.11 26L43.11 52.89L65.11 67.56L70 60.22L50.44 48L50.44 26Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Waiting</text>
 </g>
 <!-- WarningIcon -->
 <g transform="translate(800,400)">
 <rect width="60" height="60" rx="6" fill="#F3F4F6"/>
-<g transform="translate(10,10)"><use href="#icon-warning" width="40" height="40" style="color:#374151"/></g>
+<g transform="translate(10,10)"><svg width="40" height="40" viewBox="0 0 96 96"><path fill="#374151" d="M48 10L4 86L92 86L48 10ZM48 23L79 80L17 80L48 23ZM44 42L44 62L52 62L52 42L44 42ZM44 70L44 78L52 78L52 70L44 70Z"/></svg></g>
 <text class="sl" text-anchor="middle" x="30" y="75">Warning</text>
 </g>
 </g>
