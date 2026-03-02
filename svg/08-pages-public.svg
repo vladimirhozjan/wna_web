@@ -1,0 +1,1232 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 13200">
+<style>
+.st{font-family:Inter;font-size:20px;font-weight:600;fill:#374151}
+.sl{font-family:Inter;font-size:11px;font-weight:400;fill:#9CA3AF}
+</style>
+<defs>
+<filter id="shadow-auth" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="25" flood-color="rgb(15,23,42)" flood-opacity="0.2"/></filter>
+<filter id="shadow-book" x="-20%" y="-20%" width="150%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="rgb(0,0,0)" flood-opacity="0.12"/></filter>
+<filter id="shadow-tier" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="rgb(65,133,222)" flood-opacity="0.15"/></filter>
+<filter id="shadow-card-hover" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgb(0,0,0)" flood-opacity="0.08"/></filter>
+</defs>
+
+<!-- ============================================================ -->
+<!-- STEP 45 — Landing Page (Dark Theme)                          -->
+<!-- ============================================================ -->
+<g id="step-45-landing-page" transform="translate(100,100)">
+<text class="st" y="20">Step 45 — Landing Page</text>
+<text class="sl" y="40">TopNav (guest) · HeroSection (#1E293B) · HowItWorks · Features (#EDF3FC) · WhyUs · Testimony · Book · CtaBanner (#4185DE) · Footer (#F3F4F6)</text>
+
+<g transform="translate(0,60)">
+<!-- Page frame outline -->
+<rect width="1440" height="3200" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- ===== TOPNAV (y=0–48) ===== -->
+<rect width="1440" height="48" fill="#FFFFFF"/>
+<line x1="0" y1="48" x2="1440" y2="48" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Logo bolt -->
+<svg x="4" y="0" width="48" height="48" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<!-- App name -->
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" x="58" y="32">WhatsNextAction</text>
+<!-- Center nav links -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="596" y="30">Why GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="670" y="30">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="748" y="30">Pricing</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="816" y="30">Help</text>
+<!-- Start Here button (primary md) -->
+<rect x="1236" y="6" width="100" height="36" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" x="1258" y="30">Start Here</text>
+<!-- Sign In button (ghost md) -->
+<rect x="1346" y="6" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="1363" y="30">Sign In</text>
+
+<!-- ===== HERO SECTION (y=48–470) ===== -->
+<rect x="0" y="48" width="1440" height="422" fill="#1E293B"/>
+<!-- Heading line 1 -->
+<text font-family="Inter" font-size="48" font-weight="700" fill="#F1F5F9" text-anchor="middle" x="720" y="196">Capture. Clarify. Organize.</text>
+<!-- Heading line 2 -->
+<text font-family="Inter" font-size="48" font-weight="700" fill="#F1F5F9" text-anchor="middle" x="720" y="254">Reflect. Engage.</text>
+<!-- Subtitle -->
+<text font-family="Inter" font-size="18" font-weight="500" fill="#94A3B8" text-anchor="middle" x="720" y="293">Achieve stress-free productivity with the GTD methodology.</text>
+<!-- Start Free button (primary lg) -->
+<rect x="601" y="328" width="112" height="48" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="657" y="358">Start Free</text>
+<!-- Learn More button (ghost outline) -->
+<rect x="725" y="328" width="124" height="48" rx="6" fill="none" stroke="#94A3B8" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#F1F5F9" text-anchor="middle" x="787" y="358">Learn More</text>
+
+<!-- ===== HOW IT WORKS (y=470–830) ===== -->
+<rect x="0" y="470" width="1440" height="360" fill="#FFFFFF"/>
+<!-- Heading -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" text-anchor="middle" x="720" y="556">How It Works</text>
+<!-- Connector line behind circles: from 1/6 to 5/6 of 680px container, centered -->
+<line x1="493" y1="618" x2="947" y2="618" stroke="#E3E8EF" stroke-width="2"/>
+<!-- Step 1: Capture -->
+<circle cx="493" cy="618" r="24" fill="#4185DE"/>
+<text font-family="Inter" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" x="493" y="625">1</text>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="493" y="672">Capture</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="493" y="696">Dump everything on your mind</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="493" y="717">into the inbox. Don't filter,</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="493" y="738">just get it out of your head.</text>
+<!-- Step 2: Clarify -->
+<circle cx="720" cy="618" r="24" fill="#4185DE"/>
+<text font-family="Inter" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" x="720" y="625">2</text>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="720" y="672">Clarify</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="696">Process each item: Is it</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="717">actionable? Our guided wizard</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="738">walks you through it.</text>
+<!-- Step 3: Engage -->
+<circle cx="947" cy="618" r="24" fill="#4185DE"/>
+<text font-family="Inter" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" x="947" y="625">3</text>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="947" y="672">Engage</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="947" y="696">Work from your Next Actions</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="947" y="717">list with confidence, knowing</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="947" y="738">nothing is falling through.</text>
+
+<!-- ===== FEATURES SECTION (y=830–1740) ===== -->
+<rect x="0" y="830" width="1440" height="910" fill="#EDF3FC"/>
+<!-- Heading -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" text-anchor="middle" x="720" y="916">Your Trusted System, Organized</text>
+<!-- Subtitle -->
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="945">Everything you need to implement GTD — nothing you don't.</text>
+
+<!-- Feature cards: 3 columns × 3 rows, gap 16px, card width 289px -->
+<!-- Column x positions (within 900px centered content): 270, 575, 880 -->
+
+<!-- ROW 1 (y=980) -->
+<!-- Card: Inbox -->
+<g transform="translate(270,980)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="11 11 26 26"><path fill="#4185DE" d="M17 33C16.45 33 15.98 32.8 15.59 32.41C15.2 32.02 15 31.55 15 31V17C15 16.45 15.2 15.98 15.59 15.59C15.98 15.2 16.45 15 17 15H31C31.55 15 32.02 15.2 32.41 15.59C32.8 15.98 33 16.45 33 17V27L27 33H17ZM17 31H25V27C25 26.45 25.2 25.98 25.59 25.59C25.98 25.2 26.45 25 27 25H31V17H17V31ZM27 31L31 27H27V31Z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Inbox</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Capture everything that has your</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">attention. Get it out of your head</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">and into your trusted system.</text>
+</g>
+
+<!-- Card: Next Actions -->
+<g transform="translate(575,980)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="14 11 20 26"><g transform="translate(24,24) scale(0.55) translate(-32,-32)"><path fill="#4185DE" d="M27 52L31 35H20L37 12L33 29H44L27 52Z"/></g></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Next Actions</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">See the concrete physical steps</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">you can take right now to move</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">things forward.</text>
+</g>
+
+<!-- Card: Projects -->
+<g transform="translate(880,980)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="10 12 28 24"><path fill="#4185DE" d="M16 32C15.45 32 14.9792 31.8042 14.5875 31.4125C14.1958 31.0208 14 30.55 14 30V18C14 17.45 14.1958 16.9792 14.5875 16.5875C14.9792 16.1958 15.45 16 16 16H22L24 18H32C32.55 18 33.0208 18.1958 33.4125 18.5875C33.8042 18.9792 34 19.45 34 20V30C34 30.55 33.8042 31.0208 33.4125 31.4125C33.0208 31.8042 32.55 32 32 32H16ZM16 30H32V20H23.175L21.175 18H16V30Z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Projects</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Track outcomes that require</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">more than one action step to</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">complete.</text>
+</g>
+
+<!-- ROW 2 (y=1206) -->
+<!-- Card: Waiting For -->
+<g transform="translate(270,1206)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="8 0 32 48"><path fill="#4185DE" d="M12 4v12h.02L12 16.02 20 24l-8 8 .02.02H12V44h24V32.02h-.02L36 32l-8-8 8-7.98-.02-.02H36V4H12zm20 29V40H16v-7l8-8 8 8zm-8-10l-8-8V8h16v7l-8 8z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Waiting For</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Keep track of everything</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">you're waiting on from other</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">people.</text>
+</g>
+
+<!-- Card: Someday / Maybe -->
+<g transform="translate(575,1206)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="9 11 32 26"><path fill="#4185DE" d="M19.5 33C17.85 33 16.44 32.41 15.27 31.24C14.1 30.07 13.5 28.65 13.5 27C13.5 25.55 13.96 24.27 14.87 23.15C15.78 22.03 16.95 21.35 18.35 21.1C18.85 19.35 19.83 17.94 21.29 16.86C22.75 15.79 24.38 15.25 26.2 15.25C28.45 15.25 30.35 16.05 31.9 17.6C33.45 19.15 34.25 21.05 34.25 23.3V24C35.6 24.05 36.73 24.53 37.63 25.43C38.53 26.33 39 27.45 39 28.8C39 30 38.53 31.04 37.6 31.9C36.67 32.77 35.55 33.2 34.25 33.2L19.5 33ZM19.5 31H34.25C34.95 31 35.54 30.76 36.03 30.27C36.51 29.79 36.75 29.2 36.75 28.5C36.75 27.8 36.51 27.21 36.03 26.73C35.54 26.24 34.95 26 34.25 26H32V23.3C32 21.7 31.44 20.33 30.33 19.2C29.22 18.07 27.85 17.5 26.2 17.5C24.55 17.5 23.17 18.07 22.05 19.2C20.93 20.33 20.37 21.7 20.37 23.3H19.5C18.45 23.3 17.56 23.67 16.84 24.39C16.11 25.11 15.75 26 15.75 27C15.75 28.05 16.11 28.94 16.84 29.66C17.56 30.39 18.45 30.75 19.5 30.75Z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Someday / Maybe</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Park ideas and possibilities</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">you might want to pursue in</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">the future.</text>
+</g>
+
+<!-- Card: Calendar -->
+<g transform="translate(880,1206)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="11 10 26 28"><path fill="#4185DE" d="M17 34c-.55 0-1.02-.2-1.41-.59C15.2 33.02 15 32.55 15 32V18c0-.55.2-1.02.59-1.41C15.98 16.2 16.45 16 17 16h1v-2h2v2h8v-2h2v2h1c.55 0 1.02.2 1.41.59.39.39.59.86.59 1.41v14c0 .55-.2 1.02-.59 1.41-.39.39-.86.59-1.41.59H17Zm0-2h14V22H17v10Z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Calendar</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Your hard landscape — only for</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">time-specific actions and</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">commitments.</text>
+</g>
+
+<!-- ROW 3 (y=1432) -->
+<!-- Card: Weekly Review -->
+<g transform="translate(270,1432)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="11 8 26 34"><path fill="#4185DE" d="M19 34h10v-2H19v2Zm0-4h10v-2H19v2Zm-2 8c-.55 0-1.02-.2-1.41-.59C15.2 37.02 15 36.55 15 36V16c0-.55.2-1.02.59-1.41C15.98 14.2 16.45 14 17 14h4.18c.17-.58.5-1.06 1-1.44.5-.38 1.07-.56 1.72-.56h.2c.65 0 1.22.18 1.72.56.5.38.83.86 1 1.44H31c.55 0 1.02.2 1.41.59.39.39.59.86.59 1.41v20c0 .55-.2 1.02-.59 1.41-.39.39-.86.59-1.41.59H17Zm0-2h14V16h-2v2H19v-2h-2v20Zm4-18h6v-2h-6v2Z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Weekly Review</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">A guided weekly routine to</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">keep your system current and</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">your mind clear.</text>
+</g>
+
+<!-- Card: Context Tags -->
+<g transform="translate(575,1432)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="-1 1 22 18"><rect x="2" y="4" width="16" height="2" rx="1" fill="#4185DE"/><rect x="4" y="9" width="12" height="2" rx="1" fill="#4185DE"/><rect x="7" y="14" width="6" height="2" rx="1" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Context Tags</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Tag actions by context —</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">@computer, @phone, @errands</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">— and filter what to do now.</text>
+</g>
+
+<!-- Card: Reference Files -->
+<g transform="translate(880,1432)">
+<rect width="289" height="210" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<rect x="24" y="24" width="52" height="52" rx="12" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="36" y="36" width="28" height="28" viewBox="13 10 22 28"><path fill="#4185DE" d="M17 35V16C17 15.45 17.2 14.98 17.59 14.59C17.98 14.2 18.45 14 19 14H29C29.55 14 30.02 14.2 30.41 14.59C30.8 14.98 31 15.45 31 16V35L24 31.5L17 35ZM19 31.85L24 29.35L29 31.85V16H19V31.85Z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="24" y="108">Reference Files</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="130">Store non-actionable materials</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="151">you might need later. Always</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="24" y="172">organized, always findable.</text>
+</g>
+
+<!-- ===== WHY US SECTION (y=1740–2080) ===== -->
+<rect x="0" y="1740" width="1440" height="340" fill="#FFFFFF"/>
+<!-- Heading -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" text-anchor="middle" x="720" y="1820">Designed for Clarity and Focus</text>
+
+<!-- Item 1: Pure GTD (center x=408) -->
+<g transform="translate(380,1868)">
+<circle cx="28" cy="28" r="28" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="4" y="4" width="48" height="48" viewBox="0 0 48 48">
+<svg x="12" y="12" width="24" height="24" viewBox="0 0 24 24"><path fill="#4185DE" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+</svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="28" y="88">Pure GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="28" y="112">Built with strict adherence to</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="28" y="133">the GTD methodology.</text>
+</g>
+
+<!-- Item 2: Minimalist Design (center x=720) -->
+<g transform="translate(692,1868)">
+<circle cx="28" cy="28" r="28" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="16" y="16" width="24" height="24" viewBox="0 0 24 24"><path fill="#4185DE" d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5z"/><path fill="#4185DE" d="M13 13h2v2h-2zm4 0h2v2h-2zm-4 4h2v2h-2zm4 0h2v2h-2z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="28" y="88">Minimalist Design</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="28" y="112">A clean, distraction-free</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="28" y="133">interface that helps you focus.</text>
+</g>
+
+<!-- Item 3: Cross-Platform (center x=1032) -->
+<g transform="translate(1004,1868)">
+<circle cx="28" cy="28" r="28" fill="#4185DE" fill-opacity="0.1"/>
+<svg x="16" y="16" width="24" height="24" viewBox="0 0 24 24"><path fill="#4185DE" d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="28" y="88">Cross-Platform</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="28" y="112">Access your system from any</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="28" y="133">device. Always in sync.</text>
+</g>
+
+<!-- ===== TESTIMONY SECTION (y=2080–2460) ===== -->
+<rect x="0" y="2080" width="1440" height="380" fill="#EDF3FC"/>
+<!-- Heading -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="720" y="2164">Why I Built This</text>
+<!-- Blockquote: border-left 3px solid #4185DE, padding-left 24px, max-width 700px centered -->
+<!-- Quote left edge: 270 + (900-700)/2 = 370 -->
+<rect x="370" y="2200" width="3" height="170" fill="#4185DE"/>
+<!-- Paragraph 1 -->
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="397" y="2220">I discovered David Allen's Getting Things Done methodology</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="397" y="2244">years ago, and it changed how I think about productivity.</text>
+<!-- Paragraph 2 -->
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="397" y="2280">But I could never find the right tool. Every app I tried was</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="397" y="2304">either too complex, too simple, or treated GTD as an afterthought.</text>
+<!-- Paragraph 3 -->
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="397" y="2340">So I built WhatsNextAction. A tool designed from the ground up</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="397" y="2364">around GTD principles. Nothing more, nothing less.</text>
+<!-- Attribution -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#9CA3AF" text-anchor="middle" x="720" y="2410">— Dr. Vladimir Hozjan, Founder &amp; CEO</text>
+
+<!-- ===== BOOK SECTION (y=2460–2780) ===== -->
+<rect x="0" y="2460" width="1440" height="320" fill="#FFFFFF"/>
+<!-- Book layout: flex row, gap 32, centered in 900px -->
+<!-- Book image placeholder: 200×280 at x=270, vertically centered -->
+<g transform="translate(270,2480)">
+<!-- Book cover placeholder (200×280 with rounded corners and shadow) -->
+<rect width="200" height="280" rx="8" fill="#E3E8EF" filter="url(#shadow-book)"/>
+<!-- Book cover content -->
+<rect x="1" y="1" width="198" height="278" rx="7" fill="#1E293B"/>
+<text font-family="Inter" font-size="14" font-weight="700" fill="#F1F5F9" text-anchor="middle" x="100" y="100">GETTING</text>
+<text font-family="Inter" font-size="14" font-weight="700" fill="#F1F5F9" text-anchor="middle" x="100" y="120">THINGS DONE</text>
+<text font-family="Inter" font-size="11" font-weight="400" fill="#94A3B8" text-anchor="middle" x="100" y="150">David Allen</text>
+</g>
+<!-- Book text: x = 270+200+32 = 502 -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" x="502" y="2570">Want to Know More About GTD?</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="502" y="2600">Getting Things Done by David Allen is the definitive guide</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="502" y="2624">to stress-free productivity. Learn the complete methodology</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="502" y="2648">that inspired this app.</text>
+<!-- Ghost md button -->
+<rect x="502" y="2672" width="200" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="525" y="2696">Get the Book on Amazon</text>
+
+<!-- ===== CTA BANNER (y=2780–3000) ===== -->
+<rect x="0" y="2780" width="1440" height="220" fill="#4185DE"/>
+<text font-family="Inter" font-size="30" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="720" y="2850">Ready to Get Things Done?</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#FFFFFF" fill-opacity="0.85" text-anchor="middle" x="720" y="2878">Start organizing your life for free today.</text>
+<!-- White button -->
+<rect x="664" y="2908" width="112" height="48" rx="6" fill="#FFFFFF"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#4185DE" text-anchor="middle" x="720" y="2938">Start Free</text>
+
+<!-- ===== PUBLIC FOOTER (y=3000–3200) ===== -->
+<rect x="0" y="3000" width="1440" height="200" fill="#F3F4F6"/>
+<line x1="0" y1="3000" x2="1440" y2="3000" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Footer grid: 4 columns, gap 32px, within 900px centered (x=270 to 1170) -->
+<!-- Col widths: 268, 179, 179, 179 (based on 1.5fr 1fr 1fr 1fr at 900-3×32=804) -->
+
+<!-- Brand column (x=270) -->
+<svg x="270" y="3064" width="36" height="36" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="314" y="3090">WhatsNextAction</text>
+
+<!-- Product column (x=570) -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="570" y="3077" letter-spacing="0.05em">PRODUCT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="3103">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="3125">Pricing</text>
+
+<!-- Support column (x=781) -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="781" y="3077" letter-spacing="0.05em">SUPPORT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="781" y="3103">Help &amp; FAQ</text>
+
+<!-- Legal column (x=992) -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="992" y="3077" letter-spacing="0.05em">LEGAL</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="3103">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="3125">Privacy Policy</text>
+
+</g><!-- end landing page frame -->
+</g><!-- end step-45 -->
+
+
+<!-- ============================================================ -->
+<!-- STEP 46 — Auth Dialog (Login + Register overlaid)            -->
+<!-- ============================================================ -->
+<g id="step-46-auth-dialog" transform="translate(100,3560)">
+<text class="st" y="20">Step 46 — Auth Dialog</text>
+<text class="sl" y="40">backdrop: rgba(247,249,251,0.5) · dialog: #FFF · radius: 12px · padding: 30px · shadow-auth · max-width: 420px · gap: 20px</text>
+
+<g transform="translate(0,60)">
+<!-- ===== LOGIN MODE (left frame) ===== -->
+<g id="auth-login">
+<text class="sl" x="210" y="-8" text-anchor="middle">Login Mode</text>
+<!-- Viewport frame -->
+<rect width="500" height="660" fill="#f8fafc" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Fake page content behind -->
+<rect x="30" y="30" width="200" height="10" rx="4" fill="#E3E8EF"/>
+<rect x="30" y="50" width="160" height="10" rx="4" fill="#E3E8EF"/>
+<rect x="30" y="80" width="260" height="10" rx="4" fill="#E3E8EF"/>
+<rect x="30" y="100" width="180" height="10" rx="4" fill="#E3E8EF"/>
+<!-- Overlay backdrop -->
+<rect width="500" height="660" fill="#f7f9fb" opacity="0.5"/>
+<!-- Dialog centered: (500-420)/2=40, (660-520)/2=70 -->
+<g transform="translate(40,70)">
+<rect width="420" height="520" rx="12" fill="#FFFFFF" filter="url(#shadow-auth)"/>
+<!-- padding: 30px -->
+<!-- h2: "Welcome Back" text-h2 30px 600, centered -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="210" y="62">Welcome Back</text>
+<!-- subtitle: text-body-s 14px 400, margin-top 10px, centered -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" text-anchor="middle" x="210" y="86">Let's get you organized.</text>
+
+<!-- gap 20px → Email input at y=106 -->
+<!-- Email label -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#374151" x="30" y="122">Email</text>
+<!-- Email input field: margin-top 8, padding 10, border 1px #D1D5DB, radius 6 -->
+<rect x="30" y="130" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#D1D5DB" x="40" y="156">Enter your email address</text>
+
+<!-- gap 20px → Password input at y=190 -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#374151" x="30" y="204">Password</text>
+<rect x="30" y="212" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#D1D5DB" x="40" y="238">Enter your password</text>
+<!-- footer hint -->
+<text font-family="Inter" font-size="11" font-weight="400" fill="#374151" x="30" y="266">Use 8 or more characters with a mix of letters, numbers and symbols</text>
+
+<!-- gap 20px → Sign In button -->
+<rect x="30" y="286" width="360" height="38" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="210" y="311">Sign In</text>
+
+<!-- gap 20px → Link -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" text-anchor="middle" x="210" y="354">Forgot your password? <tspan fill="#4185DE">Reset it</tspan></text>
+
+<!-- Separator -->
+<line x1="30" y1="378" x2="390" y2="378" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- gap 20 + margin-bottom 10 → Ghost button (centered, not full width) -->
+<rect x="125" y="404" width="170" height="38" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle" x="210" y="429">Create new account</text>
+</g>
+</g>
+
+<!-- ===== REGISTER MODE (right frame) ===== -->
+<g id="auth-register" transform="translate(600,0)">
+<text class="sl" x="250" y="-8" text-anchor="middle">Register Mode</text>
+<!-- Viewport frame -->
+<rect width="560" height="660" fill="#f8fafc" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Fake page content behind -->
+<rect x="30" y="30" width="200" height="10" rx="4" fill="#E3E8EF"/>
+<rect x="30" y="50" width="160" height="10" rx="4" fill="#E3E8EF"/>
+<rect x="30" y="80" width="260" height="10" rx="4" fill="#E3E8EF"/>
+<rect x="30" y="100" width="180" height="10" rx="4" fill="#E3E8EF"/>
+<!-- Overlay backdrop -->
+<rect width="560" height="660" fill="#f7f9fb" opacity="0.5"/>
+<!-- Dialog centered: (560-420)/2=70, (660-600)/2=30 -->
+<g transform="translate(70,30)">
+<rect width="420" height="600" rx="12" fill="#FFFFFF" filter="url(#shadow-auth)"/>
+<!-- padding 30px -->
+<!-- h2: "Create Your Account" -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="210" y="62">Create Your Account</text>
+<!-- subtitle -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" text-anchor="middle" x="210" y="86">Start your journey to better clarity and control.</text>
+
+<!-- Email input -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#374151" x="30" y="122">Email</text>
+<rect x="30" y="130" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#D1D5DB" x="40" y="156">Enter your email address</text>
+
+<!-- Password input -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#374151" x="30" y="194">Password</text>
+<rect x="30" y="202" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#D1D5DB" x="40" y="228">Enter your password</text>
+<text font-family="Inter" font-size="11" font-weight="400" fill="#374151" x="30" y="256">Use 8 or more characters with a mix of letters, numbers and symbols</text>
+
+<!-- Confirm password input -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#374151" x="30" y="286">Confirm password</text>
+<rect x="30" y="294" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#D1D5DB" x="40" y="320">Confirm your password</text>
+
+<!-- Checkbox: agree to terms (margin-top -8 from gap 20 = gap 12) -->
+<g transform="translate(30,352)">
+<rect width="18" height="18" rx="3" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="28" y="14">I agree to the <tspan fill="#4185DE" text-decoration="underline">Terms of Service</tspan> and <tspan fill="#4185DE" text-decoration="underline">Privacy Policy</tspan></text>
+</g>
+
+<!-- Register button -->
+<rect x="30" y="394" width="360" height="38" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="210" y="419">Register</text>
+
+<!-- Link -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" text-anchor="middle" x="210" y="462">Already have an account? <tspan fill="#4185DE">Sign In</tspan></text>
+</g>
+</g>
+
+</g><!-- end auth dialog frame -->
+</g><!-- end step-46 -->
+
+
+<!-- ============================================================ -->
+<!-- STEP 47 — Pricing Page                                       -->
+<!-- ============================================================ -->
+<g id="step-47-pricing-page" transform="translate(100,4500)">
+<text class="st" y="20">Step 47 — Pricing Page</text>
+<text class="sl" y="40">toggle: Monthly/Yearly · 3 tier cards (Free, Pro featured, Business) · comparison table · CtaBanner · footer</text>
+
+<g transform="translate(0,60)">
+<!-- Page frame -->
+<rect width="1440" height="2140" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- ===== TOPNAV (y=0–48) — same as landing ===== -->
+<rect width="1440" height="48" fill="#FFFFFF"/>
+<line x1="0" y1="48" x2="1440" y2="48" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="4" y="0" width="48" height="48" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" x="58" y="32">WhatsNextAction</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="596" y="30">Why GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="670" y="30">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="748" y="30">Pricing</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="816" y="30">Help</text>
+<rect x="1236" y="6" width="100" height="36" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" x="1258" y="30">Start Here</text>
+<rect x="1346" y="6" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="1363" y="30">Sign In</text>
+
+<!-- ===== PRICING HERO (y=48–884) — white bg ===== -->
+<!-- Heading -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" text-anchor="middle" x="720" y="148">Find Your Focus, Achieve Your Goals</text>
+<!-- Subtitle -->
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="174">Choose the plan that's right for you.</text>
+
+<!-- Billing toggle: centered, margin-top 28px -->
+<g transform="translate(620,200)">
+<!-- Monthly button (inactive): left, border-radius 8 0 0 8 -->
+<path d="M8,0 h92 v44 h-92 a8,8 0 0,1 -8,-8 v-28 a8,8 0 0,1 8,-8 z" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#6B7280" x="50" y="28" text-anchor="middle">Monthly</text>
+<!-- Yearly button (active): right, border-radius 0 8 8 0, with save badge -->
+<path d="M100,0 h92 a8,8 0 0,1 8,8 v28 a8,8 0 0,1 -8,8 h-92 v-44 z" fill="#4185DE" stroke="#4185DE" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#FFFFFF" x="150" y="28" text-anchor="middle">Yearly</text>
+<!-- Save 20% badge -->
+<rect x="168" y="-10" width="60" height="20" rx="10" fill="#dcfce7"/>
+<text font-family="Inter" font-size="11" font-weight="600" fill="#16a34a" text-anchor="middle" x="198" y="4">Save 20%</text>
+</g>
+
+<!-- Tier grid: 3 cards, gap 20px, within 900px centered (x=270) -->
+<!-- Card width: (900-40)/3 = 286.7 ≈ 287 -->
+<!-- Column positions: 270, 577, 884 -->
+
+<!-- FREE TIER (x=270) -->
+<g transform="translate(270,280)">
+<rect width="287" height="540" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Name -->
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="143.5" y="56">Free</text>
+<!-- Price: "Free" -->
+<text font-family="Inter" font-size="48" font-weight="700" fill="#374151" text-anchor="middle" x="143.5" y="114">Free</text>
+<!-- Description -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="146">Get started with the basics of GTD.</text>
+<!-- CTA button: ghost lg -->
+<rect x="32" y="168" width="223" height="48" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#356dc0" text-anchor="middle" x="143.5" y="198">Start for Free</text>
+<!-- Features separator -->
+<line x1="32" y1="236" x2="255" y2="236" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Features list (6 items, gap 10px) -->
+<g transform="translate(32,256)">
+<!-- Check icon helper: 14×14 green checkmark -->
+<svg x="0" y="0" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="12">10 MB reference &amp; attachment space</text>
+
+<svg x="0" y="31" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="43">Up to 10 projects</text>
+
+<svg x="0" y="62" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="74">Up to 50 actions</text>
+
+<svg x="0" y="93" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="105">Up to 10 stuff items</text>
+
+<svg x="0" y="124" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="136">5 context tags</text>
+
+<svg x="0" y="155" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="167">Email support</text>
+</g>
+</g>
+
+<!-- PRO TIER — FEATURED (x=577) -->
+<g transform="translate(577,280)">
+<rect width="287" height="540" rx="12" fill="#FFFFFF" stroke="#4185DE" stroke-width="2" filter="url(#shadow-tier)"/>
+<!-- "Most Popular" badge -->
+<rect x="88" y="-13" width="110" height="26" rx="13" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="143" y="5">Most Popular</text>
+<!-- Name -->
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="143.5" y="56">Pro</text>
+<!-- Price: €20/mo -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" x="82" y="106">€</text>
+<text font-family="Inter" font-size="48" font-weight="700" fill="#374151" x="100" y="114">20</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="158" y="114">/mo</text>
+<!-- Footnote -->
+<text font-family="Inter" font-size="11" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="132">Billed annually at €240</text>
+<!-- Description -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="156">For individuals serious about</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="174">productivity.</text>
+<!-- CTA button: primary lg -->
+<rect x="32" y="192" width="223" height="48" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="143.5" y="222">Contact Us</text>
+<!-- Features separator -->
+<line x1="32" y1="260" x2="255" y2="260" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Features list (7 items) -->
+<g transform="translate(32,280)">
+<svg x="0" y="0" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="12">250 MB reference &amp; attachment</text>
+
+<svg x="0" y="31" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="43">Up to 100 projects</text>
+
+<svg x="0" y="62" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="74">Up to 500 actions</text>
+
+<svg x="0" y="93" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="105">Up to 100 stuff items</text>
+
+<svg x="0" y="124" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="136">25 context tags</text>
+
+<svg x="0" y="155" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="167">Recurring actions</text>
+
+<svg x="0" y="186" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="198">Priority support</text>
+</g>
+</g>
+
+<!-- BUSINESS TIER (x=884) -->
+<g transform="translate(884,280)">
+<rect width="287" height="540" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Name -->
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" text-anchor="middle" x="143.5" y="56">Business</text>
+<!-- Price: €48/mo -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" x="82" y="106">€</text>
+<text font-family="Inter" font-size="48" font-weight="700" fill="#374151" x="100" y="114">48</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="160" y="114">/mo</text>
+<!-- Footnote -->
+<text font-family="Inter" font-size="11" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="132">Billed annually at €576</text>
+<!-- Description -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="156">For teams and power users</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="143.5" y="174">who need it all.</text>
+<!-- CTA button: ghost lg -->
+<rect x="32" y="192" width="223" height="48" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#356dc0" text-anchor="middle" x="143.5" y="222">Contact Us</text>
+<!-- Features separator -->
+<line x1="32" y1="260" x2="255" y2="260" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Features list (7 items) -->
+<g transform="translate(32,280)">
+<svg x="0" y="0" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="12">1 GB reference &amp; attachment</text>
+
+<svg x="0" y="31" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="43">Unlimited projects</text>
+
+<svg x="0" y="62" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="74">Unlimited actions</text>
+
+<svg x="0" y="93" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="105">Unlimited stuff items</text>
+
+<svg x="0" y="124" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="136">Unlimited context tags</text>
+
+<svg x="0" y="155" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="167">Recurring actions</text>
+
+<svg x="0" y="186" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#374151" x="22" y="198">Dedicated support</text>
+</g>
+</g>
+
+<!-- ===== COMPARISON TABLE (y=884–1718) — gray bg ===== -->
+<rect x="0" y="884" width="1440" height="834" fill="#F3F4F6"/>
+<!-- Heading -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="720" y="958">Compare Features</text>
+<!-- Table within 1100px (x=170 to 1270) -->
+<!-- 4 columns: Feature ~500px, Free ~200px, Pro ~200px, Business ~200px -->
+<!-- Col positions: 170, 670, 870, 1070 -->
+<!-- Header row at y=1000, height 36 -->
+<rect x="170" y="1000" width="1100" height="36" rx="0" fill="#E5E7EB"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#374151" x="184" y="1024">Feature</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#374151" text-anchor="middle" x="770" y="1024">Free</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#374151" text-anchor="middle" x="970" y="1024">Pro</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#374151" text-anchor="middle" x="1170" y="1024">Business</text>
+
+<!-- Data rows (17 rows, 36px each) -->
+<!-- Row 1: Reference / attachment space -->
+<line x1="170" y1="1072" x2="1270" y2="1072" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1060">Reference / attachment space</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="770" y="1060">10 MB</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="970" y="1060">250 MB</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="1170" y="1060">1 GB</text>
+
+<!-- Row 2: Projects -->
+<line x1="170" y1="1108" x2="1270" y2="1108" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1096">Projects</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="770" y="1096">10</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="970" y="1096">100</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="1170" y="1096">Unlimited</text>
+
+<!-- Row 3: Actions -->
+<line x1="170" y1="1144" x2="1270" y2="1144" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1132">Actions</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="770" y="1132">50</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="970" y="1132">500</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="1170" y="1132">Unlimited</text>
+
+<!-- Row 4: Stuff items -->
+<line x1="170" y1="1180" x2="1270" y2="1180" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1168">Stuff items</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="770" y="1168">10</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="970" y="1168">100</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="1170" y="1168">Unlimited</text>
+
+<!-- Row 5: Context tags -->
+<line x1="170" y1="1216" x2="1270" y2="1216" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1204">Context tags</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="770" y="1204">5</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="970" y="1204">25</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle" x="1170" y="1204">Unlimited</text>
+
+<!-- Row 6: Inbox capture (all true) -->
+<line x1="170" y1="1252" x2="1270" y2="1252" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1240">Inbox capture</text>
+<svg x="763" y="1228" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1228" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1228" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 7: GTD clarify wizard (all true) -->
+<line x1="170" y1="1288" x2="1270" y2="1288" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1276">GTD clarify wizard</text>
+<svg x="763" y="1264" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1264" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1264" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 8: Next actions (all true) -->
+<line x1="170" y1="1324" x2="1270" y2="1324" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1312">Next actions</text>
+<svg x="763" y="1300" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1300" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1300" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 9: Calendar view (all true) -->
+<line x1="170" y1="1360" x2="1270" y2="1360" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1348">Calendar view</text>
+<svg x="763" y="1336" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1336" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1336" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 10: Weekly review (all true) -->
+<line x1="170" y1="1396" x2="1270" y2="1396" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1384">Weekly review</text>
+<svg x="763" y="1372" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1372" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1372" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 11: Waiting-for tracking (all true) -->
+<line x1="170" y1="1432" x2="1270" y2="1432" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1420">Waiting-for tracking</text>
+<svg x="763" y="1408" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1408" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1408" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 12: Someday / maybe (all true) -->
+<line x1="170" y1="1468" x2="1270" y2="1468" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1456">Someday / maybe</text>
+<svg x="763" y="1444" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1444" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1444" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 13: Completion history (all true) -->
+<line x1="170" y1="1504" x2="1270" y2="1504" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1492">Completion history</text>
+<svg x="763" y="1480" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1480" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1480" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 14: Recurring actions (false, true, true) -->
+<line x1="170" y1="1540" x2="1270" y2="1540" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1528">Recurring actions</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#9CA3AF" text-anchor="middle" x="770" y="1528">—</text>
+<svg x="963" y="1516" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1516" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 15: Email support (all true) -->
+<line x1="170" y1="1576" x2="1270" y2="1576" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1564">Email support</text>
+<svg x="763" y="1552" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="963" y="1552" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1552" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 16: Priority support (false, true, true) -->
+<line x1="170" y1="1612" x2="1270" y2="1612" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1600">Priority support</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#9CA3AF" text-anchor="middle" x="770" y="1600">—</text>
+<svg x="963" y="1588" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+<svg x="1163" y="1588" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- Row 17: Dedicated support (false, false, true) -->
+<line x1="170" y1="1648" x2="1270" y2="1648" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#374151" x="184" y="1636">Dedicated support</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#9CA3AF" text-anchor="middle" x="770" y="1636">—</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#9CA3AF" text-anchor="middle" x="970" y="1636">—</text>
+<svg x="1163" y="1624" width="14" height="14" viewBox="0 0 96 96"><path fill="none" stroke="#16a34a" stroke-width="12.57" stroke-linecap="round" stroke-linejoin="round" d="M10.29 49.57L35.43 74.71L85.71 21.29"/></svg>
+
+<!-- ===== CTA BANNER (y=1718–1938) ===== -->
+<rect x="0" y="1718" width="1440" height="220" fill="#4185DE"/>
+<text font-family="Inter" font-size="30" font-weight="600" fill="#FFFFFF" text-anchor="middle" x="720" y="1788">Ready to Get Things Done?</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#FFFFFF" fill-opacity="0.85" text-anchor="middle" x="720" y="1816">Start organizing your life for free today.</text>
+<rect x="664" y="1846" width="112" height="48" rx="6" fill="#FFFFFF"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#4185DE" text-anchor="middle" x="720" y="1876">Start Free</text>
+
+<!-- ===== FOOTER (y=1938–2140) ===== -->
+<rect x="0" y="1938" width="1440" height="202" fill="#F3F4F6"/>
+<line x1="0" y1="1938" x2="1440" y2="1938" stroke="#E3E8EF" stroke-width="1"/>
+<!-- Brand -->
+<svg x="270" y="2002" width="36" height="36" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="314" y="2028">WhatsNextAction</text>
+<!-- Product -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="570" y="2015" letter-spacing="0.05em">PRODUCT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="2041">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="2063">Pricing</text>
+<!-- Support -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="781" y="2015" letter-spacing="0.05em">SUPPORT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="781" y="2041">Help &amp; FAQ</text>
+<!-- Legal -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="992" y="2015" letter-spacing="0.05em">LEGAL</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="2041">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="2063">Privacy Policy</text>
+
+</g><!-- end pricing page frame -->
+</g><!-- end step-47 -->
+
+<!-- ============================================================ -->
+<!-- HELP PAGE (Hub)                                               -->
+<!-- ============================================================ -->
+<g id="help-page" transform="translate(100,6900)">
+<text class="st" y="20">Help Page (Hub)</text>
+<text class="sl" y="40">Search hero · Getting Started cards · FAQ items · Best Practices cards · Contact</text>
+
+<g transform="translate(0,60)">
+<!-- Page frame -->
+<rect width="1440" height="1900" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- ===== TOPNAV (y=0–48) Help active ===== -->
+<rect width="1440" height="48" fill="#FFFFFF"/>
+<line x1="0" y1="48" x2="1440" y2="48" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="4" y="0" width="48" height="48" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" x="58" y="32">WhatsNextAction</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="596" y="30">Why GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="670" y="30">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="748" y="30">Pricing</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" x="816" y="30">Help</text>
+<rect x="1236" y="6" width="100" height="36" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" x="1258" y="30">Start Here</text>
+<rect x="1346" y="6" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="1363" y="30">Sign In</text>
+
+<!-- ===== SEARCH HERO (y=48–260) white ===== -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" text-anchor="middle" x="720" y="134">Help &amp; Resources</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="162">Everything you need to get the most out of WhatsNextAction</text>
+<!-- Search input -->
+<rect x="420" y="186" width="600" height="48" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="434" y="200" width="20" height="20" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M88 87.78L68.67 68.45M79.11 43.34A35.56 35.56 0 1 1 8 43.34A35.56 35.56 0 0 1 79.11 43.34Z"/></svg>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#9CA3AF" x="462" y="216">Search help articles...</text>
+
+<!-- ===== GETTING STARTED (y=260–650) gray ===== -->
+<rect x="0" y="260" width="1440" height="390" fill="#F3F4F6"/>
+<!-- Rocket icon centered -->
+<svg x="700" y="310" width="40" height="40" viewBox="0 0 96 96"><path fill="#4185DE" d="M48 4C48 4 26 26 26 48C26 59 30.4 67.8 37 74.4L48 92L59 74.4C65.6 67.8 70 59 70 48C70 26 48 4 48 4ZM48 61.2A13.2 13.2 0 1 1 48 34.8A13.2 13.2 0 0 1 48 61.2Z"/></svg>
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="720" y="374">Getting Started</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="398">Learn the basics of WhatsNextAction</text>
+<!-- Card 1: What is GTD? -->
+<rect x="270" y="426" width="289" height="160" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="460" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="465">1</text>
+<text font-family="Inter" font-size="18" font-weight="500" fill="#374151" x="290" y="498">What is GTD?</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="518">Learn the principles behind</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="534">Getting Things Done.</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="566">Learn more →</text>
+<!-- Card 2: Creating Your Account -->
+<rect x="575" y="426" width="289" height="160" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="609" cy="460" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="609" y="465">2</text>
+<text font-family="Inter" font-size="18" font-weight="500" fill="#374151" x="595" y="498">Creating Your Account</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="518">Get started in minutes</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="534">with a free account.</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="595" y="566">Learn more →</text>
+<!-- Card 3: Your First Five Minutes -->
+<rect x="880" y="426" width="289" height="160" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="914" cy="460" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="914" y="465">3</text>
+<text font-family="Inter" font-size="18" font-weight="500" fill="#374151" x="900" y="498">Your First Five Minutes</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="518">Quick walkthrough to set</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="534">up your workspace.</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="900" y="566">Learn more →</text>
+<!-- See all link -->
+<text font-family="Inter" font-size="14" font-weight="500" fill="#4185DE" x="270" y="610">See all 13 guides →</text>
+
+<!-- ===== FAQ (y=650–1140) white ===== -->
+<!-- Quiz icon centered -->
+<svg x="700" y="700" width="40" height="40" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" fill="none" stroke="#4185DE" stroke-width="8"/><path fill="none" stroke="#4185DE" stroke-width="6" stroke-linecap="round" d="M40.6 38.6C40.6 35.4 43.8 32.6 48 32.6C52.2 32.6 55.4 35.4 55.4 38.6C55.4 42.4 52 43.6 49.8 45.4C48.6 46.4 48 47.8 48 49.4"/><circle cx="48" cy="61" r="4" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="720" y="764">Frequently Asked Questions</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="788">Quick answers to common questions</text>
+<!-- FAQ Item 1 -->
+<rect x="270" y="816" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="848">What is Getting Things Done (GTD)?</text>
+<svg x="1134" y="833" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 2 -->
+<rect x="270" y="874" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="906">How do I add items to my inbox?</text>
+<svg x="1134" y="891" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 3 -->
+<rect x="270" y="932" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="964">What happens when I clarify a stuff item?</text>
+<svg x="1134" y="949" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 4 -->
+<rect x="270" y="990" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="1022">Can I move items between lists?</text>
+<svg x="1134" y="1007" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 5 -->
+<rect x="270" y="1048" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="1080">How does the weekly review work?</text>
+<svg x="1134" y="1065" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- See all link -->
+<text font-family="Inter" font-size="14" font-weight="500" fill="#4185DE" x="270" y="1120">See all 30 questions →</text>
+
+<!-- ===== BEST PRACTICES (y=1140–1530) gray ===== -->
+<rect x="0" y="1140" width="1440" height="390" fill="#F3F4F6"/>
+<!-- ThumbUp icon centered -->
+<svg x="700" y="1190" width="40" height="40" viewBox="0 0 96 96"><path fill="none" stroke="#4185DE" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M28 44H12V84H28M28 44V84M28 44L44 8H48C52 8 56 12 56 16V32H76C80 32 84 36 83 40L76 80C75.2 83.2 72 84 70 84H28"/></svg>
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" text-anchor="middle" x="720" y="1254">GTD Best Practices</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="1278">Tips for getting the most out of your GTD practice</text>
+<!-- Card 1: Two-Minute Rule -->
+<rect x="270" y="1306" width="289" height="160" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="1340" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="1345">1</text>
+<text font-family="Inter" font-size="18" font-weight="500" fill="#374151" x="290" y="1378">The Two-Minute Rule</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="1398">If it takes less than two</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="1414">minutes, do it now.</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="1446">Learn more →</text>
+<!-- Card 2: Inbox at Zero -->
+<rect x="575" y="1306" width="289" height="160" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="609" cy="1340" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="609" y="1345">2</text>
+<text font-family="Inter" font-size="18" font-weight="500" fill="#374151" x="595" y="1378">Keep Your Inbox at Zero</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="1398">Process your inbox completely</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="1414">in each session.</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="595" y="1446">Learn more →</text>
+<!-- Card 3: Weekly Review -->
+<rect x="880" y="1306" width="289" height="160" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="914" cy="1340" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="914" y="1345">3</text>
+<text font-family="Inter" font-size="18" font-weight="500" fill="#374151" x="900" y="1378">Do a Weekly Review</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="1398">Reflect and plan once a week</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="1414">to stay on track.</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="900" y="1446">Learn more →</text>
+<!-- See all link -->
+<text font-family="Inter" font-size="14" font-weight="500" fill="#4185DE" x="270" y="1490">See all 14 tips →</text>
+
+<!-- ===== CONTACT (y=1530–1700) white ===== -->
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" text-anchor="middle" x="720" y="1596">Can't find what you're looking for?</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle" x="720" y="1624">Our support team is here to help.</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#4185DE" text-anchor="middle" x="720" y="1656">Contact Support →</text>
+
+<!-- ===== FOOTER (y=1700–1900) ===== -->
+<rect x="0" y="1700" width="1440" height="200" fill="#F3F4F6"/>
+<line x1="0" y1="1700" x2="1440" y2="1700" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="270" y="1732" width="36" height="36" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="314" y="1758">WhatsNextAction</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="570" y="1745" letter-spacing="0.05em">PRODUCT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="1771">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="1793">Pricing</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="781" y="1745" letter-spacing="0.05em">SUPPORT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="781" y="1771">Help &amp; FAQ</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="992" y="1745" letter-spacing="0.05em">LEGAL</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="1771">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="1793">Privacy Policy</text>
+
+</g><!-- end help page frame -->
+</g><!-- end help-page -->
+
+<!-- ============================================================ -->
+<!-- GETTING STARTED PAGE                                          -->
+<!-- ============================================================ -->
+<g id="getting-started-page" transform="translate(100,9060)">
+<text class="st" y="20">Getting Started Page</text>
+<text class="sl" y="40">Back link · h1 · 13 guide cards in 3-column grid</text>
+
+<g transform="translate(0,60)">
+<rect width="1440" height="1200" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- ===== TOPNAV (Help active) ===== -->
+<rect width="1440" height="48" fill="#FFFFFF"/>
+<line x1="0" y1="48" x2="1440" y2="48" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="4" y="0" width="48" height="48" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" x="58" y="32">WhatsNextAction</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="596" y="30">Why GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="670" y="30">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="748" y="30">Pricing</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" x="816" y="30">Help</text>
+<rect x="1236" y="6" width="100" height="36" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" x="1258" y="30">Start Here</text>
+<rect x="1346" y="6" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="1363" y="30">Sign In</text>
+
+<!-- ===== CONTENT (gray bg y=48–1000) ===== -->
+<rect x="0" y="48" width="1440" height="952" fill="#F3F4F6"/>
+<!-- Back link -->
+<svg x="270" y="96" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#4185DE" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M66.33 84.67L29.67 48L66.33 11.33"/></svg>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#4185DE" x="292" y="108">Back to Help</text>
+<!-- h1 -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" x="270" y="158">Getting Started</text>
+
+<!-- Card grid: 3 cols × 5 rows, card 289×130, gap 16 -->
+<!-- Row 1 (y=190) -->
+<rect x="270" y="190" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="220" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="225">1</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="290" y="254">What is GTD?</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="274">The principles behind GTD</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="300">Learn more →</text>
+
+<rect x="575" y="190" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="609" cy="220" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="609" y="225">2</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="595" y="254">Creating Your Account</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="274">Get started in minutes</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="595" y="300">Learn more →</text>
+
+<rect x="880" y="190" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="914" cy="220" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="914" y="225">3</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="900" y="254">Your First Five Minutes</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="274">Quick walkthrough to set up</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="900" y="300">Learn more →</text>
+
+<!-- Row 2 (y=336) -->
+<rect x="270" y="336" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="366" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="371">4</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="290" y="400">The Five Steps of GTD</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="420">Capture, Clarify, Organize...</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="446">Learn more →</text>
+
+<rect x="575" y="336" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="609" cy="366" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="609" y="371">5</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="595" y="400">Understanding Dashboard</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="420">Navigate your workspace</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="595" y="446">Learn more →</text>
+
+<rect x="880" y="336" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="914" cy="366" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="914" y="371">6</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="900" y="400">Navigating the App</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="420">Sidebar, nav, and shortcuts</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="900" y="446">Learn more →</text>
+
+<!-- Row 3 (y=482) -->
+<rect x="270" y="482" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="512" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="517">7</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="290" y="546">Quick Add</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="566">Capture items fast</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="592">Learn more →</text>
+
+<rect x="575" y="482" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="609" cy="512" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="609" y="517">8</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="595" y="546">From Stuff to Action</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="566">Clarify your inbox items</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="595" y="592">Learn more →</text>
+
+<rect x="880" y="482" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="914" cy="512" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="914" y="517">9</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="900" y="546">Moving Items</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="566">Between lists and buckets</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="900" y="592">Learn more →</text>
+
+<!-- Row 4 (y=628) -->
+<rect x="270" y="628" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="658" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="663">10</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="290" y="692">Detail Pages</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="712">Edit items in depth</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="738">Learn more →</text>
+
+<rect x="575" y="628" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="609" cy="658" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="609" y="663">11</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="595" y="692">Your First Project</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="595" y="712">Multi-step outcomes</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="595" y="738">Learn more →</text>
+
+<rect x="880" y="628" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="914" cy="658" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="914" y="663">12</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="900" y="692">Files &amp; Comments</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="900" y="712">Attachments and discussion</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="900" y="738">Learn more →</text>
+
+<!-- Row 5 (y=774) — 1 card -->
+<rect x="270" y="774" width="289" height="130" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<circle cx="304" cy="804" r="14" fill="#EDF3FC"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" text-anchor="middle" x="304" y="809">13</text>
+<text font-family="Inter" font-size="16" font-weight="500" fill="#374151" x="290" y="838">Customizing Settings</text>
+<text font-family="Inter" font-size="13" font-weight="400" fill="#6B7280" x="290" y="858">Personalize your workspace</text>
+<text font-family="Inter" font-size="13" font-weight="500" fill="#4185DE" x="290" y="884">Learn more →</text>
+
+<!-- ===== FOOTER (y=1000–1200) ===== -->
+<rect x="0" y="1000" width="1440" height="200" fill="#F3F4F6"/>
+<line x1="0" y1="1000" x2="1440" y2="1000" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="270" y="1032" width="36" height="36" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="314" y="1058">WhatsNextAction</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="570" y="1045" letter-spacing="0.05em">PRODUCT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="1071">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="1093">Pricing</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="781" y="1045" letter-spacing="0.05em">SUPPORT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="781" y="1071">Help &amp; FAQ</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="992" y="1045" letter-spacing="0.05em">LEGAL</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="1071">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="1093">Privacy Policy</text>
+
+</g><!-- end getting started frame -->
+</g><!-- end getting-started-page -->
+
+<!-- ============================================================ -->
+<!-- FAQ PAGE                                                      -->
+<!-- ============================================================ -->
+<g id="faq-page" transform="translate(100,10520)">
+<text class="st" y="20">FAQ Page</text>
+<text class="sl" y="40">Back link · h1 · search · FAQ accordion items (1 expanded + 7 collapsed)</text>
+
+<g transform="translate(0,60)">
+<rect width="1440" height="1100" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- ===== TOPNAV (Help active) ===== -->
+<rect width="1440" height="48" fill="#FFFFFF"/>
+<line x1="0" y1="48" x2="1440" y2="48" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="4" y="0" width="48" height="48" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" x="58" y="32">WhatsNextAction</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="596" y="30">Why GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="670" y="30">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="748" y="30">Pricing</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" x="816" y="30">Help</text>
+<rect x="1236" y="6" width="100" height="36" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" x="1258" y="30">Start Here</text>
+<rect x="1346" y="6" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="1363" y="30">Sign In</text>
+
+<!-- ===== CONTENT (white) ===== -->
+<!-- Back link -->
+<svg x="270" y="96" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#4185DE" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M66.33 84.67L29.67 48L66.33 11.33"/></svg>
+<text font-family="Inter" font-size="14" font-weight="500" fill="#4185DE" x="292" y="108">Back to Help</text>
+<!-- h1 -->
+<text font-family="Inter" font-size="36" font-weight="700" fill="#374151" x="270" y="158">Frequently Asked Questions</text>
+<!-- Search -->
+<rect x="270" y="182" width="600" height="48" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="284" y="196" width="20" height="20" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="M88 87.78L68.67 68.45M79.11 43.34A35.56 35.56 0 1 1 8 43.34A35.56 35.56 0 0 1 79.11 43.34Z"/></svg>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#9CA3AF" x="312" y="212">Search questions...</text>
+
+<!-- FAQ Item 1 (EXPANDED) -->
+<rect x="270" y="254" width="900" height="120" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="286">What is Getting Things Done (GTD)?</text>
+<svg x="1134" y="270" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#4185DE" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M11.33 29.67L48 66.33L84.67 29.67"/></svg>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="290" y="314">GTD is a personal productivity methodology created by David Allen. It</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="290" y="336">provides a framework for capturing, clarifying, organizing, and</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="290" y="358">reviewing all your commitments so you can focus on taking action.</text>
+
+<!-- FAQ Item 2 (collapsed) -->
+<rect x="270" y="382" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="414">How do I add items to my inbox?</text>
+<svg x="1134" y="399" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 3 -->
+<rect x="270" y="440" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="472">What happens when I clarify a stuff item?</text>
+<svg x="1134" y="457" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 4 -->
+<rect x="270" y="498" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="530">What's the difference between Stuff, Actions, and Projects?</text>
+<svg x="1134" y="515" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 5 -->
+<rect x="270" y="556" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="588">Can I move items between lists?</text>
+<svg x="1134" y="573" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 6 -->
+<rect x="270" y="614" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="646">How does the calendar view work?</text>
+<svg x="1134" y="631" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 7 -->
+<rect x="270" y="672" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="704">What are context tags and how do I use them?</text>
+<svg x="1134" y="689" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- FAQ Item 8 -->
+<rect x="270" y="730" width="900" height="50" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+<text font-family="Inter" font-size="16" font-weight="600" fill="#374151" x="290" y="762">How does the weekly review work?</text>
+<svg x="1134" y="747" width="16" height="16" viewBox="0 0 96 96"><path fill="none" stroke="#9CA3AF" stroke-width="14.67" stroke-linecap="round" stroke-linejoin="round" d="M29.67 11.33L66.33 48L29.67 84.67"/></svg>
+<!-- More indicator -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#9CA3AF" text-anchor="middle" x="720" y="810">...and 22 more questions</text>
+
+<!-- ===== FOOTER (y=900–1100) ===== -->
+<rect x="0" y="900" width="1440" height="200" fill="#F3F4F6"/>
+<line x1="0" y1="900" x2="1440" y2="900" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="270" y="932" width="36" height="36" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="314" y="958">WhatsNextAction</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="570" y="945" letter-spacing="0.05em">PRODUCT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="971">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="993">Pricing</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="781" y="945" letter-spacing="0.05em">SUPPORT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="781" y="971">Help &amp; FAQ</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="992" y="945" letter-spacing="0.05em">LEGAL</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="971">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="993">Privacy Policy</text>
+
+</g><!-- end faq page frame -->
+</g><!-- end faq-page -->
+
+<!-- ============================================================ -->
+<!-- LEGAL PAGE                                                    -->
+<!-- ============================================================ -->
+<g id="legal-page" transform="translate(100,11880)">
+<text class="st" y="20">Legal Page</text>
+<text class="sl" y="40">Sidebar nav · Terms of Service prose · Active link state</text>
+
+<g transform="translate(0,60)">
+<rect width="1440" height="1100" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+
+<!-- ===== TOPNAV (guest) ===== -->
+<rect width="1440" height="48" fill="#FFFFFF"/>
+<line x1="0" y1="48" x2="1440" y2="48" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="4" y="0" width="48" height="48" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="24" font-weight="600" fill="#374151" x="58" y="32">WhatsNextAction</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="596" y="30">Why GTD</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="670" y="30">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="748" y="30">Pricing</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="816" y="30">Help</text>
+<rect x="1236" y="6" width="100" height="36" rx="6" fill="#4185DE"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#FFFFFF" x="1258" y="30">Start Here</text>
+<rect x="1346" y="6" width="80" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#356dc0" x="1363" y="30">Sign In</text>
+
+<!-- ===== CONTENT: sidebar (200px) + gap (40px) + prose ===== -->
+<!-- SIDEBAR (x=270, y=112) -->
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="270" y="120" letter-spacing="0.05em">LEGAL DOCUMENTS</text>
+<text font-family="Inter" font-size="14" font-weight="600" fill="#4185DE" x="270" y="150">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="270" y="174">Privacy Policy</text>
+
+<!-- PROSE (x=510) -->
+<text font-family="Inter" font-size="30" font-weight="600" fill="#374151" x="510" y="120">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#9CA3AF" x="510" y="148">Last updated: March 2026</text>
+
+<!-- Section 1 -->
+<text font-family="Inter" font-size="20" font-weight="600" fill="#374151" x="510" y="198">1. Acceptance of Terms</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="226">By accessing or using WhatsNextAction ("the Service"), you agree to</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="250">be bound by these Terms of Service. If you do not agree, do not use</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="274">the Service.</text>
+
+<!-- Section 2 -->
+<text font-family="Inter" font-size="20" font-weight="600" fill="#374151" x="510" y="320">2. Description of Service</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="348">WhatsNextAction is a productivity platform based on the Getting</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="372">Things Done (GTD) methodology. The Service allows users to capture,</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="396">clarify, organize, and review tasks and projects.</text>
+
+<!-- Section 3 -->
+<text font-family="Inter" font-size="20" font-weight="600" fill="#374151" x="510" y="442">3. User Accounts</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="470">You must register for an account to use the Service. You are</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="494">responsible for maintaining the confidentiality of your login</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="518">credentials and for all activities under your account.</text>
+
+<!-- Section 4 -->
+<text font-family="Inter" font-size="20" font-weight="600" fill="#374151" x="510" y="564">4. Acceptable Use</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="592">You agree to use the Service only for lawful purposes and in</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="616">accordance with these Terms. You may not use the Service to transmit</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="640">harmful, offensive, or illegal content.</text>
+
+<!-- Section 5 -->
+<text font-family="Inter" font-size="20" font-weight="600" fill="#374151" x="510" y="686">5. Intellectual Property</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="714">All content and materials available on WhatsNextAction, including but</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="738">not limited to text, graphics, logos, and software, are the property</text>
+<text font-family="Inter" font-size="16" font-weight="400" fill="#6B7280" x="510" y="762">of WhatsNextAction or its licensors.</text>
+
+<!-- More sections indicator -->
+<text font-family="Inter" font-size="14" font-weight="400" fill="#9CA3AF" x="510" y="810">...</text>
+
+<!-- ===== FOOTER (y=900–1100) ===== -->
+<rect x="0" y="900" width="1440" height="200" fill="#F3F4F6"/>
+<line x1="0" y1="900" x2="1440" y2="900" stroke="#E3E8EF" stroke-width="1"/>
+<svg x="270" y="932" width="36" height="36" viewBox="0 0 64 64"><path d="M27 52L31 35H20L37 12L33 29H44L27 52Z" fill="#4185DE"/></svg>
+<text font-family="Inter" font-size="20" font-weight="500" fill="#374151" x="314" y="958">WhatsNextAction</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="570" y="945" letter-spacing="0.05em">PRODUCT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="971">Features</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="570" y="993">Pricing</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="781" y="945" letter-spacing="0.05em">SUPPORT</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="781" y="971">Help &amp; FAQ</text>
+<text font-family="Inter" font-size="13" font-weight="600" fill="#6B7280" x="992" y="945" letter-spacing="0.05em">LEGAL</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="971">Terms of Service</text>
+<text font-family="Inter" font-size="14" font-weight="400" fill="#6B7280" x="992" y="993">Privacy Policy</text>
+
+</g><!-- end legal page frame -->
+</g><!-- end legal-page -->
+
+</svg>
