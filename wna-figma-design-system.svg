@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="14200" viewBox="0 0 1440 14200">
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="22000" viewBox="0 0 1440 22000">
   <defs>
     <style><![CDATA[
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -48,7 +48,7 @@
   </defs>
 
   <!-- Background -->
-  <rect width="1440" height="7800" fill="#f8fafc"/>
+  <rect width="1440" height="22000" fill="#f8fafc"/>
 
   <g id="Step-01-Color-Palette">
     <!-- Section Title -->
@@ -2338,6 +2338,827 @@
     <text x="820" y="14224" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">bg: #d1fae5, color: #065f46</text>
     <text x="820" y="14248" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FONT</text>
     <text x="820" y="14268" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">text-body-s: 14px weight 400</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 21 — QuickAddBtn                                        -->
+  <!-- ============================================================ -->
+  <g id="Step-21-QuickAddBtn">
+    <text x="60" y="14500" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 21 — QuickAddBtn</text>
+    <text x="60" y="14528" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Inline quick-add — collapsed button expands to text input on click</text>
+
+    <!-- Collapsed state (button) -->
+    <text x="60" y="14570" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">COLLAPSED (DEFAULT)</text>
+    <rect x="60" y="14584" width="200" height="36" rx="6" fill="#ecf3fc" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="80" y="14607" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#6B7280">+</text>
+    <text x="100" y="14607" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Quick Add</text>
+
+    <!-- Hover state -->
+    <text x="320" y="14570" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">HOVER</text>
+    <rect x="320" y="14584" width="200" height="36" rx="6" fill="#dce8f8" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="340" y="14607" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#6B7280">+</text>
+    <text x="360" y="14607" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Quick Add</text>
+
+    <!-- Expanded state (input) -->
+    <text x="580" y="14570" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">EXPANDED (INPUT FOCUSED)</text>
+    <rect x="580" y="14584" width="200" height="36" rx="6" fill="#FFFFFF" stroke="#4185DE" stroke-width="1"/>
+    <text x="596" y="14607" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Add new stuff</text>
+
+    <!-- Mobile collapsed (icon only) -->
+    <text x="840" y="14570" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">MOBILE (ICON ONLY)</text>
+    <rect x="840" y="14584" width="36" height="36" rx="6" fill="#ecf3fc" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="858" y="14608" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#6B7280" text-anchor="middle">+</text>
+
+    <!-- Annotations -->
+    <text x="60" y="14660" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">QUICKADDBTN SPECS</text>
+    <text x="60" y="14680" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">padding: 8px 16px, gap: 8px</text>
+    <text x="60" y="14696" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">border-radius: 6px</text>
+    <text x="60" y="14712" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">border: 1px solid var(--color-border-light)</text>
+    <text x="60" y="14728" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">bg: ghost bg (#ecf3fc), hover: #dce8f8</text>
+    <text x="60" y="14744" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">input focus: border-color action (#4185DE)</text>
+    <text x="60" y="14760" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">min-width: 200px (hidden on mobile, icon only)</text>
+    <text x="60" y="14776" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">font: text-body-s 14px / 400</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 22 — ClarifyPanel                                       -->
+  <!-- ============================================================ -->
+  <g id="Step-22-ClarifyPanel">
+    <text x="60" y="14880" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 22 — ClarifyPanel</text>
+    <text x="60" y="14908" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Multi-step GTD clarify wizard — header with progress, step content, keyboard navigation</text>
+
+    <!-- Panel frame (inline mode) -->
+    <text x="60" y="14950" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">STEP 1: IS IT ACTIONABLE?</text>
+    <rect x="60" y="14964" width="400" height="320" rx="0" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Header -->
+    <rect x="60" y="14964" width="400" height="44" rx="0" fill="#FFFFFF"/>
+    <line x1="60" y1="15008" x2="460" y2="15008" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="76" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151">Clarify</text>
+    <text x="400" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" text-anchor="middle">1/3</text>
+    <text x="444" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#9CA3AF" text-anchor="middle">×</text>
+    <!-- Progress bar (33%) -->
+    <rect x="60" y="15008" width="400" height="4" fill="#F3F4F6"/>
+    <rect x="60" y="15008" width="133" height="4" fill="#4185DE"/>
+    <!-- Context -->
+    <text x="260" y="15040" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" text-anchor="middle">Processing:</text>
+    <text x="260" y="15062" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151" text-anchor="middle">Buy birthday present for Mom</text>
+    <!-- Question -->
+    <text x="260" y="15100" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="18" font-weight="600" fill="#6B7280" text-anchor="middle">Is it actionable?</text>
+    <text x="260" y="15124" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Can you take a physical action on this item?</text>
+    <!-- Option buttons -->
+    <rect x="100" y="15156" width="140" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="2"/>
+    <text x="170" y="15194" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151" text-anchor="middle">Yes</text>
+    <rect x="134" y="15210" width="72" height="20" rx="4" fill="#F3F4F6"/>
+    <text x="170" y="15224" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF" text-anchor="middle">Y</text>
+    <rect x="280" y="15156" width="140" height="80" rx="12" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="2"/>
+    <text x="350" y="15194" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151" text-anchor="middle">No</text>
+    <rect x="314" y="15210" width="72" height="20" rx="4" fill="#F3F4F6"/>
+    <text x="350" y="15224" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF" text-anchor="middle">N</text>
+
+    <!-- Create Action step -->
+    <text x="520" y="14950" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">STEP 4: CREATE ACTION</text>
+    <rect x="520" y="14964" width="400" height="320" rx="0" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Header -->
+    <rect x="520" y="14964" width="400" height="44" rx="0" fill="#FFFFFF"/>
+    <line x1="520" y1="15008" x2="920" y2="15008" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="536" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151">Clarify</text>
+    <text x="636" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">&lt;</text>
+    <text x="860" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" text-anchor="middle">4/4</text>
+    <text x="904" y="14992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="400" fill="#9CA3AF" text-anchor="middle">×</text>
+    <!-- Progress bar (100%) -->
+    <rect x="520" y="15008" width="400" height="4" fill="#F3F4F6"/>
+    <rect x="520" y="15008" width="400" height="4" fill="#4185DE"/>
+    <!-- Form: Title -->
+    <text x="540" y="15044" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#6B7280" text-anchor="start">Create Action</text>
+    <text x="540" y="15068" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Title *</text>
+    <rect x="540" y="15076" width="360" height="36" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="552" y="15099" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Buy birthday present for Mom</text>
+    <!-- Form: Description -->
+    <text x="540" y="15130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Description</text>
+    <rect x="540" y="15138" width="360" height="48" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="552" y="15161" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Additional details (optional)</text>
+    <!-- Form: Tags -->
+    <text x="540" y="15206" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Tags</text>
+    <rect x="540" y="15214" width="360" height="36" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="552" y="15237" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Add context tags (optional)</text>
+    <!-- Create Action button -->
+    <rect x="788" y="15262" width="112" height="36" rx="6" fill="#4185DE"/>
+    <text x="844" y="15285" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Create Action</text>
+
+    <!-- Done state -->
+    <text x="980" y="14950" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DONE STATE</text>
+    <rect x="980" y="14964" width="300" height="200" rx="0" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <circle cx="1130" cy="15040" r="24" fill="#d1fae5"/>
+    <text x="1130" y="15048" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="20" font-weight="400" fill="#059669" text-anchor="middle">✓</text>
+    <text x="1130" y="15090" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">Item processed successfully!</text>
+
+    <!-- Annotations -->
+    <text x="60" y="15310" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">CLARIFYPANEL SPECS</text>
+    <text x="60" y="15330" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">modes: inline | modal (border-left) | fullscreen (fixed inset 0)</text>
+    <text x="60" y="15346" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">header: 12px 16px, border-bottom 1px #E3E8EF</text>
+    <text x="60" y="15362" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">progress bar: 4px height, bg #F3F4F6, fill #4185DE</text>
+    <text x="60" y="15378" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">option cards: border 2px #E3E8EF, radius 12px, padding 24px 32px</text>
+    <text x="60" y="15394" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">option hover: border-color #4185DE, bg #F3F4F6</text>
+    <text x="60" y="15410" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">keyboard: Y/N for actionable, Escape to cancel, Backspace to go back</text>
+    <text x="60" y="15426" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">steps: Actionable? → Count? → Two-minute? → Create Action/Project</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 23 — AuthDialog                                          -->
+  <!-- ============================================================ -->
+  <g id="Step-23-AuthDialog">
+    <text x="60" y="15530" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 23 — AuthDialog</text>
+    <text x="60" y="15558" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Auth modal — login, register, forgot password, reset password modes with backdrop blur</text>
+
+    <!-- Login variant -->
+    <text x="60" y="15600" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">LOGIN MODE</text>
+    <g filter="url(#shadow-auth)">
+      <rect x="60" y="15614" width="420" height="380" rx="12" fill="#FFFFFF"/>
+    </g>
+    <text x="270" y="15660" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="22" font-weight="700" fill="#374151" text-anchor="middle">Welcome Back</text>
+    <text x="270" y="15684" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">Let's get you organized.</text>
+    <!-- Email input -->
+    <text x="90" y="15718" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Email</text>
+    <rect x="90" y="15726" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="102" y="15751" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Enter your email address</text>
+    <!-- Password input -->
+    <text x="90" y="15786" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Password</text>
+    <rect x="90" y="15794" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="102" y="15819" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Enter your password</text>
+    <text x="90" y="15850" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#6B7280">Use 8 or more characters with a mix of letters, numbers and symbols</text>
+    <!-- Sign In button -->
+    <rect x="90" y="15866" width="360" height="40" rx="6" fill="#4185DE"/>
+    <text x="270" y="15891" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Sign In</text>
+    <!-- Forgot link -->
+    <text x="270" y="15928" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">Forgot your password? <tspan fill="#4185DE">Reset it</tspan></text>
+    <!-- Separator -->
+    <line x1="90" y1="15950" x2="450" y2="15950" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Create account -->
+    <rect x="165" y="15966" width="210" height="36" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="270" y="15989" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle">Create new account</text>
+
+    <!-- Register variant -->
+    <text x="540" y="15600" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">REGISTER MODE</text>
+    <g filter="url(#shadow-auth)">
+      <rect x="540" y="15614" width="420" height="460" rx="12" fill="#FFFFFF"/>
+    </g>
+    <text x="750" y="15660" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="22" font-weight="700" fill="#374151" text-anchor="middle">Create Your Account</text>
+    <text x="750" y="15684" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">Start your journey to better clarity and control.</text>
+    <!-- Email -->
+    <text x="570" y="15718" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Email</text>
+    <rect x="570" y="15726" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="582" y="15751" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Enter your email address</text>
+    <!-- Password -->
+    <text x="570" y="15786" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Password</text>
+    <rect x="570" y="15794" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="582" y="15819" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Enter your password</text>
+    <!-- Confirm -->
+    <text x="570" y="15854" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Confirm password</text>
+    <rect x="570" y="15862" width="360" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="582" y="15887" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Confirm your password</text>
+    <!-- Checkbox -->
+    <rect x="570" y="15918" width="18" height="18" rx="3" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="596" y="15932" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">I agree to the <tspan fill="#4185DE">Terms of Service</tspan> and <tspan fill="#4185DE">Privacy Policy</tspan></text>
+    <!-- Register button -->
+    <rect x="570" y="15954" width="360" height="40" rx="6" fill="#4185DE"/>
+    <text x="750" y="15979" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Register</text>
+    <!-- Link -->
+    <text x="750" y="16016" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">Already have an account? <tspan fill="#4185DE">Sign In</tspan></text>
+
+    <!-- Forgot Password variant -->
+    <text x="1020" y="15600" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FORGOT PASSWORD MODE</text>
+    <g filter="url(#shadow-auth)">
+      <rect x="1020" y="15614" width="380" height="280" rx="12" fill="#FFFFFF"/>
+    </g>
+    <text x="1210" y="15660" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="22" font-weight="700" fill="#374151" text-anchor="middle">Forgot Your Password?</text>
+    <text x="1210" y="15688" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">No problem. Enter your email below</text>
+    <text x="1210" y="15706" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">and we'll send you a reset link.</text>
+    <!-- Email -->
+    <text x="1050" y="15740" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Email</text>
+    <rect x="1050" y="15748" width="320" height="40" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="1062" y="15773" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Enter your email address</text>
+    <!-- Send button -->
+    <rect x="1050" y="15804" width="320" height="40" rx="6" fill="#4185DE"/>
+    <text x="1210" y="15829" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Send reset link</text>
+    <!-- Link -->
+    <text x="1210" y="15870" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">Remember your password? <tspan fill="#4185DE">Back to login</tspan></text>
+
+    <!-- Annotations -->
+    <text x="60" y="16120" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">AUTHDIALOG SPECS</text>
+    <text x="60" y="16140" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">backdrop: fixed inset 0, blur(3px), z-index 40</text>
+    <text x="60" y="16156" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">dialog: max-width 420px, padding 30px, radius 12px, shadow-auth</text>
+    <text x="60" y="16172" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">section gap: 20px, separator: 1px solid #E3E8EF</text>
+    <text x="60" y="16188" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">modes: login | register | forgot | reset</text>
+    <text x="60" y="16204" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">transitions: auth-fade (opacity 0.15s), auth-section (opacity + translateY 0.15s)</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 24 — ActionBtn                                           -->
+  <!-- ============================================================ -->
+  <g id="Step-24-ActionBtn">
+    <text x="60" y="16310" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 24 — ActionBtn</text>
+    <text x="60" y="16338" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Small inline action button for list item actions — danger, primary, and default variants</text>
+
+    <!-- Default variant -->
+    <text x="60" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DEFAULT</text>
+    <rect x="60" y="16394" width="40" height="28" rx="4" fill="#F3F4F6"/>
+    <text x="80" y="16413" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#374151" text-anchor="middle">✕</text>
+
+    <text x="120" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">HOVER</text>
+    <rect x="120" y="16394" width="40" height="28" rx="4" fill="#E5E7EB"/>
+    <text x="140" y="16413" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#374151" text-anchor="middle">✕</text>
+
+    <!-- Danger variant -->
+    <text x="220" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DANGER</text>
+    <rect x="220" y="16394" width="40" height="28" rx="4" fill="#F3F4F6"/>
+    <text x="240" y="16413" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#dc2626" text-anchor="middle">✕</text>
+
+    <text x="280" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">HOVER</text>
+    <rect x="280" y="16394" width="40" height="28" rx="4" fill="#fecaca"/>
+    <text x="300" y="16413" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#dc2626" text-anchor="middle">✕</text>
+
+    <!-- Primary variant -->
+    <text x="380" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">PRIMARY</text>
+    <rect x="380" y="16394" width="40" height="28" rx="4" fill="#F3F4F6"/>
+    <text x="400" y="16413" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#4185DE" text-anchor="middle">✕</text>
+
+    <text x="440" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">HOVER</text>
+    <rect x="440" y="16394" width="40" height="28" rx="4" fill="#ecf3fc"/>
+    <text x="460" y="16413" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#4185DE" text-anchor="middle">✕</text>
+
+    <!-- Loading spinner -->
+    <text x="540" y="16380" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">LOADING</text>
+    <circle cx="555" cy="16408" r="7" fill="none" stroke="#E3E8EF" stroke-width="2"/>
+    <path d="M555 16401 A7 7 0 0 1 562 16408" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Annotations -->
+    <text x="60" y="16460" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ACTIONBTN SPECS</text>
+    <text x="60" y="16480" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">padding: 4px 8px, radius: 4px, font: xs (12px)</text>
+    <text x="60" y="16496" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">default bg: #F3F4F6, hover: #E5E7EB</text>
+    <text x="60" y="16512" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">danger: color #dc2626, hover-bg: #fecaca</text>
+    <text x="60" y="16528" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">primary: color #4185DE, hover-bg: #ecf3fc</text>
+    <text x="60" y="16544" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">spinner: 14px, border 2px #E3E8EF, top-color #4185DE</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 25 — Lnk                                                 -->
+  <!-- ============================================================ -->
+  <g id="Step-25-Lnk">
+    <text x="60" y="16650" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 25 — Lnk</text>
+    <text x="60" y="16678" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Text + link inline component — centered block with contextual text and clickable action</text>
+
+    <!-- Examples -->
+    <text x="60" y="16720" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">EXAMPLES</text>
+    <text x="60" y="16750" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="start">Already have an account? <tspan fill="#4185DE">Sign In</tspan></text>
+    <text x="60" y="16778" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="start">Forgot your password? <tspan fill="#4185DE">Reset it</tspan></text>
+    <text x="60" y="16806" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="start">Remember your password? <tspan fill="#4185DE">Back to login</tspan></text>
+
+    <!-- Hover state -->
+    <text x="500" y="16720" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">HOVER STATE</text>
+    <text x="500" y="16750" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="start">Forgot your password? <tspan fill="#2563EB" text-decoration="none">Reset it</tspan></text>
+
+    <!-- Annotations -->
+    <text x="60" y="16850" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">LNK SPECS</text>
+    <text x="60" y="16870" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">display: block, text-align: center</text>
+    <text x="60" y="16886" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">font: text-body-s 14px / 400</text>
+    <text x="60" y="16902" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">link color: #4185DE, hover: #2563EB</text>
+    <text x="60" y="16918" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">text-decoration: none</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 26 — UserAvatar                                          -->
+  <!-- ============================================================ -->
+  <g id="Step-26-UserAvatar">
+    <text x="60" y="17020" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 26 — UserAvatar</text>
+    <text x="60" y="17048" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Circular avatar — shows image or fallback with initials derived from email, HSL-hashed color</text>
+
+    <!-- Fallback avatars with different emails/colors -->
+    <text x="60" y="17090" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FALLBACK INITIALS (36px)</text>
+    <circle cx="78" cy="17124" r="18" fill="hsl(120, 45%, 72%)"/>
+    <text x="78" y="17130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">JD</text>
+    <text x="78" y="17156" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">john@...</text>
+
+    <circle cx="148" cy="17124" r="18" fill="hsl(220, 45%, 72%)"/>
+    <text x="148" y="17130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">SA</text>
+    <text x="148" y="17156" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">sarah@...</text>
+
+    <circle cx="218" cy="17124" r="18" fill="hsl(30, 45%, 72%)"/>
+    <text x="218" y="17130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">MI</text>
+    <text x="218" y="17156" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">mike@...</text>
+
+    <circle cx="288" cy="17124" r="18" fill="#777777"/>
+    <text x="288" y="17130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">?</text>
+    <text x="288" y="17156" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">no email</text>
+
+    <!-- Image avatar -->
+    <text x="380" y="17090" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">IMAGE AVATAR</text>
+    <circle cx="398" cy="17124" r="18" fill="url(#checkerboard)" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="398" y="17128" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="8" font-weight="400" fill="#9CA3AF" text-anchor="middle">IMG</text>
+
+    <!-- Mobile size (32px) -->
+    <text x="480" y="17090" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">MOBILE (32px)</text>
+    <circle cx="496" cy="17124" r="16" fill="hsl(120, 45%, 72%)"/>
+    <text x="496" y="17130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">JD</text>
+
+    <!-- Annotations -->
+    <text x="60" y="17200" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">USERAVATAR SPECS</text>
+    <text x="60" y="17220" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">size: 36px desktop, 32px mobile (max-width: 600px)</text>
+    <text x="60" y="17236" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">border-radius: 50%, overflow: hidden, cursor: pointer</text>
+    <text x="60" y="17252" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">fallback: initials from first 2 chars of email, uppercase</text>
+    <text x="60" y="17268" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">color: hsl(hash % 360, 45%, 72%), text: white, font: sm semibold</text>
+    <text x="60" y="17284" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">no email: bg #777, initials "?"</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 27 — ItemTypeIcon                                        -->
+  <!-- ============================================================ -->
+  <g id="Step-27-ItemTypeIcon">
+    <text x="60" y="17390" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 27 — ItemTypeIcon</text>
+    <text x="60" y="17418" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Color-coded icon per GTD entity type — Stuff (inbox), Action (next), Project</text>
+
+    <!-- Stuff icon -->
+    <text x="60" y="17460" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">STUFF</text>
+    <rect x="60" y="17474" width="28" height="28" rx="4" fill="#F3F4F6"/>
+    <svg x="64" y="17478" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+      <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/>
+    </svg>
+    <text x="74" y="17518" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">#6B7280</text>
+
+    <!-- Action icon -->
+    <text x="160" y="17460" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ACTION</text>
+    <rect x="160" y="17474" width="28" height="28" rx="4" fill="#ecf3fc"/>
+    <svg x="164" y="17478" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+    <text x="174" y="17518" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">#4185DE</text>
+
+    <!-- Project icon -->
+    <text x="260" y="17460" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">PROJECT</text>
+    <rect x="260" y="17474" width="28" height="28" rx="4" fill="#f0fdf4"/>
+    <svg x="264" y="17478" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+    </svg>
+    <text x="274" y="17518" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="middle">#059669</text>
+
+    <!-- Annotations -->
+    <text x="60" y="17560" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ITEMTYPEICON SPECS</text>
+    <text x="60" y="17580" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">svg size: 20px with 2px padding, box-sizing: border-box</text>
+    <text x="60" y="17596" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">STUFF: #6B7280 (text-secondary)</text>
+    <text x="60" y="17612" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">ACTION: #4185DE (action)</text>
+    <text x="60" y="17628" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">PROJECT: #059669 (project / success)</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 28 — ItemMoveDropdown                                    -->
+  <!-- ============================================================ -->
+  <g id="Step-28-ItemMoveDropdown">
+    <text x="60" y="17740" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 28 — ItemMoveDropdown</text>
+    <text x="60" y="17768" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Move-to dropdown for relocating items between GTD buckets — context-aware destinations</text>
+
+    <!-- Stuff destinations -->
+    <text x="60" y="17810" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">STUFF (INBOX) DESTINATIONS</text>
+    <g filter="url(#shadow-popover)">
+      <rect x="60" y="17824" width="200" height="340" rx="6" fill="white"/>
+    </g>
+    <text x="76" y="17848" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#374151">Move to</text>
+    <line x1="60" y1="17856" x2="260" y2="17856" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="100" y="17880" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Next Actions</text>
+    <text x="100" y="17908" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Today</text>
+    <text x="100" y="17936" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Calendar</text>
+    <text x="100" y="17964" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Waiting For</text>
+    <text x="100" y="17992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Projects</text>
+    <text x="100" y="18020" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Someday</text>
+    <text x="100" y="18048" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Reference</text>
+    <line x1="60" y1="18060" x2="260" y2="18060" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="100" y="18084" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Completed</text>
+    <text x="100" y="18112" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#dc2626">Trash</text>
+
+    <!-- Action destinations -->
+    <text x="320" y="17810" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ACTION DESTINATIONS</text>
+    <g filter="url(#shadow-popover)">
+      <rect x="320" y="17824" width="200" height="220" rx="6" fill="white"/>
+    </g>
+    <text x="336" y="17848" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#374151">Move to</text>
+    <line x1="320" y1="17856" x2="520" y2="17856" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="360" y="17880" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Next Actions</text>
+    <text x="360" y="17908" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Today</text>
+    <text x="360" y="17936" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Calendar</text>
+    <text x="360" y="17964" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Waiting For</text>
+    <text x="360" y="17992" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Someday</text>
+    <text x="360" y="18020" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Projects</text>
+
+    <!-- Trigger button -->
+    <text x="580" y="17810" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">TRIGGER BUTTON</text>
+    <rect x="580" y="17830" width="28" height="28" rx="4" fill="transparent"/>
+    <svg x="584" y="17834" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 9l7-7 7 7"/>
+      <path d="M5 15l7 7 7-7"/>
+    </svg>
+    <text x="580" y="17880" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">HOVER</text>
+    <rect x="620" y="17830" width="28" height="28" rx="4" fill="#F3F4F6"/>
+    <svg x="624" y="17834" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 9l7-7 7 7"/>
+      <path d="M5 15l7 7 7-7"/>
+    </svg>
+
+    <!-- Annotations -->
+    <text x="60" y="18180" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ITEMMOVEDROPDOWN SPECS</text>
+    <text x="60" y="18200" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">trigger: 28×28 btn, icon 18px, color tertiary → action on hover</text>
+    <text x="60" y="18216" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">uses Dropdown component, align: right</text>
+    <text x="60" y="18232" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">context-aware: stuff shows all, action hides current state</text>
+    <text x="60" y="18248" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">danger items: color #dc2626</text>
+    <text x="60" y="18264" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">divider: 1px #E3E8EF, margin 4px 0</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 29 — MoveModal                                           -->
+  <!-- ============================================================ -->
+  <g id="Step-29-MoveModal">
+    <text x="60" y="18370" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 29 — MoveModal</text>
+    <text x="60" y="18398" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Context modal for move actions requiring extra input — schedule date, waiting-for person, project outcome</text>
+
+    <!-- Schedule modal -->
+    <text x="60" y="18440" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">SCHEDULE (DATE + TIME)</text>
+    <g filter="url(#shadow-modal)">
+      <rect x="60" y="18454" width="350" height="240" rx="12" fill="#FFFFFF"/>
+    </g>
+    <text x="84" y="18486" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151">Schedule</text>
+    <!-- Date label + input -->
+    <text x="84" y="18518" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="500" fill="#6B7280">Date</text>
+    <rect x="84" y="18526" width="300" height="36" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="96" y="18549" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">2026-03-15</text>
+    <!-- Add time link -->
+    <text x="84" y="18586" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#4185DE">Add time</text>
+    <!-- Actions -->
+    <rect x="244" y="18640" width="70" height="32" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="279" y="18661" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle">Cancel</text>
+    <rect x="324" y="18640" width="70" height="32" rx="6" fill="#4185DE"/>
+    <text x="359" y="18661" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Schedule</text>
+
+    <!-- Waiting For modal -->
+    <text x="470" y="18440" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">WAITING FOR</text>
+    <g filter="url(#shadow-modal)">
+      <rect x="470" y="18454" width="350" height="200" rx="12" fill="#FFFFFF"/>
+    </g>
+    <text x="494" y="18486" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151">Waiting For</text>
+    <rect x="494" y="18510" width="300" height="36" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="506" y="18533" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">e.g., Sarah from Legal</text>
+    <!-- Actions -->
+    <rect x="654" y="18600" width="70" height="32" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="689" y="18621" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle">Cancel</text>
+    <rect x="734" y="18600" width="70" height="32" rx="6" fill="#4185DE"/>
+    <text x="769" y="18621" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Save</text>
+
+    <!-- Outcome modal -->
+    <text x="880" y="18440" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">PROJECT OUTCOME</text>
+    <g filter="url(#shadow-modal)">
+      <rect x="880" y="18454" width="350" height="230" rx="12" fill="#FFFFFF"/>
+    </g>
+    <text x="904" y="18486" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151">Create Project</text>
+    <rect x="904" y="18510" width="300" height="80" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="916" y="18536" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Describe the successful outcome...</text>
+    <!-- Actions -->
+    <rect x="1044" y="18630" width="70" height="32" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="1079" y="18651" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#356dc0" text-anchor="middle">Cancel</text>
+    <rect x="1124" y="18630" width="90" height="32" rx="6" fill="#4185DE"/>
+    <text x="1169" y="18651" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#FFFFFF" text-anchor="middle">Create Project</text>
+
+    <!-- Annotations -->
+    <text x="60" y="18730" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">MOVEMODAL SPECS</text>
+    <text x="60" y="18750" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">overlay: fixed inset 0, bg overlay, z-index 99998</text>
+    <text x="60" y="18766" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">dialog: radius 12px, padding 24px, min-width 320px, max-width 400px, shadow-modal</text>
+    <text x="60" y="18782" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">types: schedule (date + optional time/duration), waiting (text), outcome (textarea)</text>
+    <text x="60" y="18798" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">actions: flex end, gap 8px, Cancel (ghost sm) + Confirm (primary sm)</text>
+    <text x="60" y="18814" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">auto-focus: date/text/textarea on open, Enter to confirm, Escape to close</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 30 — RecurrenceInput                                     -->
+  <!-- ============================================================ -->
+  <g id="Step-30-RecurrenceInput">
+    <text x="60" y="18920" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 30 — RecurrenceInput</text>
+    <text x="60" y="18948" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">RRULE builder — frequency, interval, day picker (weekly), end condition, summary text</text>
+
+    <!-- Weekly example -->
+    <text x="60" y="18990" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">WEEKLY RECURRENCE</text>
+    <rect x="60" y="19004" width="500" height="220" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Repeat row -->
+    <text x="80" y="19032" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#6B7280">Repeat</text>
+    <rect x="170" y="19016" width="100" height="28" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="182" y="19035" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Weekly</text>
+    <!-- Every row -->
+    <text x="80" y="19068" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#6B7280">Every</text>
+    <rect x="170" y="19052" width="60" height="28" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="200" y="19071" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" text-anchor="middle">1</text>
+    <text x="240" y="19071" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">week(s)</text>
+    <!-- Day picker row -->
+    <text x="80" y="19106" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#6B7280">On</text>
+    <!-- Day buttons: M T W Th F Sa Su -->
+    <rect x="170" y="19090" width="36" height="28" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="188" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">Mo</text>
+    <rect x="210" y="19090" width="36" height="28" rx="6" fill="#4185DE"/>
+    <text x="228" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#FFFFFF" text-anchor="middle">Tu</text>
+    <rect x="250" y="19090" width="36" height="28" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="268" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">We</text>
+    <rect x="290" y="19090" width="36" height="28" rx="6" fill="#4185DE"/>
+    <text x="308" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#FFFFFF" text-anchor="middle">Th</text>
+    <rect x="330" y="19090" width="36" height="28" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="348" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">Fr</text>
+    <rect x="370" y="19090" width="36" height="28" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="388" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">Sa</text>
+    <rect x="410" y="19090" width="36" height="28" rx="6" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="428" y="19108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#6B7280" text-anchor="middle">Su</text>
+    <!-- Ends row -->
+    <text x="80" y="19148" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#6B7280">Ends</text>
+    <rect x="170" y="19132" width="100" height="28" rx="6" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="182" y="19151" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Never</text>
+    <!-- Summary -->
+    <text x="80" y="19192" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" font-style="italic">Every week on Tuesday, Thursday</text>
+
+    <!-- Annotations -->
+    <text x="60" y="19260" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">RECURRENCEINPUT SPECS</text>
+    <text x="60" y="19280" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">layout: flex column, gap 12px, rows flex center gap 12px</text>
+    <text x="60" y="19296" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">label: min-width 90px, color secondary, font-weight semibold</text>
+    <text x="60" y="19312" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">selects/inputs: padding 6px 10px, radius 6px, border #D1D5DB</text>
+    <text x="60" y="19328" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">day buttons: padding 4px 10px, radius 6px, active: bg #4185DE, color white</text>
+    <text x="60" y="19344" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">frequencies: DAILY | WEEKLY | MONTHLY | YEARLY</text>
+    <text x="60" y="19360" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">end: never | count (After N times) | until (date)</text>
+    <text x="60" y="19376" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">summary: italic, color tertiary</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 31 — ContextFilter                                       -->
+  <!-- ============================================================ -->
+  <g id="Step-31-ContextFilter">
+    <text x="60" y="19480" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 31 — ContextFilter</text>
+    <text x="60" y="19508" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Global context filter — filter icon with dropdown, active tag chip with remove, border-bottom separator</text>
+
+    <!-- Inactive state -->
+    <text x="60" y="19550" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">INACTIVE (NO FILTER)</text>
+    <rect x="60" y="19564" width="300" height="36" rx="0" fill="transparent"/>
+    <line x1="60" y1="19600" x2="360" y2="19600" stroke="#E3E8EF" stroke-width="1"/>
+    <svg x="60" y="19568" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+    <text x="96" y="19588" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" font-style="italic">Filter by context</text>
+
+    <!-- Active state with chip -->
+    <text x="420" y="19550" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ACTIVE (FILTERED)</text>
+    <rect x="420" y="19564" width="300" height="36" rx="0" fill="transparent"/>
+    <line x1="420" y1="19600" x2="720" y2="19600" stroke="#E3E8EF" stroke-width="1"/>
+    <svg x="420" y="19568" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+    <!-- Chip -->
+    <rect x="460" y="19570" width="80" height="24" rx="12" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="490" y="19587" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#374151" text-anchor="middle">@home</text>
+    <text x="530" y="19587" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" text-anchor="middle">×</text>
+
+    <!-- Dropdown open -->
+    <text x="780" y="19550" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DROPDOWN OPEN</text>
+    <g filter="url(#shadow-popover)">
+      <rect x="780" y="19564" width="180" height="168" rx="6" fill="white"/>
+    </g>
+    <rect x="780" y="19572" width="180" height="28" rx="0" fill="#F3F4F6"/>
+    <text x="796" y="19591" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#4185DE">@home</text>
+    <text x="796" y="19619" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@work</text>
+    <text x="796" y="19647" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@errands</text>
+    <text x="796" y="19675" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">@phone</text>
+    <line x1="780" y1="19690" x2="960" y2="19690" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="870" y="19714" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF" text-anchor="middle">Clear</text>
+
+    <!-- Annotations -->
+    <text x="60" y="19770" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">CONTEXTFILTER SPECS</text>
+    <text x="60" y="19790" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">container: flex center, gap 6px, padding-bottom 10px, border-bottom 1px #E3E8EF</text>
+    <text x="60" y="19806" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">trigger icon: 28px with 4px padding, color secondary → action when active</text>
+    <text x="60" y="19822" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">chip: padding 2px 8px, radius 12px, bg secondary, border #E3E8EF</text>
+    <text x="60" y="19838" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">dropdown item active: bg secondary, color action, font-weight semibold</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 32 — TagFilter                                           -->
+  <!-- ============================================================ -->
+  <g id="Step-32-TagFilter">
+    <text x="60" y="19940" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 32 — TagFilter</text>
+    <text x="60" y="19968" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Multi-select tag filter — icon button, checkmark list, removable chips, context-locked tags</text>
+
+    <!-- Inactive -->
+    <text x="60" y="20010" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">INACTIVE</text>
+    <rect x="60" y="20024" width="32" height="32" rx="6" fill="transparent" stroke="#E3E8EF" stroke-width="1"/>
+    <svg x="66" y="20030" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+
+    <!-- Active with chips -->
+    <text x="160" y="20010" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ACTIVE WITH CHIPS</text>
+    <rect x="160" y="20024" width="32" height="32" rx="6" fill="transparent" stroke="#E3E8EF" stroke-width="1"/>
+    <svg x="166" y="20030" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4185DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+    <!-- Context chip (locked, blue) -->
+    <rect x="200" y="20028" width="72" height="24" rx="12" fill="#4185DE"/>
+    <text x="236" y="20045" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#FFFFFF" text-anchor="middle">@home</text>
+    <!-- Regular chip (removable) -->
+    <rect x="280" y="20028" width="84" height="24" rx="12" fill="#F3F4F6" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="312" y="20045" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#374151" text-anchor="middle">urgent</text>
+    <text x="354" y="20045" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" text-anchor="middle">×</text>
+
+    <!-- Dropdown with checkmarks -->
+    <text x="440" y="20010" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DROPDOWN OPEN</text>
+    <g filter="url(#shadow-popover)">
+      <rect x="440" y="20024" width="180" height="168" rx="6" fill="white"/>
+    </g>
+    <!-- Context tag (locked, dimmed) -->
+    <text x="460" y="20051" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#4185DE">✓</text>
+    <text x="482" y="20051" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF">@home</text>
+    <!-- Checked tag -->
+    <text x="460" y="20079" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="600" fill="#4185DE">✓</text>
+    <text x="482" y="20079" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">urgent</text>
+    <!-- Unchecked tags -->
+    <text x="482" y="20107" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">  @work</text>
+    <text x="482" y="20135" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">  @errands</text>
+    <line x1="440" y1="20148" x2="620" y2="20148" stroke="#E3E8EF" stroke-width="1"/>
+    <text x="530" y="20172" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF" text-anchor="middle">Clear all</text>
+
+    <!-- Annotations -->
+    <text x="60" y="20230" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">TAGFILTER SPECS</text>
+    <text x="60" y="20250" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">trigger: Btn variant="icon", active color: action</text>
+    <text x="60" y="20266" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">chips: padding 2px 8px, radius 12px, removable × button</text>
+    <text x="60" y="20282" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">context chip: bg action, color white (locked, not removable)</text>
+    <text x="60" y="20298" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">check: ✓ in action color, 18px width center</text>
+    <text x="60" y="20314" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">context items: disabled, opacity 0.5</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 33 — GtdTip                                              -->
+  <!-- ============================================================ -->
+  <g id="Step-33-GtdTip">
+    <text x="60" y="20420" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 33 — GtdTip</text>
+    <text x="60" y="20448" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Dismissible GTD methodology tip banner — info and quote variants with left border accent</text>
+
+    <!-- Info variant -->
+    <text x="60" y="20490" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">INFO VARIANT</text>
+    <rect x="60" y="20504" width="600" height="48" rx="6" fill="#F3F4F6"/>
+    <rect x="60" y="20504" width="3" height="48" fill="#4185DE"/>
+    <text x="84" y="20534" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Your mind is for having ideas, not holding them. Capture everything into your inbox.</text>
+    <text x="636" y="20530" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="18" font-weight="400" fill="#9CA3AF">×</text>
+
+    <!-- Quote variant -->
+    <text x="60" y="20580" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">QUOTE VARIANT</text>
+    <rect x="60" y="20594" width="600" height="48" rx="6" fill="#F3F4F6"/>
+    <rect x="60" y="20594" width="3" height="48" fill="#9CA3AF"/>
+    <text x="84" y="20624" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151" font-style="italic">"You can do anything, but not everything." — David Allen</text>
+    <text x="636" y="20620" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="18" font-weight="400" fill="#9CA3AF">×</text>
+
+    <!-- Annotations -->
+    <text x="60" y="20680" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">GTDTIP SPECS</text>
+    <text x="60" y="20700" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">padding: 14px 16px, gap 12px, radius 6px, margin-bottom 16px</text>
+    <text x="60" y="20716" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">bg: secondary (#F3F4F6), border-left: 3px solid action (#4185DE)</text>
+    <text x="60" y="20732" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">quote variant: border-left-color tertiary (#9CA3AF), font-style italic</text>
+    <text x="60" y="20748" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">close button: font-size lg, color tertiary → primary on hover</text>
+    <text x="60" y="20764" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">dismissible: persisted via settingsModel storageKey</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 34 — FilterEmptyState                                    -->
+  <!-- ============================================================ -->
+  <g id="Step-34-FilterEmptyState">
+    <text x="60" y="20870" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 34 — FilterEmptyState</text>
+    <text x="60" y="20898" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Empty state shown when context/tag filter yields no results — icon, title, descriptive text</text>
+
+    <!-- Example -->
+    <text x="60" y="20940" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FILTER EMPTY STATE</text>
+    <rect x="60" y="20954" width="400" height="140" rx="8" fill="#FFFFFF" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- Filter icon (large) -->
+    <svg x="236" y="20970" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+    <text x="260" y="21028" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="16" font-weight="600" fill="#374151" text-anchor="middle">No items for this context</text>
+    <text x="260" y="21054" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">Nothing tagged with "@home" needs</text>
+    <text x="260" y="21072" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280" text-anchor="middle">attention right now.</text>
+
+    <!-- Annotations -->
+    <text x="60" y="21130" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">FILTEREMPTYSTATE SPECS</text>
+    <text x="60" y="21150" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">icon: 40px, color tertiary, margin-bottom 16px</text>
+    <text x="60" y="21166" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">title: text-h3, color primary, margin-bottom 8px</text>
+    <text x="60" y="21182" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">text: text-body-m, color secondary, max-width 300px</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 35 — AttachmentSection                                   -->
+  <!-- ============================================================ -->
+  <g id="Step-35-AttachmentSection">
+    <text x="60" y="21290" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 35 — AttachmentSection</text>
+    <text x="60" y="21318" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">File attachment list — upload via click/drag, file list with icon, download/delete actions, progress bar</text>
+
+    <!-- Empty state -->
+    <text x="60" y="21360" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">EMPTY STATE</text>
+    <rect x="60" y="21374" width="300" height="60" rx="0" fill="transparent"/>
+    <text x="60" y="21390" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Attachments</text>
+    <text x="60" y="21418" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" font-style="italic">Attach a file...</text>
+    <line x1="60" y1="21438" x2="360" y2="21438" stroke="#E3E8EF" stroke-width="1"/>
+
+    <!-- With files -->
+    <text x="420" y="21360" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">WITH ATTACHMENTS</text>
+    <rect x="420" y="21374" width="400" height="180" rx="0" fill="transparent"/>
+    <text x="420" y="21390" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Attachments</text>
+    <text x="780" y="21390" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="end">3 / 10</text>
+    <!-- File item 1 -->
+    <rect x="420" y="21400" width="400" height="36" rx="4" fill="transparent"/>
+    <rect x="424" y="21404" width="24" height="24" rx="2" fill="#F3F4F6"/>
+    <text x="436" y="21421" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#6B7280" text-anchor="middle">PDF</text>
+    <text x="458" y="21420" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">project-brief.pdf</text>
+    <text x="600" y="21420" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">2.4 MB</text>
+    <line x1="420" y1="21436" x2="820" y2="21436" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- File item 2 -->
+    <rect x="420" y="21438" width="400" height="36" rx="4" fill="transparent"/>
+    <rect x="424" y="21442" width="24" height="24" rx="2" fill="#F3F4F6"/>
+    <text x="436" y="21459" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#6B7280" text-anchor="middle">IMG</text>
+    <text x="458" y="21458" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">screenshot.png</text>
+    <text x="590" y="21458" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">340 KB</text>
+    <line x1="420" y1="21474" x2="820" y2="21474" stroke="#E3E8EF" stroke-width="1"/>
+    <!-- File item 3 -->
+    <rect x="420" y="21476" width="400" height="36" rx="4" fill="transparent"/>
+    <rect x="424" y="21480" width="24" height="24" rx="2" fill="#F3F4F6"/>
+    <text x="436" y="21497" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#6B7280" text-anchor="middle">TXT</text>
+    <text x="458" y="21496" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">notes.txt</text>
+    <text x="555" y="21496" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="400" fill="#9CA3AF">1.2 KB</text>
+    <!-- "Attach another" placeholder -->
+    <text x="420" y="21534" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" font-style="italic">Attach another file...</text>
+    <line x1="420" y1="21558" x2="820" y2="21558" stroke="#E3E8EF" stroke-width="1"/>
+
+    <!-- Drop zone active state -->
+    <text x="880" y="21360" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">DROP ZONE ACTIVE</text>
+    <rect x="880" y="21380" width="300" height="36" rx="4" fill="#F3F4F6" stroke="#4185DE" stroke-width="1" stroke-dasharray="4 2"/>
+    <text x="1030" y="21404" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#4185DE" text-anchor="middle">Drop file to attach</text>
+
+    <!-- Upload progress -->
+    <text x="880" y="21440" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">UPLOAD PROGRESS</text>
+    <rect x="880" y="21458" width="240" height="3" rx="2" fill="#F3F4F6"/>
+    <rect x="880" y="21458" width="168" height="3" rx="2" fill="#4185DE"/>
+    <text x="1130" y="21464" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF">70%</text>
+
+    <!-- Annotations -->
+    <text x="60" y="21600" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">ATTACHMENTSECTION SPECS</text>
+    <text x="60" y="21620" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">limit: 10 attachments, max file size: 50 MB</text>
+    <text x="60" y="21636" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">file item: flex center, gap 10px, padding 8px 4px, border-bottom #E3E8EF</text>
+    <text x="60" y="21652" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">icon: 24px RefFileIcon, actions visible on hover (always on touch)</text>
+    <text x="60" y="21668" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">drop zone active: bg secondary, border dashed action, color action</text>
+    <text x="60" y="21684" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">progress: 3px track #F3F4F6, fill #4185DE, transition 0.2s</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- STEP 36 — CommentSection                                      -->
+  <!-- ============================================================ -->
+  <g id="Step-36-CommentSection">
+    <text x="60" y="21790" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="36" font-weight="700" fill="#374151">Step 36 — CommentSection</text>
+    <text x="60" y="21818" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#6B7280">Comment thread — add comment textarea, avatar + timestamp + message bubbles, character counter</text>
+
+    <!-- Empty state -->
+    <text x="60" y="21860" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">EMPTY STATE</text>
+    <rect x="60" y="21874" width="300" height="60" rx="0" fill="transparent"/>
+    <text x="60" y="21890" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Comments</text>
+    <text x="60" y="21918" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#9CA3AF" font-style="italic">Add a comment...</text>
+
+    <!-- With comments -->
+    <text x="420" y="21860" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">WITH COMMENTS</text>
+    <text x="420" y="21882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#374151">Comments</text>
+    <text x="780" y="21882" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF" text-anchor="end">2 / 50</text>
+    <!-- Add comment textarea -->
+    <rect x="420" y="21892" width="400" height="32" rx="4" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="432" y="21913" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#D1D5DB">Add a comment...</text>
+    <!-- Comment 1 -->
+    <circle cx="434" cy="21950" r="14" fill="hsl(120, 45%, 72%)"/>
+    <text x="434" y="21955" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">JD</text>
+    <text x="458" y="21944" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF">5 minutes ago</text>
+    <rect x="458" y="21952" width="300" height="32" rx="6" fill="#F3F4F6"/>
+    <text x="470" y="21973" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Checked with Sarah, deadline is Friday.</text>
+    <!-- Comment 2 -->
+    <circle cx="434" cy="22010" r="14" fill="hsl(120, 45%, 72%)"/>
+    <text x="434" y="22015" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">JD</text>
+    <text x="458" y="22004" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF">Yesterday</text>
+    <rect x="458" y="22012" width="240" height="32" rx="6" fill="#F3F4F6"/>
+    <text x="470" y="22033" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Need to follow up on this one.</text>
+
+    <!-- Focused textarea with actions -->
+    <text x="880" y="21860" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">TEXTAREA FOCUSED</text>
+    <rect x="880" y="21880" width="400" height="80" rx="4" fill="#FFFFFF" stroke="#4185DE" stroke-width="1"/>
+    <text x="892" y="21902" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="14" font-weight="400" fill="#374151">Let me check the budget for this...</text>
+    <!-- Footer: char count + actions -->
+    <text x="880" y="21980" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="10" font-weight="400" fill="#9CA3AF">37 / 2000</text>
+    <rect x="1180" y="21966" width="50" height="28" rx="6" fill="#ecf3fc" stroke="#c6daf6" stroke-width="1"/>
+    <text x="1205" y="21985" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#356dc0" text-anchor="middle">Cancel</text>
+    <rect x="1240" y="21966" width="40" height="28" rx="6" fill="#4185DE"/>
+    <text x="1260" y="21985" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Save</text>
+
+    <!-- Annotations -->
+    <text x="60" y="22040" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="600" fill="#9CA3AF" letter-spacing="0.05em">COMMENTSECTION SPECS</text>
+    <text x="60" y="22060" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">limit: 50 comments, max 2000 chars per comment</text>
+    <text x="60" y="22076" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">textarea: border #D1D5DB, focus border action, rows 1→3 on focus</text>
+    <text x="60" y="22092" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">comment: avatar 28px + body (timestamp + message bubble bg #F3F4F6, radius 6px, padding 8px 12px)</text>
+    <text x="60" y="22108" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">char count: &gt;1800 warn (secondary), &gt;2000 error (danger)</text>
+    <text x="60" y="22124" font-family="Inter, sans-serif" text-rendering="optimizeLegibility" font-size="11" font-weight="400" fill="#9CA3AF">actions: Cancel (ghost sm) + Save (primary sm), Escape to cancel</text>
   </g>
 
 </svg>
