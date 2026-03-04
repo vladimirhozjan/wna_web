@@ -1,81 +1,97 @@
+@import './fonts.css';
 @import './tokens.css';
 
-.text-display {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-display);
-    line-height: var(--lh-display);
+/* Playfair Display – Headings */
+
+.text-hero {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-hero);
+    line-height: var(--lh-hero);
     font-weight: var(--font-weight-bold);
 }
 
-.text-subtitle {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-subtitle);
-    line-height: var(--lh-subtitle);
-    font-weight: var(--font-weight-medium);
-}
-
 .text-h1 {
-    font-family: var(--font-family-default), serif;
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-h1);
     line-height: var(--lh-h1);
     font-weight: var(--font-weight-bold);
 }
 
 .text-h2 {
-    font-family: var(--font-family-default), serif;
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-h2);
     line-height: var(--lh-h2);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
 }
 
 .text-h3 {
-    font-family: var(--font-family-default), serif;
+    font-family: var(--font-family-heading);
     font-size: var(--font-size-h3);
     line-height: var(--lh-h3);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
 }
 
-.text-h4 {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-h4);
-    line-height: var(--lh-h4);
-    font-weight: var(--font-weight-medium);
-}
-
-.text-body-l {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-body-l);
-    line-height: var(--lh-body-m);
+.text-h3-italic {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-h3);
+    line-height: var(--lh-h3);
     font-weight: var(--font-weight-normal);
+    font-style: italic;
 }
 
-.text-body-m {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-body-m);
-    line-height: var(--lh-body-m);
+/* Montserrat – UI & Body */
+
+.text-body {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-body);
+    line-height: var(--lh-body);
     font-weight: var(--font-weight-normal);
 }
 
 .text-body-s {
-    font-family: var(--font-family-default), serif;
+    font-family: var(--font-family-default);
     font-size: var(--font-size-body-s);
     line-height: var(--lh-body-s);
     font-weight: var(--font-weight-normal);
 }
 
-.text-footnote {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-footnote);
-    line-height: var(--lh-footnote);
+.text-label {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-label);
+    line-height: var(--lh-label);
+    font-weight: var(--font-weight-medium);
+}
+
+.text-caption {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-caption);
+    line-height: var(--lh-caption);
     font-weight: var(--font-weight-normal);
 }
 
-.text-label {
-    font-family: var(--font-family-default), serif;
-    font-size: var(--font-size-label);
-    line-height: var(--lh-label);
+.text-overline {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-overline);
+    line-height: var(--lh-overline);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.text-link {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-link);
+    line-height: var(--lh-link);
     font-weight: var(--font-weight-semibold);
 }
+
+/* Legacy aliases – map old class names to new typography */
+.text-display  { font-family: var(--font-family-heading); font-size: var(--font-size-hero); line-height: var(--lh-hero); font-weight: var(--font-weight-bold); }
+.text-subtitle { font-family: var(--font-family-default); font-size: clamp(15px, 2.2vw, 18px); line-height: 1.22; font-weight: var(--font-weight-medium); }
+.text-h4       { font-family: var(--font-family-heading); font-size: clamp(18px, 2.8vw, 20px); line-height: 1.2; font-weight: var(--font-weight-bold); }
+.text-body-l   { font-family: var(--font-family-default); font-size: clamp(17px, 2.2vw, 18px); line-height: 1.22; font-weight: var(--font-weight-normal); }
+.text-body-m   { font-family: var(--font-family-default); font-size: var(--font-size-body); line-height: var(--lh-body); font-weight: var(--font-weight-normal); }
+.text-footnote { font-family: var(--font-family-default); font-size: var(--font-size-caption); line-height: var(--lh-caption); font-weight: var(--font-weight-normal); }
 
 /* Color utility classes */
 .color-text-primary   { color: var(--color-text-primary); }

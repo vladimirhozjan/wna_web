@@ -1,20 +1,22 @@
 :root {
     /* Font families */
-    --font-family-default: 'Inter', sans-serif;
+    --font-family-heading: 'Playfair Display', serif;
+    --font-family-default: 'Montserrat', sans-serif;
     --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
-    /* Font sizes: responsive content scale */
-    --font-size-display: clamp(32px, 6vw, 48px);
-    --font-size-subtitle: clamp(15px, 2.2vw, 18px);
-    --font-size-h1: clamp(26px, 5vw, 36px);
-    --font-size-h2: clamp(24px, 4vw, 30px);
+    /* Font sizes: headings (Playfair Display) – responsive */
+    --font-size-hero: clamp(36px, 7vw, 52px);
+    --font-size-h1: clamp(28px, 5.5vw, 40px);
+    --font-size-h2: clamp(24px, 4.5vw, 32px);
     --font-size-h3: clamp(20px, 3.5vw, 24px);
-    --font-size-h4: clamp(18px, 2.8vw, 20px);
-    --font-size-body-l: clamp(17px, 2.2vw, 18px);
-    --font-size-body-m: clamp(15px, 2vw, 16px);
+
+    /* Font sizes: body & UI (Montserrat) – responsive */
+    --font-size-body: clamp(15px, 2vw, 16px);
     --font-size-body-s: clamp(13px, 1.8vw, 14px);
-    --font-size-footnote: 11px;
     --font-size-label: 13px;
+    --font-size-caption: 12px;
+    --font-size-overline: 11px;
+    --font-size-link: clamp(13px, 1.8vw, 14px);
 
     /* Font sizes: fixed UI chrome scale */
     --font-size-2xs: 10px;
@@ -34,17 +36,19 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
 
-    /* Line heights: content (%) */
-    --lh-display: 120%;
-    --lh-subtitle: 150%;
-    --lh-h1:   125%;
-    --lh-h2:   130%;
-    --lh-h3:   135%;
-    --lh-h4:   140%;
-    --lh-body-m: 150%;
-    --lh-body-s: 150%;
-    --lh-footnote: 150%;
-    --lh-label: 140%;
+    /* Line heights: headings (unitless, scales with clamp font sizes) */
+    --lh-hero: 1.19;
+    --lh-h1: 1.2;
+    --lh-h2: 1.19;
+    --lh-h3: 1.21;
+
+    /* Line heights: body & UI */
+    --lh-body: 1.19;
+    --lh-body-s: 1.21;
+    --lh-label: 1.23;
+    --lh-caption: 1.17;
+    --lh-overline: 1.18;
+    --lh-link: 1.21;
 
     /* Line heights: component (decimal) */
     --lh-none: 1;
