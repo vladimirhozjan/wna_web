@@ -78,6 +78,33 @@
             <Btn @click="doReset" :disabled="disableReset" :loading="auth.loading.value">Update password</Btn>
             <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
           </section>
+
+          <section v-else-if="props.mode === 'verify-sent'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Check your inbox</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                We've sent a verification link to <strong>{{ email }}</strong>.
+                Click the link to activate your account.
+              </p>
+            </div>
+            <Btn @click="doResend" :disabled="resendCooldown > 0" :loading="resending">
+              {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email' }}
+            </Btn>
+            <Lnk text="Already verified?" link="Back to login" @action="goToLogin"/>
+          </section>
+
+          <section v-else-if="props.mode === 'unverified'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Email not verified</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                Please check your inbox for the verification link.
+              </p>
+            </div>
+            <Btn @click="doResend" :disabled="resendCooldown > 0" :loading="resending">
+              {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email' }}
+            </Btn>
+            <Lnk text="Back to login" link="Sign In" @action="goToLogin"/>
+          </section>
         </div>
       </Transition>
     </div>
@@ -100,7 +127,7 @@ const error = errorModel()
 const props = defineProps({
   mode: {
     type: String,
-    default: null, // 'login' | 'register' | 'forgot' | 'reset' | null
+    default: null, // 'login' | 'register' | 'forgot' | 'reset' | 'verify-sent' | 'unverified' | null
   },
 })
 
@@ -122,11 +149,16 @@ const agreeError = ref('')
 
 const reset_token = ref('')
 
+const resending = ref(false)
+const resendCooldown = ref(0)
+let cooldownTimer = null
+
 const isOpen = computed(() => !!props.mode)
 
 watch(isOpen, (open) => {
   if (!open) {
     clearForm()
+    stopCooldown()
   }
 })
 
@@ -175,6 +207,38 @@ function clearErrors() {
   agreeError.value = ''
 }
 
+function startCooldown() {
+  resendCooldown.value = 60
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) {
+      stopCooldown()
+    }
+  }, 1000)
+}
+
+function stopCooldown() {
+  if (cooldownTimer) {
+    clearInterval(cooldownTimer)
+    cooldownTimer = null
+  }
+  resendCooldown.value = 0
+}
+
+async function doResend() {
+  if (resendCooldown.value > 0 || !email.value) return
+  resending.value = true
+  try {
+    await auth.resendVerification(email.value)
+    error.success('If this email is registered, a new verification link has been sent.')
+    startCooldown()
+  } catch (err) {
+    error.push('Failed to resend verification email.')
+  } finally {
+    resending.value = false
+  }
+}
+
 async function doLogin() {
   clearErrors()
 
@@ -197,6 +261,10 @@ async function doLogin() {
     emit('logged-in')
     closeAll()
   } catch (err) {
+    if (err.status === 403) {
+      emit('update:mode', 'unverified')
+      return
+    }
     console.log(err)
     error.push('Login failed with error: ' + mapApiError(err, ErrorScenario.LOGIN))
   }
@@ -227,10 +295,7 @@ async function doRegister() {
 
   try {
     await auth.registerUser(email.value, password.value)
-    await auth.loadUser()
-
-    emit('registered')
-    closeAll()
+    emit('update:mode', 'verify-sent')
   } catch (err) {
     console.log(err)
     error.push('Registration failed with error: ' + mapApiError(err, ErrorScenario.REGISTER)

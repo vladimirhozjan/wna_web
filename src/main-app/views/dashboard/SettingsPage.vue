@@ -209,6 +209,55 @@
           </div>
         </div>
 
+        <!-- Notifications Section -->
+        <div class="settings-section">
+          <h2 class="text-body-m fw-semibold settings-section-title">Notifications</h2>
+
+          <div class="settings-row">
+            <div>
+              <span class="text-body-m settings-label">Task due today</span>
+              <p class="text-body-s settings-hint">Daily reminder for tasks due today</p>
+            </div>
+            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.taskDueToday }">
+              <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"></span>
+              <label class="settings-toggle">
+                <input type="checkbox" v-model="taskDueToday" />
+                <span class="settings-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div>
+              <span class="text-body-m settings-label">Daily next actions</span>
+              <p class="text-body-s settings-hint">Summary of your next actions for the day</p>
+            </div>
+            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyNextActions }">
+              <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"></span>
+              <label class="settings-toggle">
+                <input type="checkbox" v-model="dailyNextActions" />
+                <span class="settings-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div>
+              <span class="text-body-m settings-label">Project needs next action</span>
+              <p class="text-body-s settings-hint">Alert when a project has no next action defined</p>
+            </div>
+            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.projectNeedsNextAction }">
+              <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"></span>
+              <label class="settings-toggle">
+                <input type="checkbox" v-model="projectNeedsNextAction" />
+                <span class="settings-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <p class="text-body-s settings-hint settings-info-note">Security notifications are always enabled.</p>
+        </div>
+
         <!-- About Section -->
         <div class="settings-section">
           <h2 class="text-body-m fw-semibold settings-section-title">About</h2>
@@ -311,12 +360,14 @@ import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
 import { changePassword, listSessions, revokeSession, revokeAllSessions } from '../../scripts/core/apiClient.js'
+import { notificationModel } from '../../scripts/models/notificationModel.js'
 
 const router = useRouter()
 const auth = authModel()
 const toaster = errorModel()
 const confirm = confirmModel()
 const settings = settingsModel()
+const notifications = notificationModel()
 
 // User data
 const userEmail = computed(() => auth.currentUser.value?.email || '')
@@ -373,6 +424,21 @@ const reviewEnabled = computed({
 const debugMode = computed({
   get: () => settings.state.debugEnabled,
   set: (val) => settings.setDebugEnabled(val).catch(err => toaster.push('Failed to save setting'))
+})
+
+const taskDueToday = computed({
+  get: () => notifications.state.taskDueToday,
+  set: (val) => notifications.setTaskDueToday(val).catch(() => toaster.push('Failed to save notification setting'))
+})
+
+const dailyNextActions = computed({
+  get: () => notifications.state.dailyNextActions,
+  set: (val) => notifications.setDailyNextActions(val).catch(() => toaster.push('Failed to save notification setting'))
+})
+
+const projectNeedsNextAction = computed({
+  get: () => notifications.state.projectNeedsNextAction,
+  set: (val) => notifications.setProjectNeedsNextAction(val).catch(() => toaster.push('Failed to save notification setting'))
 })
 
 const positionOptions = [
@@ -471,6 +537,9 @@ onMounted(() => {
   // Load settings from API
   settings.load().catch(() => {
     // Settings will fall back to localStorage, no need to show error
+  })
+  notifications.load().catch(() => {
+    // Notification settings will fall back to defaults
   })
 })
 
@@ -793,6 +862,11 @@ async function onLogout() {
 .settings-days-control {
   position: relative;
   display: inline-block;
+}
+
+.settings-info-note {
+  margin-top: 8px;
+  font-style: italic;
 }
 
 .settings-saving-spinner {

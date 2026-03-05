@@ -51,19 +51,51 @@ function addToTop() {
 export async function registerUser({email, password}) {
     try {
         const res = await httpApi.post('/v1/user/register', {email, password})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
 
+export async function verifyEmail(token) {
+    try {
+        const res = await httpApi.post('/v1/user/verify-email', {token})
         const data = res.data
 
-        if (!data.id || !data.access_token || !data.refresh_token) {
-            // noinspection ExceptionCaughtLocallyJS
-            throw new Error('Unexpected response from server')
+        if (data.access_token && data.refresh_token) {
+            localStorage.setItem('auth_token', data.access_token)
+            localStorage.setItem('refresh_token', data.refresh_token)
+            if (data.refresh_token_hash) localStorage.setItem('refresh_token_hash', data.refresh_token_hash)
         }
 
-        localStorage.setItem('auth_token', data.access_token)
-        localStorage.setItem('refresh_token', data.refresh_token)
-        if (data.refresh_token_hash) localStorage.setItem('refresh_token_hash', data.refresh_token_hash)
-
         return data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function resendVerification(email) {
+    try {
+        const res = await httpApi.post('/v1/user/resend-verification', {email})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getNotificationSettings() {
+    try {
+        const res = await httpApi.get('/v1/notification/settings', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateNotificationSettings(settings) {
+    try {
+        const res = await httpApi.put('/v1/notification/settings', settings, {headers: authHeaders()})
+        return res.data
     } catch (err) {
         throw normalizeError(err)
     }
@@ -1562,6 +1594,12 @@ const apiClient = {
     spawnRecurring,
     // Stats API
     getStats,
+    // Email verification API
+    verifyEmail,
+    resendVerification,
+    // Notification API
+    getNotificationSettings,
+    updateNotificationSettings,
 }
 
 export default apiClient

@@ -31,6 +31,14 @@ export function authModel() {
             if (savedUser) {
                 currentUser.value = JSON.parse(savedUser)
             }
+
+            if (!currentUser.value?.email) {
+                try {
+                    await loadUser()
+                } catch {
+                    // Silently fail — user will be prompted to log in if needed
+                }
+            }
         }
     }
 
@@ -40,23 +48,44 @@ export function authModel() {
         error.value = null
 
         try {
-            const data = await apiClient.registerUser({ email, password })
+            return await apiClient.registerUser({ email, password })
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
 
-            if (data.user) {
-                currentUser.value = data.user
-                localStorage.setItem('current_user', JSON.stringify(data.user))
-            }
+    async function verifyEmail(token) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.verifyEmail(token)
 
             if (localStorage.getItem('auth_token')) {
                 isAuthenticated.value = true
             }
 
             return data
-
         } catch (err) {
-            error.value = err     // { status, message }
+            error.value = err
             throw err
+        } finally {
+            loading.value = false
+        }
+    }
 
+    async function resendVerification(email) {
+        loading.value = true
+        error.value = null
+
+        try {
+            return await apiClient.resendVerification(email)
+        } catch (err) {
+            error.value = err
+            throw err
         } finally {
             loading.value = false
         }
@@ -190,6 +219,8 @@ export function authModel() {
         logoutUser,
         logoutWithConfirm,
         forgotPassword,
-        resetPassword
+        resetPassword,
+        verifyEmail,
+        resendVerification
     }
 }
