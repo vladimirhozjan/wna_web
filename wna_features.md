@@ -2,7 +2,7 @@
 
 > **Purpose:** This document describes every user-facing feature currently implemented in the WNA frontend. It is intended as a reference for creating UI test cases, Terms of Service, Help/FAQ content, and QA documentation.
 >
-> **Last updated:** 2026-02-26
+> **Last updated:** 2026-03-05
 
 ---
 
@@ -33,7 +33,9 @@
 23. [Drag & Drop](#23-drag--drop)
 24. [Public Pages](#24-public-pages)
 25. [Shared UI Behaviors](#25-shared-ui-behaviors)
-26. [Limits & Quotas](#26-limits--quotas)
+26. [Email System (Backend)](#26-email-system-backend)
+27. [Notification Settings](#27-notification-settings)
+28. [Limits & Quotas](#28-limits--quotas)
 
 ---
 
@@ -75,56 +77,106 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
   - Password strength regex check
   - Confirm password must match
   - Submit button disabled until all three fields are non-empty
-- **On success:** User is automatically logged in and redirected to the Dashboard (`/engage`)
+- **On success:** User account is created but **not yet authenticated**. The dialog transitions to the "verify-sent" mode showing a confirmation message that a verification email has been sent. The user must verify their email before they can log in.
 - **Error handling:**
   - HTTP 409: "Email already exists. Change email or sign in."
   - Other errors shown as toast notifications
 
-### 2.2 Login
+### 2.2 Email Verification
+
+#### 2.2.1 Verification Email (Backend)
+
+- **Trigger:** Automatically sent when a new user registers
+- **From address:** `noreply@whatsnextaction.com` ("WhatsNextAction")
+- **Subject:** "Verify your WNA account"
+- **Content:** HTML + plaintext email containing a verification link with a unique token
+- **Token:** 64-character cryptographically secure random string
+- **Expiry:** 24 hours from creation
+- **Delivery:** Sent via SMTP through the notification service's message queue (RabbitMQ, urgent priority)
+
+#### 2.2.2 Post-Registration "Verify Sent" Screen
+
+- **Presentation:** Auth dialog transitions to "verify-sent" mode after successful registration
+- **Content:** Confirmation message that a verification email has been sent to the registered email address
+- **Resend button:** Allows resending the verification email
+  - 60-second cooldown between resend requests (button disabled with countdown timer)
+  - Calls `POST /v1/user/resend-verification`
+  - Success/error feedback shown to user
+- **Navigation:** Link to switch to login form
+
+#### 2.2.3 Verify Email Page (`/verify`)
+
+- **URL:** `/verify?token=<verification_token>`
+- **Entry point:** User clicks the verification link in their email
+- **States:**
+  - **Loading:** Spinner shown while verification request is in progress
+  - **Success:** Verification confirmed, user is automatically authenticated (JWT tokens stored), auto-redirects to `/engage` after a 3-second countdown
+  - **Invalid:** Token parameter missing from URL — shows error message
+  - **Expired:** Token has expired or is malformed — shows error with option to resend
+  - **Error:** Network or server error — shows generic error message
+- **API call:** `POST /v1/user/verify-email` with the token
+- **On success:** Backend sets `email_verified` flag, creates JWT session, returns access + refresh tokens
+
+#### 2.2.4 Resend Verification
+
+- **Available from:** "verify-sent" screen (after registration), "unverified" login screen, Verify Email page (on expired token)
+- **API call:** `POST /v1/user/resend-verification` with email address
+- **Cooldown:** 60 seconds between resend attempts
+- **Backend behavior:** Deletes existing verification tokens, generates a new token, sends new verification email
+- **Security:** Always returns HTTP 200 regardless of whether the email exists (prevents email enumeration)
+
+### 2.3 Login
 
 - **Entry points:** "Sign In" button on landing page, `/login` URL
 - **Fields:** Email, Password
 - **Validation:** Same email and password format checks as registration
 - **On success:** Tokens stored, redirected to `/engage`
+- **Unverified email:** If the user's email has not been verified, login returns HTTP 403. The dialog transitions to "unverified" mode showing a message that email verification is required, with a "Resend Verification Email" button (60-second cooldown)
 - **Error handling:**
   - HTTP 400: "Incorrect email format, please correct email address."
   - HTTP 401: "Incorrect email and/or password. Please correct your credentials."
+  - HTTP 403: Email not verified — transitions to unverified mode with resend option
 
-### 2.3 Forgot Password
+### 2.4 Forgot Password
 
 - **Entry point:** "Forgot your password? Reset it" link on login form
 - **Fields:** Email only
-- **Behavior:** Submits email to backend, receives reset token, automatically transitions to the Reset Password form in the same dialog session
+- **Behavior:** Submits email to backend; backend sends a password reset email with a reset link (token valid for 1 hour). The dialog transitions to the Reset Password form.
+- **Backend email:** Subject "Reset your WNA password", contains reset URL with token, expires in 1 hour
+- **Security:** Always returns HTTP 200 regardless of whether the email exists (prevents email enumeration)
 
-### 2.4 Reset Password
+### 2.5 Reset Password
 
+- **Entry points:** Reset link in password reset email (`/reset?token=<reset_token>`), or via Forgot Password flow in Auth dialog
 - **Fields:** New Password, Confirm New Password
 - **Validation:** Same password strength rules as registration; confirm must match
-- **On success:** Transitions to login form
+- **On success:** Password updated, transitions to login form
+- **Backend:** After password reset, a "Your WNA password was changed" confirmation email is sent
 
-### 2.5 Auth Dialog Shared Behaviors
+### 2.6 Auth Dialog Shared Behaviors
 
 - Fixed overlay with `backdrop-filter: blur(3px)`, centered card (max 420px wide)
 - Click outside (on backdrop) closes the dialog
 - Animated transitions between auth modes (fade + slide up)
+- **7 dialog modes:** login, register, forgot, reset, verify-sent, unverified, closed
 - Switching modes clears errors; email is preserved when navigating to login; passwords are always cleared
 - All form state is component-local (not persisted to localStorage)
 
-### 2.6 JWT Token Management
+### 2.7 JWT Token Management
 
 - Access token and refresh token stored in `localStorage` (`auth_token`, `refresh_token`)
 - **Proactive refresh:** Before every API call, the token expiry is checked; if it expires within 60 seconds, the token is refreshed automatically before the request proceeds
 - **Refresh failure:** If the refresh token is invalid or expired (HTTP 401/404), the user is logged out and redirected to the landing page
 - **Cross-tab logout:** Logging out in one browser tab instantly logs out all other open tabs (via `localStorage` `storage` event)
 
-### 2.7 Logout
+### 2.8 Logout
 
 - **Entry points:** TopNav avatar dropdown "Logout", Settings page session row "End", Sidebar footer "Logout"
 - **Confirmation:** A confirmation dialog ("Are you sure you want to log out?") is shown before proceeding
 - **Behavior:** Calls logout API, clears localStorage tokens, broadcasts cross-tab logout signal, redirects to landing page
 - **Server failure:** Silently ignored (localStorage is always cleared)
 
-### 2.8 Route Protection
+### 2.9 Route Protection
 
 - Dashboard pages are protected at the layout level: `DashboardLayout` redirects to the landing page on mount if not authenticated
 - If authentication state changes mid-session (e.g., cross-tab logout), the dashboard reactively redirects to landing
@@ -1143,7 +1195,80 @@ Presets are customizable in Settings.
 
 ---
 
-## 26. Limits & Quotas
+## 26. Email System (Backend)
+
+The backend notification service handles all outbound email delivery via SMTP with TLS support.
+
+### 26.1 SMTP Configuration
+
+- **From address:** `noreply@whatsnextaction.com` ("WhatsNextAction")
+- **Protocol:** SMTP with STARTTLS and optional AUTH LOGIN
+- **Default dev server:** Mailpit on `localhost:1025` (no auth required)
+- **Production:** Configurable SMTP host, port, username, password via `notification_service/config/config.json`
+- **Message format:** Multipart MIME (HTML + plaintext fallback)
+
+### 26.2 Email Templates
+
+The backend defines 8 email templates with variable substitution (`{{variable}}`):
+
+| Template | Subject | Priority | Trigger |
+|----------|---------|----------|---------|
+| Email Verification | "Verify your WNA account" | Urgent | User registration |
+| Welcome | "Welcome to WNA!" | Urgent | Email verified successfully |
+| Login Alert | "New login to your WNA account" | Normal | Successful login (device, IP, time) |
+| Password Reset | "Reset your WNA password" | Urgent | Forgot password request |
+| Password Changed | "Your WNA password was changed" | Urgent | Password changed or reset |
+| Tasks Due Today | "Tasks due today" | Normal | Daily digest (if tasks are due) |
+| Daily Next Actions | "Your next actions for today" | Normal | Daily digest (next actions summary) |
+| Project Needs Next Action | "Project needs a next action" | Normal | Project has no next action assigned |
+
+### 26.3 Message Queue & Delivery
+
+- **Message broker:** RabbitMQ with exchange `notifications`
+- **Priority queues:**
+  - `q.notification.urgent` — Email verification, password reset, password changed, welcome (always delivered, cannot be disabled by user)
+  - `q.notification.normal` — Login alerts, task reminders (respects user notification preferences)
+  - `q.notification.marketing` — Promotional emails
+  - `q.notification.update` — Feature update emails
+- **Delivery logging:** All email sends are logged to `notification_log` table with status (sent/failed/skipped), recipient, subject, and error detail
+
+### 26.4 Security
+
+- **Token generation:** 64-character cryptographically secure random tokens for email verification and password reset
+- **Email verification tokens:** Expire after 24 hours, single-use (deleted after verification)
+- **Password reset tokens:** Expire after 1 hour, single-use (deleted after reset)
+- **Anti-enumeration:** Forgot password and resend verification endpoints always return HTTP 200 regardless of whether the email exists
+- **Rate limiting:**
+  - Register: 5.0 req/s
+  - Login: 3.0 req/s
+  - Forgot password: 3.0 req/s
+  - Verify email / Resend verification / Reset password: 1.0 req/s
+
+---
+
+## 27. Notification Settings
+
+### 27.1 Notification Preferences (Frontend)
+
+- **API endpoints:**
+  - `GET /v1/notification/settings` — Retrieve current notification preferences
+  - `PUT /v1/notification/settings` — Update notification preferences
+- **Master email toggle:**
+  - A top-level "Email notifications" toggle acts as an on/off switch for all email notifications
+  - When OFF, the backend receives `disabled_events.email: ["*"]` (wildcard disabling all events)
+  - When ON, the backend receives the individual disabled list (or empty array if all enabled)
+  - Individual event toggles appear below the master toggle and are disabled (greyed out) when the master is OFF
+  - Individual event states are preserved in memory; turning the master back ON restores previous individual settings
+- **Individual event toggles:**
+  - Task due today — daily reminder for tasks due today
+  - Daily next actions — summary of next actions for the day
+  - Project needs next action — alert when a project has no next action
+- **Urgent notifications** (email verification, password reset, password changed) are always delivered and cannot be disabled by the user
+- **Normal notifications** (login alerts, task reminders) can be disabled per event type and per channel (email, push)
+
+---
+
+## 28. Limits & Quotas
 
 | Resource | Free | Pro | Business |
 |---|---|---|---|
@@ -1173,7 +1298,7 @@ Presets are customizable in Settings.
 
 ## Appendix B: Data Persistence
 
-- **JWT tokens:** `localStorage` (`auth_token`, `refresh_token`)
+- **JWT tokens:** `localStorage` (`auth_token`, `refresh_token`, `refresh_token_hash`)
 - **User data cache:** `localStorage` (`current_user`)
 - **Settings cache:** `localStorage` (fallback when API unavailable)
 - **View preferences:** `localStorage` (calendar view mode, reference view mode, new items position, drag hints, debug mode, dismissed tips)
@@ -1185,7 +1310,10 @@ Presets are customizable in Settings.
 |---|---|---|
 | Login - bad email | 400 | "Incorrect email format, please correct email address." |
 | Login - wrong credentials | 401 | "Incorrect email and/or password. Please correct your credentials." |
+| Login - email not verified | 403 | Transitions to "unverified" mode with resend verification option |
 | Register - duplicate email | 409 | "Email already exists. Change email or sign in." |
+| Verify email - invalid token | 400 | "Invalid verification link" |
+| Verify email - expired token | 410 | "Verification link has expired" with resend option |
 | Change password - bad new password | 400 | "New password does not meet requirements." |
 | Change password - wrong current | 401 | "Current password is incorrect." |
 | Rate limited | 429 | "Too many requests. Please try again later." |

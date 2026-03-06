@@ -56,7 +56,7 @@ Use the table below to log each full or partial test run.
 ### TC-001: Successful Registration
 **Priority:** High | **Area:** Registration
 
-**Preconditions:** User is not logged in. No account exists for the test email address. Browser localStorage is clear of `auth_token` and `refresh_token`.
+**Preconditions:** User is not logged in. No account exists for the test email address. Browser localStorage is clear of `auth_token` and `refresh_token`. Mailpit (or email test server) is running on `localhost:8025` to capture outgoing emails.
 
 **Steps:**
 1. Navigate to `http://localhost:5173/` (the landing page).
@@ -70,9 +70,10 @@ Use the table below to log each full or partial test run.
 
 **Expected Result:**
 - The registration request succeeds (no error messages displayed).
-- The user is automatically logged in and redirected to `/engage` (the main dashboard).
-- Opening the browser developer tools and inspecting `localStorage` shows both `auth_token` and `refresh_token` keys present with non-empty JWT string values.
-- The dashboard layout is visible (sidebar, top navigation, inbox or default view).
+- The auth dialog transitions to a "verify-sent" screen showing a confirmation message that a verification email has been sent to the registered email address.
+- The user is **not** automatically logged in — `localStorage` does **not** contain `auth_token` or `refresh_token`.
+- A "Resend Verification Email" button is visible on the verify-sent screen.
+- Checking Mailpit (`http://localhost:8025`) shows a verification email was received with subject "Verify your WNA account" sent to the registered email address.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -785,6 +786,465 @@ Use the table below to log each full or partial test run.
 |      |     |         |
 |      |     |         |
 |      |     |         |
+
+---
+
+### TC-339: Email Verification - Successful Verification
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A new user account has been registered but not yet verified. The verification email has been received in Mailpit (`http://localhost:8025`). The user is not logged in.
+
+**Steps:**
+1. Open Mailpit at `http://localhost:8025`.
+2. Locate the verification email sent to the registered email address (subject: "Verify your WNA account").
+3. Open the email and locate the verification link.
+4. Copy the verification URL (should be in the format `http://localhost:5173/verify?token=<64-char-token>`).
+5. Open the verification URL in the browser.
+6. Observe the Verify Email page behavior.
+7. Wait for the verification to complete.
+
+**Expected Result:**
+- The Verify Email page shows a loading state while the verification request is in progress.
+- On success, a confirmation message is displayed indicating the email has been verified.
+- The user is automatically authenticated — `localStorage` now contains `auth_token`, `refresh_token`, and `refresh_token_hash`.
+- A countdown (3 seconds) is shown before auto-redirect to `/engage`.
+- After the countdown, the user is redirected to `/engage` (the dashboard).
+- The dashboard loads normally with the authenticated user.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-340: Email Verification - Invalid Token
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** User is not logged in.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/verify?token=invalidtoken123`.
+2. Observe the Verify Email page behavior.
+
+**Expected Result:**
+- The page shows a loading state briefly while the request is made.
+- An error message is displayed indicating the verification link is invalid.
+- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.
+- No redirect to the dashboard occurs.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-341: Email Verification - Missing Token Parameter
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** User is not logged in.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/verify` (no `?token=` parameter).
+2. Observe the Verify Email page behavior.
+
+**Expected Result:**
+- The page immediately shows an "invalid" state message indicating the verification link is invalid or missing.
+- No API request is made to the backend (verify in the Network tab).
+- The user is not authenticated.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-342: Email Verification - Expired Token
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A verification token has been created more than 24 hours ago (expired). This may require manually manipulating the database or waiting 24 hours.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/verify?token=<expired_token>`.
+2. Observe the Verify Email page behavior.
+
+**Expected Result:**
+- The page shows a loading state briefly while the request is made.
+- An error message is displayed indicating the verification link has expired.
+- A "Resend Verification Email" option is available on the page.
+- The user is not authenticated.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-343: Email Verification - Double Verification Prevented
+**Priority:** Medium | **Area:** Email Verification
+
+**Preconditions:** A user has already successfully verified their email. The original verification link/token is still available.
+
+**Steps:**
+1. Copy the original verification URL that was already used.
+2. Navigate to the verification URL in the browser.
+3. Observe the page behavior.
+
+**Expected Result:**
+- The verification fails because the token has already been consumed (deleted after first use).
+- An error or invalid state is displayed.
+- The user is not granted a new session from the expired/used token.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-344: Resend Verification Email - From Verify-Sent Screen
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A new user has just registered and the auth dialog is showing the "verify-sent" screen. Mailpit is accessible at `http://localhost:8025`.
+
+**Steps:**
+1. On the "verify-sent" screen, locate the "Resend Verification Email" button.
+2. Click the resend button.
+3. Observe the button state after clicking.
+4. Check Mailpit for a new verification email.
+5. Wait for the 60-second cooldown to expire.
+6. Verify the button becomes clickable again after 60 seconds.
+
+**Expected Result:**
+- Clicking the resend button sends a new verification email (visible in Mailpit with subject "Verify your WNA account").
+- The button enters a disabled state with a 60-second countdown timer visible.
+- The button cannot be clicked again until the countdown expires.
+- After 60 seconds, the button becomes enabled again and can be clicked to resend.
+- A success indicator or message confirms the email was resent.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-345: Resend Verification Email - Cooldown Enforced
+**Priority:** Medium | **Area:** Email Verification
+
+**Preconditions:** A new user has just registered and the auth dialog is showing the "verify-sent" screen.
+
+**Steps:**
+1. Click the "Resend Verification Email" button.
+2. Immediately attempt to click the button again (within the 60-second cooldown).
+3. Observe the button state.
+
+**Expected Result:**
+- The button is disabled after the first click and shows a countdown (e.g., "Resend in 59s", "Resend in 58s", etc.).
+- Clicking the disabled button has no effect.
+- No additional API requests are made during the cooldown period (verify in Network tab).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-346: Login Blocked for Unverified Email
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A user account exists with the email NOT yet verified (registered but verification link not clicked). The user knows the correct email and password.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/` (the landing page).
+2. Click "Sign In" to open the login form.
+3. Enter the unverified email address.
+4. Enter the correct password.
+5. Click the "Login" submit button.
+6. Observe the auth dialog behavior.
+
+**Expected Result:**
+- The login request returns HTTP 403 (Forbidden).
+- The auth dialog transitions to the "unverified" mode.
+- A message is displayed indicating that email verification is required before login.
+- A "Resend Verification Email" button is available with the same 60-second cooldown behavior.
+- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-347: Resend Verification Email - From Unverified Login Screen
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A user has attempted to log in with an unverified email and the auth dialog is showing the "unverified" mode with a resend button.
+
+**Steps:**
+1. On the "unverified" screen, click the "Resend Verification Email" button.
+2. Check Mailpit for a new verification email.
+3. Verify the cooldown behavior (button disabled for 60 seconds).
+
+**Expected Result:**
+- A new verification email is sent and appears in Mailpit.
+- The resend button enters a 60-second cooldown state.
+- The user can use the new verification link to verify their email.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-348: Resend Verification - Anti-Enumeration (Non-Existent Email)
+**Priority:** Medium | **Area:** Email Verification
+
+**Preconditions:** No account exists for the email `nonexistent_user@example.com`. Access to browser developer tools Network tab.
+
+**Steps:**
+1. Trigger a resend verification request for a non-existent email (this may require using the browser console or modifying the request to test the API directly: `POST /v1/user/resend-verification` with body `{ "email": "nonexistent_user@example.com" }`).
+2. Observe the HTTP response status code.
+3. Check Mailpit for any outgoing emails.
+
+**Expected Result:**
+- The API returns HTTP 200 (success) regardless of whether the email exists, to prevent email enumeration.
+- No email is actually sent (Mailpit shows no new message for this address).
+- The frontend shows a generic success message (same as when the email does exist).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-349: Full Registration-to-Login Flow with Email Verification
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** No account exists for the test email. Mailpit is running. Backend services are running.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/` and click "Start Here".
+2. Register with a new email and valid password.
+3. Verify the "verify-sent" screen appears (user is NOT logged in).
+4. Open Mailpit and locate the verification email.
+5. Click the verification link from the email.
+6. Verify the email verification succeeds and the user is redirected to `/engage`.
+7. Log out.
+8. Log in with the same email and password.
+9. Verify the login succeeds and the user is redirected to `/engage`.
+
+**Expected Result:**
+- Registration creates the account and sends a verification email (but does not log in).
+- Clicking the verification link verifies the email and logs the user in automatically.
+- After logout, the user can log in normally with the verified email.
+- The complete flow works end-to-end without errors.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-350: Verification Email Content
+**Priority:** Medium | **Area:** Email Verification
+
+**Preconditions:** A new user has just registered. Mailpit is accessible at `http://localhost:8025`.
+
+**Steps:**
+1. Open Mailpit at `http://localhost:8025`.
+2. Locate the verification email for the registered email address.
+3. Inspect the email metadata: From address, Subject, To address.
+4. View the HTML version of the email.
+5. View the plaintext version of the email.
+6. Verify the verification link URL format.
+
+**Expected Result:**
+- **From:** `noreply@whatsnextaction.com` (or "WhatsNextAction" display name)
+- **Subject:** "Verify your WNA account"
+- **To:** The registered email address
+- Both HTML and plaintext versions are present (multipart MIME).
+- The email contains a verification link in the format `https://<app-domain>/verify?token=<64-char-token>`.
+- The token in the URL is exactly 64 characters long.
+- The email mentions a 24-hour expiry for the verification link.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-351: Welcome Email After Verification
+**Priority:** Medium | **Area:** Email Verification
+
+**Preconditions:** A new user has registered and has a pending verification email. Mailpit is accessible.
+
+**Steps:**
+1. Complete the email verification by clicking the verification link.
+2. After successful verification, check Mailpit for a new email.
+3. Inspect the newly received email.
+
+**Expected Result:**
+- A welcome email is sent after successful verification.
+- **Subject:** "Welcome to WNA!"
+- **From:** `noreply@whatsnextaction.com`
+- The email contains a welcome message and a link to the application.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-352: Forgot Password Email
+**Priority:** High | **Area:** Password Reset Email
+
+**Preconditions:** A verified user account exists. Mailpit is accessible. The user is not logged in.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/` and click "Sign In".
+2. Click "Forgot your password? Reset it" link.
+3. Enter the registered email address.
+4. Submit the forgot password form.
+5. Open Mailpit and locate the password reset email.
+6. Inspect the email content.
+
+**Expected Result:**
+- A password reset email is sent to the user's email address.
+- **Subject:** "Reset your WNA password"
+- **From:** `noreply@whatsnextaction.com`
+- The email contains a reset link with a token (valid for 1 hour).
+- Both HTML and plaintext versions are present.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-353: Forgot Password - Anti-Enumeration
+**Priority:** Medium | **Area:** Password Reset Email
+
+**Preconditions:** No account exists for the email `nonexistent_user@example.com`. Access to browser developer tools.
+
+**Steps:**
+1. Navigate to the forgot password form.
+2. Enter `nonexistent_user@example.com`.
+3. Submit the form.
+4. Observe the HTTP response and UI behavior.
+5. Check Mailpit for any outgoing emails to that address.
+
+**Expected Result:**
+- The API returns HTTP 200 (success) to prevent email enumeration.
+- The frontend shows the same behavior as when the email does exist (no indication that the email is not registered).
+- No email is actually sent (Mailpit shows no message for this address).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-354: Password Changed Confirmation Email
+**Priority:** Medium | **Area:** Password Reset Email
+
+**Preconditions:** A verified user account exists. Mailpit is accessible. The user has received a password reset email.
+
+**Steps:**
+1. Use the password reset link from the email to navigate to the reset password form.
+2. Enter a new valid password and confirm it.
+3. Submit the reset password form.
+4. After success, check Mailpit for a new email.
+5. Inspect the confirmation email.
+
+**Expected Result:**
+- A password changed confirmation email is sent after successful reset.
+- **Subject:** "Your WNA password was changed"
+- **From:** `noreply@whatsnextaction.com`
+- The email confirms the password was changed and includes the timestamp.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-355: Login Alert Email
+**Priority:** Medium | **Area:** Email Notifications
+
+**Preconditions:** A verified user account exists with notification settings enabled for login alerts. Mailpit is accessible.
+
+**Steps:**
+1. Log in with the verified user account.
+2. After successful login, check Mailpit for a new email.
+3. Inspect the login alert email.
+
+**Expected Result:**
+- A login alert email is sent after successful login.
+- **Subject:** "New login to your WNA account"
+- **From:** `noreply@whatsnextaction.com`
+- The email includes the device name, IP address, and login time.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-356: Verify Email Page - Network Error
+**Priority:** Medium | **Area:** Email Verification
+
+**Preconditions:** User has a valid verification token. The backend server is stopped or unreachable.
+
+**Steps:**
+1. Stop the backend server or block network requests to the API in browser DevTools.
+2. Navigate to `http://localhost:5173/verify?token=<valid_token>`.
+3. Observe the Verify Email page behavior.
+
+**Expected Result:**
+- The page shows a loading state briefly.
+- A generic error message is displayed (e.g., network error or server unavailable).
+- The user is not authenticated.
+- When the backend is restored, the user can retry by refreshing the page or re-clicking the verification link.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
 
 
 ## Section 2: Dashboard Layout & Navigation
@@ -7555,9 +8015,10 @@ Use the table below to log each full or partial test run.
 6. Verify the Tags section is visible (showing quick-add presets).
 7. Verify the Calendar section is visible (showing week start, time format, business hours, business days).
 8. Verify the Review section is visible (showing weekly review toggle).
-9. Verify the About section is visible (showing version and debug mode toggle).
+9. Verify the Notifications section is visible (showing master email toggle and individual event toggles).
+10. Verify the About section is visible (showing version and debug mode toggle).
 
-**Expected Result:** The settings page loads completely with all sections visible: Account, Sessions, Application, Tags, Calendar, Review, and About. No loading errors occur.
+**Expected Result:** The settings page loads completely with all sections visible: Account, Sessions, Application, Tags, Calendar, Review, Notifications, and About. No loading errors occur.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9394,6 +9855,126 @@ Use the table below to log each full or partial test run.
 8. Verify all content remains readable and properly spaced in each layout.
 
 **Expected Result:** The footer is responsive: 4 columns on desktop, 2 columns on tablet, and 1 column on mobile. All content is properly aligned and readable at each breakpoint.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-357: Master Email Toggle - Displayed
+**Priority:** High | **Area:** Settings
+
+**Preconditions:** User is logged in.
+
+**Steps:**
+1. Navigate to /settings.
+2. Scroll to the Notifications section.
+3. Verify the first toggle in the section is labelled "Email notifications".
+4. Verify the hint text reads "Receive email notifications for tasks and reminders".
+5. Verify the three individual event toggles (Task due today, Daily next actions, Project needs next action) appear below the master toggle.
+
+**Expected Result:** The Notifications section displays a master "Email notifications" toggle at the top, followed by three individual event toggles. The master toggle has its own saving spinner area.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-358: Master Email Toggle - Turn Off
+**Priority:** High | **Area:** Settings
+
+**Preconditions:** User is logged in. All email notifications are currently enabled (master toggle is ON).
+
+**Steps:**
+1. Navigate to /settings.
+2. Scroll to the Notifications section.
+3. Turn OFF the "Email notifications" master toggle.
+4. Observe the saving spinner on the master toggle.
+5. In DevTools Network tab, inspect the PUT request to /v1/notification/settings.
+6. Verify the request body contains `{"disabled_events": {"email": ["*"]}}`.
+7. After save completes, verify the three individual toggles are visually disabled (greyed out, not interactive).
+
+**Expected Result:** Turning the master toggle OFF sends `["*"]` as the email disabled list. The individual toggles become disabled with reduced opacity and no pointer events. The master toggle shows a saving spinner during the API call.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-359: Master Email Toggle - Turn On
+**Priority:** High | **Area:** Settings
+
+**Preconditions:** User is logged in. Master email toggle is currently OFF (all email notifications disabled).
+
+**Steps:**
+1. Navigate to /settings (or continue from previous test).
+2. Verify the master "Email notifications" toggle is OFF and individual toggles are disabled.
+3. Turn ON the "Email notifications" master toggle.
+4. Observe the saving spinner on the master toggle.
+5. In DevTools Network tab, inspect the PUT request to /v1/notification/settings.
+6. Verify the request body contains the individual disabled list (e.g., `{"disabled_events": {"email": []}}` if all were enabled, or a list of individually disabled events).
+7. After save completes, verify the three individual toggles are re-enabled (interactive, full opacity).
+
+**Expected Result:** Turning the master toggle ON restores the individual disabled list (not `["*"]`). Individual toggles become interactive again. Previous individual toggle states are preserved.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-360: Master Email Toggle - Individual Toggles Disabled When Off
+**Priority:** Medium | **Area:** Settings
+
+**Preconditions:** User is logged in. Master email toggle is OFF.
+
+**Steps:**
+1. Navigate to /settings.
+2. Verify the master "Email notifications" toggle is OFF.
+3. Attempt to click each individual toggle (Task due today, Daily next actions, Project needs next action).
+4. Verify none of them respond to clicks or change state.
+5. Verify the toggle sliders have reduced opacity (visually greyed out).
+
+**Expected Result:** When the master toggle is OFF, all individual event toggles are disabled. They cannot be clicked, have reduced opacity, and have no pointer events.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-361: Master Email Toggle - State Persists on Reload
+**Priority:** Medium | **Area:** Settings
+
+**Preconditions:** User is logged in.
+
+**Steps:**
+1. Navigate to /settings.
+2. Turn OFF the master "Email notifications" toggle.
+3. Wait for the save to complete.
+4. Refresh the page (F5 or Ctrl+R).
+5. Scroll to the Notifications section.
+6. Verify the master toggle is still OFF.
+7. Verify the individual toggles are still disabled.
+8. Turn ON the master toggle.
+9. Wait for the save to complete.
+10. Refresh the page again.
+11. Verify the master toggle is ON and individual toggles are enabled.
+
+**Expected Result:** The master toggle state persists across page refreshes. The API correctly returns the `"*"` wildcard (or absence of it) and the UI reflects this on reload.
 
 | Date | P/F | Comment |
 |------|-----|---------|
