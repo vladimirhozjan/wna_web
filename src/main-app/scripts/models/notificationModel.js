@@ -14,6 +14,7 @@ export function notificationModel() {
 
     const state = reactive({
         // UI state: true = enabled (not disabled)
+        emailEnabled: true,       // master toggle: false when "*" in disabled_events.email
         taskDueToday: true,
         dailyNextActions: true,
         projectNeedsNextAction: true,
@@ -21,6 +22,7 @@ export function notificationModel() {
         loading: false,
         loaded: false,
         saving: {
+            emailEnabled: false,
             taskDueToday: false,
             dailyNextActions: false,
             projectNeedsNextAction: false,
@@ -36,6 +38,8 @@ export function notificationModel() {
     }
 
     function applyToState() {
+        const email = disabledEvents.email || []
+        state.emailEnabled = !email.includes('*')
         state.taskDueToday = !isDisabled('task_due_today')
         state.dailyNextActions = !isDisabled('daily_next_actions')
         state.projectNeedsNextAction = !isDisabled('project_needs_next_action')
@@ -88,6 +92,24 @@ export function notificationModel() {
         }
     }
 
+    async function setEmailEnabled(value) {
+        const oldValue = state.emailEnabled
+        state.emailEnabled = value
+        state.saving.emailEnabled = true
+        try {
+            const emailDisabled = value ? buildDisabledEmail() : ['*']
+            const payload = { disabled_events: { email: emailDisabled } }
+            const data = await updateNotificationSettings(payload)
+            disabledEvents = data.disabled_events || {}
+            applyToState()
+        } catch (err) {
+            state.emailEnabled = oldValue
+            throw err
+        } finally {
+            state.saving.emailEnabled = false
+        }
+    }
+
     async function setTaskDueToday(value) {
         return toggleEvent('taskDueToday', 'task_due_today', value)
     }
@@ -103,6 +125,7 @@ export function notificationModel() {
     instance = {
         state,
         load,
+        setEmailEnabled,
         setTaskDueToday,
         setDailyNextActions,
         setProjectNeedsNextAction,
