@@ -1,6 +1,6 @@
 <template>
   <div class="avatar-wrapper" @click="$emit('toggle-menu')">
-    <img v-if="avatarUrl" :src="avatarUrl" class="avatar-img" />
+    <img v-if="gravatarSrc && !gravatarFailed" :src="gravatarSrc" class="avatar-img" @error="gravatarFailed = true" />
     <div v-else class="avatar-fallback" :style="{ backgroundColor: bgColor }">
       {{ initials }}
     </div>
@@ -8,12 +8,30 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps({
   email: String,
-  avatarUrl: String
 });
+
+const gravatarHash = ref(null);
+const gravatarFailed = ref(false);
+
+async function sha256Hex(str) {
+  const data = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+watch(() => props.email, async (email) => {
+  gravatarFailed.value = false;
+  if (!email) { gravatarHash.value = null; return; }
+  gravatarHash.value = await sha256Hex(email.trim().toLowerCase());
+}, { immediate: true });
+
+const gravatarSrc = computed(() =>
+    gravatarHash.value ? `https://gravatar.com/avatar/${gravatarHash.value}?s=72&d=404` : null
+);
 
 const initials = computed(() => {
   if (!props.email) return "?";

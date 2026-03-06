@@ -51,7 +51,6 @@
       <div class="avatar-container" :class="{ 'desktop-only': context === 'dashboard' }" ref="avatarContainerRef">
         <UserAvatar
           :email="user?.email"
-          :avatar-url="user?.avatarUrl"
           @toggle-menu="showDropdown = !showDropdown"
         />
         <TopNavDropdown
