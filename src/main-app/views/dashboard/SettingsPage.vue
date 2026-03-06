@@ -215,13 +215,27 @@
 
           <div class="settings-row">
             <div>
+              <span class="text-body-m settings-label">Email notifications</span>
+              <p class="text-body-s settings-hint">Receive email notifications for tasks and reminders</p>
+            </div>
+            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
+              <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"></span>
+              <label class="settings-toggle">
+                <input type="checkbox" v-model="emailEnabled" />
+                <span class="settings-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div>
               <span class="text-body-m settings-label">Task due today</span>
               <p class="text-body-s settings-hint">Daily reminder for tasks due today</p>
             </div>
             <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.taskDueToday }">
               <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"></span>
               <label class="settings-toggle">
-                <input type="checkbox" v-model="taskDueToday" />
+                <input type="checkbox" v-model="taskDueToday" :disabled="!notifications.state.emailEnabled" />
                 <span class="settings-toggle-slider"></span>
               </label>
             </div>
@@ -235,7 +249,7 @@
             <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyNextActions }">
               <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"></span>
               <label class="settings-toggle">
-                <input type="checkbox" v-model="dailyNextActions" />
+                <input type="checkbox" v-model="dailyNextActions" :disabled="!notifications.state.emailEnabled" />
                 <span class="settings-toggle-slider"></span>
               </label>
             </div>
@@ -249,7 +263,7 @@
             <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.projectNeedsNextAction }">
               <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"></span>
               <label class="settings-toggle">
-                <input type="checkbox" v-model="projectNeedsNextAction" />
+                <input type="checkbox" v-model="projectNeedsNextAction" :disabled="!notifications.state.emailEnabled" />
                 <span class="settings-toggle-slider"></span>
               </label>
             </div>
@@ -424,6 +438,11 @@ const reviewEnabled = computed({
 const debugMode = computed({
   get: () => settings.state.debugEnabled,
   set: (val) => settings.setDebugEnabled(val).catch(err => toaster.push('Failed to save setting'))
+})
+
+const emailEnabled = computed({
+  get: () => notifications.state.emailEnabled,
+  set: (val) => notifications.setEmailEnabled(val).catch(() => toaster.push('Failed to save notification setting'))
 })
 
 const taskDueToday = computed({
@@ -1018,6 +1037,11 @@ async function onLogout() {
   border-radius: 50%;
   transition: 0.2s;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.settings-toggle input:disabled + .settings-toggle-slider {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .settings-toggle input:checked + .settings-toggle-slider {
