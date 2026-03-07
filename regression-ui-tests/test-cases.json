@@ -7317,5 +7317,56 @@
       "Verify the master toggle is ON and individual toggles are enabled."
     ],
     "expected": "The master toggle state persists across page refreshes. The API correctly returns the `\"*\"` wildcard (or absence of it) and the UI reflects this on reload."
+  },
+  {
+    "id": "TC-362",
+    "name": "User Avatar - Gravatar Loaded",
+    "priority": "Medium",
+    "area": "Dashboard Layout & Navigation",
+    "section": "25: Public Footer",
+    "preconditions": "User is logged in with an email address that has a Gravatar account (e.g., a known Gravatar-enabled email).",
+    "steps": [
+      "Log in with the Gravatar-enabled email account.",
+      "Observe the avatar in the top navigation bar.",
+      "Open DevTools Network tab and filter by \"gravatar.com\".",
+      "Verify a request was made to `https://gravatar.com/avatar/{hash}?s=72&d=404`.",
+      "Verify the response is HTTP 200 with an image.",
+      "Verify the avatar displays the Gravatar profile image (not the initials fallback)."
+    ],
+    "expected": "The avatar in the top nav shows the user's Gravatar image. The image is loaded from gravatar.com using a SHA-256 hash of the user's email. The image fits within the 36px circle (32px on mobile)."
+  },
+  {
+    "id": "TC-363",
+    "name": "User Avatar - Gravatar Fallback (No Account)",
+    "priority": "Medium",
+    "area": "Dashboard Layout & Navigation",
+    "section": "25: Public Footer",
+    "preconditions": "User is logged in with an email address that does NOT have a Gravatar account.",
+    "steps": [
+      "Log in with an email that has no Gravatar (e.g., a test account).",
+      "Observe the avatar in the top navigation bar.",
+      "Open DevTools Network tab and filter by \"gravatar.com\".",
+      "Verify the Gravatar request returns HTTP 404.",
+      "Verify the avatar displays the initials fallback (colored circle with first two characters of email)."
+    ],
+    "expected": "When Gravatar returns 404, the avatar falls back to the colored-initials display. The circle color is deterministic based on the email. No broken image icon is shown."
+  },
+  {
+    "id": "TC-364",
+    "name": "User Avatar - Gravatar Network Error Fallback",
+    "priority": "Low",
+    "area": "Dashboard Layout & Navigation",
+    "section": "25: Public Footer",
+    "preconditions": "User is logged in. Browser DevTools is available.",
+    "steps": [
+      "Log in with any account.",
+      "Open DevTools Network tab.",
+      "Block requests to `gravatar.com` (e.g., using DevTools request blocking).",
+      "Refresh the page.",
+      "Observe the avatar in the top navigation bar.",
+      "Verify the avatar displays the initials fallback (colored circle).",
+      "Verify no console errors or broken image icons appear."
+    ],
+    "expected": "When the Gravatar request fails due to network error, the avatar gracefully falls back to the colored-initials display. No broken image icon or error state is visible."
   }
 ]

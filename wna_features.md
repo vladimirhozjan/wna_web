@@ -227,9 +227,12 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 ### 3.4 User Avatar
 
 - 36px circle (32px on mobile)
-- Shows user avatar image if available
-- Fallback: Colored circle with first two characters of email (uppercased)
-- Background color deterministically generated from email (consistent per user)
+- **Gravatar integration:** Automatically fetches the user's avatar from [Gravatar](https://gravatar.com) using a SHA-256 hash of the lowercase/trimmed email
+  - Request URL: `https://gravatar.com/avatar/{sha256hash}?s=72&d=404`
+  - `d=404` tells Gravatar to return HTTP 404 if no account exists, triggering the fallback
+  - Hash is computed client-side using the Web Crypto API (no external dependencies)
+- **Fallback:** If Gravatar returns 404 or the image fails to load, displays a colored circle with the first two characters of the email (uppercased)
+- Background color of the fallback is deterministically generated from the email (consistent per user)
 
 ---
 

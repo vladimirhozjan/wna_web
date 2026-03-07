@@ -9981,3 +9981,72 @@ Use the table below to log each full or partial test run.
 |      |     |         |
 |      |     |         |
 |      |     |         |
+
+---
+
+### TC-362: User Avatar - Gravatar Loaded
+**Priority:** Medium | **Area:** Dashboard Layout & Navigation
+
+**Preconditions:** User is logged in with an email address that has a Gravatar account (e.g., a known Gravatar-enabled email).
+
+**Steps:**
+1. Log in with the Gravatar-enabled email account.
+2. Observe the avatar in the top navigation bar.
+3. Open DevTools Network tab and filter by "gravatar.com".
+4. Verify a request was made to `https://gravatar.com/avatar/{hash}?s=72&d=404`.
+5. Verify the response is HTTP 200 with an image.
+6. Verify the avatar displays the Gravatar profile image (not the initials fallback).
+
+**Expected Result:** The avatar in the top nav shows the user's Gravatar image. The image is loaded from gravatar.com using a SHA-256 hash of the user's email. The image fits within the 36px circle (32px on mobile).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-363: User Avatar - Gravatar Fallback (No Account)
+**Priority:** Medium | **Area:** Dashboard Layout & Navigation
+
+**Preconditions:** User is logged in with an email address that does NOT have a Gravatar account.
+
+**Steps:**
+1. Log in with an email that has no Gravatar (e.g., a test account).
+2. Observe the avatar in the top navigation bar.
+3. Open DevTools Network tab and filter by "gravatar.com".
+4. Verify the Gravatar request returns HTTP 404.
+5. Verify the avatar displays the initials fallback (colored circle with first two characters of email).
+
+**Expected Result:** When Gravatar returns 404, the avatar falls back to the colored-initials display. The circle color is deterministic based on the email. No broken image icon is shown.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-364: User Avatar - Gravatar Network Error Fallback
+**Priority:** Low | **Area:** Dashboard Layout & Navigation
+
+**Preconditions:** User is logged in. Browser DevTools is available.
+
+**Steps:**
+1. Log in with any account.
+2. Open DevTools Network tab.
+3. Block requests to `gravatar.com` (e.g., using DevTools request blocking).
+4. Refresh the page.
+5. Observe the avatar in the top navigation bar.
+6. Verify the avatar displays the initials fallback (colored circle).
+7. Verify no console errors or broken image icons appear.
+
+**Expected Result:** When the Gravatar request fails due to network error, the avatar gracefully falls back to the colored-initials display. No broken image icon or error state is visible.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
