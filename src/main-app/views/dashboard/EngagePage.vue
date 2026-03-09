@@ -35,6 +35,7 @@
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
+                :completing-ids="completingIds"
                 source-type="action"
                 @update="onUpdate"
                 @check="onCheck"
@@ -62,6 +63,7 @@
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
+                :completing-ids="completingIds"
                 source-type="action"
                 @update="onUpdate"
                 @check="onCheck"
@@ -89,6 +91,7 @@
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
+                :completing-ids="completingIds"
                 source-type="action"
                 @update="onUpdate"
                 @check="onCheck"
@@ -160,6 +163,7 @@ import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
+import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -278,6 +282,9 @@ function removeFromList(list, id) {
     if (idx !== -1) list.value.splice(idx, 1)
 }
 
+const completingIds = ref([])
+const ANIM_MS = 800
+
 async function onCheck(id, checked) {
     if (!checked) return
 
@@ -286,14 +293,23 @@ async function onCheck(id, checked) {
         || topWaiting.value.find(i => i.id === id)
     const title = truncateTitle(item?.title)
 
+    if (item) item.checked = true
+    completingIds.value.push(id)
+    hapticFeedback('success')
+
     try {
-        await apiClient.completeAction(id)
+        await Promise.all([
+            apiClient.completeAction(id),
+            new Promise(r => setTimeout(r, ANIM_MS))
+        ])
         removeFromList(topToday, id)
         removeFromList(topActions, id)
         removeFromList(topWaiting, id)
         refreshStats()
         toaster.success(`"${title}" completed`)
     } catch (err) {
+        if (item) item.checked = false
+        completingIds.value = completingIds.value.filter(x => x !== id)
         toaster.push(err.message || 'Failed to complete action')
     }
 }

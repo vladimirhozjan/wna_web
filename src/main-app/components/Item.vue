@@ -6,8 +6,7 @@
     <div class="item__main-row">
       <!-- Checkbox -->
       <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
-        <input
-            type="checkbox"
+        <AnimatedCheckbox
             :checked="checked"
             @change="onCheck"
         />
@@ -58,6 +57,7 @@
 
 <script setup>
 import { ref, nextTick, watch } from 'vue'
+import AnimatedCheckbox from './AnimatedCheckbox.vue'
 
 const props = defineProps({
   id: {
@@ -138,8 +138,8 @@ function onCancel() {
   editValue.value = props.title
 }
 
-function onCheck(e) {
-  emit('check', props.id, e.target.checked)
+function onCheck(checked) {
+  emit('check', props.id, checked)
 }
 </script>
 
@@ -209,13 +209,6 @@ function onCheck(e) {
 
 .item__checkbox {
   flex-shrink: 0;
-}
-
-.item__checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--color-action);
 }
 
 .item__prefix {

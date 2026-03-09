@@ -14,6 +14,7 @@
             :disabled="false"
             :editable="false"
             :loading-ids="loadingIds"
+            :completing-ids="completingIds"
             @load-more="loadMore"
             @click="onItemClick"
             @check="onItemCheck"
@@ -45,6 +46,7 @@ import CompletedIcon from '../../assets/CompletedIcon.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { completedModel } from '../../scripts/models/completedModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
 
@@ -55,6 +57,7 @@ const {
   hasMore,
   loadCompleted,
   uncompleteItem,
+  removeItem,
 } = completedModel()
 
 const toaster = errorModel()
@@ -107,6 +110,9 @@ function onItemClick(item) {
   }
 }
 
+const completingIds = ref([])
+const ANIM_MS = 800
+
 async function onItemCheck(id, checked) {
   if (checked) return // Already completed, ignore checking
 
@@ -115,11 +121,21 @@ async function onItemCheck(id, checked) {
   if (!item) return
 
   const title = truncateTitle(item.title)
+  item.checked = false
+  completingIds.value.push(id)
+  hapticFeedback('success')
   undoingId.value = id
+
   try {
-    await uncompleteItem(item)
+    await Promise.all([
+      uncompleteItem(item),
+      new Promise(r => setTimeout(r, ANIM_MS))
+    ])
+    removeItem(id)
     toaster.success(`"${title}" restored`)
   } catch (err) {
+    item.checked = true
+    completingIds.value = completingIds.value.filter(x => x !== id)
     toaster.push(err.message || 'Failed to restore item')
   } finally {
     undoingId.value = null

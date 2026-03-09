@@ -188,20 +188,23 @@ export function nextActionModel() {
 
         try {
             await apiClient.completeAction(actionId)
-            items.value = items.value.filter(i => i.id !== actionId)
-
-            if (cursor.value === actionId) {
-                const last = items.value[items.value.length - 1]
-                cursor.value = last ? last.id : null
-            }
-
-            if (current.value?.id === actionId) {
-                current.value = null
-            }
             statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
+        }
+    }
+
+    function removeItem(actionId) {
+        items.value = items.value.filter(i => i.id !== actionId)
+
+        if (cursor.value === actionId) {
+            const last = items.value[items.value.length - 1]
+            cursor.value = last ? last.id : null
+        }
+
+        if (current.value?.id === actionId) {
+            current.value = null
         }
     }
 
@@ -261,6 +264,7 @@ export function nextActionModel() {
         trashAction,
         moveAction,
         completeAction,
+        removeItem,
         changeActionState,
     }
 }

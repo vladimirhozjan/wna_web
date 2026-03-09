@@ -22,14 +22,14 @@ The Inter font, blue-gray palette, and flat design make it feel like an internal
 - ~~Encouraging message: "Inbox Zero — you're in control" or "All processed — nice work"~~
 - ~~Keep it brief (2-3 seconds), dismissible, non-blocking~~
 
-## 3. Checkbox & Completion Animations
+## ~~3. Checkbox & Completion Animations~~
 
-Completing an action should feel satisfying, not just a state change.
+~~Completing an action should feel satisfying, not just a state change.~~
 
-- Animated checkbox (stroke draws in, slight bounce)
-- Item slides/fades out smoothly after completion (not instant removal)
-- Subtle haptic feedback on mobile (if supported)
-- Success toast could include a small celebration icon
+- ~~Animated checkbox (stroke draws in, slight bounce)~~
+- ~~Item slides/fades out smoothly after completion (not instant removal)~~
+- ~~Subtle haptic feedback on mobile (if supported)~~
+- ~~Success toast could include a small celebration icon~~
 
 ## 4. Onboarding / First-Run Experience
 

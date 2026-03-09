@@ -69,16 +69,19 @@ export function completedModel() {
                     throw new Error(`Unknown item type: ${item.type}`)
             }
 
-            items.value = items.value.filter(i => i.id !== item.id)
-
-            if (cursor.value === item.id) {
-                const last = items.value[items.value.length - 1]
-                cursor.value = last ? last.id : null
-            }
             statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
+        }
+    }
+
+    function removeItem(itemId) {
+        items.value = items.value.filter(i => i.id !== itemId)
+
+        if (cursor.value === itemId) {
+            const last = items.value[items.value.length - 1]
+            cursor.value = last ? last.id : null
         }
     }
 
@@ -124,6 +127,7 @@ export function completedModel() {
 
         loadCompleted,
         uncompleteItem,
+        removeItem,
         trashItem,
     }
 }

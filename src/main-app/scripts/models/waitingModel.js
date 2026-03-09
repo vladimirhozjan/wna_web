@@ -156,27 +156,27 @@ export function waitingModel() {
     }
 
     async function completeWaiting(actionId) {
-        loading.value = true
         error.value = null
 
         try {
             await apiClient.completeAction(actionId)
-            items.value = items.value.filter(i => i.id !== actionId)
-
-            if (cursor.value === actionId) {
-                const last = items.value[items.value.length - 1]
-                cursor.value = last ? last.id : null
-            }
-
-            if (current.value?.id === actionId) {
-                current.value = null
-            }
             statsModel().refreshStats()
         } catch (err) {
             error.value = err
             throw err
-        } finally {
-            loading.value = false
+        }
+    }
+
+    function removeItem(actionId) {
+        items.value = items.value.filter(i => i.id !== actionId)
+
+        if (cursor.value === actionId) {
+            const last = items.value[items.value.length - 1]
+            cursor.value = last ? last.id : null
+        }
+
+        if (current.value?.id === actionId) {
+            current.value = null
         }
     }
 
@@ -224,6 +224,7 @@ export function waitingModel() {
         trashWaiting,
         moveWaiting,
         completeWaiting,
+        removeItem,
         unwaitAction,
     }
 }

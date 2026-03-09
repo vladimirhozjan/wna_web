@@ -36,6 +36,7 @@
             :loading="loading"
             :has-more="hasMore"
             :loading-ids="loadingIds"
+            :completing-ids="completingIds"
             source-type="action"
             @update="onItemUpdate"
             @check="onItemCheck"
@@ -85,6 +86,7 @@ import { todayModel } from '../../scripts/models/todayModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
 
@@ -100,6 +102,7 @@ const {
   trashAction,
   moveAction,
   completeAction,
+  removeItem,
 } = todayModel()
 
 const toaster = errorModel()
@@ -190,16 +193,29 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…'
 }
 
+const completingIds = ref([])
+const ANIM_MS = 800
+
 async function onItemCheck(id, checked) {
   if (!checked) return
 
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
+  if (item) item.checked = true
+  completingIds.value.push(id)
+  hapticFeedback('success')
+
   try {
-    await completeAction(id)
+    await Promise.all([
+      completeAction(id),
+      new Promise(r => setTimeout(r, ANIM_MS))
+    ])
+    removeItem(id)
     toaster.success(`"${title}" completed`)
   } catch (err) {
+    if (item) item.checked = false
+    completingIds.value = completingIds.value.filter(x => x !== id)
     toaster.push(err.message || 'Failed to complete action')
   }
 }

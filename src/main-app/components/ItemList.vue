@@ -32,7 +32,8 @@
             'item-wrapper--active': activeId != null && activeId === item.id,
             'item-wrapper--dragging': nativeDraggingId === item.id,
             'item-wrapper--overdue': itemIsOverdue(item),
-            'item-wrapper--wiggle': showHint && index === 0
+            'item-wrapper--wiggle': showHint && index === 0,
+            'item-wrapper--completing': completingIdSet.has(item.id)
           }"
           :draggable="!!sourceType && !disabled"
           @dragstart.capture="onNativeDragStart($event, item)"
@@ -104,6 +105,7 @@ const props = defineProps({
   editable: { type: Boolean, default: true },
   noCheckbox: { type: Boolean, default: false },
   sourceType: { type: String, default: null },
+  completingIds: { type: Array, default: () => [] },
 })
 
 const drag = dragModel()
@@ -114,6 +116,7 @@ const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-mo
 const items = defineModel({ type: Array, required: true })
 
 const loadingIdSet = computed(() => new Set(props.loadingIds))
+const completingIdSet = computed(() => new Set(props.completingIds))
 
 // Drag discoverability hint
 const HINT_KEY = 'drag_hint_dismissed'
@@ -329,5 +332,33 @@ function onNativeDragEnd() {
   40% { transform: translateX(3px); }
   60% { transform: translateX(-2px); }
   80% { transform: translateX(2px); }
+}
+
+/* Completion exit animation */
+.item-wrapper--completing {
+  animation: item-complete-out 0.4s ease 0.35s forwards;
+  pointer-events: none;
+}
+
+@keyframes item-complete-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 80px;
+  }
+  60% {
+    opacity: 0;
+    transform: translateX(20px);
+    max-height: 80px;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(20px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 </style>

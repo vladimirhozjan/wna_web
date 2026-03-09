@@ -55,6 +55,7 @@
               :loading="loading"
               :has-more="hasMore && !clarifyMode"
               :loading-ids="loadingIds"
+              :completing-ids="completingIds"
               :disabled="clarifyMode"
               :active-id="currentClarifyItem?.id ?? null"
               :editable="!clarifyMode"
@@ -135,6 +136,7 @@ import ActionBtn from '../../components/ActionBtn.vue'
 import InboxIcon from '../../assets/InboxIcon.vue'
 import CompletedIcon from '../../assets/CompletedIcon.vue'
 import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
+import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 // model
 const {
@@ -161,14 +163,13 @@ const add_input = ref(null)
 const updatingId = ref(null)
 const deletingId = ref(null)
 const movingId = ref(null)
-const completingId = ref(null)
+const completingIds = ref([])
 
 const loadingIds = computed(() => {
   const ids = []
   if (updatingId.value) ids.push(updatingId.value)
   if (deletingId.value) ids.push(deletingId.value)
   if (movingId.value) ids.push(movingId.value)
-  if (completingId.value) ids.push(completingId.value)
   return ids
 })
 
@@ -305,16 +306,23 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…'
 }
 
+const ANIM_MS = 800
+
 async function onItemCheck(id, checked) {
-  if (!checked) return // Can't uncheck - completed items aren't shown here
+  if (!checked) return
 
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
-  completingId.value = id
+  if (item) item.checked = true
+  completingIds.value.push(id)
+  hapticFeedback('success')
+
   try {
-    await apiClient.completeStuff(id)
-    // Remove item from list
+    await Promise.all([
+      apiClient.completeStuff(id),
+      new Promise(r => setTimeout(r, ANIM_MS))
+    ])
     const idx = items.value.findIndex(i => i.id === id)
     if (idx !== -1) {
       items.value.splice(idx, 1)
@@ -322,9 +330,9 @@ async function onItemCheck(id, checked) {
     toaster.success(`"${title}" completed`)
     statsModel().refreshStats()
   } catch (err) {
+    if (item) item.checked = false
+    completingIds.value = completingIds.value.filter(x => x !== id)
     toaster.push(err.message || 'Failed to complete item')
-  } finally {
-    completingId.value = null
   }
 }
 
