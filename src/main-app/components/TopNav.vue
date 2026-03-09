@@ -245,10 +245,6 @@ onBeforeUnmount(() => {
     padding: 0 10px;
   }
 
-  .dashboard-title {
-    display: none;
-  }
-
 }
 
 .topnav-center {
