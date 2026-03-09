@@ -127,9 +127,26 @@
                 </span>
                 <span v-else class="settings-tag-placeholder">Add preset tags...</span>
               </div>
-              <div v-else class="settings-tag-edit-area" @focusout="onTagPresetsFocusout">
+              <template v-else>
                 <TagInput ref="tagPresetsInput" v-model="editTagPresets" placeholder="Add preset tags..." :presetSource="defaultPresets" />
-              </div>
+                <div class="settings-tag-actions">
+                  <Btn
+                      variant="primary"
+                      size="sm"
+                      :disabled="savingTagPresets"
+                      :loading="savingTagPresets"
+                      @mousedown.prevent
+                      @click="saveTagPresets"
+                  >Save</Btn>
+                  <Btn
+                      variant="ghost"
+                      size="sm"
+                      :disabled="savingTagPresets"
+                      @mousedown.prevent
+                      @click="cancelTagPresetsEdit"
+                  >Cancel</Btn>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -420,6 +437,7 @@ const addPosition = computed({
 const editingTagPresets = ref(false)
 const editTagPresets = ref([])
 const tagPresetsInput = ref(null)
+const savingTagPresets = ref(false)
 const defaultPresets = DEFAULT_PRESETS
 
 function startTagPresetsEdit() {
@@ -430,24 +448,27 @@ function startTagPresetsEdit() {
   })
 }
 
-function onTagPresetsFocusout(e) {
-  // Check if focus moved outside the edit area
-  const editArea = e.currentTarget
-  setTimeout(() => {
-    if (!editArea.contains(document.activeElement)) {
-      saveAndCloseTagPresets()
-    }
-  }, 0)
+function cancelTagPresetsEdit() {
+  editingTagPresets.value = false
 }
 
-async function saveAndCloseTagPresets() {
+async function saveTagPresets() {
+  if (savingTagPresets.value) return
+
   const newValue = [...editTagPresets.value]
-  editingTagPresets.value = false
-  if (JSON.stringify(newValue) === JSON.stringify(settings.state.tagPresets)) return
+  if (JSON.stringify(newValue) === JSON.stringify(settings.state.tagPresets)) {
+    editingTagPresets.value = false
+    return
+  }
+
+  savingTagPresets.value = true
   try {
     await settings.setTagPresets(newValue)
+    editingTagPresets.value = false
   } catch {
     toaster.push('Failed to save setting')
+  } finally {
+    savingTagPresets.value = false
   }
 }
 
@@ -866,13 +887,16 @@ async function onLogout() {
 .settings-tag-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 4px;
-  color: var(--color-text-primary);
-  line-height: var(--lh-normal);
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  background: var(--color-bg-accent-light);
+  border: none;
+  border-radius: 9999px;
+  color: var(--color-action);
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .settings-tag-placeholder {
@@ -880,8 +904,10 @@ async function onLogout() {
   font-style: italic;
 }
 
-.settings-tag-edit-area {
-  width: 100%;
+.settings-tag-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 

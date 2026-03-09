@@ -265,6 +265,7 @@ function onMonthClick(month) {
 .year-view__day--today {
   outline: 2px solid var(--color-action);
   outline-offset: 1px;
+  z-index: 2;
 }
 
 .year-view__day--heat-0 {

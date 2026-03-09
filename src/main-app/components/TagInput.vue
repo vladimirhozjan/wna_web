@@ -221,13 +221,15 @@ defineExpose({ focus: focusInput })
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 4px;
-  color: var(--color-text-primary);
-  line-height: var(--lh-normal);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  background: var(--color-bg-accent-light);
+  border: none;
+  border-radius: 9999px;
+  color: var(--color-action);
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .tag-chip-remove {
@@ -301,20 +303,21 @@ defineExpose({ focus: focusInput })
 .tag-preset-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  border: 1px dashed var(--color-border-light);
-  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border: 1px dashed var(--color-action);
+  border-radius: 9999px;
   background: none;
   color: var(--color-text-tertiary);
   cursor: pointer;
-  line-height: var(--lh-normal);
   white-space: nowrap;
+  line-height: 1.3;
   transition: all 0.15s;
 }
 
 .tag-preset-chip:hover {
   color: var(--color-action);
-  border-color: var(--color-action);
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-accent-light);
 }
 </style>

@@ -79,10 +79,10 @@
     --color-calendar-weekend-bg: #f9fafb;
     --color-calendar-outside-business: #f8f9fa;
 
-    /* Heat map */
+    /* Heat map (fallback — accents override these) */
     --color-heat-0: #fafbfc;
-    --color-heat-1: #e0f2fe;
-    --color-heat-2: #bae6fd;
-    --color-heat-3: #7dd3fc;
-    --color-heat-4: #38bdf8;
+    --color-heat-1: rgba(65, 133, 222, 0.2);
+    --color-heat-2: rgba(65, 133, 222, 0.35);
+    --color-heat-3: rgba(65, 133, 222, 0.4);
+    --color-heat-4: rgba(65, 133, 222, 0.6);
 }

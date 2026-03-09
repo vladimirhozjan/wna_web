@@ -35,6 +35,12 @@
     --color-input-border-focus: #0e7490;
     --color-link-text: #0e7490;
     --color-link-hover: #0b5e76;
+
+    --color-heat-0: #fafbfc;
+    --color-heat-1: rgba(14, 116, 144, 0.2);
+    --color-heat-2: rgba(14, 116, 144, 0.35);
+    --color-heat-3: rgba(14, 116, 144, 0.4);
+    --color-heat-4: rgba(14, 116, 144, 0.6);
 }
 
 [data-accent="ocean"][data-theme="dark"] {
@@ -72,4 +78,10 @@
     --color-input-border-focus: #22d3ee;
     --color-link-text: #22d3ee;
     --color-link-hover: #67e8f9;
+
+    --color-heat-0: #111111;
+    --color-heat-1: rgba(34, 211, 238, 0.25);
+    --color-heat-2: rgba(34, 211, 238, 0.4);
+    --color-heat-3: rgba(34, 211, 238, 0.45);
+    --color-heat-4: rgba(34, 211, 238, 0.6);
 }

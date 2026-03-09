@@ -1353,12 +1353,16 @@ async function onAddAction() {
 .detail-tag-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 4px;
-  color: var(--color-text-primary);
-  line-height: var(--lh-normal);
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  background: var(--color-bg-accent-light);
+  border: none;
+  border-radius: 9999px;
+  color: var(--color-action);
+  white-space: nowrap;
+  line-height: 1.3;
 }
 
 /* ── Metadata section ── */

@@ -141,7 +141,7 @@ const props = defineProps({
 const emit = defineEmits(['item-click', 'create', 'reschedule', 'day-click'])
 
 const calendar = calendarModel()
-const maxItemsPerDay = 3
+const maxItemsPerDay = 5
 const quickFormDate = ref(null)
 const dragOverDate = ref(null)
 const draggingItem = ref(null)
@@ -208,7 +208,7 @@ function onCellClick(day, event) {
   if (event.target.closest('.calendar-item') || event.target.closest('.quick-form')) {
     return
   }
-  quickFormDate.value = formatDate(day)
+  emit('day-click', day)
 }
 
 function onItemClick(item) {

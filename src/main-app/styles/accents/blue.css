@@ -35,6 +35,12 @@
     --color-input-border-focus: #3730a3;
     --color-link-text: #4338ca;
     --color-link-hover: #3730a3;
+
+    --color-heat-0: #fafbfc;
+    --color-heat-1: rgba(55, 48, 163, 0.2);
+    --color-heat-2: rgba(55, 48, 163, 0.35);
+    --color-heat-3: rgba(55, 48, 163, 0.4);
+    --color-heat-4: rgba(55, 48, 163, 0.6);
 }
 
 [data-accent="blue"][data-theme="dark"] {
@@ -72,4 +78,10 @@
     --color-input-border-focus: #818cf8;
     --color-link-text: #818cf8;
     --color-link-hover: #a5b4fc;
+
+    --color-heat-0: #111111;
+    --color-heat-1: rgba(129, 140, 248, 0.25);
+    --color-heat-2: rgba(129, 140, 248, 0.4);
+    --color-heat-3: rgba(129, 140, 248, 0.45);
+    --color-heat-4: rgba(129, 140, 248, 0.6);
 }
