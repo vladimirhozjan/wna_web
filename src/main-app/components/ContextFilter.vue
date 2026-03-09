@@ -92,10 +92,10 @@ function onClear(closeFn) {
 .context-trigger {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: none;
   border: none;
-  padding: 0;
+  padding: 4px 16px 8px;
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: 0.15s ease;
@@ -112,18 +112,20 @@ function onClear(closeFn) {
 .context-trigger__icon {
   display: flex;
   flex-shrink: 0;
+  width: 18px;
+  justify-content: center;
 }
 
 .context-trigger__icon :deep(svg) {
-  width: 28px;
-  height: 28px;
-  padding: 4px;
-  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .context-trigger__hint {
   white-space: nowrap;
   font-style: italic;
+  font-size: 12px;
   color: var(--color-text-tertiary);
 }
 

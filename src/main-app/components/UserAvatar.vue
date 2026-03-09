@@ -9,10 +9,21 @@
 
 <script setup>
 import { computed, ref, watch } from "vue";
+import { themeModel } from "../scripts/models/themeModel.js";
 
 const props = defineProps({
   email: String,
 });
+
+const theme = themeModel();
+
+// Saturation & lightness extracted from each accent's primary color
+const accentSL = {
+  sky:   { s: 60, l: 48 },   // #4185DE toned down
+  blue:  { s: 54, l: 41 },   // #3730a3
+  teal:  { s: 80, l: 40 },   // #14b8a6
+  ocean: { s: 82, l: 31 },   // #0e7490
+};
 
 const gravatarHash = ref(null);
 const gravatarFailed = ref(false);
@@ -38,32 +49,35 @@ const initials = computed(() => {
   return props.email.slice(0, 2).toUpperCase();
 });
 
-function stringToColor(str) {
+function emailToHue(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 45%, 72%)`;
+  return Math.abs(hash) % 360;
 }
 
-const bgColor = computed(() =>
-    props.email ? stringToColor(props.email) : "#777"
-);
+const bgColor = computed(() => {
+  if (!props.email) return "#777";
+  const hue = emailToHue(props.email);
+  const { s, l } = accentSL[theme.accent.value] || accentSL.sky;
+  return `hsl(${hue}, ${s}%, ${l}%)`;
+});
 
 defineEmits(["toggle-menu"]);
 </script>
 
 <style scoped>
 .avatar-wrapper {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .avatar-img {
@@ -77,8 +91,8 @@ defineEmits(["toggle-menu"]);
   height: 100%;
   border-radius: 50%;
   color: var(--color-text-inverse);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm);
+  font-weight: 700;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;

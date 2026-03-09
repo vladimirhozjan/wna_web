@@ -1,8 +1,8 @@
 <template>
   <nav class="topnav">
     <div class="topnav-left">
-      <img src="../assets/AppIcon.svg" alt="logo" class="topnav-logo" />
-      <span class="text-h3 color-text-primary">WhatsNextAction</span>
+      <AppIcon />
+      <span class="topnav-title"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
     </div>
 
     <!-- Center nav links (landing/public context, desktop only) -->
@@ -73,6 +73,7 @@ import Btn from "./Btn.vue";
 import UserAvatar from "./UserAvatar.vue";
 import QuickAddBtn from "./QuickAddBtn.vue";
 import TopNavDropdown from "./TopNavDropdown.vue";
+import AppIcon from "../assets/AppIcon.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
 
@@ -164,19 +165,35 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 52px;
   border-bottom: 1px solid var(--color-border-light);
-  padding: 0 4px;
+  padding: 0 20px;
+  gap: 12px;
+  background: var(--color-bg-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .topnav-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.topnav-logo {
-  height: 48px;
-  width: 48px;
+.topnav-title {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  line-height: 18px;
+}
+
+.topnav-title-primary {
+  color: var(--color-text-primary);
+}
+
+.topnav-title-accent {
+  color: var(--color-action);
 }
 
 .topnav-right {
@@ -189,12 +206,11 @@ onBeforeUnmount(() => {
 .topnav-auth-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .avatar-container {
   position: relative;
-  margin-right: 2px;
 }
 
 .desktop-only {

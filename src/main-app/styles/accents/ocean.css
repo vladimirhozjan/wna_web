@@ -1,0 +1,75 @@
+/* Ocean — #0e7490 */
+
+[data-accent="ocean"][data-theme="light"] {
+    --color-action: #0e7490;
+    --color-action-dark: #164e63;
+    --color-bg-accent-light: #ecfeff;
+
+    --color-action-subtle: rgba(14, 116, 144, 0.1);
+    --color-action-bg-subtle: rgba(14, 116, 144, 0.08);
+    --color-action-bg-light: rgba(14, 116, 144, 0.1);
+    --color-action-shadow: rgba(14, 116, 144, 0.12);
+    --color-action-shadow-md: rgba(14, 116, 144, 0.15);
+    --color-action-ring: rgba(14, 116, 144, 0.2);
+
+    --color-focus-ring: rgba(14, 116, 144, 0.2);
+
+    --color-btn-primary-bg: #0e7490;
+    --color-btn-primary-hover: #0b5e76;
+    --color-btn-primary-active: #084c60;
+    --color-btn-primary-dis-bg: #8cbbc8;
+    --color-btn-primary-dis-txt: #f2f2f2;
+
+    --color-btn-ghost-bg: #ecfeff;
+    --color-btn-ghost-text: #0e7490;
+    --color-btn-ghost-border: #a5f3fc;
+    --color-btn-ghost-hover: #cffafe;
+    --color-btn-ghost-active: #a5f3fc;
+    --color-btn-ghost-dis-bg: #f0f7f8;
+    --color-btn-ghost-dis-txt: #6d9aa7;
+    --color-btn-ghost-dis-brd: #c0dfe5;
+
+    --color-menu-item-hover-txt: #0b5e76;
+    --color-menu-item-active-txt: #0e7490;
+
+    --color-input-border-focus: #0e7490;
+    --color-link-text: #0e7490;
+    --color-link-hover: #0b5e76;
+}
+
+[data-accent="ocean"][data-theme="dark"] {
+    --color-action: #22d3ee;
+    --color-action-dark: #0e7490;
+    --color-bg-accent-light: rgba(34, 211, 238, 0.12);
+
+    --color-action-subtle: rgba(34, 211, 238, 0.15);
+    --color-action-bg-subtle: rgba(34, 211, 238, 0.1);
+    --color-action-bg-light: rgba(34, 211, 238, 0.12);
+    --color-action-shadow: rgba(34, 211, 238, 0.15);
+    --color-action-shadow-md: rgba(34, 211, 238, 0.2);
+    --color-action-ring: rgba(34, 211, 238, 0.3);
+
+    --color-focus-ring: rgba(34, 211, 238, 0.3);
+
+    --color-btn-primary-bg: #0e7490;
+    --color-btn-primary-hover: #0891b2;
+    --color-btn-primary-active: #0b5e76;
+    --color-btn-primary-dis-bg: #193e4a;
+    --color-btn-primary-dis-txt: #3f7080;
+
+    --color-btn-ghost-bg: rgba(34, 211, 238, 0.12);
+    --color-btn-ghost-text: #67e8f9;
+    --color-btn-ghost-border: rgba(34, 211, 238, 0.25);
+    --color-btn-ghost-hover: rgba(34, 211, 238, 0.2);
+    --color-btn-ghost-active: rgba(34, 211, 238, 0.3);
+    --color-btn-ghost-dis-bg: rgba(34, 211, 238, 0.06);
+    --color-btn-ghost-dis-txt: #306A78;
+    --color-btn-ghost-dis-brd: rgba(34, 211, 238, 0.12);
+
+    --color-menu-item-hover-txt: #67e8f9;
+    --color-menu-item-active-txt: #22d3ee;
+
+    --color-input-border-focus: #22d3ee;
+    --color-link-text: #22d3ee;
+    --color-link-hover: #67e8f9;
+}
