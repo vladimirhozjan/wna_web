@@ -39,7 +39,6 @@ The app currently trusts users too much. Even GTD-literate users need orientatio
 - Explain the sidebar sections briefly — what goes where
 - Prompt to add first inbox item: "What's on your mind right now?"
 - Optional: link to a brief GTD refresher for new users
-- Landing page needs real content (currently "Under Construction")
 
 ## 5. ~~Visual Grouping of GTD Phases in Sidebar~~
 
