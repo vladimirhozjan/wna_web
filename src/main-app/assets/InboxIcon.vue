@@ -1,6 +1,7 @@
 <template>
-  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M13.78 92C11.09 92 8.79 91.02 6.88 89.12C4.98 87.21 4 84.91 4 82.22L4 13.78C4 11.09 4.98 8.79 6.88 6.88C8.79 4.98 11.09 4 13.78 4L82.22 4C84.91 4 87.21 4.98 89.12 6.88C91.02 8.79 92 11.09 92 13.78L92 62.67L62.67 92L13.78 92ZM13.78 82.22L52.89 82.22L52.89 62.67C52.89 59.98 53.87 57.68 55.77 55.77C57.68 53.87 59.98 52.89 62.67 52.89L82.22 52.89L82.22 13.78L13.78 13.78L13.78 82.22ZM62.67 82.22L82.22 62.67L62.67 62.67L62.67 82.22Z"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
   </svg>
 </template>
 

@@ -3,7 +3,7 @@
     <div class="engage-page">
 
       <div class="engage-header">
-        <h1 class="text-h1 color-text-primary">Engage</h1>
+        <h1 class="page-title">Engage</h1>
       </div>
 
       <div class="engage-content">
@@ -15,20 +15,20 @@
 
         <template v-else>
 
-          <!-- Overdue alert (urgent - stays at top) -->
-          <div v-if="overdueCount > 0" class="status-item status-item--danger" @click="router.push({ name: 'today' })">
-            <span class="text-body-m status-item__text">{{ overdueCount }} overdue item{{ overdueCount !== 1 ? 's' : '' }} need attention</span>
-            <Btn variant="ghost-danger" size="sm" @click.stop="router.push({ name: 'today' })">View</Btn>
+          <!-- Overdue alert -->
+          <div v-if="overdueCount > 0" class="overdue-banner" @click="router.push({ name: 'overdue' })">
+            <span class="overdue-banner__text">{{ overdueCount }} overdue item{{ overdueCount !== 1 ? 's' : '' }} need attention</span>
+            <Btn variant="ghost-danger" size="sm" @click.stop="router.push({ name: 'overdue' })">View</Btn>
           </div>
 
           <!-- Today section -->
-          <div class="section" v-if="topToday.length > 0">
-            <div class="section__header">
-              <router-link :to="{ name: 'today' }" class="text-body-s fw-semibold section__title">
+          <div class="card" v-if="topToday.length > 0">
+            <div class="card-header">
+              <router-link :to="{ name: 'today' }" class="section__title">
                 Today
-                <span v-if="todayCount > 0" class="fw-normal section__count">{{ todayCount }}</span>
+                <span v-if="todayCount > 0" class="section__count">{{ todayCount }}</span>
               </router-link>
-              <router-link v-if="hasMoreToday" :to="{ name: 'today' }" class="text-body-s section__link">View all</router-link>
+              <router-link v-if="hasMoreToday" :to="{ name: 'today' }" class="section__link">View all</router-link>
             </div>
             <ItemList
                 v-model="displayToday"
@@ -49,13 +49,13 @@
           </div>
 
           <!-- Next Actions section -->
-          <div class="section" v-if="topActions.length > 0">
-            <div class="section__header">
-              <router-link :to="{ name: 'next' }" class="text-body-s fw-semibold section__title">
+          <div class="card" v-if="topActions.length > 0">
+            <div class="card-header">
+              <router-link :to="{ name: 'next' }" class="section__title">
                 Next Actions
-                <span v-if="nextCount > 0" class="fw-normal section__count">{{ nextCount }}</span>
+                <span v-if="nextCount > 0" class="section__count">{{ nextCount }}</span>
               </router-link>
-              <router-link v-if="hasMoreNext" :to="{ name: 'next' }" class="text-body-s section__link">View all</router-link>
+              <router-link v-if="hasMoreNext" :to="{ name: 'next' }" class="section__link">View all</router-link>
             </div>
             <ItemList
                 v-model="displayActions"
@@ -76,13 +76,13 @@
           </div>
 
           <!-- Waiting For section -->
-          <div class="section" v-if="topWaiting.length > 0">
-            <div class="section__header">
-              <router-link :to="{ name: 'waiting-for' }" class="text-body-s fw-semibold section__title">
+          <div class="card" v-if="topWaiting.length > 0">
+            <div class="card-header">
+              <router-link :to="{ name: 'waiting-for' }" class="section__title">
                 Waiting For
-                <span v-if="waitingCount > 0" class="fw-normal section__count">{{ waitingCount }}</span>
+                <span v-if="waitingCount > 0" class="section__count">{{ waitingCount }}</span>
               </router-link>
-              <router-link v-if="hasMoreWaiting" :to="{ name: 'waiting-for' }" class="text-body-s section__link">View all</router-link>
+              <router-link v-if="hasMoreWaiting" :to="{ name: 'waiting-for' }" class="section__link">View all</router-link>
             </div>
             <ItemList
                 v-model="displayWaiting"
@@ -103,19 +103,21 @@
           </div>
 
           <!-- Secondary nudges (low priority) -->
-          <div v-if="hasNudges" class="nudges">
-            <div class="text-body-s fw-semibold nudges__title">Keep your system clean</div>
+          <div v-if="hasNudges" class="card">
+            <div class="card-header">
+              <span class="nudges__title">Keep your system clean</span>
+            </div>
             <div v-if="inboxCount > 0" class="nudge" @click="router.push({ name: 'inbox', query: { clarify: 1 } })">
-              <span class="text-body-m nudge__text">{{ inboxCount }} item{{ inboxCount !== 1 ? 's' : '' }} in inbox to clarify</span>
-              <router-link :to="{ name: 'inbox', query: { clarify: 1 } }" class="text-body-s nudge__link" @click.stop>Clarify</router-link>
+              <span class="nudge__text"><strong>{{ inboxCount }}</strong> item{{ inboxCount !== 1 ? 's' : '' }} in inbox to clarify</span>
+              <router-link :to="{ name: 'inbox', query: { clarify: 1 } }" class="nudge__link" @click.stop>Clarify</router-link>
             </div>
             <div v-if="stuckProjects.length > 0" class="nudge" @click="router.push({ name: 'projects' })">
-              <span class="text-body-m nudge__text">{{ stuckProjects.length }} project{{ stuckProjects.length !== 1 ? 's' : '' }} need a next action</span>
-              <router-link :to="{ name: 'projects' }" class="text-body-s nudge__link" @click.stop>View</router-link>
+              <span class="nudge__text"><strong>{{ stuckProjects.length }}</strong> project{{ stuckProjects.length !== 1 ? 's' : '' }} need a next action</span>
+              <router-link :to="{ name: 'projects' }" class="nudge__link" @click.stop>View</router-link>
             </div>
             <div v-if="reviewNudgeVisible" class="nudge" @click="router.push({ name: 'review' })">
-              <span class="text-body-m nudge__text">{{ reviewLabel }}</span>
-              <router-link :to="{ name: 'review' }" class="text-body-s nudge__link" @click.stop>Review</router-link>
+              <span class="nudge__text">{{ reviewLabel }}</span>
+              <router-link :to="{ name: 'review' }" class="nudge__link" @click.stop>Review</router-link>
             </div>
           </div>
 
@@ -363,11 +365,10 @@ function onWaitingClick(item) {
 
 .engage-header {
   flex-shrink: 0;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
 }
 
-h1 {
+.page-title {
   padding: 10px;
 }
 
@@ -375,6 +376,7 @@ h1 {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }
@@ -400,112 +402,134 @@ h1 {
   to { transform: rotate(360deg); }
 }
 
-/* Overdue alert */
-.status-item {
+/* Overdue banner */
+.overdue-banner {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
-  background: var(--color-bg-primary);
-  border-bottom: 1px solid var(--color-border-light);
-  border-left: 3px solid transparent;
+  justify-content: space-between;
+  background: var(--color-danger-bg-subtle);
+  border: 1px solid var(--color-danger-light);
+  border-left: 3px solid var(--color-danger);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
-.status-item:hover {
-  background: var(--color-bg-hover);
+.overdue-banner:hover {
+  background: var(--color-danger-bg-medium);
 }
 
-.status-item--danger {
-  border-left-color: var(--color-danger);
-  background-color: rgba(254, 226, 226, 0.35);
+.overdue-banner__text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-danger);
 }
 
-.status-item--danger:hover {
-  background-color: rgba(254, 226, 226, 0.55);
-}
-
-.status-item__text {
-  flex: 1;
-  color: var(--color-text-primary);
-}
-
-/* Section headers */
-.section__header {
+.section__title,
+.section__title:visited,
+.section__title:link {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px 6px;
-}
-
-.section__title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--color-text-secondary);
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-family-default);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  line-height: 13px;
+  color: var(--color-action);
   text-decoration: none;
 }
 
 .section__title:hover {
-  color: var(--color-text-primary);
+  opacity: 0.8;
 }
 
 .section__count {
-  color: var(--color-text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-action);
+  background: var(--color-bg-accent-light);
+  border-radius: 9999px;
+  padding: 1px 8px;
 }
 
-.section__link {
-  color: var(--color-text-tertiary);
+.section__link,
+.section__link:visited,
+.section__link:link {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-family-default);
+  color: var(--color-action);
   text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  line-height: 14px;
 }
 
 .section__link:hover {
-  color: var(--color-text-secondary);
-  text-decoration: underline;
+  background: var(--color-bg-accent-light);
 }
 
 /* Nudges - gentle secondary prompts */
-.nudges {
-  margin-top: 20px;
-}
-
 .nudges__title {
-  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-family-default);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 0 16px 6px;
+  line-height: 13px;
+  color: var(--color-text-tertiary);
 }
 
 .nudge {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-  background: var(--color-bg-primary);
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border-subtle);
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .nudge:last-child {
   border-bottom: none;
 }
 
+.nudge:hover {
+  background: var(--color-bg-hover);
+}
+
 .nudge__text {
+  font-size: 14px;
   color: var(--color-text-secondary);
+  line-height: 17px;
+}
+
+.nudge__text strong {
+  color: var(--color-action);
+  font-weight: 600;
 }
 
 .nudge__link {
-  color: var(--color-text-tertiary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-family-default);
+  color: var(--color-action);
   text-decoration: none;
   flex-shrink: 0;
   margin-left: 12px;
+  border: 1.5px solid var(--color-btn-ghost-border);
+  border-radius: 4px;
+  padding: 5px 12px;
+  line-height: 14px;
+  background: transparent;
 }
 
 .nudge__link:hover {
-  color: var(--color-text-secondary);
-  text-decoration: underline;
+  background: var(--color-bg-accent-light);
 }
 
 /* Empty state */

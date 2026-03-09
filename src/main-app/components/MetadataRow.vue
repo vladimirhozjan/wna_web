@@ -4,13 +4,13 @@
       <!-- No next action warning (projects only) -->
       <span v-if="missingNextAction" class="chip chip--warning">
         <WarningIcon class="chip__icon chip__icon--warning" />
-        <span class="text-body-s chip__text chip__text--warning">No next action</span>
+        <span class="chip__text chip__text--warning">No next action</span>
       </span>
 
       <!-- Recurrence rule -->
       <span v-if="item.recurrence_rule" class="chip">
         <RecurringIcon class="chip__icon chip__icon--tertiary" />
-        <span class="text-body-s chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
+        <span class="chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
       </span>
 
       <!-- Waiting for -->
@@ -22,49 +22,48 @@
       <!-- Due date -->
       <span v-if="entityType === 'action' && item.due_date" class="chip" :class="{ 'chip--danger': isItemOverdue }">
         <CalendarIcon class="chip__icon" />
-        <span class="text-body-s chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
+        <span class="chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
       </span>
 
       <!-- Scheduled date -->
       <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
         <CalendarIcon class="chip__icon chip__icon--scheduled" />
-        <span class="text-body-s chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
+        <span class="chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
       </span>
 
       <!-- Start date -->
       <span v-if="entityType === 'action' && item.start_date" class="chip">
         <CalendarIcon class="chip__icon chip__icon--tertiary" />
-        <span class="text-body-s chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
+        <span class="chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
       </span>
 
       <!-- Project -->
-      <span v-if="entityType === 'action' && projectTitle" class="fw-medium chip chip--project">
+      <span v-if="entityType === 'action' && projectTitle" class="chip chip--project">
         <ProjectsIcon class="chip__icon chip__icon--project" />
-        <span class="text-body-s chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
+        <span class="chip__text chip__text--project">{{ truncatedProjectTitle }}</span>
       </span>
 
       <!-- Attachments -->
       <span v-if="item.attachment_count > 0" class="chip">
         <AttachmentIcon class="chip__icon chip__icon--tertiary" />
-        <span class="text-body-s chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
+        <span class="chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
       </span>
 
       <!-- Comments -->
       <span v-if="item.comment_count > 0" class="chip">
         <CommentIcon class="chip__icon chip__icon--tertiary" />
-        <span class="text-body-s chip__text chip__text--tertiary">{{ item.comment_count }}</span>
+        <span class="chip__text chip__text--tertiary">{{ item.comment_count }}</span>
       </span>
 
       <!-- Description -->
       <span v-if="item.description" class="chip">
         <DescriptionIcon class="chip__icon chip__icon--tertiary" />
       </span>
-    </div>
 
-    <div v-if="visibleTags.length" class="metadata-row__tags">
-      <span v-for="tag in visibleTags" :key="tag" class="text-body-s tag-chip">{{ tag }}</span>
-      <span v-if="hiddenTagCount > 0" class="text-body-s tag-chip tag-chip--overflow tag-chip--desktop">+{{ hiddenTagCount }}</span>
-      <span v-if="mobileHiddenTagCount > 0" class="text-body-s tag-chip tag-chip--overflow tag-chip--mobile">+{{ mobileHiddenTagCount }}</span>
+      <!-- Tags (inline with other metadata) -->
+      <span v-for="tag in visibleTags" :key="tag" class="tag-chip">{{ tag }}</span>
+      <span v-if="hiddenTagCount > 0" class="tag-chip tag-chip--overflow tag-chip--desktop">+{{ hiddenTagCount }}</span>
+      <span v-if="mobileHiddenTagCount > 0" class="tag-chip tag-chip--overflow tag-chip--mobile">+{{ mobileHiddenTagCount }}</span>
     </div>
   </div>
 </template>
@@ -175,71 +174,71 @@ const hasAnyMetadata = computed(() => {
 
 <style scoped>
 .metadata-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-top: 3px;
   min-width: 0;
 }
 
 .metadata-row__indicators {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  flex-shrink: 1;
-  overflow: hidden;
-}
-
-.metadata-row__tags {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: auto;
-  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   white-space: nowrap;
-  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
 }
 
 .chip--danger {
   color: var(--color-danger);
+  font-weight: 600;
 }
 
 .chip--warning {
   color: var(--color-warning);
 }
 
+.chip--project {
+  font-weight: 500;
+  color: var(--color-action);
+}
+
 .chip__icon {
-  width: 20px;
-  height: 20px;
-  padding: 4px;
-  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
+  opacity: 0.6;
 }
 
 .chip__icon--warning {
   color: var(--color-warning);
+  opacity: 1;
 }
 
 .chip__icon--scheduled {
   color: var(--color-calendar-scheduled-text);
+  opacity: 1;
 }
 
 .chip__icon--tertiary {
   color: var(--color-text-tertiary);
+  opacity: 0.5;
 }
 
 .chip__icon--project {
   color: var(--color-action);
+  opacity: 1;
 }
 
 .chip__text {
-  line-height: var(--lh-tight);
+  line-height: 1.2;
 }
 
 .chip__text--warning {
@@ -260,19 +259,20 @@ const hasAnyMetadata = computed(() => {
 
 .tag-chip {
   display: inline-block;
-  padding: 1px 6px;
-  line-height: var(--lh-normal);
-  color: var(--color-text-secondary);
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  line-height: 1.2;
+  color: var(--color-action);
+  background: var(--color-bg-accent-light);
+  border-radius: 9999px;
   white-space: nowrap;
 }
 
 .tag-chip--overflow {
   color: var(--color-text-tertiary);
   background: transparent;
-  border-color: transparent;
+  font-weight: 400;
   padding: 1px 2px;
 }
 
@@ -281,7 +281,7 @@ const hasAnyMetadata = computed(() => {
 }
 
 @media (max-width: 480px) {
-  .metadata-row__tags .tag-chip:nth-child(n+3):not(.tag-chip--overflow) {
+  .metadata-row__indicators .tag-chip:nth-child(n+3 of .tag-chip):not(.tag-chip--overflow) {
     display: none;
   }
 

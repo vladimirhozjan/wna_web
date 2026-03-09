@@ -2,8 +2,10 @@
 
 body {
     background-color: var(--color-app-background);
+    color: var(--color-text-primary);
     font-family: var(--font-family-default);
     margin: 0;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 html, body {

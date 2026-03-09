@@ -49,41 +49,45 @@ function submit() {
 .quick-add-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border-light);
-  background: var(--color-btn-ghost-bg);
-  color: var(--color-btn-ghost-text);
-  cursor: text;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-btn-ghost-border);
+  background: var(--color-bg-accent-light);
+  color: var(--color-action);
+  cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s;
-  min-width: 200px;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
 }
 
 .quick-add-btn:hover {
-  background: var(--color-btn-ghost-hover);
+  opacity: 0.85;
 }
 
 .quick-add-icon {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--lh-none);
-  color: var(--color-btn-ghost-text);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-action);
 }
 
 .quick-add-input {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border-light);
-  background: var(--color-btn-ghost-bg);
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--color-btn-ghost-border);
+  background: var(--color-bg-accent-light);
   color: var(--color-text-primary);
   outline: none;
   width: 200px;
+  font-size: 13px;
+  font-family: inherit;
 }
 
 .quick-add-input:focus {
-  border-color: var(--color-input-border-focus);
+  border-color: var(--color-action);
 }
 
 @media (max-width: 768px) {
@@ -92,8 +96,7 @@ function submit() {
   }
 
   .quick-add-btn {
-    padding: 8px 10px;
-    min-width: unset;
+    padding: 6px 10px;
   }
 
   .quick-add {
@@ -102,7 +105,7 @@ function submit() {
 
   .quick-add-input {
     position: fixed;
-    top: 6px;
+    top: 8px;
     left: 52px;
     right: 48px;
     width: auto;

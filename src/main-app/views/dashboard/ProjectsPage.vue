@@ -3,7 +3,7 @@
     <div class="projects-page">
       <div class="projects-header">
         <div class="header-row">
-          <h1 class="text-h1 color-text-primary">Projects</h1>
+          <h1 class="page-title">Projects</h1>
           <div class="header-actions">
             <TagFilter v-model="filterTags" />
             <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
@@ -39,6 +39,7 @@
       </div>
 
       <div class="projects-content">
+        <div class="card">
         <ItemList
             v-model="items"
             :loading="loading"
@@ -71,6 +72,7 @@
             </template>
           </template>
         </ItemList>
+        </div>
       </div>
     </div>
   </DashboardLayout>
@@ -245,7 +247,6 @@ async function onMove(id, newIndex) {
 
 .projects-header {
   flex-shrink: 0;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
 }
 
@@ -259,7 +260,7 @@ async function onMove(id, newIndex) {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
 }
 
 h1 {
@@ -289,6 +290,7 @@ h1 {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }

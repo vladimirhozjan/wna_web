@@ -7,7 +7,7 @@
         <!-- Fixed header -->
         <div class="inbox-header">
           <div class="title">
-            <h1 class="text-h1 color-text-primary">Inbox</h1>
+            <h1 class="page-title">Inbox</h1>
             <Btn
                 v-if="items.length > 0 && !clarifyMode"
                 variant="ghost"
@@ -49,6 +49,7 @@
 
         <!-- Scrollable content -->
         <div class="inbox-content">
+          <div class="card">
           <ItemList
               v-model="items"
               :loading="loading"
@@ -69,13 +70,26 @@
               <ActionBtn v-if="!clarifyMode" @click="onTrash(item.id)" />
             </template>
             <template #empty>
-              <InboxIcon class="empty-state__icon" />
-              <h2 class="text-h3 empty-state__title">Your inbox is empty</h2>
-              <p class="text-body-m empty-state__text">
-                Capture everything on your mind. Add new stuff above to get started.
-              </p>
+              <div v-if="celebrationPhase !== 'none'"
+                   class="celebration"
+                   :class="{ 'celebration--fading': celebrationPhase === 'fading' }"
+                   @click="dismissCelebration">
+                <div class="celebration__check">
+                  <CompletedIcon class="celebration__icon" />
+                </div>
+                <h2 class="text-h3 celebration__title">Inbox Zero</h2>
+                <p class="text-body-m celebration__subtitle">You're in control.</p>
+              </div>
+              <template v-else>
+                <InboxIcon class="empty-state__icon" />
+                <h2 class="text-h3 empty-state__title">Your inbox is empty</h2>
+                <p class="text-body-m empty-state__text">
+                  Capture everything on your mind. Add new stuff above to get started.
+                </p>
+              </template>
             </template>
           </ItemList>
+          </div>
         </div>
       </div>
 
@@ -119,6 +133,7 @@ import Inpt from '../../components/Inpt.vue'
 import ItemList from '../../components/ItemList.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import InboxIcon from '../../assets/InboxIcon.vue'
+import CompletedIcon from '../../assets/CompletedIcon.vue'
 import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
 
 // model
@@ -157,6 +172,11 @@ const loadingIds = computed(() => {
   return ids
 })
 
+// Inbox Zero celebration state
+const hadItems = ref(false)
+const celebrationPhase = ref('none') // 'none' | 'celebrating' | 'fading'
+let celebrationTimer = null
+
 // Clarify mode state
 const clarifyMode = ref(false)
 const currentClarifyIndex = ref(0)
@@ -165,6 +185,13 @@ const isMobile = ref(false)
 const currentClarifyItem = computed(() => {
   if (!clarifyMode.value) return null
   return items.value[currentClarifyIndex.value] || null
+})
+
+// Trigger celebration when items list empties (covers all removal paths including drag-to-sidebar)
+watch(() => items.value.length, (newLen, oldLen) => {
+  if (newLen === 0 && oldLen > 0 && hadItems.value) {
+    startCelebration()
+  }
 })
 
 // show errors in toaster
@@ -178,7 +205,12 @@ watch(error, (err) => {
 onMounted(async () => {
   items.value = []
   await loadStuff({ reset: true })
-  if (route.query.clarify && items.value.length > 0) {
+  if (items.value.length > 0) hadItems.value = true
+  if (route.query.celebrate && items.value.length === 0) {
+    hadItems.value = true
+    startCelebration()
+    router.replace({ name: 'inbox' })
+  } else if (route.query.clarify && items.value.length > 0) {
     onClarify()
     router.replace({ name: 'inbox' })
   } else {
@@ -190,6 +222,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
+  clearTimeout(celebrationTimer)
 })
 
 function checkMobile() {
@@ -210,11 +243,28 @@ watch(loading, async (v) => {
   }
 })
 
+// celebration
+function startCelebration() {
+  celebrationPhase.value = 'celebrating'
+  clearTimeout(celebrationTimer)
+  celebrationTimer = setTimeout(() => {
+    celebrationPhase.value = 'fading'
+    setTimeout(() => { celebrationPhase.value = 'none' }, 300)
+  }, 3000)
+}
+
+function dismissCelebration() {
+  clearTimeout(celebrationTimer)
+  celebrationPhase.value = 'fading'
+  setTimeout(() => { celebrationPhase.value = 'none' }, 300)
+}
+
 // actions
 async function onAdd() {
   const t = (new_stuff_title.value ?? '').toString().trim()
   if (!t) return
 
+  hadItems.value = true
   await addStuff(t)
   new_stuff_title.value = ''
   focusAddInput()
@@ -370,7 +420,6 @@ function onClarifyDone(processedItem) {
 
 .inbox-header {
   flex-shrink: 0;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
   border-right: 1px solid var(--color-border-light);
 }
@@ -379,6 +428,7 @@ function onClarifyDone(processedItem) {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }
@@ -422,6 +472,66 @@ h1 {
   color: var(--color-text-secondary);
   margin: 0;
   max-width: 300px;
+}
+
+/* Celebration */
+.celebration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.celebration--fading {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.celebration__check {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-success-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  animation: check-bloom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.celebration__icon {
+  width: 32px;
+  height: 32px;
+  color: var(--color-success);
+  animation: check-draw 0.4s ease 0.2s both;
+}
+
+.celebration__title {
+  color: var(--color-text-primary);
+  margin: 0 0 8px 0;
+  animation: celebration-text-in 0.4s ease 0.3s both;
+}
+
+.celebration__subtitle {
+  color: var(--color-text-secondary);
+  margin: 0;
+  animation: celebration-text-in 0.4s ease 0.45s both;
+}
+
+@keyframes check-bloom {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes check-draw {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes celebration-text-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive */

@@ -14,13 +14,13 @@ The Inter font, blue-gray palette, and flat design make it feel like an internal
 - Subtle background color variations between GTD phases (capture vs organize vs engage)
 - A warm "Welcome back" or time-of-day greeting on the Engage page ("Good morning, Vladimir")
 
-## 2. Inbox Zero Celebration
+## ~~2. Inbox Zero Celebration~~
 
-Completing your inbox deserves a moment of satisfaction, not just "Your inbox is empty."
+~~Completing your inbox deserves a moment of satisfaction, not just "Your inbox is empty."~~
 
-- Brief animation when last inbox item is clarified (confetti, checkmark bloom, or subtle pulse)
-- Encouraging message: "Inbox Zero — you're in control" or "All processed — nice work"
-- Keep it brief (2-3 seconds), dismissible, non-blocking
+- ~~Brief animation when last inbox item is clarified (confetti, checkmark bloom, or subtle pulse)~~
+- ~~Encouraging message: "Inbox Zero — you're in control" or "All processed — nice work"~~
+- ~~Keep it brief (2-3 seconds), dismissible, non-blocking~~
 
 ## 3. Checkbox & Completion Animations
 

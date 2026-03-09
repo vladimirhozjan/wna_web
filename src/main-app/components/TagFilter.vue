@@ -38,10 +38,10 @@
       </template>
     </Dropdown>
 
-    <span v-if="activeTag" class="text-body-s tag-filter__chip tag-filter__chip--context">
+    <span v-if="activeTag" class="tag-filter__chip tag-filter__chip--context">
       {{ activeTag }}
     </span>
-    <span v-for="tag in modelValue" :key="tag" class="text-body-s tag-filter__chip">
+    <span v-for="tag in modelValue" :key="tag" class="tag-filter__chip">
       {{ tag }}
       <button type="button" class="tag-filter__chip-remove" @click="removeTag(tag)">&times;</button>
     </span>
@@ -173,12 +173,15 @@ function clearAll(closeFn) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 12px;
-  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  background: var(--color-bg-accent-light);
+  border: none;
+  border-radius: 9999px;
+  color: var(--color-action);
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .tag-filter__chip-remove {
@@ -189,14 +192,15 @@ function clearAll(closeFn) {
   border: none;
   padding: 0;
   margin-left: 2px;
-  font-size: var(--font-size-sm);
-  line-height: var(--lh-none);
-  color: var(--color-text-tertiary);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--color-action);
   cursor: pointer;
+  opacity: 0.6;
 }
 
 .tag-filter__chip-remove:hover {
-  color: var(--color-text-primary);
+  opacity: 1;
 }
 
 .tag-filter__chip--context {

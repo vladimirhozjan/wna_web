@@ -123,6 +123,9 @@
 
     <div class="sidebar-footer">
 
+      <AccentColorPicker />
+      <ThemeToggle />
+
       <SidebarMenuItem label="Settings" :to="{ name: 'settings' }">
         <template #icon><SettingsIcon/></template>
       </SidebarMenuItem>
@@ -166,6 +169,8 @@ import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 import ReviewIcon from "../assets/ReviewIcon.vue";
 import EngageIcon from "../assets/EngageIcon.vue";
+import AccentColorPicker from "./AccentColorPicker.vue";
+import ThemeToggle from "./ThemeToggle.vue";
 import { reviewModel } from "../scripts/models/reviewModel.js";
 import { settingsModel } from "../scripts/models/settingsModel.js";
 
@@ -482,23 +487,22 @@ function removeFromActions(id) {
   border-right: 1px solid var(--color-border-light);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding: 12px 0;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  row-gap: 10px;
+  padding: 0;
 }
 
 .sidebar-footer {
   margin-top: auto;
   border-top: 1px solid var(--color-border-light);
-  padding: 10px;
+  padding: 8px 0 0;
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
 }
-
-
 </style>

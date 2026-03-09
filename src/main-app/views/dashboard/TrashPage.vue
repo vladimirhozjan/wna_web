@@ -2,7 +2,7 @@
   <DashboardLayout>
     <div class="trash-page">
       <div class="trash-header">
-        <h1 class="text-h1 color-text-primary">Trash</h1>
+        <h1 class="page-title">Trash</h1>
         <div class="trash-actions">
           <Btn variant="ghost" size="sm" @click="onEmptyTrash" :disabled="items.length === 0">
             Empty Trash
@@ -11,6 +11,7 @@
       </div>
 
       <div class="trash-content">
+        <div class="card">
         <ItemList
             v-model="items"
             :loading="loading"
@@ -34,6 +35,7 @@
             </p>
           </template>
         </ItemList>
+        </div>
       </div>
     </div>
   </DashboardLayout>
@@ -124,7 +126,6 @@ async function onEmptyTrash() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
 }
 
@@ -143,6 +144,7 @@ async function onEmptyTrash() {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }

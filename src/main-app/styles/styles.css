@@ -93,6 +93,40 @@
 .text-body-m   { font-family: var(--font-family-default); font-size: var(--font-size-body); line-height: var(--lh-body); font-weight: var(--font-weight-normal); }
 .text-footnote { font-family: var(--font-family-default); font-size: var(--font-size-caption); line-height: var(--lh-caption); font-weight: var(--font-weight-normal); }
 
+/* Page title – matches HTML spec: 32px Playfair Display */
+.page-title {
+    font-family: var(--font-family-heading);
+    font-size: 32px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 38px;
+    margin: 0;
+}
+
+/* Card — block container matching HTML spec */
+.card {
+    background: var(--color-bg-primary);
+    border-radius: 12px;
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: background 0.25s, border-color 0.25s;
+}
+
+.card:last-child {
+    margin-bottom: 0;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-secondary);
+}
+
 /* Color utility classes */
 .color-text-primary   { color: var(--color-text-primary); }
 .color-text-secondary { color: var(--color-text-secondary); }

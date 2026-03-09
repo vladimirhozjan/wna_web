@@ -37,7 +37,7 @@
       </template>
     </Dropdown>
 
-    <span v-if="activeTag" class="text-body-s context-filter__chip">
+    <span v-if="activeTag" class="context-filter__chip">
       {{ activeTag }}
       <button type="button" class="context-filter__chip-remove" @click="clear">&times;</button>
     </span>
@@ -83,7 +83,7 @@ function onClear(closeFn) {
 .context-filter {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   padding-bottom: 10px;
   margin-bottom: 4px;
   border-bottom: 1px solid var(--color-border-light);
@@ -92,10 +92,10 @@ function onClear(closeFn) {
 .context-trigger {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: none;
   border: none;
-  padding: 0;
+  padding: 4px 0 8px 16px;
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: 0.15s ease;
@@ -112,18 +112,20 @@ function onClear(closeFn) {
 .context-trigger__icon {
   display: flex;
   flex-shrink: 0;
+  width: 18px;
+  justify-content: center;
 }
 
 .context-trigger__icon :deep(svg) {
-  width: 28px;
-  height: 28px;
-  padding: 4px;
-  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .context-trigger__hint {
   white-space: nowrap;
   font-style: italic;
+  font-size: 12px;
   color: var(--color-text-tertiary);
 }
 
@@ -183,12 +185,16 @@ function onClear(closeFn) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 12px;
-  color: var(--color-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  margin-left: 10px;
+  background: var(--color-bg-accent-light);
+  border: none;
+  border-radius: 9999px;
+  color: var(--color-action);
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .context-filter__chip-remove {
@@ -199,14 +205,15 @@ function onClear(closeFn) {
   border: none;
   padding: 0;
   margin-left: 2px;
-  font-size: var(--font-size-sm);
-  line-height: var(--lh-none);
-  color: var(--color-text-tertiary);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--color-action);
   cursor: pointer;
+  opacity: 0.6;
 }
 
 .context-filter__chip-remove:hover {
-  color: var(--color-text-primary);
+  opacity: 1;
 }
 
 @media (max-width: 768px) {

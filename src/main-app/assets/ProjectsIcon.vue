@@ -1,6 +1,6 @@
 <template>
-  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M12.8 83.2C10.38 83.2 8.31 82.34 6.58 80.61C4.86 78.89 4 76.82 4 74.4L4 21.6C4 19.18 4.86 17.11 6.58 15.38C8.31 13.66 10.38 12.8 12.8 12.8L39.2 12.8L48 21.6L83.2 21.6C85.62 21.6 87.69 22.46 89.42 24.18C91.14 25.91 92 27.98 92 30.4L92 74.4C92 76.82 91.14 78.89 89.42 80.61C87.69 82.34 85.62 83.2 83.2 83.2L12.8 83.2ZM12.8 74.4L83.2 74.4L83.2 30.4L44.37 30.4L35.57 21.6L12.8 21.6L12.8 74.4Z"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
   </svg>
 </template>
 

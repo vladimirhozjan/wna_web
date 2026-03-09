@@ -3,7 +3,7 @@
     <div class="review-page">
 
       <div class="review-header">
-        <h1 class="text-h1 color-text-primary">Weekly Review</h1>
+        <h1 class="page-title">Weekly Review</h1>
         <p class="review-last text-body-s">{{ lastReviewedText }}</p>
       </div>
 
@@ -23,31 +23,36 @@
           </div>
         </GtdTip>
 
-        <div class="review-steps">
-          <div
-              v-for="(step, index) in reviewSteps"
-              :key="index"
-              class="review-step"
-              :class="{ 'review-step--checked': steps[index] }"
-          >
-            <label class="review-step__checkbox">
-              <input
-                  type="checkbox"
-                  :checked="steps[index]"
-                  :disabled="!inReview"
-                  @change="toggleStep(index)"
-              />
-            </label>
-            <div class="review-step__body">
-              <span class="text-body-m fw-semibold review-step__title">{{ step.title }}</span>
-              <span class="review-step__hint text-body-s">{{ step.hint }}</span>
+        <div class="card">
+          <div class="card-header">
+            <span class="review-card-title">Review Steps</span>
+          </div>
+          <div class="review-steps">
+            <div
+                v-for="(step, index) in reviewSteps"
+                :key="index"
+                class="review-step"
+                :class="{ 'review-step--checked': steps[index] }"
+            >
+              <label class="review-step__checkbox">
+                <input
+                    type="checkbox"
+                    :checked="steps[index]"
+                    :disabled="!inReview"
+                    @change="toggleStep(index)"
+                />
+              </label>
+              <div class="review-step__body">
+                <span class="fw-semibold review-step__title">{{ step.title }}</span>
+                <span class="review-step__hint text-body-s">{{ step.hint }}</span>
+              </div>
+              <span v-if="stepCount(step.statsKey) != null" class="review-step__count text-footnote">
+                {{ stepCount(step.statsKey) }}
+              </span>
+              <router-link :to="{ name: step.route }" class="review-step__go text-body-s">
+                Go
+              </router-link>
             </div>
-            <span v-if="stepCount(step.statsKey) != null" class="review-step__count text-footnote">
-              {{ stepCount(step.statsKey) }}
-            </span>
-            <router-link :to="{ name: step.route }" class="review-step__go text-body-s">
-              Go
-            </router-link>
           </div>
         </div>
 
@@ -176,7 +181,17 @@ function onComplete() {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 0 10px 24px;
+  padding: 0 10px 20px;
+}
+
+.review-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-family-default);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 13px;
+  color: var(--color-action);
 }
 
 .tip-content {
@@ -199,12 +214,19 @@ function onComplete() {
 .review-step {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 12px;
-  background: var(--color-bg-primary);
-  border-bottom: 1px solid var(--color-border-light);
-  transition: border-color 0.15s ease;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  transition: background 0.15s ease;
   border-left: 3px solid transparent;
+}
+
+.review-step:last-child {
+  border-bottom: none;
+}
+
+.review-step:hover {
+  background: var(--color-bg-hover);
 }
 
 .review-step--checked {
@@ -243,6 +265,7 @@ function onComplete() {
 }
 
 .review-step__title {
+  font-size: 14px;
   color: var(--color-text-primary);
 }
 

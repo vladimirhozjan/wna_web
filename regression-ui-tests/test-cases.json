@@ -7368,5 +7368,92 @@
       "Verify no console errors or broken image icons appear."
     ],
     "expected": "When the Gravatar request fails due to network error, the avatar gracefully falls back to the colored-initials display. No broken image icon or error state is visible."
+  },
+  {
+    "id": "TC-365",
+    "name": "Inbox Zero Celebration - Triggered by Completing Last Item",
+    "priority": "Medium",
+    "area": "Inbox / Stuff",
+    "section": "25: Public Footer",
+    "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
+    "steps": [
+      "Navigate to the Inbox page",
+      "Verify 1 item is shown in the inbox list",
+      "Check the checkbox on the item to mark it as completed",
+      "Verify the item is removed from the list",
+      "Verify a celebration animation plays: a green circle blooms in, a checkmark icon appears inside it, followed by \"Inbox Zero\" title and \"You're in control.\" subtitle sliding up",
+      "Wait approximately 3 seconds",
+      "Verify the celebration fades out",
+      "Verify the normal empty state is shown (inbox icon + \"Your inbox is empty\" text)"
+    ],
+    "expected": "When the last inbox item is completed, a celebration animation with a green checkmark, \"Inbox Zero\" title, and \"You're in control.\" subtitle plays for approximately 3 seconds before fading to the normal empty state."
+  },
+  {
+    "id": "TC-366",
+    "name": "Inbox Zero Celebration - Not Triggered on Empty Load",
+    "priority": "Medium",
+    "area": "Inbox / Stuff",
+    "section": "25: Public Footer",
+    "preconditions": "User is authenticated. Inbox is already empty (no items).",
+    "steps": [
+      "Navigate to the Inbox page",
+      "Verify the inbox loads with no items",
+      "Verify the normal empty state is shown immediately (inbox icon + \"Your inbox is empty\" text)",
+      "Verify NO celebration animation plays"
+    ],
+    "expected": "When navigating to an already-empty inbox, the normal empty state is displayed without any celebration animation. The celebration only triggers when the user actively empties the inbox during the current session."
+  },
+  {
+    "id": "TC-367",
+    "name": "Inbox Zero Celebration - Click to Dismiss Early",
+    "priority": "Low",
+    "area": "Inbox / Stuff",
+    "section": "25: Public Footer",
+    "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
+    "steps": [
+      "Navigate to the Inbox page",
+      "Trash the single item (click trash icon, confirm)",
+      "Verify the celebration animation starts playing",
+      "Immediately click anywhere on the celebration area",
+      "Verify the celebration fades out within 0.3 seconds (much faster than the normal 3-second duration)",
+      "Verify the normal empty state is shown"
+    ],
+    "expected": "Clicking on the celebration dismisses it early with a quick fade-out, transitioning to the normal empty state."
+  },
+  {
+    "id": "TC-368",
+    "name": "Inbox Zero Celebration - Triggered by Drag to Sidebar",
+    "priority": "Medium",
+    "area": "Inbox / Stuff",
+    "section": "25: Public Footer",
+    "preconditions": "User is authenticated on desktop. Inbox contains exactly 1 stuff item.",
+    "steps": [
+      "Navigate to the Inbox page",
+      "Verify 1 item is shown",
+      "Drag the item from the inbox list to the \"Next Action\" sidebar menu item",
+      "Verify the item is removed from the inbox",
+      "Verify the celebration animation plays (green checkmark + \"Inbox Zero\" + \"You're in control.\")",
+      "Wait for the celebration to auto-dismiss or click to dismiss",
+      "Verify the normal empty state is shown"
+    ],
+    "expected": "Dragging the last inbox item to any sidebar destination (Next Action, Today, Trash, Completed, etc.) triggers the Inbox Zero celebration animation."
+  },
+  {
+    "id": "TC-369",
+    "name": "Inbox Zero Celebration - Triggered from Detail Page",
+    "priority": "Medium",
+    "area": "Inbox / Stuff",
+    "section": "25: Public Footer",
+    "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
+    "steps": [
+      "Navigate to the Inbox page",
+      "Click on the single item to open the Stuff Detail Page",
+      "Click the \"Done\" button (or use \"Move\" to move it to another bucket, or \"Trash\" it)",
+      "Verify the app navigates back to the Inbox page",
+      "Verify the celebration animation plays (green checkmark + \"Inbox Zero\" + \"You're in control.\")",
+      "Wait for the celebration to auto-dismiss or click to dismiss",
+      "Verify the normal empty state is shown"
+    ],
+    "expected": "When the last inbox item is processed from the Stuff Detail Page (via Done, Move, Trash, or Clarify), the app navigates back to the Inbox page and triggers the Inbox Zero celebration animation."
   }
 ]

@@ -1,5 +1,5 @@
 <template>
-  <div class="item-list">
+  <div class="item-list" :class="{ 'item-list--has-more': hasMore }">
     <!-- Loading state -->
     <div v-if="loading && items.length === 0" class="loading-state">
       <span class="loading-spinner"></span>
@@ -20,7 +20,7 @@
         :chosen-class="'item-wrapper-chosen'"
         :ghost-class="'item-wrapper-ghost'"
         :disabled="disabled"
-        :class="{ 'item-list--dragging': isDragging }"
+        :class="{ 'item-list--dragging': isDragging, 'item-list--has-more': hasMore }"
         @start="onDragStart"
         @end="onDragEnd"
     >
@@ -213,6 +213,10 @@ function onNativeDragEnd() {
   border-left: 3px solid transparent;
 }
 
+:deep(.item-wrapper:last-child .item) {
+  border-bottom: none;
+}
+
 .item-wrapper--active .item {
   background-color: var(--color-bg-secondary);
   border-left-color: var(--color-action);
@@ -250,7 +254,8 @@ function onNativeDragEnd() {
 .load-more {
   display: flex;
   justify-content: center;
-  margin: 16px 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .empty-state {

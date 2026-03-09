@@ -1,8 +1,8 @@
 <template>
-  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-    <rect x="4" y="15" width="88" height="11" rx="5.5" fill="currentColor"/>
-    <rect x="15" y="42.5" width="66" height="11" rx="5.5" fill="currentColor"/>
-    <rect x="31.5" y="70" width="33" height="11" rx="5.5" fill="currentColor"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
   </svg>
 </template>
 

@@ -1,0 +1,75 @@
+/* Royal Blue — #3730a3 */
+
+[data-accent="blue"][data-theme="light"] {
+    --color-action: #3730a3;
+    --color-action-dark: #1e1b6e;
+    --color-bg-accent-light: #eef2ff;
+
+    --color-action-subtle: rgba(55, 48, 163, 0.1);
+    --color-action-bg-subtle: rgba(55, 48, 163, 0.08);
+    --color-action-bg-light: rgba(55, 48, 163, 0.1);
+    --color-action-shadow: rgba(55, 48, 163, 0.12);
+    --color-action-shadow-md: rgba(55, 48, 163, 0.15);
+    --color-action-ring: rgba(55, 48, 163, 0.2);
+
+    --color-focus-ring: rgba(55, 48, 163, 0.2);
+
+    --color-btn-primary-bg: #3730a3;
+    --color-btn-primary-hover: #2e2890;
+    --color-btn-primary-active: #252075;
+    --color-btn-primary-dis-bg: #a5a1d4;
+    --color-btn-primary-dis-txt: #f2f2f2;
+
+    --color-btn-ghost-bg: #eef2ff;
+    --color-btn-ghost-text: #4338ca;
+    --color-btn-ghost-border: #c7d2fe;
+    --color-btn-ghost-hover: #c7d2fe;
+    --color-btn-ghost-active: #a5b4fc;
+    --color-btn-ghost-dis-bg: #f1f2f8;
+    --color-btn-ghost-dis-txt: #8b8ab8;
+    --color-btn-ghost-dis-brd: #d4d3e9;
+
+    --color-menu-item-hover-txt: #4338ca;
+    --color-menu-item-active-txt: #3730a3;
+
+    --color-input-border-focus: #3730a3;
+    --color-link-text: #4338ca;
+    --color-link-hover: #3730a3;
+}
+
+[data-accent="blue"][data-theme="dark"] {
+    --color-action: #818cf8;
+    --color-action-dark: #4338ca;
+    --color-bg-accent-light: rgba(129, 140, 248, 0.12);
+
+    --color-action-subtle: rgba(129, 140, 248, 0.15);
+    --color-action-bg-subtle: rgba(129, 140, 248, 0.1);
+    --color-action-bg-light: rgba(129, 140, 248, 0.12);
+    --color-action-shadow: rgba(129, 140, 248, 0.15);
+    --color-action-shadow-md: rgba(129, 140, 248, 0.2);
+    --color-action-ring: rgba(129, 140, 248, 0.3);
+
+    --color-focus-ring: rgba(129, 140, 248, 0.3);
+
+    --color-btn-primary-bg: #4338ca;
+    --color-btn-primary-hover: #5548d9;
+    --color-btn-primary-active: #3730a3;
+    --color-btn-primary-dis-bg: #2D2A5E;
+    --color-btn-primary-dis-txt: #6B68A0;
+
+    --color-btn-ghost-bg: rgba(129, 140, 248, 0.12);
+    --color-btn-ghost-text: #a5b4fc;
+    --color-btn-ghost-border: rgba(129, 140, 248, 0.25);
+    --color-btn-ghost-hover: rgba(129, 140, 248, 0.2);
+    --color-btn-ghost-active: rgba(129, 140, 248, 0.3);
+    --color-btn-ghost-dis-bg: rgba(129, 140, 248, 0.06);
+    --color-btn-ghost-dis-txt: #4A4880;
+    --color-btn-ghost-dis-brd: rgba(129, 140, 248, 0.12);
+
+    --color-menu-item-hover-txt: #a5b4fc;
+    --color-menu-item-active-txt: #818cf8;
+
+    --color-input-border-focus: #818cf8;
+    --color-link-text: #818cf8;
+    --color-link-hover: #a5b4fc;
+}

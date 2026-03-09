@@ -1,7 +1,15 @@
 <template>
-  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-    <path fill="none" stroke="currentColor" stroke-width="6.77" d="M48 17.54L48 7.38M48 88.62L48 78.46M78.46 48L88.62 48M7.38 48L17.54 48M69.49 26.51L76.77 19.23M19.23 76.77L26.51 69.49M69.49 69.49L76.77 76.77M19.23 19.23L26.51 26.51M48 34.46C55.45 34.46 61.54 40.55 61.54 48C61.54 55.45 55.45 61.54 48 61.54C40.55 61.54 34.46 55.45 34.46 48C34.46 40.55 40.55 34.46 48 34.46Z"/>
-    <circle v-if="overdue" cx="82" cy="14" r="14" fill="var(--color-danger)"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/>
+    <line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    <circle v-if="overdue" cx="21" cy="3" r="3" fill="var(--color-danger)" stroke="none"/>
   </svg>
 </template>
 

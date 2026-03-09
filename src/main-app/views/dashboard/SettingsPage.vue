@@ -4,31 +4,33 @@
 
       <!-- Header -->
       <div class="settings-header">
-        <h1 class="text-h1 color-text-primary">Settings</h1>
+        <h1 class="page-title">Settings</h1>
       </div>
 
       <!-- Body -->
       <div class="settings-body">
 
         <!-- Account Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">Account</h2>
-
-          <div class="settings-row">
-            <span class="text-body-m settings-label">Email</span>
-            <span class="text-body-m settings-value">{{ userEmail }}</span>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Account</h2>
           </div>
-
-          <div class="settings-row">
-            <span class="text-body-m settings-label">Password</span>
-            <Btn variant="ghost" size="sm" @click="openPasswordModal">Change Password</Btn>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <span class="settings-label">Email</span>
+              <span class="settings-value">{{ userEmail }}</span>
+            </div>
+            <div class="settings-row">
+              <span class="settings-label">Password</span>
+              <Btn variant="ghost" size="sm" @click="openPasswordModal">Change Password</Btn>
+            </div>
           </div>
         </div>
 
         <!-- Sessions Section -->
-        <div class="settings-section">
-          <div class="settings-section-header">
-            <h2 class="text-body-m fw-semibold settings-section-title">Sessions</h2>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Sessions</h2>
             <Btn
                 v-if="sessions.length > 1"
                 variant="ghost"
@@ -39,97 +41,107 @@
               End Others
             </Btn>
           </div>
+          <div class="settings-section-body">
+            <div v-if="loadingSessions" class="settings-loading">
+              <span class="settings-spinner"></span>
+              <span>Loading sessions...</span>
+            </div>
 
-          <div v-if="loadingSessions" class="text-body-m settings-loading">
-            <span class="settings-spinner"></span>
-            <span>Loading sessions...</span>
-          </div>
+            <div v-else-if="sessionsError" class="settings-error">
+              <span>{{ sessionsError }}</span>
+              <Btn variant="ghost" size="sm" @click="loadSessions">Retry</Btn>
+            </div>
 
-          <div v-else-if="sessionsError" class="text-body-m settings-error">
-            <span>{{ sessionsError }}</span>
-            <Btn variant="ghost" size="sm" @click="loadSessions">Retry</Btn>
-          </div>
+            <div v-else-if="sessions.length === 0" class="settings-empty">
+              No active sessions found.
+            </div>
 
-          <div v-else-if="sessions.length === 0" class="text-body-m settings-empty">
-            No active sessions found.
-          </div>
-
-          <div v-else class="sessions-list">
-            <div
-                v-for="session in sessions"
-                :key="session.id"
-                class="session-item"
-                :class="{ 'session-item--current': session.is_current }"
-            >
-              <div class="session-info">
-                <div class="session-device">
-                  <span class="session-icon">{{ getDeviceIcon(session) }}</span>
-                  <span class="text-body-m fw-medium session-name">{{ session.device || 'Unknown Device' }}</span>
-                  <span v-if="session.is_current" class="text-footnote fw-semibold session-badge">Current</span>
+            <div v-else class="sessions-list">
+              <div
+                  v-for="session in sessions"
+                  :key="session.id"
+                  class="session-item"
+                  :class="{ 'session-item--current': session.is_current }"
+              >
+                <div class="session-info">
+                  <div class="session-device">
+                    <span class="session-icon">{{ getDeviceIcon(session) }}</span>
+                    <span class="fw-medium session-name">{{ session.device || 'Unknown Device' }}</span>
+                    <span v-if="session.is_current" class="text-footnote fw-semibold session-badge">Current</span>
+                  </div>
+                  <div class="text-body-s session-details">
+                    <span v-if="session.ip">{{ session.ip }}</span>
+                    <span v-if="session.ip && session.last_active" class="session-separator">·</span>
+                    <span v-if="session.last_active">{{ formatSessionTime(session.last_active) }}</span>
+                  </div>
                 </div>
-                <div class="text-body-s session-details">
-                  <span v-if="session.ip">{{ session.ip }}</span>
-                  <span v-if="session.ip && session.last_active" class="session-separator">·</span>
-                  <span v-if="session.last_active">{{ formatSessionTime(session.last_active) }}</span>
-                </div>
+                <ActionBtn
+                    v-if="session.is_current"
+                    variant="primary"
+                    :loading="loggingOut"
+                    @click="onLogout"
+                />
+                <ActionBtn
+                    v-else
+                    variant="primary"
+                    :loading="revokingId === session.id"
+                    @click="onRevokeSession(session.id)"
+                />
               </div>
-              <ActionBtn
-                  v-if="session.is_current"
-                  variant="primary"
-                  :loading="loggingOut"
-                  @click="onLogout"
-              />
-              <ActionBtn
-                  v-else
-                  variant="primary"
-                  :loading="revokingId === session.id"
-                  @click="onRevokeSession(session.id)"
-              />
             </div>
           </div>
         </div>
 
         <!-- Application Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">Application</h2>
-
-          <div class="settings-row">
-            <span class="text-body-m settings-label">New items position in the list</span>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
-              <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"></span>
-              <Select
-                  v-model="addPosition"
-                  :options="positionOptions"
-                  title="New items position"
-              />
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Application</h2>
+          </div>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <span class="settings-label">New items position in the list</span>
+              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
+                <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"></span>
+                <Select
+                    v-model="addPosition"
+                    :options="positionOptions"
+                    title="New items position"
+                />
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Tags Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">Tags</h2>
-          <div class="settings-row settings-row--column">
-            <span class="text-body-m settings-label">Quick-add presets</span>
-            <span class="text-body-s settings-hint">These appear as clickable suggestions below the tag input. Leave empty to use defaults.</span>
-            <div v-if="!editingTagPresets" class="settings-tags-display" @click="startTagPresetsEdit">
-              <span v-if="settings.state.tagPresets.length > 0" class="settings-tags-chips">
-                <span v-for="tag in settings.state.tagPresets" :key="tag" class="text-body-s settings-tag-chip">{{ tag }}</span>
-              </span>
-              <span v-else class="text-body-m settings-tag-placeholder">Add preset tags...</span>
-            </div>
-            <div v-else class="settings-tag-edit-area" @focusout="onTagPresetsFocusout">
-              <TagInput ref="tagPresetsInput" v-model="editTagPresets" placeholder="Add preset tags..." :presetSource="defaultPresets" />
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Tags</h2>
+          </div>
+          <div class="settings-section-body">
+            <div class="settings-row settings-row--column">
+              <span class="settings-label">Quick-add presets</span>
+              <span class="text-body-s settings-hint">These appear as clickable suggestions below the tag input. Leave empty to use defaults.</span>
+              <div v-if="!editingTagPresets" class="settings-tags-display" @click="startTagPresetsEdit">
+                <span v-if="settings.state.tagPresets.length > 0" class="settings-tags-chips">
+                  <span v-for="tag in settings.state.tagPresets" :key="tag" class="text-body-s settings-tag-chip">{{ tag }}</span>
+                </span>
+                <span v-else class="settings-tag-placeholder">Add preset tags...</span>
+              </div>
+              <div v-else class="settings-tag-edit-area" @focusout="onTagPresetsFocusout">
+                <TagInput ref="tagPresetsInput" v-model="editTagPresets" placeholder="Add preset tags..." :presetSource="defaultPresets" />
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Calendar Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">Calendar</h2>
-
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Calendar</h2>
+          </div>
+          <div class="settings-section-body">
           <div class="settings-row">
-            <span class="text-body-m settings-label">Week starts on</span>
+            <span class="settings-label">Week starts on</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.weekStart }">
               <span v-if="settings.state.saving.weekStart" class="settings-saving-spinner"></span>
               <Select v-model="weekStart" :options="weekStartOptions" title="Week starts on" />
@@ -137,7 +149,7 @@
           </div>
 
           <div class="settings-row">
-            <span class="text-body-m settings-label">Time format</span>
+            <span class="settings-label">Time format</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timeFormat }">
               <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"></span>
               <Select
@@ -149,7 +161,7 @@
           </div>
 
           <div class="settings-row">
-            <span class="text-body-m settings-label">Business hours start</span>
+            <span class="settings-label">Business hours start</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursStart }">
               <span v-if="settings.state.saving.businessHoursStart" class="settings-saving-spinner"></span>
               <Select
@@ -161,7 +173,7 @@
           </div>
 
           <div class="settings-row">
-            <span class="text-body-m settings-label">Business hours end</span>
+            <span class="settings-label">Business hours end</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursEnd }">
               <span v-if="settings.state.saving.businessHoursEnd" class="settings-saving-spinner"></span>
               <Select
@@ -173,7 +185,7 @@
           </div>
 
           <div class="settings-row settings-row--column">
-            <span class="text-body-m settings-label">Business days</span>
+            <span class="settings-label">Business days</span>
             <div class="settings-days-control" :class="{ 'settings-control--saving': settings.state.saving.businessDays }">
               <span v-if="settings.state.saving.businessDays" class="settings-saving-spinner"></span>
               <div class="settings-days">
@@ -188,107 +200,117 @@
               </div>
             </div>
           </div>
+          </div>
         </div>
 
         <!-- Review Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">Review</h2>
-
-          <div class="settings-row">
-            <div>
-              <span class="text-body-m settings-label">Weekly Review</span>
-              <p class="text-body-s settings-hint">Show the Weekly Review section in the sidebar</p>
-            </div>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.reviewEnabled }">
-              <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"></span>
-              <label class="settings-toggle">
-                <input type="checkbox" v-model="reviewEnabled" />
-                <span class="settings-toggle-slider"></span>
-              </label>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Review</h2>
+          </div>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Weekly Review</span>
+                <p class="text-body-s settings-hint">Show the Weekly Review section in the sidebar</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.reviewEnabled }">
+                <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="reviewEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Notifications Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">Notifications</h2>
-
-          <div class="settings-row">
-            <div>
-              <span class="text-body-m settings-label">Email notifications</span>
-              <p class="text-body-s settings-hint">Receive email notifications for tasks and reminders</p>
-            </div>
-            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
-              <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"></span>
-              <label class="settings-toggle">
-                <input type="checkbox" v-model="emailEnabled" />
-                <span class="settings-toggle-slider"></span>
-              </label>
-            </div>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">Notifications</h2>
           </div>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Email notifications</span>
+                <p class="text-body-s settings-hint">Receive email notifications for tasks and reminders</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
+                <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
 
-          <div class="settings-row">
-            <div>
-              <span class="text-body-m settings-label">Task due today</span>
-              <p class="text-body-s settings-hint">Daily reminder for tasks due today</p>
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Task due today</span>
+                <p class="text-body-s settings-hint">Daily reminder for tasks due today</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.taskDueToday }">
+                <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="taskDueToday" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
             </div>
-            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.taskDueToday }">
-              <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"></span>
-              <label class="settings-toggle">
-                <input type="checkbox" v-model="taskDueToday" :disabled="!notifications.state.emailEnabled" />
-                <span class="settings-toggle-slider"></span>
-              </label>
+
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Daily next actions</span>
+                <p class="text-body-s settings-hint">Summary of your next actions for the day</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyNextActions }">
+                <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="dailyNextActions" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
             </div>
+
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Project needs next action</span>
+                <p class="text-body-s settings-hint">Alert when a project has no next action defined</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.projectNeedsNextAction }">
+                <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="projectNeedsNextAction" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <p class="text-body-s settings-hint settings-info-note">Security notifications are always enabled.</p>
           </div>
-
-          <div class="settings-row">
-            <div>
-              <span class="text-body-m settings-label">Daily next actions</span>
-              <p class="text-body-s settings-hint">Summary of your next actions for the day</p>
-            </div>
-            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyNextActions }">
-              <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"></span>
-              <label class="settings-toggle">
-                <input type="checkbox" v-model="dailyNextActions" :disabled="!notifications.state.emailEnabled" />
-                <span class="settings-toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <div>
-              <span class="text-body-m settings-label">Project needs next action</span>
-              <p class="text-body-s settings-hint">Alert when a project has no next action defined</p>
-            </div>
-            <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.projectNeedsNextAction }">
-              <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"></span>
-              <label class="settings-toggle">
-                <input type="checkbox" v-model="projectNeedsNextAction" :disabled="!notifications.state.emailEnabled" />
-                <span class="settings-toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <p class="text-body-s settings-hint settings-info-note">Security notifications are always enabled.</p>
         </div>
 
         <!-- About Section -->
-        <div class="settings-section">
-          <h2 class="text-body-m fw-semibold settings-section-title">About</h2>
-
-          <div class="settings-row">
-            <span class="text-body-m settings-label">Version</span>
-            <span class="text-body-m settings-value">{{ appVersion }}</span>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="settings-section-title">About</h2>
           </div>
+          <div class="settings-section-body">
+            <div class="settings-row">
+              <span class="settings-label">Version</span>
+              <span class="settings-value">{{ appVersion }}</span>
+            </div>
 
-          <div class="settings-row">
-            <span class="text-body-m settings-label">Debug Mode</span>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.debugEnabled }">
-              <span v-if="settings.state.saving.debugEnabled" class="settings-saving-spinner"></span>
-              <label class="settings-toggle">
-                <input type="checkbox" v-model="debugMode" />
-                <span class="settings-toggle-slider"></span>
-              </label>
+            <div class="settings-row">
+              <span class="settings-label">Debug Mode</span>
+              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.debugEnabled }">
+                <span v-if="settings.state.saving.debugEnabled" class="settings-saving-spinner"></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="debugMode" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -751,7 +773,7 @@ async function onLogout() {
 .settings-header {
   flex-shrink: 0;
   padding: 10px 16px;
-  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: 15px;
 }
 
 .settings-header h1 {
@@ -761,40 +783,23 @@ async function onLogout() {
 .settings-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 0 10px 20px;
 }
 
-/* Sections */
-.settings-section {
-  margin-bottom: 32px;
-}
-
-.settings-section:last-child {
-  margin-bottom: 0;
-}
-
-.settings-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.settings-section-header .settings-section-title {
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
+/* Section title in card header */
 .settings-section-title {
-  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-family-default);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-border-light);
+  line-height: 13px;
+  color: var(--color-action);
+  margin: 0;
+}
+
+.settings-section-body {
+  padding: 0 20px;
 }
 
 /* Rows */
@@ -802,8 +807,8 @@ async function onLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .settings-row:last-child {
@@ -811,10 +816,12 @@ async function onLogout() {
 }
 
 .settings-label {
+  font-size: 14px;
   color: var(--color-text-primary);
 }
 
 .settings-value {
+  font-size: 14px;
   color: var(--color-text-secondary);
 }
 
@@ -945,8 +952,8 @@ async function onLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .session-item:last-child {
@@ -954,11 +961,7 @@ async function onLogout() {
 }
 
 .session-item--current {
-  background: var(--color-bg-secondary);
-  margin: 0 -12px;
-  padding: 12px;
-  border-radius: 8px;
-  border-bottom: none;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .session-info {

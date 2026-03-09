@@ -1,7 +1,7 @@
 <template>
-  <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-    <path fill="currentColor" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/>
-    <circle v-if="overdue" cx="82" cy="14" r="14" fill="var(--color-danger)"/>
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+    <circle v-if="overdue" cx="21" cy="3" r="3" fill="var(--color-danger)"/>
   </svg>
 </template>
 

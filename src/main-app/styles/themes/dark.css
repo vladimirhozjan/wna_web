@@ -1,0 +1,116 @@
+/* Dark theme — non-accent base color overrides */
+
+[data-theme="dark"] {
+    /* Backgrounds */
+    --color-app-background: #090909;
+    --color-bg-primary: #111111;
+    --color-bg-secondary: #1a1a1a;
+    --color-bg-hover: #222222;
+
+    /* Text */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a0a0a0;
+    --color-text-tertiary: #555555;
+    --color-text-error: #fca5a5;
+    --color-text-danger: #f87171;
+    --color-text-success: #34d399;
+    --color-text-inverse: #090909;
+    --color-text-prefill: #475569;
+
+    /* Borders */
+    --color-border-light: #2a2a2a;
+    --color-border-subtle: #181818;
+    --color-border-medium: #333333;
+
+    /* Status */
+    --color-danger: #ef4444;
+    --color-danger-light: rgba(239, 68, 68, 0.2);
+    --color-warning: #fbbf24;
+    --color-warning-light: rgba(251, 191, 36, 0.15);
+    --color-success: #34d399;
+    --color-success-light: rgba(52, 211, 153, 0.15);
+
+    /* Semantic */
+    --color-project: #f59e0b;
+    --color-review: #fb923c;
+    --color-file-blue: #60a5fa;
+    --color-highlight-amber: rgba(253, 230, 138, 0.2);
+    --color-highlight-yellow: rgba(254, 240, 138, 0.2);
+    --color-avatar-fallback: #94a3b8;
+
+    /* Overlays */
+    --color-overlay: rgba(0, 0, 0, 0.7);
+    --color-overlay-light: rgba(0, 0, 0, 0.5);
+    --color-overlay-heavy: rgba(0, 0, 0, 0.8);
+    --color-overlay-opaque: rgba(0, 0, 0, 0.95);
+    --color-popup-backdrop: rgba(0, 0, 0, 0.7);
+
+    /* Focus & danger opacity */
+    --color-danger-ring: rgba(239, 68, 68, 0.3);
+    --color-danger-bg-subtle: rgba(239, 68, 68, 0.12);
+    --color-danger-bg-medium: rgba(239, 68, 68, 0.2);
+
+    /* Components */
+    --color-sidebar-background: #111111;
+    --color-popup-background: #111111;
+    --color-input-border: #333333;
+    --color-input-border-error: #7f1d1d;
+    --color-input-background-error: rgba(127, 29, 29, 0.2);
+
+    /* Button: primary text stays white in dark */
+    --color-btn-primary-text: #FFFFFF;
+
+    /* Button: danger */
+    --color-btn-danger-bg: #dc2626;
+    --color-btn-danger-text: #FFFFFF;
+    --color-btn-danger-hover: #ef4444;
+    --color-btn-danger-active: #b91c1c;
+    --color-btn-danger-dis-bg: #4a1c1c;
+    --color-btn-danger-dis-txt: #8b5c5c;
+
+    /* Button: ghost-danger */
+    --color-btn-ghost-danger-bg: rgba(220, 38, 38, 0.1);
+    --color-btn-ghost-danger-text: #f87171;
+    --color-btn-ghost-danger-border: rgba(220, 38, 38, 0.25);
+    --color-btn-ghost-danger-hover: rgba(220, 38, 38, 0.2);
+    --color-btn-ghost-danger-active: rgba(220, 38, 38, 0.3);
+    --color-btn-ghost-danger-dis-bg: rgba(220, 38, 38, 0.05);
+    --color-btn-ghost-danger-dis-txt: #6b3a3a;
+    --color-btn-ghost-danger-dis-brd: rgba(220, 38, 38, 0.1);
+
+    /* Button loader */
+    --color-btn-loader-top: #fff;
+    --color-btn-loader-fade-1: rgba(255, 255, 255, 0.3);
+
+    /* Menu items */
+    --color-menu-item-default-text: #a0a0a0;
+    --color-menu-item-hover-bg: #1a1a1a;
+    --color-menu-item-active-bg: #1a1a1a;
+
+    /* Toasts */
+    --color-toast-error-bg: #450a0a;
+    --color-toast-error-text: #fca5a5;
+    --color-toast-success-bg: #052e16;
+    --color-toast-success-text: #86efac;
+
+    /* Calendar */
+    --color-calendar-scheduled: rgba(56, 189, 248, 0.2);
+    --color-calendar-scheduled-border: #38bdf8;
+    --color-calendar-scheduled-text: #bae6fd;
+    --color-calendar-deferred: rgba(56, 189, 248, 0.1);
+    --color-calendar-deferred-border: #0ea5e9;
+    --color-calendar-deferred-text: #7dd3fc;
+    --color-calendar-today-bg: rgba(245, 158, 11, 0.15);
+    --color-calendar-today-border: #f59e0b;
+    --color-calendar-grid-line: #222222;
+    --color-calendar-hour-text: #555555;
+    --color-calendar-weekend-bg: #0e0e0e;
+    --color-calendar-outside-business: #0c0c0c;
+
+    /* Heat map */
+    --color-heat-0: #111111;
+    --color-heat-1: rgba(56, 189, 248, 0.15);
+    --color-heat-2: rgba(56, 189, 248, 0.3);
+    --color-heat-3: rgba(56, 189, 248, 0.45);
+    --color-heat-4: rgba(56, 189, 248, 0.6);
+}
