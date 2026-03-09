@@ -28,10 +28,10 @@
                 Today
                 <span v-if="todayCount > 0" class="fw-normal section__count">{{ todayCount }}</span>
               </router-link>
-              <router-link :to="{ name: 'today' }" class="text-body-s section__link">View all</router-link>
+              <router-link v-if="hasMoreToday" :to="{ name: 'today' }" class="text-body-s section__link">View all</router-link>
             </div>
             <ItemList
-                v-model="topToday"
+                v-model="displayToday"
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
@@ -55,10 +55,10 @@
                 Next Actions
                 <span v-if="nextCount > 0" class="fw-normal section__count">{{ nextCount }}</span>
               </router-link>
-              <router-link :to="{ name: 'next' }" class="text-body-s section__link">View all</router-link>
+              <router-link v-if="hasMoreNext" :to="{ name: 'next' }" class="text-body-s section__link">View all</router-link>
             </div>
             <ItemList
-                v-model="topActions"
+                v-model="displayActions"
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
@@ -82,10 +82,10 @@
                 Waiting For
                 <span v-if="waitingCount > 0" class="fw-normal section__count">{{ waitingCount }}</span>
               </router-link>
-              <router-link :to="{ name: 'waiting-for' }" class="text-body-s section__link">View all</router-link>
+              <router-link v-if="hasMoreWaiting" :to="{ name: 'waiting-for' }" class="text-body-s section__link">View all</router-link>
             </div>
             <ItemList
-                v-model="topWaiting"
+                v-model="displayWaiting"
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
@@ -205,6 +205,16 @@ const inboxCount = computed(() => stats.value?.inbox?.count ?? 0)
 const todayCount = computed(() => stats.value?.today?.count ?? 0)
 const nextCount = computed(() => stats.value?.next?.count ?? 0)
 const waitingCount = computed(() => stats.value?.waiting?.count ?? 0)
+
+// Backend returns up to 6 items; 6 means there are more beyond what's shown
+const hasMoreToday = computed(() => topToday.value.length >= 6)
+const hasMoreNext = computed(() => topActions.value.length >= 6)
+const hasMoreWaiting = computed(() => topWaiting.value.length >= 6)
+
+// Display at most 5 items per section
+const displayToday = computed(() => topToday.value.slice(0, 5))
+const displayActions = computed(() => topActions.value.slice(0, 5))
+const displayWaiting = computed(() => topWaiting.value.slice(0, 5))
 
 const overdueCount = computed(() => {
     return (stats.value?.next?.overdue ?? 0)

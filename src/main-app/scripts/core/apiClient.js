@@ -1464,6 +1464,20 @@ export async function getStats() {
     }
 }
 
+// ── Engage API ──
+
+export async function getEngage({tags = null} = {}) {
+    try {
+        const params = {}
+        if (tags) params.tags = tags
+
+        const res = await httpApi.get('/v1/engage', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,
@@ -1594,6 +1608,8 @@ const apiClient = {
     spawnRecurring,
     // Stats API
     getStats,
+    // Engage API
+    getEngage,
     // Email verification API
     verifyEmail,
     resendVerification,

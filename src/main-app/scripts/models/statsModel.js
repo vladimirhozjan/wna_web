@@ -19,10 +19,14 @@ export function statsModel() {
         }
     }
 
+    function setStats(data) {
+        stats.value = data
+    }
+
     function refreshStats() {
         clearTimeout(refreshTimer)
         refreshTimer = setTimeout(loadStats, 300)
     }
 
-    return { stats, loadStats, refreshStats }
+    return { stats, loadStats, setStats, refreshStats }
 }
