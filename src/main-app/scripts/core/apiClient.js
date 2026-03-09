@@ -1464,6 +1464,30 @@ export async function getStats() {
     }
 }
 
+// ── Overdue API ──
+
+export async function listOverdue({limit = 10, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/overdue', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function overdueCount() {
+    try {
+        const res = await httpApi.get('/v1/overdue/count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Engage API ──
 
 export async function getEngage({tags = null} = {}) {
@@ -1608,6 +1632,9 @@ const apiClient = {
     spawnRecurring,
     // Stats API
     getStats,
+    // Overdue API
+    listOverdue,
+    overdueCount,
     // Engage API
     getEngage,
     // Email verification API
