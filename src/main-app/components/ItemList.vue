@@ -1,5 +1,12 @@
 <template>
-  <div class="item-list" :class="{ 'item-list--has-more': hasMore }">
+  <div
+      class="item-list"
+      :class="{ 'item-list--has-more': hasMore, 'item-list--drop-target': showDropTarget }"
+      @dragover="onExternalDragOver"
+      @dragenter="onExternalDragEnter"
+      @dragleave="onExternalDragLeave"
+      @drop="onExternalDrop"
+  >
     <!-- Loading state -->
     <div v-if="loading && items.length === 0" class="loading-state">
       <span class="loading-spinner"></span>
@@ -106,12 +113,13 @@ const props = defineProps({
   noCheckbox: { type: Boolean, default: false },
   sourceType: { type: String, default: null },
   completingIds: { type: Array, default: () => [] },
+  acceptDrop: { type: Array, default: () => [] },
 })
 
 const drag = dragModel()
 const nativeDraggingId = ref(null)
 
-const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-more'])
+const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-more', 'external-drop'])
 
 const items = defineModel({ type: Array, required: true })
 
@@ -206,6 +214,51 @@ function onNativeDragEnd() {
   nativeDraggingId.value = null
   drag.endDrag()
 }
+
+// Cross-list drop support
+const isOverDrop = ref(false)
+
+const canAcceptDrop = computed(() => {
+  if (!props.acceptDrop.length) return false
+  if (!drag.state.isDragging) return false
+  if (!props.acceptDrop.includes(drag.state.sourceType)) return false
+  // Don't show drop target if dragged item belongs to this list
+  const draggedId = drag.state.draggedItem?.id
+  if (draggedId && items.value.some(i => i.id === draggedId)) return false
+  return true
+})
+
+const showDropTarget = computed(() => isOverDrop.value && canAcceptDrop.value)
+
+function onExternalDragOver(e) {
+  if (!canAcceptDrop.value) return
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+}
+
+function onExternalDragEnter(e) {
+  if (!canAcceptDrop.value) return
+  e.preventDefault()
+  isOverDrop.value = true
+}
+
+function onExternalDragLeave(e) {
+  if (!e.currentTarget.contains(e.relatedTarget)) {
+    isOverDrop.value = false
+  }
+}
+
+function onExternalDrop(e) {
+  isOverDrop.value = false
+  if (!canAcceptDrop.value) return
+  e.preventDefault()
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('application/json'))
+    // Don't emit if dropping back into the same list
+    if (items.value.some(i => i.id === data.id)) return
+    emit('external-drop', data)
+  } catch {}
+}
 </script>
 
 <!--suppress CssUnusedSymbol -->
@@ -293,6 +346,13 @@ function onNativeDragEnd() {
 /* Drag hint overlay */
 .item-list {
   position: relative;
+}
+
+.item-list--drop-target {
+  outline: 2px dashed var(--color-action);
+  outline-offset: -2px;
+  border-radius: 8px;
+  background: var(--color-bg-accent-light);
 }
 
 .drag-hint {

@@ -2,14 +2,17 @@
   <aside class="sidebar">
     <nav class="sidebar-nav">
 
+      <ContextFilter />
+
+      <!-- ENGAGE -->
+      <div class="sidebar-section-label">Engage</div>
+
       <SidebarMenuItem
           label="Dashboard"
           :to="{ name: 'engage' }"
       >
         <template #icon><EngageIcon/></template>
       </SidebarMenuItem>
-
-      <ContextFilter />
 
       <SidebarMenuItem
           label="Next Action"
@@ -32,6 +35,19 @@
       </SidebarMenuItem>
 
       <SidebarMenuItem
+          label="Calendar"
+          :to="{ name: 'calendar' }"
+          :count="stats?.calendar?.count"
+          :accept-drop="['stuff', 'action']"
+          @drop="onDropToCalendar"
+      >
+        <template #icon><CalendarIcon :overdue="stats?.calendar?.overdue > 0"/></template>
+      </SidebarMenuItem>
+
+      <!-- ORGANIZE -->
+      <div class="sidebar-section-label">Organize</div>
+
+      <SidebarMenuItem
           label="Inbox"
           :to="{ name: 'inbox' }"
           :count="stats?.inbox?.count"
@@ -47,16 +63,6 @@
           @drop="onDropToProjects"
       >
         <template #icon><ProjectsIcon/></template>
-      </SidebarMenuItem>
-
-      <SidebarMenuItem
-          label="Calendar"
-          :to="{ name: 'calendar' }"
-          :count="stats?.calendar?.count"
-          :accept-drop="['stuff', 'action']"
-          @drop="onDropToCalendar"
-      >
-        <template #icon><CalendarIcon :overdue="stats?.calendar?.overdue > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
@@ -89,6 +95,9 @@
         <template #icon><ReferenceIcon/></template>
       </SidebarMenuItem>
 
+      <!-- REFLECT -->
+      <div v-if="settingsMdl.state.reviewEnabled" class="sidebar-section-label">Reflect</div>
+
       <SidebarMenuItem
           v-if="settingsMdl.state.reviewEnabled"
           label="Review"
@@ -98,6 +107,9 @@
       >
         <template #icon><ReviewIcon/></template>
       </SidebarMenuItem>
+
+      <!-- ARCHIVE -->
+      <div class="sidebar-section-label">Archive</div>
 
       <SidebarMenuItem
           label="Completed"
@@ -496,6 +508,19 @@ function removeFromActions(id) {
   display: flex;
   flex-direction: column;
   padding: 0;
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+  padding: 16px 20px 4px;
+}
+
+.sidebar-section-label:first-child {
+  padding-top: 4px;
 }
 
 .sidebar-footer {

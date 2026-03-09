@@ -2,7 +2,7 @@
   <nav class="topnav">
     <router-link to="/" class="topnav-left">
       <AppIcon />
-      <span class="topnav-title"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
+      <span class="topnav-title" :class="{ 'dashboard-title': context === 'dashboard' }"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
     </router-link>
 
     <!-- Center nav links (landing/public context, desktop only) -->
@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
 .topnav-auth-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
 }
 
 .avatar-container {
@@ -238,8 +238,17 @@ onBeforeUnmount(() => {
     font-size: var(--font-size-h3);
     background: none;
     border: none;
-    margin-right: 4px;
+    margin-right: -4px;
   }
+
+  .topnav {
+    padding: 0 10px;
+  }
+
+  .dashboard-title {
+    display: none;
+  }
+
 }
 
 .topnav-center {

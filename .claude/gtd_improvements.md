@@ -41,16 +41,16 @@ The app currently trusts users too much. Even GTD-literate users need orientatio
 - Optional: link to a brief GTD refresher for new users
 - Landing page needs real content (currently "Under Construction")
 
-## 5. Visual Grouping of GTD Phases in Sidebar
+## 5. ~~Visual Grouping of GTD Phases in Sidebar~~
 
-Sidebar shows flat buckets with no distinction between GTD phases. Should group them.
+~~Sidebar shows flat buckets with no distinction between GTD phases. Should group them.~~
 
-- **Engage**: Dashboard, Next Actions, Today, Calendar
-- **Organize**: Inbox, Projects, Waiting For, Someday, Reference
-- **Reflect**: Review
-- **Archive**: Completed, Trash
+- ~~**Engage**: Dashboard, Next Actions, Today, Calendar~~
+- ~~**Organize**: Inbox, Projects, Waiting For, Someday, Reference~~
+- ~~**Reflect**: Review~~
+- ~~**Archive**: Completed, Trash~~
 
-Use subtle section dividers or labels (small uppercase text) to separate groups. This teaches GTD structure passively.
+~~Use subtle section dividers or labels (small uppercase text) to separate groups. This teaches GTD structure passively.~~
 
 ## 6. Make Weekly Review Feel Like a Ritual, Not Homework
 

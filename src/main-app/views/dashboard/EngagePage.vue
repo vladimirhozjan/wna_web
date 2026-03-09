@@ -3,7 +3,12 @@
     <div class="engage-page">
 
       <div class="engage-header">
-        <h1 class="page-title">Engage</h1>
+        <div class="header-row">
+          <h1 class="page-title">Engage</h1>
+          <div class="header-actions">
+            <TagFilter v-model="filterTags" />
+          </div>
+        </div>
       </div>
 
       <div class="engage-content">
@@ -37,10 +42,12 @@
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
                 source-type="action"
+                :accept-drop="['action']"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onTodayClick"
                 @move="onTodayMove"
+                @external-drop="onDropToToday"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
@@ -65,10 +72,12 @@
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
                 source-type="action"
+                :accept-drop="['action']"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onNextClick"
                 @move="onNextMove"
+                @external-drop="onDropToNext"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
@@ -93,10 +102,12 @@
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
                 source-type="action"
+                :accept-drop="['action']"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onWaitingClick"
                 @move="onWaitingMove"
+                @external-drop="onDropToWaiting"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
@@ -125,7 +136,7 @@
           </div>
 
           <!-- Empty state: filtered -->
-          <div v-if="noActionItems && activeTag" class="empty-state">
+          <div v-if="noActionItems && (activeTag || filterTags.length)" class="empty-state">
             <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
           </div>
 
@@ -157,18 +168,22 @@ import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import EngageIcon from '../../assets/EngageIcon.vue'
+import TagFilter from '../../components/TagFilter.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
+import { moveModel } from '../../scripts/models/moveModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
 const toaster = errorModel()
+const mover = moveModel()
 const { refreshStats } = statsModel()
 const { activeTag } = contextModel()
+const filterTags = ref([])
 
 const {
     stats,
@@ -184,8 +199,11 @@ const {
 } = engageModel()
 
 const effectiveTags = computed(() => {
-    if (!activeTag.value) return []
-    return [activeTag.value]
+    const tags = [...filterTags.value]
+    if (activeTag.value && !tags.includes(activeTag.value)) {
+        tags.push(activeTag.value)
+    }
+    return tags
 })
 
 onMounted(() => {
@@ -370,6 +388,51 @@ function onWaitingClick(item) {
     router.push({ name: 'action-detail', params: { id: item.id }, query: { from: 'engage' } })
 }
 
+// Cross-list drop handlers
+function removeFromAllLists(id) {
+    removeFromList(topToday, id)
+    removeFromList(topActions, id)
+    removeFromList(topWaiting, id)
+}
+
+async function onDropToToday(data) {
+    if (data.state === 'TODAY') return
+    try {
+        await apiClient.todayAction(data.id)
+        await loadDashboard({ tags: effectiveTags.value })
+        refreshStats()
+        toaster.success(`"${truncateTitle(data.title)}" moved to Today`)
+    } catch (err) {
+        toaster.push(err.message || 'Failed to move item')
+    }
+}
+
+async function onDropToNext(data) {
+    if (data.state === 'NEXT') return
+    try {
+        await apiClient.undeferAction(data.id)
+        await loadDashboard({ tags: effectiveTags.value })
+        refreshStats()
+        toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`)
+    } catch (err) {
+        toaster.push(err.message || 'Failed to move item')
+    }
+}
+
+async function onDropToWaiting(data) {
+    if (data.state === 'WAITING') return
+    const waitingFor = await mover.showWaiting({ waitingFor: '' })
+    if (!waitingFor) return
+    try {
+        await apiClient.waitAction(data.id, waitingFor)
+        await loadDashboard({ tags: effectiveTags.value })
+        refreshStats()
+        toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`)
+    } catch (err) {
+        toaster.push(err.message || 'Failed to move item')
+    }
+}
+
 </script>
 
 <style scoped>
@@ -382,6 +445,19 @@ function onWaitingClick(item) {
 .engage-header {
   flex-shrink: 0;
   margin-bottom: 15px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 10px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .page-title {
