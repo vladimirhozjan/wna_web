@@ -211,23 +211,22 @@ const inboxCount = computed(() => stats.value?.inbox?.count ?? 0)
 const todayCount = computed(() => stats.value?.today?.count ?? 0)
 const nextCount = computed(() => stats.value?.next?.count ?? 0)
 const waitingCount = computed(() => stats.value?.waiting?.count ?? 0)
-
-// Backend returns up to 6 items; 6 means there are more beyond what's shown
-const hasMoreToday = computed(() => topToday.value.length >= 6)
-const hasMoreNext = computed(() => topActions.value.length >= 6)
-const hasMoreWaiting = computed(() => topWaiting.value.length >= 6)
-
-// Display at most 5 items per section
-const displayToday = computed(() => topToday.value.slice(0, 5))
-const displayActions = computed(() => topActions.value.slice(0, 5))
-const displayWaiting = computed(() => topWaiting.value.slice(0, 5))
-
 const overdueCount = computed(() => {
     return (stats.value?.next?.overdue ?? 0)
         + (stats.value?.today?.overdue ?? 0)
         + (stats.value?.calendar?.overdue ?? 0)
         + (stats.value?.waiting?.overdue ?? 0)
 })
+
+// Show "View all" when count > 5
+const hasMoreToday = computed(() => todayCount.value > 5)
+const hasMoreNext = computed(() => nextCount.value > 5)
+const hasMoreWaiting = computed(() => waitingCount.value > 5)
+
+// Display at most 5 items per section
+const displayToday = computed(() => topToday.value.slice(0, 5))
+const displayActions = computed(() => topActions.value.slice(0, 5))
+const displayWaiting = computed(() => topWaiting.value.slice(0, 5))
 
 const reviewLabel = computed(() => {
     const days = daysSinceReview.value
@@ -370,6 +369,7 @@ function onNextClick(item) {
 function onWaitingClick(item) {
     router.push({ name: 'action-detail', params: { id: item.id }, query: { from: 'engage' } })
 }
+
 </script>
 
 <style scoped>
@@ -443,6 +443,7 @@ function onWaitingClick(item) {
   color: var(--color-text-danger);
 }
 
+
 .section__title,
 .section__title:visited,
 .section__title:link {
@@ -462,6 +463,7 @@ function onWaitingClick(item) {
 .section__title:hover {
   opacity: 0.8;
 }
+
 
 .section__count {
   font-size: 11px;
@@ -488,6 +490,7 @@ function onWaitingClick(item) {
 .section__link:hover {
   background: var(--color-bg-accent-light);
 }
+
 
 /* Nudges - gentle secondary prompts */
 .nudges__title {
