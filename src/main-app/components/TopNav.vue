@@ -1,9 +1,9 @@
 <template>
   <nav class="topnav">
-    <div class="topnav-left">
+    <router-link to="/" class="topnav-left">
       <AppIcon />
       <span class="topnav-title"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
-    </div>
+    </router-link>
 
     <!-- Center nav links (landing/public context, desktop only) -->
     <nav v-if="context === 'landing'" class="topnav-center desktop-only">
@@ -162,6 +162,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .topnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -179,6 +182,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none;
 }
 
 .topnav-title {

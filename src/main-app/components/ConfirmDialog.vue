@@ -39,12 +39,13 @@ const confirm = confirmModel()
 }
 
 .dialog {
-  background: var(--color-bg-primary);
+  background: var(--color-popup-background);
+  border: 1px solid var(--color-border-light);
   border-radius: 8px;
   padding: 24px;
   min-width: 300px;
   max-width: 400px;
-  box-shadow: var(--shadow-dropdown);
+  box-shadow: var(--shadow-modal);
 }
 
 .title {

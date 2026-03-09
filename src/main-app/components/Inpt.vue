@@ -65,6 +65,8 @@ input {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
 }
 
 input:focus {

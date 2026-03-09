@@ -52,10 +52,19 @@
 
     /* Components */
     --color-sidebar-background: #111111;
-    --color-popup-background: #111111;
+    --color-popup-background: #1a1a1a;
+    --color-input-background: #111111;
     --color-input-border: #333333;
+    --color-input-border-focus: #555555;
     --color-input-border-error: #7f1d1d;
     --color-input-background-error: rgba(127, 29, 29, 0.2);
+    --shadow-auth: 0 18px 50px rgba(0, 0, 0, 0.6);
+
+    /* Shadows */
+    --shadow-dropdown: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.4);
+    --shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.5);
+    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
 
     /* Button: primary text stays white in dark */
     --color-btn-primary-text: #FFFFFF;
