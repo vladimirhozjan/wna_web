@@ -47,6 +47,7 @@
     --color-menu-item-active-txt: var(--color-action);
 
     /* Inputs */
+    --color-input-background: #FFFFFF;
     --color-input-border: #D1D5DB;
     --color-input-border-focus: #4185DE;
     --color-input-border-error: #f9c6c6;

@@ -46,10 +46,11 @@ defineEmits(['close', 'open-login', 'open-register', 'go-dashboard', 'go-setting
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: white;
+  background: var(--color-popup-background);
+  border: 1px solid var(--color-border-light);
   padding: 8px 0;
   border-radius: 6px;
-  box-shadow: var(--shadow-popover);
+  box-shadow: var(--shadow-dropdown);
   z-index: 1000;
   min-width: 160px;
 }
@@ -68,7 +69,7 @@ defineEmits(['close', 'open-login', 'open-register', 'go-dashboard', 'go-setting
 }
 
 .topnav-item:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--color-bg-hover);
 }
 
 .dropdown-divider {
