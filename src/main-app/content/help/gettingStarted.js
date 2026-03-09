@@ -7,7 +7,7 @@ export const gettingStarted = [
   {
     title: 'Creating Your Account',
     description:
-      'Tap "Start Free" on the landing page to open the registration dialog. Enter your email, choose a password (at least 8 characters with a letter, a digit, and a symbol), and confirm it. Once registered you are automatically logged in and taken to your Dashboard. You can also sign in from the "Sign In" button if you already have an account.',
+      'Tap "Start Free" on the landing page to open the registration dialog. Enter your email, choose a password (at least 8 characters with a letter, a digit, and a symbol), and confirm it. After registering, a verification email is sent to your address — click the link in the email to verify your account. Once verified, you are automatically logged in and taken to your Dashboard. You can also sign in from the "Sign In" button if you already have an account.',
   },
   {
     title: 'Your First Five Minutes',
@@ -27,7 +27,7 @@ export const gettingStarted = [
   {
     title: 'Navigating the App',
     description:
-      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a GTD bucket: Inbox, Next Actions, Today, Calendar, Projects, Waiting For, Someday/Maybe, Reference, Completed, and Trash. Count badges next to each item show how many items are in that bucket. The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
+      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a GTD bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Completed, and Trash. Count badges next to each item show how many items are in that bucket. The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
   },
   {
     title: 'Quick Add — Capture From Anywhere',
