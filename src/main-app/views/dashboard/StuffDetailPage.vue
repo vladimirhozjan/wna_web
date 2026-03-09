@@ -466,7 +466,7 @@ async function onClarifyDone() {
   if (newTotal <= 0) {
     // No more items - close clarify and go to inbox
     showClarify.value = false
-    router.push({ name: 'inbox' })
+    router.push({ name: 'inbox', query: { celebrate: '1' } })
     return
   }
 
@@ -522,7 +522,7 @@ async function navigateToNextOrPrev() {
   else if (fromSomeday.value) backRoute = 'someday'
 
   if (newTotal <= 0) {
-    router.push({ name: backRoute })
+    router.push({ name: backRoute, query: backRoute === 'inbox' ? { celebrate: '1' } : undefined })
     return
   }
 

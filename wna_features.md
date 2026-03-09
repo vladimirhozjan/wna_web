@@ -271,6 +271,13 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 **Empty state:** Inbox icon + "Your inbox is empty" + instructional text
 
+**Inbox Zero celebration:**
+- When the user clears the last item from the inbox (via clarify, complete, trash, drag-to-sidebar, or from the detail page), a brief celebration animation plays
+- Animation: Green circle blooms in with a spring curve, checkmark icon fades/scales in, "Inbox Zero" title and "You're in control." subtitle slide up with staggered timing
+- Auto-dismisses after 3 seconds, or click anywhere on the celebration to dismiss early
+- Does NOT trigger when the inbox was already empty on page load (only when the user actively empties it)
+- After the celebration fades out, the normal empty state is shown
+
 ### 4.2 Stuff Detail Page
 
 - **URL:** `/stuff/:id`

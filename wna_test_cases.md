@@ -10050,3 +10050,120 @@ Use the table below to log each full or partial test run.
 |      |     |         |
 |      |     |         |
 |      |     |         |
+
+---
+
+### TC-365: Inbox Zero Celebration - Triggered by Completing Last Item
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is authenticated. Inbox contains exactly 1 stuff item.
+
+**Steps:**
+1. Navigate to the Inbox page
+2. Verify 1 item is shown in the inbox list
+3. Check the checkbox on the item to mark it as completed
+4. Verify the item is removed from the list
+5. Verify a celebration animation plays: a green circle blooms in, a checkmark icon appears inside it, followed by "Inbox Zero" title and "You're in control." subtitle sliding up
+6. Wait approximately 3 seconds
+7. Verify the celebration fades out
+8. Verify the normal empty state is shown (inbox icon + "Your inbox is empty" text)
+
+**Expected Result:** When the last inbox item is completed, a celebration animation with a green checkmark, "Inbox Zero" title, and "You're in control." subtitle plays for approximately 3 seconds before fading to the normal empty state.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-366: Inbox Zero Celebration - Not Triggered on Empty Load
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is authenticated. Inbox is already empty (no items).
+
+**Steps:**
+1. Navigate to the Inbox page
+2. Verify the inbox loads with no items
+3. Verify the normal empty state is shown immediately (inbox icon + "Your inbox is empty" text)
+4. Verify NO celebration animation plays
+
+**Expected Result:** When navigating to an already-empty inbox, the normal empty state is displayed without any celebration animation. The celebration only triggers when the user actively empties the inbox during the current session.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-367: Inbox Zero Celebration - Click to Dismiss Early
+**Priority:** Low | **Area:** Inbox / Stuff
+
+**Preconditions:** User is authenticated. Inbox contains exactly 1 stuff item.
+
+**Steps:**
+1. Navigate to the Inbox page
+2. Trash the single item (click trash icon, confirm)
+3. Verify the celebration animation starts playing
+4. Immediately click anywhere on the celebration area
+5. Verify the celebration fades out within 0.3 seconds (much faster than the normal 3-second duration)
+6. Verify the normal empty state is shown
+
+**Expected Result:** Clicking on the celebration dismisses it early with a quick fade-out, transitioning to the normal empty state.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-368: Inbox Zero Celebration - Triggered by Drag to Sidebar
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is authenticated on desktop. Inbox contains exactly 1 stuff item.
+
+**Steps:**
+1. Navigate to the Inbox page
+2. Verify 1 item is shown
+3. Drag the item from the inbox list to the "Next Action" sidebar menu item
+4. Verify the item is removed from the inbox
+5. Verify the celebration animation plays (green checkmark + "Inbox Zero" + "You're in control.")
+6. Wait for the celebration to auto-dismiss or click to dismiss
+7. Verify the normal empty state is shown
+
+**Expected Result:** Dragging the last inbox item to any sidebar destination (Next Action, Today, Trash, Completed, etc.) triggers the Inbox Zero celebration animation.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-369: Inbox Zero Celebration - Triggered from Detail Page
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is authenticated. Inbox contains exactly 1 stuff item.
+
+**Steps:**
+1. Navigate to the Inbox page
+2. Click on the single item to open the Stuff Detail Page
+3. Click the "Done" button (or use "Move" to move it to another bucket, or "Trash" it)
+4. Verify the app navigates back to the Inbox page
+5. Verify the celebration animation plays (green checkmark + "Inbox Zero" + "You're in control.")
+6. Wait for the celebration to auto-dismiss or click to dismiss
+7. Verify the normal empty state is shown
+
+**Expected Result:** When the last inbox item is processed from the Stuff Detail Page (via Done, Move, Trash, or Clarify), the app navigates back to the Inbox page and triggers the Inbox Zero celebration animation.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
