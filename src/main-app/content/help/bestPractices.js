@@ -27,7 +27,7 @@ export const bestPractices = [
   {
     title: 'Use Contexts to Work Smarter',
     description:
-      'Context tags (@computer, @phone, @office, @home, @errands) let you filter your action lists by where you are and what tools are available. When you sit down at your desk, set @computer as your active context and see only the actions you can do right now. Add energy tags (energy:high, energy:low) and time estimates (min:5, min:30) to match actions to your current state. Customize your tag presets in Settings.',
+      'Context tags (@computer, @office, @home, @calls, @anywhere) let you filter your action lists by where you are and what tools are available. When you sit down at your desk, set @computer as your active context and see only the actions you can do right now. Add energy tags (energy:high, energy:low) and time estimates (min:5, min:30) to match actions to your current state. Customize your tag presets in Settings.',
   },
   {
     title: 'Use Today Sparingly',

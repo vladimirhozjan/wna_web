@@ -3,7 +3,7 @@ export const faq = [
   {
     question: 'How do I create an account?',
     answer:
-      'Tap "Start Free" on the landing page. Enter your email address, choose a password (at least 8 characters with at least one letter, one digit, and one symbol), and confirm it. After registering you are automatically logged in and taken to your Dashboard.',
+      'Tap "Start Free" on the landing page. Enter your email address, choose a password (at least 8 characters with at least one letter, one digit, and one symbol), and confirm it. A verification email will be sent to your address — click the link to verify your account. Once verified, you are automatically logged in and taken to your Dashboard.',
   },
   {
     question: 'How do I log in?',
@@ -106,7 +106,7 @@ export const faq = [
   {
     question: 'How does the Calendar work?',
     answer:
-      'The Calendar shows your time-specific actions and commitments — your "hard landscape" in GTD terms. It offers Day, Week, Month, and Year views. In Day and Week views, scheduled actions appear as time blocks based on their start time and duration. You can click an empty time slot to create a new action, drag items to reschedule them, and switch to the Recurring view to manage repeating actions. Calendar settings (week start day, time format, business hours) are configurable in Settings.',
+      'The Calendar shows your time-specific actions and commitments — your "hard landscape" in GTD terms. It offers Day, Week, Month, Year, and Recurring views. In Day and Week views, scheduled actions appear as time blocks based on their start time and duration. You can click an empty time slot to create a new action, drag items to reschedule them, and switch to the Recurring view to manage repeating action templates. Calendar settings (week start day, time format, business hours) are configurable in Settings.',
   },
   {
     question: 'What are recurring actions?',
@@ -118,7 +118,7 @@ export const faq = [
   {
     question: 'What are context tags and how do I use them?',
     answer:
-      'Context tags help you filter your actions by where you are or what resources you have available. Common examples include @computer, @phone, @office, @home, and @errands. You can also use energy levels (energy:high, energy:low) or time estimates (min:5, min:30). Add tags to any action or project from its detail page. Use the per-page tag filter icon to filter a single list, or set a global Context Filter in the sidebar to filter all lists at once.',
+      'Context tags help you filter your actions by where you are or what resources you have available. Common examples include @computer, @office, @home, @calls, and @anywhere. You can also use energy levels (energy:high, energy:low) or time estimates (min:5, min:30). Add tags to any action or project from its detail page. Use the per-page tag filter icon to filter a single list, or set a global Context Filter in the sidebar to filter all lists at once.',
   },
   {
     question: 'Can I customize my tag presets?',
