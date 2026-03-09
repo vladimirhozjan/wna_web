@@ -2,7 +2,7 @@
   <div class="app-icon-wrap">
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="14" cy="14" r="14" fill="url(#logo-grad)"/>
-      <path d="M15.2 6L8 16h6.5L12.8 22 20 12h-6.5L15.2 6z" fill="#ffffff"/>
+      <path d="M15.4 4.4L6.8 16.4h7.8L12.6 23.6 21.2 11.6h-7.8L15.4 4.4z" fill="#ffffff"/>
       <defs>
         <linearGradient id="logo-grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
           <stop offset="0%" :stop-color="darkColor"/>

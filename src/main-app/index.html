@@ -40,8 +40,8 @@
       .splash-spinner {
         position: absolute;
         inset: 0;
-        border: 6px solid rgba(65, 133, 222, 0.15);
-        border-top-color: #4185DE;
+        border: 6px solid rgba(14, 116, 144, 0.15);
+        border-top-color: #0e7490;
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
@@ -56,9 +56,15 @@
       <div class="splash">
         <div class="splash-wrapper">
           <div class="splash-spinner"></div>
-          <svg class="splash-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="64" height="64" rx="14" fill="#4185DE"/>
-            <path d="M25 54L30 34H18L39 10L34 30H46L25 54Z" fill="white"/>
+          <svg class="splash-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="14" fill="url(#splash-grad)"/>
+            <path d="M15.4 4.4L6.8 16.4h7.8L12.6 23.6 21.2 11.6h-7.8L15.4 4.4z" fill="#ffffff"/>
+            <defs>
+              <linearGradient id="splash-grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#164e63"/>
+                <stop offset="100%" stop-color="#0e7490"/>
+              </linearGradient>
+            </defs>
           </svg>
           <p class="splash-text">Loading your content...</p>
         </div>
