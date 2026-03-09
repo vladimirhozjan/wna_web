@@ -2,10 +2,11 @@
   <DashboardLayout>
     <div class="completed-page">
       <div class="completed-header">
-        <h1 class="text-h1 color-text-primary">Completed</h1>
+        <h1 class="page-title">Completed</h1>
       </div>
 
       <div class="completed-content">
+        <div class="card">
         <ItemList
             v-model="items"
             :loading="loading"
@@ -29,6 +30,7 @@
             </p>
           </template>
         </ItemList>
+        </div>
       </div>
     </div>
   </DashboardLayout>
@@ -139,7 +141,6 @@ async function onItemCheck(id, checked) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
 }
 
@@ -152,6 +153,7 @@ async function onItemCheck(id, checked) {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }

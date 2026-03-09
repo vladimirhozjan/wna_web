@@ -36,7 +36,7 @@ const classes = computed(() => [
 .action-btn {
   padding: 4px 8px;
   border: none;
-  background: var(--color-bg-secondary);
+  background: transparent;
   border-radius: 4px;
   cursor: pointer;
   font-size: var(--font-size-xs);

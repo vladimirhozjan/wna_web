@@ -3,7 +3,7 @@
     <div class="ref-page">
       <!-- Header with title and tabs -->
       <div class="ref-header">
-        <h1 class="text-h1 color-text-primary">Reference</h1>
+        <h1 class="page-title">Reference</h1>
         <SegmentSwitch
             :options="[{ value: 'files', label: 'Files' }, { value: 'trash', label: 'Trash' }]"
             :model-value="activeTab"
@@ -412,7 +412,6 @@ function formatSize(bytes) {
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background: var(--color-bg-primary);
 }
 
 .ref-header h1 {

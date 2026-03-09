@@ -2,24 +2,25 @@
 
 [data-theme="dark"] {
     /* Backgrounds */
-    --color-app-background: #0f172a;
-    --color-bg-primary: #1e293b;
-    --color-bg-secondary: #283548;
-    --color-bg-hover: #334155;
+    --color-app-background: #090909;
+    --color-bg-primary: #111111;
+    --color-bg-secondary: #1a1a1a;
+    --color-bg-hover: #222222;
 
     /* Text */
-    --color-text-primary: #f1f5f9;
-    --color-text-secondary: #94a3b8;
-    --color-text-tertiary: #64748b;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a0a0a0;
+    --color-text-tertiary: #555555;
     --color-text-error: #fca5a5;
     --color-text-danger: #f87171;
     --color-text-success: #34d399;
-    --color-text-inverse: #0f172a;
+    --color-text-inverse: #090909;
     --color-text-prefill: #475569;
 
     /* Borders */
-    --color-border-light: #334155;
-    --color-border-medium: #475569;
+    --color-border-light: #2a2a2a;
+    --color-border-subtle: #181818;
+    --color-border-medium: #333333;
 
     /* Status */
     --color-danger: #ef4444;
@@ -42,7 +43,7 @@
     --color-overlay-light: rgba(0, 0, 0, 0.5);
     --color-overlay-heavy: rgba(0, 0, 0, 0.8);
     --color-overlay-opaque: rgba(0, 0, 0, 0.95);
-    --color-popup-backdrop: rgba(15, 23, 42, 0.7);
+    --color-popup-backdrop: rgba(0, 0, 0, 0.7);
 
     /* Focus & danger opacity */
     --color-danger-ring: rgba(239, 68, 68, 0.3);
@@ -50,9 +51,9 @@
     --color-danger-bg-medium: rgba(239, 68, 68, 0.2);
 
     /* Components */
-    --color-sidebar-background: #1e293b;
-    --color-popup-background: #1e293b;
-    --color-input-border: #475569;
+    --color-sidebar-background: #111111;
+    --color-popup-background: #111111;
+    --color-input-border: #333333;
     --color-input-border-error: #7f1d1d;
     --color-input-background-error: rgba(127, 29, 29, 0.2);
 
@@ -82,9 +83,9 @@
     --color-btn-loader-fade-1: rgba(255, 255, 255, 0.3);
 
     /* Menu items */
-    --color-menu-item-default-text: #cbd5e1;
-    --color-menu-item-hover-bg: #283548;
-    --color-menu-item-active-bg: #283548;
+    --color-menu-item-default-text: #a0a0a0;
+    --color-menu-item-hover-bg: #1a1a1a;
+    --color-menu-item-active-bg: #1a1a1a;
 
     /* Toasts */
     --color-toast-error-bg: #450a0a;
@@ -101,13 +102,13 @@
     --color-calendar-deferred-text: #7dd3fc;
     --color-calendar-today-bg: rgba(245, 158, 11, 0.15);
     --color-calendar-today-border: #f59e0b;
-    --color-calendar-grid-line: #334155;
-    --color-calendar-hour-text: #64748b;
-    --color-calendar-weekend-bg: #1a2536;
-    --color-calendar-outside-business: #162032;
+    --color-calendar-grid-line: #222222;
+    --color-calendar-hour-text: #555555;
+    --color-calendar-weekend-bg: #0e0e0e;
+    --color-calendar-outside-business: #0c0c0c;
 
     /* Heat map */
-    --color-heat-0: #1e293b;
+    --color-heat-0: #111111;
     --color-heat-1: rgba(56, 189, 248, 0.15);
     --color-heat-2: rgba(56, 189, 248, 0.3);
     --color-heat-3: rgba(56, 189, 248, 0.45);

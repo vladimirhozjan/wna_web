@@ -3,8 +3,8 @@
     --color-action: #4185DE;
 
     /* Text */
-    --color-text-primary: #374151;
-    --color-text-secondary: #6B7280;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #4b5563;
     --color-text-tertiary: #9CA3AF;
     --color-text-error: #7f1c1d;
     --color-text-danger: #dc2626;
@@ -13,14 +13,15 @@
     --color-text-prefill: #D1D5DB;
 
     /* Backgrounds */
-    --color-app-background: #f8fafc;
+    --color-app-background: #f9fafb;
     --color-bg-primary: #FFFFFF;
     --color-bg-secondary: #F3F4F6;
     --color-bg-hover: #E5E7EB;
     --color-bg-accent-light: #EDF3FC;
 
     /* Borders */
-    --color-border-light: #E3E8EF;
+    --color-border-light: #e5e7eb;
+    --color-border-subtle: #f3f4f6;
     --color-border-medium: #dddddd;
 
     /* Status */

@@ -19,6 +19,7 @@ import WaitingForPage from '../views/dashboard/WaitingForPage.vue'
 import RecurringDetailPage from '../views/dashboard/RecurringDetailPage.vue'
 import ReviewPage from '../views/dashboard/ReviewPage.vue'
 import EngagePage from '../views/dashboard/EngagePage.vue'
+import OverduePage from '../views/dashboard/OverduePage.vue'
 import VerifyEmailPage from '../views/public/VerifyEmailPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
@@ -42,6 +43,7 @@ const routes = [
     {path: '/trash', name: 'trash', component: TrashPage},
     {path: '/waiting-for', name: 'waiting-for', component: WaitingForPage},
     {path: '/review', name: 'review', component: ReviewPage},
+    {path: '/overdue', name: 'overdue', component: OverduePage},
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},

@@ -3,7 +3,7 @@
     <div class="someday-page">
       <div class="someday-header">
         <div class="header-row">
-          <h1 class="text-h1 color-text-primary">Someday / Maybe</h1>
+          <h1 class="page-title">Someday / Maybe</h1>
           <div class="header-actions">
             <TagFilter v-model="filterTags" />
             <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
@@ -30,6 +30,7 @@
       </div>
 
       <div class="someday-content">
+        <div class="card">
         <ItemList
             v-model="items"
             :loading="loading"
@@ -71,6 +72,7 @@
             </template>
           </template>
         </ItemList>
+        </div>
       </div>
     </div>
   </DashboardLayout>
@@ -282,7 +284,6 @@ async function onTrash(id) {
 
 .someday-header {
   flex-shrink: 0;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
 }
 
@@ -296,7 +297,7 @@ async function onTrash(id) {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
 }
 
 .someday-header h1 {
@@ -320,6 +321,7 @@ async function onTrash(id) {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }

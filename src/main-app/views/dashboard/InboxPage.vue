@@ -7,7 +7,7 @@
         <!-- Fixed header -->
         <div class="inbox-header">
           <div class="title">
-            <h1 class="text-h1 color-text-primary">Inbox</h1>
+            <h1 class="page-title">Inbox</h1>
             <Btn
                 v-if="items.length > 0 && !clarifyMode"
                 variant="ghost"
@@ -49,6 +49,7 @@
 
         <!-- Scrollable content -->
         <div class="inbox-content">
+          <div class="card">
           <ItemList
               v-model="items"
               :loading="loading"
@@ -88,6 +89,7 @@
               </template>
             </template>
           </ItemList>
+          </div>
         </div>
       </div>
 
@@ -418,7 +420,6 @@ function onClarifyDone(processedItem) {
 
 .inbox-header {
   flex-shrink: 0;
-  background: var(--color-bg-primary);
   margin-bottom: 15px;
   border-right: 1px solid var(--color-border-light);
 }
@@ -427,6 +428,7 @@ function onClarifyDone(processedItem) {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  padding: 0 10px 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }
