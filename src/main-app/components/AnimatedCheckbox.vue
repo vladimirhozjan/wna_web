@@ -1,5 +1,5 @@
 <template>
-  <label class="animated-checkbox" :class="{ 'animated-checkbox--checked': checked, 'animated-checkbox--disabled': disabled }">
+  <label class="animated-checkbox" :class="{ 'animated-checkbox--checked': checked, 'animated-checkbox--disabled': disabled, 'animated-checkbox--no-animate': suppressAnimation }">
     <input
         type="checkbox"
         class="animated-checkbox__input"
@@ -25,14 +25,23 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref } from 'vue'
+
+const props = defineProps({
   checked: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
+  noInitialAnimation: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['change'])
+const hasInteracted = ref(false)
+const suppressAnimation = ref(props.noInitialAnimation)
 
 function onChange(e) {
+  if (!hasInteracted.value) {
+    hasInteracted.value = true
+    suppressAnimation.value = false
+  }
   emit('change', e.target.checked)
 }
 </script>
@@ -102,5 +111,12 @@ function onChange(e) {
   0% { transform: scale(1); }
   50% { transform: scale(1.15); }
   100% { transform: scale(1); }
+}
+
+.animated-checkbox--no-animate,
+.animated-checkbox--no-animate .animated-checkbox__box,
+.animated-checkbox--no-animate .animated-checkbox__check {
+  animation: none !important;
+  transition: none !important;
 }
 </style>

@@ -30,7 +30,7 @@ export function waitingModel() {
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
-            const data = await apiClient.listWaiting({
+            const { total_count, items: data } = await apiClient.listWaiting({
                 limit: limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
@@ -48,8 +48,7 @@ export function waitingModel() {
 
             hasMore.value = data.length >= limit.value
 
-            const count_data = await apiClient.waitingCount()
-            totalItems.value = count_data.count
+            totalItems.value = total_count
 
             return data
         } catch (err) {

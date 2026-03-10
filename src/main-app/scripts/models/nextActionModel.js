@@ -35,7 +35,7 @@ export function nextActionModel() {
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
-            const data = await apiClient.listActions({
+            const { total_count, items: data } = await apiClient.listActions({
                 limit: limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
@@ -56,10 +56,7 @@ export function nextActionModel() {
 
             hasMore.value = data.length >= limit.value
 
-            const count_data = await apiClient.nextActionCount()
-            if (myVersion === loadVersion) {
-                totalItems.value = count_data.count
-            }
+            totalItems.value = total_count
 
             return data
         } catch (err) {

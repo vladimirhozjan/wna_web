@@ -21,7 +21,7 @@ export function completedModel() {
                 hasMore.value = true
             }
 
-            const data = await apiClient.listCompleted({
+            const { items: data } = await apiClient.listCompleted({
                 limit: limit.value,
                 cursor: cursor.value,
             })

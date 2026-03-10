@@ -15,6 +15,7 @@
             :editable="false"
             :loading-ids="loadingIds"
             :completing-ids="completingIds"
+            :no-initial-animation="true"
             @load-more="loadMore"
             @click="onItemClick"
             @check="onItemCheck"

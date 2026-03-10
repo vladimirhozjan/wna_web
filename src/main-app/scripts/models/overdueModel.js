@@ -26,7 +26,7 @@ export function overdueModel() {
                 hasMore.value = true
             }
 
-            const data = await apiClient.listOverdue({
+            const { total_count, items: data } = await apiClient.listOverdue({
                 limit: limit.value,
                 cursor: cursor.value,
             })
@@ -45,10 +45,7 @@ export function overdueModel() {
 
             hasMore.value = data.length >= limit.value
 
-            const countData = await apiClient.overdueCount()
-            if (myVersion === loadVersion) {
-                totalItems.value = countData.count
-            }
+            totalItems.value = total_count
 
             return data
         } catch (err) {

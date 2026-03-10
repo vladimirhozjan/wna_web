@@ -28,7 +28,7 @@ export function somedayModel() {
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
-            const data = await apiClient.listSomeday({
+            const { items: data } = await apiClient.listSomeday({
                 limit: limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,

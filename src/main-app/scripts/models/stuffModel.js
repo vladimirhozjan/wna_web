@@ -27,7 +27,7 @@ export function stuffModel() {
                 hasMore.value = true
             }
 
-            const data = await apiClient.listStuff({
+            const { total_count, items: data } = await apiClient.listStuff({
                 limit: limit.value,
                 cursor: cursor.value,
             })
@@ -48,10 +48,7 @@ export function stuffModel() {
             // Hide "Load more" if we got fewer items than requested
             hasMore.value = data.length >= limit.value
 
-            const count_data = await apiClient.inboxCount()
-            if (myVersion === loadVersion) {
-                totalItems.value = count_data.count
-            }
+            totalItems.value = total_count
 
             return data
         } catch (err) {

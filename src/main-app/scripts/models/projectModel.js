@@ -30,7 +30,7 @@ export function projectModel() {
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
-            const data = await apiClient.listProjects({
+            const { total_count, items: data } = await apiClient.listProjects({
                 limit: limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
@@ -48,8 +48,7 @@ export function projectModel() {
 
             hasMore.value = data.length >= limit.value
 
-            const count_data = await apiClient.projectsCount()
-            totalItems.value = count_data.count
+            totalItems.value = total_count
 
             return data
         } catch (err) {
