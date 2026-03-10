@@ -4,7 +4,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="footer-logo">
-            <img src="../../assets/AppIcon.svg" alt="logo" class="footer-logo-img" />
+            <AppIcon />
             <span class="text-h4 color-text-primary">WhatsNextAction</span>
           </div>
         </div>
@@ -37,6 +37,10 @@
   </footer>
 </template>
 
+<script setup>
+import AppIcon from '../../assets/AppIcon.vue'
+</script>
+
 <style scoped>
 .public-footer {
   background: var(--color-bg-secondary);
@@ -64,11 +68,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.footer-logo-img {
-  height: 36px;
-  width: 36px;
 }
 
 .footer-col {
