@@ -63,9 +63,11 @@
           :style="{
             top: item.top + 'px',
             height: item.height + 'px',
-            left: 'calc(64px + 4px)',
-            right: '4px',
+            left: (item.column / item.totalColumns * 100) + '%',
+            width: (100 / item.totalColumns) + '%',
           }"
+          @dragover.prevent="onWrapperDragOver"
+          @drop="onWrapperDrop"
       >
         <CalendarItem
             :item="item"
@@ -93,6 +95,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { isToday, parseISO } from '../../scripts/core/dateUtils.js'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
+import { layoutOverlappingItems } from '../../scripts/core/calendarLayout.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
 
@@ -134,7 +137,7 @@ const positionedItems = computed(() => {
   const minHeight = props.hourHeight / 4  // 15 minutes minimum
   const defaultDuration = 15  // 15 minutes default
 
-  return props.items
+  const items = props.items
       .filter(item => calendar.hasTime(item))
       .map(item => {
         const time = calendar.getItemTime(item)
@@ -152,6 +155,8 @@ const positionedItems = computed(() => {
           height,
         }
       })
+
+  return layoutOverlappingItems(items)
 })
 
 function formatHour(hour) {
@@ -183,6 +188,35 @@ function onQuickFormSubmit(data) {
 
 function onQuickFormCancel() {
   quickFormSlot.value = null
+}
+
+function getSlotFromEvent(event) {
+  const gridRect = gridRef.value.getBoundingClientRect()
+  const y = event.clientY - gridRect.top + gridRef.value.scrollTop
+  const hour = Math.max(0, Math.min(23, Math.floor(y / props.hourHeight)))
+  const half = (y - hour * props.hourHeight) >= props.hourHeight / 2 ? 30 : 0
+  return { hour, half }
+}
+
+function onWrapperDragOver(event) {
+  const { hour, half } = getSlotFromEvent(event)
+  dragOverSlot.value = { hour, half }
+}
+
+function onWrapperDrop(event) {
+  event.preventDefault()
+  const { hour, half } = getSlotFromEvent(event)
+  dragOverSlot.value = null
+
+  try {
+    const data = JSON.parse(event.dataTransfer.getData('text/plain'))
+    if (data.type === 'calendar-item') {
+      const newTime = formatTimeSlot(hour, half)
+      emit('reschedule', { actionId: data.id, newDate: props.date, newTime })
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
 }
 
 function onDragOver(hour, half) {
@@ -310,8 +344,8 @@ onUnmounted(() => {
 .time-grid__items {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: calc(64px + 4px);
+  right: 4px;
   bottom: 0;
   pointer-events: none;
   z-index: 5;

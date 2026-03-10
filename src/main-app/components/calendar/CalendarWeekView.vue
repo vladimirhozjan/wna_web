@@ -127,7 +127,11 @@
                 :style="{
                   top: item.top + 'px',
                   height: item.height + 'px',
+                  left: (item.column / item.totalColumns * 100) + '%',
+                  width: (100 / item.totalColumns) + '%',
                 }"
+                @dragover.prevent="onWrapperDragOver(day, $event)"
+                @drop="onWrapperDrop(day, $event)"
             >
               <CalendarItem
                   :item="item"
@@ -161,6 +165,7 @@ import {
   isToday,
 } from '../../scripts/core/dateUtils.js'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
+import { layoutOverlappingItems } from '../../scripts/core/calendarLayout.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
 
@@ -209,7 +214,7 @@ function getPositionedItemsForDate(date) {
   const minHeight = hourHeight / 4  // 15 minutes minimum
   const defaultDuration = 15  // 15 minutes default
 
-  return getTimedItemsForDate(date).map(item => {
+  const items = getTimedItemsForDate(date).map(item => {
     const time = calendar.getItemTime(item)
     const [hours, minutes] = time.split(':').map(Number)
     const top = (hours * hourHeight) + (minutes / 60) * hourHeight
@@ -225,6 +230,8 @@ function getPositionedItemsForDate(date) {
       height,
     }
   })
+
+  return layoutOverlappingItems(items)
 }
 
 function formatHour(hour) {
@@ -280,6 +287,33 @@ function onItemDragEnd() {
 function onAllDayDragOver(day) {
   dragOverDate.value = day.dateStr
   dragOverTime.value = null
+}
+
+function getHourFromEvent(event) {
+  const container = event.currentTarget.parentElement
+  const y = event.clientY - container.getBoundingClientRect().top
+  return Math.max(0, Math.min(23, Math.floor(y / hourHeight)))
+}
+
+function onWrapperDragOver(day, event) {
+  dragOverDate.value = day.dateStr
+  dragOverTime.value = { hour: getHourFromEvent(event) }
+}
+
+function onWrapperDrop(day, event) {
+  event.preventDefault()
+  dragOverDate.value = null
+  dragOverTime.value = null
+
+  try {
+    const data = JSON.parse(event.dataTransfer.getData('text/plain'))
+    if (data.type === 'calendar-item') {
+      const hour = getHourFromEvent(event)
+      emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime: formatTimeSlot(hour) })
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
 }
 
 function onCellDragOver(day, hour) {
@@ -547,8 +581,6 @@ onUnmounted(() => {
 
 .week-view__item-wrapper {
   position: absolute;
-  left: 0;
-  right: 0;
   pointer-events: auto;
 }
 
