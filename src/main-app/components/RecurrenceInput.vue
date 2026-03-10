@@ -93,9 +93,8 @@
             :disabled="disabled"
             @change="onChanged"
         />
-        <input
+        <DateInput
             v-if="endType === 'until'"
-            type="date"
             v-model="untilDate"
             class="text-body-m recurrence-date-input"
             :disabled="disabled"
@@ -114,6 +113,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { FREQUENCIES, WEEKDAYS, parseRRule, buildRRule, describeRRule } from '../scripts/core/rruleUtils.js'
+import DateInput from './DateInput.vue'
 
 const props = defineProps({
   modelValue: {

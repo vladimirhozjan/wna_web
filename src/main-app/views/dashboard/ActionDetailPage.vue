@@ -289,9 +289,8 @@
                   </label>
                 </div>
                 <div class="detail-date-inputs">
-                  <input
+                  <DateInput
                       ref="deferredDateInput"
-                      type="date"
                       v-model="dateEdit.date"
                       class="text-body-m detail-input"
                       :disabled="savingField === 'deferred'"
@@ -342,9 +341,8 @@
               <!-- Edit mode -->
               <div v-else class="detail-date-edit-wrapper">
                 <div class="detail-date-inputs">
-                  <input
+                  <DateInput
                       ref="dueDateInput"
-                      type="date"
                       v-model="dateEdit.date"
                       class="text-body-m detail-input"
                       :disabled="savingField === 'due_date'"
@@ -405,6 +403,7 @@ import Dropdown from '../../components/Dropdown.vue'
 import TagInput from '../../components/TagInput.vue'
 import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
+import DateInput from '../../components/DateInput.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
 import { todayModel } from '../../scripts/models/todayModel.js'
 import { waitingModel } from '../../scripts/models/waitingModel.js'

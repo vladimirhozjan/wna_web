@@ -9,9 +9,8 @@
           <template v-if="move.state.type === 'schedule'">
             <div class="form-group">
               <label class="text-body-s fw-medium label">Date</label>
-              <input
+              <DateInput
                   ref="dateInput"
-                  type="date"
                   v-model="move.state.date"
                   class="text-body-m input"
                   @keyup.enter="onConfirm"
@@ -102,6 +101,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { moveModel } from '../scripts/models/moveModel.js'
 import Btn from './Btn.vue'
+import DateInput from './DateInput.vue'
 
 const move = moveModel()
 const dateInput = ref(null)

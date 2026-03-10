@@ -57,7 +57,7 @@
               </label>
             </div>
             <div v-if="form.deferType" class="clarify-date-inputs">
-              <input type="date" v-model="form.deferDate" class="text-body-m clarify-input" />
+              <DateInput v-model="form.deferDate" class="text-body-m clarify-input" />
               <span v-if="!showDeferTime" class="text-body-s clarify-link" @click="showDeferTime = true">Add time</span>
               <input v-else type="time" v-model="form.deferTime" class="text-body-m clarify-input clarify-input--time" />
               <template v-if="form.deferType === 'scheduled' && form.deferTime">
@@ -82,7 +82,7 @@
           <div class="clarify-date-field">
             <label class="text-body-s fw-semibold clarify-label">Due</label>
             <div class="clarify-date-inputs">
-              <input type="date" v-model="form.dueDate" class="text-body-m clarify-input" />
+              <DateInput v-model="form.dueDate" class="text-body-m clarify-input" />
               <span v-if="form.dueDate && !showDueTime" class="text-body-s clarify-link" @click="showDueTime = true">Add time</span>
               <input v-if="form.dueDate && showDueTime" type="time" v-model="form.dueTime" class="text-body-m clarify-input clarify-input--time" />
             </div>
@@ -110,6 +110,7 @@
 import { reactive, ref, computed, onMounted } from 'vue'
 import Btn from '../Btn.vue'
 import TagInput from '../TagInput.vue'
+import DateInput from '../DateInput.vue'
 
 const props = defineProps({
   initialData: {
