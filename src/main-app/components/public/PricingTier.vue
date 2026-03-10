@@ -15,7 +15,7 @@
       </template>
     </div>
 
-    <p v-if="period === 'year' && price > 0" class="text-footnote tier__footnote">
+    <p v-if="period === 'year'" class="text-footnote tier__footnote" :style="{ visibility: price > 0 ? 'visible' : 'hidden' }">
       Billed annually at €{{ price * 12 }}
     </p>
 

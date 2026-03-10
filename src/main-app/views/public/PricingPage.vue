@@ -253,11 +253,13 @@ const comparisonRows = [
 }
 
 .toggle-btn {
+  min-width: 130px;
   padding: 12px 28px;
   border: 1px solid var(--color-border-light);
   background: var(--color-bg-primary);
   color: var(--color-text-secondary);
   cursor: pointer;
+  text-align: center;
   transition: 0.15s background, 0.15s color, 0.15s border-color;
 }
 
@@ -285,7 +287,8 @@ const comparisonRows = [
   position: absolute;
   top: -10px;
   right: -10px;
-  background: var(--color-success-light);
+  background-color: var(--color-bg-primary);
+  background-image: linear-gradient(var(--color-success-light), var(--color-success-light));
   color: var(--color-success);
   padding: 2px 8px;
   border-radius: 20px;
