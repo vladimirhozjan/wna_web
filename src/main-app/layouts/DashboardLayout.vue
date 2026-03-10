@@ -92,6 +92,12 @@ watch(
   overflow: hidden;
 }
 
+@media (min-width: 769px) {
+  .dashboard-content {
+    padding: 0 30px;
+  }
+}
+
 .desktop-only {
   display: flex;
 }
