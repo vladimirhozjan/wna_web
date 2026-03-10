@@ -100,6 +100,7 @@ function formatBytes(bytes) {
   padding: 8px 16px;
   border-bottom: 1px solid var(--color-border-light);
   flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .toolbar__left {
@@ -125,6 +126,7 @@ function formatBytes(bytes) {
   color: var(--color-text-primary);
   background: var(--color-bg-primary);
   width: 160px;
+  box-sizing: border-box;
   transition: border-color 0.15s;
 }
 
@@ -212,11 +214,13 @@ function formatBytes(bytes) {
   .toolbar__right {
     flex-wrap: wrap;
     gap: 8px;
+    width: 100%;
   }
 
   .toolbar__search {
     flex: 1 1 100%;
     order: -1;
+    min-width: 0;
   }
 
   .search-input {

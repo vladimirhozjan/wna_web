@@ -5,7 +5,7 @@
       <div class="ref-header">
         <h1 class="page-title">Reference</h1>
         <SegmentSwitch
-            :options="[{ value: 'files', label: 'Files' }, { value: 'trash', label: 'Trash' }]"
+            :options="[{ value: 'files', label: 'Files' }, { value: 'attachments', label: 'Attachments' }, { value: 'trash', label: 'Trash' }]"
             :model-value="activeTab"
             @update:model-value="switchTab"
         />
@@ -17,7 +17,7 @@
             :breadcrumbs="model.breadcrumbs.value"
             :search-query="model.searchQuery.value"
             :view-mode="model.viewMode.value"
-            :quota="model.quota.value"
+            :quota="filesQuota"
             @navigate="onNavigate"
             @search="onSearch"
             @new-folder="model.startNewFolder()"
@@ -93,6 +93,66 @@
         </div>
       </template>
 
+      <!-- Attachments Tab -->
+      <template v-if="activeTab === 'attachments'">
+        <div class="att-toolbar">
+          <div v-if="attachmentsQuota" class="att-quota">
+            <span class="text-footnote quota-text">{{ formatSize(attachmentsQuota.used_bytes) }} / {{ formatSize(attachmentsQuota.quota_bytes) }}</span>
+            <div class="quota-bar">
+              <div class="quota-bar__fill" :style="{ width: attachmentsQuotaPercent + '%' }"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="attModel_.loading.value && attModel_.items.value.length === 0" class="ref-loading">
+          <span class="spinner"></span>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="!attModel_.loading.value && attModel_.items.value.length === 0" class="ref-empty">
+          <AttachmentIcon class="empty-state__icon" />
+          <h2 class="text-h3 empty-state__title">No attachments</h2>
+          <p class="text-body-m empty-state__text">
+            Attachments added to your items will appear here.
+          </p>
+        </div>
+
+        <!-- Attachment list -->
+        <div v-else class="att-list">
+          <div
+              v-for="att in attModel_.items.value"
+              :key="att.id"
+              class="att-row"
+          >
+            <div class="att-row__main">
+              <RefFileIcon class="att-file-icon" :mime-type="att.mime_type" />
+              <div class="att-row__content">
+                <span class="text-body-m att-row__name">
+                  <FileName :name="att.file_name" />
+                </span>
+                <div class="att-row__meta">
+                  <router-link :to="parentRoute(att)" class="att-meta-chip" @click.stop>
+                    <ItemTypeIcon :type="att.item_type.toUpperCase()" />
+                    <span class="att-meta-chip__text">{{ att.item_title || 'Untitled' }}</span>
+                  </router-link>
+                  <span class="att-meta-size text-footnote">{{ formatSize(att.size_bytes) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="att-row__actions" @click.stop>
+              <button class="att-action-btn att-action-btn--download" title="Download" @click="onDownloadAttachment(att)">
+                <DownloadIcon />
+              </button>
+              <ActionBtn @click="onDeleteAttachment(att)" />
+            </div>
+          </div>
+          <div v-if="attModel_.hasMore.value" class="load-more">
+            <Btn variant="ghost" size="sm" @click="attModel_.loadMore()">Load more</Btn>
+          </div>
+        </div>
+      </template>
+
       <!-- Trash Tab -->
       <template v-if="activeTab === 'trash'">
         <div class="trash-toolbar">
@@ -164,7 +224,7 @@
 </template>
 
 <script setup>
-import {ref, watch, onMounted} from 'vue'
+import {ref, computed, watch, onMounted} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
@@ -174,24 +234,55 @@ import RefListView from '../../components/reference/RefListView.vue'
 import RefGridView from '../../components/reference/RefGridView.vue'
 import RefPreviewModal from '../../components/reference/RefPreviewModal.vue'
 import RefRenameModal from '../../components/reference/RefRenameModal.vue'
+import RefFileIcon from '../../components/reference/RefFileIcon.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import AttachmentIcon from '../../assets/AttachmentIcon.vue'
+import DownloadIcon from '../../assets/DownloadIcon.vue'
+import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
+import ActionBtn from '../../components/ActionBtn.vue'
 import {referenceModel} from '../../scripts/models/referenceModel.js'
 import {referenceTrashModel} from '../../scripts/models/referenceTrashModel.js'
+import {attachmentListModel} from '../../scripts/models/attachmentListModel.js'
 import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import FileName from '../../components/reference/FileName.vue'
 import {errorModel} from '../../scripts/core/errorModel.js'
 import {confirmModel} from '../../scripts/core/confirmModel.js'
+import {downloadAttachment, deleteAttachment} from '../../scripts/core/apiClient.js'
 
 const route = useRoute()
 const router = useRouter()
 const model = referenceModel()
 const trashModel_ = referenceTrashModel()
+const attModel_ = attachmentListModel()
 const toaster = errorModel()
 const confirm = confirmModel()
 
 const activeTab = ref('files')
 const fileInputRef = ref(null)
+
+const filesQuota = computed(() => {
+  const q = model.quota.value
+  if (!q) return null
+  return {
+    used_bytes: q.reference_bytes ?? q.used_bytes,
+    quota_bytes: q.quota_bytes,
+  }
+})
+
+const attachmentsQuota = computed(() => {
+  const q = model.quota.value
+  if (!q || q.attachment_bytes == null) return null
+  return {
+    used_bytes: q.attachment_bytes,
+    quota_bytes: q.quota_bytes,
+  }
+})
+
+const attachmentsQuotaPercent = computed(() => {
+  if (!attachmentsQuota.value || !attachmentsQuota.value.quota_bytes) return 0
+  return Math.min(100, Math.round((attachmentsQuota.value.used_bytes / attachmentsQuota.value.quota_bytes) * 100))
+})
 
 // Watch model errors
 watch(() => model.error.value, (err) => {
@@ -204,10 +295,17 @@ watch(() => trashModel_.error.value, (err) => {
   toaster.push(typeof err === 'string' ? err : err.message ?? 'Unknown error')
 })
 
+watch(() => attModel_.error.value, (err) => {
+  if (!err) return
+  toaster.push(typeof err === 'string' ? err : err.message ?? 'Unknown error')
+})
+
 // Sync route query params → state
 watch(() => route.query, (query) => {
   if (query.tab === 'trash') {
     activeTab.value = 'trash'
+  } else if (query.tab === 'attachments') {
+    activeTab.value = 'attachments'
   } else {
     activeTab.value = 'files'
     const folderId = query.folder || null
@@ -222,6 +320,8 @@ onMounted(() => {
   if (activeTab.value === 'files') {
     const folderId = route.query.folder || null
     model.navigateToFolder(folderId).catch(() => {})
+  } else if (activeTab.value === 'attachments') {
+    attModel_.loadAttachments({reset: true}).catch(() => {})
   } else {
     trashModel_.loadTrash({reset: true}).catch(() => {})
   }
@@ -232,9 +332,14 @@ function switchTab(tab) {
   if (tab === 'trash') {
     router.replace({query: {tab: 'trash'}})
     trashModel_.loadTrash({reset: true}).catch(() => {})
+  } else if (tab === 'attachments') {
+    router.replace({query: {tab: 'attachments'}})
+    attModel_.loadAttachments({reset: true}).catch(() => {})
   } else {
     const query = model.currentFolderId.value ? {folder: model.currentFolderId.value} : {}
     router.replace({query})
+    const folderId = model.currentFolderId.value || null
+    model.navigateToFolder(folderId).catch(() => {})
   }
 }
 
@@ -389,6 +494,49 @@ async function onEmptyTrash() {
   }
 }
 
+function parentRoute(att) {
+  const type = (att.item_type || '').toLowerCase()
+  const name = type === 'action' ? 'action' : type === 'project' ? 'project' : 'stuff'
+  return {name: `${name}-detail`, params: {id: att.item_id}}
+}
+
+async function onDownloadAttachment(att) {
+  try {
+    const entityType = att.item_type?.toLowerCase()
+    const res = await downloadAttachment(entityType, att.item_id, att.id)
+    const blob = res.data
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = att.file_name
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch (err) {
+    toaster.push(err.message || 'Download failed')
+  }
+}
+
+async function onDeleteAttachment(att) {
+  const confirmed = await confirm.show({
+    title: 'Delete Attachment',
+    message: `Are you sure you want to delete "${att.file_name}"? This cannot be undone.`,
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+  try {
+    const entityType = att.item_type?.toLowerCase()
+    await deleteAttachment(entityType, att.item_id, att.id)
+    attModel_.removeItem(att.id)
+    toaster.success('Attachment deleted')
+    model.loadQuota()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to delete attachment')
+  }
+}
+
 function formatSize(bytes) {
   if (!bytes && bytes !== 0) return ''
   if (bytes < 1024) return bytes + ' B'
@@ -404,6 +552,8 @@ function formatSize(bytes) {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .ref-header {
@@ -604,13 +754,188 @@ function formatSize(bytes) {
   padding: 16px;
 }
 
+/* Attachments tab */
+.att-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.att-quota {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 100px;
+}
+
+.quota-text {
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+.quota-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--color-bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.quota-bar__fill {
+  height: 100%;
+  background: var(--color-action);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.att-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.att-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.att-row__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.att-file-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+.att-row__content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.att-row__name {
+  color: var(--color-text-primary);
+  min-width: 120px;
+}
+
+.att-row__name :deep(.filename) {
+  display: flex;
+  width: 100%;
+}
+
+.att-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.att-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-action);
+  text-decoration: none;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.att-meta-chip:hover {
+  text-decoration: underline;
+}
+
+.att-meta-chip :deep(.item-type-icon svg) {
+  width: 14px;
+  height: 14px;
+}
+
+.att-meta-chip__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.att-meta-size {
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.att-row__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.att-row:hover .att-row__actions {
+  opacity: 1;
+}
+
+.att-action-btn {
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.att-action-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-action);
+}
+
+.att-action-btn :deep(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .att-row__actions {
+    opacity: 1;
+  }
+}
+
 @media (max-width: 600px) {
+  .ref-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
   .trash-table .col-size {
     display: none;
   }
 
   .trash-table .col-actions {
     width: 120px;
+  }
+
+  .att-meta-chip {
+    max-width: 140px;
   }
 }
 </style>

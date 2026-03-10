@@ -1321,6 +1321,18 @@ export async function deleteAttachment(entityType, itemId, attachmentId) {
     }
 }
 
+export async function listAllAttachments({limit = 20, offset = 0} = {}) {
+    try {
+        const res = await httpApi.get('/v1/reference/attachments', {
+            headers: authHeaders(),
+            params: {limit, offset},
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Settings API ──
 
 export async function getSettings() {
@@ -1554,6 +1566,7 @@ const apiClient = {
     downloadAttachment,
     replaceAttachment,
     deleteAttachment,
+    listAllAttachments,
     // Recurring API
     listRecurring,
     createRecurring,
