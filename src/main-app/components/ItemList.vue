@@ -54,6 +54,7 @@
             :editable="editable"
             :no-hover="isDragging"
             :no-checkbox="noCheckbox"
+            :no-initial-animation="noInitialAnimation"
             @update="(id, data) => emit('update', id, data)"
             @check="(id, checked) => emit('check', id, checked)"
             @click="onItemClick(item, index)"
@@ -114,6 +115,7 @@ const props = defineProps({
   sourceType: { type: String, default: null },
   completingIds: { type: Array, default: () => [] },
   acceptDrop: { type: Array, default: () => [] },
+  noInitialAnimation: { type: Boolean, default: false },
 })
 
 const drag = dragModel()

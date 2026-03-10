@@ -1,6 +1,6 @@
 <template>
   <DashboardLayout>
-    <div class="inbox-page" :class="{ 'inbox-page--clarify-mode': clarifyMode }">
+    <div class="inbox-page">
 
       <!-- List Panel -->
       <div class="inbox-list-panel">
@@ -10,7 +10,7 @@
             <h1 class="page-title">Inbox</h1>
             <Btn
                 v-if="items.length > 0 && !clarifyMode"
-                variant="ghost"
+                variant="primary"
                 size="sm"
                 @click="onClarify"
             >
@@ -94,16 +94,20 @@
         </div>
       </div>
 
-      <!-- Clarify Panel (Desktop) -->
-      <div class="inbox-clarify-panel" v-if="clarifyMode && currentClarifyItem && !isMobile">
-        <ClarifyPanel
-            :key="currentClarifyItem.id"
-            :stuff-item="currentClarifyItem"
-            mode="inline"
-            @done="onClarifyDone"
-            @cancel="exitClarifyMode"
-        />
-      </div>
+      <!-- Clarify Panel (Desktop - Slide-over) -->
+      <Teleport to="body" v-if="clarifyMode && currentClarifyItem && !isMobile">
+        <div class="clarify-slideover-overlay" @click="exitClarifyMode">
+          <div class="clarify-slideover" @click.stop>
+            <ClarifyPanel
+                :key="currentClarifyItem.id"
+                :stuff-item="currentClarifyItem"
+                mode="modal"
+                @done="onClarifyDone"
+                @cancel="exitClarifyMode"
+            />
+          </div>
+        </div>
+      </Teleport>
 
       <!-- Clarify Panel (Mobile - Fullscreen) -->
       <Teleport to="body" v-if="clarifyMode && currentClarifyItem && isMobile">
@@ -403,10 +407,6 @@ function onClarifyDone(processedItem) {
   padding-right: 1px;
 }
 
-.inbox-page--clarify-mode {
-  flex-direction: row;
-}
-
 .inbox-list-panel {
   display: flex;
   flex-direction: column;
@@ -415,21 +415,9 @@ function onClarifyDone(processedItem) {
   min-width: 0;
 }
 
-.inbox-page--clarify-mode .inbox-list-panel {
-  flex: 0 0 320px;
-  border-right: 1px solid var(--color-border-light);
-}
-
-.inbox-clarify-panel {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-}
-
 .inbox-header {
   flex-shrink: 0;
   margin-bottom: 15px;
-  border-right: 1px solid var(--color-border-light);
 }
 
 .inbox-content {
@@ -542,15 +530,27 @@ h1 {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .inbox-page--clarify-mode .inbox-list-panel {
-    flex: 1;
-    border-right: none;
-  }
+/* Clarify Slide-over */
+.clarify-slideover-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay-light);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
 
-  .inbox-clarify-panel {
-    display: none;
-  }
+.clarify-slideover {
+  width: 480px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--color-bg-primary);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 </style>

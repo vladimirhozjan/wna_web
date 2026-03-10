@@ -10,14 +10,14 @@
         </div>
         <div v-if="item" class="detail-header-right">
           <div class="detail-nav-buttons">
-            <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst">⏮</Btn>
-            <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev">◀</Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst"><ChevronsLeftIcon class="detail-nav-icon" /></Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
             <span class="text-body-s detail-position">
               <span class="detail-nav-spinner" v-if="navigating"></span>
               {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
-            <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext">▶</Btn>
-            <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast">⏭</Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext"><TriangleRightIcon class="detail-nav-icon" /></Btn>
+            <Btn variant="icon" class="detail-nav-btn" title="Last" :disabled="navigating || currentPosition >= totalItems - 1" @click="goLast"><ChevronsRightIcon class="detail-nav-icon" /></Btn>
           </div>
         </div>
       </div>
@@ -237,6 +237,10 @@ import WaitingIcon from '../../assets/WaitingIcon.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import SomedayIcon from '../../assets/SomedayIcon.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
+import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
+import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
+import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
+import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -804,13 +808,18 @@ async function onActivate() {
   font-size: var(--font-size-xs);
 }
 
+.detail-nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .detail-nav-spinner {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border: 2px solid var(--color-border-light);
   border-top-color: var(--color-action);
   border-radius: 50%;

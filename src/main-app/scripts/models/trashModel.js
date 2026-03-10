@@ -21,7 +21,7 @@ export function trashModel() {
                 hasMore.value = true
             }
 
-            const data = await apiClient.listTrash({
+            const { items: data } = await apiClient.listTrash({
                 limit: limit.value,
                 cursor: cursor.value,
             })

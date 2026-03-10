@@ -37,21 +37,10 @@
     <div v-else class="topnav-auth-right">
       <QuickAddBtn @add="onQuickAdd" />
 
-      <!-- Dashboard mobile: hamburger opens sidebar -->
-      <Btn
-        v-if="context === 'dashboard'"
-        class="hamburger mobile-only"
-        variant="ghost"
-        size="sm"
-        @click="$emit('open-sidebar')"
-      >
-        ☰
-      </Btn>
-
-      <div class="avatar-container" :class="{ 'desktop-only': context === 'dashboard' }" ref="avatarContainerRef">
+      <div class="avatar-container" ref="avatarContainerRef">
         <UserAvatar
           :email="user?.email"
-          @toggle-menu="showDropdown = !showDropdown"
+          @toggle-menu="onAvatarClick"
         />
         <TopNavDropdown
           v-if="showDropdown"
@@ -77,7 +66,7 @@ import AppIcon from "../assets/AppIcon.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
 
-defineProps({
+const props = defineProps({
   authenticated: {
     type: Boolean,
     default: false,
@@ -126,6 +115,14 @@ function goToSettings() {
 function handleLogout() {
   showDropdown.value = false;
   emit("logout");
+}
+
+function onAvatarClick() {
+  if (props.context === "dashboard" && window.innerWidth <= 768) {
+    emit("open-sidebar");
+  } else {
+    showDropdown.value = !showDropdown.value;
+  }
 }
 
 const { addStuff } = stuffModel();

@@ -8,6 +8,7 @@
       <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
         <AnimatedCheckbox
             :checked="checked"
+            :no-initial-animation="noInitialAnimation"
             @change="onCheck"
         />
       </div>
@@ -85,6 +86,10 @@ const props = defineProps({
     default: false
   },
   noCheckbox: {
+    type: Boolean,
+    default: false
+  },
+  noInitialAnimation: {
     type: Boolean,
     default: false
   }

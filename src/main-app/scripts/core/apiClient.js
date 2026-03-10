@@ -318,15 +318,6 @@ export async function listStuff({limit = 10, cursor = null} = {}) {
     }
 }
 
-export async function inboxCount() {
-    try {
-        const res = await httpApi.get(`/v1/stuff/count`, {headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
 export async function logoutUser() {
     // Revoke the current session on the server before clearing local state
     const refreshToken = localStorage.getItem('refresh_token')
@@ -597,15 +588,6 @@ export async function clearDueDate(actionId) {
     }
 }
 
-export async function nextActionCount() {
-    try {
-        const res = await httpApi.get('/v1/nextActions/count', {headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
 // ── Today API ──
 
 export async function listTodayActions({limit = 10, cursor = null, tags = null} = {}) {
@@ -616,15 +598,6 @@ export async function listTodayActions({limit = 10, cursor = null, tags = null} 
         if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/today', {params, headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
-export async function todayCount() {
-    try {
-        const res = await httpApi.get('/v1/today/count', {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -786,15 +759,6 @@ export async function moveProject(projectId, destination) {
     }
 }
 
-export async function projectsCount() {
-    try {
-        const res = await httpApi.get('/v1/projects/count', {headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
 export async function getProjectByPosition(position) {
     try {
         const res = await httpApi.get(`/v1/projects/pos/${position}`, {headers: authHeaders()})
@@ -911,15 +875,6 @@ export async function getCompletedByPosition(position) {
     }
 }
 
-export async function completedCount() {
-    try {
-        const res = await httpApi.get('/v1/completed/count', {headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
 // ── Uncomplete API ──
 
 export async function uncompleteStuff(stuffId) {
@@ -959,15 +914,6 @@ export async function listWaiting({limit = 10, cursor = null, tags = null} = {})
         if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/waiting', {params, headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
-export async function waitingCount() {
-    try {
-        const res = await httpApi.get('/v1/waiting/count', {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1479,15 +1425,6 @@ export async function listOverdue({limit = 10, cursor = null} = {}) {
     }
 }
 
-export async function overdueCount() {
-    try {
-        const res = await httpApi.get('/v1/overdue/count', {headers: authHeaders()})
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
 // ── Engage API ──
 
 export async function getEngage({tags = null} = {}) {
@@ -1523,7 +1460,6 @@ const apiClient = {
     trashStuff,
     moveStuff,
     listStuff,
-    inboxCount,
     // Clarify API stubs
     clarifyToAction,
     clarifyToProject,
@@ -1538,7 +1474,6 @@ const apiClient = {
     deleteAction,
     trashAction,
     moveAction,
-    nextActionCount,
     getActionByPosition,
     completeAction,
     changeActionState,
@@ -1550,7 +1485,6 @@ const apiClient = {
     somedayProject,
     // Today API
     listTodayActions,
-    todayCount,
     todayAction,
     getTodayActionByPosition,
     // Project API
@@ -1561,7 +1495,6 @@ const apiClient = {
     deleteProject,
     trashProject,
     moveProject,
-    projectsCount,
     getProjectByPosition,
     completeProject,
     listProjectActions,
@@ -1577,7 +1510,6 @@ const apiClient = {
     restoreAction,
     restoreProject,
     listCompleted,
-    completedCount,
     getCompletedByPosition,
     uncompleteStuff,
     uncompleteAction,
@@ -1586,7 +1518,6 @@ const apiClient = {
     getCalendarDensity,
     // Waiting For API
     listWaiting,
-    waitingCount,
     getWaitingByPosition,
     moveWaitingPosition,
     waitAction,
@@ -1634,7 +1565,6 @@ const apiClient = {
     getStats,
     // Overdue API
     listOverdue,
-    overdueCount,
     // Engage API
     getEngage,
     // Email verification API

@@ -34,7 +34,7 @@ export function todayModel() {
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
-            const data = await apiClient.listTodayActions({
+            const { total_count, items: data } = await apiClient.listTodayActions({
                 limit: limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
@@ -54,10 +54,7 @@ export function todayModel() {
 
             hasMore.value = data.length >= limit.value
 
-            const count_data = await apiClient.todayCount()
-            if (myVersion === loadVersion) {
-                totalItems.value = count_data.count
-            }
+            totalItems.value = total_count
 
             return data
         } catch (err) {
