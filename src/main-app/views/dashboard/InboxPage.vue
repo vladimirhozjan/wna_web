@@ -10,7 +10,7 @@
             <h1 class="page-title">Inbox</h1>
             <Btn
                 v-if="items.length > 0 && !clarifyMode"
-                variant="ghost"
+                variant="primary"
                 size="sm"
                 @click="onClarify"
             >
