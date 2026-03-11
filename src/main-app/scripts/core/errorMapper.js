@@ -16,6 +16,7 @@ export const ErrorScenario = Object.freeze({
     LOGIN: "Login",
     REGISTER: "Register",
     CHANGE_PASSWORD: "ChangePassword",
+    GOOGLE_LOGIN: "GoogleLogin",
     GENERIC: "Generic",
 })
 
@@ -32,6 +33,10 @@ export function mapApiError(error, scenario=ErrorScenario.GENERIC) {
             }
             if (status === 401) {
                 return "Incorrect email and/or password. Please correct your credentials.";
+            }
+        } else if (scenario === ErrorScenario.GOOGLE_LOGIN) {
+            if (status === 401) {
+                return "Google authentication failed.";
             }
         } else if (scenario === ErrorScenario.REGISTER) {
             if (status === 409) {

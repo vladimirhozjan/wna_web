@@ -146,6 +146,60 @@ export function authModel() {
         }
     }
 
+    async function googleLogin(idToken) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.googleAuth(idToken)
+
+            if (data.user) {
+                currentUser.value = data.user
+                localStorage.setItem('current_user', JSON.stringify(data.user))
+            }
+
+            if (localStorage.getItem('auth_token')) {
+                isAuthenticated.value = true
+            }
+
+            return data
+
+        } catch (err) {
+            error.value = err
+            throw err
+
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function googleSsoLogin(code) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const data = await apiClient.googleSso(code)
+
+            if (data.user) {
+                currentUser.value = data.user
+                localStorage.setItem('current_user', JSON.stringify(data.user))
+            }
+
+            if (localStorage.getItem('auth_token')) {
+                isAuthenticated.value = true
+            }
+
+            return data
+
+        } catch (err) {
+            error.value = err
+            throw err
+
+        } finally {
+            loading.value = false
+        }
+    }
+
     async function refreshToken() {
         loading.value = true
         error.value = null
@@ -214,6 +268,8 @@ export function authModel() {
         // actions
         registerUser,
         loginUser,
+        googleLogin,
+        googleSsoLogin,
         loadUser,
         refreshToken,
         logoutUser,

@@ -1437,6 +1437,48 @@ export async function listOverdue({limit = 10, cursor = null} = {}) {
     }
 }
 
+// ── Google Auth API ──
+
+export async function googleAuth(idToken) {
+    try {
+        const res = await httpApi.post('/v1/user/google-auth', {id_token: idToken})
+        const data = res.data
+
+        if (!data.access_token || !data.refresh_token) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Unexpected response from server')
+        }
+
+        localStorage.setItem('auth_token', data.access_token)
+        localStorage.setItem('refresh_token', data.refresh_token)
+        if (data.refresh_token_hash) localStorage.setItem('refresh_token_hash', data.refresh_token_hash)
+
+        return data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function googleSso(code) {
+    try {
+        const res = await httpApi.post('/v1/user/google-sso', {code})
+        const data = res.data
+
+        if (!data.access_token || !data.refresh_token) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('Unexpected response from server')
+        }
+
+        localStorage.setItem('auth_token', data.access_token)
+        localStorage.setItem('refresh_token', data.refresh_token)
+        if (data.refresh_token_hash) localStorage.setItem('refresh_token_hash', data.refresh_token_hash)
+
+        return data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Engage API ──
 
 export async function getEngage({tags = null} = {}) {
@@ -1586,6 +1628,9 @@ const apiClient = {
     // Notification API
     getNotificationSettings,
     updateNotificationSettings,
+    // Google Auth API
+    googleAuth,
+    googleSso,
 }
 
 export default apiClient

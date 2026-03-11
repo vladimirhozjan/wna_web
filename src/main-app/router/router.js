@@ -21,6 +21,7 @@ import ReviewPage from '../views/dashboard/ReviewPage.vue'
 import EngagePage from '../views/dashboard/EngagePage.vue'
 import OverduePage from '../views/dashboard/OverduePage.vue'
 import VerifyEmailPage from '../views/public/VerifyEmailPage.vue'
+import GoogleSsoPage from '../views/public/GoogleSsoPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
@@ -30,6 +31,7 @@ const routes = [
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
     {path: '/reset', name: 'reset', component: LandingPage, props: {mode: 'reset'}},
     {path: '/verify', name: 'verify-email', component: VerifyEmailPage},
+    {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage},
     {path: '/engage', name: 'engage', component: EngagePage},
     {path: '/next', name: 'next', component: NextPage},
     {path: '/calendar', name: 'calendar', component: CalendarPage},
