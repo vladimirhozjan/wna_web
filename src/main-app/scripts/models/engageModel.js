@@ -9,6 +9,7 @@ const topActions = ref([])
 const topWaiting = ref([])
 const stuckProjects = ref([])
 const loading = ref(false)
+const loaded = ref(false)
 
 export function engageModel() {
 
@@ -23,14 +24,15 @@ export function engageModel() {
             const data = await apiClient.getEngage({ tags: tagsParam })
 
             setStats(data.stats)
-            topToday.value = data.today || []
-            topActions.value = data.next || []
-            topWaiting.value = data.waiting || []
+            topToday.value = data.today?.items || data.today || []
+            topActions.value = data.next?.items || data.next || []
+            topWaiting.value = data.waiting?.items || data.waiting || []
 
-            const allProjects = data.projects || []
+            const allProjects = data.projects?.items || data.projects || []
             stuckProjects.value = allProjects.filter(p => !p.next_action_id)
         } finally {
             loading.value = false
+            loaded.value = true
         }
     }
 
@@ -43,6 +45,7 @@ export function engageModel() {
         topWaiting,
         stuckProjects,
         loading,
+        loaded,
         loadDashboard,
         daysSinceReview: review.daysSinceReview,
         isReviewOverdue: review.isOverdue,

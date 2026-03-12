@@ -14,7 +14,7 @@
       <div class="engage-content">
 
         <!-- Loading state -->
-        <div v-if="loading && !stats" class="loading-state">
+        <div v-if="!initialLoadDone" class="loading-state">
           <span class="loading-spinner"></span>
         </div>
 
@@ -206,8 +206,16 @@ const effectiveTags = computed(() => {
     return tags
 })
 
-onMounted(() => {
-    loadDashboard({ tags: effectiveTags.value })
+const initialLoadDone = ref(false)
+
+onMounted(async () => {
+    try {
+        await loadDashboard({ tags: effectiveTags.value })
+    } catch {
+        // API error — empty state will show
+    } finally {
+        initialLoadDone.value = true
+    }
 })
 
 watch(effectiveTags, (tags) => {
@@ -277,8 +285,7 @@ const hasNudges = computed(() => {
 })
 
 const noActionItems = computed(() => {
-    return !loading.value
-        && topToday.value.length === 0
+    return topToday.value.length === 0
         && topActions.value.length === 0
         && topWaiting.value.length === 0
 })
