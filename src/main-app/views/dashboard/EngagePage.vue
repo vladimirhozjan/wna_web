@@ -136,20 +136,24 @@
           </div>
 
           <!-- Empty state: filtered -->
-          <div v-if="noActionItems && (activeTag || filterTags.length)" class="empty-state">
-            <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
+          <div v-if="noActionItems && (activeTag || filterTags.length)" class="card">
+            <div class="empty-state">
+              <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
+            </div>
           </div>
 
           <!-- Empty state: truly empty -->
-          <div v-else-if="isEmpty" class="empty-state">
-            <EngageIcon class="empty-state__icon" />
-            <h2 class="text-h3 empty-state__title">Ready to get things done?</h2>
-            <p class="text-body-m empty-state__text">
-              Capture what's on your mind and let your system take care of the rest.
-            </p>
-            <Btn variant="primary" size="sm" class="empty-state__btn" @click="router.push({ name: 'inbox' })">
-              Go to Inbox
-            </Btn>
+          <div v-else-if="isEmpty" class="card">
+            <div class="empty-state">
+              <EngageIcon class="empty-state__icon" />
+              <h2 class="text-h3 empty-state__title">Ready to get things done?</h2>
+              <p class="text-body-m empty-state__text">
+                Capture what's on your mind and let your system take care of the rest.
+              </p>
+              <Btn variant="primary" size="sm" class="empty-state__btn" @click="router.push({ name: 'inbox' })">
+                Go to Inbox
+              </Btn>
+            </div>
           </div>
 
         </template>
