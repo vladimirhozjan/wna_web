@@ -16,6 +16,7 @@
             :loading-ids="loadingIds"
             :completing-ids="completingIds"
             :no-initial-animation="true"
+            source-type="completed"
             @load-more="loadMore"
             @click="onItemClick"
             @check="onItemCheck"

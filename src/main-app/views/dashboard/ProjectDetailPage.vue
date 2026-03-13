@@ -78,6 +78,14 @@
             >
               Activate
             </Btn>
+            <Btn
+                variant="ghost"
+                size="sm"
+                :loading="actionLoading === 'complete'"
+                @click="onComplete"
+            >
+              Complete
+            </Btn>
           </template>
           <template v-else>
             <Btn
@@ -89,7 +97,7 @@
               Complete
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="ghost"
@@ -99,7 +107,9 @@
                 Move
               </Btn>
             </template>
-            <button class="dropdown-item" @click="onMoveToSomeday"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+            <button class="dropdown-item" @click="onMoveTo('ACTION')"><NextIcon class="dropdown-item-icon" /> Next Actions</button>
+            <button class="dropdown-item" @click="onMoveTo('REFERENCE')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
+            <button v-if="!isSomeday" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
           </Dropdown>
           <Btn
               v-if="!isCompleted"
@@ -427,6 +437,8 @@ import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
+import NextIcon from '../../assets/NextIcon.vue'
+import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import SomedayIcon from '../../assets/SomedayIcon.vue'
 import WarningIcon from '../../assets/WarningIcon.vue'
 import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
@@ -857,23 +869,61 @@ async function onActivate() {
   }
 }
 
-async function onMoveToSomeday() {
+async function onMoveTo(target) {
   showMoveDialog.value = false
-  actionLoading.value = 'move'
-  const title = truncateTitle(project.value.title)
-  const oldState = project.value.state
-  project.value.state = 'SOMEDAY'
 
-  try {
-    await apiClient.somedayProject(project.value.id)
-    statsModel().refreshStats()
-    toaster.success(`"${title}" moved to Someday`)
-    await navigateToNextOrPrev()
-  } catch (err) {
-    project.value.state = oldState
-    toaster.push(err.message || 'Failed to move project')
-  } finally {
-    actionLoading.value = null
+  const stateLabels = {
+    ACTION: 'Next Actions',
+    REFERENCE: 'Reference',
+    SOMEDAY: 'Someday'
+  }
+
+  if (target === 'ACTION') {
+    actionLoading.value = 'move'
+    try {
+      await apiClient.transformProjectToAction(project.value.id)
+      statsModel().refreshStats()
+      toaster.success(`"${truncateTitle(project.value.title)}" converted to action`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to convert to action')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
+  if (target === 'REFERENCE') {
+    actionLoading.value = 'move'
+    try {
+      await apiClient.transformProjectToFile(project.value.id)
+      statsModel().refreshStats()
+      toaster.success(`"${truncateTitle(project.value.title)}" moved to Reference`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move to Reference')
+    } finally {
+      actionLoading.value = null
+    }
+    return
+  }
+
+  if (target === 'SOMEDAY') {
+    actionLoading.value = 'move'
+    const oldState = project.value.state
+    project.value.state = 'SOMEDAY'
+
+    try {
+      await apiClient.somedayProject(project.value.id)
+      statsModel().refreshStats()
+      toaster.success(`"${truncateTitle(project.value.title)}" moved to Someday`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      project.value.state = oldState
+      toaster.push(err.message || 'Failed to move project')
+    } finally {
+      actionLoading.value = null
+    }
   }
 }
 

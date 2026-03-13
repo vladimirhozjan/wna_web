@@ -129,7 +129,7 @@
               Done
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="ghost"
@@ -145,6 +145,7 @@
             <button v-if="action.state !== 'WAITING'" class="dropdown-item" @click="onMoveTo('WAITING')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
             <button v-if="action.state !== 'SOMEDAY'" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
             <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
+            <button class="dropdown-item" @click="onMoveTo('REFERENCE')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
           </Dropdown>
           <Btn
               v-if="!isCompleted && !isSomeday"
@@ -420,6 +421,7 @@ import WaitingIcon from '../../assets/WaitingIcon.vue'
 import CalendarIcon from '../../assets/CalendarIcon.vue'
 import SomedayIcon from '../../assets/SomedayIcon.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
+import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import ReviewIcon from '../../assets/ReviewIcon.vue'
 import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
@@ -709,7 +711,24 @@ async function onMoveTo(newState) {
     WAITING: 'Waiting For',
     CALENDAR: 'Calendar',
     SOMEDAY: 'Someday',
-    PROJECT: 'Projects'
+    PROJECT: 'Projects',
+    REFERENCE: 'Reference'
+  }
+
+  // Special handling for REFERENCE - transform action to file
+  if (newState === 'REFERENCE') {
+    actionLoading.value = 'move'
+    try {
+      await apiClient.transformActionToFile(action.value.id)
+      statsModel().refreshStats()
+      toaster.success(`"${truncateTitle(action.value.title)}" moved to Reference`)
+      await navigateToNextOrPrev()
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move to Reference')
+    } finally {
+      actionLoading.value = null
+    }
+    return
   }
 
   // Special handling for PROJECT - transform action to project
@@ -719,12 +738,7 @@ async function onMoveTo(newState) {
 
     actionLoading.value = 'move'
     try {
-      await apiClient.addProject({
-        title: action.value.title,
-        description: action.value.description || '',
-        outcome
-      })
-      await trashAction(action.value.id)
+      await apiClient.transformActionToProject(action.value.id, outcome)
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(action.value.title)}" converted to project`)
       await navigateToNextOrPrev()

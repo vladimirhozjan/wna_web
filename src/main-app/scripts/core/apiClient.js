@@ -348,6 +348,7 @@ export async function clarifyToAction(stuffId, actionData) {
         }
         if (actionData.description) body.description = actionData.description
         if (actionData.tags?.length) body.tags = actionData.tags
+        if (actionData.waitingFor) body.waiting_for = actionData.waitingFor
 
         // Deferred dates
         if (actionData.deferType === 'scheduled' && actionData.deferDate) {
@@ -397,28 +398,7 @@ export async function clarifyToProject(stuffId, projectData) {
 }
 
 export async function clarifyToReference(stuffId) {
-    try {
-        // Fetch the stuff item to get its content
-        const stuff = await getStuff(stuffId)
-        const title = stuff.title || 'Untitled'
-        const description = stuff.description || ''
-
-        // Build a simple text note from the stuff content
-        const content = description ? `${title}\n\n${description}` : title
-        const blob = new Blob([content], { type: 'text/plain' })
-        const fileName = `${title.slice(0, 80).replace(/[/\\?%*:|"<>]/g, '_')}.txt`
-        const file = new File([blob], fileName, { type: 'text/plain' })
-
-        // Upload as a reference file
-        await uploadRefFile(file)
-
-        // Remove the original stuff item from inbox
-        await deleteStuff(stuffId)
-
-        return true
-    } catch (err) {
-        throw normalizeError(err)
-    }
+    return transformStuffToFile(stuffId)
 }
 
 export async function clarifyToSomeday(stuffId) {
@@ -441,6 +421,64 @@ export async function completeStuff(stuffId) {
 
 export async function clarifyToTrash(stuffId) {
     return trashStuff(stuffId)
+}
+
+// ── Transform API ──
+
+export async function transformStuffToFile(stuffId) {
+    try {
+        const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, {target: 'file'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function transformActionToProject(actionId, outcome) {
+    try {
+        const body = {target: 'project', outcome, add_to_top: addToTop()}
+        const res = await httpApi.post(`/v1/action/${actionId}/transform`, body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function transformActionToFile(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/transform`, {target: 'file'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function transformProjectToAction(projectId) {
+    try {
+        const body = {target: 'action', add_to_top: addToTop()}
+        const res = await httpApi.post(`/v1/project/${projectId}/transform`, body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function transformProjectToFile(projectId) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/transform`, {target: 'file'}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function transformFileToOriginal(fileId, target) {
+    try {
+        const res = await httpApi.post(`/v1/reference/files/${fileId}/transform`, {target, add_to_top: addToTop()}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
 }
 
 // ── Action API ──
@@ -1521,6 +1559,13 @@ const apiClient = {
     clarifyToSomeday,
     completeStuff,
     clarifyToTrash,
+    // Transform API
+    transformStuffToFile,
+    transformActionToProject,
+    transformActionToFile,
+    transformProjectToAction,
+    transformProjectToFile,
+    transformFileToOriginal,
     addAction,
     updateAction,
     getAction,

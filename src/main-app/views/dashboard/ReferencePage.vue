@@ -212,6 +212,7 @@
           :preview="model.preview"
           @close="model.closePreview()"
           @download="onDownloadPreviewFile"
+          @restore="onRestorePreviewFile"
       />
 
       <RefRenameModal
@@ -248,7 +249,7 @@ import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import FileName from '../../components/reference/FileName.vue'
 import {errorModel} from '../../scripts/core/errorModel.js'
 import {confirmModel} from '../../scripts/core/confirmModel.js'
-import {downloadAttachment, deleteAttachment} from '../../scripts/core/apiClient.js'
+import {downloadAttachment, deleteAttachment, transformFileToOriginal} from '../../scripts/core/apiClient.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -445,6 +446,26 @@ async function onDownloadFile(file) {
 function onDownloadPreviewFile() {
   if (model.preview.file) {
     onDownloadFile(model.preview.file)
+  }
+}
+
+async function onRestorePreviewFile() {
+  const file = model.preview.file
+  if (!file || !file.source_type) return
+
+  const targetMap = { 1: 'stuff', 2: 'action', 3: 'project' }
+  const labelMap = { 1: 'Inbox', 2: 'Next Actions', 3: 'Projects' }
+  const target = targetMap[file.source_type]
+  if (!target) return
+
+  try {
+    await transformFileToOriginal(file.id, target)
+    model.closePreview()
+    model.files.value = model.files.value.filter(f => f.id !== file.id)
+    model.loadQuota()
+    toaster.success(`"${file.name}" restored to ${labelMap[file.source_type]}`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to restore file')
   }
 }
 

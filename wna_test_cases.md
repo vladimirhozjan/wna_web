@@ -1840,6 +1840,27 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-046b: Stuff Detail Someday - Trash Button
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User has a stuff item in SOMEDAY state
+
+**Steps:**
+1. Navigate to the someday stuff detail page
+2. Verify the "Activate" button is visible
+3. Verify the "Trash" button is visible
+4. Click "Trash"
+5. Verify the item is moved to trash
+6. Navigate to the Trash page and verify the item appears there
+
+**Expected Result:** Someday stuff items show both Activate and Trash buttons. Trash moves the item to trash.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
 ### TC-047: Inbox Empty State
 **Priority:** Medium | **Area:** Inbox / Stuff
 
@@ -2925,6 +2946,52 @@ Use the table below to log each full or partial test run.
 |------|-----|---------|
 |      |     |         |
 |      |     |         |
+|      |     |         |
+
+---
+
+### TC-084b: Action Detail Move Dropdown Includes Reference
+**Priority:** Medium | **Area:** Next Actions
+
+**Preconditions:** User is logged in and viewing an action detail page
+
+**Steps:**
+1. Navigate to an action detail page
+2. Open the Move dropdown
+3. Verify "Reference" appears as a destination option
+4. Select "Reference"
+5. Verify the action is transformed to a file and appears in the Reference page
+6. Navigate to the Reference page and verify the file exists
+
+**Expected Result:** The action is converted to a reference file via the backend transform endpoint. The file appears in Reference with the action's title as the filename.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-084c: Someday Action Detail - Full Move Dropdown
+**Priority:** Medium | **Area:** Next Actions
+
+**Preconditions:** User has an action in SOMEDAY state
+
+**Steps:**
+1. Navigate to the someday action's detail page
+2. Verify the "Activate" button is visible
+3. Verify the "Move" dropdown is visible
+4. Open the Move dropdown
+5. Verify it shows: Next Actions, Today, Calendar, Waiting For, Project, Reference (but NOT Someday)
+6. Verify the "Trash" button is visible
+7. Select "Today" from the dropdown
+8. Verify the action is activated and moved to Today
+9. Repeat with another someday action, selecting "Reference"
+10. Verify the action transforms to a file in Reference
+
+**Expected Result:** Someday actions have full Move dropdown access with all non-current destinations. Each destination works correctly, activating the action first if needed.
+
+| Date | P/F | Comment |
+|------|-----|---------|
 |      |     |         |
 
 ---
@@ -4050,6 +4117,55 @@ Use the table below to log each full or partial test run.
 |------|-----|---------|
 |      |     |         |
 |      |     |         |
+|      |     |         |
+
+---
+
+### TC-125b: Project Detail Move Dropdown - Action and Reference
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User is logged in and viewing an active project detail page
+
+**Steps:**
+1. Navigate to a project detail page
+2. Open the Move dropdown
+3. Verify it shows: Next Actions, Reference, Someday
+4. Select "Next Actions"
+5. Verify the project is transformed into an action and appears in Next Actions
+6. Create another project and navigate to its detail page
+7. Open the Move dropdown and select "Reference"
+8. Verify the project is transformed to a file in Reference
+9. Navigate to Reference page and verify the file exists
+
+**Expected Result:** Projects can be converted to actions or reference files via the Move dropdown using backend transform endpoints.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-125c: Someday Project Detail - Full Controls
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User has a project in SOMEDAY state
+
+**Steps:**
+1. Navigate to the someday project's detail page
+2. Verify "Activate" button is visible
+3. Verify "Complete" button is visible
+4. Verify "Move" dropdown is visible with options: Next Actions, Reference (but NOT Someday)
+5. Verify "Trash" button is visible
+6. Click "Complete" and verify the project is completed
+7. With another someday project, select "Next Actions" from Move dropdown
+8. Verify the project is transformed to an action in Next Actions
+9. With another someday project, click "Activate"
+10. Verify the project moves back to active Projects
+
+**Expected Result:** Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash.
+
+| Date | P/F | Comment |
+|------|-----|---------|
 |      |     |         |
 
 ---
@@ -8910,7 +9026,7 @@ Use the table below to log each full or partial test run.
 ### TC-303: Cross-Component Drag to Reference Sidebar
 **Priority:** Medium | **Area:** Drag & Drop
 
-**Preconditions:** User is logged in on desktop. The sidebar is visible. The inbox contains at least one stuff item and the next list contains at least one action.
+**Preconditions:** User is logged in on desktop. The sidebar is visible. The inbox contains at least one stuff item, the next list contains at least one action, and the projects list contains at least one project.
 
 **Steps:**
 1. Navigate to /inbox.
@@ -8918,16 +9034,159 @@ Use the table below to log each full or partial test run.
 3. Drag the stuff item to the "Reference" item in the sidebar.
 4. Verify the sidebar "Reference" item highlights as a valid drop target.
 5. Drop the stuff item on "Reference".
-6. Verify the stuff item is accepted and moved to the Reference view.
-7. Navigate to /reference and verify the item appears there.
+6. Verify the stuff item is transformed to a file and moved to the Reference view.
+7. Navigate to /reference and verify the item appears there as a file.
 8. Navigate to /next.
 9. Click and hold on an action item.
 10. Drag the action item to the "Reference" item in the sidebar.
-11. Verify the drop is rejected (e.g., the "Reference" item does not highlight, or a visual rejection indicator appears).
-12. Release the item.
-13. Verify the action item remains in its original position in the next list.
+11. Verify the sidebar "Reference" item highlights as a valid drop target.
+12. Drop the action item on "Reference".
+13. Verify the action is transformed to a file and moved to the Reference view.
+14. Navigate to /projects.
+15. Click and hold on a project item.
+16. Drag the project item to the "Reference" item in the sidebar.
+17. Verify the sidebar "Reference" item highlights as a valid drop target.
+18. Drop the project item on "Reference".
+19. Verify the project is transformed to a file and moved to the Reference view.
 
-**Expected Result:** Stuff items can be dragged to Reference and are accepted. Action items dragged to Reference are rejected because actions are actionable items and cannot be stored as reference material. The rejection is visually indicated.
+**Expected Result:** Stuff items, action items, and project items can all be dragged to Reference. Each is transformed into a file via the backend transform endpoint and appears in the Reference view. A success toast confirms each transformation.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-303b: Drag Project to Sidebar Destinations
+**Priority:** High | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in on desktop. The sidebar is visible. The projects list contains at least one active project.
+
+**Steps:**
+1. Navigate to /projects.
+2. Drag a project to the "Next" item in the sidebar.
+3. Verify the project is transformed into an action and appears in the Next Actions list.
+4. Create another project. Drag it to the "Someday" item in the sidebar.
+5. Verify the project is moved to Someday.
+6. Create another project. Drag it to the "Completed" item in the sidebar.
+7. Verify the project is marked as completed and appears in the Completed page.
+8. Create another project. Drag it to the "Trash" item in the sidebar.
+9. Verify the project is trashed and appears in the Trash page.
+10. Create another project. Drag it to the "Reference" item in the sidebar.
+11. Verify the project is transformed into a file and appears in the Reference page.
+
+**Expected Result:** Projects can be dragged to all relevant sidebar destinations. Drag to Next transforms the project into an action. Drag to Someday moves it to someday. Drag to Completed completes it. Drag to Trash trashes it. Drag to Reference transforms it into a file. Each operation shows a success toast.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-303c: Drag Someday Items to Sidebar
+**Priority:** High | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in on desktop. The sidebar is visible. The Someday page contains at least one stuff, one action, and one project.
+
+**Steps:**
+1. Navigate to /someday.
+2. Drag a stuff item to the "Inbox" item in the sidebar.
+3. Verify the stuff item is activated (moved back to Inbox).
+4. Drag an action item to the "Next" item in the sidebar.
+5. Verify the action is activated and appears in the Next Actions list.
+6. Drag a project item to the "Projects" item in the sidebar.
+7. Verify the project is activated and appears in the Projects list.
+8. Drag an action item to the "Today" item in the sidebar.
+9. Verify the action is activated and moved to Today (due date set to today).
+10. Drag an action item to the "Reference" item in the sidebar.
+11. Verify the action is transformed into a file in Reference.
+
+**Expected Result:** Someday items can be dragged to sidebar targets to activate/move them. The correct API is called based on the item type (stuff, action, or project). Each operation removes the item from Someday and shows a success toast.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-303d: Drag Completed Items to Sidebar
+**Priority:** High | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in on desktop. The sidebar is visible. The Completed page contains at least one completed stuff, one completed action, and one completed project.
+
+**Steps:**
+1. Navigate to /completed.
+2. Drag a completed stuff item to the "Inbox" item in the sidebar.
+3. Verify the stuff item is uncompleted and appears back in the Inbox.
+4. Drag a completed action item to the "Next" item in the sidebar.
+5. Verify the action is uncompleted and appears in the Next Actions list.
+6. Drag a completed project item to the "Projects" item in the sidebar.
+7. Verify the project is uncompleted and appears in the Projects list.
+
+**Expected Result:** Completed items can be dragged to sidebar targets to restore them. Stuff goes to Inbox, actions go to Next Actions, projects go to Projects. Each operation uncompletes the item and shows a success toast.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-303e: Drag Reference File to Sidebar
+**Priority:** Medium | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in on desktop. The sidebar is visible. The Reference page contains at least one transformed file (a file with source_type indicating it was originally a stuff, action, or project).
+
+**Steps:**
+1. Navigate to /reference.
+2. Verify that transformed files (files with a source_type) are draggable (cursor changes on hover).
+3. Drag a transformed stuff file (source_type=1) to the "Inbox" item in the sidebar.
+4. Verify the file is transformed back into a stuff item and appears in the Inbox.
+5. Drag a transformed action file (source_type=2) to the "Next" item in the sidebar.
+6. Verify the file is transformed back into an action and appears in Next Actions.
+7. Drag a transformed project file (source_type=3) to the "Projects" item in the sidebar.
+8. Verify the file is transformed back into a project and appears in Projects.
+9. Verify that regular files (no source_type) are NOT draggable.
+
+**Expected Result:** Transformed reference files can be dragged to their original sidebar destination to restore them. The transform endpoint converts the file back to its original entity type. Regular files without source_type are not draggable.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-303f: Reference Preview Modal - Restore Button
+**Priority:** Medium | **Area:** Reference
+
+**Preconditions:** User is logged in. The Reference page contains at least one transformed file (a file created by transforming a stuff, action, or project to file).
+
+**Steps:**
+1. Navigate to /reference.
+2. Click on a transformed stuff file (source_type=1) to open the preview modal.
+3. Verify the preview modal displays a "Restore to Inbox" button.
+4. Click the "Restore to Inbox" button.
+5. Verify the file is transformed back into a stuff item, the modal closes, and the file disappears from the Reference list.
+6. Navigate to /inbox and verify the item appears there.
+7. Navigate back to /reference. Click on a transformed action file (source_type=2).
+8. Verify the preview modal displays a "Restore to Next Actions" button.
+9. Click the button and verify the action is restored.
+10. Click on a transformed project file (source_type=3).
+11. Verify the preview modal displays a "Restore to Projects" button.
+12. Click the button and verify the project is restored.
+13. Click on a regular file (no source_type) to open preview.
+14. Verify NO restore button is shown for regular files.
+
+**Expected Result:** The Reference preview modal shows a context-appropriate restore button for transformed files based on their source_type. Clicking restore transforms the file back to its original entity type, closes the modal, removes the file from the list, and shows a success toast. Regular files do not show any restore button.
 
 | Date | P/F | Comment |
 |------|-----|---------|

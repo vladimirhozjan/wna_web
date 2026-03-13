@@ -5,6 +5,7 @@
         <div class="preview-header">
           <span class="text-body-m fw-medium preview-filename">{{ preview.file?.name }}</span>
           <div class="preview-header-actions">
+            <Btn v-if="restoreLabel" variant="ghost" size="sm" @click="$emit('restore')">{{ restoreLabel }}</Btn>
             <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
             <Btn variant="ghost-danger" size="sm" @click="$emit('close')">Close</Btn>
           </div>
@@ -50,7 +51,7 @@ const props = defineProps({
   },
 })
 
-defineEmits(['close', 'download'])
+defineEmits(['close', 'download', 'restore'])
 
 const overlayRef = ref(null)
 
@@ -63,6 +64,16 @@ watch(() => props.preview.visible, (visible) => {
 })
 
 const mime = computed(() => props.preview.file?.mime_type || '')
+
+const sourceType = computed(() => props.preview.file?.source_type)
+const restoreLabel = computed(() => {
+  switch (sourceType.value) {
+    case 1: return 'Restore to Inbox'
+    case 2: return 'Restore to Next Actions'
+    case 3: return 'Restore to Projects'
+    default: return null
+  }
+})
 
 const isImage = computed(() => mime.value.startsWith('image/'))
 const isPdf = computed(() => mime.value === 'application/pdf')

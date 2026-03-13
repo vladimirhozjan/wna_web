@@ -47,6 +47,7 @@ export function clarifyModel() {
             deferDuration: null,
             dueDate: null,
             dueTime: null,
+            waitingFor: '',
         },
         projectData: {
             title: '',
@@ -94,6 +95,7 @@ export function clarifyModel() {
             deferDuration: null,
             dueDate: null,
             dueTime: null,
+            waitingFor: '',
         }
         state.projectData = {
             title: '',

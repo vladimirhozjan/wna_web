@@ -1,5 +1,5 @@
 <template>
-  <div class="file-card" @click="$emit('preview', file)">
+  <div class="file-card" :draggable="!!file.source_type" @click="$emit('preview', file)" @dragstart="onDragStart">
     <RefFileIcon class="file-card__icon" :mime-type="file.mime_type" />
     <FileName class="file-card__name" :name="file.name" />
     <span class="file-card__size">{{ formatSize(file.size_bytes) }}</span>
@@ -32,8 +32,11 @@ import Dropdown from '../Dropdown.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import { dragModel } from '../../scripts/models/dragModel.js'
 
-defineProps({
+const drag = dragModel()
+
+const props = defineProps({
   file: {
     type: Object,
     required: true,
@@ -41,6 +44,21 @@ defineProps({
 })
 
 defineEmits(['preview', 'download', 'rename', 'trash'])
+
+function onDragStart(evt) {
+  const file = props.file
+  if (!file.source_type) return
+  const targetMap = { 1: 'STUFF', 2: 'ACTION', 3: 'PROJECT' }
+  drag.startDrag({ id: file.id, title: file.name, source_type: file.source_type }, 'reference')
+  evt.dataTransfer.effectAllowed = 'move'
+  evt.dataTransfer.setData('application/json', JSON.stringify({
+    id: file.id,
+    title: file.name,
+    sourceType: 'reference',
+    type: targetMap[file.source_type] || null,
+    source_type: file.source_type
+  }))
+}
 
 function formatSize(bytes) {
   if (!bytes && bytes !== 0) return ''

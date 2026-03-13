@@ -46,7 +46,9 @@
             v-for="file in files"
             :key="'fi-' + file.id"
             class="list-row list-row--file"
+            :draggable="!!file.source_type"
             @click="$emit('preview-file', file)"
+            @dragstart="onFileDragStart($event, file)"
         >
           <td class="col-icon">
             <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
@@ -91,6 +93,9 @@ import Btn from '../Btn.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import { dragModel } from '../../scripts/models/dragModel.js'
+
+const drag = dragModel()
 
 defineProps({
   folders: {
@@ -117,6 +122,21 @@ defineEmits([
   'trash-file',
   'load-more',
 ])
+
+function onFileDragStart(evt, file) {
+  if (!file.source_type) return
+  const targetMap = { 1: 'STUFF', 2: 'ACTION', 3: 'PROJECT' }
+  const item = { id: file.id, title: file.name, source_type: file.source_type }
+  drag.startDrag(item, 'reference')
+  evt.dataTransfer.effectAllowed = 'move'
+  evt.dataTransfer.setData('application/json', JSON.stringify({
+    id: file.id,
+    title: file.name,
+    sourceType: 'reference',
+    type: targetMap[file.source_type] || null,
+    source_type: file.source_type
+  }))
+}
 
 function formatSize(bytes) {
   if (!bytes && bytes !== 0) return ''

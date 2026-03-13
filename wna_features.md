@@ -289,7 +289,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 **Action buttons (state-dependent):**
 - Normal stuff: "Clarify" (primary), "Done" (ghost), "Move" dropdown, "Trash" (danger)
 - Completed stuff: "Undo" only
-- Someday stuff: "Activate" only
+- Someday stuff: "Activate", "Trash"
 
 **"Move" dropdown destinations:**
 - Next Actions, Today, Calendar (opens date/time modal), Waiting For (opens waiting-for modal), Projects (opens outcome modal), Someday, Reference
@@ -393,10 +393,10 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 **Action buttons (state-dependent):**
 - NEXT / TODAY / CALENDAR: "Done", "Move" dropdown, "Trash"
 - COMPLETED: "Undo" only
-- SOMEDAY: "Activate", "Trash"
+- SOMEDAY: "Activate", "Move" dropdown (Today, Calendar, Waiting For, Project, Reference), "Trash"
 - WAITING: "Got it" (unwait → moves to NEXT), "Done", "Move" dropdown
 
-**"Move" dropdown:** Shows all valid destination states except the current one. Calendar requires a schedule dialog. Waiting For requires a waiting-for dialog.
+**"Move" dropdown:** Shows all valid destination states except the current one. Includes: Next Actions, Today (schedule dialog), Calendar (schedule dialog), Waiting For (waiting-for dialog), Someday, Projects (outcome dialog, uses backend transform endpoint), Reference (transforms action to file).
 
 **Sections:**
 - Project link (clickable, navigates to project detail) - only if action belongs to a project
@@ -515,9 +515,9 @@ Configurable in Settings page:
 **Title:** Click-to-edit auto-resizing textarea
 
 **Action buttons:**
-- Active project: "Complete" (ghost), "Move" dropdown (Someday only), "Trash" (danger)
+- Active project: "Complete" (ghost), "Move" dropdown (Next Actions, Reference, Someday), "Trash" (danger)
 - Completed project: "Undo" only
-- Someday project: "Activate" only
+- Someday project: "Activate", "Complete", "Move" dropdown (Next Actions, Reference), "Trash"
 
 **Outcome section:** Click-to-edit textarea; placeholder "What does done look like?"
 
@@ -581,6 +581,7 @@ Configurable in Settings page:
 - No checkbox (items cannot be completed from the list)
 - Type icon prefix: Inbox icon (Stuff), Arrow icon (Action), Projects icon (Project)
 - Tag filtering (only applies to actions/projects since stuff has no tags), drag to reorder, inline title edit
+- Items are draggable to sidebar navigation targets (move to other buckets)
 
 **Per-item actions:**
 - **Activate:** Moves item back to its original bucket (Stuff → Inbox, Action → Next, Project → Projects); shows toast with destination
@@ -596,7 +597,7 @@ Configurable in Settings page:
 
 - **URL:** `/reference`
 - **Purpose:** Non-actionable file storage (the GTD "Reference" bucket)
-- **Tabs:** Files | Trash
+- **Tabs:** Files | Attachments | Trash
 
 ### 12.2 Files Tab
 
@@ -624,6 +625,7 @@ Configurable in Settings page:
   - Images and PDFs rendered in browser
   - Text and JSON files shown as plain text
   - Other types via browser's native blob handling
+  - For transformed files (items converted from stuff/action/project to reference), the preview modal shows a "Restore" button to transform the item back to its original type
 - **Download:** Downloads file via browser download mechanism
 - **Rename file:** Opens rename modal
 - **Trash file:** Confirmation dialog; moves to reference trash
@@ -658,6 +660,7 @@ Configurable in Settings page:
 - No trash button from this view
 - Type icons shown as prefix
 - Cursor-based pagination
+- Items are draggable to sidebar targets for quick restore to original bucket
 
 **Item click:** Navigates to correct detail page with "Undo" button context
 
@@ -1024,11 +1027,18 @@ Presets are customizable in Settings.
 
 - Items can be dragged from list views to sidebar menu items
 - Native HTML5 drag-and-drop API used for cross-component communication
+- Draggable source pages: Inbox, Next Actions, Today, Waiting For, Projects, Someday, Completed, Reference (transformed files only)
 - Compatible sidebar targets accept specific types:
-  - Next, Today, Calendar, Waiting For, Someday, Completed, Trash accept stuff and actions
-  - Projects accept stuff and actions
-  - Reference accepts stuff only
+  - Next, Today, Calendar, Waiting For accept stuff, actions, projects, someday items, completed items, and reference files
+  - Inbox accepts someday items, completed items, and reference files (source_type=stuff)
+  - Projects accept stuff, actions, someday items, completed items, and reference files (source_type=project)
+  - Someday accepts stuff, actions, projects, and completed items
+  - Completed accepts stuff, actions, projects, and someday items
+  - Trash accepts stuff, actions, projects, someday items, and completed items
+  - Reference accepts stuff, actions, and projects (transforms to file)
+- Projects dragged to Next/Today/Calendar/Waiting For are transformed to actions (single API call)
 - Complex drops (Calendar, Waiting For, Projects) open modal dialogs for additional input
+- Completed/Someday items are routed by their entity type (STUFF/ACTION/PROJECT) to the correct API
 
 ### 23.3 Drag Discoverability
 

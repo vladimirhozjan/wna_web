@@ -18,7 +18,7 @@
           label="Next Action"
           :to="{ name: 'next' }"
           :count="stats?.next?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed', 'reference']"
           @drop="onDropToNextAction"
       >
         <template #icon><NextIcon :overdue="stats?.next?.overdue > 0"/></template>
@@ -28,7 +28,7 @@
           label="Today"
           :to="{ name: 'today' }"
           :count="stats?.today?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed']"
           @drop="onDropToToday"
       >
         <template #icon><TodayIcon :overdue="stats?.today?.overdue > 0"/></template>
@@ -38,7 +38,7 @@
           label="Calendar"
           :to="{ name: 'calendar' }"
           :count="stats?.calendar?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed']"
           @drop="onDropToCalendar"
       >
         <template #icon><CalendarIcon :overdue="stats?.calendar?.overdue > 0"/></template>
@@ -51,6 +51,8 @@
           label="Inbox"
           :to="{ name: 'inbox' }"
           :count="stats?.inbox?.count"
+          :accept-drop="['someday', 'completed', 'reference']"
+          @drop="onDropToInbox"
       >
         <template #icon><InboxIcon/></template>
       </SidebarMenuItem>
@@ -59,7 +61,7 @@
           label="Projects"
           :to="{ name: 'projects' }"
           :count="stats?.projects?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'someday', 'completed', 'reference']"
           @drop="onDropToProjects"
       >
         <template #icon><ProjectsIcon/></template>
@@ -69,7 +71,7 @@
           label="Waiting For"
           :to="{ name: 'waiting-for' }"
           :count="stats?.waiting?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed']"
           @drop="onDropToWaitingFor"
       >
         <template #icon><WaitingIcon :overdue="stats?.waiting?.overdue > 0"/></template>
@@ -79,7 +81,7 @@
           label="Someday / Maybe"
           :to="{ name: 'someday' }"
           :count="stats?.someday?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'completed']"
           @drop="onDropToSomeday"
       >
         <template #icon><SomedayIcon/></template>
@@ -89,7 +91,7 @@
           label="Reference"
           :to="{ name: 'reference' }"
           :badge="referenceLabel"
-          :accept-drop="['stuff']"
+          :accept-drop="['stuff', 'action', 'project']"
           @drop="onDropToReference"
       >
         <template #icon><ReferenceIcon/></template>
@@ -115,7 +117,7 @@
           label="Completed"
           :to="{ name: 'completed' }"
           :count="stats?.completed?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'someday']"
           @drop="onDropToCompleted"
       >
         <template #icon><CompletedIcon/></template>
@@ -125,7 +127,7 @@
           label="Trash"
           :to="{ name: 'trash' }"
           :count="stats?.trash?.count"
-          :accept-drop="['stuff', 'action']"
+          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed']"
           @drop="onDropToTrash"
       >
         <template #icon><TrashIcon/></template>
@@ -162,6 +164,8 @@ import { somedayModel } from "../scripts/models/somedayModel.js";
 import { calendarModel } from "../scripts/models/calendarModel.js";
 import { moveModel } from "../scripts/models/moveModel.js";
 import { statsModel } from "../scripts/models/statsModel.js";
+import { projectModel } from "../scripts/models/projectModel.js";
+import { completedModel } from "../scripts/models/completedModel.js";
 import apiClient from "../scripts/core/apiClient.js";
 import { useRouter } from "vue-router";
 
@@ -195,6 +199,8 @@ const { items: todayItems } = todayModel();
 const { items: waitingItems } = waitingModel();
 const { items: somedayItems } = somedayModel();
 const { items: calendarItems } = calendarModel();
+const { items: projectItems } = projectModel();
+const { items: completedItems } = completedModel();
 const { stats, loadStats, refreshStats } = statsModel();
 const router = useRouter();
 const { daysSinceReview } = reviewModel();
@@ -241,6 +247,25 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…';
 }
 
+async function onDropToInbox(data) {
+  try {
+    if (data.sourceType === 'someday' && data.type === 'STUFF') {
+      await apiClient.activateStuff(data.id);
+    } else if (data.sourceType === 'completed' && data.type === 'STUFF') {
+      await apiClient.uncompleteStuff(data.id);
+    } else if (data.sourceType === 'reference' && data.source_type === 1) {
+      await apiClient.transformFileToOriginal(data.id, 'stuff');
+    } else {
+      return;
+    }
+    removeFromSource(data);
+    toaster.success(`"${truncateTitle(data.title)}" moved to Inbox`);
+    refreshStats();
+  } catch (err) {
+    toaster.push(err.message || 'Failed to move item');
+  }
+}
+
 async function onDropToNextAction(data) {
   try {
     if (data.sourceType === 'stuff') {
@@ -248,15 +273,41 @@ async function onDropToNextAction(data) {
         title: data.title,
         description: data.description || ''
       });
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
       if (data.state === 'NEXT') return;
-      // undefer works from any active state (TODAY, CALENDAR, WAITING, SOMEDAY) → NEXT
       await apiClient.undeferAction(data.id);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      await apiClient.transformProjectToAction(data.id);
+    } else if (data.sourceType === 'someday') {
+      if (data.type === 'STUFF') {
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        removeFromSource(data);
+        toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
+        refreshStats();
+        return;
+      } else if (data.type === 'ACTION') {
+        await apiClient.activateAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        await apiClient.transformProjectToAction(data.id);
+      } else return;
+    } else if (data.sourceType === 'completed') {
+      if (data.type === 'STUFF') {
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        removeFromSource(data);
+        toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
+        refreshStats();
+        return;
+      } else if (data.type === 'ACTION') {
+        await apiClient.uncompleteAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        await apiClient.transformProjectToAction(data.id);
+      } else return;
+    } else if (data.sourceType === 'reference' && data.source_type === 2) {
+      await apiClient.transformFileToOriginal(data.id, 'action');
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
     refreshStats();
   } catch (err) {
@@ -265,6 +316,36 @@ async function onDropToNextAction(data) {
 }
 
 async function onDropToProjects(data) {
+  // Reference file with source_type=3 → transform back to project
+  if (data.sourceType === 'reference' && data.source_type === 3) {
+    try {
+      await apiClient.transformFileToOriginal(data.id, 'project');
+      removeFromSource(data);
+      toaster.success(`"${truncateTitle(data.title)}" restored to Projects`);
+      refreshStats();
+    } catch (err) {
+      toaster.push(err.message || 'Failed to restore file');
+    }
+    return;
+  }
+
+  // Projects accepting a project from someday/completed = activate/uncomplete
+  if ((data.sourceType === 'someday' || data.sourceType === 'completed') && data.type === 'PROJECT') {
+    try {
+      if (data.sourceType === 'someday') {
+        await apiClient.activateProject(data.id);
+      } else {
+        await apiClient.uncompleteProject(data.id);
+      }
+      removeFromSource(data);
+      toaster.success(`"${truncateTitle(data.title)}" moved to Projects`);
+      refreshStats();
+    } catch (err) {
+      toaster.push(err.message || 'Failed to move item');
+    }
+    return;
+  }
+
   const outcome = await mover.showOutcome()
   if (!outcome) return
 
@@ -275,19 +356,17 @@ async function onDropToProjects(data) {
         description: data.description || '',
         outcome
       });
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
-      // Transform action to project: create project, then trash action
-      await apiClient.addProject({
-        title: data.title,
-        description: data.description || '',
-        outcome
-      });
-      await apiClient.trashAction(data.id);
-      removeFromActions(data.id);
+      await apiClient.transformActionToProject(data.id, outcome);
+    } else if (data.sourceType === 'someday' && data.type === 'ACTION') {
+      await apiClient.transformActionToProject(data.id, outcome);
+    } else if (data.sourceType === 'completed' && data.type === 'ACTION') {
+      await apiClient.uncompleteAction(data.id);
+      await apiClient.transformActionToProject(data.id, outcome);
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" converted to project`);
     refreshStats();
   } catch (err) {
@@ -299,15 +378,27 @@ async function onDropToSomeday(data) {
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.clarifyToSomeday(data.id);
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
-      // Skip if already in SOMEDAY state
       if (data.state === 'SOMEDAY') return;
       await apiClient.somedayAction(data.id);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      await apiClient.somedayProject(data.id);
+    } else if (data.sourceType === 'completed') {
+      // Uncomplete then someday
+      if (data.type === 'STUFF') {
+        await apiClient.uncompleteStuff(data.id);
+        await apiClient.clarifyToSomeday(data.id);
+      } else if (data.type === 'ACTION') {
+        await apiClient.uncompleteAction(data.id);
+        await apiClient.somedayAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        await apiClient.uncompleteProject(data.id);
+        await apiClient.somedayProject(data.id);
+      } else return;
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Someday`);
     refreshStats();
   } catch (err) {
@@ -318,21 +409,43 @@ async function onDropToSomeday(data) {
 async function onDropToToday(data) {
   try {
     if (data.sourceType === 'stuff') {
-      // Transform to action first, then mark today
       const result = await apiClient.clarifyToAction(data.id, {
         title: data.title,
         description: data.description || ''
       });
       await apiClient.todayAction(result.id);
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
-      // Skip if already in TODAY state
       if (data.state === 'TODAY') return;
       await apiClient.todayAction(data.id);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      const result = await apiClient.transformProjectToAction(data.id);
+      await apiClient.todayAction(result.id);
+    } else if (data.sourceType === 'someday') {
+      if (data.type === 'STUFF') {
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.todayAction(result.id);
+      } else if (data.type === 'ACTION') {
+        await apiClient.activateAction(data.id);
+        await apiClient.todayAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        const result = await apiClient.transformProjectToAction(data.id);
+        await apiClient.todayAction(result.id);
+      } else return;
+    } else if (data.sourceType === 'completed') {
+      if (data.type === 'STUFF') {
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.todayAction(result.id);
+      } else if (data.type === 'ACTION') {
+        await apiClient.uncompleteAction(data.id);
+        await apiClient.todayAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        const result = await apiClient.transformProjectToAction(data.id);
+        await apiClient.todayAction(result.id);
+      } else return;
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Today`);
     refreshStats();
   } catch (err) {
@@ -341,21 +454,18 @@ async function onDropToToday(data) {
 }
 
 async function onDropToCalendar(data) {
-  // Skip if action is already in CALENDAR state
   if (data.sourceType === 'action' && data.state === 'CALENDAR') return;
 
-  // Show schedule modal to get date/time
   const scheduleData = await mover.showSchedule({
     date: '',
     time: '',
     duration: 15
   });
 
-  if (!scheduleData || !scheduleData.date) return; // User cancelled
+  if (!scheduleData || !scheduleData.date) return;
 
   try {
     if (data.sourceType === 'stuff') {
-      // Transform to action with scheduled_date
       await apiClient.clarifyToAction(data.id, {
         title: data.title,
         description: data.description || '',
@@ -364,13 +474,43 @@ async function onDropToCalendar(data) {
         deferTime: scheduleData.time || null,
         deferDuration: scheduleData.duration || null
       });
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
       await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      const result = await apiClient.transformProjectToAction(data.id);
+      await apiClient.deferAction(result.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+    } else if (data.sourceType === 'someday') {
+      if (data.type === 'STUFF') {
+        await apiClient.clarifyToAction(data.id, {
+          title: data.title, description: data.description || '',
+          deferType: 'scheduled', deferDate: scheduleData.date,
+          deferTime: scheduleData.time || null, deferDuration: scheduleData.duration || null
+        });
+      } else if (data.type === 'ACTION') {
+        await apiClient.activateAction(data.id);
+        await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+      } else if (data.type === 'PROJECT') {
+        const result = await apiClient.transformProjectToAction(data.id);
+        await apiClient.deferAction(result.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+      } else return;
+    } else if (data.sourceType === 'completed') {
+      if (data.type === 'STUFF') {
+        await apiClient.clarifyToAction(data.id, {
+          title: data.title, description: data.description || '',
+          deferType: 'scheduled', deferDate: scheduleData.date,
+          deferTime: scheduleData.time || null, deferDuration: scheduleData.duration || null
+        });
+      } else if (data.type === 'ACTION') {
+        await apiClient.uncompleteAction(data.id);
+        await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+      } else if (data.type === 'PROJECT') {
+        const result = await apiClient.transformProjectToAction(data.id);
+        await apiClient.deferAction(result.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+      } else return;
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Calendar`);
     refreshStats();
   } catch (err) {
@@ -379,31 +519,52 @@ async function onDropToCalendar(data) {
 }
 
 async function onDropToWaitingFor(data) {
-  // Skip if action is already in WAITING state
   if (data.sourceType === 'action' && data.state === 'WAITING') return;
 
-  // Show waiting modal to get waiting_for value
   const waitingFor = await mover.showWaiting({
     waitingFor: ''
   });
 
-  if (!waitingFor) return; // User cancelled
+  if (!waitingFor) return;
 
   try {
     if (data.sourceType === 'stuff') {
-      // Transform to action first, then set waiting
       const result = await apiClient.clarifyToAction(data.id, {
         title: data.title,
         description: data.description || ''
       });
       await apiClient.waitAction(result.id, waitingFor);
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
       await apiClient.waitAction(data.id, waitingFor);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      const result = await apiClient.transformProjectToAction(data.id);
+      await apiClient.waitAction(result.id, waitingFor);
+    } else if (data.sourceType === 'someday') {
+      if (data.type === 'STUFF') {
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.waitAction(result.id, waitingFor);
+      } else if (data.type === 'ACTION') {
+        await apiClient.activateAction(data.id);
+        await apiClient.waitAction(data.id, waitingFor);
+      } else if (data.type === 'PROJECT') {
+        const result = await apiClient.transformProjectToAction(data.id);
+        await apiClient.waitAction(result.id, waitingFor);
+      } else return;
+    } else if (data.sourceType === 'completed') {
+      if (data.type === 'STUFF') {
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.waitAction(result.id, waitingFor);
+      } else if (data.type === 'ACTION') {
+        await apiClient.uncompleteAction(data.id);
+        await apiClient.waitAction(data.id, waitingFor);
+      } else if (data.type === 'PROJECT') {
+        const result = await apiClient.transformProjectToAction(data.id);
+        await apiClient.waitAction(result.id, waitingFor);
+      } else return;
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`);
     refreshStats();
   } catch (err) {
@@ -412,11 +573,17 @@ async function onDropToWaitingFor(data) {
 }
 
 async function onDropToReference(data) {
-  if (data.sourceType !== 'stuff') return;
-
   try {
-    await apiClient.clarifyToReference(data.id);
-    removeFromInbox(data.id);
+    if (data.sourceType === 'stuff') {
+      await apiClient.transformStuffToFile(data.id);
+    } else if (data.sourceType === 'action') {
+      await apiClient.transformActionToFile(data.id);
+    } else if (data.sourceType === 'project') {
+      await apiClient.transformProjectToFile(data.id);
+    } else {
+      return;
+    }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Reference`);
     refreshStats();
   } catch (err) {
@@ -428,13 +595,22 @@ async function onDropToCompleted(data) {
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.completeStuff(data.id);
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
       await apiClient.completeAction(data.id);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      await apiClient.completeProject(data.id);
+    } else if (data.sourceType === 'someday') {
+      if (data.type === 'STUFF') {
+        await apiClient.completeStuff(data.id);
+      } else if (data.type === 'ACTION') {
+        await apiClient.completeAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        await apiClient.completeProject(data.id);
+      } else return;
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" marked as completed`);
     refreshStats();
   } catch (err) {
@@ -446,13 +622,22 @@ async function onDropToTrash(data) {
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.trashStuff(data.id);
-      removeFromInbox(data.id);
     } else if (data.sourceType === 'action') {
       await apiClient.trashAction(data.id);
-      removeFromActions(data.id);
+    } else if (data.sourceType === 'project') {
+      await apiClient.trashProject(data.id);
+    } else if (data.sourceType === 'someday' || data.sourceType === 'completed') {
+      if (data.type === 'STUFF') {
+        await apiClient.trashStuff(data.id);
+      } else if (data.type === 'ACTION') {
+        await apiClient.trashAction(data.id);
+      } else if (data.type === 'PROJECT') {
+        await apiClient.trashProject(data.id);
+      } else return;
     } else {
       return;
     }
+    removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Trash`);
     refreshStats();
   } catch (err) {
@@ -469,26 +654,32 @@ function removeFromInbox(id) {
 
 function removeFromActions(id) {
   // Remove from all action lists (Next, Today, Waiting, Someday, Calendar)
-  const nextIdx = actionItems.value.findIndex(i => i.id === id);
-  if (nextIdx !== -1) {
-    actionItems.value.splice(nextIdx, 1);
+  for (const list of [actionItems, todayItems, waitingItems, somedayItems, calendarItems]) {
+    const idx = list.value.findIndex(i => i.id === id);
+    if (idx !== -1) list.value.splice(idx, 1);
   }
-  const todayIdx = todayItems.value.findIndex(i => i.id === id);
-  if (todayIdx !== -1) {
-    todayItems.value.splice(todayIdx, 1);
+}
+
+function removeFromProjects(id) {
+  const idx = projectItems.value.findIndex(i => i.id === id);
+  if (idx !== -1) projectItems.value.splice(idx, 1);
+}
+
+function removeFromCompleted(id) {
+  const idx = completedItems.value.findIndex(i => i.id === id);
+  if (idx !== -1) completedItems.value.splice(idx, 1);
+}
+
+function removeFromSource(data) {
+  if (data.sourceType === 'stuff') removeFromInbox(data.id);
+  else if (data.sourceType === 'action') removeFromActions(data.id);
+  else if (data.sourceType === 'project') removeFromProjects(data.id);
+  else if (data.sourceType === 'someday') {
+    // Someday list has mixed types
+    const idx = somedayItems.value.findIndex(i => i.id === data.id);
+    if (idx !== -1) somedayItems.value.splice(idx, 1);
   }
-  const waitingIdx = waitingItems.value.findIndex(i => i.id === id);
-  if (waitingIdx !== -1) {
-    waitingItems.value.splice(waitingIdx, 1);
-  }
-  const somedayIdx = somedayItems.value.findIndex(i => i.id === id);
-  if (somedayIdx !== -1) {
-    somedayItems.value.splice(somedayIdx, 1);
-  }
-  const calendarIdx = calendarItems.value.findIndex(i => i.id === id);
-  if (calendarIdx !== -1) {
-    calendarItems.value.splice(calendarIdx, 1);
-  }
+  else if (data.sourceType === 'completed') removeFromCompleted(data.id);
 }
 </script>
 
