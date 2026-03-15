@@ -821,12 +821,10 @@ async function onMoveTo(newState) {
 
   try {
     // Use appropriate API based on current state and destination
-    if (currentState === 'SOMEDAY') {
-      // From Someday: need to activate first, then move if needed
+    if (currentState === 'SOMEDAY' && newState === 'TODAY') {
+      await todayAction(action.value.id)
+    } else if (currentState === 'SOMEDAY') {
       await activateAction(action.value.id)
-      if (newState === 'TODAY') {
-        await todayAction(action.value.id)
-      }
     } else if (newState === 'TODAY') {
       await todayAction(action.value.id)
     } else if (newState === 'NEXT') {

@@ -607,11 +607,11 @@ async function onMoveTo(destination) {
 
     actionLoading.value = 'move'
     try {
-      const result = await apiClient.clarifyToAction(item.value.id, {
+      await apiClient.clarifyToAction(item.value.id, {
         title: item.value.title,
-        description: item.value.description || ''
+        description: item.value.description || '',
+        waitingFor
       })
-      await apiClient.waitAction(result.id, waitingFor)
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Waiting For`)
       await navigateToNextOrPrev()
@@ -623,15 +623,15 @@ async function onMoveTo(destination) {
     return
   }
 
-  // Special handling for today - transform to action then mark today
+  // Special handling for today - transform to action with today state
   if (destination === 'today') {
     actionLoading.value = 'move'
     try {
-      const result = await apiClient.clarifyToAction(item.value.id, {
+      await apiClient.clarifyToAction(item.value.id, {
         title: item.value.title,
-        description: item.value.description || ''
+        description: item.value.description || '',
+        state: 'today'
       })
-      await apiClient.todayAction(result.id)
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Today`)
       await navigateToNextOrPrev()
