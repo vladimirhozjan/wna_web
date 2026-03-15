@@ -26,6 +26,16 @@
           @drag-end="onDragEnd"
       />
     </div>
+
+    <!-- Drag type popover -->
+    <CalendarDragPopover
+        v-if="pendingDrop"
+        :date="pendingDrop.date"
+        :x="pendingDrop.x"
+        :y="pendingDrop.y"
+        @select="onDragPopoverSelect"
+        @cancel="pendingDrop = null"
+    />
   </div>
 </template>
 
@@ -35,6 +45,7 @@ import { formatDate } from '../../scripts/core/dateUtils.js'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarAllDaySection from './CalendarAllDaySection.vue'
 import CalendarTimeGrid from './CalendarTimeGrid.vue'
+import CalendarDragPopover from './CalendarDragPopover.vue'
 
 const props = defineProps({
   currentDate: {
@@ -49,6 +60,7 @@ const calendar = calendarModel()
 const hourHeight = 60
 const draggingItem = ref(null)
 const scrollRef = ref(null)
+const pendingDrop = ref(null)
 
 function scrollToBusinessHours() {
   if (!scrollRef.value) return
@@ -87,7 +99,28 @@ function onCreate(data) {
 }
 
 function onReschedule(data) {
-  emit('reschedule', data)
+  if (data.hasDueDate && !data.hasScheduledDate && !data.hasStartDate) {
+    pendingDrop.value = {
+      actionId: data.actionId,
+      date: data.newDate,
+      time: data.newTime,
+      x: data.dropX,
+      y: data.dropY,
+    }
+  } else {
+    emit('reschedule', data)
+  }
+}
+
+function onDragPopoverSelect(forcedType) {
+  if (!pendingDrop.value) return
+  emit('reschedule', {
+    actionId: pendingDrop.value.actionId,
+    newDate: pendingDrop.value.date,
+    newTime: pendingDrop.value.time,
+    forcedType,
+  })
+  pendingDrop.value = null
 }
 
 function onDragStart(item) {

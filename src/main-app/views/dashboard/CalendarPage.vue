@@ -136,18 +136,22 @@ function onMonthClick(date) {
   calendar.setViewMode('month')
 }
 
-async function onCreate({ title, date, time }) {
+async function onCreate({ title, date, time, deferType, dueDate }) {
   try {
-    await calendar.createScheduledAction(date, time, title)
+    if (deferType === 'start') {
+      await calendar.createDeferredAction(date, time, title, dueDate)
+    } else {
+      await calendar.createScheduledAction(date, time, title)
+    }
     toaster.success('Action created')
   } catch (err) {
     toaster.push('Failed to create action')
   }
 }
 
-async function onReschedule({ actionId, newDate, newTime }) {
+async function onReschedule({ actionId, newDate, newTime, forcedType }) {
   try {
-    await calendar.rescheduleAction(actionId, newDate, newTime)
+    await calendar.rescheduleAction(actionId, newDate, newTime, forcedType)
     toaster.success('Action rescheduled')
   } catch (err) {
     toaster.push('Failed to reschedule action')

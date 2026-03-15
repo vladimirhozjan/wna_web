@@ -340,7 +340,7 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - **Fields:** Title (required, pre-filled from stuff item), Description (optional), Tags (multi-select with autocomplete and presets)
 - **Dates section (collapsed by default):**
   - Deferred: Radio between "Scheduled for" (specific date/time/duration) and "Start after" (tickler date)
-  - Due Date: Date input + optional time
+  - Due Date: Date input + optional time — **hidden when "Scheduled for" is selected** (mutual exclusivity)
   - Duration options: 15, 30, 45, 60, 90, 120, 180, 240 minutes
 - **Confirm** button transforms the stuff item into an action via the API
 
@@ -405,8 +405,10 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - Waiting For (only for WAITING state): shows who/what is being waited on + duration since waiting began
 - Dates (collapsible):
   - Deferred: "Scheduled for" or "Start after" + date + optional time + duration (for scheduled)
-  - Due Date: date + optional time
+  - Due Date: date + optional time. Shows **"N/A (has scheduled date)"** and is non-editable when a scheduled_date is set (mutual exclusivity). Editable when start_date is set (start_date + due_date can coexist).
+  - **Mutual exclusivity:** Setting scheduled_date clears due_date (on backend). Setting due_date clears scheduled_date (on backend). start_date and due_date can coexist.
   - Each has Save, Cancel, Clear buttons
+- **Move from Calendar:** Moving an action from CALENDAR to another state (Next, Today, Someday) clears scheduled_date/start_date via undefer. due_date is preserved.
 - Attachments (max 10)
 - Comments
 - Metadata (created/updated timestamps)
@@ -446,8 +448,9 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 - 24-hour time grid with configurable business hours highlighting
 - Scheduled actions rendered as time blocks positioned by start time and sized by duration
-- All-day / dateless actions shown in a section above the time grid
-- Click on an empty time slot opens a quick-add form for creating a scheduled action at that time
+- All-day / dateless actions shown in a section above the time grid (including due-only items without due_time)
+- Due-only items with due_time appear in the timed section
+- Click on an empty time slot opens a quick-add form for creating an action at that time
 - Click on an item navigates to action detail
 
 ### 8.4 Week View
@@ -455,7 +458,7 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - 7-column grid (configurable week start: Monday or Sunday)
 - Each column is a mini day view with time grid
 - Scheduled actions shown as positioned blocks
-- All-day section at the top
+- All-day section at the top (includes due-only items without due_time)
 
 ### 8.5 Month View
 
@@ -477,9 +480,32 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 ### 8.8 Calendar Item Interactions
 
-- **Create:** Click empty day/time slot to quick-add a scheduled action
-- **Reschedule:** Drag an item to a new date/time slot to reschedule it
+- **Create:** Click empty day/time slot to open quick-add form. Form includes type selector ("Scheduled" / "Start after") and optional due date field (when "Start after" selected).
+- **Reschedule:** Drag an item to a new date/time slot. Scheduled items auto-reschedule as scheduled. Start_after items auto-reschedule as start. Due-only items show a type-selection popover ("Scheduled for [date]" / "Start after [date]").
 - **View detail:** Click an item to navigate to action detail with `from=calendar`
+
+### 8.8b Calendar Item Visual States
+
+Four color-coded states for calendar items:
+- **Scheduled** (blue): Items with `scheduled_date` — time-specific commitments
+- **Start after** (yellow/amber): Items with `start_date` and no `scheduled_date` — tickler/deferred items
+- **Due only** (red): Items appearing on their `due_date` with no `scheduled_date`
+- **Overdue** (dark red): Due-only items where `due_date` is in the past
+
+### 8.8c Multi-Date Display
+
+An item can appear on multiple dates in the calendar:
+- On its `scheduled_date` (blue styling)
+- On its `start_date` (yellow/amber styling)
+- On its `due_date` (red styling) — only when `scheduled_date` is not set
+
+Priority: if an item's `scheduled_date`, `start_date`, and `due_date` all fall on the same day, it shows once with scheduled taking precedence, then start, then due.
+
+### 8.8d Date Mutual Exclusivity
+
+- `scheduled_date` and `due_date` are mutually exclusive — setting one clears the other (both locally and on the backend)
+- `start_date` and `due_date` can coexist — an action can have both a start date and a due date
+- `start_date` and `scheduled_date` are mutually exclusive (handled by the backend defer API)
 
 ### 8.9 Calendar Settings
 
@@ -1048,8 +1074,11 @@ Presets are customizable in Settings.
 
 ### 23.4 Overdue Item Highlighting
 
-- Items with past due dates get a red left border and light red background
+- Items with past due dates get a red left border and light red background in list views
 - Applied automatically in all list views via the `isOverdue()` utility
+- **MetadataRow badges:** Due chips show "Due [date]" in red; overdue chips show "Overdue [date]" in dark red
+- **Calendar items:** Due-only items show red styling; overdue due-only items show dark red styling
+- **Color coding across views:** Consistent use of red (due, future) and dark red (overdue, past) in MetadataRow chips and calendar items
 
 ---
 

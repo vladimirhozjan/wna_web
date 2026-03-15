@@ -2333,15 +2333,18 @@ Use the table below to log each full or partial test run.
    - Duration: selection of predefined options
 4. Click on the "Scheduled for" date option and verify a date picker appears
 5. Select a date and verify it is set
-6. Click on the "Start after" date option and verify a date picker appears
-7. Select a date for deferred start
-8. Click on the Due Date field and verify a date picker appears
-9. Select a due date
-10. Open the Duration selector and verify the following options are available: 15, 30, 45, 60, 90, 120, 180, 240 minutes
-11. Select a duration (e.g., 30 minutes)
-12. Verify all selected values are displayed correctly in the form
+6. Verify the Due Date section is **hidden** when "Scheduled for" is selected (mutual exclusivity)
+7. Click on the "Start after" date option and verify a date picker appears
+8. Verify the Due Date section **reappears** when "Start after" is selected
+9. Select a date for deferred start
+10. Click on the Due Date field and verify a date picker appears
+11. Select a due date
+12. Open the Duration selector and verify the following options are available: 15, 30, 45, 60, 90, 120, 180, 240 minutes
+13. Select a duration (e.g., 30 minutes)
+14. Verify all selected values are displayed correctly in the form
+15. Switch back to "Scheduled for" and verify the Due Date section hides again
 
-**Expected Result:** The dates section of the Create Action form includes Deferred (Scheduled for / Start after), Due Date, and Duration fields. Date pickers function correctly. Duration offers predefined options: 15, 30, 45, 60, 90, 120, 180, and 240 minutes. All selections are reflected in the form.
+**Expected Result:** The dates section of the Create Action form includes Deferred (Scheduled for / Start after), Due Date, and Duration fields. Date pickers function correctly. Duration offers predefined options: 15, 30, 45, 60, 90, 120, 180, and 240 minutes. When "Scheduled for" is selected, the Due Date section is hidden (mutual exclusivity). When "Start after" is selected, the Due Date section is visible. All selections are reflected in the form.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3610,24 +3613,33 @@ Use the table below to log each full or partial test run.
 ### TC-108: Calendar Drag Reschedule
 **Priority:** Medium | **Area:** Calendar
 
-**Preconditions:** User is logged in, at least one action is scheduled on the calendar, using Day or Week view
+**Preconditions:** User is logged in, at least one scheduled action and one due-only action (has due_date but no scheduled_date or start_date) exist on the calendar, using Day or Week view
 
 **Steps:**
 1. Navigate to the Calendar page (/calendar) and switch to Day view
-2. Identify a scheduled action block (e.g., at 10:00 AM)
+2. Identify a scheduled action block (blue, e.g., at 10:00 AM)
 3. Click and hold the action block
 4. Drag it to a different time slot (e.g., 3:00 PM)
 5. Release the mouse button
-6. Verify the action block moves to the 3:00 PM position
+6. Verify the action block moves to the 3:00 PM position automatically (no popover)
 7. Verify the action's scheduled time has been updated (navigate to action detail to confirm)
 8. Switch to Week view
 9. Identify a scheduled action on one day (e.g., Monday)
 10. Drag the action to a different day (e.g., Wednesday at the same time)
-11. Verify the action moves to the new day column
-12. Reload the page and verify the new schedule persists
-13. Navigate to the action detail page and verify the updated date and time
+11. Verify the action moves to the new day column automatically (no popover)
+12. Identify a due-only action (red styling) on the calendar
+13. Drag the due-only action to a different day
+14. Verify a popover appears with two options: "Scheduled for [date]" and "Start after [date]"
+15. Click "Scheduled for [date]"
+16. Verify the action is rescheduled as a scheduled action (blue styling)
+17. Verify the due_date is cleared (mutual exclusivity)
+18. Reload the page and verify the new schedule persists
+19. Create another due-only action and drag it, this time select "Start after [date]"
+20. Verify the action is rescheduled as a start_after action (yellow styling)
+21. Verify the due_date is preserved
+22. Verify clicking outside the popover cancels the drag operation
 
-**Expected Result:** Dragging an action in Day view changes its time. Dragging in Week view can change both the day and time. Changes are saved to the backend and persist across page reloads.
+**Expected Result:** Dragging a scheduled or start_after action auto-reschedules without a popover. Dragging a due-only action shows a type-selection popover. "Scheduled for" clears due_date (mutual exclusivity). "Start after" preserves due_date. Changes persist across reloads.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3743,6 +3755,360 @@ Use the table below to log each full or partial test run.
 14. Switch to Month view and verify non-business days have a visual distinction (e.g., dimmed columns or different cell styling)
 
 **Expected Result:** Business days settings control which day columns receive business-hour highlighting in Week view and visual distinction in Month view. Changing business days updates the display immediately.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112b: Calendar Item Visual Variants - Four Color States
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in. The following actions exist on the calendar:
+- A scheduled action (has scheduled_date, e.g., today at 10:00 AM)
+- A start_after action (has start_date, e.g., today, no scheduled_date)
+- A due-only action (has due_date = today, no scheduled_date, no start_date, with start_date in the past so it appears on calendar)
+- An overdue due-only action (has due_date in the past)
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) and switch to Day view for the appropriate date
+2. Locate the scheduled action
+3. Verify it displays with **blue** styling (blue background, blue left border, blue text)
+4. Locate the start_after action
+5. Verify it displays with **yellow/amber** styling (amber background, amber left border, amber text)
+6. Locate the due-only action (due today)
+7. Verify it displays with **red** styling (red background, red left border, red text)
+8. Navigate to the date of the overdue due-only action
+9. Verify it displays with **dark red** styling (darker red background, darker red left border, darker red text)
+10. Switch to Week view and verify the same four color states are visible
+11. Switch to Month view and verify the same four color states are visible in the day cells
+
+**Expected Result:** Calendar items display in four distinct visual states: scheduled (blue), start_after (yellow/amber), due-only (red), and overdue (dark red). The color coding is consistent across Day, Week, and Month views.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112c: Calendar Multi-Date Display
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in. An action exists in CALENDAR state with `start_date = March 15` and `due_date = March 20` (no scheduled_date).
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) in Month view for March
+2. Locate March 15 in the calendar grid
+3. Verify the action appears on March 15 with **yellow/amber** styling (start_after display)
+4. Locate March 20 in the calendar grid
+5. Verify the **same action** also appears on March 20 with **red** styling (due display)
+6. Switch to Week view for the week containing March 15
+7. Verify the action appears on March 15 with yellow/amber styling
+8. Navigate to the week containing March 20
+9. Verify the action appears on March 20 with red styling
+10. Switch to Day view for March 15
+11. Verify the action appears with yellow/amber styling
+12. Navigate to Day view for March 20
+13. Verify the action appears with red styling
+14. Click the action on March 20 to navigate to the action detail
+15. Verify the detail page shows both start_date (March 15) and due_date (March 20)
+
+**Expected Result:** An action with both start_date and due_date appears on both dates in the calendar. On the start_date it shows yellow/amber styling. On the due_date it shows red styling. Both reference the same action.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112d: Calendar Quick-Add - Type Selector
+**Priority:** Medium | **Area:** Calendar
+
+**Preconditions:** User is logged in, viewing the Calendar page in Month or Day view
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) in Month view
+2. Click on an empty day cell to open the quick-add form
+3. Verify the quick-add form appears with a title input field
+4. Verify the form shows two radio buttons: "Scheduled" (default selected) and "Start after"
+5. Type a title (e.g., "Team meeting")
+6. With "Scheduled" selected, verify NO due date input is shown
+7. Press Enter to submit
+8. Verify the action is created as a scheduled action (blue styling) on the selected date
+9. Click another empty day cell
+10. Select "Start after" radio button
+11. Verify a due date input field appears
+12. Type a title and optionally set a due date
+13. Press Enter to submit
+14. Verify the action is created as a start_after action (yellow/amber styling) on the selected date
+15. If a due date was set, verify the action also appears on the due date with red styling
+16. Switch to Day view and repeat the same flow by clicking an empty time slot
+17. Verify the type selector and due date input work the same way in the Day view quick-add form
+
+**Expected Result:** The calendar quick-add form includes a type selector ("Scheduled" / "Start after"). "Scheduled" creates a scheduled action. "Start after" creates a deferred action and optionally accepts a due date. The due date field only appears when "Start after" is selected.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112e: Mutual Exclusivity - Scheduled Date Clears Due Date (Action Detail)
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in. An action exists with a `due_date` set (e.g., March 20) and NO scheduled_date or start_date.
+
+**Steps:**
+1. Navigate to the action detail page (/action/:id)
+2. Expand the Dates section
+3. Verify the Due row shows the due date (e.g., "Sat, Mar 20, 2026")
+4. Verify the Deferred row shows "Not set"
+5. Click on the Deferred row to edit
+6. Select "Scheduled for" radio option
+7. Pick a date (e.g., March 18) and optionally a time
+8. Click Save
+9. Verify the Deferred row now shows "Scheduled for March 18"
+10. Verify the Due row now shows **"N/A (has scheduled date)"** — it is non-editable
+11. Verify clicking on the Due row does NOT open an editor
+12. Reload the page
+13. Verify the due_date is cleared (the backend should have also cleared it)
+14. Verify the Due row still shows "N/A (has scheduled date)"
+15. Clear the deferred date (click Clear button on Deferred row)
+16. Verify the Due row becomes editable again (shows "Not set" and is clickable)
+
+**Expected Result:** Setting a "Scheduled for" date on an action clears the due_date (mutual exclusivity). The Due row shows "N/A (has scheduled date)" and is non-editable while a scheduled_date is set. Clearing the scheduled date restores editability of the Due row. The change persists on reload.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112f: Mutual Exclusivity - Due Date Clears Scheduled Date (Action Detail)
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in. An action exists in CALENDAR state with a `scheduled_date` set (e.g., March 18 at 10:00 AM) and NO due_date.
+
+**Steps:**
+1. Navigate to the action detail page (/action/:id)
+2. Expand the Dates section
+3. Verify the Deferred row shows "Scheduled for March 18 at 10:00 AM"
+4. Verify the Due row shows "N/A (has scheduled date)"
+5. Clear the deferred date (click Clear on Deferred row)
+6. Verify the action moves to NEXT state
+7. Verify the Due row is now editable (shows "Not set")
+8. Click on the Due row to edit
+9. Set a due date (e.g., March 25)
+10. Click Save
+11. Verify the Due row shows the new due date
+12. Verify the Deferred row shows "Not set" (no scheduled_date)
+13. Reload the page
+14. Verify the scheduled_date/time/duration remain cleared
+15. Verify the due_date persists
+
+**Expected Result:** Setting a due_date when a scheduled_date exists first requires clearing the scheduled_date (since the Due row is non-editable while scheduled). The scheduled_date is properly cleared on the backend via undefer. The due_date is then set independently.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112g: Mutual Exclusivity - Start Date and Due Date Coexist
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in. An action exists with `start_date` (e.g., March 15) and `due_date` (e.g., March 20).
+
+**Steps:**
+1. Navigate to the action detail page (/action/:id)
+2. Expand the Dates section
+3. Verify the Deferred row shows "Start after March 15"
+4. Verify the Due row shows the due date (e.g., "March 20") — it is **editable** (not "N/A")
+5. Click on the Due row to edit
+6. Change the due date to March 22
+7. Click Save
+8. Verify the Due row updates to March 22
+9. Verify the Deferred row still shows "Start after March 15" (start_date is NOT cleared)
+10. Reload the page and verify both dates persist
+11. Edit the Deferred row and change start_date to March 17
+12. Save
+13. Verify the Due row still shows March 22 (due_date is NOT cleared when changing start_date)
+
+**Expected Result:** start_date and due_date can coexist on the same action. Editing either one does not affect the other. Only scheduled_date and due_date are mutually exclusive.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112h: MetadataRow Date Badge Color Coding
+**Priority:** Medium | **Area:** Calendar
+
+**Preconditions:** User is logged in. The following actions exist:
+- Action A: has `scheduled_date` set (e.g., March 18)
+- Action B: has `start_date` set (e.g., March 15)
+- Action C: has `due_date` set in the future (e.g., March 25)
+- Action D: has `due_date` set in the past (e.g., March 1) — overdue
+
+**Steps:**
+1. Navigate to a list view where all four actions are visible (e.g., /next or /today)
+2. Locate Action A (scheduled)
+3. Verify its MetadataRow chip shows "Scheduled Mar 18" with a **blue** calendar icon and blue text
+4. Locate Action B (start_after)
+5. Verify its MetadataRow chip shows "Starts Mar 15" with a **yellow/amber** calendar icon and amber text
+6. Locate Action C (due in future)
+7. Verify its MetadataRow chip shows "Due Mar 25" with a **red** calendar icon and red text
+8. Locate Action D (overdue)
+9. Verify its MetadataRow chip shows "Overdue Mar 1" with a **dark red** calendar icon and dark red text
+10. Verify that Action D's chip uses darker red compared to Action C's red
+
+**Expected Result:** MetadataRow date chips use color-coded styling: scheduled (blue), start_after (yellow/amber), due (red), overdue (dark red). The "Scheduled" label is fully spelled out (not "Sched"). Due chips show "Due [date]" and overdue chips show "Overdue [date]".
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112i: Move From Calendar Clears Dates
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in. An action exists in CALENDAR state with `scheduled_date = March 18` and `due_date = March 20`.
+
+**Steps:**
+1. Navigate to the action detail page (/action/:id)
+2. Verify state is CALENDAR, scheduled_date is March 18, due_date is March 20
+3. Open the Move dropdown
+4. Select "Next Actions"
+5. Verify the action moves to NEXT state
+6. Navigate to the action detail (from /next)
+7. Expand the Dates section
+8. Verify the scheduled_date is **cleared** (shows "Not set")
+9. Verify the due_date is **preserved** (still shows March 20)
+10. Navigate back and create another CALENDAR action with `start_date = March 15` and `due_date = March 22`
+11. Open the Move dropdown on this action
+12. Select "Today"
+13. Verify the action moves to TODAY state
+14. Navigate to the action detail
+15. Verify start_date is **cleared**
+16. Verify due_date is **preserved** (March 22)
+17. Create another CALENDAR action with `scheduled_date = March 19`
+18. Move it to "Someday"
+19. Verify scheduled_date is **cleared**
+20. Reload the page and verify the dates remain as expected (cleared dates stay cleared, due_date persists)
+
+**Expected Result:** Moving an action from CALENDAR to any other state (Next, Today, Someday) clears the scheduled_date/start_date via the undefer API but preserves the due_date. Changes persist on reload.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112j: Calendar Drag Popover for Due-Only Items
+**Priority:** Medium | **Area:** Calendar
+
+**Preconditions:** User is logged in. A due-only action exists on the calendar (has due_date, has start_date in the past so it was loaded, but the item currently shows on its due_date with red styling).
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) in Month view
+2. Locate the due-only action (red styling)
+3. Drag the action to a different day cell
+4. Verify a popover appears near the drop location with two buttons:
+   - "Scheduled for [target date]"
+   - "Start after [target date]"
+5. Click "Scheduled for [date]"
+6. Verify the action is rescheduled as a scheduled action on the target date (blue styling)
+7. Verify the due_date is cleared (mutual exclusivity with scheduled)
+8. Undo by navigating to the action detail and clearing the scheduled date
+9. Set a due date again and drag the due-only action to another day
+10. When the popover appears, click "Start after [date]"
+11. Verify the action is rescheduled as a start_after action on the target date (yellow/amber styling)
+12. Verify the due_date is **preserved**
+13. Drag the due-only action again, but this time click outside the popover
+14. Verify the popover closes and the action is NOT rescheduled (drag is cancelled)
+15. Repeat in Week view (all-day and timed drops) to verify popover appears for due-only items
+16. Repeat in Day view to verify popover appears for due-only items
+
+**Expected Result:** Dragging a due-only item on the calendar shows a type-selection popover. "Scheduled for" clears due_date. "Start after" preserves due_date. Clicking outside cancels. The popover works in Month, Week, and Day views.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112k: Calendar Drag Auto-Detects Type for Scheduled and Start Items
+**Priority:** Medium | **Area:** Calendar
+
+**Preconditions:** User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (yellow/amber).
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) in Month view
+2. Locate the scheduled action (blue styling)
+3. Drag it to a different day cell
+4. Verify NO popover appears — the action is automatically rescheduled as "scheduled" on the new date
+5. Verify the action retains blue styling on the new date
+6. Locate the start_after action (yellow/amber styling)
+7. Drag it to a different day cell
+8. Verify NO popover appears — the action is automatically rescheduled as "start" on the new date
+9. Verify the action retains yellow/amber styling on the new date
+10. Reload the page and verify both actions are on their new dates
+
+**Expected Result:** Dragging a scheduled action auto-reschedules as "scheduled" (no popover). Dragging a start_after action auto-reschedules as "start" (no popover). The popover only appears for due-only items that have no existing scheduled/start date to auto-detect from.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-112l: Dark Theme Calendar Color Tokens
+**Priority:** Low | **Area:** Calendar
+
+**Preconditions:** User is logged in with dark theme enabled. Actions with various date types exist on the calendar.
+
+**Steps:**
+1. Enable dark theme in Settings
+2. Navigate to the Calendar page (/calendar)
+3. Verify scheduled items (blue) are visible and readable against the dark background
+4. Verify start_after items (yellow/amber) are visible and readable against the dark background
+5. Verify due-only items (red) are visible and readable against the dark background
+6. Verify overdue items (dark red) are visible and readable against the dark background
+7. Navigate to a list view (e.g., /next)
+8. Verify MetadataRow date chips use appropriate dark theme colors:
+   - Scheduled: blue text/icon
+   - Start: amber/yellow text/icon
+   - Due: light red text/icon
+   - Overdue: light red text/icon (distinguishable from non-overdue due)
+9. Verify all four calendar item types have sufficient contrast in dark theme
+10. Switch back to light theme and verify the light theme colors are correct
+
+**Expected Result:** All four calendar item color states (scheduled, start, due, overdue) and MetadataRow chip colors render with appropriate dark theme overrides. Text and icons are readable against the dark background.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9249,21 +9615,26 @@ Use the table below to log each full or partial test run.
 ### TC-306: Overdue Item Highlighting
 **Priority:** High | **Area:** Drag & Drop
 
-**Preconditions:** User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday).
+**Preconditions:** User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday). Another action has a due_date set to tomorrow.
 
 **Steps:**
 1. Navigate to /next (or any list view where the overdue action appears).
 2. Locate the overdue action item.
 3. Verify the item has a red left border (visually distinct from non-overdue items).
 4. Verify the item has a light red background.
-5. Navigate to /today.
-6. Verify the same overdue item displays with the red left border and light red background.
-7. Navigate to /calendar.
-8. Verify the overdue item is highlighted similarly in the calendar view.
-9. Create a new action with a due_date set to tomorrow.
-10. Verify this future-dated action does NOT have the red left border or light red background.
+5. Verify the MetadataRow chip shows "Overdue [date]" in dark red text with a dark red calendar icon.
+6. Navigate to /today.
+7. Verify the same overdue item displays with the red left border and light red background.
+8. Navigate to /calendar.
+9. Verify the overdue item is displayed with dark red styling (dark red background, dark red border).
+10. Locate the action with a future due_date on the calendar.
+11. Verify this future-dated action has red (not dark red) styling on the calendar.
+12. Verify the future-dated action's MetadataRow chip shows "Due [date]" in red text (not dark red).
+13. Create a new action with a due_date set to tomorrow.
+14. Verify this future-dated action does NOT have the red left border or light red background in list views.
+15. Verify its MetadataRow chip shows "Due [date]" in red, not "Overdue".
 
-**Expected Result:** Actions with a due_date in the past are visually highlighted with a red left border and light red background across all list views. Actions with future due dates are not highlighted.
+**Expected Result:** Actions with a due_date in the past are visually highlighted with a red left border, light red background in list views, and dark red styling on the calendar. MetadataRow shows "Overdue [date]" in dark red. Future-due actions show "Due [date]" in red (lighter). Actions with no due date have no date-related highlighting.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9874,18 +10245,21 @@ Use the table below to log each full or partial test run.
 1. Navigate to /next.
 2. Locate the overdue action.
 3. Verify it has a red left border.
-4. Navigate to /today.
-5. Locate the overdue action.
-6. Verify it has a red left border.
-7. Navigate to /calendar.
-8. Locate the overdue action on the calendar.
-9. Verify it is highlighted with overdue styling.
-10. Create an action with a due_date set to today.
-11. Verify this action does NOT have overdue styling (it is due today, not overdue).
-12. Create an action with no due_date.
-13. Verify this action does NOT have overdue styling.
+4. Verify the MetadataRow chip shows "Overdue [date]" with dark red text and icon.
+5. Navigate to /today.
+6. Locate the overdue action.
+7. Verify it has a red left border.
+8. Verify the MetadataRow chip shows "Overdue [date]" with dark red styling.
+9. Navigate to /calendar.
+10. Locate the overdue action on the calendar.
+11. Verify it is displayed with dark red calendar item styling (dark red background, dark red left border).
+12. Create an action with a due_date set to today.
+13. Verify this action does NOT have overdue styling (it is due today, not overdue).
+14. Verify its MetadataRow chip shows "Due [date]" in red (not dark red "Overdue").
+15. Create an action with no due_date.
+16. Verify this action does NOT have any due date chip or overdue styling.
 
-**Expected Result:** Items with past due dates display a red left border in all list views (next, today, calendar). Items due today or with no due date do not receive overdue styling.
+**Expected Result:** Items with past due dates display a red left border in list views and dark red styling on the calendar. MetadataRow shows "Overdue [date]" in dark red. Items due today show "Due [date]" in red. Items with no due date have no date-related styling.
 
 | Date | P/F | Comment |
 |------|-----|---------|

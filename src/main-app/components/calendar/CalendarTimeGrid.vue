@@ -212,7 +212,16 @@ function onWrapperDrop(event) {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
       const newTime = formatTimeSlot(hour, half)
-      emit('reschedule', { actionId: data.id, newDate: props.date, newTime })
+      emit('reschedule', {
+        actionId: data.id,
+        newDate: props.date,
+        newTime,
+        hasDueDate: data.hasDueDate,
+        hasScheduledDate: data.hasScheduledDate,
+        hasStartDate: data.hasStartDate,
+        dropX: event.clientX,
+        dropY: event.clientY,
+      })
     }
   } catch (e) {
     // Ignore parse errors
@@ -239,7 +248,16 @@ function onDrop(hour, half, event) {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
       const newTime = formatTimeSlot(hour, half)
-      emit('reschedule', { actionId: data.id, newDate: props.date, newTime })
+      emit('reschedule', {
+        actionId: data.id,
+        newDate: props.date,
+        newTime,
+        hasDueDate: data.hasDueDate,
+        hasScheduledDate: data.hasScheduledDate,
+        hasStartDate: data.hasStartDate,
+        dropX: event.clientX,
+        dropY: event.clientY,
+      })
     }
   } catch (e) {
     // Ignore parse errors

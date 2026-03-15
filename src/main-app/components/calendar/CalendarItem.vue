@@ -2,9 +2,8 @@
   <div
       :class="[
         'text-footnote calendar-item',
+        `calendar-item--${displayClass}`,
         {
-          'calendar-item--scheduled': isScheduled,
-          'calendar-item--deferred': !isScheduled,
           'calendar-item--dragging': isDragging,
           'calendar-item--compact': compact,
         }
@@ -50,7 +49,16 @@ const emit = defineEmits(['click', 'drag-start', 'drag-end'])
 const calendar = calendarModel()
 const isDragging = ref(false)
 
-const isScheduled = computed(() => calendar.isScheduledItem(props.item))
+const displayType = computed(() => calendar.getItemDisplayType(props.item))
+const isOverdueItem = computed(() => calendar.isItemOverdue(props.item))
+
+const displayClass = computed(() => {
+  if (displayType.value === 'due' && isOverdueItem.value) return 'overdue'
+  if (displayType.value === 'due') return 'due'
+  if (displayType.value === 'start') return 'start'
+  return 'scheduled'
+})
+
 const time = computed(() => calendar.getItemTime(props.item))
 
 function onClick(e) {
@@ -62,7 +70,10 @@ function onDragStart(e) {
   isDragging.value = true
   e.dataTransfer.setData('text/plain', JSON.stringify({
     id: props.item.id,
-    type: 'calendar-item'
+    type: 'calendar-item',
+    hasScheduledDate: !!props.item.scheduled_date,
+    hasStartDate: !!props.item.start_date,
+    hasDueDate: !!props.item.due_date,
   }))
   e.dataTransfer.effectAllowed = 'move'
   emit('drag-start', props.item)
@@ -104,6 +115,24 @@ function onDragEnd(e) {
   background: var(--color-calendar-deferred);
   border-left-color: var(--color-calendar-deferred-border);
   color: var(--color-calendar-deferred-text);
+}
+
+.calendar-item--start {
+  background: var(--color-calendar-start);
+  border-left-color: var(--color-calendar-start-border);
+  color: var(--color-calendar-start-text);
+}
+
+.calendar-item--due {
+  background: var(--color-calendar-due);
+  border-left-color: var(--color-calendar-due-border);
+  color: var(--color-calendar-due-text);
+}
+
+.calendar-item--overdue {
+  background: var(--color-calendar-overdue);
+  border-left-color: var(--color-calendar-overdue-border);
+  color: var(--color-calendar-overdue-text);
 }
 
 .calendar-item:hover {

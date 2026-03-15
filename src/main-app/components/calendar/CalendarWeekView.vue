@@ -152,6 +152,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Drag type popover -->
+    <CalendarDragPopover
+        v-if="pendingDrop"
+        :date="pendingDrop.date"
+        :x="pendingDrop.x"
+        :y="pendingDrop.y"
+        @select="onDragPopoverSelect"
+        @cancel="pendingDrop = null"
+    />
   </div>
 </template>
 
@@ -168,6 +178,7 @@ import { calendarModel } from '../../scripts/models/calendarModel.js'
 import { layoutOverlappingItems } from '../../scripts/core/calendarLayout.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
+import CalendarDragPopover from './CalendarDragPopover.vue'
 
 const props = defineProps({
   currentDate: {
@@ -187,6 +198,7 @@ const dragOverDate = ref(null)
 const dragOverTime = ref(null)
 const draggingItem = ref(null)
 const currentTimePosition = ref(null)
+const pendingDrop = ref(null)
 let timeUpdateInterval = null
 
 const weekDays = computed(() => {
@@ -309,7 +321,12 @@ function onWrapperDrop(day, event) {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
       const hour = getHourFromEvent(event)
-      emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime: formatTimeSlot(hour) })
+      const newTime = formatTimeSlot(hour)
+      if (data.hasDueDate && !data.hasScheduledDate && !data.hasStartDate) {
+        pendingDrop.value = { actionId: data.id, date: day.dateStr, time: newTime, x: event.clientX, y: event.clientY }
+      } else {
+        emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime })
+      }
     }
   } catch (e) {
     // Ignore parse errors
@@ -333,7 +350,11 @@ function onAllDayDrop(day, event) {
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
-      emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime: null })
+      if (data.hasDueDate && !data.hasScheduledDate && !data.hasStartDate) {
+        pendingDrop.value = { actionId: data.id, date: day.dateStr, time: null, x: event.clientX, y: event.clientY }
+      } else {
+        emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime: null })
+      }
     }
   } catch (e) {
     // Ignore parse errors
@@ -348,11 +369,27 @@ function onCellDrop(day, hour, event) {
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
-      emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime: formatTimeSlot(hour) })
+      const newTime = formatTimeSlot(hour)
+      if (data.hasDueDate && !data.hasScheduledDate && !data.hasStartDate) {
+        pendingDrop.value = { actionId: data.id, date: day.dateStr, time: newTime, x: event.clientX, y: event.clientY }
+      } else {
+        emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime })
+      }
     }
   } catch (e) {
     // Ignore parse errors
   }
+}
+
+function onDragPopoverSelect(forcedType) {
+  if (!pendingDrop.value) return
+  emit('reschedule', {
+    actionId: pendingDrop.value.actionId,
+    newDate: pendingDrop.value.date,
+    newTime: pendingDrop.value.time,
+    forcedType,
+  })
+  pendingDrop.value = null
 }
 
 function updateCurrentTime() {

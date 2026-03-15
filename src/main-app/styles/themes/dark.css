@@ -115,6 +115,23 @@
     --color-calendar-hour-text: #555555;
     --color-calendar-weekend-bg: #0e0e0e;
     --color-calendar-outside-business: #0c0c0c;
+    /* Calendar: start_after */
+    --color-calendar-start: rgba(245, 158, 11, 0.15);
+    --color-calendar-start-border: #f59e0b;
+    --color-calendar-start-text: #fbbf24;
+    /* Calendar: due-only */
+    --color-calendar-due: rgba(239, 68, 68, 0.15);
+    --color-calendar-due-border: #ef4444;
+    --color-calendar-due-text: #fca5a5;
+    /* Calendar: overdue */
+    --color-calendar-overdue: rgba(220, 38, 38, 0.25);
+    --color-calendar-overdue-border: #dc2626;
+    --color-calendar-overdue-text: #fca5a5;
+    /* Chip colors */
+    --color-chip-start-text: #fbbf24;
+    --color-chip-start-icon: #f59e0b;
+    --color-chip-due-text: #fca5a5;
+    --color-chip-due-icon: #ef4444;
 
     /* Heat map (fallback — accents override these) */
     --color-heat-0: #111111;

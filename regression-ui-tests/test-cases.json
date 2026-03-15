@@ -1531,15 +1531,18 @@
       "Verify the following date options are present: - Deferred: with sub-options \"Scheduled for\" and \"Start after\" - Due Date: date picker - Duration: selection of predefined options",
       "Click on the \"Scheduled for\" date option and verify a date picker appears",
       "Select a date and verify it is set",
+      "Verify the Due Date section is **hidden** when \"Scheduled for\" is selected (mutual exclusivity)",
       "Click on the \"Start after\" date option and verify a date picker appears",
+      "Verify the Due Date section **reappears** when \"Start after\" is selected",
       "Select a date for deferred start",
       "Click on the Due Date field and verify a date picker appears",
       "Select a due date",
       "Open the Duration selector and verify the following options are available: 15, 30, 45, 60, 90, 120, 180, 240 minutes",
       "Select a duration (e.g., 30 minutes)",
-      "Verify all selected values are displayed correctly in the form"
+      "Verify all selected values are displayed correctly in the form",
+      "Switch back to \"Scheduled for\" and verify the Due Date section hides again"
     ],
-    "expected": "The dates section of the Create Action form includes Deferred (Scheduled for / Start after), Due Date, and Duration fields. Date pickers function correctly. Duration offers predefined options: 15, 30, 45, 60, 90, 120, 180, and 240 minutes. All selections are reflected in the form."
+    "expected": "The dates section of the Create Action form includes Deferred (Scheduled for / Start after), Due Date, and Duration fields. Date pickers function correctly. Duration offers predefined options: 15, 30, 45, 60, 90, 120, 180, and 240 minutes. When \"Scheduled for\" is selected, the Due Date section is hidden (mutual exclusivity). When \"Start after\" is selected, the Due Date section is visible. All selections are reflected in the form."
   },
   {
     "id": "TC-065",
@@ -2450,23 +2453,32 @@
     "priority": "Medium",
     "area": "Calendar",
     "section": "7: Calendar",
-    "preconditions": "User is logged in, at least one action is scheduled on the calendar, using Day or Week view",
+    "preconditions": "User is logged in, at least one scheduled action and one due-only action (has due_date but no scheduled_date or start_date) exist on the calendar, using Day or Week view",
     "steps": [
       "Navigate to the Calendar page (/calendar) and switch to Day view",
-      "Identify a scheduled action block (e.g., at 10:00 AM)",
+      "Identify a scheduled action block (blue, e.g., at 10:00 AM)",
       "Click and hold the action block",
       "Drag it to a different time slot (e.g., 3:00 PM)",
       "Release the mouse button",
-      "Verify the action block moves to the 3:00 PM position",
+      "Verify the action block moves to the 3:00 PM position automatically (no popover)",
       "Verify the action's scheduled time has been updated (navigate to action detail to confirm)",
       "Switch to Week view",
       "Identify a scheduled action on one day (e.g., Monday)",
       "Drag the action to a different day (e.g., Wednesday at the same time)",
-      "Verify the action moves to the new day column",
+      "Verify the action moves to the new day column automatically (no popover)",
+      "Identify a due-only action (red styling) on the calendar",
+      "Drag the due-only action to a different day",
+      "Verify a popover appears with two options: \"Scheduled for [date]\" and \"Start after [date]\"",
+      "Click \"Scheduled for [date]\"",
+      "Verify the action is rescheduled as a scheduled action (blue styling)",
+      "Verify the due_date is cleared (mutual exclusivity)",
       "Reload the page and verify the new schedule persists",
-      "Navigate to the action detail page and verify the updated date and time"
+      "Create another due-only action and drag it, this time select \"Start after [date]\"",
+      "Verify the action is rescheduled as a start_after action (yellow styling)",
+      "Verify the due_date is preserved",
+      "Verify clicking outside the popover cancels the drag operation"
     ],
-    "expected": "Dragging an action in Day view changes its time. Dragging in Week view can change both the day and time. Changes are saved to the backend and persist across page reloads."
+    "expected": "Dragging a scheduled or start_after action auto-reschedules without a popover. Dragging a due-only action shows a type-selection popover. \"Scheduled for\" clears due_date (mutual exclusivity). \"Start after\" preserves due_date. Changes persist across reloads."
   },
   {
     "id": "TC-109",
@@ -2540,24 +2552,20 @@
     "priority": "Low",
     "area": "Calendar",
     "section": "7: Calendar",
-    "preconditions": "User is logged in",
+    "preconditions": "User is logged in with dark theme enabled. Actions with various date types exist on the calendar.",
     "steps": [
-      "Navigate to Settings and locate the calendar configuration section",
-      "Verify the default business days are Monday through Friday (selected/checked)",
-      "Verify Saturday and Sunday are not selected as business days",
-      "Save the settings (if not already default)",
-      "Navigate to the Calendar Week view",
-      "Verify Monday through Friday columns have business-hour highlighting",
-      "Verify Saturday and Sunday columns do NOT have business-hour highlighting (or are visually distinguished as non-business days)",
-      "Return to Settings",
-      "Deselect Friday and select Saturday (business days: Mon-Thu, Sat)",
-      "Save the settings",
-      "Return to the Calendar Week view",
-      "Verify Monday through Thursday and Saturday columns have business-hour highlighting",
-      "Verify Friday and Sunday columns do NOT have business-hour highlighting",
-      "Switch to Month view and verify non-business days have a visual distinction (e.g., dimmed columns or different cell styling)"
+      "Enable dark theme in Settings",
+      "Navigate to the Calendar page (/calendar)",
+      "Verify scheduled items (blue) are visible and readable against the dark background",
+      "Verify start_after items (yellow/amber) are visible and readable against the dark background",
+      "Verify due-only items (red) are visible and readable against the dark background",
+      "Verify overdue items (dark red) are visible and readable against the dark background",
+      "Navigate to a list view (e.g., /next)",
+      "Verify MetadataRow date chips use appropriate dark theme colors: - Scheduled: blue text/icon - Start: amber/yellow text/icon - Due: light red text/icon - Overdue: light red text/icon (distinguishable from non-overdue due)",
+      "Verify all four calendar item types have sufficient contrast in dark theme",
+      "Switch back to light theme and verify the light theme colors are correct"
     ],
-    "expected": "Business days settings control which day columns receive business-hour highlighting in Week view and visual distinction in Month view. Changing business days updates the display immediately."
+    "expected": "All four calendar item color states (scheduled, start, due, overdue) and MetadataRow chip colors render with appropriate dark theme overrides. Text and icons are readable against the dark background."
   },
   {
     "id": "TC-113",
@@ -6566,20 +6574,25 @@
     "priority": "High",
     "area": "Drag & Drop",
     "section": "22: Drag & Drop",
-    "preconditions": "User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday).",
+    "preconditions": "User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday). Another action has a due_date set to tomorrow.",
     "steps": [
       "Navigate to /next (or any list view where the overdue action appears).",
       "Locate the overdue action item.",
       "Verify the item has a red left border (visually distinct from non-overdue items).",
       "Verify the item has a light red background.",
+      "Verify the MetadataRow chip shows \"Overdue [date]\" in dark red text with a dark red calendar icon.",
       "Navigate to /today.",
       "Verify the same overdue item displays with the red left border and light red background.",
       "Navigate to /calendar.",
-      "Verify the overdue item is highlighted similarly in the calendar view.",
+      "Verify the overdue item is displayed with dark red styling (dark red background, dark red border).",
+      "Locate the action with a future due_date on the calendar.",
+      "Verify this future-dated action has red (not dark red) styling on the calendar.",
+      "Verify the future-dated action's MetadataRow chip shows \"Due [date]\" in red text (not dark red).",
       "Create a new action with a due_date set to tomorrow.",
-      "Verify this future-dated action does NOT have the red left border or light red background."
+      "Verify this future-dated action does NOT have the red left border or light red background in list views.",
+      "Verify its MetadataRow chip shows \"Due [date]\" in red, not \"Overdue\"."
     ],
-    "expected": "Actions with a due_date in the past are visually highlighted with a red left border and light red background across all list views. Actions with future due dates are not highlighted."
+    "expected": "Actions with a due_date in the past are visually highlighted with a red left border, light red background in list views, and dark red styling on the calendar. MetadataRow shows \"Overdue [date]\" in dark red. Future-due actions show \"Due [date]\" in red (lighter). Actions with no due date have no date-related highlighting."
   },
   {
     "id": "TC-307",
@@ -7025,18 +7038,21 @@
       "Navigate to /next.",
       "Locate the overdue action.",
       "Verify it has a red left border.",
+      "Verify the MetadataRow chip shows \"Overdue [date]\" with dark red text and icon.",
       "Navigate to /today.",
       "Locate the overdue action.",
       "Verify it has a red left border.",
+      "Verify the MetadataRow chip shows \"Overdue [date]\" with dark red styling.",
       "Navigate to /calendar.",
       "Locate the overdue action on the calendar.",
-      "Verify it is highlighted with overdue styling.",
+      "Verify it is displayed with dark red calendar item styling (dark red background, dark red left border).",
       "Create an action with a due_date set to today.",
       "Verify this action does NOT have overdue styling (it is due today, not overdue).",
+      "Verify its MetadataRow chip shows \"Due [date]\" in red (not dark red \"Overdue\").",
       "Create an action with no due_date.",
-      "Verify this action does NOT have overdue styling."
+      "Verify this action does NOT have any due date chip or overdue styling."
     ],
-    "expected": "Items with past due dates display a red left border in all list views (next, today, calendar). Items due today or with no due date do not receive overdue styling."
+    "expected": "Items with past due dates display a red left border in list views and dark red styling on the calendar. MetadataRow shows \"Overdue [date]\" in dark red. Items due today show \"Due [date]\" in red. Items with no due date have no date-related styling."
   },
   {
     "id": "TC-331",

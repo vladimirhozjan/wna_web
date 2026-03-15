@@ -3,6 +3,7 @@ import {
     formatDate,
     navigateDate,
     getDateRange,
+    isOverdue,
 } from '../core/dateUtils.js'
 import { listCalendar, getCalendarDensity, addAction, deferAction } from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
@@ -66,6 +67,8 @@ function transformItem(apiItem) {
         start_time: formatTime(apiItem.start_time),
         duration: apiItem.scheduled_duration || null,
         due_date: apiItem.due_date || null,
+        due_time: formatTime(apiItem.due_time),
+        recurring_parent_id: apiItem.recurring_parent_id || null,
     }
 }
 
@@ -87,18 +90,32 @@ export function calendarModel() {
 
     function getItemsForDate(date) {
         const dateStr = formatDate(date)
-        return items.value.filter(item => {
-            const itemDate = item.scheduled_date || item.start_date
-            return itemDate === dateStr
-        })
+        const result = []
+        for (const item of items.value) {
+            if (item.scheduled_date === dateStr) {
+                result.push({ ...item, _displayReason: 'scheduled' })
+            } else if (item.start_date === dateStr) {
+                result.push({ ...item, _displayReason: 'start' })
+            } else if (item.due_date === dateStr && !item.scheduled_date) {
+                // Due-only items show on their due date (skip if also has scheduled on another date)
+                result.push({ ...item, _displayReason: 'due' })
+            }
+        }
+        return result
     }
 
     function getItemsForDateRange(startDate, endDate) {
         const startStr = formatDate(startDate)
         const endStr = formatDate(endDate)
+        const seen = new Set()
         return items.value.filter(item => {
-            const itemDate = item.scheduled_date || item.start_date
-            return itemDate >= startStr && itemDate <= endStr
+            const dates = [item.scheduled_date, item.start_date, item.due_date].filter(Boolean)
+            const inRange = dates.some(d => d >= startStr && d <= endStr)
+            if (inRange && !seen.has(item.id)) {
+                seen.add(item.id)
+                return true
+            }
+            return false
         })
     }
 
@@ -119,16 +136,35 @@ export function calendarModel() {
         return !!item.start_date && !item.scheduled_date
     }
 
+    function isDueOnlyItem(item) {
+        return !!item.due_date && !item.scheduled_date && !item.start_date
+    }
+
+    function getItemDisplayType(item) {
+        if (item._displayReason) return item._displayReason
+        if (item.scheduled_date) return 'scheduled'
+        if (item.start_date) return 'start'
+        if (item.due_date) return 'due'
+        return 'scheduled'
+    }
+
+    function isItemOverdue(item) {
+        return !!item.due_date && isOverdue(item.due_date)
+    }
+
     function hasTime(item) {
+        if (item._displayReason === 'due') return !!item.due_time
         return !!(item.scheduled_time || item.start_time)
     }
 
     function getItemTime(item) {
+        if (item._displayReason === 'due') return item.due_time || null
         return item.scheduled_time || item.start_time || null
     }
 
     function getItemDate(item) {
-        return item.scheduled_date || item.start_date
+        if (item._displayReason === 'due') return item.due_date
+        return item.scheduled_date || item.start_date || item.due_date
     }
 
     async function loadCalendarItems(startDate, endDate) {
@@ -205,28 +241,99 @@ export function calendarModel() {
         }
     }
 
-    async function rescheduleAction(actionId, newDate, newTime) {
+    async function rescheduleAction(actionId, newDate, newTime, forcedType) {
         loading.value = true
         error.value = null
 
         try {
-            // Use defer API to reschedule
-            const type = 'scheduled'
+            // Auto-detect type from item's current dates when no forcedType
+            let type = forcedType
+            if (!type) {
+                const item = items.value.find(i => i.id === actionId)
+                if (item?.scheduled_date) {
+                    type = 'scheduled'
+                } else if (item?.start_date) {
+                    type = 'start'
+                } else {
+                    type = 'scheduled'
+                }
+            }
+
             await deferAction(actionId, type, newDate, newTime)
+            // Backend handles mutual exclusivity: /defer with type=scheduled clears due_date
 
             items.value = items.value.map(item => {
                 if (item.id === actionId) {
-                    return {
-                        ...item,
-                        scheduled_date: newDate,
-                        scheduled_time: newTime,
-                        start_date: null,
-                        start_time: null,
+                    if (type === 'scheduled') {
+                        return {
+                            ...item,
+                            scheduled_date: newDate,
+                            scheduled_time: newTime,
+                            start_date: null,
+                            start_time: null,
+                            // Mutual exclusivity: scheduled clears due
+                            due_date: null,
+                            due_time: null,
+                        }
+                    } else {
+                        return {
+                            ...item,
+                            start_date: newDate,
+                            start_time: newTime,
+                            scheduled_date: null,
+                            scheduled_time: null,
+                            // Keep due_date when using start_after
+                        }
                     }
                 }
                 return item
             })
             statsModel().refreshStats()
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function createDeferredAction(date, time, title, dueDate) {
+        loading.value = true
+        error.value = null
+
+        try {
+            const actionData = {
+                title,
+                state: 'CALENDAR',
+                start_date: date,
+            }
+            if (time) {
+                actionData.start_time = time
+            }
+            if (dueDate) {
+                actionData.due_date = dueDate
+            }
+
+            const created = await addAction(actionData)
+
+            const newItem = {
+                id: created.id,
+                title,
+                type: created.type || 'ACTION',
+                state: created.state || 'CALENDAR',
+                scheduled_date: null,
+                scheduled_time: null,
+                start_date: date,
+                start_time: time || null,
+                duration: null,
+                due_date: dueDate || null,
+                due_time: null,
+                recurring_parent_id: null,
+            }
+
+            items.value = [...items.value, newItem]
+            statsModel().refreshStats()
+            return newItem
         } catch (err) {
             error.value = err
             throw err
@@ -272,6 +379,9 @@ export function calendarModel() {
         getItemCountForDate,
         isScheduledItem,
         isDeferredItem,
+        isDueOnlyItem,
+        getItemDisplayType,
+        isItemOverdue,
         hasTime,
         getItemTime,
         getItemDate,
@@ -279,6 +389,7 @@ export function calendarModel() {
         loadCalendarItems,
         loadDensity,
         createScheduledAction,
+        createDeferredAction,
         rescheduleAction,
         goToToday,
         goToPrev,

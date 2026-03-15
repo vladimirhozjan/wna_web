@@ -93,7 +93,16 @@ function onDrop(event) {
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
-      emit('reschedule', { actionId: data.id, newDate: props.date, newTime: null })
+      emit('reschedule', {
+        actionId: data.id,
+        newDate: props.date,
+        newTime: null,
+        hasDueDate: data.hasDueDate,
+        hasScheduledDate: data.hasScheduledDate,
+        hasStartDate: data.hasStartDate,
+        dropX: event.clientX,
+        dropY: event.clientY,
+      })
     }
   } catch (e) {
     // Ignore parse errors

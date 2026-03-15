@@ -135,8 +135,8 @@
           <button v-if="form.deferType" type="button" class="text-body-s clarify-clear-btn" @click="clearDeferred">Clear</button>
         </div>
 
-        <!-- Due Date -->
-        <div class="clarify-date-field">
+        <!-- Due Date (hidden when scheduled is selected — mutual exclusivity) -->
+        <div v-if="form.deferType !== 'scheduled'" class="clarify-date-field">
           <label class="text-body-s fw-semibold clarify-label">Due</label>
           <div class="clarify-date-inputs">
             <DateInput v-model="form.dueDate" class="text-body-m clarify-input" />

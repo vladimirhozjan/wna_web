@@ -331,8 +331,12 @@
             <!-- Due Date -->
             <div class="detail-date-row">
               <label class="text-body-s fw-semibold detail-date-label">Due</label>
+              <!-- N/A when scheduled date is set (mutual exclusivity) -->
+              <div v-if="action.scheduled_date" class="detail-section-wrapper">
+                <p class="text-body-m detail-section-content detail-section-content--empty">N/A (has scheduled date)</p>
+              </div>
               <!-- Display mode -->
-              <div v-if="editingField !== 'due_date'" class="detail-section-wrapper">
+              <div v-else-if="editingField !== 'due_date'" class="detail-section-wrapper">
                 <p
                     class="text-body-m detail-section-content"
                     :class="{ 'detail-section-content--empty': !action.due_date }"
@@ -817,9 +821,24 @@ async function onMoveTo(newState) {
 
   actionLoading.value = 'move'
   const oldState = action.value.state
+  const oldScheduledDate = action.value.scheduled_date
+  const oldScheduledTime = action.value.scheduled_time
+  const oldScheduledDuration = action.value.scheduled_duration
+  const oldStartDate = action.value.start_date
+  const oldStartTime = action.value.start_time
   action.value.state = newState
 
   try {
+    // When leaving CALENDAR, clear scheduled/start dates first (due_date is preserved)
+    if (currentState === 'CALENDAR' && newState !== 'CALENDAR') {
+      await undeferAction(action.value.id)
+      action.value.scheduled_date = null
+      action.value.scheduled_time = null
+      action.value.scheduled_duration = null
+      action.value.start_date = null
+      action.value.start_time = null
+    }
+
     // Use appropriate API based on current state and destination
     if (currentState === 'SOMEDAY') {
       // From Someday: need to activate first, then move if needed
@@ -830,8 +849,10 @@ async function onMoveTo(newState) {
     } else if (newState === 'TODAY') {
       await todayAction(action.value.id)
     } else if (newState === 'NEXT') {
-      // undefer works from any active state (TODAY, CALENDAR, WAITING, SOMEDAY) → NEXT
-      await undeferAction(action.value.id)
+      // If we already called undeferAction above (from CALENDAR), skip the redundant call
+      if (currentState !== 'CALENDAR') {
+        await undeferAction(action.value.id)
+      }
     } else if (newState === 'SOMEDAY') {
       await apiClient.somedayAction(action.value.id)
     } else {
@@ -842,6 +863,11 @@ async function onMoveTo(newState) {
     await navigateToNextOrPrev()
   } catch {
     action.value.state = oldState
+    action.value.scheduled_date = oldScheduledDate
+    action.value.scheduled_time = oldScheduledTime
+    action.value.scheduled_duration = oldScheduledDuration
+    action.value.start_date = oldStartDate
+    action.value.start_time = oldStartTime
     toaster.push('Failed to move action')
   } finally {
     actionLoading.value = null
@@ -978,6 +1004,8 @@ async function saveDeferredField() {
   const oldScheduledDate = action.value.scheduled_date
   const oldScheduledTime = action.value.scheduled_time
   const oldScheduledDuration = action.value.scheduled_duration
+  const oldDueDate = action.value.due_date
+  const oldDueTime = action.value.due_time
   const oldState = action.value.state
 
   // Update local state optimistically
@@ -987,6 +1015,9 @@ async function saveDeferredField() {
     action.value.scheduled_duration = newTime ? duration : null
     action.value.start_date = null
     action.value.start_time = null
+    // Mutual exclusivity: scheduled clears due date
+    action.value.due_date = null
+    action.value.due_time = null
   } else {
     action.value.start_date = newDate
     action.value.start_time = newTime
@@ -1000,6 +1031,7 @@ async function saveDeferredField() {
 
   try {
     await deferAction(action.value.id, deferType, newDate, newTime, duration)
+    // Backend handles mutual exclusivity: /defer with type=scheduled clears due_date
     statsModel().refreshStats()
     editingField.value = null
   } catch {
@@ -1009,6 +1041,8 @@ async function saveDeferredField() {
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
+    action.value.due_date = oldDueDate
+    action.value.due_time = oldDueTime
     action.value.state = oldState
     toaster.push('Failed to save deferred date')
   } finally {
@@ -1089,19 +1123,32 @@ async function saveDateField(field) {
 
   const oldDate = action.value.due_date
   const oldTime = action.value.due_time
+  const oldScheduledDate = action.value.scheduled_date
+  const oldScheduledTime = action.value.scheduled_time
+  const oldScheduledDuration = action.value.scheduled_duration
 
   // Update local state optimistically
   action.value.due_date = newDate
   action.value.due_time = newTime
+  // Mutual exclusivity: due clears scheduled (but not start_date)
+  if (action.value.scheduled_date) {
+    action.value.scheduled_date = null
+    action.value.scheduled_time = null
+    action.value.scheduled_duration = null
+  }
   savingField.value = field
 
   try {
+    // Backend handles mutual exclusivity: /due clears scheduled_date/time/duration
     await setDueDate(action.value.id, newDate, newTime)
     statsModel().refreshStats()
     editingField.value = null
   } catch {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
+    action.value.scheduled_date = oldScheduledDate
+    action.value.scheduled_time = oldScheduledTime
+    action.value.scheduled_duration = oldScheduledDuration
     toaster.push('Failed to save due date')
   } finally {
     savingField.value = null

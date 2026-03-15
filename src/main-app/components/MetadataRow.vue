@@ -20,21 +20,21 @@
       </span>
 
       <!-- Due date -->
-      <span v-if="entityType === 'action' && item.due_date" class="chip" :class="{ 'chip--danger': isItemOverdue }">
-        <CalendarIcon class="chip__icon" />
-        <span class="chip__text">{{ isItemOverdue ? 'Overdue ' : '' }}{{ formattedDueDate }}</span>
+      <span v-if="entityType === 'action' && item.due_date" class="chip" :class="isItemOverdue ? 'chip--overdue' : 'chip--due'">
+        <CalendarIcon class="chip__icon" :class="isItemOverdue ? 'chip__icon--overdue' : 'chip__icon--due'" />
+        <span class="chip__text" :class="isItemOverdue ? 'chip__text--overdue' : 'chip__text--due'">{{ isItemOverdue ? 'Overdue' : 'Due' }} {{ formattedDueDate }}</span>
       </span>
 
       <!-- Scheduled date -->
       <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
         <CalendarIcon class="chip__icon chip__icon--scheduled" />
-        <span class="chip__text chip__text--scheduled">Sched {{ formattedScheduledDate }}</span>
+        <span class="chip__text chip__text--scheduled">Scheduled {{ formattedScheduledDate }}</span>
       </span>
 
       <!-- Start date -->
       <span v-if="entityType === 'action' && item.start_date" class="chip">
-        <CalendarIcon class="chip__icon chip__icon--tertiary" />
-        <span class="chip__text chip__text--tertiary">Starts {{ formattedStartDate }}</span>
+        <CalendarIcon class="chip__icon chip__icon--start" />
+        <span class="chip__text chip__text--start">Starts {{ formattedStartDate }}</span>
       </span>
 
       <!-- Project -->
@@ -196,8 +196,13 @@ const hasAnyMetadata = computed(() => {
   color: var(--color-text-tertiary);
 }
 
-.chip--danger {
-  color: var(--color-danger);
+.chip--due {
+  color: var(--color-chip-due-text);
+  font-weight: 600;
+}
+
+.chip--overdue {
+  color: var(--color-calendar-overdue-text);
   font-weight: 600;
 }
 
@@ -232,6 +237,21 @@ const hasAnyMetadata = computed(() => {
   opacity: 0.5;
 }
 
+.chip__icon--due {
+  color: var(--color-chip-due-icon);
+  opacity: 1;
+}
+
+.chip__icon--overdue {
+  color: var(--color-calendar-overdue-border);
+  opacity: 1;
+}
+
+.chip__icon--start {
+  color: var(--color-chip-start-icon);
+  opacity: 1;
+}
+
 .chip__icon--project {
   color: var(--color-action);
   opacity: 1;
@@ -251,6 +271,18 @@ const hasAnyMetadata = computed(() => {
 
 .chip__text--tertiary {
   color: var(--color-text-tertiary);
+}
+
+.chip__text--due {
+  color: var(--color-chip-due-text);
+}
+
+.chip__text--overdue {
+  color: var(--color-calendar-overdue-text);
+}
+
+.chip__text--start {
+  color: var(--color-chip-start-text);
 }
 
 .chip__text--project {
