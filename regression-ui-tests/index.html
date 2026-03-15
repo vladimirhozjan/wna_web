@@ -112,6 +112,11 @@
                 <option value="N">Not Tested</option>
               </select>
             </div>
+            <div class="filter-group">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
+                <input type="checkbox" id="filter-smoke" onchange="applyFilters()"> Smoke Only
+              </label>
+            </div>
           </div>
         </div>
 
@@ -256,6 +261,11 @@
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
             </select>
+          </div>
+          <div class="filter-group">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
+              <input type="checkbox" id="catalog-smoke" onchange="renderCatalog()"> Smoke Only
+            </label>
           </div>
         </div>
 

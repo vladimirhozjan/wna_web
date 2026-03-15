@@ -29,13 +29,14 @@ while (i < lines.length) {
   }
 
   // Match test case header: ### TC-NNN: Name
-  const tcMatch = line.match(/^### (TC-\d+): (.+)$/);
+  const tcMatch = line.match(/^### (TC-\d+[a-z]?): (.+)$/);
   if (tcMatch) {
     const tc = {
       id: tcMatch[1],
       name: tcMatch[2],
       priority: '',
       area: '',
+      smoke: false,
       section: currentSection,
       preconditions: '',
       steps: [],
@@ -50,7 +51,14 @@ while (i < lines.length) {
       const prioMatch = lines[i].match(/\*\*Priority:\*\*\s*(\w+)\s*\|\s*\*\*Area:\*\*\s*(.+)/);
       if (prioMatch) {
         tc.priority = prioMatch[1].trim();
-        tc.area = prioMatch[2].trim();
+        const areaRaw = prioMatch[2].trim();
+        // Check for smoke test marker and strip it from area
+        if (/\|\s*\*\*Smoke Test\*\*/.test(areaRaw)) {
+          tc.smoke = true;
+          tc.area = areaRaw.replace(/\s*\|\s*\*\*Smoke Test\*\*/, '').trim();
+        } else {
+          tc.area = areaRaw;
+        }
         i++;
       }
     }
@@ -88,7 +96,7 @@ while (i < lines.length) {
       const l = lines[i];
 
       // Stop at next test case, section, or horizontal rule before next TC
-      if (l.match(/^### TC-\d+:/) || l.match(/^## Section/)) {
+      if (l.match(/^### TC-\d+[a-z]?:/) || l.match(/^## Section/)) {
         break;
       }
 
@@ -176,6 +184,10 @@ console.log('\nBy section:');
 for (const [sec, count] of Object.entries(bySec)) {
   console.log(`  ${sec}: ${count} test cases`);
 }
+
+// Print smoke test count
+const smokeCount = testCases.filter(tc => tc.smoke).length;
+console.log(`\nSmoke tests: ${smokeCount}`);
 
 // Print summary by priority
 const byPrio = {};

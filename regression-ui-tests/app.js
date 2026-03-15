@@ -215,8 +215,10 @@ function renderRunStats(run) {
   const tested = counts.P + counts.F + counts.S + counts.B;
   const passRate = tested > 0 ? ((counts.P / tested) * 100).toFixed(1) : '0.0';
 
+  const smokeTotal = testCases.filter(t => t.smoke).length;
+
   document.getElementById('run-stats').innerHTML = `
-    <div class="stat-card stat-total"><div class="stat-value">${total}</div><div class="stat-label">Total</div></div>
+    <div class="stat-card stat-total"><div class="stat-value">${total}</div><div class="stat-label">Total (${smokeTotal} smoke)</div></div>
     <div class="stat-card stat-pass"><div class="stat-value">${counts.P}</div><div class="stat-label">Passed</div></div>
     <div class="stat-card stat-fail"><div class="stat-value">${counts.F}</div><div class="stat-label">Failed</div></div>
     <div class="stat-card stat-skip"><div class="stat-value">${counts.S}</div><div class="stat-label">Skipped</div></div>
@@ -251,9 +253,11 @@ function getFilteredTestCases() {
   const areaFilter = document.getElementById('filter-area').value;
   const priorityFilter = document.getElementById('filter-priority').value;
   const statusFilter = document.getElementById('filter-status').value;
+  const smokeFilter = document.getElementById('filter-smoke').checked;
   const run = getActiveRun();
 
   return testCases.filter(tc => {
+    if (smokeFilter && !tc.smoke) return false;
     if (idFilter && !tc.id.toUpperCase().includes(idFilter) && !tc.name.toUpperCase().includes(idFilter)) return false;
     if (sectionFilter && tc.section !== sectionFilter) return false;
     if (areaFilter && tc.area !== areaFilter) return false;
@@ -291,8 +295,10 @@ function renderTestCaseTable(run) {
       bugCell = `<button class="btn-bug" onclick="quickCreateBug('${tc.id}')">+ Bug</button>`;
     }
 
+    const smokeBadge = tc.smoke ? '<span class="badge-smoke" title="Smoke Test">ST</span>' : '';
+
     tr.innerHTML = `
-      <td class="tc-id" onclick="showTcDetail('${tc.id}')">${tc.id}</td>
+      <td class="tc-id" onclick="showTcDetail('${tc.id}')">${tc.id}${smokeBadge}</td>
       <td class="tc-name">${escapeHtml(tc.name)}</td>
       <td><span class="${prioClass}">${tc.priority}</span></td>
       <td>${escapeHtml(tc.area)}</td>
@@ -330,6 +336,7 @@ function clearFilters() {
   document.getElementById('filter-area').value = '';
   document.getElementById('filter-priority').value = '';
   document.getElementById('filter-status').value = '';
+  document.getElementById('filter-smoke').checked = false;
   applyFilters();
 }
 
@@ -427,6 +434,12 @@ function renderRunSummary(run) {
   const tested = counts.P + counts.F + counts.S + counts.B;
   const passRate = tested > 0 ? ((counts.P / tested) * 100).toFixed(1) : '0.0';
 
+  // Smoke test breakdown
+  const smokeTcs = testCases.filter(t => t.smoke);
+  const smokeCounts = getStatusCounts(run, smokeTcs);
+  const smokeTested = smokeCounts.P + smokeCounts.F + smokeCounts.S + smokeCounts.B;
+  const smokePassRate = smokeTested > 0 ? ((smokeCounts.P / smokeTested) * 100).toFixed(1) : '0.0';
+
   // By priority
   const priorities = ['High', 'Medium', 'Low'];
   let prioRows = '';
@@ -469,6 +482,20 @@ function renderRunSummary(run) {
       <strong>Build:</strong> ${escapeHtml(run.build || 'N/A')} |
       <strong>Date:</strong> ${run.date}
     </p>
+
+    <h4 style="margin-bottom:8px">Smoke Tests (${smokeTcs.length})</h4>
+    <table class="breakdown-table">
+      <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Total Smoke</td><td>${smokeTcs.length}</td></tr>
+        <tr><td>Passed</td><td>${smokeCounts.P}</td></tr>
+        <tr><td>Failed</td><td>${smokeCounts.F}</td></tr>
+        <tr><td>Skipped</td><td>${smokeCounts.S}</td></tr>
+        <tr><td>Blocked</td><td>${smokeCounts.B}</td></tr>
+        <tr><td>Not Tested</td><td>${smokeCounts.N}</td></tr>
+        <tr><td>Pass Rate</td><td>${smokePassRate}%</td></tr>
+      </tbody>
+    </table>
 
     <h4 style="margin-bottom:8px">By Priority</h4>
     <table class="breakdown-table">
@@ -771,6 +798,7 @@ function renderCatalog() {
   const search = document.getElementById('catalog-search').value.trim().toLowerCase();
   const section = document.getElementById('catalog-section').value;
   const priority = document.getElementById('catalog-priority').value;
+  const smokeOnly = document.getElementById('catalog-smoke').checked;
 
   let filtered = testCases;
   if (search) filtered = filtered.filter(t =>
@@ -778,6 +806,7 @@ function renderCatalog() {
   );
   if (section) filtered = filtered.filter(t => t.section === section);
   if (priority) filtered = filtered.filter(t => t.priority === priority);
+  if (smokeOnly) filtered = filtered.filter(t => t.smoke);
 
   document.getElementById('catalog-count').textContent = `(${filtered.length} of ${testCases.length})`;
 
@@ -800,6 +829,7 @@ function renderCatalog() {
     html += `<h3 style="font-size:15px;margin-bottom:10px;color:var(--primary)">Section ${escapeHtml(sec)} (${tcs.length})</h3>`;
     for (const tc of tcs) {
       const prioClass = 'priority-' + tc.priority.toLowerCase();
+      const catSmokeBadge = tc.smoke ? '<span class="badge-smoke" title="Smoke Test" style="margin-left:6px">ST</span>' : '';
       html += `
         <div style="padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;cursor:pointer;transition:border-color 0.15s"
           onclick="showTcDetail('${tc.id}')"
@@ -807,7 +837,7 @@ function renderCatalog() {
           onmouseout="this.style.borderColor='var(--border)'">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <div>
-              <span style="color:var(--primary);font-weight:600">${tc.id}</span>
+              <span style="color:var(--primary);font-weight:600">${tc.id}</span>${catSmokeBadge}
               <span style="margin-left:8px">${escapeHtml(tc.name)}</span>
             </div>
             <div style="display:flex;gap:12px;flex-shrink:0">

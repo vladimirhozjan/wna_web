@@ -54,7 +54,7 @@ Use the table below to log each full or partial test run.
 ---
 
 ### TC-001: Successful Registration
-**Priority:** High | **Area:** Registration
+**Priority:** High | **Area:** Registration | **Smoke Test**
 
 **Preconditions:** User is not logged in. No account exists for the test email address. Browser localStorage is clear of `auth_token` and `refresh_token`. Mailpit (or email test server) is running on `localhost:8025` to capture outgoing emails.
 
@@ -222,7 +222,7 @@ Use the table below to log each full or partial test run.
 ---
 
 ### TC-007: Successful Login
-**Priority:** High | **Area:** Login
+**Priority:** High | **Area:** Login | **Smoke Test**
 
 **Preconditions:** A valid user account exists (e.g., `testuser@example.com` with password `TestPass1!`). User is not logged in. localStorage is clear of auth tokens.
 
@@ -718,7 +718,7 @@ Use the table below to log each full or partial test run.
 ---
 
 ### TC-024: Logout Flow
-**Priority:** High | **Area:** JWT & Session Management
+**Priority:** High | **Area:** JWT & Session Management | **Smoke Test**
 
 **Preconditions:** User is logged in and on the dashboard (`/engage`).
 
@@ -789,8 +789,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-339: Email Verification - Successful Verification
-**Priority:** High | **Area:** Email Verification
+### TC-026: Email Verification - Successful Verification
+**Priority:** High | **Area:** Email Verification | **Smoke Test**
 
 **Preconditions:** A new user account has been registered but not yet verified. The verification email has been received in Mailpit (`http://localhost:8025`). The user is not logged in.
 
@@ -819,7 +819,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-340: Email Verification - Invalid Token
+### TC-027: Email Verification - Invalid Token
 **Priority:** High | **Area:** Email Verification
 
 **Preconditions:** User is not logged in.
@@ -842,7 +842,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-341: Email Verification - Missing Token Parameter
+### TC-028: Email Verification - Missing Token Parameter
 **Priority:** High | **Area:** Email Verification
 
 **Preconditions:** User is not logged in.
@@ -864,7 +864,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-342: Email Verification - Expired Token
+### TC-029: Email Verification - Expired Token
 **Priority:** High | **Area:** Email Verification
 
 **Preconditions:** A verification token has been created more than 24 hours ago (expired). This may require manually manipulating the database or waiting 24 hours.
@@ -887,7 +887,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-343: Email Verification - Double Verification Prevented
+### TC-030: Email Verification - Double Verification Prevented
 **Priority:** Medium | **Area:** Email Verification
 
 **Preconditions:** A user has already successfully verified their email. The original verification link/token is still available.
@@ -910,7 +910,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-344: Resend Verification Email - From Verify-Sent Screen
+### TC-031: Resend Verification Email - From Verify-Sent Screen
 **Priority:** High | **Area:** Email Verification
 
 **Preconditions:** A new user has just registered and the auth dialog is showing the "verify-sent" screen. Mailpit is accessible at `http://localhost:8025`.
@@ -938,7 +938,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-345: Resend Verification Email - Cooldown Enforced
+### TC-032: Resend Verification Email - Cooldown Enforced
 **Priority:** Medium | **Area:** Email Verification
 
 **Preconditions:** A new user has just registered and the auth dialog is showing the "verify-sent" screen.
@@ -961,7 +961,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-346: Login Blocked for Unverified Email
+### TC-033: Login Blocked for Unverified Email
 **Priority:** High | **Area:** Email Verification
 
 **Preconditions:** A user account exists with the email NOT yet verified (registered but verification link not clicked). The user knows the correct email and password.
@@ -989,7 +989,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-347: Resend Verification Email - From Unverified Login Screen
+### TC-034: Resend Verification Email - From Unverified Login Screen
 **Priority:** High | **Area:** Email Verification
 
 **Preconditions:** A user has attempted to log in with an unverified email and the auth dialog is showing the "unverified" mode with a resend button.
@@ -1012,7 +1012,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-348: Resend Verification - Anti-Enumeration (Non-Existent Email)
+### TC-035: Resend Verification - Anti-Enumeration (Non-Existent Email)
 **Priority:** Medium | **Area:** Email Verification
 
 **Preconditions:** No account exists for the email `nonexistent_user@example.com`. Access to browser developer tools Network tab.
@@ -1035,8 +1035,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-349: Full Registration-to-Login Flow with Email Verification
-**Priority:** High | **Area:** Email Verification
+### TC-036: Full Registration-to-Login Flow with Email Verification
+**Priority:** High | **Area:** Email Verification | **Smoke Test**
 
 **Preconditions:** No account exists for the test email. Mailpit is running. Backend services are running.
 
@@ -1065,7 +1065,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-350: Verification Email Content
+### TC-037: Verification Email Content
 **Priority:** Medium | **Area:** Email Verification
 
 **Preconditions:** A new user has just registered. Mailpit is accessible at `http://localhost:8025`.
@@ -1095,7 +1095,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-351: Welcome Email After Verification
+### TC-038: Welcome Email After Verification
 **Priority:** Medium | **Area:** Email Verification
 
 **Preconditions:** A new user has registered and has a pending verification email. Mailpit is accessible.
@@ -1119,7 +1119,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-352: Forgot Password Email
+### TC-039: Forgot Password Email
 **Priority:** High | **Area:** Password Reset Email
 
 **Preconditions:** A verified user account exists. Mailpit is accessible. The user is not logged in.
@@ -1147,7 +1147,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-353: Forgot Password - Anti-Enumeration
+### TC-040: Forgot Password - Anti-Enumeration
 **Priority:** Medium | **Area:** Password Reset Email
 
 **Preconditions:** No account exists for the email `nonexistent_user@example.com`. Access to browser developer tools.
@@ -1172,7 +1172,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-354: Password Changed Confirmation Email
+### TC-041: Password Changed Confirmation Email
 **Priority:** Medium | **Area:** Password Reset Email
 
 **Preconditions:** A verified user account exists. Mailpit is accessible. The user has received a password reset email.
@@ -1198,7 +1198,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-355: Login Alert Email
+### TC-042: Login Alert Email
 **Priority:** Medium | **Area:** Email Notifications
 
 **Preconditions:** A verified user account exists with notification settings enabled for login alerts. Mailpit is accessible.
@@ -1222,7 +1222,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-356: Verify Email Page - Network Error
+### TC-043: Verify Email Page - Network Error
 **Priority:** Medium | **Area:** Email Verification
 
 **Preconditions:** User has a valid verification token. The backend server is stopped or unreachable.
@@ -1251,7 +1251,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-026: Top Nav - Guest View Desktop
+### TC-044: Top Nav - Guest View Desktop
 **Priority:** High | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is not authenticated. Browser viewport is desktop width (>768px). Application is loaded at the landing page.
@@ -1273,7 +1273,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-027: Top Nav - Guest View Mobile
+### TC-045: Top Nav - Guest View Mobile
 **Priority:** High | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is not authenticated. Browser viewport is mobile width (<=768px). Application is loaded at the landing page.
@@ -1299,8 +1299,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-028: Top Nav - Authenticated Desktop
-**Priority:** High | **Area:** Dashboard Layout & Navigation
+### TC-046: Top Nav - Authenticated Desktop
+**Priority:** High | **Area:** Dashboard Layout & Navigation | **Smoke Test**
 
 **Preconditions:** User is authenticated with a valid session. Browser viewport is desktop width (>768px). User is on any dashboard page.
 
@@ -1326,7 +1326,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-029: Top Nav - Authenticated Mobile
+### TC-047: Top Nav - Authenticated Mobile
 **Priority:** High | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated with a valid session. Browser viewport is mobile width (<=768px). User is on any dashboard page.
@@ -1351,8 +1351,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-030: Sidebar Desktop - Full Navigation Panel
-**Priority:** High | **Area:** Dashboard Layout & Navigation
+### TC-048: Sidebar Desktop - Full Navigation Panel
+**Priority:** High | **Area:** Dashboard Layout & Navigation | **Smoke Test**
 
 **Preconditions:** User is authenticated. Browser viewport is desktop width (>768px). User is on the dashboard.
 
@@ -1388,7 +1388,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-031: Sidebar Count Badges Update
+### TC-049: Sidebar Count Badges Update
 **Priority:** High | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated on desktop. Sidebar is visible with count badges displayed. The inbox has at least one item.
@@ -1415,7 +1415,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-032: Sidebar Review Conditional Display
+### TC-050: Sidebar Review Conditional Display
 **Priority:** Medium | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated on desktop. User has access to Settings where Weekly Review can be enabled or disabled.
@@ -1443,8 +1443,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-033: Mobile Sidebar Drawer
-**Priority:** High | **Area:** Dashboard Layout & Navigation
+### TC-051: Mobile Sidebar Drawer
+**Priority:** High | **Area:** Dashboard Layout & Navigation | **Smoke Test**
 
 **Preconditions:** User is authenticated. Browser viewport is mobile width (<=768px).
 
@@ -1471,7 +1471,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-034: User Avatar Display
+### TC-052: User Avatar Display
 **Priority:** Medium | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated. Test with two accounts: one with a profile avatar image uploaded, and one without.
@@ -1499,7 +1499,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-035: User Avatar Color Consistency
+### TC-053: User Avatar Color Consistency
 **Priority:** Low | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated with an account that has no profile avatar image (uses fallback). Multiple sessions or browsers available for testing.
@@ -1526,7 +1526,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-036: Sidebar Drag-Drop Targets
+### TC-054: Sidebar Drag-Drop Targets
 **Priority:** High | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated on desktop. Inbox contains at least 2 stuff items. Next Actions list contains at least 1 action item.
@@ -1557,7 +1557,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-037: Complex Sidebar Drops with Modal Prompts
+### TC-055: Complex Sidebar Drops with Modal Prompts
 **Priority:** High | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is authenticated on desktop. Inbox contains at least 3 stuff items.
@@ -1587,7 +1587,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-038: Catch-All Route Redirect
+### TC-056: Catch-All Route Redirect
 **Priority:** Medium | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** Application is running. Test both as an authenticated and unauthenticated user.
@@ -1617,8 +1617,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-039: Add Stuff Item to Inbox
-**Priority:** High | **Area:** Inbox / Stuff
+### TC-057: Add Stuff Item to Inbox
+**Priority:** High | **Area:** Inbox / Stuff | **Smoke Test**
 
 **Preconditions:** User is authenticated and on the Inbox page.
 
@@ -1644,7 +1644,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-040: Inbox Item Count Badge
+### TC-058: Inbox Item Count Badge
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox is empty or has a known number of items. Sidebar is visible (desktop viewport).
@@ -1672,8 +1672,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-041: Complete Stuff from List
-**Priority:** High | **Area:** Inbox / Stuff
+### TC-059: Complete Stuff from List
+**Priority:** High | **Area:** Inbox / Stuff | **Smoke Test**
 
 **Preconditions:** User is authenticated. Inbox contains at least 2 stuff items.
 
@@ -1699,7 +1699,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-042: Inline Title Edit
+### TC-060: Inline Title Edit
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item with a known title.
@@ -1731,7 +1731,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-043: Trash Stuff from List
+### TC-061: Trash Stuff from List
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item.
@@ -1761,7 +1761,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-044: Drag to Reorder Inbox
+### TC-062: Drag to Reorder Inbox
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains at least 3 stuff items with known titles in a known order (e.g., Item A, Item B, Item C from top to bottom).
@@ -1789,8 +1789,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-045: Click to Stuff Detail Page
-**Priority:** High | **Area:** Inbox / Stuff
+### TC-063: Click to Stuff Detail Page
+**Priority:** High | **Area:** Inbox / Stuff | **Smoke Test**
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item with a known ID.
 
@@ -1813,7 +1813,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-046: Inbox Pagination / Load More
+### TC-064: Inbox Pagination / Load More
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains more than 10 stuff items (add items until there are at least 15).
@@ -1840,7 +1840,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-046b: Stuff Detail Someday - Trash Button
+### TC-065: Stuff Detail Someday - Trash Button
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User has a stuff item in SOMEDAY state
@@ -1861,7 +1861,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-047: Inbox Empty State
+### TC-066: Inbox Empty State
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains zero stuff items (complete or delete all existing items).
@@ -1886,7 +1886,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-048: Clarify Mode Activation from Inbox Header (Desktop)
+### TC-067: Clarify Mode Activation from Inbox Header (Desktop)
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated on a desktop browser. Inbox contains at least 2 stuff items.
@@ -1913,7 +1913,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-049: Clarify Mode Mobile (Full-Screen Overlay)
+### TC-068: Clarify Mode Mobile (Full-Screen Overlay)
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated on a mobile viewport (<=768px). Inbox contains at least 2 stuff items.
@@ -1939,7 +1939,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-050: Clarify Mode Item Interactions (Disabled State)
+### TC-069: Clarify Mode Item Interactions (Disabled State)
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated on desktop. Inbox contains at least 3 stuff items. Clarify mode is activated from the inbox header.
@@ -1966,7 +1966,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-051: Clarify Auto-Start via URL Parameter
+### TC-070: Clarify Auto-Start via URL Parameter
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item.
@@ -1992,7 +1992,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-052: Clarify Completion (Auto-Exit When List Empty)
+### TC-071: Clarify Completion (Auto-Exit When List Empty)
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains exactly 2 stuff items. Clarify mode is activated.
@@ -2019,7 +2019,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-053: Input Hidden in Clarify Mode
+### TC-072: Input Hidden in Clarify Mode
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item.
@@ -2043,8 +2043,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-054: Stuff Detail Page
-**Priority:** High | **Area:** Inbox / Stuff
+### TC-073: Stuff Detail Page
+**Priority:** High | **Area:** Inbox / Stuff | **Smoke Test**
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item with a known title.
 
@@ -2077,7 +2077,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-055: Stuff Detail Page Navigation (Position-Based Browsing)
+### TC-074: Stuff Detail Page Navigation (Position-Based Browsing)
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains at least 4 stuff items (e.g., Item 1, Item 2, Item 3, Item 4 in order).
@@ -2111,8 +2111,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-056: Clarify Step 1 - Is It Actionable?
-**Priority:** High | **Area:** Clarify Workflow
+### TC-075: Clarify Step 1 - Is It Actionable?
+**Priority:** High | **Area:** Clarify Workflow | **Smoke Test**
 
 **Preconditions:** User is authenticated. Inbox contains at least 1 stuff item. Clarify mode is not yet active.
 
@@ -2137,7 +2137,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-057: Non-Actionable Path - Reference
+### TC-076: Non-Actionable Path - Reference
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 ("Is this actionable?").
@@ -2163,7 +2163,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-058: Non-Actionable Path - Someday
+### TC-077: Non-Actionable Path - Someday
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 ("Is this actionable?").
@@ -2189,7 +2189,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-059: Non-Actionable Path - Trash
+### TC-078: Non-Actionable Path - Trash
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 ("Is this actionable?").
@@ -2215,8 +2215,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-060: Clarify Step 2 - Single or Multiple Steps?
-**Priority:** High | **Area:** Clarify Workflow
+### TC-079: Clarify Step 2 - Single or Multiple Steps?
+**Priority:** High | **Area:** Clarify Workflow | **Smoke Test**
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 ("Is this actionable?").
 
@@ -2241,7 +2241,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-061: Single Action - Two-Minute Rule
+### TC-080: Single Action - Two-Minute Rule
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently at step 2 after choosing "Yes" (actionable).
@@ -2265,7 +2265,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-062: Two-Minute Yes - Do It Now
+### TC-081: Two-Minute Yes - Do It Now
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently at step 3 (two-minute rule question).
@@ -2291,8 +2291,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-063: Two-Minute No - Create Action Form
-**Priority:** High | **Area:** Clarify Workflow
+### TC-082: Two-Minute No - Create Action Form
+**Priority:** High | **Area:** Clarify Workflow | **Smoke Test**
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently at step 3 (two-minute rule question). The stuff item has the title "Research vacation destinations".
 
@@ -2319,7 +2319,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-064: Create Action Form - Dates Section
+### TC-083: Create Action Form - Dates Section
 **Priority:** Medium | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently viewing the Create Action form (step after two-minute "No").
@@ -2354,7 +2354,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-065: Create Action Confirm
+### TC-084: Create Action Confirm
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently on the Create Action form with Title filled.
@@ -2381,7 +2381,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-066: Multiple Steps - Create Project Form
+### TC-085: Multiple Steps - Create Project Form
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently at step 2 after choosing "Yes" (actionable). The stuff item has the title "Plan office renovation".
@@ -2412,8 +2412,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-067: Create Project Confirm
-**Priority:** High | **Area:** Clarify Workflow
+### TC-086: Create Project Confirm
+**Priority:** High | **Area:** Clarify Workflow | **Smoke Test**
 
 **Preconditions:** User is authenticated. Clarify mode is active. Currently on the Create Project form with Title and Outcome filled.
 
@@ -2440,7 +2440,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-068: Clarify Panel UI Elements
+### TC-087: Clarify Panel UI Elements
 **Priority:** Medium | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item. The ClarifyPanel is visible.
@@ -2470,7 +2470,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-069: Clarify Done State
+### TC-088: Clarify Done State
 **Priority:** Medium | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item.
@@ -2482,7 +2482,7 @@ Use the table below to log each full or partial test run.
 4. Verify the text "Item processed successfully!" (or equivalent success message) is shown
 5. Verify the panel either auto-advances to the next item after a brief delay or provides a button to continue
 6. If there are more items in the inbox, verify the panel transitions to the next item's step 1
-7. If there are no more items, verify clarify mode exits (as tested in TC-052)
+7. If there are no more items, verify clarify mode exits (as tested in TC-071)
 
 **Expected Result:** After completing the clarify workflow for an item, the panel briefly displays a success state with a green checkmark and "Item processed successfully!" message. The panel then either auto-advances to the next inbox item or, if the inbox is empty, exits clarify mode.
 
@@ -2494,7 +2494,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-070: Clarify Keyboard Shortcuts
+### TC-089: Clarify Keyboard Shortcuts
 **Priority:** Medium | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated on desktop. Clarify mode is active on a stuff item. Currently at step 2 or later (so the back button is available). Focus is not in any input field.
@@ -2523,7 +2523,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-071: Clarify from Detail Page
+### TC-090: Clarify from Detail Page
 **Priority:** High | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Inbox contains at least 2 stuff items. User is on a Stuff Detail page (/stuff/:id).
@@ -2551,7 +2551,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-072: Clarify Panel Modes
+### TC-091: Clarify Panel Modes
 **Priority:** Medium | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Inbox contains at least 2 stuff items. Desktop and mobile viewports available for testing.
@@ -2595,8 +2595,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-073: Add Next Action via Collapsible Form
-**Priority:** High | **Area:** Next Actions
+### TC-092: Add Next Action via Collapsible Form
+**Priority:** High | **Area:** Next Actions | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Next Actions page (/next)
 
@@ -2625,8 +2625,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-074: Complete Action from Next Actions List
-**Priority:** High | **Area:** Next Actions
+### TC-093: Complete Action from Next Actions List
+**Priority:** High | **Area:** Next Actions | **Smoke Test**
 
 **Preconditions:** User is logged in and at least one action exists in the Next Actions list
 
@@ -2651,7 +2651,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-075: Inline Edit Action Title
+### TC-094: Inline Edit Action Title
 **Priority:** High | **Area:** Next Actions
 
 **Preconditions:** User is logged in and at least one action exists in the Next Actions list
@@ -2685,7 +2685,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-076: Trash Action from Next Actions List
+### TC-095: Trash Action from Next Actions List
 **Priority:** High | **Area:** Next Actions
 
 **Preconditions:** User is logged in and at least one action exists in the Next Actions list
@@ -2717,7 +2717,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-077: Drag Reorder Actions in Next Actions List
+### TC-096: Drag Reorder Actions in Next Actions List
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in and at least three actions exist in the Next Actions list
@@ -2746,8 +2746,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-078: Click to Navigate to Action Detail
-**Priority:** High | **Area:** Next Actions
+### TC-097: Click to Navigate to Action Detail
+**Priority:** High | **Area:** Next Actions | **Smoke Test**
 
 **Preconditions:** User is logged in and at least one action exists in the Next Actions list
 
@@ -2770,7 +2770,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-079: Next Actions Pagination (Load More)
+### TC-098: Next Actions Pagination (Load More)
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed one page)
@@ -2798,7 +2798,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-080: Tag Filtering on Next Actions
+### TC-099: Tag Filtering on Next Actions
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in and multiple actions exist with various tags assigned (e.g., some tagged "home", some tagged "work", some tagged "errands")
@@ -2830,7 +2830,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-081: Empty State Without Filter on Next Actions
+### TC-100: Empty State Without Filter on Next Actions
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in and has no actions in the Next Actions list (all actions are completed, trashed, or moved elsewhere)
@@ -2854,7 +2854,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-082: Empty State With Active Tag Filter on Next Actions
+### TC-101: Empty State With Active Tag Filter on Next Actions
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in, some actions exist in Next Actions but none are tagged with the tag "urgent"
@@ -2881,7 +2881,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-083: Action Detail Page Full Content
+### TC-102: Action Detail Page Full Content
 **Priority:** High | **Area:** Next Actions
 
 **Preconditions:** User is logged in and at least one action exists with the following attributes set: title, description, tags, deferred date, due date, association with a project, at least one attachment, and at least one comment
@@ -2913,7 +2913,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-084: Action Detail Move Dropdown
+### TC-103: Action Detail Move Dropdown
 **Priority:** High | **Area:** Next Actions
 
 **Preconditions:** User is logged in and viewing an action detail page (/action/:id) for an action currently in the Next Actions list
@@ -2953,7 +2953,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-084b: Action Detail Move Dropdown Includes Reference
+### TC-104: Action Detail Move Dropdown Includes Reference
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in and viewing an action detail page
@@ -2974,7 +2974,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-084c: Someday Action Detail - Full Move Dropdown
+### TC-105: Someday Action Detail - Full Move Dropdown
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User has an action in SOMEDAY state
@@ -3003,8 +3003,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-085: Add Today Action
-**Priority:** High | **Area:** Today
+### TC-106: Add Today Action
+**Priority:** High | **Area:** Today | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Today page (/today)
 
@@ -3031,8 +3031,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-086: Today Page Operations (Complete, Inline Edit, Trash, Drag Reorder, Tag Filter)
-**Priority:** High | **Area:** Today
+### TC-107: Today Page Operations (Complete, Inline Edit, Trash, Drag Reorder, Tag Filter)
+**Priority:** High | **Area:** Today | **Smoke Test**
 
 **Preconditions:** User is logged in, at least three actions exist on the Today page with various tags assigned
 
@@ -3054,7 +3054,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-087: Today Page Empty State
+### TC-108: Today Page Empty State
 **Priority:** Medium | **Area:** Today
 
 **Preconditions:** User is logged in and has no actions on the Today page
@@ -3077,7 +3077,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-088: Today Items in Engage Dashboard
+### TC-109: Today Items in Engage Dashboard
 **Priority:** Medium | **Area:** Today
 
 **Preconditions:** User is logged in and has at least 6 actions on the Today page
@@ -3103,7 +3103,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-089: Move Action to Today from Next Actions
+### TC-110: Move Action to Today from Next Actions
 **Priority:** High | **Area:** Today
 
 **Preconditions:** User is logged in, at least one action exists in the Next Actions list
@@ -3132,7 +3132,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-090: Today Page URL Direct Navigation
+### TC-111: Today Page URL Direct Navigation
 **Priority:** Low | **Area:** Today
 
 **Preconditions:** User is logged in
@@ -3162,8 +3162,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-091: Calendar Default View is Month
-**Priority:** High | **Area:** Calendar
+### TC-112: Calendar Default View is Month
+**Priority:** High | **Area:** Calendar | **Smoke Test**
 
 **Preconditions:** User is logged in, localStorage has no saved calendar view preference (clear localStorage or use incognito)
 
@@ -3186,7 +3186,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-092: Calendar View Mode Persistence
+### TC-113: Calendar View Mode Persistence
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and on the Calendar page
@@ -3215,8 +3215,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-093: Calendar Day View Layout
-**Priority:** High | **Area:** Calendar
+### TC-114: Calendar Day View Layout
+**Priority:** High | **Area:** Calendar | **Smoke Test**
 
 **Preconditions:** User is logged in, calendar business hours are configured (e.g., 9 AM to 5 PM)
 
@@ -3241,7 +3241,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-094: Calendar Day View - Scheduled Actions Rendered as Time Blocks
+### TC-115: Calendar Day View - Scheduled Actions Rendered as Time Blocks
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in, at least one action exists with a specific date and time (e.g., today at 10:00 AM with 1-hour duration) and one all-day action
@@ -3266,7 +3266,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-095: Calendar Day View - Click Empty Time Slot to Quick-Add
+### TC-116: Calendar Day View - Click Empty Time Slot to Quick-Add
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and viewing the Day view of the Calendar
@@ -3293,7 +3293,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-096: Calendar Day View - Click Action to Navigate to Detail
+### TC-117: Calendar Day View - Click Action to Navigate to Detail
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in and at least one action is scheduled on the day being viewed
@@ -3319,7 +3319,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-097: Calendar Week View Layout
+### TC-118: Calendar Week View Layout
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in
@@ -3346,7 +3346,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-098: Calendar Week View - Week Start Configuration
+### TC-119: Calendar Week View - Week Start Configuration
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and has access to calendar settings
@@ -3375,8 +3375,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-099: Calendar Month View Layout
-**Priority:** High | **Area:** Calendar
+### TC-120: Calendar Month View Layout
+**Priority:** High | **Area:** Calendar | **Smoke Test**
 
 **Preconditions:** User is logged in and some actions are scheduled on various dates in the current month
 
@@ -3402,7 +3402,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-100: Calendar Month View - Click Day Cell
+### TC-121: Calendar Month View - Click Day Cell
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and viewing Month view with actions scheduled on at least one day
@@ -3426,7 +3426,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-101: Calendar Month View - Click Action Item
+### TC-122: Calendar Month View - Click Action Item
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in and viewing Month view with at least one action visible in a day cell
@@ -3450,7 +3450,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-102: Calendar Year View with Density Heat Map
+### TC-123: Calendar Year View with Density Heat Map
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and has actions scheduled across multiple days throughout the year with varying density (some days have many actions, some have few, some have none)
@@ -3477,7 +3477,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-103: Calendar Year View - Click Day to Navigate to Day View
+### TC-124: Calendar Year View - Click Day to Navigate to Day View
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and viewing the Year view
@@ -3502,7 +3502,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-104: Calendar Year View - Click Month to Navigate to Month View
+### TC-125: Calendar Year View - Click Month to Navigate to Month View
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and viewing the Year view
@@ -3528,7 +3528,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-105: Calendar Navigation Buttons (Previous/Next)
+### TC-126: Calendar Navigation Buttons (Previous/Next)
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in and on the Calendar page
@@ -3551,7 +3551,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-106: Calendar Today Button
+### TC-127: Calendar Today Button
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and on the Calendar page, currently navigated away from today's date
@@ -3583,7 +3583,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-107: Calendar View Mode Toggle Buttons
+### TC-128: Calendar View Mode Toggle Buttons
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and on the Calendar page
@@ -3610,8 +3610,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-108: Calendar Drag Reschedule
-**Priority:** Medium | **Area:** Calendar
+### TC-129: Calendar Drag Reschedule
+**Priority:** Medium | **Area:** Calendar | **Smoke Test**
 
 **Preconditions:** User is logged in, at least one scheduled action and one due-only action (has due_date but no scheduled_date or start_date) exist on the calendar, using Day or Week view
 
@@ -3649,7 +3649,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-109: Calendar Recurring View
+### TC-130: Calendar Recurring View
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in and at least two recurring action templates have been created
@@ -3674,7 +3674,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-110: Calendar Settings - Time Format (12h / 24h)
+### TC-131: Calendar Settings - Time Format (12h / 24h)
 **Priority:** Low | **Area:** Calendar
 
 **Preconditions:** User is logged in and has actions scheduled at various times
@@ -3704,7 +3704,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-111: Calendar Settings - Business Hours
+### TC-132: Calendar Settings - Business Hours
 **Priority:** Low | **Area:** Calendar
 
 **Preconditions:** User is logged in
@@ -3733,7 +3733,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112: Calendar Settings - Business Days
+### TC-133: Calendar Settings - Business Days
 **Priority:** Low | **Area:** Calendar
 
 **Preconditions:** User is logged in
@@ -3764,8 +3764,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112b: Calendar Item Visual Variants - Four Color States
-**Priority:** High | **Area:** Calendar
+### TC-134: Calendar Item Visual Variants - Four Color States
+**Priority:** High | **Area:** Calendar | **Smoke Test**
 
 **Preconditions:** User is logged in. The following actions exist on the calendar:
 - A scheduled action (has scheduled_date, e.g., today at 10:00 AM)
@@ -3796,7 +3796,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112c: Calendar Multi-Date Display
+### TC-135: Calendar Multi-Date Display
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in. An action exists in CALENDAR state with `start_date = March 15` and `due_date = March 20` (no scheduled_date).
@@ -3828,7 +3828,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112d: Calendar Quick-Add - Type Selector
+### TC-136: Calendar Quick-Add - Type Selector
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in, viewing the Calendar page in Month or Day view
@@ -3862,7 +3862,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112e: Mutual Exclusivity - Scheduled Date Clears Due Date (Action Detail)
+### TC-137: Mutual Exclusivity - Scheduled Date Clears Due Date (Action Detail)
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in. An action exists with a `due_date` set (e.g., March 20) and NO scheduled_date or start_date.
@@ -3895,7 +3895,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112f: Mutual Exclusivity - Due Date Clears Scheduled Date (Action Detail)
+### TC-138: Mutual Exclusivity - Due Date Clears Scheduled Date (Action Detail)
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in. An action exists in CALENDAR state with a `scheduled_date` set (e.g., March 18 at 10:00 AM) and NO due_date.
@@ -3927,7 +3927,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112g: Mutual Exclusivity - Start Date and Due Date Coexist
+### TC-139: Mutual Exclusivity - Start Date and Due Date Coexist
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in. An action exists with `start_date` (e.g., March 15) and `due_date` (e.g., March 20).
@@ -3957,7 +3957,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112h: MetadataRow Date Badge Color Coding
+### TC-140: MetadataRow Date Badge Color Coding
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in. The following actions exist:
@@ -3988,7 +3988,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112i: Move From Calendar Clears Dates
+### TC-141: Move From Calendar Clears Dates
 **Priority:** High | **Area:** Calendar
 
 **Preconditions:** User is logged in. An action exists in CALENDAR state with `scheduled_date = March 18` and `due_date = March 20`.
@@ -4025,7 +4025,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112j: Calendar Drag Popover for Due-Only Items
+### TC-142: Calendar Drag Popover for Due-Only Items
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in. A due-only action exists on the calendar (has due_date, has start_date in the past so it was loaded, but the item currently shows on its due_date with red styling).
@@ -4060,7 +4060,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112k: Calendar Drag Auto-Detects Type for Scheduled and Start Items
+### TC-143: Calendar Drag Auto-Detects Type for Scheduled and Start Items
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (yellow/amber).
@@ -4087,7 +4087,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-112l: Dark Theme Calendar Color Tokens
+### TC-144: Dark Theme Calendar Color Tokens
 **Priority:** Low | **Area:** Calendar
 
 **Preconditions:** User is logged in with dark theme enabled. Actions with various date types exist on the calendar.
@@ -4122,8 +4122,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-113: Add Project via Collapsible Form
-**Priority:** High | **Area:** Projects
+### TC-145: Add Project via Collapsible Form
+**Priority:** High | **Area:** Projects | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Projects page (/projects)
 
@@ -4155,7 +4155,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-114: Project List Has No Checkbox
+### TC-146: Project List Has No Checkbox
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and at least one project exists in the Projects list
@@ -4177,7 +4177,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-115: Project List Operations (Tag Filter, Drag Reorder, Inline Title Edit, Trash)
+### TC-147: Project List Operations (Tag Filter, Drag Reorder, Inline Title Edit, Trash)
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in, at least three projects exist with various tags assigned
@@ -4199,8 +4199,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-116: Click to Navigate to Project Detail
-**Priority:** High | **Area:** Projects
+### TC-148: Click to Navigate to Project Detail
+**Priority:** High | **Area:** Projects | **Smoke Test**
 
 **Preconditions:** User is logged in and at least one project exists in the Projects list
 
@@ -4223,7 +4223,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-117: Project Detail - Title and Outcome Editing
+### TC-149: Project Detail - Title and Outcome Editing
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with title "Launch new website" and outcome "Have a professional online presence"
@@ -4257,7 +4257,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-118: Project Detail - Next Action Section
+### TC-150: Project Detail - Next Action Section
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in and has two projects: one with a next action assigned, and one with no actions at all
@@ -4286,7 +4286,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-119: Project Detail - Backlog Expand/Collapse
+### TC-151: Project Detail - Backlog Expand/Collapse
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with one next action and at least 3 backlog actions
@@ -4305,7 +4305,7 @@ Use the table below to log each full or partial test run.
 11. Verify the backlog section collapses, hiding the backlog items
 12. Verify the count indicator is still visible showing the number of backlog items
 
-**Expected Result:** The backlog section is collapsible with an expand toggle showing the item count. When expanded, all backlog items are visible with titles and trash icons. Items are draggable (tested separately in TC-122).
+**Expected Result:** The backlog section is collapsible with an expand toggle showing the item count. When expanded, all backlog items are visible with titles and trash icons. Items are draggable (tested separately in TC-154).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4315,8 +4315,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-120: Project Detail - Add Action to Project
-**Priority:** High | **Area:** Projects
+### TC-152: Project Detail - Add Action to Project
+**Priority:** High | **Area:** Projects | **Smoke Test**
 
 **Preconditions:** User is logged in and a project exists (with or without existing actions)
 
@@ -4344,8 +4344,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-121: Project Detail - Complete Next Action Triggers Auto-Promotion
-**Priority:** High | **Area:** Projects
+### TC-153: Project Detail - Complete Next Action Triggers Auto-Promotion
+**Priority:** High | **Area:** Projects | **Smoke Test**
 
 **Preconditions:** User is logged in and a project exists with one next action ("Draft wireframes") and at least two backlog actions ("Set up hosting" at position 1, "Write content" at position 2)
 
@@ -4376,7 +4376,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-122: Project Detail - Reorder Backlog via Drag
+### TC-154: Project Detail - Reorder Backlog via Drag
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with a next action and at least 3 backlog items (e.g., "Item A", "Item B", "Item C" in that order)
@@ -4406,7 +4406,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-123: Complete Project from Project Detail
+### TC-155: Complete Project from Project Detail
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with a title and outcome
@@ -4433,7 +4433,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-124: Project Cannot Be Completed from List View
+### TC-156: Project Cannot Be Completed from List View
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and at least one project exists in the Projects list
@@ -4441,7 +4441,7 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to the Projects page (/projects)
 2. Inspect each project item in the list
-3. Verify there is no checkbox on any project item (already verified in TC-114)
+3. Verify there is no checkbox on any project item (already verified in TC-146)
 4. Verify there is no "Complete" button, icon, or menu option visible on hover or via right-click
 5. Verify the only available actions on hover are inline title edit, trash icon, and drag handle
 6. Verify there is no context menu or swipe action that allows completion
@@ -4458,7 +4458,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-125: Move Project to Someday
+### TC-157: Move Project to Someday
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists in the active Projects list
@@ -4487,7 +4487,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-125b: Project Detail Move Dropdown - Action and Reference
+### TC-158: Project Detail Move Dropdown - Action and Reference
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and viewing an active project detail page
@@ -4511,7 +4511,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-125c: Someday Project Detail - Full Controls
+### TC-159: Someday Project Detail - Full Controls
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User has a project in SOMEDAY state
@@ -4536,7 +4536,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-126: Project Detail - Tags Editing
+### TC-160: Project Detail - Tags Editing
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists, some tag presets exist in the system
@@ -4569,7 +4569,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-127: Project Detail - Description, Attachments, and Comments
+### TC-161: Project Detail - Description, Attachments, and Comments
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists
@@ -4612,7 +4612,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-128: Project Detail - Navigation Arrows (Position-Based)
+### TC-162: Project Detail - Navigation Arrows (Position-Based)
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and at least 4 projects exist in the Projects list (Project A at position 1, Project B at position 2, Project C at position 3, Project D at position 4)
@@ -4650,8 +4650,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-129: Add Waiting For Item
-**Priority:** High | **Area:** Waiting For
+### TC-163: Add Waiting For Item
+**Priority:** High | **Area:** Waiting For | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Waiting For page (/waiting)
 
@@ -4678,7 +4678,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-130: Waiting For List - Checkbox Completion
+### TC-164: Waiting For List - Checkbox Completion
 **Priority:** High | **Area:** Waiting For
 
 **Preconditions:** User is logged in and on the Waiting For page with at least one waiting item visible
@@ -4699,7 +4699,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-131: Waiting For List Operations - Tag Filter, Inline Edit, Trash, Drag Reorder
+### TC-165: Waiting For List Operations - Tag Filter, Inline Edit, Trash, Drag Reorder
 **Priority:** High | **Area:** Waiting For
 
 **Preconditions:** User is logged in and on the Waiting For page with at least three waiting items, some having tags assigned
@@ -4720,7 +4720,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-132: Click to Action Detail from Waiting For
+### TC-166: Click to Action Detail from Waiting For
 **Priority:** High | **Area:** Waiting For
 
 **Preconditions:** User is logged in and on the Waiting For page with at least one waiting item
@@ -4741,8 +4741,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-133: Action Detail - Got It Button
-**Priority:** High | **Area:** Waiting For
+### TC-167: Action Detail - Got It Button
+**Priority:** High | **Area:** Waiting For | **Smoke Test**
 
 **Preconditions:** User is logged in and viewing the detail page of an action with WAITING state (navigated from the Waiting For list)
 
@@ -4764,7 +4764,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-134: Action Detail - Waiting For Display
+### TC-168: Action Detail - Waiting For Display
 **Priority:** Medium | **Area:** Waiting For
 
 **Preconditions:** User is logged in and has created multiple waiting items at different times: one created today, one created 3 days ago, one created approximately 2 weeks ago, one created approximately 1 month ago
@@ -4792,7 +4792,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-135: Waiting For - Done Button
+### TC-169: Waiting For - Done Button
 **Priority:** High | **Area:** Waiting For
 
 **Preconditions:** User is logged in and viewing the detail page of an action with WAITING state
@@ -4815,7 +4815,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-136: Waiting For - Move Dropdown
+### TC-170: Waiting For - Move Dropdown
 **Priority:** Medium | **Area:** Waiting For
 
 **Preconditions:** User is logged in and viewing the detail page of an action with WAITING state
@@ -4841,7 +4841,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-137: Waiting For Empty State
+### TC-171: Waiting For Empty State
 **Priority:** Low | **Area:** Waiting For
 
 **Preconditions:** User is logged in and has no items in the Waiting For state (complete, trash, or move all waiting items first)
@@ -4861,7 +4861,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-138: Waiting For Pagination
+### TC-172: Waiting For Pagination
 **Priority:** Medium | **Area:** Waiting For
 
 **Preconditions:** User is logged in and on the Waiting For page
@@ -4890,8 +4890,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-139: Add Someday Item
-**Priority:** High | **Area:** Someday / Maybe
+### TC-173: Add Someday Item
+**Priority:** High | **Area:** Someday / Maybe | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Someday/Maybe page (/someday)
 
@@ -4911,7 +4911,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-140: Someday Mixed Types - Type Icon Prefix
+### TC-174: Someday Mixed Types - Type Icon Prefix
 **Priority:** High | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Stuff item (added directly), one Action (moved from Next via Move dropdown or clarified as someday), and one Project (moved to Someday)
@@ -4934,7 +4934,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-141: Someday - No Checkbox
+### TC-175: Someday - No Checkbox
 **Priority:** Medium | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and on the Someday/Maybe page with at least one item visible
@@ -4955,7 +4955,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-142: Someday - Activate Stuff Item
+### TC-176: Someday - Activate Stuff Item
 **Priority:** High | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Stuff item
@@ -4980,8 +4980,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-143: Someday - Activate Action
-**Priority:** High | **Area:** Someday / Maybe
+### TC-177: Someday - Activate Action
+**Priority:** High | **Area:** Someday / Maybe | **Smoke Test**
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Action item
 
@@ -5005,7 +5005,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-144: Someday - Activate Project
+### TC-178: Someday - Activate Project
 **Priority:** High | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Project item
@@ -5030,7 +5030,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-145: Someday - Trash with Confirmation
+### TC-179: Someday - Trash with Confirmation
 **Priority:** High | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and on the Someday/Maybe page with at least one item visible
@@ -5059,7 +5059,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-146: Someday - Correct Detail Navigation by Type
+### TC-180: Someday - Correct Detail Navigation by Type
 **Priority:** High | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Stuff item, one Action item, and one Project item
@@ -5088,7 +5088,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-147: Someday - Tag Filtering
+### TC-181: Someday - Tag Filtering
 **Priority:** Medium | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains: at least one Stuff item (no tags possible), at least one Action with a tag (e.g., "@work"), at least one Action with a different tag (e.g., "@personal"), and at least one Project with a tag
@@ -5115,7 +5115,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-148: Someday - Drag Reorder
+### TC-182: Someday - Drag Reorder
 **Priority:** Medium | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least three items
@@ -5140,7 +5140,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-149: Someday - Inline Title Edit
+### TC-183: Someday - Inline Title Edit
 **Priority:** Medium | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and on the Someday/Maybe page with at least one item
@@ -5168,7 +5168,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-150: Someday Empty State
+### TC-184: Someday Empty State
 **Priority:** Low | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and has no items in the Someday/Maybe state (activate, trash, or move all someday items first)
@@ -5192,8 +5192,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-151: Reference Page Loads
-**Priority:** High | **Area:** Reference / File Manager
+### TC-185: Reference Page Loads
+**Priority:** High | **Area:** Reference / File Manager | **Smoke Test**
 
 **Preconditions:** User is logged in
 
@@ -5220,8 +5220,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-152: Create Folder
-**Priority:** High | **Area:** Reference / File Manager
+### TC-186: Create Folder
+**Priority:** High | **Area:** Reference / File Manager | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Reference page (/reference) at the root level
 
@@ -5245,7 +5245,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-153: Navigate Into Folder
+### TC-187: Navigate Into Folder
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one folder created (e.g., "Project Documents")
@@ -5269,7 +5269,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-154: Breadcrumb Navigation
+### TC-188: Breadcrumb Navigation
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and has a nested folder structure: Root > "Project Documents" > "Q1 Reports"
@@ -5298,7 +5298,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-155: Rename Folder
+### TC-189: Rename Folder
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one folder (e.g., "Project Documents")
@@ -5324,7 +5324,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-156: Delete Folder
+### TC-190: Delete Folder
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with a folder that contains at least one file or subfolder
@@ -5350,8 +5350,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-157: Upload File via Button
-**Priority:** High | **Area:** Reference / File Manager
+### TC-191: Upload File via Button
+**Priority:** High | **Area:** Reference / File Manager | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Reference page with a small test file ready (e.g., a 1 MB image)
 
@@ -5377,7 +5377,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-158: Upload File via Drag and Drop
+### TC-192: Upload File via Drag and Drop
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page (desktop browser) with a file ready to drag from the OS file manager
@@ -5404,7 +5404,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-159: Upload File Greater Than 50MB - Client-Side Rejection
+### TC-193: Upload File Greater Than 50MB - Client-Side Rejection
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with a test file larger than 50 MB available
@@ -5426,7 +5426,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-160: File Preview - Image
+### TC-194: File Preview - Image
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one uploaded image file (PNG, JPG, GIF, etc.)
@@ -5449,7 +5449,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-161: File Preview - PDF
+### TC-195: File Preview - PDF
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one uploaded PDF file
@@ -5472,7 +5472,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-162: File Preview - Text and JSON
+### TC-196: File Preview - Text and JSON
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one uploaded text file (.txt) and one JSON file (.json)
@@ -5499,8 +5499,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-163: Download File
-**Priority:** High | **Area:** Reference / File Manager
+### TC-197: Download File
+**Priority:** High | **Area:** Reference / File Manager | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Reference page with at least one uploaded file
 
@@ -5521,7 +5521,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-164: Rename File
+### TC-198: Rename File
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one uploaded file (e.g., "report.pdf")
@@ -5546,7 +5546,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-165: Trash File
+### TC-199: Trash File
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least one uploaded file
@@ -5573,7 +5573,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-166: Search Files
+### TC-200: Search Files
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with multiple files and folders across nested directories (e.g., Root: "readme.txt", "Project Documents" folder containing "notes.txt" and "budget.xlsx")
@@ -5602,7 +5602,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-167: View Mode Toggle - List and Grid
+### TC-201: View Mode Toggle - List and Grid
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least a few files and folders
@@ -5629,7 +5629,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-168: Storage Quota Display
+### TC-202: Storage Quota Display
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page
@@ -5655,7 +5655,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-169: Reference Pagination
+### TC-203: Reference Pagination
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page in a folder that contains more than 20 files
@@ -5681,7 +5681,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-170: Reference Trash Tab
+### TC-204: Reference Trash Tab
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in, on the Reference page, and has at least one trashed file
@@ -5705,7 +5705,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-171: Reference Trash - Restore File
+### TC-205: Reference Trash - Restore File
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in, on the Reference page Trash tab, with at least one trashed file that was originally in a known folder
@@ -5730,7 +5730,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-172: Reference Trash - Permanent Delete and Empty Trash
+### TC-206: Reference Trash - Permanent Delete and Empty Trash
 **Priority:** High | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in, on the Reference page Trash tab, with at least two trashed files
@@ -5773,8 +5773,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-173: Completed Page Loads
-**Priority:** High | **Area:** Completed Items
+### TC-207: Completed Page Loads
+**Priority:** High | **Area:** Completed Items | **Smoke Test**
 
 **Preconditions:** User is logged in and has at least one completed item (stuff, action, or project completed from their respective views)
 
@@ -5799,8 +5799,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-174: Uncheck to Restore Completed Item
-**Priority:** High | **Area:** Completed Items
+### TC-208: Uncheck to Restore Completed Item
+**Priority:** High | **Area:** Completed Items | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Completed page with at least one completed Stuff item, one completed Action, and one completed Project
 
@@ -5834,7 +5834,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-175: Completed Items Not Editable
+### TC-209: Completed Items Not Editable
 **Priority:** Medium | **Area:** Completed Items
 
 **Preconditions:** User is logged in and on the Completed page with at least one completed item
@@ -5858,7 +5858,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-176: Completed Item Click - Navigate to Detail
+### TC-210: Completed Item Click - Navigate to Detail
 **Priority:** Medium | **Area:** Completed Items
 
 **Preconditions:** User is logged in and on the Completed page with at least one completed item
@@ -5884,7 +5884,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-177: Completed Pagination
+### TC-211: Completed Pagination
 **Priority:** Medium | **Area:** Completed Items
 
 **Preconditions:** User is logged in and has many completed items (complete at least 15-20 items to exceed one page)
@@ -5909,7 +5909,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-178: Completed Empty State
+### TC-212: Completed Empty State
 **Priority:** Low | **Area:** Completed Items
 
 **Preconditions:** User is logged in and has no completed items (restore all completed items first, or use a fresh account)
@@ -5931,7 +5931,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-179: Completed Mixed Types Display
+### TC-213: Completed Mixed Types Display
 **Priority:** Medium | **Area:** Completed Items
 
 **Preconditions:** User is logged in and has completed at least one Stuff item, one Action, and one Project
@@ -5959,8 +5959,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-180: Trash Page Loads
-**Priority:** High | **Area:** Trash
+### TC-214: Trash Page Loads
+**Priority:** High | **Area:** Trash | **Smoke Test**
 
 **Preconditions:** User is logged in and has at least one trashed item (trash an item from Inbox, Next Actions, or Projects)
 
@@ -5987,7 +5987,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-181: Trash Items Not Clickable
+### TC-215: Trash Items Not Clickable
 **Priority:** Medium | **Area:** Trash
 
 **Preconditions:** User is logged in and on the Trash page with at least one trashed item
@@ -6011,8 +6011,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-182: Restore from Trash
-**Priority:** High | **Area:** Trash
+### TC-216: Restore from Trash
+**Priority:** High | **Area:** Trash | **Smoke Test**
 
 **Preconditions:** User is logged in and on the Trash page with at least one trashed item whose original bucket is known
 
@@ -6039,7 +6039,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-183: Empty Trash Button - Enabled/Disabled State
+### TC-217: Empty Trash Button - Enabled/Disabled State
 **Priority:** Medium | **Area:** Trash
 
 **Preconditions:** User is logged in
@@ -6065,7 +6065,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-184: Empty Trash Confirmation and Permanent Deletion
+### TC-218: Empty Trash Confirmation and Permanent Deletion
 **Priority:** High | **Area:** Trash
 
 **Preconditions:** User is logged in and on the Trash page with at least two trashed items
@@ -6094,7 +6094,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-185: Trash Pagination
+### TC-219: Trash Pagination
 **Priority:** Medium | **Area:** Trash
 
 **Preconditions:** User is logged in and has many trashed items (trash at least 15-20 items to exceed one page)
@@ -6119,7 +6119,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-186: Trash Empty State
+### TC-220: Trash Empty State
 **Priority:** Low | **Area:** Trash
 
 **Preconditions:** User is logged in and has no items in trash (restore or permanently delete all trashed items)
@@ -6142,7 +6142,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-187: Trash Item from Inbox - Verify Round Trip
+### TC-221: Trash Item from Inbox - Verify Round Trip
 **Priority:** High | **Area:** Trash
 
 **Preconditions:** User is logged in and has at least one Stuff item in the Inbox
@@ -6173,7 +6173,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-188: Trash Item from Next Actions - Verify Round Trip
+### TC-222: Trash Item from Next Actions - Verify Round Trip
 **Priority:** High | **Area:** Trash
 
 **Preconditions:** User is logged in and has at least one Action in the Next Actions list
@@ -6207,8 +6207,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-189: Engage Page Loads as Default Landing Page
-**Priority:** High | **Area:** Engage Dashboard
+### TC-223: Engage Page Loads as Default Landing Page
+**Priority:** High | **Area:** Engage Dashboard | **Smoke Test**
 
 **Preconditions:** User has a verified account and is logged in. At least one action exists in any bucket.
 
@@ -6230,7 +6230,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-190: Overdue Alert Displays with Count and View Button
+### TC-224: Overdue Alert Displays with Count and View Button
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 3 actions exist with due dates set to past dates (e.g., yesterday, two days ago, one week ago).
@@ -6256,7 +6256,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-191: Overdue Count Aggregates Items from Multiple Buckets
+### TC-225: Overdue Count Aggregates Items from Multiple Buckets
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. The following overdue items exist: 2 actions in Next with past due dates, 1 action in Today with a past due date, 1 action in Calendar with a past due date, 1 action in Waiting For with a past due date. Total overdue = 5.
@@ -6283,7 +6283,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-192: Today Section Displays Header with Count, View All Link, and Up to 5 Items
+### TC-226: Today Section Displays Header with Count, View All Link, and Up to 5 Items
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 7 actions exist with today's date as the due date.
@@ -6311,7 +6311,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-193: Today Section - Complete Item Inline
+### TC-227: Today Section - Complete Item Inline
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 2 actions exist with today's date as the due date and are visible in the Engage dashboard Today section.
@@ -6341,7 +6341,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-194: Next Actions Section Displays Header with Count, View All Link, and Up to 5 Items
+### TC-228: Next Actions Section Displays Header with Count, View All Link, and Up to 5 Items
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 8 actions exist that qualify as Next Actions (no due date, not delegated, not deferred, not someday).
@@ -6368,7 +6368,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-195: Waiting For Section Displays Header with Count, View All Link, and Up to 5 Items
+### TC-229: Waiting For Section Displays Header with Count, View All Link, and Up to 5 Items
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 6 actions exist with the `waiting_for` field set (delegated actions).
@@ -6395,7 +6395,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-196: Inbox Nudge Displays with Count and Link to Clarify
+### TC-230: Inbox Nudge Displays with Count and Link to Clarify
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 4 stuff items exist in the Inbox that have not been clarified.
@@ -6423,7 +6423,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-197: Stuck Projects Nudge Displays When Projects Lack Next Action
+### TC-231: Stuck Projects Nudge Displays When Projects Lack Next Action
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. 3 projects exist, and 2 of them have no next action assigned (stuck projects).
@@ -6453,7 +6453,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-198: Review Nudge Displays Last Reviewed Information
+### TC-232: Review Nudge Displays Last Reviewed Information
 **Priority:** Medium | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. Weekly Review feature is enabled in settings. User has items in various buckets. User has either never performed a review or last reviewed several days ago.
@@ -6482,7 +6482,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-199: Context Filter on Dashboard Filters All Sections Simultaneously
+### TC-233: Context Filter on Dashboard Filters All Sections Simultaneously
 **Priority:** High | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. Multiple actions exist across Today, Next Actions, and Waiting For sections. Some actions have the tag `@office`, others have `@home`, and some have no tags.
@@ -6511,7 +6511,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-200: Dashboard Empty State with Context Filter Active
+### TC-234: Dashboard Empty State with Context Filter Active
 **Priority:** Medium | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. Actions exist in various buckets but none are tagged with `@calls`.
@@ -6538,7 +6538,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-201: Dashboard Fully Empty State for New Account
+### TC-235: Dashboard Fully Empty State for New Account
 **Priority:** Medium | **Area:** Engage Dashboard
 
 **Preconditions:** A brand new user account with no stuff, actions, projects, or any other items.
@@ -6566,7 +6566,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-202: Dashboard Drag Reorder Within Today and Next Sections
+### TC-236: Dashboard Drag Reorder Within Today and Next Sections
 **Priority:** Medium | **Area:** Engage Dashboard
 
 **Preconditions:** User is logged in. At least 3 items exist in the Today section and at least 3 items exist in the Next Actions section on the Engage dashboard.
@@ -6598,8 +6598,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-203: Dashboard Item Click Navigates to Correct Detail Page
-**Priority:** High | **Area:** Engage Dashboard
+### TC-237: Dashboard Item Click Navigates to Correct Detail Page
+**Priority:** High | **Area:** Engage Dashboard | **Smoke Test**
 
 **Preconditions:** User is logged in. At least 1 action exists in each section: Today (an action with due date today), Next Actions (a standalone action), Waiting For (a delegated action). At least 1 action belongs to a project.
 
@@ -6632,8 +6632,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-204: Review Page Accessible When Weekly Review Is Enabled
-**Priority:** High | **Area:** Weekly Review
+### TC-238: Review Page Accessible When Weekly Review Is Enabled
+**Priority:** High | **Area:** Weekly Review | **Smoke Test**
 
 **Preconditions:** User is logged in. Weekly Review feature is enabled in user settings.
 
@@ -6659,7 +6659,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-205: Review Page Hidden When Weekly Review Is Disabled
+### TC-239: Review Page Hidden When Weekly Review Is Disabled
 **Priority:** High | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review feature is currently enabled.
@@ -6686,7 +6686,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-206: Review Page Header Displays Title and Last Review Date
+### TC-240: Review Page Header Displays Title and Last Review Date
 **Priority:** Medium | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled in settings.
@@ -6715,7 +6715,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-207: Setup Tip on First Visit Suggests Recurring Weekly Reminder
+### TC-241: Setup Tip on First Visit Suggests Recurring Weekly Reminder
 **Priority:** Medium | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. User has never visited the Review page before.
@@ -6742,7 +6742,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-208: Setup Tip Is Dismissible and Stays Dismissed Across Sessions
+### TC-242: Setup Tip Is Dismissible and Stays Dismissed Across Sessions
 **Priority:** Low | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. User has never visited the Review page before (setup tip is visible).
@@ -6773,7 +6773,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-209: Review Page Displays All 6 Steps with Correct Details
+### TC-243: Review Page Displays All 6 Steps with Correct Details
 **Priority:** High | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. Items exist in Inbox (3 items), Next Actions (5 items), Waiting For (2 items), Projects (4 projects), Someday/Maybe (6 items), and Calendar (8 items).
@@ -6807,7 +6807,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-210: Review Step Go Links Navigate to Correct Pages
+### TC-244: Review Step Go Links Navigate to Correct Pages
 **Priority:** High | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. Items exist in all 6 buckets.
@@ -6842,7 +6842,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-211: Start Review Enables Checkboxes
+### TC-245: Start Review Enables Checkboxes
 **Priority:** High | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. User has not started a review session.
@@ -6868,7 +6868,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-212: Review Progress Counter Updates as Steps Are Checked
+### TC-246: Review Progress Counter Updates as Steps Are Checked
 **Priority:** Medium | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. User has clicked "Start Review" and checkboxes are enabled.
@@ -6903,8 +6903,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-213: Complete Review Saves Review Date After All Steps Checked
-**Priority:** High | **Area:** Weekly Review
+### TC-247: Complete Review Saves Review Date After All Steps Checked
+**Priority:** High | **Area:** Weekly Review | **Smoke Test**
 
 **Preconditions:** User is logged in. Weekly Review is enabled. User has clicked "Start Review" and all 6 checkboxes are checked.
 
@@ -6932,7 +6932,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-214: Complete Review Button Disabled Until All 6 Steps Are Checked
+### TC-248: Complete Review Button Disabled Until All 6 Steps Are Checked
 **Priority:** Medium | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. User has clicked "Start Review."
@@ -6962,7 +6962,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-215: Review Page Mobile Layout Hides Hint Text
+### TC-249: Review Page Mobile Layout Hides Hint Text
 **Priority:** Low | **Area:** Weekly Review
 
 **Preconditions:** User is logged in. Weekly Review is enabled. Device is a mobile phone or browser is resized to mobile viewport width (< 768px).
@@ -6995,7 +6995,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-216: Access Recurring Actions from Calendar View
+### TC-250: Access Recurring Actions from Calendar View
 **Priority:** High | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. At least 3 recurring action templates exist.
@@ -7019,8 +7019,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-217: Create New Recurring Action with All Required Fields
-**Priority:** High | **Area:** Recurring Actions
+### TC-251: Create New Recurring Action with All Required Fields
+**Priority:** High | **Area:** Recurring Actions | **Smoke Test**
 
 **Preconditions:** User is logged in. User is on the Calendar Recurring view.
 
@@ -7051,7 +7051,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-218: Recurrence Rule - Daily Frequency with Interval
+### TC-252: Recurrence Rule - Daily Frequency with Interval
 **Priority:** High | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form.
@@ -7084,7 +7084,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-219: Recurrence Rule - Weekly Frequency with Multiple Day Selection
+### TC-253: Recurrence Rule - Weekly Frequency with Multiple Day Selection
 **Priority:** High | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form.
@@ -7117,7 +7117,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-220: Recurrence Rule - Monthly Frequency with Day of Month
+### TC-254: Recurrence Rule - Monthly Frequency with Day of Month
 **Priority:** High | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form.
@@ -7146,7 +7146,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-221: Recurrence Rule - Yearly Frequency with Month and Day
+### TC-255: Recurrence Rule - Yearly Frequency with Month and Day
 **Priority:** Medium | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form.
@@ -7176,7 +7176,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-222: End Condition - Never (No End Date)
+### TC-256: End Condition - Never (No End Date)
 **Priority:** Medium | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.
@@ -7202,7 +7202,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-223: End Condition - After N Occurrences
+### TC-257: End Condition - After N Occurrences
 **Priority:** Medium | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.
@@ -7234,7 +7234,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-224: End Condition - Until Specific Date
+### TC-258: End Condition - Until Specific Date
 **Priority:** Medium | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.
@@ -7264,8 +7264,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-225: Edit Recurring Action Template
-**Priority:** High | **Area:** Recurring Actions
+### TC-259: Edit Recurring Action Template
+**Priority:** High | **Area:** Recurring Actions | **Smoke Test**
 
 **Preconditions:** User is logged in. A recurring action template exists with title "Daily standup", recurrence "Every day", time 9:00 AM, duration 15 minutes.
 
@@ -7297,7 +7297,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-226: Active Instance Badge on Recurring Detail Page
+### TC-260: Active Instance Badge on Recurring Detail Page
 **Priority:** Medium | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. A recurring action template exists and has spawned an active action instance (a concrete action that exists in Next Actions, Today, or Calendar).
@@ -7325,7 +7325,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-227: Spawn Next Action Instance Manually
+### TC-261: Spawn Next Action Instance Manually
 **Priority:** Medium | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. A recurring action template exists. No active instance currently exists for this template (or the current instance has been completed).
@@ -7354,7 +7354,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-228: Trash Recurring Action Template
+### TC-262: Trash Recurring Action Template
 **Priority:** High | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. A recurring action template named "Old recurring task" exists.
@@ -7388,8 +7388,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-229: Tag Input - Add Tag by Pressing Enter or Comma
-**Priority:** High | **Area:** Context Tags & Filtering
+### TC-263: Tag Input - Add Tag by Pressing Enter or Comma
+**Priority:** High | **Area:** Context Tags & Filtering | **Smoke Test**
 
 **Preconditions:** User is logged in. An action detail page is open (e.g., `/action/:id`).
 
@@ -7422,7 +7422,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-230: Tag Input - Autocomplete Suggests Previously Used Tags
+### TC-264: Tag Input - Autocomplete Suggests Previously Used Tags
 **Priority:** High | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Tags `@office`, `@home`, `@calls`, `energy:high`, and `project-alpha` have been used on other actions. User is on an action detail page with the tag input field.
@@ -7457,7 +7457,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-231: Tag Input - Remove Tag via Backspace and via X Button
+### TC-265: Tag Input - Remove Tag via Backspace and via X Button
 **Priority:** High | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. An action detail page is open with 3 tags already added: `@office`, `@home`, `urgent`.
@@ -7490,7 +7490,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-232: Tag Input - Keyboard Navigation of Suggestion Dropdown
+### TC-266: Tag Input - Keyboard Navigation of Suggestion Dropdown
 **Priority:** Medium | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Multiple previously used tags exist: `@office`, `@home`, `@calls`, `@anywhere`. User is on an action detail page.
@@ -7526,7 +7526,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-233: Tag Input - Preset Chips Displayed and Clickable
+### TC-267: Tag Input - Preset Chips Displayed and Clickable
 **Priority:** Medium | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. User is on an action detail page with the tag input visible.
@@ -7557,7 +7557,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-234: Tags Cannot Be Added to Stuff Items
+### TC-268: Tags Cannot Be Added to Stuff Items
 **Priority:** High | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. At least one stuff item exists in the Inbox. At least one action exists (for comparison).
@@ -7585,7 +7585,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-235: Per-Page Tag Filter on List Pages
+### TC-269: Per-Page Tag Filter on List Pages
 **Priority:** High | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Multiple actions exist with various tags: some with `@office`, some with `@home`, some with `energy:high`, some with no tags. Actions span Next, Today, Waiting For, Projects, and Someday views.
@@ -7618,7 +7618,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-236: Context Filter Located in Sidebar Below Dashboard Link
+### TC-270: Context Filter Located in Sidebar Below Dashboard Link
 **Priority:** Medium | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. The sidebar is visible (desktop layout or mobile sidebar opened).
@@ -7643,7 +7643,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-237: Context Filter Single-Select Toggle Behavior
+### TC-271: Context Filter Single-Select Toggle Behavior
 **Priority:** High | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Tags `@office`, `@home`, and `@calls` have been used on various actions.
@@ -7675,7 +7675,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-238: Context Filter Active Chip Displayed in Sidebar
+### TC-272: Context Filter Active Chip Displayed in Sidebar
 **Priority:** Medium | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Tags have been used on actions. The sidebar is visible.
@@ -7704,8 +7704,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-239: Context Filter Applies Globally Across Multiple Pages
-**Priority:** High | **Area:** Context Tags & Filtering
+### TC-273: Context Filter Applies Globally Across Multiple Pages
+**Priority:** High | **Area:** Context Tags & Filtering | **Smoke Test**
 
 **Preconditions:** User is logged in. Actions exist in Next, Today, Waiting For, Projects, and Someday views with various tags. At least some items in each view have the tag `@office` and some do not.
 
@@ -7738,7 +7738,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-240: Context Filter Interaction with Per-Page Tag Filter
+### TC-274: Context Filter Interaction with Per-Page Tag Filter
 **Priority:** High | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Actions on the Next page have tags: some `@office`, some `@office` + `energy:high`, some `@home` + `energy:high`, some with only `energy:low`.
@@ -7772,7 +7772,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-241: Custom Tag Presets Modified via Settings
+### TC-275: Custom Tag Presets Modified via Settings
 **Priority:** Low | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. Default presets exist: `@computer`, `@office`, `@home`, `@calls`, `@anywhere`, `energy:high`, `energy:low`, `min:5`, `min:30`.
@@ -7804,7 +7804,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-242: Tags Are Lowercased and Trimmed on Input
+### TC-276: Tags Are Lowercased and Trimmed on Input
 **Priority:** Medium | **Area:** Context Tags & Filtering
 
 **Preconditions:** User is logged in. User is on an action detail page with the tag input visible.
@@ -7841,8 +7841,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-243: Upload Attachment via Button
-**Priority:** High | **Area:** Attachments
+### TC-277: Upload Attachment via Button
+**Priority:** High | **Area:** Attachments | **Smoke Test**
 
 **Preconditions:** User is logged in. An action, project, or stuff item exists. User is on the detail page of that item.
 
@@ -7864,7 +7864,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-244: Upload Attachment via Drag-Drop
+### TC-278: Upload Attachment via Drag-Drop
 **Priority:** High | **Area:** Attachments
 
 **Preconditions:** User is logged in. An action, project, or stuff item exists. User is on the detail page of that item. A file is accessible on the desktop or file manager.
@@ -7889,7 +7889,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-245: Attachment Display
+### TC-279: Attachment Display
 **Priority:** High | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with at least three attachments of different types: an image (PNG), a document (PDF), and a large file (e.g., 2.5 MB ZIP).
@@ -7914,7 +7914,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-246: Attachment Preview - Image
+### TC-280: Attachment Preview - Image
 **Priority:** Medium | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with an image attachment (e.g., PNG, JPG, or GIF).
@@ -7936,7 +7936,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-247: Attachment Preview - PDF
+### TC-281: Attachment Preview - PDF
 **Priority:** Medium | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with a PDF attachment.
@@ -7957,7 +7957,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-248: Attachment Preview - Text/JSON
+### TC-282: Attachment Preview - Text/JSON
 **Priority:** Medium | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with a plain text file (.txt) and a JSON file (.json) as attachments.
@@ -7980,8 +7980,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-249: Download Attachment
-**Priority:** High | **Area:** Attachments
+### TC-283: Download Attachment
+**Priority:** High | **Area:** Attachments | **Smoke Test**
 
 **Preconditions:** User is logged in. An item exists with at least one attachment.
 
@@ -8003,7 +8003,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-250: Delete Attachment
+### TC-284: Delete Attachment
 **Priority:** High | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with at least one attachment.
@@ -8029,7 +8029,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-251: Upload File Exceeding 50MB Limit
+### TC-285: Upload File Exceeding 50MB Limit
 **Priority:** High | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item detail page is open. A file larger than 50 MB is available on the local machine.
@@ -8050,7 +8050,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-252: Attachment Limit of 10
+### TC-286: Attachment Limit of 10
 **Priority:** High | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with exactly 9 attachments already uploaded.
@@ -8076,7 +8076,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-253: Attachment Count Display
+### TC-287: Attachment Count Display
 **Priority:** Medium | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item exists with varying numbers of attachments.
@@ -8101,7 +8101,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-254: Attachment HTTP 409 Error
+### TC-288: Attachment HTTP 409 Error
 **Priority:** Medium | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item has reached the attachment limit of 10 on the server side, but the client UI has not yet refreshed to reflect this (e.g., another session added the 10th file).
@@ -8122,7 +8122,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-255: Attachment HTTP 413 Error
+### TC-289: Attachment HTTP 413 Error
 **Priority:** Medium | **Area:** Attachments
 
 **Preconditions:** User is logged in. An item detail page is open. A file that passes client-side validation but exceeds server-side limits is available (e.g., exactly at the boundary or the user's storage quota is nearly full).
@@ -8143,7 +8143,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-256: Attachments on All Detail Types
+### TC-290: Attachments on All Detail Types
 **Priority:** High | **Area:** Attachments
 
 **Preconditions:** User is logged in. At least one stuff item, one action, and one project exist.
@@ -8173,7 +8173,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-257: Add Comment - Focus and Expand Behavior
+### TC-291: Add Comment - Focus and Expand Behavior
 **Priority:** High | **Area:** Comments
 
 **Preconditions:** User is logged in. An item detail page (action, project, or stuff) is open.
@@ -8197,8 +8197,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-258: Save Comment
-**Priority:** High | **Area:** Comments
+### TC-292: Save Comment
+**Priority:** High | **Area:** Comments | **Smoke Test**
 
 **Preconditions:** User is logged in. An item detail page is open. The comment textarea is focused and expanded.
 
@@ -8223,7 +8223,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-259: Cancel Comment
+### TC-293: Cancel Comment
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item detail page is open.
@@ -8250,7 +8250,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-260: Comment Character Counter
+### TC-294: Comment Character Counter
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item detail page is open.
@@ -8278,7 +8278,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-261: Comment Display Order
+### TC-295: Comment Display Order
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item detail page is open with no existing comments.
@@ -8304,7 +8304,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-262: Comment Timestamp Display
+### TC-296: Comment Timestamp Display
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item has comments with varying ages: one just posted, one posted a few minutes ago, one posted yesterday, one posted 5 days ago, and one posted more than a week ago (this may require pre-seeding data or waiting between comment creation).
@@ -8327,7 +8327,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-263: Comment Avatar
+### TC-297: Comment Avatar
 **Priority:** Low | **Area:** Comments
 
 **Preconditions:** User is logged in. An item has at least one comment.
@@ -8349,7 +8349,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-264: Comments Not Editable or Deletable
+### TC-298: Comments Not Editable or Deletable
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item has at least one comment posted by the current user.
@@ -8374,7 +8374,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-265: Comment Limit of 50
+### TC-299: Comment Limit of 50
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item exists with exactly 49 comments (may require pre-seeding via API or repeated manual entry).
@@ -8398,7 +8398,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-266: Comments on All Detail Types
+### TC-300: Comments on All Detail Types
 **Priority:** High | **Area:** Comments
 
 **Preconditions:** User is logged in. At least one stuff item, one action, and one project exist.
@@ -8424,7 +8424,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-267: Comment with Maximum Length
+### TC-301: Comment with Maximum Length
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item detail page is open.
@@ -8452,7 +8452,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-268: Comment Empty Save Prevention
+### TC-302: Comment Empty Save Prevention
 **Priority:** Medium | **Area:** Comments
 
 **Preconditions:** User is logged in. An item detail page is open.
@@ -8483,8 +8483,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-269: Settings Page Loads
-**Priority:** High | **Area:** Settings
+### TC-303: Settings Page Loads
+**Priority:** High | **Area:** Settings | **Smoke Test**
 
 **Preconditions:** User is logged in.
 
@@ -8510,7 +8510,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-270: Settings Auto-Save
+### TC-304: Settings Auto-Save
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -8536,7 +8536,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-271: Settings Offline Fallback
+### TC-305: Settings Offline Fallback
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The user has previously visited /settings so localStorage contains cached settings.
@@ -8561,7 +8561,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-272: Account - Email Display
+### TC-306: Account - Email Display
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in with a known email address (e.g., testuser@example.com).
@@ -8584,7 +8584,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-273: Change Password - Open Modal
+### TC-307: Change Password - Open Modal
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -8609,8 +8609,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-274: Change Password - Success
-**Priority:** High | **Area:** Settings
+### TC-308: Change Password - Success
+**Priority:** High | **Area:** Settings | **Smoke Test**
 
 **Preconditions:** User is logged in. The change password modal is open. The user knows their current password.
 
@@ -8635,7 +8635,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-275: Change Password - Wrong Current Password
+### TC-309: Change Password - Wrong Current Password
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in. The change password modal is open.
@@ -8661,7 +8661,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-276: Change Password - Weak New Password
+### TC-310: Change Password - Weak New Password
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The change password modal is open.
@@ -8686,7 +8686,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-277: Sessions - List Display
+### TC-311: Sessions - List Display
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in with at least two active sessions (e.g., logged in from both a desktop browser and a mobile device).
@@ -8712,7 +8712,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-278: Sessions - Current Session Badge
+### TC-312: Sessions - Current Session Badge
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open with the Sessions section visible.
@@ -8734,7 +8734,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-279: Sessions - End Current Session
+### TC-313: Sessions - End Current Session
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open with the Sessions section visible.
@@ -8758,7 +8758,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-280: Sessions - End Other Session
+### TC-314: Sessions - End Other Session
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in with at least two active sessions. The settings page is open.
@@ -8783,7 +8783,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-281: Sessions - End Others Bulk Action
+### TC-315: Sessions - End Others Bulk Action
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in with at least three active sessions. The settings page is open.
@@ -8810,7 +8810,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-282: Sessions - Error State
+### TC-316: Sessions - Error State
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The sessions API endpoint is temporarily unavailable or returns an error.
@@ -8835,7 +8835,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-283: Application - New Items Position
+### TC-317: Application - New Items Position
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -8865,7 +8865,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-284: Tags - Quick-Add Presets
+### TC-318: Tags - Quick-Add Presets
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -8893,7 +8893,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-285: Calendar - Week Starts On
+### TC-319: Calendar - Week Starts On
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open. The user has access to the calendar view.
@@ -8921,7 +8921,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-286: Calendar - Time Format
+### TC-320: Calendar - Time Format
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open. The user has actions with specific times on the calendar.
@@ -8949,7 +8949,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-287: Calendar - Business Hours
+### TC-321: Calendar - Business Hours
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -8977,7 +8977,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-288: Calendar - Business Days
+### TC-322: Calendar - Business Days
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -9004,7 +9004,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-289: Review Toggle
+### TC-323: Review Toggle
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -9032,7 +9032,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-290: About - Version and Debug Mode
+### TC-324: About - Version and Debug Mode
 **Priority:** Low | **Area:** Settings
 
 **Preconditions:** User is logged in. The settings page is open.
@@ -9067,7 +9067,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-291: Quick Add Collapsed State
+### TC-325: Quick Add Collapsed State
 **Priority:** High | **Area:** Quick Add
 
 **Preconditions:** User is logged in. The application is in its default state (Quick Add is not expanded).
@@ -9090,7 +9090,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-292: Quick Add Expand
+### TC-326: Quick Add Expand
 **Priority:** High | **Area:** Quick Add
 
 **Preconditions:** User is logged in. Quick Add is in collapsed state.
@@ -9112,8 +9112,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-293: Quick Add Submit
-**Priority:** High | **Area:** Quick Add
+### TC-327: Quick Add Submit
+**Priority:** High | **Area:** Quick Add | **Smoke Test**
 
 **Preconditions:** User is logged in. Quick Add is expanded and the input field is focused.
 
@@ -9141,7 +9141,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-294: Quick Add Collapse
+### TC-328: Quick Add Collapse
 **Priority:** Medium | **Area:** Quick Add
 
 **Preconditions:** User is logged in. Quick Add is expanded and the input field is focused.
@@ -9169,7 +9169,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-295: Quick Add Mobile Layout
+### TC-329: Quick Add Mobile Layout
 **Priority:** Medium | **Area:** Quick Add
 
 **Preconditions:** User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 375px).
@@ -9195,7 +9195,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-296: Quick Add from Any Page
+### TC-330: Quick Add from Any Page
 **Priority:** High | **Area:** Quick Add
 
 **Preconditions:** User is logged in.
@@ -9228,8 +9228,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-297: Within-List Reorder - Desktop
-**Priority:** High | **Area:** Drag & Drop
+### TC-331: Within-List Reorder - Desktop
+**Priority:** High | **Area:** Drag & Drop | **Smoke Test**
 
 **Preconditions:** User is logged in on a desktop browser. A list (e.g., inbox) contains at least 3 items.
 
@@ -9255,7 +9255,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-298: Within-List Reorder - Touch
+### TC-332: Within-List Reorder - Touch
 **Priority:** High | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on a touch device (or using touch emulation). A list contains at least 3 items.
@@ -9281,8 +9281,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-299: Cross-Component Drag to Sidebar Destinations
-**Priority:** High | **Area:** Drag & Drop
+### TC-333: Cross-Component Drag to Sidebar Destinations
+**Priority:** High | **Area:** Drag & Drop | **Smoke Test**
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. A list (e.g., inbox) contains at least one item.
 
@@ -9309,7 +9309,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-300: Cross-Component Drag to Calendar Sidebar
+### TC-334: Cross-Component Drag to Calendar Sidebar
 **Priority:** Medium | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. A list contains at least one item.
@@ -9336,7 +9336,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-301: Cross-Component Drag to Waiting For Sidebar
+### TC-335: Cross-Component Drag to Waiting For Sidebar
 **Priority:** Medium | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. A list contains at least one item.
@@ -9362,7 +9362,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-302: Cross-Component Drag to Projects Sidebar
+### TC-336: Cross-Component Drag to Projects Sidebar
 **Priority:** Medium | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. A list contains at least one item.
@@ -9389,7 +9389,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-303: Cross-Component Drag to Reference Sidebar
+### TC-337: Cross-Component Drag to Reference Sidebar
 **Priority:** Medium | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. The inbox contains at least one stuff item, the next list contains at least one action, and the projects list contains at least one project.
@@ -9425,7 +9425,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-303b: Drag Project to Sidebar Destinations
+### TC-338: Drag Project to Sidebar Destinations
 **Priority:** High | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. The projects list contains at least one active project.
@@ -9453,7 +9453,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-303c: Drag Someday Items to Sidebar
+### TC-339: Drag Someday Items to Sidebar
 **Priority:** High | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. The Someday page contains at least one stuff, one action, and one project.
@@ -9481,7 +9481,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-303d: Drag Completed Items to Sidebar
+### TC-340: Drag Completed Items to Sidebar
 **Priority:** High | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. The Completed page contains at least one completed stuff, one completed action, and one completed project.
@@ -9505,7 +9505,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-303e: Drag Reference File to Sidebar
+### TC-341: Drag Reference File to Sidebar
 **Priority:** Medium | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in on desktop. The sidebar is visible. The Reference page contains at least one transformed file (a file with source_type indicating it was originally a stuff, action, or project).
@@ -9531,7 +9531,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-303f: Reference Preview Modal - Restore Button
+### TC-342: Reference Preview Modal - Restore Button
 **Priority:** Medium | **Area:** Reference
 
 **Preconditions:** User is logged in. The Reference page contains at least one transformed file (a file created by transforming a stuff, action, or project to file).
@@ -9562,7 +9562,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-304: Drag Hint on First Visit
+### TC-343: Drag Hint on First Visit
 **Priority:** Low | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in. The user has never visited the inbox (or the specific list page) before (fresh account or cleared localStorage).
@@ -9585,7 +9585,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-305: Drag Hint Dismissed After First Drag
+### TC-344: Drag Hint Dismissed After First Drag
 **Priority:** Low | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in. The drag hint overlay is visible on a list page.
@@ -9612,7 +9612,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-306: Overdue Item Highlighting
+### TC-345: Overdue Item Highlighting
 **Priority:** High | **Area:** Drag & Drop
 
 **Preconditions:** User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday). Another action has a due_date set to tomorrow.
@@ -9648,8 +9648,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-307: Landing Page - Hero Section
-**Priority:** High | **Area:** Public Pages
+### TC-346: Landing Page - Hero Section
+**Priority:** High | **Area:** Public Pages | **Smoke Test**
 
 **Preconditions:** User is not logged in (or logged out). Browser is open.
 
@@ -9674,7 +9674,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-308: Landing Page - How It Works Section
+### TC-347: Landing Page - How It Works Section
 **Priority:** Medium | **Area:** Public Pages
 
 **Preconditions:** User is on the landing page /.
@@ -9697,7 +9697,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-309: Landing Page - Features Section
+### TC-348: Landing Page - Features Section
 **Priority:** Medium | **Area:** Public Pages
 
 **Preconditions:** User is on the landing page /.
@@ -9720,7 +9720,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-310: Landing Page - Why Us Section
+### TC-349: Landing Page - Why Us Section
 **Priority:** Medium | **Area:** Public Pages
 
 **Preconditions:** User is on the landing page /.
@@ -9743,7 +9743,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-311: Landing Page - Testimonial Section
+### TC-350: Landing Page - Testimonial Section
 **Priority:** Low | **Area:** Public Pages
 
 **Preconditions:** User is on the landing page /.
@@ -9763,7 +9763,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-312: Landing Page - Book Section
+### TC-351: Landing Page - Book Section
 **Priority:** Low | **Area:** Public Pages
 
 **Preconditions:** User is on the landing page /.
@@ -9785,7 +9785,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-313: Landing Page - CTA Banner
+### TC-352: Landing Page - CTA Banner
 **Priority:** Medium | **Area:** Public Pages
 
 **Preconditions:** User is on the landing page /.
@@ -9808,7 +9808,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-314: Pricing Page - Monthly/Yearly Toggle
+### TC-353: Pricing Page - Monthly/Yearly Toggle
 **Priority:** High | **Area:** Public Pages
 
 **Preconditions:** User is not logged in (or logged out). Browser is open.
@@ -9836,7 +9836,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-315: Pricing Page - Three Tiers
+### TC-354: Pricing Page - Three Tiers
 **Priority:** High | **Area:** Public Pages
 
 **Preconditions:** User is on the pricing page /pricing.
@@ -9869,7 +9869,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-316: Pricing Page - Feature Comparison Table
+### TC-355: Pricing Page - Feature Comparison Table
 **Priority:** Medium | **Area:** Public Pages
 
 **Preconditions:** User is on the pricing page /pricing.
@@ -9893,7 +9893,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-317: Help Page
+### TC-356: Help Page
 **Priority:** Low | **Area:** Public Pages
 
 **Preconditions:** Browser is open.
@@ -9915,7 +9915,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-318: Legal Pages
+### TC-357: Legal Pages
 **Priority:** Medium | **Area:** Public Pages
 
 **Preconditions:** Browser is open.
@@ -9945,8 +9945,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-319: Error Toast
-**Priority:** High | **Area:** Shared UI Behaviors
+### TC-358: Error Toast
+**Priority:** High | **Area:** Shared UI Behaviors | **Smoke Test**
 
 **Preconditions:** User is logged in.
 
@@ -9970,7 +9970,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-320: Success Toast
+### TC-359: Success Toast
 **Priority:** High | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. At least one action item exists.
@@ -9993,7 +9993,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-321: Toast Maximum of 5
+### TC-360: Toast Maximum of 5
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. A way to trigger multiple errors rapidly exists (e.g., multiple failed API calls).
@@ -10015,7 +10015,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-322: Toast Deduplication
+### TC-361: Toast Deduplication
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. A way to trigger the same error twice exists.
@@ -10038,7 +10038,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-323: Toast Positioning and Animation
+### TC-362: Toast Positioning and Animation
 **Priority:** Low | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in.
@@ -10063,8 +10063,8 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-324: Confirmation Dialog
-**Priority:** High | **Area:** Shared UI Behaviors
+### TC-363: Confirmation Dialog
+**Priority:** High | **Area:** Shared UI Behaviors | **Smoke Test**
 
 **Preconditions:** User is logged in. An item exists that can be deleted.
 
@@ -10091,7 +10091,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-325: GTD Tips Display and Dismissal
+### TC-364: GTD Tips Display and Dismissal
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. The user has not previously dismissed the GTD tip for the inbox page (fresh account or cleared localStorage).
@@ -10118,7 +10118,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-326: Inline Title Editing
+### TC-365: Inline Title Editing
 **Priority:** High | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. A list page with at least one item is open.
@@ -10151,7 +10151,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-327: Cursor Pagination (Load More)
+### TC-366: Cursor Pagination (Load More)
 **Priority:** High | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. A list (e.g., inbox) contains more than 10 items.
@@ -10179,7 +10179,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-328: Per-Item Loading Spinner
+### TC-367: Per-Item Loading Spinner
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. A list page with at least one item is open.
@@ -10203,7 +10203,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-329: Empty States
+### TC-368: Empty States
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. Various lists are empty (no items in inbox, next, today, projects, etc.).
@@ -10236,7 +10236,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-330: Overdue Highlighting in All List Views
+### TC-369: Overdue Highlighting in All List Views
 **Priority:** High | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. An action exists with a due_date set in the past.
@@ -10269,7 +10269,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-331: Detail Page Navigation Arrows
+### TC-370: Detail Page Navigation Arrows
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in. A list contains at least 4 items (e.g., inbox with items A, B, C, D in order).
@@ -10301,7 +10301,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-332: Mobile Sidebar Drawer
+### TC-371: Mobile Sidebar Drawer
 **Priority:** High | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in on a mobile device or using browser device emulation with a mobile viewport.
@@ -10328,7 +10328,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-333: Mobile Bottom Sheets
+### TC-372: Mobile Bottom Sheets
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in on a mobile device or using browser device emulation.
@@ -10355,7 +10355,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-334: Mobile Action Buttons Always Visible
+### TC-373: Mobile Action Buttons Always Visible
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in on a touch device or using browser device emulation with touch enabled.
@@ -10377,7 +10377,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-335: Keyboard Shortcuts
+### TC-374: Keyboard Shortcuts
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
 **Preconditions:** User is logged in on a desktop browser. Various pages and modals are accessible.
@@ -10413,7 +10413,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-336: Footer Content
+### TC-375: Footer Content
 **Priority:** Medium | **Area:** Public Footer
 
 **Preconditions:** User is on any public page (landing, pricing, help, or legal pages).
@@ -10440,7 +10440,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-337: Footer Links
+### TC-376: Footer Links
 **Priority:** Medium | **Area:** Public Footer
 
 **Preconditions:** User is on a public page with the footer visible.
@@ -10472,7 +10472,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-338: Footer Responsive Layout
+### TC-377: Footer Responsive Layout
 **Priority:** Medium | **Area:** Public Footer
 
 **Preconditions:** User is on a public page with the footer visible. Browser DevTools is available for viewport resizing.
@@ -10497,7 +10497,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-357: Master Email Toggle - Displayed
+### TC-378: Master Email Toggle - Displayed
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in.
@@ -10519,7 +10519,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-358: Master Email Toggle - Turn Off
+### TC-379: Master Email Toggle - Turn Off
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in. All email notifications are currently enabled (master toggle is ON).
@@ -10543,7 +10543,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-359: Master Email Toggle - Turn On
+### TC-380: Master Email Toggle - Turn On
 **Priority:** High | **Area:** Settings
 
 **Preconditions:** User is logged in. Master email toggle is currently OFF (all email notifications disabled).
@@ -10567,7 +10567,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-360: Master Email Toggle - Individual Toggles Disabled When Off
+### TC-381: Master Email Toggle - Individual Toggles Disabled When Off
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in. Master email toggle is OFF.
@@ -10589,7 +10589,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-361: Master Email Toggle - State Persists on Reload
+### TC-382: Master Email Toggle - State Persists on Reload
 **Priority:** Medium | **Area:** Settings
 
 **Preconditions:** User is logged in.
@@ -10617,7 +10617,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-362: User Avatar - Gravatar Loaded
+### TC-383: User Avatar - Gravatar Loaded
 **Priority:** Medium | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is logged in with an email address that has a Gravatar account (e.g., a known Gravatar-enabled email).
@@ -10640,7 +10640,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-363: User Avatar - Gravatar Fallback (No Account)
+### TC-384: User Avatar - Gravatar Fallback (No Account)
 **Priority:** Medium | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is logged in with an email address that does NOT have a Gravatar account.
@@ -10662,7 +10662,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-364: User Avatar - Gravatar Network Error Fallback
+### TC-385: User Avatar - Gravatar Network Error Fallback
 **Priority:** Low | **Area:** Dashboard Layout & Navigation
 
 **Preconditions:** User is logged in. Browser DevTools is available.
@@ -10686,7 +10686,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-365: Inbox Zero Celebration - Triggered by Completing Last Item
+### TC-386: Inbox Zero Celebration - Triggered by Completing Last Item
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains exactly 1 stuff item.
@@ -10711,7 +10711,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-366: Inbox Zero Celebration - Not Triggered on Empty Load
+### TC-387: Inbox Zero Celebration - Not Triggered on Empty Load
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox is already empty (no items).
@@ -10732,7 +10732,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-367: Inbox Zero Celebration - Click to Dismiss Early
+### TC-388: Inbox Zero Celebration - Click to Dismiss Early
 **Priority:** Low | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains exactly 1 stuff item.
@@ -10755,7 +10755,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-368: Inbox Zero Celebration - Triggered by Drag to Sidebar
+### TC-389: Inbox Zero Celebration - Triggered by Drag to Sidebar
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated on desktop. Inbox contains exactly 1 stuff item.
@@ -10779,7 +10779,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-369: Inbox Zero Celebration - Triggered from Detail Page
+### TC-390: Inbox Zero Celebration - Triggered from Detail Page
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains exactly 1 stuff item.
