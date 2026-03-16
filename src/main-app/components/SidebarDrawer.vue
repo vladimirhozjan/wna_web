@@ -26,11 +26,11 @@ defineEmits(["close"]);
 
 .drawer {
   width: 260px;
-  height: 100%;
   position: fixed;
   top: 0;
   left: 0;
-  border-right: 1px solid #ddd;
+  bottom: 0;
+  border-right: 1px solid var(--color-border-light);
   transform: translateX(-100%);
   transition: transform 0.25s ease;
   z-index: 901;
