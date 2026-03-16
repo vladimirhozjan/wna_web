@@ -213,7 +213,11 @@ function onCheck(checked) {
 }
 
 .item__checkbox {
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
+  position: relative;
+  top: 1px;
 }
 
 .item__prefix {
