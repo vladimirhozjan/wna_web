@@ -265,14 +265,18 @@ function startVerificationPolling() {
   stopVerificationPolling()
   if (!userId.value) return
 
+  console.log('[AuthDialog] Verification polling started for user:', userId.value)
+
   verifyPollTimer = setInterval(async () => {
     try {
+      console.log('[AuthDialog] Polling verification status...')
       const data = await auth.checkVerificationStatus(userId.value)
+      console.log('[AuthDialog] Verification status:', data.verified)
       if (data.verified) {
         await autoLogin()
       }
-    } catch {
-      // Silently continue polling
+    } catch (err) {
+      console.log('[AuthDialog] Polling error (will retry):', err.message || err)
     }
   }, 3000)
 

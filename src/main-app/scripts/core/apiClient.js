@@ -87,7 +87,7 @@ export async function resendVerification(email) {
 
 export async function checkVerificationStatus(userId) {
     try {
-        const res = await httpApi.get(`/v1/user/${userId}/verified`)
+        const res = await httpApi.get('/v1/user/verified', { params: { id: userId } })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1684,6 +1684,7 @@ const apiClient = {
     // Email verification API
     verifyEmail,
     resendVerification,
+    checkVerificationStatus,
     // Notification API
     getNotificationSettings,
     updateNotificationSettings,
