@@ -166,7 +166,7 @@ async function onAdd() {
   const t = newTitle.value.trim()
   const w = newWaitingFor.value.trim()
   if (!t || !w) return
-  await addWaiting(t, w)
+  try { await addWaiting(t, w) } catch { /* error watcher handles it */ }
   newTitle.value = ''
   newWaitingFor.value = ''
   nextTick(() => add_input.value?.focus())

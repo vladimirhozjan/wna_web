@@ -163,7 +163,7 @@ async function loadMore() {
 async function onAdd() {
   const t = newTitle.value.trim()
   if (!t) return
-  await addSomeday(t)
+  try { await addSomeday(t) } catch { /* error watcher handles it */ }
   newTitle.value = ''
   nextTick(() => add_input.value?.focus())
 }

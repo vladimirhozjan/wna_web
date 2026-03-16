@@ -136,7 +136,6 @@ function truncateTitle(title, maxLen = 30) {
 async function onQuickAdd(title) {
   try {
     await addStuff(title);
-    toaster.success(`"${truncateTitle(title)}" added to inbox`);
   } catch (e) {
     toaster.push(e.message || "Failed to add item");
   }

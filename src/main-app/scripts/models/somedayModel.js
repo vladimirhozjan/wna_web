@@ -1,6 +1,12 @@
 import { ref } from 'vue'
 import apiClient from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
+import { errorModel } from '../core/errorModel.js'
+
+function truncateTitle(title, maxLen = 30) {
+    if (!title || title.length <= maxLen) return title
+    return title.slice(0, maxLen).trim() + '\u2026'
+}
 
 const items = ref([])
 const loading = ref(false)
@@ -148,6 +154,7 @@ export function somedayModel() {
             const created = await apiClient.addStuff({ title, state: 'SOMEDAY' })
             await loadSomeday({ reset: true })
             statsModel().refreshStats()
+            errorModel().success(`"${truncateTitle(title)}" added to Someday`)
             return created
         } catch (err) {
             error.value = err

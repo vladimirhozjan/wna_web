@@ -143,7 +143,6 @@ async function onCreate({ title, date, time, deferType, dueDate }) {
     } else {
       await calendar.createScheduledAction(date, time, title)
     }
-    toaster.success('Action created')
   } catch (err) {
     toaster.push('Failed to create action')
   }

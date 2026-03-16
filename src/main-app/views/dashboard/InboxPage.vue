@@ -270,7 +270,7 @@ async function onAdd() {
   if (!t) return
 
   hadItems.value = true
-  await addStuff(t)
+  try { await addStuff(t) } catch { /* error watcher handles it */ }
   new_stuff_title.value = ''
   focusAddInput()
 }

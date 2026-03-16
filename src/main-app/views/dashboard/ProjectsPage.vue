@@ -162,7 +162,7 @@ async function onAdd() {
   const t = newTitle.value.trim()
   const o = newOutcome.value.trim()
   if (!t || !o) return
-  await addProject(t, '', o)
+  try { await addProject(t, '', o) } catch { /* error watcher handles it */ }
   newTitle.value = ''
   newOutcome.value = ''
   nextTick(() => add_input.value?.focus())

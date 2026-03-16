@@ -8,6 +8,12 @@ import {
 import { listCalendar, getCalendarDensity, addAction, deferAction } from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
 import { settingsModel } from './settingsModel.js'
+import { errorModel } from '../core/errorModel.js'
+
+function truncateTitle(title, maxLen = 30) {
+    if (!title || title.length <= maxLen) return title
+    return title.slice(0, maxLen).trim() + '\u2026'
+}
 
 const STORAGE_KEY = 'calendar_view_mode'
 const validViewModes = ['day', 'week', 'month', 'year', 'recurring']
@@ -232,6 +238,7 @@ export function calendarModel() {
 
             items.value = [...items.value, newItem]
             statsModel().refreshStats()
+            errorModel().success(`"${truncateTitle(title)}" added to Calendar`)
             return newItem
         } catch (err) {
             error.value = err
@@ -333,6 +340,7 @@ export function calendarModel() {
 
             items.value = [...items.value, newItem]
             statsModel().refreshStats()
+            errorModel().success(`"${truncateTitle(title)}" added to Calendar`)
             return newItem
         } catch (err) {
             error.value = err
