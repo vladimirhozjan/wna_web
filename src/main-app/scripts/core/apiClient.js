@@ -1684,6 +1684,7 @@ const apiClient = {
     // Email verification API
     verifyEmail,
     resendVerification,
+    checkVerificationStatus,
     // Notification API
     getNotificationSettings,
     updateNotificationSettings,
