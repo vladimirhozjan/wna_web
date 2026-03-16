@@ -582,7 +582,7 @@ function formatSize(bytes) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 0 10px;
 }
 
 .ref-header h1 {

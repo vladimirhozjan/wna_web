@@ -90,11 +90,12 @@ watch(
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  padding-top: 30px;
 }
 
 @media (min-width: 769px) {
   .dashboard-content {
-    padding: 0 30px;
+    padding: 30px 30px 0;
   }
 }
 

@@ -187,7 +187,7 @@ async function onTrash(id) {
 }
 
 .page-title {
-  padding: 10px;
+  padding: 0 10px;
 }
 
 .overdue-content {

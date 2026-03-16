@@ -165,7 +165,7 @@ function onComplete() {
 
 .review-header {
   flex-shrink: 0;
-  padding: 10px;
+  padding: 0 10px;
 }
 
 .review-header h1 {

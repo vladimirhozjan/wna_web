@@ -472,7 +472,7 @@ async function onDropToWaiting(data) {
 }
 
 .page-title {
-  padding: 10px;
+  padding: 0 10px;
 }
 
 .engage-content {
