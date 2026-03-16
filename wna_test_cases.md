@@ -1643,11 +1643,11 @@ Use the table below to log each full or partial test run.
    - Review (conditional, may or may not be visible)
    - Completed
    - Trash
-5. Verify the footer area of the sidebar contains "Settings" and "Logout" options
+5. Verify the footer area of the sidebar contains an accent color picker, "Settings" link, and "Logout" option
 6. Click each navigation item and verify it routes to the correct page
 7. Verify the active/current page is visually highlighted in the sidebar
 
-**Expected Result:** The sidebar is a 260px fixed-width panel on the left side of the dashboard. It displays all listed navigation items, each accompanied by an icon and a count badge showing the number of items in that category. The Reference item includes a storage quota indicator. The sidebar footer contains Settings and Logout links. Clicking any item navigates to the corresponding page, and the active page is visually highlighted.
+**Expected Result:** The sidebar is a 260px fixed-width panel on the left side of the dashboard. It displays all listed navigation items, each accompanied by an icon and a count badge showing the number of items in that category. The Reference item includes a storage quota indicator. The sidebar footer contains an accent color picker, Settings, and Logout links. Clicking any item navigates to the corresponding page, and the active page is visually highlighted.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4359,10 +4359,10 @@ Use the table below to log each full or partial test run.
 ### TC-144: Dark Theme Calendar Color Tokens
 **Priority:** Low | **Area:** Calendar
 
-**Preconditions:** User is logged in with dark theme enabled. Actions with various date types exist on the calendar.
+**Preconditions:** User is logged in. Actions with various date types exist on the calendar.
 
 **Steps:**
-1. Enable dark theme in Settings
+1. Navigate to /settings and set the Theme dropdown to "Dark" in the Application section
 2. Navigate to the Calendar page (/calendar)
 3. Verify scheduled items (blue) are visible and readable against the dark background
 4. Verify start_after items (yellow/amber) are visible and readable against the dark background
@@ -4375,7 +4375,7 @@ Use the table below to log each full or partial test run.
    - Due: light red text/icon
    - Overdue: light red text/icon (distinguishable from non-overdue due)
 9. Verify all four calendar item types have sufficient contrast in dark theme
-10. Switch back to light theme and verify the light theme colors are correct
+10. Navigate to /settings and switch Theme to "Light"; verify the light theme colors are correct
 
 **Expected Result:** All four calendar item color states (scheduled, start, due, overdue) and MetadataRow chip colors render with appropriate dark theme overrides. Text and icons are readable against the dark background.
 
@@ -8760,7 +8760,7 @@ Use the table below to log each full or partial test run.
 2. Wait for the page to fully load.
 3. Verify the Account section is visible (showing email, change password option).
 4. Verify the Sessions section is visible (showing active sessions list).
-5. Verify the Application section is visible (showing new items position setting).
+5. Verify the Application section is visible (showing theme selector and new items position setting).
 6. Verify the Tags section is visible (showing quick-add presets).
 7. Verify the Calendar section is visible (showing week start, time format, business hours, business days).
 8. Verify the Review section is visible (showing weekly review toggle).
@@ -9093,6 +9093,133 @@ Use the table below to log each full or partial test run.
 8. Verify the sessions list loads successfully.
 
 **Expected Result:** When sessions fail to load, an error message and a "Retry" button are displayed instead of the sessions list. Clicking "Retry" attempts to reload the sessions and succeeds when the service is available.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-401: Theme Setting - System Default
+**Priority:** High | **Area:** Settings
+
+**Preconditions:** User is logged in. No `wna_theme` value exists in localStorage (or it has been cleared).
+
+**Steps:**
+1. Clear `wna_theme` from localStorage (via browser dev tools).
+2. Navigate to /settings.
+3. Locate the "Theme" dropdown in the Application section.
+4. Verify the dropdown value is "System Default".
+5. Set the OS to light mode (System Settings → Appearance → Light).
+6. Verify the application renders with the light theme (light backgrounds, dark text).
+7. Set the OS to dark mode (System Settings → Appearance → Dark).
+8. Verify the application automatically switches to dark theme (dark backgrounds, light text) without refreshing the page.
+9. Set the OS back to light mode.
+10. Verify the application automatically switches back to light theme.
+
+**Expected Result:** When the theme is set to "System Default", the application follows the OS light/dark preference and updates in real time when the OS preference changes. No page refresh is needed.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-402: Theme Setting - Light Override
+**Priority:** High | **Area:** Settings
+
+**Preconditions:** User is logged in. OS is set to dark mode.
+
+**Steps:**
+1. Navigate to /settings.
+2. Set the Theme dropdown to "Light".
+3. Verify the application immediately renders with the light theme, despite the OS being in dark mode.
+4. Refresh the page.
+5. Verify the light theme persists after refresh.
+6. Verify the Theme dropdown still shows "Light".
+7. Change the OS to light mode, then back to dark mode.
+8. Verify the application stays in light theme regardless of OS changes.
+
+**Expected Result:** Selecting "Light" forces the light theme regardless of OS preference. The setting persists across page refreshes via localStorage.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-403: Theme Setting - Dark Override
+**Priority:** High | **Area:** Settings
+
+**Preconditions:** User is logged in. OS is set to light mode.
+
+**Steps:**
+1. Navigate to /settings.
+2. Set the Theme dropdown to "Dark".
+3. Verify the application immediately renders with the dark theme, despite the OS being in light mode.
+4. Refresh the page.
+5. Verify the dark theme persists after refresh.
+6. Verify the Theme dropdown still shows "Dark".
+7. Change the OS to dark mode, then back to light mode.
+8. Verify the application stays in dark theme regardless of OS changes.
+
+**Expected Result:** Selecting "Dark" forces the dark theme regardless of OS preference. The setting persists across page refreshes via localStorage.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-404: Theme Setting - Backwards Compatibility
+**Priority:** Medium | **Area:** Settings
+
+**Preconditions:** User is logged in.
+
+**Steps:**
+1. Open browser dev tools → Application → Local Storage.
+2. Set `wna_theme` to `dark`.
+3. Refresh the page.
+4. Verify the application renders with dark theme.
+5. Navigate to /settings.
+6. Verify the Theme dropdown shows "Dark".
+7. Clear `wna_theme` from localStorage.
+8. Refresh the page.
+9. Verify the application defaults to "System Default" (follows OS preference).
+10. Navigate to /settings and verify the Theme dropdown shows "System Default".
+
+**Expected Result:** Users with existing `wna_theme=dark` or `wna_theme=light` localStorage values retain their chosen theme. Users with no stored value default to "System Default".
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-405: Theme Toggle Removed from Sidebar
+**Priority:** Medium | **Area:** Settings
+
+**Preconditions:** User is logged in on desktop.
+
+**Steps:**
+1. Navigate to any dashboard page.
+2. Observe the sidebar footer area.
+3. Verify the sidebar footer contains: accent color picker, Settings link, and Logout button.
+4. Verify there is NO dark theme toggle in the sidebar footer.
+5. Navigate to /settings.
+6. Verify the Theme setting is available in the Application section as a dropdown with three options: System Default, Light, Dark.
+
+**Expected Result:** The theme toggle has been removed from the sidebar. Theme selection is now exclusively managed via the Settings page Application section dropdown.
 
 | Date | P/F | Comment |
 |------|-----|---------|

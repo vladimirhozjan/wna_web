@@ -1,6 +1,7 @@
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 
 const ACCENTS = ['sky', 'blue', 'teal', 'ocean']
+const MODES = ['system', 'light', 'dark']
 const LS_ACCENT = 'wna_accent_color'
 const LS_THEME = 'wna_theme'
 
@@ -10,17 +11,25 @@ export function themeModel() {
     if (instance) return instance
 
     const accent = ref(loadAccent())
-    const isDark = ref(loadTheme())
+    const mode = ref(loadMode())
+
+    const mql = window.matchMedia('(prefers-color-scheme: dark)')
+    const systemDark = ref(mql.matches)
+
+    const isDark = computed(() => {
+        if (mode.value === 'system') return systemDark.value
+        return mode.value === 'dark'
+    })
 
     function loadAccent() {
         const stored = localStorage.getItem(LS_ACCENT)
         return ACCENTS.includes(stored) ? stored : 'sky'
     }
 
-    function loadTheme() {
+    function loadMode() {
         const stored = localStorage.getItem(LS_THEME)
-        if (stored === 'dark') return true
-        return false
+        if (MODES.includes(stored)) return stored
+        return 'system'
     }
 
     function apply() {
@@ -35,20 +44,33 @@ export function themeModel() {
         apply()
     }
 
-    function toggleTheme() {
-        isDark.value = !isDark.value
-        localStorage.setItem(LS_THEME, isDark.value ? 'dark' : 'light')
+    function setMode(m) {
+        if (!MODES.includes(m)) return
+        mode.value = m
+        localStorage.setItem(LS_THEME, m)
         apply()
     }
+
+    function toggleTheme() {
+        setMode(isDark.value ? 'light' : 'dark')
+    }
+
+    // Re-apply when OS preference changes (relevant in system mode)
+    mql.addEventListener('change', (e) => {
+        systemDark.value = e.matches
+        apply()
+    })
 
     // Apply immediately on creation
     apply()
 
     instance = {
         accent,
+        mode,
         isDark,
         accents: ACCENTS,
         setAccent,
+        setMode,
         toggleTheme,
     }
 

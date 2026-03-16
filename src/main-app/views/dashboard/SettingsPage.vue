@@ -99,6 +99,14 @@
           </div>
           <div class="settings-section-body">
             <div class="settings-row">
+              <span class="settings-label">Theme</span>
+              <Select
+                  v-model="themeMode"
+                  :options="themeModeOptions"
+                  title="Theme"
+              />
+            </div>
+            <div class="settings-row">
               <span class="settings-label">New items position in the list</span>
               <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
                 <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"></span>
@@ -414,6 +422,7 @@ import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
 import { changePassword, listSessions, revokeSession, revokeAllSessions } from '../../scripts/core/apiClient.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
+import { themeModel } from '../../scripts/models/themeModel.js'
 
 const router = useRouter()
 const auth = authModel()
@@ -421,6 +430,7 @@ const toaster = errorModel()
 const confirm = confirmModel()
 const settings = settingsModel()
 const notifications = notificationModel()
+const theme = themeModel()
 
 // User data
 const userEmail = computed(() => auth.currentUser.value?.email || '')
@@ -429,6 +439,17 @@ const userEmail = computed(() => auth.currentUser.value?.email || '')
 const appVersion = __APP_VERSION__
 
 // Preferences - computed from settings model
+const themeMode = computed({
+  get: () => theme.mode.value,
+  set: (val) => theme.setMode(val)
+})
+
+const themeModeOptions = [
+  { value: 'system', label: 'System Default' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' }
+]
+
 const addPosition = computed({
   get: () => settings.state.newItemsPosition,
   set: (val) => settings.setNewItemsPosition(val).catch(err => toaster.push('Failed to save setting'))

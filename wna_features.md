@@ -2,7 +2,7 @@
 
 > **Purpose:** This document describes every user-facing feature currently implemented in the WNA frontend. It is intended as a reference for creating UI test cases, Terms of Service, Help/FAQ content, and QA documentation.
 >
-> **Last updated:** 2026-03-05
+> **Last updated:** 2026-03-16
 
 ---
 
@@ -213,7 +213,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
   - Reference (shows storage quota badge instead of count)
   - Review (conditional: only shown when review is enabled in settings; shows days-since-last-review badge with color coding: orange at 7+ days, red at 14+ days)
   - Completed, Trash
-- **Footer:** Settings link + Logout button
+- **Footer:** Accent color picker + Settings link + Logout button
 - **Drag-drop targets:** Most sidebar items accept dragged items (stuff/actions) from list views. Complex drops (Calendar, Waiting For, Projects) open modals for additional input.
 - **Count badges** update after every create/complete/delete/move operation (debounced 300ms)
 
@@ -990,6 +990,12 @@ Presets are customizable in Settings.
 
 ### 21.4 Application Section
 
+- **Theme:** Dropdown with three options:
+  - **System Default** (default) — follows the operating system's light/dark preference; updates live when OS preference changes
+  - **Light** — forces light theme regardless of OS setting
+  - **Dark** — forces dark theme regardless of OS setting
+  - Saved to `localStorage` only (no API call); takes effect immediately
+  - Backwards-compatible: users with existing `wna_theme=dark` or `wna_theme=light` keep their choice; new users default to System Default
 - **New items position:** Dropdown - "End" (default) or "Beginning"
   - Controls where newly created items appear in lists (top or bottom)
 
