@@ -1,10 +1,10 @@
 :root {
     /* Font families */
-    --font-family-heading: 'Playfair Display', serif;
+    --font-family-heading: 'Libre Bodoni', serif;
     --font-family-default: 'Montserrat', sans-serif;
     --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
-    /* Font sizes: headings (Playfair Display) – responsive */
+    /* Font sizes: headings (Libre Bodoni) – responsive */
     --font-size-hero: clamp(36px, 7vw, 52px);
     --font-size-h1: clamp(28px, 5.5vw, 40px);
     --font-size-h2: clamp(24px, 4.5vw, 32px);

@@ -1,7 +1,7 @@
 @import './fonts.css';
 @import './tokens.css';
 
-/* Playfair Display – Headings */
+/* Libre Bodoni – Headings */
 
 .text-hero {
     font-family: var(--font-family-heading);
@@ -93,7 +93,7 @@
 .text-body-m   { font-family: var(--font-family-default); font-size: var(--font-size-body); line-height: var(--lh-body); font-weight: var(--font-weight-normal); }
 .text-footnote { font-family: var(--font-family-default); font-size: var(--font-size-caption); line-height: var(--lh-caption); font-weight: var(--font-weight-normal); }
 
-/* Page title – matches HTML spec: 32px Playfair Display */
+/* Page title – matches HTML spec: 32px Libre Bodoni */
 .page-title {
     font-family: var(--font-family-heading);
     font-size: 32px;
