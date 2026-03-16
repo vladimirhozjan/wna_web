@@ -292,7 +292,8 @@ async function onMove(id, newIndex) {
 }
 
 h1 {
-  padding: 10px;
+  margin: 0;
+  padding: 0 10px;
 }
 
 .add-input {

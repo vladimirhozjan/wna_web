@@ -90,7 +90,7 @@ watch(
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding-top: 30px;
+  padding-top: 8px;
 }
 
 @media (min-width: 769px) {

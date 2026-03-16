@@ -164,7 +164,7 @@ async function onItemCheck(id, checked) {
 
 .completed-header h1 {
   margin: 0;
-  padding: 10px;
+  padding: 0 10px;
 }
 
 .completed-content {

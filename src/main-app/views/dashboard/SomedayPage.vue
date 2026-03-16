@@ -302,7 +302,7 @@ async function onTrash(id) {
 
 .someday-header h1 {
   margin: 0;
-  padding: 10px;
+  padding: 0 10px;
 }
 
 .add-input {
