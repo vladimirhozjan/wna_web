@@ -15,16 +15,6 @@
       </SidebarMenuItem>
 
       <SidebarMenuItem
-          label="Next Action"
-          :to="{ name: 'next' }"
-          :count="stats?.next?.count"
-          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed', 'reference']"
-          @drop="onDropToNextAction"
-      >
-        <template #icon><NextIcon :overdue="stats?.next?.overdue > 0"/></template>
-      </SidebarMenuItem>
-
-      <SidebarMenuItem
           label="Today"
           :to="{ name: 'today' }"
           :count="stats?.today?.count"
@@ -32,6 +22,16 @@
           @drop="onDropToToday"
       >
         <template #icon><TodayIcon :overdue="stats?.today?.overdue > 0"/></template>
+      </SidebarMenuItem>
+
+      <SidebarMenuItem
+          label="Next Action"
+          :to="{ name: 'next' }"
+          :count="stats?.next?.count"
+          :accept-drop="['stuff', 'action', 'project', 'someday', 'completed', 'reference']"
+          @drop="onDropToNextAction"
+      >
+        <template #icon><NextIcon :overdue="stats?.next?.overdue > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
