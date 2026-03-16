@@ -8,7 +8,9 @@ function normalizeError(error) {
 
         // Backend message → has priority
         if (backendMsg) {
-            return {status, message: backendMsg}
+            const normalized = {status, message: backendMsg}
+            if (error.response.data?.user_id) normalized.user_id = error.response.data.user_id
+            return normalized
         }
 
         // Fallback messages by status
@@ -77,6 +79,15 @@ export async function verifyEmail(token) {
 export async function resendVerification(email) {
     try {
         const res = await httpApi.post('/v1/user/resend-verification', {email})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function checkVerificationStatus(userId) {
+    try {
+        const res = await httpApi.get(`/v1/user/${userId}/verified`)
         return res.data
     } catch (err) {
         throw normalizeError(err)

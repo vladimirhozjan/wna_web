@@ -130,7 +130,7 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from 'vue'
+import {computed, onUnmounted, ref, watch} from 'vue'
 import Inpt from './Inpt.vue'
 import Btn from './Btn.vue'
 import Lnk from './Lnk.vue'
@@ -169,6 +169,7 @@ const agreeTerms = ref(false)
 const agreeError = ref('')
 
 const reset_token = ref('')
+const userId = ref(null)
 
 const resending = ref(false)
 const resendCooldown = ref(0)
@@ -180,6 +181,8 @@ watch(isOpen, (open) => {
   if (!open) {
     clearForm()
     stopCooldown()
+    stopVerificationPolling()
+    userId.value = null
   }
 })
 
@@ -246,6 +249,60 @@ function stopCooldown() {
   resendCooldown.value = 0
 }
 
+let verifyPollTimer = null
+
+function onStorageEvent(event) {
+  if (event.key === 'auth_token' && event.newValue) {
+    auth.isAuthenticated.value = true
+    auth.loadUser()
+    stopVerificationPolling()
+    emit('logged-in')
+    closeAll()
+  }
+}
+
+function startVerificationPolling() {
+  stopVerificationPolling()
+  if (!userId.value) return
+
+  verifyPollTimer = setInterval(async () => {
+    try {
+      const data = await auth.checkVerificationStatus(userId.value)
+      if (data.verified) {
+        await autoLogin()
+      }
+    } catch {
+      // Silently continue polling
+    }
+  }, 3000)
+
+  window.addEventListener('storage', onStorageEvent)
+}
+
+function stopVerificationPolling() {
+  if (verifyPollTimer) {
+    clearInterval(verifyPollTimer)
+    verifyPollTimer = null
+  }
+  window.removeEventListener('storage', onStorageEvent)
+}
+
+async function autoLogin() {
+  stopVerificationPolling()
+  try {
+    await auth.loginUser(email.value, password.value)
+    await auth.loadUser()
+    emit('logged-in')
+    closeAll()
+  } catch {
+    // Login failed — user can retry manually
+  }
+}
+
+onUnmounted(() => {
+  stopVerificationPolling()
+})
+
 async function doResend() {
   if (resendCooldown.value > 0 || !email.value) return
   resending.value = true
@@ -283,7 +340,9 @@ async function doLogin() {
     closeAll()
   } catch (err) {
     if (err.status === 403) {
+      userId.value = err.user_id || null
       emit('update:mode', 'unverified')
+      startVerificationPolling()
       return
     }
     console.log(err)
@@ -315,8 +374,10 @@ async function doRegister() {
   }
 
   try {
-    await auth.registerUser(email.value, password.value)
+    const data = await auth.registerUser(email.value, password.value)
+    userId.value = data.user_id || null
     emit('update:mode', 'verify-sent')
+    startVerificationPolling()
   } catch (err) {
     console.log(err)
     error.push('Registration failed with error: ' + mapApiError(err, ErrorScenario.REGISTER)
