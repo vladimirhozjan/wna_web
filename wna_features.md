@@ -103,6 +103,11 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
   - Calls `POST /v1/user/resend-verification`
   - Success/error feedback shown to user
 - **Navigation:** Link to switch to login form
+- **Auto-detect verification:** While the "verify-sent" screen is open, the app automatically detects when the user verifies their email from another tab or device:
+  - **Same browser (another tab):** Detected instantly via `localStorage` `storage` event when `auth_token` is set by the verify page
+  - **Different browser/device:** Detected by polling `GET /v1/user/{user_id}/verified` every 3 seconds using the `user_id` returned from registration
+  - **On detection:** Automatically logs the user in with the email/password still held in memory, then redirects to `/engage`
+  - **Cleanup:** Polling and listener are stopped when the dialog closes or the component unmounts
 
 #### 2.2.3 Verify Email Page (`/verify`)
 
@@ -131,7 +136,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - **Fields:** Email, Password
 - **Validation:** Same email and password format checks as registration
 - **On success:** Tokens stored, redirected to `/engage`
-- **Unverified email:** If the user's email has not been verified, login returns HTTP 403. The dialog transitions to "unverified" mode showing a message that email verification is required, with a "Resend Verification Email" button (60-second cooldown)
+- **Unverified email:** If the user's email has not been verified, login returns HTTP 403 with `user_id` in the response. The dialog transitions to "unverified" mode showing a message that email verification is required, with a "Resend Verification Email" button (60-second cooldown). The same auto-detect verification logic starts (polling + localStorage listener) to automatically log the user in once they verify from any device.
 - **Error handling:**
   - HTTP 400: "Incorrect email format, please correct email address."
   - HTTP 401: "Incorrect email and/or password. Please correct your credentials."

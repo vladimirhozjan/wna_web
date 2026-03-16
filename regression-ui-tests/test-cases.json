@@ -8507,5 +8507,93 @@
       "Verify the normal empty state is shown"
     ],
     "expected": "When the last inbox item is processed from the Stuff Detail Page (via Done, Move, Trash, or Clarify), the app navigates back to the Inbox page and triggers the Inbox Zero celebration animation."
+  },
+  {
+    "id": "TC-401",
+    "name": "Auto-Detect Verification - Same Browser (Another Tab)",
+    "priority": "High",
+    "area": "Email Verification",
+    "smoke": true,
+    "section": "1: Authentication & Account",
+    "preconditions": "A new user account has been registered and the auth dialog is showing the \"verify-sent\" screen. The verification email has been received in Mailpit (`http://localhost:8025`). The user has the registration tab still open.",
+    "steps": [
+      "Register a new account and stay on the \"Check your inbox\" modal.",
+      "Open a new browser tab (same browser).",
+      "Open Mailpit at `http://localhost:8025` and locate the verification email.",
+      "Click the verification link in the new tab.",
+      "Wait for the verification to complete in the new tab.",
+      "Switch back to the original tab with the \"Check your inbox\" modal.",
+      "Observe the original tab's behavior."
+    ],
+    "expected": "- The original tab detects the verification instantly (via localStorage storage event).\n- The \"Check your inbox\" modal auto-closes.\n- The user is automatically logged in and redirected to `/engage`.\n- No manual action is required on the original tab."
+  },
+  {
+    "id": "TC-402",
+    "name": "Auto-Detect Verification - Different Browser/Device (Polling)",
+    "priority": "High",
+    "area": "Email Verification",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "A new user account has been registered and the auth dialog is showing the \"verify-sent\" screen. The verification email has been received in Mailpit. A second browser or device is available.",
+    "steps": [
+      "Register a new account in Browser A and stay on the \"Check your inbox\" modal.",
+      "Open Browser B (a different browser or incognito window).",
+      "Open Mailpit and click the verification link in Browser B.",
+      "Wait for verification to complete in Browser B.",
+      "Return to Browser A and observe the \"Check your inbox\" modal.",
+      "Wait up to 5 seconds for the modal to react."
+    ],
+    "expected": "- Browser A detects the verification within ~3 seconds (via polling).\n- The \"Check your inbox\" modal auto-closes in Browser A.\n- The user is automatically logged in and redirected to `/engage` in Browser A.\n- No manual action is required in Browser A."
+  },
+  {
+    "id": "TC-403",
+    "name": "Auto-Detect Verification - Unverified Login Flow",
+    "priority": "High",
+    "area": "Email Verification",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "A user account exists with the email NOT yet verified. The user knows the correct email and password. A second browser or device is available.",
+    "steps": [
+      "In Browser A, attempt to log in with the unverified email and correct password.",
+      "Verify the dialog transitions to \"unverified\" mode (\"Email not verified\").",
+      "In Browser B, open Mailpit and click the verification link.",
+      "Wait for verification to complete in Browser B.",
+      "Return to Browser A and observe the \"Email not verified\" modal.",
+      "Wait up to 5 seconds for the modal to react."
+    ],
+    "expected": "- The login attempt returns HTTP 403 and shows the \"unverified\" modal.\n- After verification in Browser B, Browser A detects the change within ~3 seconds.\n- The modal auto-closes and the user is automatically logged in and redirected to `/engage`.\n- The auto-detect works the same way as from the \"verify-sent\" screen."
+  },
+  {
+    "id": "TC-404",
+    "name": "Auto-Detect Verification - Cleanup on Dialog Close",
+    "priority": "Medium",
+    "area": "Email Verification",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "A new user account has been registered and the auth dialog is showing the \"verify-sent\" screen with auto-detect polling active.",
+    "steps": [
+      "Register a new account and stay on the \"Check your inbox\" modal.",
+      "Close the auth dialog by clicking the backdrop or navigating away.",
+      "Open the browser DevTools Console tab.",
+      "Wait 10 seconds and observe the console for any errors or network requests.",
+      "Check the Network tab for any ongoing polling requests to `/v1/user/{id}/verified`."
+    ],
+    "expected": "- Closing the dialog stops the polling interval and removes the storage event listener.\n- No further network requests are made to `/v1/user/{id}/verified` after closing.\n- No console errors appear related to polling or verification checks.\n- The cleanup is complete and no resources are leaked."
+  },
+  {
+    "id": "TC-405",
+    "name": "Auto-Detect Verification - Mode Switch Stops Polling",
+    "priority": "Medium",
+    "area": "Email Verification",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "A new user account has been registered and the auth dialog is showing the \"verify-sent\" screen with auto-detect polling active.",
+    "steps": [
+      "Register a new account and stay on the \"Check your inbox\" modal.",
+      "Click the \"Back to login\" link to switch to the login form.",
+      "Open the browser DevTools Network tab.",
+      "Wait 10 seconds and observe for any polling requests to `/v1/user/{id}/verified`."
+    ],
+    "expected": "- Switching from \"verify-sent\" mode to login mode stops the polling.\n- No further network requests are made to the verification status endpoint.\n- The login form functions normally without any background polling interference."
   }
 ]

@@ -91,6 +91,10 @@ export function authModel() {
         }
     }
 
+    async function checkVerificationStatus(userId) {
+        return await apiClient.checkVerificationStatus(userId)
+    }
+
     async function forgotPassword(email) {
         loading.value = true
         error.value = null
@@ -277,6 +281,7 @@ export function authModel() {
         forgotPassword,
         resetPassword,
         verifyEmail,
-        resendVerification
+        resendVerification,
+        checkVerificationStatus
     }
 }
