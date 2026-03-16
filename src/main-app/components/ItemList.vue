@@ -39,7 +39,7 @@
             'item-wrapper--active': activeId != null && activeId === item.id,
             'item-wrapper--dragging': nativeDraggingId === item.id,
             'item-wrapper--overdue': itemIsOverdue(item),
-            'item-wrapper--wiggle': showHint && index === 0,
+            'item-wrapper--wiggle': showHint && index === 0 && items.length >= 3,
             'item-wrapper--completing': completingIdSet.has(item.id)
           }"
           :draggable="!!sourceType && !disabled"
@@ -76,7 +76,7 @@
     </template>
 
     <!-- Drag hint (centered overlay) -->
-    <div v-if="showHint && items.length >= 2" class="text-body-m drag-hint">
+    <div v-if="showHint && items.length >= 3" class="text-body-m drag-hint">
       <span class="drag-hint__icon">↕</span>
       <span>Drag to reorder</span>
     </div>
