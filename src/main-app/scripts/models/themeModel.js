@@ -1,8 +1,6 @@
 import { ref, computed } from 'vue'
 
-const ACCENTS = ['sky', 'blue', 'teal', 'ocean']
 const MODES = ['system', 'light', 'dark']
-const LS_ACCENT = 'wna_accent_color'
 const LS_THEME = 'wna_theme'
 
 let instance = null
@@ -10,7 +8,6 @@ let instance = null
 export function themeModel() {
     if (instance) return instance
 
-    const accent = ref(loadAccent())
     const mode = ref(loadMode())
 
     const mql = window.matchMedia('(prefers-color-scheme: dark)')
@@ -21,11 +18,6 @@ export function themeModel() {
         return mode.value === 'dark'
     })
 
-    function loadAccent() {
-        const stored = localStorage.getItem(LS_ACCENT)
-        return ACCENTS.includes(stored) ? stored : 'sky'
-    }
-
     function loadMode() {
         const stored = localStorage.getItem(LS_THEME)
         if (MODES.includes(stored)) return stored
@@ -33,15 +25,7 @@ export function themeModel() {
     }
 
     function apply() {
-        document.documentElement.setAttribute('data-accent', accent.value)
         document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
-    }
-
-    function setAccent(color) {
-        if (!ACCENTS.includes(color)) return
-        accent.value = color
-        localStorage.setItem(LS_ACCENT, color)
-        apply()
     }
 
     function setMode(m) {
@@ -65,11 +49,8 @@ export function themeModel() {
     apply()
 
     instance = {
-        accent,
         mode,
         isDark,
-        accents: ACCENTS,
-        setAccent,
         setMode,
         toggleTheme,
     }

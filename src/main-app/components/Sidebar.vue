@@ -137,8 +137,6 @@
 
     <div class="sidebar-footer">
 
-      <AccentColorPicker />
-
       <SidebarMenuItem label="Settings" :to="{ name: 'settings' }">
         <template #icon><SettingsIcon/></template>
       </SidebarMenuItem>
@@ -184,7 +182,6 @@ import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 import ReviewIcon from "../assets/ReviewIcon.vue";
 import EngageIcon from "../assets/EngageIcon.vue";
-import AccentColorPicker from "./AccentColorPicker.vue";
 import { reviewModel } from "../scripts/models/reviewModel.js";
 import { settingsModel } from "../scripts/models/settingsModel.js";
 

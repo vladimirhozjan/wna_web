@@ -9,21 +9,10 @@
 
 <script setup>
 import { computed, ref, watch } from "vue";
-import { themeModel } from "../scripts/models/themeModel.js";
 
 const props = defineProps({
   email: String,
 });
-
-const theme = themeModel();
-
-// Saturation & lightness extracted from each accent's primary color
-const accentSL = {
-  sky:   { s: 60, l: 48 },   // #4185DE toned down
-  blue:  { s: 54, l: 41 },   // #3730a3
-  teal:  { s: 80, l: 40 },   // #14b8a6
-  ocean: { s: 82, l: 31 },   // #0e7490
-};
 
 const gravatarHash = ref(null);
 const gravatarFailed = ref(false);
@@ -60,8 +49,7 @@ function emailToHue(str) {
 const bgColor = computed(() => {
   if (!props.email) return "#777";
   const hue = emailToHue(props.email);
-  const { s, l } = accentSL[theme.accent.value] || accentSL.sky;
-  return `hsl(${hue}, ${s}%, ${l}%)`;
+  return `hsl(${hue}, 82%, 31%)`;
 });
 
 defineEmits(["toggle-menu"]);

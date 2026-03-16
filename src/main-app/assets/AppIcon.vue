@@ -14,20 +14,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { themeModel } from '../scripts/models/themeModel.js'
-
-const theme = themeModel()
-
-const colorMap = {
-  sky:   { main: '#4185DE', dark: '#1a56a8' },
-  blue:  { main: '#3730a3', dark: '#1e1b6e' },
-  teal:  { main: '#14b8a6', dark: '#134e4a' },
-  ocean: { main: '#0e7490', dark: '#164e63' },
-}
-
-const mainColor = computed(() => colorMap[theme.accent.value]?.main || '#4185DE')
-const darkColor = computed(() => colorMap[theme.accent.value]?.dark || '#1a56a8')
+const mainColor = '#0e7490'
+const darkColor = '#164e63'
 </script>
 
 <style scoped>

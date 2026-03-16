@@ -1,6 +1,6 @@
 /* Ocean — #0e7490 */
 
-[data-accent="ocean"][data-theme="light"] {
+[data-theme="light"] {
     --color-action: #0e7490;
     --color-action-dark: #164e63;
     --color-bg-accent-light: #ecfeff;
@@ -43,7 +43,7 @@
     --color-heat-4: rgba(14, 116, 144, 0.6);
 }
 
-[data-accent="ocean"][data-theme="dark"] {
+[data-theme="dark"] {
     --color-action: #22d3ee;
     --color-action-dark: #0e7490;
     --color-bg-accent-light: rgba(34, 211, 238, 0.12);
