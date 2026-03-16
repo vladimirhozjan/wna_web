@@ -1246,6 +1246,275 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-391: Google SSO - Button Visibility
+**Priority:** Medium | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured (the runtime config includes a valid `google_client_id`). User is not logged in. Browser is at the landing page.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/`.
+2. Click "Start Here" to open the authentication dialog in registration mode.
+3. Observe the registration form.
+4. Switch to the login form by clicking the "Log in" toggle.
+5. Observe the login form.
+
+**Expected Result:**
+- The registration form displays a "Sign up with Google" button with the Google icon.
+- An "or" divider separates the Google button from the email/password fields.
+- The login form displays a "Sign in with Google" button with the Google icon.
+- An "or" divider separates the Google button from the email/password fields.
+- Both Google buttons use the `ghost` button variant styling.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-392: Google SSO - Redirect to Google Consent
+**Priority:** High | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured. User is not logged in. Browser is at the landing page.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/`.
+2. Click "Start Here" to open the authentication dialog.
+3. Click the "Sign up with Google" button (or switch to login and click "Sign in with Google").
+4. Observe the browser navigation.
+
+**Expected Result:**
+- The browser redirects to `https://accounts.google.com/o/oauth2/v2/auth` with the following query parameters:
+  - `client_id` matching the configured Google client ID.
+  - `redirect_uri` set to `http://localhost:5173/google/sso`.
+  - `response_type` set to `code`.
+  - `scope` set to `openid email profile`.
+  - `access_type` set to `offline`.
+  - `prompt` set to `select_account`.
+- The Google account selection / consent screen is displayed.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-393: Google SSO - Successful Login (New User)
+**Priority:** High | **Area:** Google SSO | **Smoke Test**
+
+**Preconditions:** Google SSO is configured. No WNA account exists for the Google email being used. The Google OAuth flow has been completed and Google has redirected back with a valid authorization code.
+
+**Steps:**
+1. Complete the Google consent flow (or simulate by navigating to `http://localhost:5173/google/sso?code=<valid_auth_code>`).
+2. Observe the Google SSO page behavior.
+3. Wait for the redirect to complete.
+4. Inspect `localStorage` in the browser DevTools.
+
+**Expected Result:**
+- The Google SSO page briefly shows a spinning loader with the text "Signing you in...".
+- A `POST /v1/user/google-sso` request is sent to the backend with the authorization code.
+- On success, the user is redirected to the `/engage` dashboard page.
+- `localStorage` contains `auth_token` and `refresh_token` values.
+- `localStorage` contains `current_user` with the user's details (email matching the Google account).
+- A new WNA account is created for the Google user.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-394: Google SSO - Successful Login (Existing User)
+**Priority:** High | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured. A WNA account already exists for the Google email being used (previously registered via Google SSO or email). The Google OAuth flow has been completed with a valid authorization code.
+
+**Steps:**
+1. Complete the Google consent flow (or simulate by navigating to `http://localhost:5173/google/sso?code=<valid_auth_code>`).
+2. Observe the Google SSO page behavior.
+3. Wait for the redirect to complete.
+4. Inspect `localStorage` in the browser DevTools.
+
+**Expected Result:**
+- The Google SSO page briefly shows a spinning loader with the text "Signing you in...".
+- A `POST /v1/user/google-sso` request is sent to the backend with the authorization code.
+- On success, the user is redirected to the `/engage` dashboard page.
+- `localStorage` contains `auth_token` and `refresh_token` values.
+- `localStorage` contains `current_user` with the existing user's details.
+- No duplicate account is created — the existing account is used.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-395: Google SSO - Token Storage After Login
+**Priority:** High | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured. The Google OAuth flow has been completed with a valid authorization code.
+
+**Steps:**
+1. Clear `localStorage` in browser DevTools (remove `auth_token`, `refresh_token`, `refresh_token_hash`, `current_user`).
+2. Navigate to `http://localhost:5173/google/sso?code=<valid_auth_code>`.
+3. Wait for the login to complete and the redirect to `/engage`.
+4. Open browser DevTools → Application → Local Storage.
+5. Inspect the stored values.
+
+**Expected Result:**
+- `auth_token` is present and contains a valid JWT access token.
+- `refresh_token` is present and contains a valid JWT refresh token.
+- `refresh_token_hash` is present (if the backend returns it).
+- `current_user` is present and contains a JSON-encoded object with the user's details (including email).
+- The user is fully authenticated and can navigate the dashboard without being redirected to login.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-396: Google SSO - User Cancels Google Consent
+**Priority:** Medium | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured. User is not logged in. The authentication dialog is open.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/`.
+2. Click "Start Here" to open the authentication dialog.
+3. Click the "Sign up with Google" button.
+4. On the Google consent screen, click "Cancel" or close the Google window / navigate back.
+5. Observe the application behavior.
+
+**Expected Result:**
+- The user is returned to the application without an authorization code.
+- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.
+- The landing page is displayed (or the authentication dialog is still accessible).
+- No error messages are shown (the user intentionally cancelled).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-397: Google SSO - Invalid Authorization Code
+**Priority:** High | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured. User is not logged in.
+
+**Steps:**
+1. Navigate to `http://localhost:5173/google/sso?code=invalid_fake_code_12345`.
+2. Observe the Google SSO page behavior.
+3. Wait for the API response.
+
+**Expected Result:**
+- The page initially shows a spinning loader with the text "Signing you in...".
+- A `POST /v1/user/google-sso` request is sent with the invalid code.
+- The backend rejects the code and returns an error.
+- The page transitions to an error state showing an error icon (red circle with X) and the heading "Sign-in failed".
+- A user-friendly error message is displayed below the heading.
+- A "Back to login" button is displayed.
+- Clicking "Back to login" navigates to the login page.
+- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-398: Google SSO - Loading State on Redirect Page
+**Priority:** Medium | **Area:** Google SSO
+
+**Preconditions:** Google SSO is configured. User is not logged in. Network throttling is enabled in browser DevTools (e.g., "Slow 3G") to make the loading state visible.
+
+**Steps:**
+1. Open browser DevTools → Network tab → enable "Slow 3G" throttling.
+2. Navigate to `http://localhost:5173/google/sso?code=<valid_auth_code>`.
+3. Observe the Google SSO page immediately after navigation.
+
+**Expected Result:**
+- A centered card is displayed on the page.
+- The card contains a spinning circular loader animation (rotating 360 degrees).
+- The text "Signing you in..." is displayed below the loader in the primary theme color.
+- The loading state persists until the API response is received.
+- No interactive elements (buttons, links) are visible during the loading state.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-399: Google SSO - Direct Navigation Without Code
+**Priority:** Medium | **Area:** Google SSO
+
+**Preconditions:** User is not logged in.
+
+**Steps:**
+1. Navigate directly to `http://localhost:5173/google/sso` (without any `code` query parameter).
+2. Observe the Google SSO page behavior.
+
+**Expected Result:**
+- The page does not show the loading spinner.
+- The page displays a warning icon (yellow circle with exclamation mark).
+- The heading "Invalid sign-in link" is displayed.
+- The message "This link is missing an authorization code. Please try signing in again." is displayed.
+- A "Back to login" button is displayed.
+- Clicking "Back to login" navigates to the login page.
+- The user is not authenticated.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-400: Google SSO - Button Hidden When Not Configured
+**Priority:** Low | **Area:** Google SSO
+
+**Preconditions:** Google SSO is not configured (the runtime config does not include a `google_client_id`, or it is set to an empty string). User is not logged in.
+
+**Steps:**
+1. Ensure the runtime configuration has no `google_client_id` set (or set it to an empty string).
+2. Navigate to `http://localhost:5173/`.
+3. Click "Start Here" to open the authentication dialog in registration mode.
+4. Observe the registration form.
+5. Switch to the login form.
+6. Observe the login form.
+
+**Expected Result:**
+- The registration form does not display a "Sign up with Google" button.
+- The login form does not display a "Sign in with Google" button.
+- No "or" divider is shown on either form.
+- The email/password fields and standard registration/login flow work normally.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 
 ## Section 2: Dashboard Layout & Navigation
 
