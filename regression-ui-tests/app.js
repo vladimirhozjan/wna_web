@@ -253,7 +253,7 @@ function getFilteredTestCases() {
   const areaFilter = document.getElementById('filter-area').value;
   const priorityFilter = document.getElementById('filter-priority').value;
   const statusFilter = document.getElementById('filter-status').value;
-  const smokeFilter = document.getElementById('filter-smoke').checked;
+  const smokeFilter = document.getElementById('filter-smoke').value === 'yes';
   const run = getActiveRun();
 
   return testCases.filter(tc => {
@@ -336,7 +336,7 @@ function clearFilters() {
   document.getElementById('filter-area').value = '';
   document.getElementById('filter-priority').value = '';
   document.getElementById('filter-status').value = '';
-  document.getElementById('filter-smoke').checked = false;
+  document.getElementById('filter-smoke').value = '';
   applyFilters();
 }
 
@@ -798,7 +798,7 @@ function renderCatalog() {
   const search = document.getElementById('catalog-search').value.trim().toLowerCase();
   const section = document.getElementById('catalog-section').value;
   const priority = document.getElementById('catalog-priority').value;
-  const smokeOnly = document.getElementById('catalog-smoke').checked;
+  const smokeOnly = document.getElementById('catalog-smoke').value === 'yes';
 
   let filtered = testCases;
   if (search) filtered = filtered.filter(t =>
@@ -829,16 +829,16 @@ function renderCatalog() {
     html += `<h3 style="font-size:15px;margin-bottom:10px;color:var(--primary)">Section ${escapeHtml(sec)} (${tcs.length})</h3>`;
     for (const tc of tcs) {
       const prioClass = 'priority-' + tc.priority.toLowerCase();
-      const catSmokeBadge = tc.smoke ? '<span class="badge-smoke" title="Smoke Test" style="margin-left:6px">ST</span>' : '';
+      const catSmokeBadge = tc.smoke ? '<span class="badge-smoke" title="Smoke Test">ST</span>' : '';
       html += `
         <div style="padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;cursor:pointer;transition:border-color 0.15s"
           onclick="showTcDetail('${tc.id}')"
           onmouseover="this.style.borderColor='var(--primary)'"
           onmouseout="this.style.borderColor='var(--border)'">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-            <div>
+            <div style="display:flex;align-items:center;gap:4px">
               <span style="color:var(--primary);font-weight:600">${tc.id}</span>${catSmokeBadge}
-              <span style="margin-left:8px">${escapeHtml(tc.name)}</span>
+              <span style="margin-left:4px">${escapeHtml(tc.name)}</span>
             </div>
             <div style="display:flex;gap:12px;flex-shrink:0">
               <span class="${prioClass}" style="font-size:12px">${tc.priority}</span>

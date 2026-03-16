@@ -5225,7 +5225,7 @@ Use the table below to log each full or partial test run.
 ---
 
 ### TC-176: Someday - Activate Stuff Item
-**Priority:** High | **Area:** Someday / Maybe
+**Priority:** High | **Area:** Someday / Maybe | **Smoke Test**
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Stuff item
 
@@ -5250,7 +5250,7 @@ Use the table below to log each full or partial test run.
 ---
 
 ### TC-177: Someday - Activate Action
-**Priority:** High | **Area:** Someday / Maybe | **Smoke Test**
+**Priority:** High | **Area:** Someday / Maybe
 
 **Preconditions:** User is logged in and the Someday/Maybe list contains at least one Action item
 
@@ -7291,26 +7291,27 @@ Use the table below to log each full or partial test run.
 ### TC-251: Create New Recurring Action with All Required Fields
 **Priority:** High | **Area:** Recurring Actions | **Smoke Test**
 
-**Preconditions:** User is logged in. User is on the Calendar Recurring view.
+**Preconditions:** User is logged in. User is on the Calendar page with the Recurring tab active.
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. Verify the creation form is displayed with the following fields:
-   a. Title (text input)
+1. Click the "+" button to reveal the quick-add input.
+2. Enter a title: "Weekly team standup" and press Enter (or click "Add").
+3. Verify the app navigates to the recurring detail page for the newly created template.
+4. On the detail page, verify the following fields are available:
+   a. Title (text input, pre-filled with "Weekly team standup")
    b. Recurrence rule (frequency selector and options)
    c. Scheduled time (time picker)
    d. Duration (duration input, e.g., in minutes)
-3. Enter a title: "Weekly team standup"
-4. Set the recurrence rule to Weekly, select Monday and Wednesday
-5. Set the scheduled time to 10:00 AM
-6. Set the duration to 30 minutes
-7. Save the recurring action
-8. Verify a success confirmation is shown
-9. Verify the new recurring template appears in the Recurring list
-10. Click on the newly created template
-11. Verify all entered values are correctly displayed (title, weekly on Mon/Wed, 10:00 AM, 30 min)
+5. Set the recurrence rule to Weekly, select Monday and Wednesday.
+6. Set the scheduled time to 10:00 AM.
+7. Set the duration to 30 minutes.
+8. Save the recurring action.
+9. Verify a success confirmation is shown.
+10. Navigate back to the Calendar Recurring view.
+11. Verify the new recurring template appears in the list.
+12. Click on the template and verify all entered values are correctly displayed (title, weekly on Mon/Wed, 10:00 AM, 30 min).
 
-**Expected Result:** The `/recurring/new` page presents a form with Title, Recurrence rule, Scheduled time, and Duration fields. After filling in all fields and saving, the recurring action template is created and appears in the list with correct details.
+**Expected Result:** Creating a recurring template via quick-add navigates to the detail page where Title, Recurrence rule, Scheduled time, and Duration can be configured. After saving, the template appears in the Recurring list with correct details.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7323,11 +7324,11 @@ Use the table below to log each full or partial test run.
 ### TC-252: Recurrence Rule - Daily Frequency with Interval
 **Priority:** High | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. In the recurrence rule section, select frequency "Daily"
+1. On the recurring detail page, locate the recurrence rule section.
+2. Select frequency "Daily".
 3. Verify an interval field appears allowing input of a number between 1 and 99
 4. Set the interval to 1
 5. Verify the human-readable summary reads "Every day"
@@ -7356,11 +7357,11 @@ Use the table below to log each full or partial test run.
 ### TC-253: Recurrence Rule - Weekly Frequency with Multiple Day Selection
 **Priority:** High | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. In the recurrence rule section, select frequency "Weekly"
+1. On the recurring detail page, locate the recurrence rule section.
+2. Select frequency "Weekly".
 3. Verify day-of-week selectors appear for Mon, Tue, Wed, Thu, Fri, Sat, Sun
 4. Verify an interval field appears (every N weeks)
 5. Set interval to 1 and select Monday only
@@ -7389,11 +7390,11 @@ Use the table below to log each full or partial test run.
 ### TC-254: Recurrence Rule - Monthly Frequency with Day of Month
 **Priority:** High | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. In the recurrence rule section, select frequency "Monthly"
+1. On the recurring detail page, locate the recurrence rule section.
+2. Select frequency "Monthly".
 3. Verify a day-of-month selector appears allowing values 1 through 31
 4. Set the day of month to 1
 5. Verify the human-readable summary reads "Every month on the 1st"
@@ -7418,11 +7419,11 @@ Use the table below to log each full or partial test run.
 ### TC-255: Recurrence Rule - Yearly Frequency with Month and Day
 **Priority:** Medium | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. In the recurrence rule section, select frequency "Yearly"
+1. On the recurring detail page, locate the recurrence rule section.
+2. Select frequency "Yearly".
 3. Verify month and day selectors appear
 4. Select month "January" and day 1
 5. Verify the human-readable summary reads "Every year on Jan 1"
@@ -7448,18 +7449,17 @@ Use the table below to log each full or partial test run.
 ### TC-256: End Condition - Never (No End Date)
 **Priority:** Medium | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. Configure a recurrence rule (e.g., Daily, every 1 day)
-3. Locate the end condition selector
-4. Select "Never" as the end condition
-5. Verify no end date field or occurrence count field is displayed
-6. Verify the summary does not include any end information (or explicitly states "No end date")
-7. Fill in the remaining required fields and save
-8. Open the saved recurring template
-9. Verify the end condition is set to "Never" and no end date is stored
+1. On the recurring detail page, configure a recurrence rule (e.g., Daily, every 1 day).
+2. Locate the end condition selector.
+3. Select "Never" as the end condition.
+4. Verify no end date field or occurrence count field is displayed.
+5. Verify the summary does not include any end information (or explicitly states "No end date").
+6. Fill in the remaining required fields and save.
+7. Open the saved recurring template.
+8. Verify the end condition is set to "Never" and no end date is stored.
 
 **Expected Result:** Selecting "Never" as the end condition hides any end date or occurrence count inputs. The recurring action is set to repeat indefinitely with no termination.
 
@@ -7474,24 +7474,23 @@ Use the table below to log each full or partial test run.
 ### TC-257: End Condition - After N Occurrences
 **Priority:** Medium | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. Configure a recurrence rule (e.g., Weekly on Monday)
-3. Locate the end condition selector
-4. Select "After" as the end condition
-5. Verify an occurrences count input field appears
-6. Enter 10 in the occurrences field
-7. Verify the summary includes information about ending after 10 occurrences
-8. Try entering 0
-9. Verify validation rejects 0 (minimum is 1)
-10. Try entering 1000
-11. Verify validation rejects values above 999 (maximum is 999)
-12. Set the value to 5
-13. Fill in the remaining required fields and save
-14. Open the saved recurring template
-15. Verify the end condition shows "After 5 occurrences"
+1. On the recurring detail page, configure a recurrence rule (e.g., Weekly on Monday).
+2. Locate the end condition selector.
+3. Select "After" as the end condition.
+4. Verify an occurrences count input field appears.
+5. Enter 10 in the occurrences field.
+6. Verify the summary includes information about ending after 10 occurrences.
+7. Try entering 0.
+8. Verify validation rejects 0 (minimum is 1).
+9. Try entering 1000.
+10. Verify validation rejects values above 999 (maximum is 999).
+11. Set the value to 5.
+12. Fill in the remaining required fields and save.
+13. Open the saved recurring template.
+14. Verify the end condition shows "After 5 occurrences".
 
 **Expected Result:** The "After N occurrences" end condition allows setting a count between 1 and 999. Validation enforces the range. The saved template correctly reflects the occurrence limit.
 
@@ -7506,22 +7505,21 @@ Use the table below to log each full or partial test run.
 ### TC-258: End Condition - Until Specific Date
 **Priority:** Medium | **Area:** Recurring Actions
 
-**Preconditions:** User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.
+**Preconditions:** User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.
 
 **Steps:**
-1. Navigate to `/recurring/new`
-2. Configure a recurrence rule (e.g., Monthly on the 1st)
-3. Locate the end condition selector
-4. Select "Until" as the end condition
-5. Verify a date picker or date input field appears
-6. Select a date 6 months from today
-7. Verify the summary includes the end date (e.g., "until Aug 27, 2026")
-8. Try selecting a date in the past
-9. Verify validation rejects past dates (the end date must be in the future)
-10. Select a valid future date (e.g., December 31, 2026)
-11. Fill in the remaining required fields and save
-12. Open the saved recurring template
-13. Verify the end condition shows "Until Dec 31, 2026"
+1. On the recurring detail page, configure a recurrence rule (e.g., Monthly on the 1st).
+2. Locate the end condition selector.
+3. Select "Until" as the end condition.
+4. Verify a date picker or date input field appears.
+5. Select a date 6 months from today.
+6. Verify the summary includes the end date (e.g., "until Aug 27, 2026").
+7. Try selecting a date in the past.
+8. Verify validation rejects past dates (the end date must be in the future).
+9. Select a valid future date (e.g., December 31, 2026).
+10. Fill in the remaining required fields and save.
+11. Open the saved recurring template.
+12. Verify the end condition shows "Until Dec 31, 2026".
 
 **Expected Result:** The "Until" end condition allows selecting a future date via a date picker. Past dates are rejected by validation. The saved template correctly displays the end date.
 

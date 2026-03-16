@@ -113,9 +113,11 @@
               </select>
             </div>
             <div class="filter-group">
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
-                <input type="checkbox" id="filter-smoke" onchange="applyFilters()"> Smoke Only
-              </label>
+              <label>Smoke</label>
+              <select id="filter-smoke" onchange="applyFilters()">
+                <option value="">All Tests</option>
+                <option value="yes">Smoke Only</option>
+              </select>
             </div>
           </div>
         </div>
@@ -263,9 +265,11 @@
             </select>
           </div>
           <div class="filter-group">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">
-              <input type="checkbox" id="catalog-smoke" onchange="renderCatalog()"> Smoke Only
-            </label>
+            <label>Smoke</label>
+            <select id="catalog-smoke" onchange="renderCatalog()">
+              <option value="">All Tests</option>
+              <option value="yes">Smoke Only</option>
+            </select>
           </div>
         </div>
 

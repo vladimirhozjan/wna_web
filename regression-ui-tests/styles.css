@@ -310,7 +310,7 @@ textarea { resize: vertical; min-height: 180px; }
 .badge-in-progress { background: rgba(245,158,11,0.15); color: var(--warning); }
 .badge-fixed { background: rgba(34,197,94,0.15); color: var(--success); }
 .badge-rejected { background: rgba(139,143,163,0.15); color: var(--skip); }
-.badge-smoke { display:inline-block; font-size:10px; font-weight:700; padding:1px 5px; border-radius:3px; background:rgba(245,158,11,0.18); color:var(--warning); margin-left:4px; vertical-align:middle; letter-spacing:0.5px; }
+.badge-smoke { display:inline-flex; align-items:center; font-size:11px; line-height:1; font-weight:700; padding:3px 6px; border-radius:4px; background:rgba(245,158,11,0.18); color:var(--warning); vertical-align:middle; letter-spacing:0.5px; }
 
 /* Modal */
 .modal-overlay {

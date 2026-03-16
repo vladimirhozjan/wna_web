@@ -775,6 +775,167 @@
     "expected": "- The page shows a loading state briefly.\n- A generic error message is displayed (e.g., network error or server unavailable).\n- The user is not authenticated.\n- When the backend is restored, the user can retry by refreshing the page or re-clicking the verification link."
   },
   {
+    "id": "TC-391",
+    "name": "Google SSO - Button Visibility",
+    "priority": "Medium",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured (the runtime config includes a valid `google_client_id`). User is not logged in. Browser is at the landing page.",
+    "steps": [
+      "Navigate to `http://localhost:5173/`.",
+      "Click \"Start Here\" to open the authentication dialog in registration mode.",
+      "Observe the registration form.",
+      "Switch to the login form by clicking the \"Log in\" toggle.",
+      "Observe the login form."
+    ],
+    "expected": "- The registration form displays a \"Sign up with Google\" button with the Google icon.\n- An \"or\" divider separates the Google button from the email/password fields.\n- The login form displays a \"Sign in with Google\" button with the Google icon.\n- An \"or\" divider separates the Google button from the email/password fields.\n- Both Google buttons use the `ghost` button variant styling."
+  },
+  {
+    "id": "TC-392",
+    "name": "Google SSO - Redirect to Google Consent",
+    "priority": "High",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. User is not logged in. Browser is at the landing page.",
+    "steps": [
+      "Navigate to `http://localhost:5173/`.",
+      "Click \"Start Here\" to open the authentication dialog.",
+      "Click the \"Sign up with Google\" button (or switch to login and click \"Sign in with Google\").",
+      "Observe the browser navigation."
+    ],
+    "expected": "- The browser redirects to `https://accounts.google.com/o/oauth2/v2/auth` with the following query parameters:\n  - `client_id` matching the configured Google client ID.\n  - `redirect_uri` set to `http://localhost:5173/google/sso`.\n  - `response_type` set to `code`.\n  - `scope` set to `openid email profile`.\n  - `access_type` set to `offline`.\n  - `prompt` set to `select_account`.\n- The Google account selection / consent screen is displayed."
+  },
+  {
+    "id": "TC-393",
+    "name": "Google SSO - Successful Login (New User)",
+    "priority": "High",
+    "area": "Google SSO",
+    "smoke": true,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. No WNA account exists for the Google email being used. The Google OAuth flow has been completed and Google has redirected back with a valid authorization code.",
+    "steps": [
+      "Complete the Google consent flow (or simulate by navigating to `http://localhost:5173/google/sso?code=<valid_auth_code>`).",
+      "Observe the Google SSO page behavior.",
+      "Wait for the redirect to complete.",
+      "Inspect `localStorage` in the browser DevTools."
+    ],
+    "expected": "- The Google SSO page briefly shows a spinning loader with the text \"Signing you in...\".\n- A `POST /v1/user/google-sso` request is sent to the backend with the authorization code.\n- On success, the user is redirected to the `/engage` dashboard page.\n- `localStorage` contains `auth_token` and `refresh_token` values.\n- `localStorage` contains `current_user` with the user's details (email matching the Google account).\n- A new WNA account is created for the Google user."
+  },
+  {
+    "id": "TC-394",
+    "name": "Google SSO - Successful Login (Existing User)",
+    "priority": "High",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. A WNA account already exists for the Google email being used (previously registered via Google SSO or email). The Google OAuth flow has been completed with a valid authorization code.",
+    "steps": [
+      "Complete the Google consent flow (or simulate by navigating to `http://localhost:5173/google/sso?code=<valid_auth_code>`).",
+      "Observe the Google SSO page behavior.",
+      "Wait for the redirect to complete.",
+      "Inspect `localStorage` in the browser DevTools."
+    ],
+    "expected": "- The Google SSO page briefly shows a spinning loader with the text \"Signing you in...\".\n- A `POST /v1/user/google-sso` request is sent to the backend with the authorization code.\n- On success, the user is redirected to the `/engage` dashboard page.\n- `localStorage` contains `auth_token` and `refresh_token` values.\n- `localStorage` contains `current_user` with the existing user's details.\n- No duplicate account is created — the existing account is used."
+  },
+  {
+    "id": "TC-395",
+    "name": "Google SSO - Token Storage After Login",
+    "priority": "High",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. The Google OAuth flow has been completed with a valid authorization code.",
+    "steps": [
+      "Clear `localStorage` in browser DevTools (remove `auth_token`, `refresh_token`, `refresh_token_hash`, `current_user`).",
+      "Navigate to `http://localhost:5173/google/sso?code=<valid_auth_code>`.",
+      "Wait for the login to complete and the redirect to `/engage`.",
+      "Open browser DevTools → Application → Local Storage.",
+      "Inspect the stored values."
+    ],
+    "expected": "- `auth_token` is present and contains a valid JWT access token.\n- `refresh_token` is present and contains a valid JWT refresh token.\n- `refresh_token_hash` is present (if the backend returns it).\n- `current_user` is present and contains a JSON-encoded object with the user's details (including email).\n- The user is fully authenticated and can navigate the dashboard without being redirected to login."
+  },
+  {
+    "id": "TC-396",
+    "name": "Google SSO - User Cancels Google Consent",
+    "priority": "Medium",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. User is not logged in. The authentication dialog is open.",
+    "steps": [
+      "Navigate to `http://localhost:5173/`.",
+      "Click \"Start Here\" to open the authentication dialog.",
+      "Click the \"Sign up with Google\" button.",
+      "On the Google consent screen, click \"Cancel\" or close the Google window / navigate back.",
+      "Observe the application behavior."
+    ],
+    "expected": "- The user is returned to the application without an authorization code.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.\n- The landing page is displayed (or the authentication dialog is still accessible).\n- No error messages are shown (the user intentionally cancelled)."
+  },
+  {
+    "id": "TC-397",
+    "name": "Google SSO - Invalid Authorization Code",
+    "priority": "High",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. User is not logged in.",
+    "steps": [
+      "Navigate to `http://localhost:5173/google/sso?code=invalid_fake_code_12345`.",
+      "Observe the Google SSO page behavior.",
+      "Wait for the API response."
+    ],
+    "expected": "- The page initially shows a spinning loader with the text \"Signing you in...\".\n- A `POST /v1/user/google-sso` request is sent with the invalid code.\n- The backend rejects the code and returns an error.\n- The page transitions to an error state showing an error icon (red circle with X) and the heading \"Sign-in failed\".\n- A user-friendly error message is displayed below the heading.\n- A \"Back to login\" button is displayed.\n- Clicking \"Back to login\" navigates to the login page.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`."
+  },
+  {
+    "id": "TC-398",
+    "name": "Google SSO - Loading State on Redirect Page",
+    "priority": "Medium",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is configured. User is not logged in. Network throttling is enabled in browser DevTools (e.g., \"Slow 3G\") to make the loading state visible.",
+    "steps": [
+      "Open browser DevTools → Network tab → enable \"Slow 3G\" throttling.",
+      "Navigate to `http://localhost:5173/google/sso?code=<valid_auth_code>`.",
+      "Observe the Google SSO page immediately after navigation."
+    ],
+    "expected": "- A centered card is displayed on the page.\n- The card contains a spinning circular loader animation (rotating 360 degrees).\n- The text \"Signing you in...\" is displayed below the loader in the primary theme color.\n- The loading state persists until the API response is received.\n- No interactive elements (buttons, links) are visible during the loading state."
+  },
+  {
+    "id": "TC-399",
+    "name": "Google SSO - Direct Navigation Without Code",
+    "priority": "Medium",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "User is not logged in.",
+    "steps": [
+      "Navigate directly to `http://localhost:5173/google/sso` (without any `code` query parameter).",
+      "Observe the Google SSO page behavior."
+    ],
+    "expected": "- The page does not show the loading spinner.\n- The page displays a warning icon (yellow circle with exclamation mark).\n- The heading \"Invalid sign-in link\" is displayed.\n- The message \"This link is missing an authorization code. Please try signing in again.\" is displayed.\n- A \"Back to login\" button is displayed.\n- Clicking \"Back to login\" navigates to the login page.\n- The user is not authenticated."
+  },
+  {
+    "id": "TC-400",
+    "name": "Google SSO - Button Hidden When Not Configured",
+    "priority": "Low",
+    "area": "Google SSO",
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Google SSO is not configured (the runtime config does not include a `google_client_id`, or it is set to an empty string). User is not logged in.",
+    "steps": [
+      "Ensure the runtime configuration has no `google_client_id` set (or set it to an empty string).",
+      "Navigate to `http://localhost:5173/`.",
+      "Click \"Start Here\" to open the authentication dialog in registration mode.",
+      "Observe the registration form.",
+      "Switch to the login form.",
+      "Observe the login form."
+    ],
+    "expected": "- The registration form does not display a \"Sign up with Google\" button.\n- The login form does not display a \"Sign in with Google\" button.\n- No \"or\" divider is shown on either form.\n- The email/password fields and standard registration/login flow work normally."
+  },
+  {
     "id": "TC-044",
     "name": "Top Nav - Guest View Desktop",
     "priority": "High",
@@ -3719,7 +3880,7 @@
     "name": "Someday - Activate Stuff Item",
     "priority": "High",
     "area": "Someday / Maybe",
-    "smoke": false,
+    "smoke": true,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Stuff item",
     "steps": [
@@ -3739,7 +3900,7 @@
     "name": "Someday - Activate Action",
     "priority": "High",
     "area": "Someday / Maybe",
-    "smoke": true,
+    "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Action item",
     "steps": [
@@ -5336,21 +5497,22 @@
     "area": "Recurring Actions",
     "smoke": true,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the Calendar Recurring view.",
+    "preconditions": "User is logged in. User is on the Calendar page with the Recurring tab active.",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "Verify the creation form is displayed with the following fields: a. Title (text input) b. Recurrence rule (frequency selector and options) c. Scheduled time (time picker) d. Duration (duration input, e.g., in minutes)",
-      "Enter a title: \"Weekly team standup\"",
-      "Set the recurrence rule to Weekly, select Monday and Wednesday",
-      "Set the scheduled time to 10:00 AM",
-      "Set the duration to 30 minutes",
-      "Save the recurring action",
-      "Verify a success confirmation is shown",
-      "Verify the new recurring template appears in the Recurring list",
-      "Click on the newly created template",
-      "Verify all entered values are correctly displayed (title, weekly on Mon/Wed, 10:00 AM, 30 min)"
+      "Click the \"+\" button to reveal the quick-add input.",
+      "Enter a title: \"Weekly team standup\" and press Enter (or click \"Add\").",
+      "Verify the app navigates to the recurring detail page for the newly created template.",
+      "On the detail page, verify the following fields are available: a. Title (text input, pre-filled with \"Weekly team standup\") b. Recurrence rule (frequency selector and options) c. Scheduled time (time picker) d. Duration (duration input, e.g., in minutes)",
+      "Set the recurrence rule to Weekly, select Monday and Wednesday.",
+      "Set the scheduled time to 10:00 AM.",
+      "Set the duration to 30 minutes.",
+      "Save the recurring action.",
+      "Verify a success confirmation is shown.",
+      "Navigate back to the Calendar Recurring view.",
+      "Verify the new recurring template appears in the list.",
+      "Click on the template and verify all entered values are correctly displayed (title, weekly on Mon/Wed, 10:00 AM, 30 min)."
     ],
-    "expected": "The `/recurring/new` page presents a form with Title, Recurrence rule, Scheduled time, and Duration fields. After filling in all fields and saving, the recurring action template is created and appears in the list with correct details."
+    "expected": "Creating a recurring template via quick-add navigates to the detail page where Title, Recurrence rule, Scheduled time, and Duration can be configured. After saving, the template appears in the Recurring list with correct details."
   },
   {
     "id": "TC-252",
@@ -5359,10 +5521,10 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "In the recurrence rule section, select frequency \"Daily\"",
+      "On the recurring detail page, locate the recurrence rule section.",
+      "Select frequency \"Daily\".",
       "Verify an interval field appears allowing input of a number between 1 and 99",
       "Set the interval to 1",
       "Verify the human-readable summary reads \"Every day\"",
@@ -5387,10 +5549,10 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "In the recurrence rule section, select frequency \"Weekly\"",
+      "On the recurring detail page, locate the recurrence rule section.",
+      "Select frequency \"Weekly\".",
       "Verify day-of-week selectors appear for Mon, Tue, Wed, Thu, Fri, Sat, Sun",
       "Verify an interval field appears (every N weeks)",
       "Set interval to 1 and select Monday only",
@@ -5415,10 +5577,10 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "In the recurrence rule section, select frequency \"Monthly\"",
+      "On the recurring detail page, locate the recurrence rule section.",
+      "Select frequency \"Monthly\".",
       "Verify a day-of-month selector appears allowing values 1 through 31",
       "Set the day of month to 1",
       "Verify the human-readable summary reads \"Every month on the 1st\"",
@@ -5439,10 +5601,10 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "In the recurrence rule section, select frequency \"Yearly\"",
+      "On the recurring detail page, locate the recurrence rule section.",
+      "Select frequency \"Yearly\".",
       "Verify month and day selectors appear",
       "Select month \"January\" and day 1",
       "Verify the human-readable summary reads \"Every year on Jan 1\"",
@@ -5464,17 +5626,16 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "Configure a recurrence rule (e.g., Daily, every 1 day)",
-      "Locate the end condition selector",
-      "Select \"Never\" as the end condition",
-      "Verify no end date field or occurrence count field is displayed",
-      "Verify the summary does not include any end information (or explicitly states \"No end date\")",
-      "Fill in the remaining required fields and save",
-      "Open the saved recurring template",
-      "Verify the end condition is set to \"Never\" and no end date is stored"
+      "On the recurring detail page, configure a recurrence rule (e.g., Daily, every 1 day).",
+      "Locate the end condition selector.",
+      "Select \"Never\" as the end condition.",
+      "Verify no end date field or occurrence count field is displayed.",
+      "Verify the summary does not include any end information (or explicitly states \"No end date\").",
+      "Fill in the remaining required fields and save.",
+      "Open the saved recurring template.",
+      "Verify the end condition is set to \"Never\" and no end date is stored."
     ],
     "expected": "Selecting \"Never\" as the end condition hides any end date or occurrence count inputs. The recurring action is set to repeat indefinitely with no termination."
   },
@@ -5485,23 +5646,22 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "Configure a recurrence rule (e.g., Weekly on Monday)",
-      "Locate the end condition selector",
-      "Select \"After\" as the end condition",
-      "Verify an occurrences count input field appears",
-      "Enter 10 in the occurrences field",
-      "Verify the summary includes information about ending after 10 occurrences",
-      "Try entering 0",
-      "Verify validation rejects 0 (minimum is 1)",
-      "Try entering 1000",
-      "Verify validation rejects values above 999 (maximum is 999)",
-      "Set the value to 5",
-      "Fill in the remaining required fields and save",
-      "Open the saved recurring template",
-      "Verify the end condition shows \"After 5 occurrences\""
+      "On the recurring detail page, configure a recurrence rule (e.g., Weekly on Monday).",
+      "Locate the end condition selector.",
+      "Select \"After\" as the end condition.",
+      "Verify an occurrences count input field appears.",
+      "Enter 10 in the occurrences field.",
+      "Verify the summary includes information about ending after 10 occurrences.",
+      "Try entering 0.",
+      "Verify validation rejects 0 (minimum is 1).",
+      "Try entering 1000.",
+      "Verify validation rejects values above 999 (maximum is 999).",
+      "Set the value to 5.",
+      "Fill in the remaining required fields and save.",
+      "Open the saved recurring template.",
+      "Verify the end condition shows \"After 5 occurrences\"."
     ],
     "expected": "The \"After N occurrences\" end condition allows setting a count between 1 and 999. Validation enforces the range. The saved template correctly reflects the occurrence limit."
   },
@@ -5512,21 +5672,20 @@
     "area": "Recurring Actions",
     "smoke": false,
     "section": "16: Recurring Actions",
-    "preconditions": "User is logged in. User is on the recurring action creation or edit form with a recurrence rule configured.",
+    "preconditions": "User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.",
     "steps": [
-      "Navigate to `/recurring/new`",
-      "Configure a recurrence rule (e.g., Monthly on the 1st)",
-      "Locate the end condition selector",
-      "Select \"Until\" as the end condition",
-      "Verify a date picker or date input field appears",
-      "Select a date 6 months from today",
-      "Verify the summary includes the end date (e.g., \"until Aug 27, 2026\")",
-      "Try selecting a date in the past",
-      "Verify validation rejects past dates (the end date must be in the future)",
-      "Select a valid future date (e.g., December 31, 2026)",
-      "Fill in the remaining required fields and save",
-      "Open the saved recurring template",
-      "Verify the end condition shows \"Until Dec 31, 2026\""
+      "On the recurring detail page, configure a recurrence rule (e.g., Monthly on the 1st).",
+      "Locate the end condition selector.",
+      "Select \"Until\" as the end condition.",
+      "Verify a date picker or date input field appears.",
+      "Select a date 6 months from today.",
+      "Verify the summary includes the end date (e.g., \"until Aug 27, 2026\").",
+      "Try selecting a date in the past.",
+      "Verify validation rejects past dates (the end date must be in the future).",
+      "Select a valid future date (e.g., December 31, 2026).",
+      "Fill in the remaining required fields and save.",
+      "Open the saved recurring template.",
+      "Verify the end condition shows \"Until Dec 31, 2026\"."
     ],
     "expected": "The \"Until\" end condition allows selecting a future date via a date picker. Past dates are rejected by validation. The saved template correctly displays the end date."
   },

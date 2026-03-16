@@ -806,8 +806,8 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 
 ### 17.2 Creating a Recurring Action
 
-- **URL:** `/recurring/new`
-- **Fields:** Title, Recurrence rule, Scheduled time, Duration
+- **How:** On the Calendar Recurring view, click "+" to reveal the quick-add input, enter a title, and press Enter (or click "Add"). This creates a template with default `FREQ=WEEKLY` and navigates to the detail page (`/recurring/:id`) for full configuration.
+- **Fields (on detail page):** Title, Recurrence rule, Scheduled time, Duration
 
 ### 17.3 Recurrence Rule Configuration
 
