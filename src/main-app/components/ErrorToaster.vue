@@ -84,9 +84,8 @@ const error = errorModel()
 
 /* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-enter-active),
-:global(.toast-leave-active),
-:global(.toast-move) {
-  transition: all .25s ease;
+:global(.toast-leave-active) {
+  transition: opacity .25s ease, transform .25s ease;
 }
 
 /* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
@@ -98,13 +97,6 @@ const error = errorModel()
 /* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-leave-to) {
   opacity: 0;
-  transform: translateY(-10px);
-}
-
-/* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
-:global(.toast-leave-active) {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  transform: scale(0.85);
 }
 </style>
