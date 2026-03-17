@@ -121,7 +121,6 @@ export function referenceModel() {
             folders.value.unshift(folder)
             return folder
         } catch (err) {
-            error.value = err
             throw err
         }
     }
@@ -134,7 +133,6 @@ export function referenceModel() {
             folderCache.set(id, {...(folderCache.get(id) || {}), ...updated})
             return updated
         } catch (err) {
-            error.value = err
             throw err
         }
     }
@@ -146,7 +144,6 @@ export function referenceModel() {
             files.value = files.value.map(f => f.id === id ? {...f, name} : f)
             return updated
         } catch (err) {
-            error.value = err
             throw err
         }
     }
@@ -207,7 +204,11 @@ export function referenceModel() {
                 statsModel().refreshStats()
             } catch (err) {
                 entry.status = 'error'
-                entry.error = err.message || 'Upload failed'
+                if (err.status === 413) {
+                    entry.error = 'File too large or storage quota exceeded'
+                } else {
+                    entry.error = err.message || 'Upload failed'
+                }
             }
 
             setTimeout(() => {
@@ -251,7 +252,9 @@ export function referenceModel() {
                 preview.url = URL.createObjectURL(blob)
             }
         } catch (err) {
-            error.value = err
+            if (err.status !== 415) {
+                error.value = err
+            }
         } finally {
             preview.loading = false
         }

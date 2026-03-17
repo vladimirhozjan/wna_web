@@ -25,6 +25,8 @@ function normalizeError(error) {
                 return {status, message: "Resource not found (404)."}
             case 409:
                 return {status, message: "Conflict (409). Resource already exists."}
+            case 413:
+                return {status, message: "File too large or storage quota exceeded."}
             case 422:
                 return {status, message: "Unprocessable entity (422). Invalid input."}
             default:

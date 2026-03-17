@@ -124,6 +124,7 @@
               v-for="att in attModel_.items.value"
               :key="att.id"
               class="att-row"
+              @click="openAttachmentPreview(att)"
           >
             <div class="att-row__main">
               <RefFileIcon class="att-file-icon" :mime-type="att.mime_type" />
@@ -397,7 +398,12 @@ async function onRenameConfirm(name) {
     }
     model.closeRename()
   } catch (err) {
-    toaster.push(err.message || 'Operation failed')
+    if (err.status === 409) {
+      const label = type === 'file' ? 'file' : 'folder'
+      toaster.push(`A ${label} with this name already exists`)
+    } else {
+      toaster.push(err.message || 'Operation failed')
+    }
   }
 }
 
@@ -444,8 +450,38 @@ async function onDownloadFile(file) {
 }
 
 function onDownloadPreviewFile() {
-  if (model.preview.file) {
-    onDownloadFile(model.preview.file)
+  const file = model.preview.file
+  if (!file) return
+  if (file._attachment) {
+    onDownloadAttachment(file._attachment)
+  } else {
+    onDownloadFile(file)
+  }
+}
+
+async function openAttachmentPreview(att) {
+  model.preview.visible = true
+  model.preview.file = { name: att.file_name, mime_type: att.mime_type, _attachment: att }
+  model.preview.url = null
+  model.preview.text = null
+  model.preview.loading = true
+
+  try {
+    const entityType = att.item_type?.toLowerCase()
+    const res = await downloadAttachment(entityType, att.item_id, att.id)
+    const blob = res.data
+    const mime = att.mime_type || ''
+
+    if (mime.startsWith('text/') || mime === 'application/json') {
+      model.preview.text = await blob.text()
+    } else {
+      model.preview.url = URL.createObjectURL(blob)
+    }
+  } catch {
+    toaster.push('Failed to load preview')
+    model.preview.visible = false
+  } finally {
+    model.preview.loading = false
   }
 }
 
@@ -824,6 +860,12 @@ function formatSize(bytes) {
   gap: 12px;
   padding: 8px 12px;
   border-bottom: 1px solid var(--color-border-light);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.att-row:hover {
+  background: var(--color-bg-hover);
 }
 
 .att-row__main {
