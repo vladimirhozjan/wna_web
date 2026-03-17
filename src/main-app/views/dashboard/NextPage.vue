@@ -176,7 +176,7 @@ function onItemClick(item, index) {
   router.push({
     name: 'action-detail',
     params: { id: item.id },
-    query: { position: index, total: totalItems.value }
+    query: { position: index, total: totalItems.value, from: 'next' }
   })
 }
 

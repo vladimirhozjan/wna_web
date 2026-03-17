@@ -49,7 +49,6 @@ const routes = [
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
-    {path: '/recurring/new', name: 'recurring-new', component: RecurringDetailPage},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
     {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue')},
     {path: '/help', name: 'help', component: () => import('../views/public/HelpPage.vue')},

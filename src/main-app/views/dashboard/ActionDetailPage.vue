@@ -8,7 +8,7 @@
           <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
           <span class="text-body-s detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="action && !fromCalendar && !fromProject && !fromRecurring && !fromEngage" class="detail-header-right">
+        <div v-if="action && hasPositionNav" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst"><ChevronsLeftIcon class="detail-nav-icon" /></Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
@@ -520,6 +520,24 @@ const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
 
+// From-source route and label mappings
+const FROM_ROUTES = {
+  inbox: 'inbox', next: 'next', today: 'today', calendar: 'calendar',
+  waiting: 'waiting-for', completed: 'completed', someday: 'someday',
+  projects: 'projects', engage: 'engage', overdue: 'overdue',
+  reference: 'reference', review: 'review',
+}
+
+const FROM_LABELS = {
+  inbox: 'Inbox', next: 'Next', today: 'Today', calendar: 'Calendar',
+  waiting: 'Waiting For', completed: 'Completed', someday: 'Someday / Maybe',
+  projects: 'Projects', engage: 'Dashboard', overdue: 'Overdue',
+  reference: 'Reference', review: 'Review', recurring: 'Recurring',
+}
+
+// Sources that don't support position-based navigation
+const NO_POSITION_SOURCES = ['calendar', 'engage', 'overdue', 'project', 'recurring', 'reference', 'review']
+
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
@@ -533,16 +551,14 @@ const fromSomeday = computed(() => fromSource.value === 'someday')
 const fromRecurring = computed(() => fromSource.value === 'recurring')
 const fromEngage = computed(() => fromSource.value === 'engage')
 const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
+const hasPositionNav = computed(() => !NO_POSITION_SOURCES.includes(fromSource.value))
 
 const backLabel = computed(() => {
-  if (fromEngage.value) return 'Dashboard'
-  if (fromRecurring.value) return 'Recurring'
-  if (fromProject.value) return route.query.project_title || 'Project'
-  if (fromCalendar.value) return 'Calendar'
-  if (fromCompleted.value || isCompleted.value) return 'Completed'
-  if (fromSomeday.value || isSomeday.value) return 'Someday / Maybe'
-  if (isWaiting.value || fromWaiting.value) return 'Waiting For'
-  if (isToday.value) return 'Today'
+  if (fromSource.value === 'project') return route.query.project_title || 'Project'
+  if (fromSource.value && FROM_LABELS[fromSource.value]) return FROM_LABELS[fromSource.value]
+  if (isCompleted.value) return 'Completed'
+  if (isSomeday.value) return 'Someday / Maybe'
+  if (isWaiting.value) return 'Waiting For'
   return 'Next'
 })
 
@@ -613,22 +629,28 @@ onMounted(async () => {
 })
 
 function goBack() {
-  if (fromEngage.value) {
-    router.push({ name: 'engage' })
-  } else if (fromRecurring.value) {
-    router.push({ name: 'recurring-detail', params: { id: route.query.recurring_id } })
-  } else if (fromProject.value) {
+  // Special cases with params
+  if (fromProject.value) {
     router.push({ name: 'project-detail', params: { id: route.query.project_id } })
-  } else if (fromCalendar.value) {
-    router.push({ name: 'calendar' })
-  } else if (fromCompleted.value || isCompleted.value) {
+    return
+  }
+  if (fromRecurring.value) {
+    router.push({ name: 'recurring-detail', params: { id: route.query.recurring_id } })
+    return
+  }
+  // Lookup from source
+  const mapped = fromSource.value && FROM_ROUTES[fromSource.value]
+  if (mapped) {
+    router.push({ name: mapped })
+    return
+  }
+  // State-based fallback
+  if (isCompleted.value) {
     router.push({ name: 'completed' })
-  } else if (fromSomeday.value || isSomeday.value) {
+  } else if (isSomeday.value) {
     router.push({ name: 'someday' })
-  } else if (isWaiting.value || fromWaiting.value) {
+  } else if (isWaiting.value) {
     router.push({ name: 'waiting-for' })
-  } else if (isToday.value) {
-    router.push({ name: 'today' })
   } else {
     router.push({ name: 'next' })
   }
@@ -1319,15 +1341,25 @@ async function onMarkDone() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
-  let backRoute = 'next'
-  if (fromCompleted.value) {
-    backRoute = 'completed'
-  } else if (fromSomeday.value) {
-    backRoute = 'someday'
-  } else if (fromWaiting.value) {
-    backRoute = 'waiting-for'
-  } else if (isToday.value) {
-    backRoute = 'today'
+  // Determine back route from source, then state-based fallback
+  let backRoute = (fromSource.value && FROM_ROUTES[fromSource.value]) || null
+  if (!backRoute) {
+    if (isCompleted.value) backRoute = 'completed'
+    else if (isSomeday.value) backRoute = 'someday'
+    else if (isWaiting.value) backRoute = 'waiting-for'
+    else backRoute = 'next'
+  }
+
+  // For sources without position-based lists, just go back
+  if (NO_POSITION_SOURCES.includes(fromSource.value)) {
+    if (fromProject.value) {
+      router.push({ name: 'project-detail', params: { id: route.query.project_id } })
+    } else if (fromRecurring.value) {
+      router.push({ name: 'recurring-detail', params: { id: route.query.recurring_id } })
+    } else {
+      router.push({ name: backRoute })
+    }
+    return
   }
 
   if (newTotal <= 0) {

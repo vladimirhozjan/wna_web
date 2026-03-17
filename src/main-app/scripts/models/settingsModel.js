@@ -22,9 +22,6 @@ const DEFAULTS = {
         last_review_date: null,
         dismissed_tips: [],
     },
-    debug: {
-        enabled: false,
-    },
 }
 
 // Map day names to numbers and vice versa
@@ -56,9 +53,6 @@ export function settingsModel() {
         reviewLastDate: null,
         dismissedTips: [],
 
-        // Debug settings
-        debugEnabled: false,
-
         // Loading state
         loading: false,
         loaded: false,
@@ -77,7 +71,6 @@ export function settingsModel() {
             reviewTemplateId: false,
             reviewLastDate: false,
             dismissedTips: false,
-            debugEnabled: false,
         },
     })
 
@@ -126,9 +119,6 @@ export function settingsModel() {
             state.reviewLastDate = settings.review.last_review_date ?? DEFAULTS.review.last_review_date
             state.dismissedTips = Array.isArray(settings.review.dismissed_tips) ? settings.review.dismissed_tips : []
         }
-        if (settings.debug) {
-            state.debugEnabled = settings.debug.enabled ?? DEFAULTS.debug.enabled
-        }
     }
 
     // Load settings from localStorage as fallback
@@ -142,7 +132,6 @@ export function settingsModel() {
         state.businessHoursEnd = parseInt(localStorage.getItem('calendar_business_hours_end')) || 17
         state.businessDays = JSON.parse(localStorage.getItem('calendar_business_days') || '[1,2,3,4,5]')
         state.tagPresets = JSON.parse(localStorage.getItem('tag_presets') || '[]')
-        state.debugEnabled = localStorage.getItem('debug-window') !== null
     }
 
     // Save settings to localStorage for quick access
@@ -158,12 +147,6 @@ export function settingsModel() {
         localStorage.setItem('calendar_business_days', JSON.stringify(state.businessDays))
 
         localStorage.setItem('tag_presets', JSON.stringify(state.tagPresets))
-
-        if (state.debugEnabled) {
-            localStorage.setItem('debug-window', 'true')
-        } else {
-            localStorage.removeItem('debug-window')
-        }
     }
 
     // Load settings from API
@@ -373,26 +356,6 @@ export function settingsModel() {
         return state.dismissedTips.includes(key)
     }
 
-    // Update debug settings
-    async function setDebugEnabled(value) {
-        const oldValue = state.debugEnabled
-        state.debugEnabled = value
-        state.saving.debugEnabled = true
-        saveToLocalStorage()
-        // Notify App.vue about the change
-        window.dispatchEvent(new CustomEvent('debug-mode-changed', { detail: value }))
-        try {
-            await save('debug', { enabled: value })
-        } catch (err) {
-            state.debugEnabled = oldValue
-            saveToLocalStorage()
-            window.dispatchEvent(new CustomEvent('debug-mode-changed', { detail: oldValue }))
-            throw err
-        } finally {
-            state.saving.debugEnabled = false
-        }
-    }
-
     // Get calendar settings object (for calendarModel compatibility)
     function getCalendarSettings() {
         return {
@@ -423,7 +386,6 @@ export function settingsModel() {
         setReviewLastDate,
         dismissTip,
         isTipDismissed,
-        setDebugEnabled,
         getCalendarSettings,
     }
 

@@ -113,7 +113,8 @@ async function onAdd() {
 
   adding.value = true
   try {
-    const created = await createRecurring({ title: t, recurrence_rule: 'FREQ=WEEKLY' })
+    const todayDay = ['SU','MO','TU','WE','TH','FR','SA'][new Date().getDay()]
+    const created = await createRecurring({ title: t, recurrence_rule: `FREQ=WEEKLY;BYDAY=${todayDay}` })
     newTitle.value = ''
     nextTick(() => add_input.value?.focus())
     router.push({ name: 'recurring-detail', params: { id: created.id } })

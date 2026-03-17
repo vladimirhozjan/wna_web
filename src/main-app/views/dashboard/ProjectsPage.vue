@@ -47,6 +47,7 @@
             :loading-ids="loadingIds"
             :disabled="adding"
             :no-checkbox="true"
+            source-type="project"
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
@@ -182,7 +183,7 @@ function onItemClick(item, index) {
   router.push({
     name: 'project-detail',
     params: { id: item.id },
-    query: { position: index, total: totalItems.value }
+    query: { position: index, total: totalItems.value, from: 'projects' }
   })
 }
 

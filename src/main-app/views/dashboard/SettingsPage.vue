@@ -327,16 +327,6 @@
               <span class="settings-value">{{ appVersion }}</span>
             </div>
 
-            <div class="settings-row">
-              <span class="settings-label">Debug Mode</span>
-              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.debugEnabled }">
-                <span v-if="settings.state.saving.debugEnabled" class="settings-saving-spinner"></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="debugMode" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -497,11 +487,6 @@ async function saveTagPresets() {
 const reviewEnabled = computed({
   get: () => settings.state.reviewEnabled,
   set: (val) => settings.setReviewEnabled(val).catch(err => toaster.push('Failed to save setting'))
-})
-
-const debugMode = computed({
-  get: () => settings.state.debugEnabled,
-  set: (val) => settings.setDebugEnabled(val).catch(err => toaster.push('Failed to save setting'))
 })
 
 const emailEnabled = computed({

@@ -518,7 +518,7 @@ async function onEmptyTrash() {
 function parentRoute(att) {
   const type = (att.item_type || '').toLowerCase()
   const name = type === 'action' ? 'action' : type === 'project' ? 'project' : 'stuff'
-  return {name: `${name}-detail`, params: {id: att.item_id}}
+  return {name: `${name}-detail`, params: {id: att.item_id}, query: {from: 'reference'}}
 }
 
 async function onDownloadAttachment(att) {
