@@ -8,6 +8,7 @@ const error = ref(null)
 const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
+const totalItems = ref(0)
 
 export function trashModel() {
 
@@ -21,7 +22,7 @@ export function trashModel() {
                 hasMore.value = true
             }
 
-            const { items: data } = await apiClient.listTrash({
+            const { total_count, items: data } = await apiClient.listTrash({
                 limit: limit.value,
                 cursor: cursor.value,
             })
@@ -36,7 +37,8 @@ export function trashModel() {
                 cursor.value = data[data.length - 1].id
             }
 
-            hasMore.value = data.length >= limit.value
+            totalItems.value = total_count
+            hasMore.value = total_count > items.value.length
 
             return data
         } catch (err) {

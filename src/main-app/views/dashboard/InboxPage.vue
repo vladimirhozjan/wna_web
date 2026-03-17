@@ -34,11 +34,11 @@
                 type="text"
                 placeholder="Add new stuff"
                 @keyup.enter="onAdd"
-                :disabled="loading"
+                :disabled="adding"
             />
             <Btn @click="onAdd"
-                 :disabled="loading || !new_stuff_title.trim()"
-                 :loading="loading"
+                 :disabled="adding || !new_stuff_title.trim()"
+                 :loading="adding"
                  class="add-button"
                  variant="primary"
                  size="sm">
@@ -52,11 +52,11 @@
           <div class="card">
           <ItemList
               v-model="items"
-              :loading="loading"
-              :has-more="hasMore && !clarifyMode"
+              :loading="loading && !adding"
+              :has-more="(adding ? hasMoreSnapshot : hasMore) && !clarifyMode"
               :loading-ids="loadingIds"
               :completing-ids="completingIds"
-              :disabled="clarifyMode"
+              :disabled="clarifyMode || adding"
               :active-id="currentClarifyItem?.id ?? null"
               :editable="!clarifyMode"
               :source-type="clarifyMode ? null : 'stuff'"
@@ -164,6 +164,8 @@ const confirm = confirmModel()
 // local UI state
 const new_stuff_title = ref('')
 const add_input = ref(null)
+const adding = ref(false)
+const hasMoreSnapshot = ref(false)
 const updatingId = ref(null)
 const deletingId = ref(null)
 const movingId = ref(null)
@@ -270,7 +272,10 @@ async function onAdd() {
   if (!t) return
 
   hadItems.value = true
+  hasMoreSnapshot.value = hasMore.value
+  adding.value = true
   try { await addStuff(t) } catch { /* error watcher handles it */ }
+  finally { adding.value = false }
   new_stuff_title.value = ''
   focusAddInput()
 }

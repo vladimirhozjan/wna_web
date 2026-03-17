@@ -87,6 +87,7 @@
           variant="ghost"
           size="sm"
           :loading="loading"
+          :disabled="disabled"
           @click="emit('load-more')"
       >
         Load more

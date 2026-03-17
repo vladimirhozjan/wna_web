@@ -60,9 +60,8 @@ export function nextActionModel() {
                 cursor.value = data[data.length - 1].id
             }
 
-            hasMore.value = data.length >= limit.value
-
             totalItems.value = total_count
+            hasMore.value = total_count > items.value.length
 
             return data
         } catch (err) {

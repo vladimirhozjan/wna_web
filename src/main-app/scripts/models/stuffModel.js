@@ -51,10 +51,8 @@ export function stuffModel() {
                 cursor.value = data[data.length - 1].id
             }
 
-            // Hide "Load more" if we got fewer items than requested
-            hasMore.value = data.length >= limit.value
-
             totalItems.value = total_count
+            hasMore.value = total_count > items.value.length
 
             return data
         } catch (err) {

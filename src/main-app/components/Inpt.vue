@@ -6,6 +6,7 @@
         v-model="model_value"
         :placeholder="props.placeholder"
         :type="props.type"
+        :disabled="props.disabled"
         class="text-body-m color-text-primary"
         :class="{ 'input-error': error }"
         @input="handleInput"
@@ -30,6 +31,10 @@ const props = defineProps({
   type: {
     type: String,
     required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   }
 })
 
@@ -73,6 +78,11 @@ input:focus {
   outline: none;
   border-color: var(--color-input-border-focus);
   box-shadow: 0 0 0 1px var(--color-action-ring);
+}
+
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 input::placeholder {

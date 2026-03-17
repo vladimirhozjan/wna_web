@@ -16,11 +16,11 @@
               type="text"
               placeholder="Add new action"
               @keyup.enter="onAdd"
-              :disabled="loading"
+              :disabled="adding"
           />
           <Btn @click="onAdd"
-               :disabled="loading || !newTitle.trim()"
-               :loading="loading"
+               :disabled="adding || !newTitle.trim()"
+               :loading="adding"
                class="add-button"
                variant="primary"
                size="sm">
@@ -33,10 +33,11 @@
         <div class="card">
         <ItemList
             v-model="items"
-            :loading="loading"
-            :has-more="hasMore"
+            :loading="loading && !adding"
+            :has-more="adding ? hasMoreSnapshot : hasMore"
             :loading-ids="loadingIds"
             :completing-ids="completingIds"
+            :disabled="adding"
             source-type="action"
             @update="onItemUpdate"
             @check="onItemCheck"
@@ -111,6 +112,8 @@ const confirm = confirmModel()
 const showAdd = ref(false)
 const newTitle = ref('')
 const add_input = ref(null)
+const adding = ref(false)
+const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
 const { activeTag } = contextModel()
 
@@ -156,7 +159,10 @@ async function loadMore() {
 async function onAdd() {
   const t = newTitle.value.trim()
   if (!t) return
+  hasMoreSnapshot.value = hasMore.value
+  adding.value = true
   try { await addAction(t) } catch { /* error watcher handles it */ }
+  finally { adding.value = false }
   newTitle.value = ''
   nextTick(() => add_input.value?.focus())
 }

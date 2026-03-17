@@ -17,19 +17,19 @@
                 type="text"
                 placeholder="Add new project"
                 @keyup.enter="onAdd"
-                :disabled="loading"
+                :disabled="adding"
             />
             <Inpt
                 v-model="newOutcome"
                 type="text"
                 placeholder="Outcome"
                 @keyup.enter="onAdd"
-                :disabled="loading"
+                :disabled="adding"
             />
           </div>
           <Btn @click="onAdd"
-               :disabled="loading || !newTitle.trim() || !newOutcome.trim()"
-               :loading="loading"
+               :disabled="adding || !newTitle.trim() || !newOutcome.trim()"
+               :loading="adding"
                class="add-button"
                variant="primary"
                size="sm">
@@ -42,9 +42,10 @@
         <div class="card">
         <ItemList
             v-model="items"
-            :loading="loading"
-            :has-more="hasMore"
+            :loading="loading && !adding"
+            :has-more="adding ? hasMoreSnapshot : hasMore"
             :loading-ids="loadingIds"
+            :disabled="adding"
             :no-checkbox="true"
             @update="onItemUpdate"
             @check="onItemCheck"
@@ -117,6 +118,8 @@ const showAdd = ref(false)
 const newTitle = ref('')
 const newOutcome = ref('')
 const add_input = ref(null)
+const adding = ref(false)
+const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
 const { activeTag } = contextModel()
 
@@ -162,7 +165,10 @@ async function onAdd() {
   const t = newTitle.value.trim()
   const o = newOutcome.value.trim()
   if (!t || !o) return
+  hasMoreSnapshot.value = hasMore.value
+  adding.value = true
   try { await addProject(t, '', o) } catch { /* error watcher handles it */ }
+  finally { adding.value = false }
   newTitle.value = ''
   newOutcome.value = ''
   nextTick(() => add_input.value?.focus())

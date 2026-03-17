@@ -14,6 +14,7 @@ const error = ref(null)
 const cursor = ref(null)
 const limit = ref(10)
 const hasMore = ref(true)
+const totalItems = ref(0)
 const activeTags = ref(null)
 
 export function somedayModel() {
@@ -34,7 +35,7 @@ export function somedayModel() {
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
-            const { items: data } = await apiClient.listSomeday({
+            const { total_count, items: data } = await apiClient.listSomeday({
                 limit: limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
@@ -50,7 +51,8 @@ export function somedayModel() {
                 cursor.value = data[data.length - 1].id
             }
 
-            hasMore.value = data.length >= limit.value
+            totalItems.value = total_count
+            hasMore.value = total_count > items.value.length
 
             return data
         } catch (err) {
