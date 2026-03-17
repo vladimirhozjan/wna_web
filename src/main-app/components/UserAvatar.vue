@@ -1,6 +1,6 @@
 <template>
   <div class="avatar-wrapper" @click="$emit('toggle-menu')">
-    <img v-if="gravatarSrc && !gravatarFailed" :src="gravatarSrc" class="avatar-img" @error="gravatarFailed = true" />
+    <img v-if="gravatarSrc && !gravatarFailed" :src="gravatarSrc" class="avatar-img" @load="onGravatarLoad" @error="onGravatarError" />
     <div v-else class="avatar-fallback" :style="{ backgroundColor: bgColor }">
       {{ initials }}
     </div>
@@ -14,8 +14,32 @@ const props = defineProps({
   email: String,
 });
 
+const CACHE_TTL = 24 * 60 * 60 * 1000;
 const gravatarHash = ref(null);
 const gravatarFailed = ref(false);
+
+function getCachedStatus(hash) {
+  try {
+    const raw = localStorage.getItem(`gravatar_${hash}`);
+    if (!raw) return null;
+    const { status, ts } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL) { localStorage.removeItem(`gravatar_${hash}`); return null; }
+    return status;
+  } catch { return null; }
+}
+
+function setCachedStatus(hash, status) {
+  try { localStorage.setItem(`gravatar_${hash}`, JSON.stringify({ status, ts: Date.now() })); } catch {}
+}
+
+function onGravatarLoad() {
+  if (gravatarHash.value) setCachedStatus(gravatarHash.value, 'ok');
+}
+
+function onGravatarError() {
+  gravatarFailed.value = true;
+  if (gravatarHash.value) setCachedStatus(gravatarHash.value, 'fail');
+}
 
 async function sha256Hex(str) {
   const data = new TextEncoder().encode(str);
@@ -26,7 +50,10 @@ async function sha256Hex(str) {
 watch(() => props.email, async (email) => {
   gravatarFailed.value = false;
   if (!email) { gravatarHash.value = null; return; }
-  gravatarHash.value = await sha256Hex(email.trim().toLowerCase());
+  const hash = await sha256Hex(email.trim().toLowerCase());
+  const cached = getCachedStatus(hash);
+  if (cached === 'fail') { gravatarFailed.value = true; }
+  gravatarHash.value = hash;
 }, { immediate: true });
 
 const gravatarSrc = computed(() =>
