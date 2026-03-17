@@ -184,7 +184,7 @@ function onDragEnd(evt) {
   isDragging.value = false
   const newIndex = evt.newIndex
 
-  if (originalIndex !== newIndex && draggedItemId) {
+  if (originalIndex !== newIndex && draggedItemId && !drag.state.droppedExternally) {
     emit('move', draggedItemId, newIndex)
   }
 
@@ -256,6 +256,7 @@ function onExternalDrop(e) {
   isOverDrop.value = false
   if (!canAcceptDrop.value) return
   e.preventDefault()
+  drag.markExternalDrop()
   try {
     const data = JSON.parse(e.dataTransfer.getData('application/json'))
     // Don't emit if dropping back into the same list

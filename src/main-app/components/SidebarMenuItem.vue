@@ -85,6 +85,7 @@ function onDrop(e) {
   if (!canAcceptDrop.value) return;
 
   e.preventDefault();
+  drag.markExternalDrop();
 
   try {
     const data = JSON.parse(e.dataTransfer.getData('application/json'));

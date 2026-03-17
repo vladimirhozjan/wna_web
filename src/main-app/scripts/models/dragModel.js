@@ -9,12 +9,18 @@ export function dragModel() {
         isDragging: false,
         draggedItem: null,
         sourceType: null,  // 'stuff', 'action', 'project'
+        droppedExternally: false,
     })
 
     function startDrag(item, sourceType) {
         state.isDragging = true
         state.draggedItem = item
         state.sourceType = sourceType
+        state.droppedExternally = false
+    }
+
+    function markExternalDrop() {
+        state.droppedExternally = true
     }
 
     function endDrag() {
@@ -23,6 +29,6 @@ export function dragModel() {
         state.sourceType = null
     }
 
-    instance = { state, startDrag, endDrag }
+    instance = { state, startDrag, endDrag, markExternalDrop }
     return instance
 }
