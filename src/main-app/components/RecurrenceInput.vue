@@ -136,6 +136,10 @@ const untilDate = ref('')
 
 onMounted(() => {
   syncEndType()
+  if (parts.value.freq === 'WEEKLY' && parts.value.byday.length === 0) {
+    parts.value.byday.push(['SU','MO','TU','WE','TH','FR','SA'][new Date().getDay()])
+    onChanged()
+  }
 })
 
 function syncEndType() {
@@ -154,6 +158,10 @@ function syncEndType() {
 watch(() => props.modelValue, (val) => {
   parts.value = parseRRule(val)
   syncEndType()
+  if (parts.value.freq === 'WEEKLY' && parts.value.byday.length === 0) {
+    parts.value.byday.push(['SU','MO','TU','WE','TH','FR','SA'][new Date().getDay()])
+    onChanged()
+  }
 })
 
 const months = [
@@ -201,6 +209,16 @@ function toggleDay(day) {
   onChanged()
 }
 
+function todayWeekday() {
+  return ['SU','MO','TU','WE','TH','FR','SA'][new Date().getDay()]
+}
+
+function ensureWeeklyDay() {
+  if (parts.value.freq === 'WEEKLY' && parts.value.byday.length === 0) {
+    parts.value.byday.push(todayWeekday())
+  }
+}
+
 function onFreqChanged() {
   if (parts.value.freq === 'YEARLY') {
     const now = new Date()
@@ -210,6 +228,7 @@ function onFreqChanged() {
   if (parts.value.freq === 'MONTHLY') {
     if (!parts.value.bymonthday) parts.value.bymonthday = new Date().getDate()
   }
+  ensureWeeklyDay()
   onChanged()
 }
 

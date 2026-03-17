@@ -26,22 +26,12 @@
               <span class="detail-spinner"></span>
             </div>
             <h2
-                v-if="!isCreate"
                 class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title' }"
                 @click="startEdit('title', template.title)"
             >{{ template.title }}</h2>
             <textarea
-                v-if="isCreate"
-                ref="titleInput"
-                v-model="createData.title"
-                class="text-h2 detail-title-input detail-title-input--create"
-                placeholder="Template title"
-                @input="autoResizeTitle"
-                rows="1"
-            ></textarea>
-            <textarea
-                v-else-if="editingField === 'title'"
+                v-if="editingField === 'title'"
                 ref="titleInput"
                 v-model="editTitle"
                 class="text-h2 detail-title-input"
@@ -56,58 +46,36 @@
         </div>
 
         <!-- Active instance badge -->
-        <div v-if="!isCreate && template.active_instance_id" class="text-body-s detail-instance-badge" @click="goToInstance">
+        <div v-if="template.active_instance_id" class="text-body-s detail-instance-badge" @click="goToInstance">
           <ActionIcon class="detail-instance-badge__icon" />
           <span>Active instance</span>
         </div>
 
         <!-- Action buttons -->
         <div class="detail-actions">
-          <template v-if="isCreate">
-            <Btn
-                variant="primary"
-                size="sm"
-                :loading="creating"
-                :disabled="!createData.title.trim() || creating"
-                @click="onCreateSubmit"
-            >
-              Create
-            </Btn>
-          </template>
-          <template v-else>
-            <Btn
-                v-if="!template.active_instance_id"
-                variant="primary"
-                size="sm"
-                :loading="actionLoading === 'spawn'"
-                @click="onSpawn"
-            >
-              Spawn next
-            </Btn>
-            <Btn
-                variant="ghost-danger"
-                size="sm"
-                :loading="actionLoading === 'delete'"
-                @click="onDelete"
-            >
-              Trash
-            </Btn>
-          </template>
+          <Btn
+              v-if="!template.active_instance_id"
+              variant="primary"
+              size="sm"
+              :loading="actionLoading === 'spawn'"
+              @click="onSpawn"
+          >
+            Spawn next
+          </Btn>
+          <Btn
+              variant="ghost-danger"
+              size="sm"
+              :loading="actionLoading === 'delete'"
+              @click="onDelete"
+          >
+            Trash
+          </Btn>
         </div>
 
         <!-- Description area -->
         <div class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Description</label>
           <div class="detail-section-wrapper">
-            <template v-if="isCreate">
-              <textarea
-                  v-model="createData.description"
-                  class="text-body-m detail-section-textarea"
-                  placeholder="Add a description..."
-                  rows="1"
-              ></textarea>
-            </template>
-            <template v-else>
               <p
                   v-if="editingField !== 'description'"
                   class="text-body-m detail-section-content"
@@ -128,7 +96,6 @@
                 <Btn variant="primary" size="sm" :disabled="savingField === 'description'" :loading="savingField === 'description'" @mousedown.prevent @click="saveField('description')">Save</Btn>
                 <Btn variant="ghost" size="sm" :disabled="savingField === 'description'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
               </div>
-            </template>
           </div>
         </div>
 
@@ -137,11 +104,6 @@
           <label class="text-body-s fw-semibold detail-section-label">Recurrence</label>
           <div class="detail-section-wrapper">
             <RecurrenceInput
-                v-if="isCreate"
-                v-model="createData.recurrence_rule"
-            />
-            <RecurrenceInput
-                v-else
                 :model-value="template.recurrence_rule || ''"
                 :disabled="savingField === 'recurrence'"
                 @update:model-value="onRecurrenceChanged"
@@ -156,20 +118,20 @@
             <div class="detail-date-inputs">
               <input
                   type="time"
-                  :value="isCreate ? createData.scheduled_time : template.scheduled_time"
+                  :value="template.scheduled_time"
                   class="text-body-m detail-input detail-input--time"
-                  :disabled="!isCreate && savingField === 'time'"
+                  :disabled="savingField === 'time'"
                   @change="onTimeChanged($event.target.value)"
               />
               <div class="detail-duration-input">
                 <input
                     type="number"
-                    :value="isCreate ? createData.scheduled_duration : template.scheduled_duration"
+                    :value="template.scheduled_duration"
                     class="text-body-m detail-input detail-input--duration"
                     min="5"
                     step="5"
                     placeholder="min"
-                    :disabled="!isCreate && savingField === 'time'"
+                    :disabled="savingField === 'time'"
                     @change="onDurationChanged(Number($event.target.value))"
                 />
                 <span class="text-body-s detail-duration-label">min</span>
@@ -182,10 +144,6 @@
         <div class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Tags</label>
           <div class="detail-section-wrapper">
-            <template v-if="isCreate">
-              <TagInput v-model="createData.tags" />
-            </template>
-            <template v-else>
               <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
                 <span v-if="template.tags && template.tags.length > 0" class="detail-tags-chips">
                   <span v-for="tag in template.tags" :key="tag" class="text-body-s detail-tag-chip">{{ tag }}</span>
@@ -199,12 +157,11 @@
                   <Btn variant="ghost" size="sm" :disabled="savingField === 'tags'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
                 </div>
               </template>
-            </template>
           </div>
         </div>
 
         <!-- Next occurrence (edit mode only) -->
-        <div v-if="!isCreate && template.next_occurrence" class="detail-section-area">
+        <div v-if="template.next_occurrence" class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Next occurrence</label>
           <div class="detail-section-wrapper">
             <p class="text-body-m detail-section-content detail-section-content--readonly">{{ formatDate(template.next_occurrence) }}</p>
@@ -212,7 +169,7 @@
         </div>
 
         <!-- Metadata (edit mode) -->
-        <div v-if="!isCreate" class="detail-metadata">
+        <div class="detail-metadata">
           <span class="detail-metadata-item">
             <span class="text-footnote detail-metadata-label">Created</span>
             <span class="text-footnote detail-metadata-value">{{ formatDate(template.created) }}</span>
@@ -230,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
@@ -251,7 +208,6 @@ const tagMdl = tagModel()
 
 const {
   getRecurring,
-  createRecurring,
   updateRecurring,
   deleteRecurring: deleteRecurringFn,
   spawnRecurring,
@@ -267,27 +223,8 @@ const descriptionInput = ref(null)
 const actionLoading = ref(null)
 const editTags = ref([])
 const editTitle = ref('')
-const creating = ref(false)
-
-const isCreate = computed(() => route.name === 'recurring-new')
-
-// Create mode data
-const createData = ref({
-  title: '',
-  description: '',
-  recurrence_rule: 'FREQ=WEEKLY',
-  scheduled_time: '',
-  scheduled_duration: null,
-  tags: [],
-})
 
 onMounted(async () => {
-  if (isCreate.value) {
-    pageLoading.value = false
-    nextTick(() => titleInput.value?.focus())
-    return
-  }
-
   try {
     const data = await getRecurring(route.params.id)
     template.value = { ...data }
@@ -420,11 +357,6 @@ async function onRecurrenceChanged(newRule) {
 }
 
 async function onTimeChanged(time) {
-  if (isCreate.value) {
-    createData.value.scheduled_time = time
-    return
-  }
-
   const oldTime = template.value.scheduled_time
   template.value.scheduled_time = time
   savingField.value = 'time'
@@ -440,11 +372,6 @@ async function onTimeChanged(time) {
 }
 
 async function onDurationChanged(duration) {
-  if (isCreate.value) {
-    createData.value.scheduled_duration = duration || null
-    return
-  }
-
   const oldDuration = template.value.scheduled_duration
   template.value.scheduled_duration = duration || null
   savingField.value = 'time'
@@ -456,29 +383,6 @@ async function onDurationChanged(duration) {
     toaster.push('Failed to save duration')
   } finally {
     savingField.value = null
-  }
-}
-
-async function onCreateSubmit() {
-  const title = createData.value.title.trim()
-  if (!title) return
-
-  creating.value = true
-  try {
-    const body = { title }
-    if (createData.value.description) body.description = createData.value.description
-    if (createData.value.recurrence_rule) body.recurrence_rule = createData.value.recurrence_rule
-    if (createData.value.scheduled_time) body.scheduled_time = createData.value.scheduled_time
-    if (createData.value.scheduled_duration) body.scheduled_duration = createData.value.scheduled_duration
-    if (createData.value.tags?.length) body.tags = createData.value.tags
-
-    const created = await createRecurring(body)
-    toaster.success('Recurring template created')
-    router.push({ name: 'recurring-detail', params: { id: created.id } })
-  } catch (err) {
-    toaster.push(err.message || 'Failed to create template')
-  } finally {
-    creating.value = false
   }
 }
 
@@ -667,10 +571,6 @@ function formatDate(dateStr) {
   background: var(--color-bg-primary);
   resize: none;
   overflow: hidden;
-}
-
-.detail-title-input--create {
-  position: relative;
 }
 
 .detail-title-input:focus {
