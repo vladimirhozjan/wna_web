@@ -100,11 +100,6 @@ export function calendarModel() {
         for (const item of items.value) {
             if (item.scheduled_date === dateStr) {
                 result.push({ ...item, _displayReason: 'scheduled' })
-            } else if (item.start_date === dateStr) {
-                result.push({ ...item, _displayReason: 'start' })
-            } else if (item.due_date === dateStr && !item.scheduled_date) {
-                // Due-only items show on their due date (skip if also has scheduled on another date)
-                result.push({ ...item, _displayReason: 'due' })
             }
         }
         return result
@@ -113,15 +108,8 @@ export function calendarModel() {
     function getItemsForDateRange(startDate, endDate) {
         const startStr = formatDate(startDate)
         const endStr = formatDate(endDate)
-        const seen = new Set()
         return items.value.filter(item => {
-            const dates = [item.scheduled_date, item.start_date, item.due_date].filter(Boolean)
-            const inRange = dates.some(d => d >= startStr && d <= endStr)
-            if (inRange && !seen.has(item.id)) {
-                seen.add(item.id)
-                return true
-            }
-            return false
+            return item.scheduled_date && item.scheduled_date >= startStr && item.scheduled_date <= endStr
         })
     }
 

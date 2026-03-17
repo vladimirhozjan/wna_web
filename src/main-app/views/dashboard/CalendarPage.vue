@@ -136,13 +136,9 @@ function onMonthClick(date) {
   calendar.setViewMode('month')
 }
 
-async function onCreate({ title, date, time, deferType, dueDate }) {
+async function onCreate({ title, date, time }) {
   try {
-    if (deferType === 'start') {
-      await calendar.createDeferredAction(date, time, title, dueDate)
-    } else {
-      await calendar.createScheduledAction(date, time, title)
-    }
+    await calendar.createScheduledAction(date, time, title)
   } catch (err) {
     toaster.push('Failed to create action')
   }

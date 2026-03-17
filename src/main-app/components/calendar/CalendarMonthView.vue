@@ -113,15 +113,6 @@
         </div>
       </div>
     </div>
-    <!-- Drag type popover -->
-    <CalendarDragPopover
-        v-if="pendingDrop"
-        :date="pendingDrop.date"
-        :x="pendingDrop.x"
-        :y="pendingDrop.y"
-        @select="onDragPopoverSelect"
-        @cancel="pendingDrop = null"
-    />
   </div>
 </template>
 
@@ -139,7 +130,6 @@ import {
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
-import CalendarDragPopover from './CalendarDragPopover.vue'
 
 const props = defineProps({
   currentDate: {
@@ -157,7 +147,6 @@ const dragOverDate = ref(null)
 const draggingItem = ref(null)
 const isMobile = ref(false)
 const listRef = ref(null)
-const pendingDrop = ref(null)
 
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768
@@ -271,35 +260,13 @@ function onDrop(day, event) {
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
-      // Due-only item (has due but no scheduled/start) → show popover
-      if (data.hasDueDate && !data.hasScheduledDate && !data.hasStartDate) {
-        pendingDrop.value = {
-          actionId: data.id,
-          date: dateStr,
-          time: null,
-          x: event.clientX,
-          y: event.clientY,
-        }
-      } else {
-        emit('reschedule', { actionId: data.id, newDate: dateStr, newTime: null })
-      }
+      emit('reschedule', { actionId: data.id, newDate: dateStr, newTime: null })
     }
   } catch (e) {
     // Ignore parse errors
   }
 
   dragOverDate.value = null
-}
-
-function onDragPopoverSelect(forcedType) {
-  if (!pendingDrop.value) return
-  emit('reschedule', {
-    actionId: pendingDrop.value.actionId,
-    newDate: pendingDrop.value.date,
-    newTime: pendingDrop.value.time,
-    forcedType,
-  })
-  pendingDrop.value = null
 }
 </script>
 
