@@ -47,6 +47,7 @@
             :loading-ids="loadingIds"
             :disabled="adding"
             :no-checkbox="true"
+            source-type="project"
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
