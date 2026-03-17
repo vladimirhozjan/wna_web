@@ -934,7 +934,8 @@ async function loadProjectActions() {
 
   actionsLoading.value = true
   try {
-    const actions = await getProjectActions(project.value.id)
+    const data = await getProjectActions(project.value.id)
+    const actions = Array.isArray(data) ? data : (data.items || [])
     const next = actions.find(a => a.state === 'NEXT')
     const backlog = actions.filter(a => a.state === 'BACKLOG')
 
