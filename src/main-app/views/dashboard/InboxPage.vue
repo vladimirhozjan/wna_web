@@ -290,7 +290,7 @@ function onItemClick(item, index) {
     return
   }
 
-  router.push({ name: 'stuff-detail', params: { id: item.id }, query: { total: totalItems.value, position: item.position } })
+  router.push({ name: 'stuff-detail', params: { id: item.id }, query: { total: totalItems.value, position: item.position, from: 'inbox' } })
 }
 
 async function onItemUpdate(id, { title }) {

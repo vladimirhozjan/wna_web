@@ -183,7 +183,7 @@ function onItemClick(item, index) {
   router.push({
     name: 'project-detail',
     params: { id: item.id },
-    query: { position: index, total: totalItems.value }
+    query: { position: index, total: totalItems.value, from: 'projects' }
   })
 }
 

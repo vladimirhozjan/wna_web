@@ -496,6 +496,21 @@ const totalItems = ref(1)
 const navigating = ref(false)
 const fromSource = ref(null)
 
+// From-source route and label mappings
+const FROM_ROUTES = {
+  inbox: 'inbox', next: 'next', today: 'today', calendar: 'calendar',
+  waiting: 'waiting-for', completed: 'completed', someday: 'someday',
+  projects: 'projects', engage: 'engage', overdue: 'overdue',
+  reference: 'reference', review: 'review',
+}
+
+const FROM_LABELS = {
+  inbox: 'Inbox', next: 'Next', today: 'Today', calendar: 'Calendar',
+  waiting: 'Waiting For', completed: 'Completed', someday: 'Someday / Maybe',
+  projects: 'Projects', engage: 'Dashboard', overdue: 'Overdue',
+  reference: 'Reference', review: 'Review', recurring: 'Recurring',
+}
+
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
 const nextAction = computed(() => orderedActions.value[0] || null)
@@ -505,8 +520,9 @@ const fromCompleted = computed(() => fromSource.value === 'completed')
 const fromSomeday = computed(() => fromSource.value === 'someday')
 const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
 const backLabel = computed(() => {
-  if (fromCompleted.value || isCompleted.value) return 'Completed'
-  if (fromSomeday.value || isSomeday.value) return 'Someday / Maybe'
+  if (fromSource.value && FROM_LABELS[fromSource.value]) return FROM_LABELS[fromSource.value]
+  if (isCompleted.value) return 'Completed'
+  if (isSomeday.value) return 'Someday / Maybe'
   return 'Projects'
 })
 
@@ -549,9 +565,12 @@ onMounted(async () => {
 })
 
 function goBack() {
-  if (fromCompleted.value || isCompleted.value) {
+  const mapped = fromSource.value && FROM_ROUTES[fromSource.value]
+  if (mapped) {
+    router.push({ name: mapped })
+  } else if (isCompleted.value) {
     router.push({ name: 'completed' })
-  } else if (fromSomeday.value || isSomeday.value) {
+  } else if (isSomeday.value) {
     router.push({ name: 'someday' })
   } else {
     router.push({ name: 'projects' })
@@ -767,11 +786,11 @@ async function onComplete() {
 
 async function navigateToNextOrPrev() {
   const newTotal = totalItems.value - 1
-  let backRoute = 'projects'
-  if (fromCompleted.value) {
-    backRoute = 'completed'
-  } else if (fromSomeday.value) {
-    backRoute = 'someday'
+  let backRoute = (fromSource.value && FROM_ROUTES[fromSource.value]) || 'projects'
+  if (backRoute === 'projects') {
+    // State-based fallback
+    if (isCompleted.value) backRoute = 'completed'
+    else if (isSomeday.value) backRoute = 'someday'
   }
 
   if (newTotal <= 0) {
