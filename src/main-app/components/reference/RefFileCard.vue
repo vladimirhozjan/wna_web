@@ -1,5 +1,5 @@
 <template>
-  <div class="file-card" :draggable="!!file.source_type" @click="$emit('preview', file)" @dragstart="onDragStart">
+  <div class="file-card" draggable="true" @click="$emit('preview', file)" @dragstart="onDragStart" @dragend="drag.endDrag()">
     <RefFileIcon class="file-card__icon" :mime-type="file.mime_type" />
     <FileName class="file-card__name" :name="file.name" />
     <span class="file-card__size">{{ formatSize(file.size_bytes) }}</span>
@@ -47,7 +47,6 @@ defineEmits(['preview', 'download', 'rename', 'trash'])
 
 function onDragStart(evt) {
   const file = props.file
-  if (!file.source_type) return
   const targetMap = { 1: 'STUFF', 2: 'ACTION', 3: 'PROJECT' }
   drag.startDrag({ id: file.id, title: file.name, source_type: file.source_type }, 'reference')
   evt.dataTransfer.effectAllowed = 'move'
@@ -55,7 +54,7 @@ function onDragStart(evt) {
     id: file.id,
     title: file.name,
     sourceType: 'reference',
-    type: targetMap[file.source_type] || null,
+    type: file.source_type ? (targetMap[file.source_type] || null) : null,
     source_type: file.source_type
   }))
 }

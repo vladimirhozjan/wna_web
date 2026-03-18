@@ -156,6 +156,17 @@ export function referenceModel() {
             folderCache.delete(id)
             statsModel().refreshStats()
         } catch (err) {
+            throw err
+        }
+    }
+
+    async function moveFile(fileId, targetFolderId) {
+        error.value = null
+        try {
+            await apiClient.updateRefFile(fileId, {folder_id: targetFolderId})
+            files.value = files.value.filter(f => f.id !== fileId)
+            totalFiles.value = Math.max(0, totalFiles.value - 1)
+        } catch (err) {
             error.value = err
             throw err
         }
@@ -336,6 +347,7 @@ export function referenceModel() {
         renameFolder,
         renameFile,
         deleteFolder,
+        moveFile,
         trashFile,
         uploadFiles,
         downloadFile,

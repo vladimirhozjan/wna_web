@@ -8,6 +8,7 @@
           @navigate="$emit('navigate-folder', folder.id)"
           @rename="$emit('rename-folder', folder)"
           @delete="$emit('delete-folder', folder)"
+          @move-file="$emit('move-file', $event)"
       />
     </template>
     <template v-if="files.length > 0">
@@ -56,6 +57,7 @@ defineEmits([
   'rename-file',
   'trash-file',
   'load-more',
+  'move-file',
 ])
 </script>
 

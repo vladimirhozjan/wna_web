@@ -4,6 +4,7 @@
       <RefBreadcrumb
           :breadcrumbs="breadcrumbs"
           @navigate="$emit('navigate', $event)"
+          @move-file="$emit('move-file', $event)"
       />
     </div>
     <div class="toolbar__right">
@@ -75,7 +76,7 @@ const props = defineProps({
   },
 })
 
-defineEmits(['navigate', 'search', 'new-folder', 'upload', 'set-view'])
+defineEmits(['navigate', 'search', 'new-folder', 'upload', 'set-view', 'move-file'])
 
 const quotaPercent = computed(() => {
   if (!props.quota || !props.quota.quota_bytes) return 0

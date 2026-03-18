@@ -23,6 +23,7 @@
             @new-folder="model.startNewFolder()"
             @upload="triggerUpload"
             @set-view="model.setViewMode($event)"
+            @move-file="onMoveFile"
         />
 
         <RefUploadZone @upload="onUploadFiles" class="ref-content">
@@ -56,6 +57,7 @@
               @rename-file="onRenameFile"
               @trash-file="onTrashFile"
               @load-more="model.loadMoreFiles()"
+              @move-file="onMoveFile"
           />
 
           <!-- Grid view -->
@@ -72,6 +74,7 @@
               @rename-file="onRenameFile"
               @trash-file="onTrashFile"
               @load-more="model.loadMoreFiles()"
+              @move-file="onMoveFile"
           />
         </RefUploadZone>
 
@@ -419,7 +422,11 @@ async function onDeleteFolder(folder) {
       await model.deleteFolder(folder.id)
       toaster.success('Folder deleted')
     } catch (err) {
-      toaster.push(err.message || 'Failed to delete folder')
+      if (err.status === 409) {
+        toaster.push('Folder is not empty. Move or delete the files inside first.')
+      } else {
+        toaster.push(err.message || 'Failed to delete folder')
+      }
     }
   }
 }
@@ -438,6 +445,19 @@ async function onTrashFile(file) {
     model.loadQuota()
   } catch (err) {
     toaster.push(err.message || 'Failed to trash file')
+  }
+}
+
+async function onMoveFile({fileId, targetFolderId}) {
+  try {
+    await model.moveFile(fileId, targetFolderId)
+    toaster.success('File moved')
+  } catch (err) {
+    if (err.status === 409) {
+      toaster.push('A file with this name already exists in the target folder')
+    } else {
+      toaster.push(err.message || 'Failed to move file')
+    }
   }
 }
 

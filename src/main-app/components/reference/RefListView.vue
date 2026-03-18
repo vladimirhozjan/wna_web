@@ -16,7 +16,11 @@
             v-for="folder in folders"
             :key="'f-' + folder.id"
             class="list-row list-row--folder"
+            :class="{ 'list-row--drop-target': dropTargetId === folder.id }"
             @click="$emit('navigate-folder', folder.id)"
+            @dragover.prevent.stop="onFolderDragOver(folder)"
+            @dragleave.prevent.stop="onFolderDragLeave(folder)"
+            @drop.prevent.stop="onFolderDrop(folder)"
         >
           <td class="col-icon">
             <FolderIcon class="row-icon row-icon--folder" />
@@ -46,9 +50,10 @@
             v-for="file in files"
             :key="'fi-' + file.id"
             class="list-row list-row--file"
-            :draggable="!!file.source_type"
+            draggable="true"
             @click="$emit('preview-file', file)"
             @dragstart="onFileDragStart($event, file)"
+            @dragend="drag.endDrag()"
         >
           <td class="col-icon">
             <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
@@ -84,6 +89,7 @@
 </template>
 
 <script setup>
+import {ref} from 'vue'
 import FolderIcon from '../../assets/FolderIcon.vue'
 import RefFileIcon from './RefFileIcon.vue'
 import FileName from './FileName.vue'
@@ -96,6 +102,7 @@ import TrashIcon from '../../assets/TrashIcon.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
+const dropTargetId = ref(null)
 
 defineProps({
   folders: {
@@ -112,7 +119,7 @@ defineProps({
   },
 })
 
-defineEmits([
+const emit = defineEmits([
   'navigate-folder',
   'rename-folder',
   'delete-folder',
@@ -121,10 +128,10 @@ defineEmits([
   'rename-file',
   'trash-file',
   'load-more',
+  'move-file',
 ])
 
 function onFileDragStart(evt, file) {
-  if (!file.source_type) return
   const targetMap = { 1: 'STUFF', 2: 'ACTION', 3: 'PROJECT' }
   const item = { id: file.id, title: file.name, source_type: file.source_type }
   drag.startDrag(item, 'reference')
@@ -133,9 +140,29 @@ function onFileDragStart(evt, file) {
     id: file.id,
     title: file.name,
     sourceType: 'reference',
-    type: targetMap[file.source_type] || null,
+    type: file.source_type ? (targetMap[file.source_type] || null) : null,
     source_type: file.source_type
   }))
+}
+
+function onFolderDragOver(folder) {
+  if (!drag.state.isDragging || drag.state.sourceType !== 'reference') return
+  dropTargetId.value = folder.id
+}
+
+function onFolderDragLeave(folder) {
+  if (dropTargetId.value === folder.id) {
+    dropTargetId.value = null
+  }
+}
+
+function onFolderDrop(folder) {
+  dropTargetId.value = null
+  if (!drag.state.isDragging || drag.state.sourceType !== 'reference') return
+  const fileId = drag.state.draggedItem?.id
+  if (fileId) {
+    emit('move-file', { fileId, targetFolderId: folder.id })
+  }
 }
 
 function formatSize(bytes) {
@@ -185,6 +212,12 @@ function formatDate(dateStr) {
 
 .list-row:hover {
   background: var(--color-bg-hover);
+}
+
+.list-row--drop-target {
+  background: rgba(65, 133, 222, 0.08);
+  outline: 2px dashed var(--color-action);
+  outline-offset: -2px;
 }
 
 .list-row td {

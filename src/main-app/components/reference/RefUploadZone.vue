@@ -18,18 +18,26 @@
 <script setup>
 import {ref} from 'vue'
 import UploadIcon from '../../assets/UploadIcon.vue'
+import { dragModel } from '../../scripts/models/dragModel.js'
 
+const drag = dragModel()
 const emit = defineEmits(['upload'])
 
 const isDragging = ref(false)
 let dragCounter = 0
 
+function isInternalDrag() {
+  return drag.state.isDragging
+}
+
 function onDragOver() {
+  if (isInternalDrag()) return
   dragCounter++
   isDragging.value = true
 }
 
 function onDragLeave() {
+  if (isInternalDrag()) return
   dragCounter--
   if (dragCounter <= 0) {
     dragCounter = 0
@@ -38,6 +46,7 @@ function onDragLeave() {
 }
 
 function onDrop(e) {
+  if (isInternalDrag()) return
   dragCounter = 0
   isDragging.value = false
   const files = e.dataTransfer?.files

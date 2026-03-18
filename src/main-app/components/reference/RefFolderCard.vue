@@ -1,5 +1,12 @@
 <template>
-  <div class="folder-card" @click="$emit('navigate', folder.id)">
+  <div
+      class="folder-card"
+      :class="{ 'folder-card--drop-target': isDropTarget }"
+      @click="$emit('navigate', folder.id)"
+      @dragover.prevent.stop="onDragOver"
+      @dragleave.prevent.stop="onDragLeave"
+      @drop.prevent.stop="onDrop"
+  >
     <FolderIcon class="folder-card__icon" />
     <FileName class="folder-card__name" :name="folder.name" />
     <div class="folder-card__actions" @click.stop>
@@ -21,21 +28,44 @@
 </template>
 
 <script setup>
+import {ref} from 'vue'
 import FolderIcon from '../../assets/FolderIcon.vue'
 import FileName from './FileName.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import { dragModel } from '../../scripts/models/dragModel.js'
 
-defineProps({
+const drag = dragModel()
+const isDropTarget = ref(false)
+
+const props = defineProps({
   folder: {
     type: Object,
     required: true,
   },
 })
 
-defineEmits(['navigate', 'rename', 'delete'])
+const emit = defineEmits(['navigate', 'rename', 'delete', 'move-file'])
+
+function onDragOver() {
+  if (!drag.state.isDragging || drag.state.sourceType !== 'reference') return
+  isDropTarget.value = true
+}
+
+function onDragLeave() {
+  isDropTarget.value = false
+}
+
+function onDrop() {
+  isDropTarget.value = false
+  if (!drag.state.isDragging || drag.state.sourceType !== 'reference') return
+  const fileId = drag.state.draggedItem?.id
+  if (fileId) {
+    emit('move-file', { fileId, targetFolderId: props.folder.id })
+  }
+}
 </script>
 
 <style scoped>
@@ -54,6 +84,12 @@ defineEmits(['navigate', 'rename', 'delete'])
 
 .folder-card:hover {
   background: var(--color-bg-hover);
+}
+
+.folder-card--drop-target {
+  background: rgba(65, 133, 222, 0.08);
+  border-color: var(--color-action);
+  border-style: dashed;
 }
 
 .folder-card__icon {
