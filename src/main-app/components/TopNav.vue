@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
 .topnav-auth-right {
   display: flex;
   align-items: center;
-  gap: 4px;
+  column-gap: 8px;
 }
 
 .avatar-container {

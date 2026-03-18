@@ -105,7 +105,7 @@ function submit() {
 
   .quick-add-input {
     position: fixed;
-    top: 12px;
+    top: 10px;
     left: 54px;
     right: 50px;
     width: auto;
