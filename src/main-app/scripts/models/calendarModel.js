@@ -205,7 +205,6 @@ export function calendarModel() {
             }
             if (time) {
                 actionData.scheduled_time = time
-                // scheduled_duration defaults to 30 on backend
             }
 
             const created = await addAction(actionData)
@@ -266,6 +265,8 @@ export function calendarModel() {
                             scheduled_time: newTime,
                             start_date: null,
                             start_time: null,
+                            // When dragging to a time slot, preserve existing duration or default to 30
+                            duration: newTime ? (item.duration || 30) : null,
                             // Mutual exclusivity: scheduled clears due
                             due_date: null,
                             due_time: null,

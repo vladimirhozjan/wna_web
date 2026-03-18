@@ -598,7 +598,7 @@ async function onMoveTo(destination) {
 
   // Special handling for calendar - need date input
   if (destination === 'calendar') {
-    const scheduleData = await mover.showSchedule({ date: '', time: '', duration: 15 })
+    const scheduleData = await mover.showSchedule({ date: '', time: '', duration: null })
     if (!scheduleData || !scheduleData.date) return // User cancelled
 
     actionLoading.value = 'move'

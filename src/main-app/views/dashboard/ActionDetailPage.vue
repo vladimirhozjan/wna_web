@@ -282,38 +282,19 @@
                 >{{ scheduledDisplay }}</p>
               </div>
               <!-- Edit mode -->
-              <div v-else class="detail-date-edit-wrapper">
-                <div class="detail-date-inputs">
-                  <DateInput
-                      ref="scheduledDateInput"
-                      v-model="dateEdit.date"
-                      class="text-body-m detail-input"
-                      :disabled="savingField === 'scheduled'"
-                      @keyup.esc="cancelEdit"
-                  />
-                  <span v-if="!dateEdit.showTime" class="text-body-s detail-link" @click="dateEdit.showTime = true">Add time</span>
-                  <template v-else>
-                    <input
-                        type="time"
-                        v-model="dateEdit.time"
-                        class="text-body-m detail-input detail-input--time"
-                        :disabled="savingField === 'scheduled'"
-                        @keyup.esc="cancelEdit"
-                    />
-                    <div class="detail-duration-input">
-                      <input
-                          type="number"
-                          v-model.number="dateEdit.duration"
-                          class="text-body-m detail-input detail-input--duration"
-                          min="5"
-                          step="5"
-                          :disabled="savingField === 'scheduled'"
-                          @keyup.esc="cancelEdit"
-                      />
-                      <span class="text-body-s detail-duration-label">min</span>
-                    </div>
-                  </template>
-                </div>
+              <div v-else class="detail-date-edit-wrapper" @keyup.esc="cancelEdit">
+                <DateTimeInput
+                    ref="scheduledDateInput"
+                    :date="dateEdit.date"
+                    @update:date="dateEdit.date = $event"
+                    :time="dateEdit.time"
+                    @update:time="dateEdit.time = $event"
+                    :duration="dateEdit.duration"
+                    @update:duration="dateEdit.duration = $event"
+                    :with-duration="true"
+                    :clearable="true"
+                    :disabled="savingField === 'scheduled'"
+                />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'scheduled'" @mousedown.prevent @click="saveScheduledField">Save</Btn>
                   <Btn variant="ghost" size="sm" :disabled="savingField === 'scheduled'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
@@ -338,25 +319,17 @@
                 >{{ startDisplay }}</p>
               </div>
               <!-- Edit mode -->
-              <div v-else class="detail-date-edit-wrapper">
-                <div class="detail-date-inputs">
-                  <DateInput
-                      ref="startDateInput"
-                      v-model="dateEdit.date"
-                      class="text-body-m detail-input"
-                      :disabled="savingField === 'start_date'"
-                      @keyup.esc="cancelEdit"
-                  />
-                  <span v-if="!dateEdit.showTime" class="text-body-s detail-link" @click="dateEdit.showTime = true">Add time</span>
-                  <input
-                      v-else
-                      type="time"
-                      v-model="dateEdit.time"
-                      class="text-body-m detail-input detail-input--time"
-                      :disabled="savingField === 'start_date'"
-                      @keyup.esc="cancelEdit"
-                  />
-                </div>
+              <div v-else class="detail-date-edit-wrapper" @keyup.esc="cancelEdit">
+                <DateTimeInput
+                    ref="startDateInput"
+                    :date="dateEdit.date"
+                    @update:date="dateEdit.date = $event"
+                    :time="dateEdit.time"
+                    @update:time="dateEdit.time = $event"
+                    :with-duration="false"
+                    :clearable="true"
+                    :disabled="savingField === 'start_date'"
+                />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'start_date'" @mousedown.prevent @click="saveStartField">Save</Btn>
                   <Btn variant="ghost" size="sm" :disabled="savingField === 'start_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
@@ -381,25 +354,17 @@
                 >{{ formatDateTimeDisplay(action.due_date, action.due_time) || 'Not set' }}</p>
               </div>
               <!-- Edit mode -->
-              <div v-else class="detail-date-edit-wrapper">
-                <div class="detail-date-inputs">
-                  <DateInput
-                      ref="dueDateInput"
-                      v-model="dateEdit.date"
-                      class="text-body-m detail-input"
-                      :disabled="savingField === 'due_date'"
-                      @keyup.esc="cancelEdit"
-                  />
-                  <span v-if="!dateEdit.showTime" class="text-body-s detail-link" @click="dateEdit.showTime = true">Add time</span>
-                  <input
-                      v-else
-                      type="time"
-                      v-model="dateEdit.time"
-                      class="text-body-m detail-input detail-input--time"
-                      :disabled="savingField === 'due_date'"
-                      @keyup.esc="cancelEdit"
-                  />
-                </div>
+              <div v-else class="detail-date-edit-wrapper" @keyup.esc="cancelEdit">
+                <DateTimeInput
+                    ref="dueDateInput"
+                    :date="dateEdit.date"
+                    @update:date="dateEdit.date = $event"
+                    :time="dateEdit.time"
+                    @update:time="dateEdit.time = $event"
+                    :with-duration="false"
+                    :clearable="true"
+                    :disabled="savingField === 'due_date'"
+                />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'due_date'" @mousedown.prevent @click="saveDateField('due_date')">Save</Btn>
                   <Btn variant="ghost" size="sm" :disabled="savingField === 'due_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
@@ -445,7 +410,7 @@ import Dropdown from '../../components/Dropdown.vue'
 import TagInput from '../../components/TagInput.vue'
 import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
-import DateInput from '../../components/DateInput.vue'
+import DateTimeInput from '../../components/DateTimeInput.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
 import { todayModel } from '../../scripts/models/todayModel.js'
 import { waitingModel } from '../../scripts/models/waitingModel.js'
@@ -510,7 +475,7 @@ const editTags = ref([])
 
 // Date section state
 const datesExpanded = ref(false)
-const dateEdit = ref({ date: '', time: '', showTime: false, duration: 15 })
+const dateEdit = ref({ date: '', time: null, duration: null })
 const scheduledDateInput = ref(null)
 const startDateInput = ref(null)
 const dueDateInput = ref(null)
@@ -849,10 +814,10 @@ async function onMoveTo(newState) {
   if (newState === 'CALENDAR') {
     const scheduleData = await mover.showSchedule({
       date: action.value.scheduled_date || '',
-      time: action.value.scheduled_time || '',
-      duration: action.value.scheduled_duration || 15
+      time: action.value.scheduled_time || null,
+      duration: action.value.scheduled_duration || null
     })
-    if (!scheduleData || !scheduleData.date) return // User cancelled
+    if (!scheduleData?.date) return // User cancelled
 
     actionLoading.value = 'move'
     const oldState = action.value.state
@@ -1017,9 +982,8 @@ function startScheduledEdit() {
 
   dateEdit.value = {
     date: action.value.scheduled_date || '',
-    time: action.value.scheduled_time || '',
-    showTime: !!action.value.scheduled_time,
-    duration: action.value.scheduled_duration || 15
+    time: action.value.scheduled_time || null,
+    duration: action.value.scheduled_duration || null
   }
 
   nextTick(() => {
@@ -1031,8 +995,8 @@ async function saveScheduledField() {
   if (editingField.value !== 'scheduled' || savingField.value) return
 
   const newDate = dateEdit.value.date || null
-  const newTime = dateEdit.value.showTime ? (dateEdit.value.time || null) : null
-  const duration = dateEdit.value.duration || 15
+  const newTime = dateEdit.value.time || null
+  const duration = dateEdit.value.duration || null
 
   if (!newDate) {
     await clearScheduledField()
@@ -1086,7 +1050,7 @@ async function clearScheduledField() {
     await undeferAction(action.value.id)
     statsModel().refreshStats()
     editingField.value = null
-    dateEdit.value = { date: '', time: '', showTime: false, duration: 15 }
+    dateEdit.value = { date: '', time: null, duration: null }
   } catch {
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
@@ -1104,9 +1068,8 @@ function startStartEdit() {
 
   dateEdit.value = {
     date: action.value.start_date || '',
-    time: action.value.start_time || '',
-    showTime: !!action.value.start_time,
-    duration: 15
+    time: action.value.start_time || null,
+    duration: null
   }
 
   nextTick(() => {
@@ -1118,7 +1081,7 @@ async function saveStartField() {
   if (editingField.value !== 'start_date' || savingField.value) return
 
   const newDate = dateEdit.value.date || null
-  const newTime = dateEdit.value.showTime ? (dateEdit.value.time || null) : null
+  const newTime = dateEdit.value.time || null
 
   if (!newDate) {
     await clearStartField()
@@ -1166,7 +1129,7 @@ async function clearStartField() {
     await undeferAction(action.value.id)
     statsModel().refreshStats()
     editingField.value = null
-    dateEdit.value = { date: '', time: '', showTime: false, duration: 15 }
+    dateEdit.value = { date: '', time: null, duration: null }
   } catch {
     action.value.start_date = oldStartDate
     action.value.start_time = oldStartTime
@@ -1184,9 +1147,8 @@ function startDateEdit(field) {
   const existingTime = action.value[timeField] || ''
   dateEdit.value = {
     date: action.value[field] || '',
-    time: existingTime,
-    showTime: !!existingTime,
-    duration: 15
+    time: existingTime || null,
+    duration: null
   }
   nextTick(() => {
     dueDateInput.value?.focus()
@@ -1197,7 +1159,7 @@ async function saveDateField(field) {
   if (editingField.value !== field || savingField.value) return
 
   const newDate = dateEdit.value.date || null
-  const newTime = dateEdit.value.showTime ? (dateEdit.value.time || null) : null
+  const newTime = dateEdit.value.time || null
 
   // If no date, this is a clear operation
   if (!newDate) {
@@ -1247,7 +1209,7 @@ async function clearDateField(field) {
     await clearDueDate(action.value.id)
     statsModel().refreshStats()
     editingField.value = null
-    dateEdit.value = { ...dateEdit.value, date: '', time: '', showTime: false }
+    dateEdit.value = { date: '', time: null, duration: null }
   } catch {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
@@ -1844,13 +1806,6 @@ async function onActivate() {
   gap: 12px;
 }
 
-.detail-date-inputs {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
 .detail-input {
   color: var(--color-text-primary);
   padding: 8px 12px;
@@ -1868,36 +1823,6 @@ async function onActivate() {
 .detail-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.detail-input--time {
-  width: 120px;
-}
-
-.detail-duration-input {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.detail-input--duration {
-  width: 70px;
-  text-align: center;
-}
-
-.detail-duration-label {
-  color: var(--color-text-secondary);
-}
-
-.detail-link {
-  color: var(--color-link-text);
-  cursor: pointer;
-  padding: 8px 0;
-}
-
-.detail-link:hover {
-  color: var(--color-link-hover);
-  text-decoration: underline;
 }
 
 .detail-date-row .detail-section-actions {
@@ -1997,27 +1922,8 @@ async function onActivate() {
     padding: 12px 16px 16px 50px;
   }
 
-  .detail-date-inputs {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .detail-input {
     width: 100%;
-  }
-
-  .detail-input--time {
-    width: 100%;
-  }
-
-  .detail-duration-input {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .detail-input--duration {
-    flex: 1;
-    width: auto;
   }
 }
 
