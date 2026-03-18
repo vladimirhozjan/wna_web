@@ -1580,12 +1580,13 @@ Use the table below to log each full or partial test run.
 4. Click the "Quick Add" button and verify it opens an input for adding stuff
 5. Verify the user avatar is displayed on the right side of the nav bar
 6. Click the user avatar to open the dropdown menu
-7. Verify the dropdown contains: "My Dashboard", "Settings", and "Logout" options
-8. Click "My Dashboard" and verify navigation to the dashboard view
-9. Click the avatar again, then click "Settings" and verify navigation to settings
-10. Click the avatar again, then click "Logout" and verify the user is logged out and redirected to the landing page
+7. Verify the dropdown contains: "Settings" and "Logout" options (no "My Dashboard" since already on dashboard)
+8. Click "Settings" and verify navigation to settings
+9. Click the avatar again, then click "Logout" and verify the user is logged out and redirected to the landing page
+10. On a public page (e.g. landing page) while authenticated, click the avatar and verify "My Dashboard" appears in the dropdown
+11. Click "My Dashboard" and verify navigation to the dashboard view
 
-**Expected Result:** The authenticated desktop nav bar shows a "Quick Add" button and a user avatar. The Quick Add button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with "My Dashboard", "Settings", and "Logout". Each option navigates to the correct destination. Logout clears the session and redirects to the landing page.
+**Expected Result:** The authenticated desktop nav bar shows a "Quick Add" button and a user avatar. The Quick Add button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with "Settings" and "Logout" (no "My Dashboard" when already on the dashboard). On public pages, the dropdown also includes "My Dashboard" at the top. Each option navigates to the correct destination. Logout clears the session and redirects to the landing page.
 
 | Date | P/F | Comment |
 |------|-----|---------|

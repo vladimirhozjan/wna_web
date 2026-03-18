@@ -206,7 +206,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 **Right side (authenticated):**
 - Quick Add button (captures new inbox items from any page)
 - Mobile: Hamburger icon to open sidebar drawer
-- Desktop: User avatar with dropdown menu containing "My Dashboard", "Settings", "Logout"
+- Desktop: User avatar with dropdown menu containing "Settings", "Logout" (plus "My Dashboard" on public pages only)
 
 ### 3.2 Sidebar (Desktop)
 

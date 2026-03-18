@@ -45,6 +45,7 @@
         <TopNavDropdown
           v-if="showDropdown"
           :authenticated="true"
+          :context="context"
           @close="showDropdown = false"
           @go-dashboard="goToDashboard"
           @go-settings="goToSettings"
