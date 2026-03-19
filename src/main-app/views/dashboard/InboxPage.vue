@@ -338,6 +338,8 @@ async function onItemCheck(id, checked) {
     }
     toaster.success(`"${title}" completed`)
     statsModel().refreshStats()
+    // Reload list to backfill removed item
+    loadStuff({ reset: true }).catch(() => {})
   } catch (err) {
     if (item) item.checked = false
     completingIds.value = completingIds.value.filter(x => x !== id)
@@ -361,6 +363,8 @@ async function onTrash(id) {
     try {
       await trashStuff(id)
       toaster.success(`"${title}" moved to trash`)
+      // Reload list to backfill removed item
+      loadStuff({ reset: true }).catch(() => {})
     } finally {
       deletingId.value = null
     }

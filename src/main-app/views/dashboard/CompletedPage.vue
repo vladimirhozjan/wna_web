@@ -135,6 +135,8 @@ async function onItemCheck(id, checked) {
     ])
     removeItem(id)
     toaster.success(`"${title}" restored`)
+    // Reload list to backfill removed item
+    loadCompleted({ reset: true }).catch(() => {})
   } catch (err) {
     item.checked = true
     completingIds.value = completingIds.value.filter(x => x !== id)

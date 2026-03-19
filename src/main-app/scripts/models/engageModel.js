@@ -10,6 +10,7 @@ const topWaiting = ref([])
 const stuckProjects = ref([])
 const loading = ref(false)
 const loaded = ref(false)
+let lastTags = null
 
 export function engageModel() {
 
@@ -17,10 +18,11 @@ export function engageModel() {
     const review = reviewModel()
     const settings = settingsModel()
 
-    async function loadDashboard({ tags = null } = {}) {
+    async function loadDashboard({ tags = undefined } = {}) {
+        if (tags !== undefined) lastTags = tags
         loading.value = true
         try {
-            const tagsParam = tags?.length ? tags.join(',') : null
+            const tagsParam = lastTags?.length ? lastTags.join(',') : null
             const data = await apiClient.getEngage({ tags: tagsParam })
 
             setStats(data.stats)

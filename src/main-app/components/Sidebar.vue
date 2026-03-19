@@ -163,6 +163,8 @@ import { moveModel } from "../scripts/models/moveModel.js";
 import { statsModel } from "../scripts/models/statsModel.js";
 import { projectModel } from "../scripts/models/projectModel.js";
 import { completedModel } from "../scripts/models/completedModel.js";
+import { overdueModel } from "../scripts/models/overdueModel.js";
+import { trashModel } from "../scripts/models/trashModel.js";
 import apiClient from "../scripts/core/apiClient.js";
 import { useRouter } from "vue-router";
 
@@ -184,19 +186,40 @@ import ReviewIcon from "../assets/ReviewIcon.vue";
 import EngageIcon from "../assets/EngageIcon.vue";
 import { reviewModel } from "../scripts/models/reviewModel.js";
 import { settingsModel } from "../scripts/models/settingsModel.js";
+import { engageModel } from "../scripts/models/engageModel.js";
 
 const auth = authModel();
 const toaster = errorModel();
 const mover = moveModel();
-const { items: stuffItems } = stuffModel();
-const { items: actionItems } = nextActionModel();
-const { items: todayItems } = todayModel();
-const { items: waitingItems } = waitingModel();
-const { items: somedayItems } = somedayModel();
+const { items: stuffItems, loadStuff } = stuffModel();
+const { items: actionItems, loadActions: loadNextActions } = nextActionModel();
+const { items: todayItems, loadActions: loadTodayActions } = todayModel();
+const { items: waitingItems, loadWaiting } = waitingModel();
+const { items: somedayItems, loadSomeday } = somedayModel();
 const { items: calendarItems } = calendarModel();
-const { items: projectItems } = projectModel();
-const { items: completedItems } = completedModel();
+const { items: projectItems, loadProjects } = projectModel();
+const { items: completedItems, loadCompleted } = completedModel();
+const { items: overdueItems, loadItems: loadOverdue } = overdueModel();
+const { items: trashItems, loadTrash } = trashModel();
 const { stats, loadStats, refreshStats } = statsModel();
+const engage = engageModel();
+
+function refreshAfterDrop() {
+  refreshStats()
+  if (engage.loaded.value) {
+    engage.loadDashboard().catch(() => {})
+  }
+  // Reload all loaded list models to backfill removed items
+  if (stuffItems.value.length)    loadStuff({ reset: true }).catch(() => {})
+  if (actionItems.value.length)   loadNextActions({ reset: true }).catch(() => {})
+  if (todayItems.value.length)    loadTodayActions({ reset: true }).catch(() => {})
+  if (waitingItems.value.length)  loadWaiting({ reset: true }).catch(() => {})
+  if (somedayItems.value.length)  loadSomeday({ reset: true }).catch(() => {})
+  if (projectItems.value.length)  loadProjects({ reset: true }).catch(() => {})
+  if (completedItems.value.length) loadCompleted({ reset: true }).catch(() => {})
+  if (overdueItems.value.length)  loadOverdue({ reset: true }).catch(() => {})
+  if (trashItems.value.length)    loadTrash({ reset: true }).catch(() => {})
+}
 const router = useRouter();
 const { daysSinceReview } = reviewModel();
 const settingsMdl = settingsModel();
@@ -255,7 +278,7 @@ async function onDropToInbox(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Inbox`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -278,7 +301,7 @@ async function onDropToNextAction(data) {
         const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         removeFromSource(data);
         toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
-        refreshStats();
+        refreshAfterDrop();
         return;
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
@@ -290,7 +313,7 @@ async function onDropToNextAction(data) {
         const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         removeFromSource(data);
         toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
-        refreshStats();
+        refreshAfterDrop();
         return;
       } else if (data.type === 'ACTION') {
         await apiClient.uncompleteAction(data.id);
@@ -304,7 +327,7 @@ async function onDropToNextAction(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -317,7 +340,7 @@ async function onDropToProjects(data) {
       await apiClient.transformFileToOriginal(data.id, 'project');
       removeFromSource(data);
       toaster.success(`"${truncateTitle(data.title)}" restored to Projects`);
-      refreshStats();
+      refreshAfterDrop();
     } catch (err) {
       toaster.push(err.message || 'Failed to restore file');
     }
@@ -334,7 +357,7 @@ async function onDropToProjects(data) {
       }
       removeFromSource(data);
       toaster.success(`"${truncateTitle(data.title)}" moved to Projects`);
-      refreshStats();
+      refreshAfterDrop();
     } catch (err) {
       toaster.push(err.message || 'Failed to move item');
     }
@@ -363,7 +386,7 @@ async function onDropToProjects(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" converted to project`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -395,7 +418,7 @@ async function onDropToSomeday(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Someday`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -442,7 +465,7 @@ async function onDropToToday(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Today`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -507,7 +530,7 @@ async function onDropToCalendar(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Calendar`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -561,7 +584,7 @@ async function onDropToWaitingFor(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -580,7 +603,7 @@ async function onDropToReference(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Reference`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -607,7 +630,7 @@ async function onDropToCompleted(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" marked as completed`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item');
   }
@@ -634,7 +657,7 @@ async function onDropToTrash(data) {
     }
     removeFromSource(data);
     toaster.success(`"${truncateTitle(data.title)}" moved to Trash`);
-    refreshStats();
+    refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }

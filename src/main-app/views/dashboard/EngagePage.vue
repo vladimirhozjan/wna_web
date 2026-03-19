@@ -46,13 +46,13 @@
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onTodayClick"
+                @delete="onTrash"
                 @move="onTodayMove"
                 @external-drop="onDropToToday"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
               </template>
-              <template #actions></template>
             </ItemList>
           </div>
 
@@ -76,13 +76,13 @@
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onNextClick"
+                @delete="onTrash"
                 @move="onNextMove"
                 @external-drop="onDropToNext"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
               </template>
-              <template #actions></template>
             </ItemList>
           </div>
 
@@ -106,13 +106,13 @@
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onWaitingClick"
+                @delete="onTrash"
                 @move="onWaitingMove"
                 @external-drop="onDropToWaiting"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
               </template>
-              <template #actions></template>
             </ItemList>
           </div>
 
@@ -177,6 +177,7 @@ import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
@@ -184,6 +185,7 @@ import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
 const toaster = errorModel()
+const confirm = confirmModel()
 const mover = moveModel()
 const { refreshStats } = statsModel()
 const { activeTag } = contextModel()
@@ -229,11 +231,13 @@ watch(effectiveTags, (tags) => {
 // Loading state tracking
 const movingId = ref(null)
 const updatingId = ref(null)
+const deletingId = ref(null)
 
 const loadingIds = computed(() => {
     const ids = []
     if (movingId.value) ids.push(movingId.value)
     if (updatingId.value) ids.push(updatingId.value)
+    if (deletingId.value) ids.push(deletingId.value)
     return ids
 })
 
@@ -335,10 +339,44 @@ async function onCheck(id, checked) {
         removeFromList(topWaiting, id)
         refreshStats()
         toaster.success(`"${title}" completed`)
+        // Reload dashboard to backfill removed item
+        loadDashboard({ tags: effectiveTags.value }).catch(() => {})
     } catch (err) {
         if (item) item.checked = false
         completingIds.value = completingIds.value.filter(x => x !== id)
         toaster.push(err.message || 'Failed to complete action')
+    }
+}
+
+async function onTrash(id) {
+    const item = topToday.value.find(i => i.id === id)
+        || topActions.value.find(i => i.id === id)
+        || topWaiting.value.find(i => i.id === id)
+    const title = truncateTitle(item?.title)
+
+    const confirmed = await confirm.show({
+        title: 'Move to Trash',
+        message: 'Are you sure you want to move this action to trash?',
+        confirmText: 'Move to Trash',
+        cancelText: 'Cancel'
+    })
+
+    if (confirmed) {
+        deletingId.value = id
+        try {
+            await apiClient.trashAction(id)
+            removeFromList(topToday, id)
+            removeFromList(topActions, id)
+            removeFromList(topWaiting, id)
+            refreshStats()
+            toaster.success(`"${title}" moved to trash`)
+            // Reload dashboard to backfill removed item
+            loadDashboard({ tags: effectiveTags.value }).catch(() => {})
+        } catch (err) {
+            toaster.push(err.message || 'Failed to trash action')
+        } finally {
+            deletingId.value = null
+        }
     }
 }
 

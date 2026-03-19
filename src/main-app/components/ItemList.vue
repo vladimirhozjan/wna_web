@@ -182,7 +182,6 @@ function onDragStart(evt) {
 }
 
 function onDragEnd(evt) {
-  isDragging.value = false
   const newIndex = evt.newIndex
 
   if (originalIndex !== newIndex && draggedItemId && !drag.state.droppedExternally) {
@@ -197,6 +196,11 @@ function onDragEnd(evt) {
     nativeDraggingId.value = null
     drag.endDrag()
   }
+
+  // Delay clearing drag state to prevent hover flash on adjacent items after drop
+  setTimeout(() => {
+    isDragging.value = false
+  }, 50)
 }
 
 function onNativeDragStart(evt, item) {

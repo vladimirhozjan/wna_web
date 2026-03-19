@@ -247,6 +247,8 @@ async function onActivate(id) {
   try {
     await activateItem(item)
     toaster.success(`"${title}" moved to ${typeLabels[item.type]}`)
+    // Reload list to backfill removed item
+    loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
   } catch (err) {
     toaster.push(err.message || 'Failed to activate item')
   } finally {
@@ -272,6 +274,8 @@ async function onTrash(id) {
     try {
       await trashItem(item)
       toaster.success(`"${title}" moved to trash`)
+      // Reload list to backfill removed item
+      loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
     } catch (err) {
       toaster.push(err.message || 'Failed to trash item')
     } finally {

@@ -227,6 +227,8 @@ async function onTrash(id) {
     try {
       await trashProject(id)
       toaster.success(`"${title}" moved to trash`)
+      // Reload list to backfill removed item
+      loadProjects({ reset: true, tags: effectiveTags.value }).catch(() => {})
     } finally {
       deletingId.value = null
     }

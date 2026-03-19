@@ -89,6 +89,8 @@ async function onRestoreOne(item) {
   try {
     await restoreItem(item)
     toaster.success(`"${title}" restored`)
+    // Reload list to backfill removed item
+    loadTrash({ reset: true }).catch(() => {})
   } catch (err) {
     toaster.push(err.message || 'Failed to restore item')
   }

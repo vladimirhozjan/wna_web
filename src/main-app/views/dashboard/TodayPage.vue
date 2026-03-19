@@ -219,6 +219,8 @@ async function onItemCheck(id, checked) {
     ])
     removeItem(id)
     toaster.success(`"${title}" completed`)
+    // Reload list to backfill removed item
+    loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
   } catch (err) {
     if (item) item.checked = false
     completingIds.value = completingIds.value.filter(x => x !== id)
@@ -242,6 +244,8 @@ async function onTrash(id) {
     try {
       await trashAction(id)
       toaster.success(`"${title}" moved to trash`)
+      // Reload list to backfill removed item
+      loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
     } finally {
       deletingId.value = null
     }
