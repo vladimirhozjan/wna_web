@@ -206,7 +206,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 **Right side (authenticated):**
 - Quick Add button (captures new inbox items from any page)
 - Mobile: Hamburger icon to open sidebar drawer
-- Desktop: User avatar with dropdown menu containing "My Dashboard", "Settings", "Logout"
+- Desktop: User avatar with dropdown menu containing "Settings", "Logout" (plus "My Dashboard" on public pages only)
 
 ### 3.2 Sidebar (Desktop)
 
@@ -344,9 +344,10 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 - **Fields:** Title (required, pre-filled from stuff item), Description (optional), Tags (multi-select with autocomplete and presets)
 - **Dates section (collapsed by default):**
-  - Deferred: Radio between "Scheduled for" (specific date/time/duration) and "Start after" (tickler date)
-  - Due Date: Date input + optional time — **hidden when "Scheduled for" is selected** (mutual exclusivity)
-  - Duration options: 15, 30, 45, 60, 90, 120, 180, 240 minutes
+  - Uses `DateTimeInput` component for all date/time fields (date always shown, "Add time..." placeholder reveals time + duration for scheduled, "Clear" link to remove time)
+  - Deferred: Radio between "Scheduled for" (date + optional time with duration, default 30 min) and "Start after" (tickler date + optional time, no duration)
+  - Due Date: Date input + optional time (no duration) — **hidden when "Scheduled for" is selected** (mutual exclusivity)
+  - Duration (scheduled only): Automatically appears when time is added. Default 30 min. Uses `DurationInput` component: dropdown with preset options (15, 30, 45, 60, 90, 120, 180, 240 minutes) + editable number input for any value > 0.
 - **Confirm** button transforms the stuff item into an action via the API
 
 ### 5.6 Create Project Form
@@ -409,7 +410,7 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - Tags (click to show TagInput; displays as chips)
 - Waiting For (only for WAITING state): shows who/what is being waited on + duration since waiting began
 - Dates (collapsible):
-  - Deferred: "Scheduled for" or "Start after" + date + optional time + duration (for scheduled)
+  - Deferred: "Scheduled for" or "Start after" — uses `DateTimeInput` component. Duration auto-appears with default 30 min when time is added (scheduled only).
   - Due Date: date + optional time. Shows **"N/A (has scheduled date)"** and is non-editable when a scheduled_date is set (mutual exclusivity). Editable when start_date is set (start_date + due_date can coexist).
   - **Mutual exclusivity:** Setting scheduled_date clears due_date (on backend). Setting due_date clears scheduled_date (on backend). start_date and due_date can coexist.
   - Each has Save, Cancel, Clear buttons
@@ -516,7 +517,7 @@ Priority: if an item's `scheduled_date`, `start_date`, and `due_date` all fall o
 
 Configurable in Settings page:
 - Week starts on: Monday or Sunday
-- Time format: 12-hour (AM/PM) or 24-hour
+- Time format: 12-hour (AM/PM) or 24-hour — respected by all time inputs via `TimeInput` component (hour/minute/period selects) and calendar hour labels
 - Business hours: Start and end hour
 - Business days: Selectable days of the week
 
@@ -812,7 +813,7 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 ### 17.2 Creating a Recurring Action
 
 - **How:** On the Calendar Recurring view, click "+" to reveal the quick-add input, enter a title, and press Enter (or click "Add"). This creates a template with default `FREQ=WEEKLY` and navigates to the detail page (`/recurring/:id`) for full configuration.
-- **Fields (on detail page):** Title, Recurrence rule, Scheduled time, Duration
+- **Fields (on detail page):** Title, Description, Recurrence rule, Scheduled time + Duration (uses `DateTimeInput` with `withDate=false` and `withDuration=true`; shows "Add time" when no time is set, clicking sets default 09:00 + 30 min duration), Tags
 
 ### 17.3 Recurrence Rule Configuration
 
@@ -836,7 +837,8 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 - "Spawn next" button: manually creates the next action instance from the template
 - "Trash" button: deletes the recurring template
 - Description: click-to-edit
-- Recurrence rule, time, and duration: editable
+- Recurrence rule: editable via `RecurrenceInput`
+- Scheduled time + Duration: uses `DateTimeInput` component (`withDate=false`, `withDuration=true`, `clearable=true`). When no time is set, shows "Add time..." placeholder (tertiary color, italic, matching detail page empty field pattern); clicking sets 09:00 + 30 min. "Clear" link removes time and duration (reverts to all-day event). Time and duration editable via `DurationInput` dropdown.
 
 ---
 

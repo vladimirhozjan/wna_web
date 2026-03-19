@@ -1580,12 +1580,13 @@ Use the table below to log each full or partial test run.
 4. Click the "Quick Add" button and verify it opens an input for adding stuff
 5. Verify the user avatar is displayed on the right side of the nav bar
 6. Click the user avatar to open the dropdown menu
-7. Verify the dropdown contains: "My Dashboard", "Settings", and "Logout" options
-8. Click "My Dashboard" and verify navigation to the dashboard view
-9. Click the avatar again, then click "Settings" and verify navigation to settings
-10. Click the avatar again, then click "Logout" and verify the user is logged out and redirected to the landing page
+7. Verify the dropdown contains: "Settings" and "Logout" options (no "My Dashboard" since already on dashboard)
+8. Click "Settings" and verify navigation to settings
+9. Click the avatar again, then click "Logout" and verify the user is logged out and redirected to the landing page
+10. On a public page (e.g. landing page) while authenticated, click the avatar and verify "My Dashboard" appears in the dropdown
+11. Click "My Dashboard" and verify navigation to the dashboard view
 
-**Expected Result:** The authenticated desktop nav bar shows a "Quick Add" button and a user avatar. The Quick Add button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with "My Dashboard", "Settings", and "Logout". Each option navigates to the correct destination. Logout clears the session and redirects to the landing page.
+**Expected Result:** The authenticated desktop nav bar shows a "Quick Add" button and a user avatar. The Quick Add button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with "Settings" and "Logout" (no "My Dashboard" when already on the dashboard). On public pages, the dropdown also includes "My Dashboard" at the top. Each option navigates to the correct destination. Logout clears the session and redirects to the landing page.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2597,23 +2598,29 @@ Use the table below to log each full or partial test run.
 1. On the Create Action form, locate the dates section (may be collapsed/expandable)
 2. Expand the dates section if it is collapsed
 3. Verify the following date options are present:
-   - Deferred: with sub-options "Scheduled for" and "Start after"
-   - Due Date: date picker
-   - Duration: selection of predefined options
-4. Click on the "Scheduled for" date option and verify a date picker appears
+   - Deferred: with sub-options "Scheduled for" and "Start after" (each using the DateTimeInput component)
+   - Due Date: DateTimeInput component (date picker + optional time)
+4. Click on the "Scheduled for" radio option and verify a DateTimeInput appears with a date picker and "Add time..." placeholder
 5. Select a date and verify it is set
 6. Verify the Due Date section is **hidden** when "Scheduled for" is selected (mutual exclusivity)
-7. Click on the "Start after" date option and verify a date picker appears
-8. Verify the Due Date section **reappears** when "Start after" is selected
-9. Select a date for deferred start
-10. Click on the Due Date field and verify a date picker appears
-11. Select a due date
-12. Open the Duration selector and verify the following options are available: 15, 30, 45, 60, 90, 120, 180, 240 minutes
-13. Select a duration (e.g., 30 minutes)
-14. Verify all selected values are displayed correctly in the form
-15. Switch back to "Scheduled for" and verify the Due Date section hides again
+7. Click "Add time..." and verify a time input, a DurationInput, and a "Clear" link appear together (default duration: 30 min)
+8. Verify the DurationInput shows a number input with a dropdown of preset options: 15, 30, 45, 60, 90, 120, 180, 240 minutes
+9. Click on the DurationInput number field and verify the dropdown opens; select a preset (e.g., 60 min) and verify it updates
+10. Type a custom value (e.g., 25) directly in the number input and verify it accepts any value > 0
+11. Click "Clear" and verify time and duration are removed, reverting to the "Add time..." placeholder
+12. Click on the "Start after" radio option and verify a DateTimeInput appears
+13. Verify the Due Date section **reappears** when "Start after" is selected
+14. Click "Add time..." for "Start after" and verify a time input and "Clear" link appear — NO duration
+15. Click "Clear" and verify time is removed
+16. Select a date for deferred start
+17. Verify the Due Date DateTimeInput is visible
+18. Select a due date
+19. Click "Add time..." for due date and verify a time input and "Clear" link appear — NO duration
+20. Verify all selected values are displayed correctly in the form
+21. Switch back to "Scheduled for" and verify the Due Date section hides again
+22. Verify that when switching from "Start after" (with time set) to "Scheduled for", duration auto-appears with default 30
 
-**Expected Result:** The dates section of the Create Action form includes Deferred (Scheduled for / Start after), Due Date, and Duration fields. Date pickers function correctly. Duration offers predefined options: 15, 30, 45, 60, 90, 120, 180, and 240 minutes. When "Scheduled for" is selected, the Due Date section is hidden (mutual exclusivity). When "Start after" is selected, the Due Date section is visible. All selections are reflected in the form.
+**Expected Result:** All date/time fields use the reusable DateTimeInput component with clearable time. "Add time..." placeholder is styled like other empty fields (tertiary color, italic). Duration automatically appears with a default of 30 minutes when time is added for "Scheduled for". Duration uses the DurationInput component: an editable number input with a dropdown of preset options (15, 30, 45, 60, 90, 120, 180, 240 minutes) and accepts any typed value > 0. "Clear" link (tertiary color, red on hover) removes time/duration. "Start after" and "Due" times do NOT show duration. When "Scheduled for" is selected, the Due Date section is hidden (mutual exclusivity). When "Start after" is selected, the Due Date section is visible.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3200,7 +3207,7 @@ Use the table below to log each full or partial test run.
 10. Navigate back to the action detail and open the Move dropdown again
 11. Verify "Today" is no longer a destination (since the action is now in Today) and "Next" is now available
 12. Select "Calendar" from the dropdown
-13. Verify a schedule dialog appears allowing the user to pick a date and optionally a time
+13. Verify a schedule dialog appears with a DateTimeInput component (date picker + "Add time" link). When time is added, a DurationInput auto-appears with default 30 min.
 14. Select a date and confirm
 15. Verify the action is moved to the Calendar with the selected date
 16. Navigate back to the action detail and move it again
@@ -3212,7 +3219,7 @@ Use the table below to log each full or partial test run.
 22. Verify the action is moved to Someday without additional dialogs
 23. Navigate to the Someday page and verify the action appears there
 
-**Expected Result:** The Move dropdown shows all valid destinations except the current one. Moving to Today and Someday happens directly. Moving to Calendar triggers a schedule dialog for date selection. Moving to Waiting For triggers a dialog for specifying the waiting-for contact. The action appears in the correct destination after each move.
+**Expected Result:** The Move dropdown shows all valid destinations except the current one. Moving to Today and Someday happens directly. Moving to Calendar triggers a schedule dialog with DateTimeInput (date + optional time; when time is added, DurationInput auto-appears with default 30 min). Moving to Waiting For triggers a dialog for specifying the waiting-for contact. The action appears in the correct destination after each move.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3962,8 +3969,13 @@ Use the table below to log each full or partial test run.
 11. Verify time labels show 12-hour format with AM/PM (e.g., 12:00 AM, 1:00 AM, ..., 1:00 PM, ..., 11:00 PM)
 12. Verify action blocks display times in 12-hour format (e.g., "2:00 PM")
 13. Switch to Week view and verify the time format is also applied there
+14. Open an action detail page and edit the scheduled date — click "Add time..." and verify the TimeInput shows hours in 12-hour format (1-12) with AM/PM selector
+15. Return to Settings and switch back to 24-hour format
+16. Return to the action detail and verify the TimeInput now shows hours in 24-hour format (00-23) without AM/PM selector
+17. Open the Move to Calendar dialog and verify the TimeInput also respects the current format setting
+18. Open the Clarify flow, defer an action, and verify the TimeInput in the clarify form respects the format setting
 
-**Expected Result:** The calendar respects the 12h/24h time format setting. Changing the setting updates time labels and action time displays in Day and Week views.
+**Expected Result:** The 12h/24h time format setting is respected everywhere: calendar hour labels, calendar action time displays, and all time inputs (action detail, move dialog, clarify form, recurring detail) via the `TimeInput` component.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7299,19 +7311,23 @@ Use the table below to log each full or partial test run.
 3. Verify the app navigates to the recurring detail page for the newly created template.
 4. On the detail page, verify the following fields are available:
    a. Title (text input, pre-filled with "Weekly team standup")
-   b. Recurrence rule (frequency selector and options)
-   c. Scheduled time (time picker)
-   d. Duration (duration input, e.g., in minutes)
+   b. Description (click-to-edit)
+   c. Recurrence rule (frequency selector and options)
+   d. Scheduled time section showing "Add time..." placeholder (tertiary color, italic — matching the empty field pattern used for description/tags)
+   e. Tags
 5. Set the recurrence rule to Weekly, select Monday and Wednesday.
-6. Set the scheduled time to 10:00 AM.
-7. Set the duration to 30 minutes.
-8. Save the recurring action.
-9. Verify a success confirmation is shown.
-10. Navigate back to the Calendar Recurring view.
-11. Verify the new recurring template appears in the list.
-12. Click on the template and verify all entered values are correctly displayed (title, weekly on Mon/Wed, 10:00 AM, 30 min).
+6. In the Scheduled time section, click "Add time..." placeholder.
+7. Verify a time input (defaulting to 09:00), a DurationInput (defaulting to 30 min), and a "Clear" link appear.
+8. Change the time to 10:00 AM.
+9. Change the duration to 30 minutes using the DurationInput dropdown.
+10. Verify changes are saved automatically.
+11. Click "Clear" link and verify time and duration are removed, reverting to the "Add time..." placeholder (all-day event).
+12. Click "Add time..." again to re-add time (09:00 + 30 min).
+13. Navigate back to the Calendar Recurring view.
+14. Verify the new recurring template appears in the list.
+15. Click on the template and verify all entered values are correctly displayed (title, weekly on Mon/Wed, 09:00, 30 min).
 
-**Expected Result:** Creating a recurring template via quick-add navigates to the detail page where Title, Recurrence rule, Scheduled time, and Duration can be configured. After saving, the template appears in the Recurring list with correct details.
+**Expected Result:** Creating a recurring template via quick-add navigates to the detail page. Scheduled time initially shows "Add time..." placeholder styled like other empty fields (tertiary color, italic). Clicking it sets defaults (09:00, 30 min) and shows a "Clear" link (tertiary color, turns red on hover). Clearing removes time/duration and reverts to placeholder.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7549,12 +7565,12 @@ Use the table below to log each full or partial test run.
 10. Edit the description field (if present) and add "Team sync meeting"
 11. Change the recurrence rule from Daily to Weekly on Mon-Fri
 12. Change the scheduled time to 10:30 AM
-13. Change the duration to 30 minutes
+13. Change the duration to 30 minutes using the DurationInput (select from dropdown or type directly)
 14. Save all changes
 15. Navigate away and return to `/recurring/:id`
 16. Verify all changes persisted: "Morning standup", Weekly Mon-Fri, 10:30 AM, 30 min, description "Team sync meeting"
 
-**Expected Result:** The recurring template detail page allows editing all fields: title (click-to-edit inline), description, recurrence rule, scheduled time, and duration. All changes persist after saving and navigating away.
+**Expected Result:** The recurring template detail page allows editing all fields: title (click-to-edit inline), description, recurrence rule, scheduled time and duration (via DateTimeInput with DurationInput). All changes persist after saving and navigating away.
 
 | Date | P/F | Comment |
 |------|-----|---------|

@@ -113,36 +113,31 @@
               <span>Start after</span>
             </label>
           </div>
-          <div v-if="form.deferType" class="clarify-date-inputs">
-            <DateInput v-model="form.deferDate" class="text-body-m clarify-input" />
-            <span v-if="!showDeferTime" class="text-body-s clarify-link" @click="showDeferTime = true">Add time</span>
-            <input v-else type="time" v-model="form.deferTime" class="text-body-m clarify-input clarify-input--time" />
-            <template v-if="form.deferType === 'scheduled' && form.deferTime">
-              <span v-if="!showDuration" class="text-body-s clarify-link" @click="showDuration = true">Add duration</span>
-              <select v-else v-model="form.deferDuration" class="text-body-m clarify-input clarify-input--duration">
-                <option :value="null">No duration</option>
-                <option value="15">15 min</option>
-                <option value="30">30 min</option>
-                <option value="45">45 min</option>
-                <option value="60">1 hour</option>
-                <option value="90">1.5 hours</option>
-                <option value="120">2 hours</option>
-                <option value="180">3 hours</option>
-                <option value="240">4 hours</option>
-              </select>
-            </template>
-          </div>
+          <DateTimeInput
+              v-if="form.deferType"
+              :date="form.deferDate"
+              @update:date="form.deferDate = $event"
+              :time="form.deferTime"
+              @update:time="form.deferTime = $event"
+              :duration="form.deferDuration"
+              @update:duration="form.deferDuration = $event"
+              :with-duration="form.deferType === 'scheduled'"
+              :clearable="true"
+          />
           <button v-if="form.deferType" type="button" class="text-body-s clarify-clear-btn" @click="clearDeferred">Clear</button>
         </div>
 
         <!-- Due Date (hidden when scheduled is selected — mutual exclusivity) -->
         <div v-if="form.deferType !== 'scheduled'" class="clarify-date-field">
           <label class="text-body-s fw-semibold clarify-label">Due</label>
-          <div class="clarify-date-inputs">
-            <DateInput v-model="form.dueDate" class="text-body-m clarify-input" />
-            <span v-if="form.dueDate && !showDueTime" class="text-body-s clarify-link" @click="showDueTime = true">Add time</span>
-            <input v-if="form.dueDate && showDueTime" type="time" v-model="form.dueTime" class="text-body-m clarify-input clarify-input--time" />
-          </div>
+          <DateTimeInput
+              :date="form.dueDate"
+              @update:date="form.dueDate = $event"
+              :time="form.dueTime"
+              @update:time="form.dueTime = $event"
+              :with-duration="false"
+              :clearable="true"
+          />
           <button v-if="form.dueDate" type="button" class="text-body-s clarify-clear-btn" @click="clearDue">Clear</button>
         </div>
 
@@ -167,7 +162,7 @@
 import { reactive, ref, nextTick, onMounted } from 'vue'
 import Btn from '../Btn.vue'
 import TagInput from '../TagInput.vue'
-import DateInput from '../DateInput.vue'
+import DateTimeInput from '../DateTimeInput.vue'
 
 const props = defineProps({
   initialData: {
@@ -185,15 +180,12 @@ const emit = defineEmits(['submit'])
 const titleInput = ref(null)
 const waitingForInput = ref(null)
 const subStep = ref('choose') // 'choose' | 'delegate' | 'defer'
-const showDeferTime = ref(false)
-const showDueTime = ref(false)
-const showDuration = ref(false)
 
 const form = reactive({
   title: props.initialData.title || '',
   description: props.initialData.description || '',
   tags: props.initialData.tags || [],
-  deferType: null,
+  deferType: 'scheduled',
   deferDate: null,
   deferTime: null,
   deferDuration: null,
@@ -211,14 +203,11 @@ function clearDeferred() {
   form.deferDate = null
   form.deferTime = null
   form.deferDuration = null
-  showDeferTime.value = false
-  showDuration.value = false
 }
 
 function clearDue() {
   form.dueDate = null
   form.dueTime = null
-  showDueTime.value = false
 }
 
 onMounted(() => {
@@ -234,7 +223,7 @@ function onSubmit() {
     deferType: subStep.value === 'defer' ? form.deferType : null,
     deferDate: subStep.value === 'defer' ? form.deferDate : null,
     deferTime: subStep.value === 'defer' ? form.deferTime : null,
-    deferDuration: subStep.value === 'defer' && form.deferDuration ? parseInt(form.deferDuration) : null,
+    deferDuration: subStep.value === 'defer' ? form.deferDuration : null,
     dueDate: subStep.value === 'defer' ? form.dueDate : null,
     dueTime: subStep.value === 'defer' ? form.dueTime : null,
     waitingFor: subStep.value === 'delegate' ? form.waitingFor.trim() : '',
@@ -405,31 +394,6 @@ function onSubmit() {
   cursor: pointer;
 }
 
-.clarify-date-inputs {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.clarify-input--time {
-  width: 120px;
-}
-
-.clarify-input--duration {
-  width: 120px;
-}
-
-.clarify-link {
-  color: var(--color-link-text);
-  cursor: pointer;
-}
-
-.clarify-link:hover {
-  color: var(--color-link-hover);
-  text-decoration: underline;
-}
-
 .clarify-clear-btn {
   align-self: flex-start;
   color: var(--color-text-tertiary);
@@ -447,19 +411,6 @@ function onSubmit() {
   .clarify-date-type-selector {
     flex-direction: column;
     gap: 8px;
-  }
-
-  .clarify-date-inputs {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .clarify-input--time {
-    width: 100%;
-  }
-
-  .clarify-input--duration {
-    width: 100%;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="dropdown-menu">
-    <!-- Authenticated: My Dashboard on top -->
-    <template v-if="authenticated">
+    <!-- Authenticated: My Dashboard on public pages only -->
+    <template v-if="authenticated && context !== 'dashboard'">
       <button class="text-body-s topnav-item" @click="$emit('go-dashboard')">My Dashboard</button>
       <hr class="dropdown-divider" />
     </template>
@@ -32,6 +32,10 @@ defineProps({
   authenticated: {
     type: Boolean,
     default: false,
+  },
+  context: {
+    type: String,
+    default: 'landing',
   },
 })
 

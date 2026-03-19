@@ -2,50 +2,23 @@
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="move.state.visible" class="overlay" @click.self="move.close">
-        <div class="dialog">
+        <div class="dialog" @keyup.esc="move.close">
           <h3 class="text-h3 title">{{ move.state.title }}</h3>
 
           <!-- Schedule Modal -->
           <template v-if="move.state.type === 'schedule'">
-            <div class="form-group">
-              <label class="text-body-s fw-medium label">Date</label>
-              <DateInput
-                  ref="dateInput"
-                  v-model="move.state.date"
-                  class="text-body-m input"
-                  @keyup.enter="onConfirm"
-                  @keyup.esc="move.close"
+            <div class="form-group" @keyup.enter="onConfirm">
+              <DateTimeInput
+                  ref="dateTimeInput"
+                  :date="move.state.date"
+                  @update:date="move.state.date = $event"
+                  :time="move.state.time"
+                  @update:time="move.state.time = $event"
+                  :duration="move.state.duration"
+                  @update:duration="move.state.duration = $event"
+                  :with-duration="true"
+                  :clearable="true"
               />
-            </div>
-            <div class="form-group">
-              <div class="time-toggle">
-                <span
-                    v-if="!move.state.showTime"
-                    class="text-body-s link"
-                    @click="enableTime"
-                >Add time</span>
-                <template v-else>
-                  <input
-                      type="time"
-                      v-model="move.state.time"
-                      class="text-body-m input input--time"
-                      @keyup.enter="onConfirm"
-                      @keyup.esc="move.close"
-                  />
-                  <div class="duration-input">
-                    <input
-                        type="number"
-                        v-model.number="move.state.duration"
-                        class="text-body-m input input--duration"
-                        min="5"
-                        step="5"
-                        @keyup.enter="onConfirm"
-                        @keyup.esc="move.close"
-                    />
-                    <span class="text-body-s duration-label">min</span>
-                  </div>
-                </template>
-              </div>
             </div>
           </template>
 
@@ -59,7 +32,6 @@
                   class="text-body-m input"
                   placeholder="e.g., Sarah from Legal"
                   @keyup.enter="onConfirm"
-                  @keyup.esc="move.close"
               />
             </div>
           </template>
@@ -73,7 +45,6 @@
                   class="text-body-m input input--textarea"
                   placeholder="Describe the successful outcome..."
                   rows="3"
-                  @keyup.esc="move.close"
               ></textarea>
             </div>
           </template>
@@ -101,10 +72,10 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { moveModel } from '../scripts/models/moveModel.js'
 import Btn from './Btn.vue'
-import DateInput from './DateInput.vue'
+import DateTimeInput from './DateTimeInput.vue'
 
 const move = moveModel()
-const dateInput = ref(null)
+const dateTimeInput = ref(null)
 const waitingInput = ref(null)
 const outcomeInput = ref(null)
 
@@ -133,17 +104,12 @@ function onConfirm() {
   if (move.state.onConfirm) move.state.onConfirm()
 }
 
-function enableTime() {
-  move.state.showTime = true
-  move.state.time = '09:00'
-}
-
 // Auto-focus inputs when modal opens
 watch(() => move.state.visible, (visible) => {
   if (visible) {
     nextTick(() => {
-      if (move.state.type === 'schedule' && dateInput.value) {
-        dateInput.value.focus()
+      if (move.state.type === 'schedule' && dateTimeInput.value) {
+        dateTimeInput.value.focus()
       } else if (move.state.type === 'waiting' && waitingInput.value) {
         waitingInput.value.focus()
       } else if (move.state.type === 'outcome' && outcomeInput.value) {
@@ -171,7 +137,7 @@ watch(() => move.state.visible, (visible) => {
   border-radius: 12px;
   padding: 24px;
   min-width: 320px;
-  max-width: 400px;
+  max-width: 600px;
   box-shadow: var(--shadow-modal);
 }
 
@@ -184,10 +150,17 @@ watch(() => move.state.visible, (visible) => {
   margin-bottom: 16px;
 }
 
-.label {
-  display: block;
-  color: var(--color-text-secondary);
-  margin-bottom: 6px;
+@media (max-width: 768px) {
+  .form-group :deep(.dti) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group :deep(.dur),
+  .form-group :deep(.dur-field) {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 .input {
@@ -209,41 +182,6 @@ watch(() => move.state.visible, (visible) => {
 .input--textarea {
   resize: vertical;
   min-height: 80px;
-}
-
-.input--time {
-  width: 120px;
-}
-
-.input--duration {
-  width: 70px;
-  text-align: center;
-}
-
-.time-toggle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.link {
-  color: var(--color-link-text);
-  cursor: pointer;
-}
-
-.link:hover {
-  color: var(--color-link-hover);
-  text-decoration: underline;
-}
-
-.duration-input {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.duration-label {
-  color: var(--color-text-secondary);
 }
 
 .actions {

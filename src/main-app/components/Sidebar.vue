@@ -477,7 +477,7 @@ async function onDropToCalendar(data) {
   const scheduleData = await mover.showSchedule({
     date: '',
     time: '',
-    duration: 15
+    duration: null
   });
 
   if (!scheduleData || !scheduleData.date) return;

@@ -115,28 +115,16 @@
         <div class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Scheduled time</label>
           <div class="detail-section-wrapper">
-            <div class="detail-date-inputs">
-              <input
-                  type="time"
-                  :value="template.scheduled_time"
-                  class="text-body-m detail-input detail-input--time"
-                  :disabled="savingField === 'time'"
-                  @change="onTimeChanged($event.target.value)"
-              />
-              <div class="detail-duration-input">
-                <input
-                    type="number"
-                    :value="template.scheduled_duration"
-                    class="text-body-m detail-input detail-input--duration"
-                    min="5"
-                    step="5"
-                    placeholder="min"
-                    :disabled="savingField === 'time'"
-                    @change="onDurationChanged(Number($event.target.value))"
-                />
-                <span class="text-body-s detail-duration-label">min</span>
-              </div>
-            </div>
+            <DateTimeInput
+                :with-date="false"
+                :with-duration="true"
+                :clearable="true"
+                :time="template.scheduled_time"
+                @update:time="onTimeChanged"
+                :duration="template.scheduled_duration"
+                @update:duration="onDurationChanged"
+                :disabled="savingField === 'time'"
+            />
           </div>
         </div>
 
@@ -193,6 +181,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import TagInput from '../../components/TagInput.vue'
 import RecurrenceInput from '../../components/RecurrenceInput.vue'
+import DateTimeInput from '../../components/DateTimeInput.vue'
 import RecurringIcon from '../../assets/RecurringIcon.vue'
 import ActionIcon from '../../assets/ActionIcon.vue'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
@@ -358,13 +347,25 @@ async function onRecurrenceChanged(newRule) {
 
 async function onTimeChanged(time) {
   const oldTime = template.value.scheduled_time
-  template.value.scheduled_time = time
+  const oldDuration = template.value.scheduled_duration
+  template.value.scheduled_time = time || null
   savingField.value = 'time'
 
   try {
-    await updateRecurring(template.value.id, { scheduled_time: time })
+    const patch = { scheduled_time: time || null }
+    if (!oldTime && time && !oldDuration) {
+      // Adding time for the first time — also set default duration
+      patch.scheduled_duration = 30
+      template.value.scheduled_duration = 30
+    } else if (!time) {
+      // Clearing time — also clear duration
+      patch.scheduled_duration = null
+      template.value.scheduled_duration = null
+    }
+    await updateRecurring(template.value.id, patch)
   } catch {
     template.value.scheduled_time = oldTime
+    template.value.scheduled_duration = oldDuration
     toaster.push('Failed to save time')
   } finally {
     savingField.value = null
@@ -686,52 +687,6 @@ function formatDate(dateStr) {
   gap: 8px;
 }
 
-/* ── Date inputs ── */
-.detail-date-inputs {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.detail-input {
-  color: var(--color-text-primary);
-  padding: 8px 12px;
-  border: 1px solid var(--color-input-border);
-  border-radius: 6px;
-  background: var(--color-bg-primary);
-}
-
-.detail-input:focus {
-  border-color: var(--color-input-border-focus);
-  box-shadow: var(--shadow-focus-ring);
-  outline: none;
-}
-
-.detail-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.detail-input--time {
-  width: 120px;
-}
-
-.detail-duration-input {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.detail-input--duration {
-  width: 70px;
-  text-align: center;
-}
-
-.detail-duration-label {
-  color: var(--color-text-secondary);
-}
-
 /* ── Tags section ── */
 .detail-tags-display {
   cursor: pointer;
@@ -829,25 +784,6 @@ function formatDate(dateStr) {
 
   .detail-metadata {
     padding: 12px 16px 16px 50px;
-  }
-
-  .detail-date-inputs {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .detail-input--time {
-    width: 100%;
-  }
-
-  .detail-duration-input {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .detail-input--duration {
-    flex: 1;
-    width: auto;
   }
 }
 </style>

@@ -17,9 +17,8 @@ export function moveModel() {
         title: '',
         // Schedule fields
         date: '',
-        time: '',
-        showTime: false,
-        duration: 15,
+        time: null,
+        duration: null,
         // Waiting fields
         waitingFor: '',
         // Outcome fields
@@ -39,16 +38,15 @@ export function moveModel() {
             state.type = 'schedule'
             state.title = options.title || 'Schedule for when?'
             state.date = options.date || ''
-            state.time = options.time || ''
-            state.showTime = !!options.time
-            state.duration = options.duration || 15
+            state.time = options.time || null
+            state.duration = options.duration ?? null
             state.visible = true
 
             state.onConfirm = () => {
                 const result = {
                     date: state.date,
-                    time: state.showTime ? state.time : null,
-                    duration: state.showTime ? state.duration : null
+                    time: state.time || null,
+                    duration: state.time ? (state.duration || 30) : null
                 }
                 state.visible = false
                 resolve(result)
