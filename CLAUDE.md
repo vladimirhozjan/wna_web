@@ -86,6 +86,7 @@ This is a **multi-app Vue 3 + Vite 7** frontend project supporting two applicati
 - **Btn** - Button with variants: `primary`, `ghost`, `danger`, `ghost-danger`, `icon`. Sizes: `sm`, `md`, `lg`.
 - **Inpt** - Input field with label and error display.
 - **DateTimeInput** - Reusable date/time/duration input. Props: `date`, `time`, `duration`, `withDate` (default true), `withDuration` (for scheduled), `clearable` (shows "Clear" link to remove time/duration), `disabled`. Shows "Add time..." placeholder when no time set; clicking sets 09:00 + duration 30 min. Used in clarify, action detail, move modal, and recurring detail.
+- **TimeInput** - Custom time picker using hour/minute/period selects. Respects the app's 12h/24h time format setting from `settingsModel`. Emits value in HH:MM 24h format. Used inside DateTimeInput.
 - **DurationInput** - Editable number input with dropdown of preset options (15, 30, 45, 60, 90, 120, 180, 240 min). Accepts any typed value > 0. Used inside DateTimeInput when `withDuration` is true.
 - **QuickAddBtn** - Floating quick-add button for mobile, inline input for desktop.
 

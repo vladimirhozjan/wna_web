@@ -10,11 +10,9 @@
     />
     <span v-if="!hasTime" class="text-body-m dti-placeholder" @click="onAddTime">Add time...</span>
     <template v-if="hasTime">
-      <input
-          type="time"
-          :value="time"
-          @input="$emit('update:time', $event.target.value)"
-          class="text-body-m dti-field dti-field--time"
+      <TimeInput
+          :modelValue="time"
+          @update:modelValue="$emit('update:time', $event)"
           :disabled="disabled"
       />
       <DurationInput
@@ -31,6 +29,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import DateInput from './DateInput.vue'
+import TimeInput from './TimeInput.vue'
 import DurationInput from './DurationInput.vue'
 
 const props = defineProps({
@@ -99,10 +98,6 @@ defineExpose({ focus })
   box-shadow: var(--shadow-focus-ring);
 }
 
-.dti-field--time {
-  width: 120px;
-}
-
 .dti-placeholder {
   color: var(--color-text-tertiary);
   font-style: italic;
@@ -134,8 +129,7 @@ defineExpose({ focus })
     align-items: stretch;
   }
 
-  .dti-field,
-  .dti-field--time {
+  .dti-field {
     width: 100%;
     box-sizing: border-box;
   }

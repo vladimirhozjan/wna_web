@@ -517,7 +517,7 @@ Priority: if an item's `scheduled_date`, `start_date`, and `due_date` all fall o
 
 Configurable in Settings page:
 - Week starts on: Monday or Sunday
-- Time format: 12-hour (AM/PM) or 24-hour
+- Time format: 12-hour (AM/PM) or 24-hour — respected by all time inputs via `TimeInput` component (hour/minute/period selects) and calendar hour labels
 - Business hours: Start and end hour
 - Business days: Selectable days of the week
 

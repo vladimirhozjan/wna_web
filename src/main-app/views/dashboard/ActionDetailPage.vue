@@ -434,6 +434,7 @@ import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import { reviewModel } from '../../scripts/models/reviewModel.js'
+import { settingsModel } from '../../scripts/models/settingsModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -442,6 +443,7 @@ const confirm = confirmModel()
 const mover = moveModel()
 const tagMdl = tagModel()
 const { reviewTemplateId } = reviewModel()
+const settings = settingsModel()
 
 const nextModel = nextActionModel()
 const todayMdl = todayModel()
@@ -556,14 +558,20 @@ const startDisplay = computed(() => {
 
 const datesSummary = computed(() => {
   const parts = []
-  if (action.value?.due_date) {
-    parts.push(`Due: ${formatShortDate(action.value.due_date)}`)
-  }
   if (action.value?.scheduled_date) {
-    parts.push(`Scheduled: ${formatShortDate(action.value.scheduled_date)}`)
+    let s = formatDateTimeDisplay(action.value.scheduled_date, action.value.scheduled_time)
+    if (action.value.scheduled_time && action.value.scheduled_duration) {
+      s += ` (${action.value.scheduled_duration} min)`
+    }
+    parts.push(s)
   }
   if (action.value?.start_date) {
-    parts.push(`Starts: ${formatShortDate(action.value.start_date)}`)
+    let s = formatDateTimeDisplay(action.value.start_date, action.value.start_time)
+    parts.push(`Starts: ${s}`)
+  }
+  if (action.value?.due_date) {
+    let s = formatDateTimeDisplay(action.value.due_date, action.value.due_time)
+    parts.push(`Due: ${s}`)
   }
   return parts.join(' · ')
 })
@@ -936,25 +944,37 @@ function toggleDatesSection() {
   datesExpanded.value = !datesExpanded.value
 }
 
-function formatShortDate(date) {
+function formatSmartDate(date) {
   if (!date) return ''
-  return new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric'
-  })
+  const d = new Date(date + 'T00:00:00')
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const target = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const diff = Math.round((target - today) / (1000 * 60 * 60 * 24))
+  if (diff === 0) return 'Today'
+  if (diff === 1) return 'Tomorrow'
+  if (diff === -1) return 'Yesterday'
+  const opts = { month: 'short', day: 'numeric' }
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
+  return d.toLocaleDateString('en-US', opts)
+}
+
+function formatTimeStr(time) {
+  if (!time) return ''
+  const [h, m] = time.split(':')
+  const hour = parseInt(h)
+  const is12h = settings.getCalendarSettings().timeFormat === '12h'
+  if (is12h) {
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    return `${hour % 12 || 12}:${m} ${ampm}`
+  }
+  return `${String(hour).padStart(2, '0')}:${m}`
 }
 
 function formatDateTimeDisplay(date, time) {
   if (!date) return null
-  const dateObj = new Date(date + 'T00:00:00')
-  const dateStr = dateObj.toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
-  })
-  if (time) {
-    const [h, m] = time.split(':')
-    const hour = parseInt(h)
-    const ampm = hour >= 12 ? 'PM' : 'AM'
-    return `${dateStr} at ${hour % 12 || 12}:${m} ${ampm}`
-  }
+  const dateStr = formatSmartDate(date)
+  if (time) return `${dateStr} at ${formatTimeStr(time)}`
   return dateStr
 }
 

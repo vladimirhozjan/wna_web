@@ -3969,8 +3969,13 @@ Use the table below to log each full or partial test run.
 11. Verify time labels show 12-hour format with AM/PM (e.g., 12:00 AM, 1:00 AM, ..., 1:00 PM, ..., 11:00 PM)
 12. Verify action blocks display times in 12-hour format (e.g., "2:00 PM")
 13. Switch to Week view and verify the time format is also applied there
+14. Open an action detail page and edit the scheduled date — click "Add time..." and verify the TimeInput shows hours in 12-hour format (1-12) with AM/PM selector
+15. Return to Settings and switch back to 24-hour format
+16. Return to the action detail and verify the TimeInput now shows hours in 24-hour format (00-23) without AM/PM selector
+17. Open the Move to Calendar dialog and verify the TimeInput also respects the current format setting
+18. Open the Clarify flow, defer an action, and verify the TimeInput in the clarify form respects the format setting
 
-**Expected Result:** The calendar respects the 12h/24h time format setting. Changing the setting updates time labels and action time displays in Day and Week views.
+**Expected Result:** The 12h/24h time format setting is respected everywhere: calendar hour labels, calendar action time displays, and all time inputs (action detail, move dialog, clarify form, recurring detail) via the `TimeInput` component.
 
 | Date | P/F | Comment |
 |------|-----|---------|

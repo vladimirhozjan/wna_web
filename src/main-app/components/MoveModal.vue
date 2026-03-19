@@ -156,10 +156,6 @@ watch(() => move.state.visible, (visible) => {
     align-items: stretch;
   }
 
-  .form-group :deep(.dti-field--time) {
-    width: 100%;
-  }
-
   .form-group :deep(.dur),
   .form-group :deep(.dur-field) {
     width: 100%;
