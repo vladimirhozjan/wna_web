@@ -79,6 +79,36 @@
       </div>
     </div>
 
+    <!-- Start date indicators -->
+    <div
+        v-for="item in startIndicators"
+        :key="`start-${item.id}`"
+        class="time-grid__indicator time-grid__indicator--start"
+        :style="{ top: item.top + 'px' }"
+    >
+      <div class="time-grid__indicator-rule"></div>
+      <div class="time-grid__indicator-body">
+        <div class="text-footnote time-grid__indicator-label" @click.stop="onItemClick(item)">
+          {{ item.title }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Due date indicators -->
+    <div
+        v-for="item in dueIndicators"
+        :key="`due-${item.id}`"
+        class="time-grid__indicator time-grid__indicator--due"
+        :style="{ top: item.top + 'px' }"
+    >
+      <div class="time-grid__indicator-body">
+        <div class="text-footnote time-grid__indicator-label" @click.stop="onItemClick(item)">
+          {{ item.title }}
+        </div>
+      </div>
+      <div class="time-grid__indicator-rule"></div>
+    </div>
+
     <!-- Current time indicator -->
     <div
         v-if="showCurrentTime && currentTimePosition !== null"
@@ -138,7 +168,7 @@ const positionedItems = computed(() => {
   const defaultDuration = 15  // 15 minutes default
 
   const items = props.items
-      .filter(item => calendar.hasTime(item))
+      .filter(item => item._displayReason !== 'start' && item._displayReason !== 'due' && calendar.hasTime(item))
       .map(item => {
         const time = calendar.getItemTime(item)
         const [hours, minutes] = time.split(':').map(Number)
@@ -157,6 +187,24 @@ const positionedItems = computed(() => {
       })
 
   return layoutOverlappingItems(items)
+})
+
+function computeIndicatorPosition(item) {
+  const time = calendar.getItemTime(item)
+  const [h, m] = time.split(':').map(Number)
+  return (h * props.hourHeight) + (m / 60) * props.hourHeight
+}
+
+const startIndicators = computed(() => {
+  return props.items
+      .filter(item => item._displayReason === 'start' && calendar.hasTime(item))
+      .map(item => ({ ...item, top: computeIndicatorPosition(item) }))
+})
+
+const dueIndicators = computed(() => {
+  return props.items
+      .filter(item => item._displayReason === 'due' && calendar.hasTime(item))
+      .map(item => ({ ...item, top: computeIndicatorPosition(item) }))
 })
 
 function formatHour(hour) {
@@ -392,7 +440,7 @@ onUnmounted(() => {
 .time-grid__now-dot {
   width: 12px;
   height: 12px;
-  background: var(--color-danger);
+  background: var(--color-action);
   border-radius: 50%;
   margin-left: -6px;
 }
@@ -400,6 +448,63 @@ onUnmounted(() => {
 .time-grid__now-line {
   flex: 1;
   height: 2px;
+  background: var(--color-action);
+}
+
+/* Start/Due date indicators */
+.time-grid__indicator {
+  position: absolute;
+  left: 64px;
+  right: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.time-grid__indicator--due {
+  transform: translateY(-100%);
+}
+
+.time-grid__indicator-rule {
+  height: 3px;
+}
+
+.time-grid__indicator--start .time-grid__indicator-rule {
+  background: var(--color-calendar-start-border);
+}
+
+.time-grid__indicator--due .time-grid__indicator-rule {
   background: var(--color-danger);
+}
+
+.time-grid__indicator-body {
+  padding-bottom: 16px;
+}
+
+.time-grid__indicator--start .time-grid__indicator-body {
+  background: linear-gradient(to bottom, var(--color-calendar-start), transparent);
+}
+
+.time-grid__indicator--due .time-grid__indicator-body {
+  background: linear-gradient(to top, rgba(239, 68, 68, 0.2), transparent);
+  padding-bottom: 0;
+  padding-top: 16px;
+}
+
+.time-grid__indicator-label {
+  padding: 0 8px;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: var(--lh-snug);
+}
+
+.time-grid__indicator--start .time-grid__indicator-label {
+  color: var(--color-calendar-start-text);
+}
+
+.time-grid__indicator--due .time-grid__indicator-label {
+  color: var(--color-calendar-due-text);
 }
 </style>

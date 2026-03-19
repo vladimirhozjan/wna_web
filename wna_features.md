@@ -454,17 +454,20 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 - 24-hour time grid with configurable business hours highlighting
 - Scheduled actions rendered as time blocks positioned by start time and sized by duration
-- All-day / dateless actions shown in a section above the time grid (including due-only items without due_time)
-- Due-only items with due_time appear in the timed section
+- All-day / dateless actions shown in a section above the time grid (including start/due items without time)
+- **Start date indicators:** Items with `start_date` + `start_time` shown as a yellow dot+line at the exact time, with a yellow gradient fading downward and the task title below the line
+- **Due date indicators:** Items with `due_date` + `due_time` shown as a red dot+line at the exact time, with a red gradient fading upward and the task title above the line
+- **Current time indicator:** Accent-colored dot+line showing the current time (updates every minute, visible only when viewing today)
 - Click on an empty time slot opens a quick-add form for creating an action at that time
-- Click on an item navigates to action detail
+- Click on an item or indicator label navigates to action detail
 
 ### 8.4 Week View
 
 - 7-column grid (configurable week start: Monday or Sunday)
 - Each column is a mini day view with time grid
 - Scheduled actions shown as positioned blocks
-- All-day section at the top (includes due-only items without due_time)
+- Start date and due date indicators shown per column (same visual style as day view)
+- All-day section at the top (includes start/due items without time)
 
 ### 8.5 Month View
 

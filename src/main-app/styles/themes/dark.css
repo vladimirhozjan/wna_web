@@ -102,13 +102,7 @@
     --color-toast-success-bg: #052e16;
     --color-toast-success-text: #86efac;
 
-    /* Calendar */
-    --color-calendar-scheduled: rgba(56, 189, 248, 0.2);
-    --color-calendar-scheduled-border: #38bdf8;
-    --color-calendar-scheduled-text: #bae6fd;
-    --color-calendar-deferred: rgba(56, 189, 248, 0.1);
-    --color-calendar-deferred-border: #0ea5e9;
-    --color-calendar-deferred-text: #7dd3fc;
+    /* Calendar — scheduled/deferred inherit from accent vars automatically */
     --color-calendar-today-bg: rgba(245, 158, 11, 0.15);
     --color-calendar-today-border: #f59e0b;
     --color-calendar-grid-line: #222222;
@@ -116,9 +110,9 @@
     --color-calendar-weekend-bg: #0e0e0e;
     --color-calendar-outside-business: #0c0c0c;
     /* Calendar: start_after */
-    --color-calendar-start: rgba(245, 158, 11, 0.15);
-    --color-calendar-start-border: #f59e0b;
-    --color-calendar-start-text: #fbbf24;
+    --color-calendar-start: rgba(22, 163, 74, 0.15);
+    --color-calendar-start-border: #22c55e;
+    --color-calendar-start-text: #4ade80;
     /* Calendar: due-only */
     --color-calendar-due: rgba(239, 68, 68, 0.15);
     --color-calendar-due-border: #ef4444;

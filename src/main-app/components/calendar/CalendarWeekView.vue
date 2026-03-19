@@ -143,6 +143,36 @@
             </div>
           </div>
 
+          <!-- Start date indicators -->
+          <div
+              v-for="item in getStartIndicatorsForDate(day.date)"
+              :key="`start-${item.id}`"
+              class="week-view__indicator week-view__indicator--start"
+              :style="{ top: item.top + 'px' }"
+          >
+            <div class="week-view__indicator-rule"></div>
+            <div class="week-view__indicator-body">
+              <div class="text-footnote week-view__indicator-label" @click.stop="onItemClick(item)">
+                {{ item.title }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Due date indicators -->
+          <div
+              v-for="item in getDueIndicatorsForDate(day.date)"
+              :key="`due-${item.id}`"
+              class="week-view__indicator week-view__indicator--due"
+              :style="{ top: item.top + 'px' }"
+          >
+            <div class="week-view__indicator-body">
+              <div class="text-footnote week-view__indicator-label" @click.stop="onItemClick(item)">
+                {{ item.title }}
+              </div>
+            </div>
+            <div class="week-view__indicator-rule"></div>
+          </div>
+
           <!-- Current time indicator -->
           <div
               v-if="day.isToday && currentTimePosition !== null"
@@ -215,24 +245,44 @@ function getPositionedItemsForDate(date) {
   const minHeight = hourHeight / 4  // 15 minutes minimum
   const defaultDuration = 15  // 15 minutes default
 
-  const items = getTimedItemsForDate(date).map(item => {
-    const time = calendar.getItemTime(item)
-    const [hours, minutes] = time.split(':').map(Number)
-    const top = (hours * hourHeight) + (minutes / 60) * hourHeight
+  const items = getTimedItemsForDate(date)
+      .filter(item => item._displayReason !== 'start' && item._displayReason !== 'due')
+      .map(item => {
+        const time = calendar.getItemTime(item)
+        const [hours, minutes] = time.split(':').map(Number)
+        const top = (hours * hourHeight) + (minutes / 60) * hourHeight
 
-    // Calculate duration in minutes
-    const duration = item.duration || defaultDuration
-    const durationHeight = (duration / 60) * hourHeight
-    const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
+        // Calculate duration in minutes
+        const duration = item.duration || defaultDuration
+        const durationHeight = (duration / 60) * hourHeight
+        const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
 
-    return {
-      ...item,
-      top,
-      height,
-    }
-  })
+        return {
+          ...item,
+          top,
+          height,
+        }
+      })
 
   return layoutOverlappingItems(items)
+}
+
+function computeIndicatorTop(item) {
+  const time = calendar.getItemTime(item)
+  const [h, m] = time.split(':').map(Number)
+  return (h * hourHeight) + (m / 60) * hourHeight
+}
+
+function getStartIndicatorsForDate(date) {
+  return calendar.getItemsForDate(date)
+      .filter(item => item._displayReason === 'start' && calendar.hasTime(item))
+      .map(item => ({ ...item, top: computeIndicatorTop(item) }))
+}
+
+function getDueIndicatorsForDate(date) {
+  return calendar.getItemsForDate(date)
+      .filter(item => item._displayReason === 'due' && calendar.hasTime(item))
+      .map(item => ({ ...item, top: computeIndicatorTop(item) }))
 }
 
 function formatHour(hour) {
@@ -596,7 +646,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--color-danger);
+  background: var(--color-action);
   z-index: 10;
   pointer-events: none;
 }
@@ -608,7 +658,64 @@ onUnmounted(() => {
   top: -4px;
   width: 10px;
   height: 10px;
-  background: var(--color-danger);
+  background: var(--color-action);
   border-radius: 50%;
+}
+
+/* Start/Due date indicators */
+.week-view__indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.week-view__indicator--due {
+  transform: translateY(-100%);
+}
+
+.week-view__indicator-rule {
+  height: 3px;
+}
+
+.week-view__indicator--start .week-view__indicator-rule {
+  background: var(--color-calendar-start-border);
+}
+
+.week-view__indicator--due .week-view__indicator-rule {
+  background: var(--color-danger);
+}
+
+.week-view__indicator-body {
+  padding-bottom: 12px;
+}
+
+.week-view__indicator--start .week-view__indicator-body {
+  background: linear-gradient(to bottom, var(--color-calendar-start), transparent);
+}
+
+.week-view__indicator--due .week-view__indicator-body {
+  background: linear-gradient(to top, rgba(239, 68, 68, 0.2), transparent);
+  padding-bottom: 0;
+  padding-top: 12px;
+}
+
+.week-view__indicator-label {
+  padding: 0 4px;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: var(--lh-snug);
+}
+
+.week-view__indicator--start .week-view__indicator-label {
+  color: var(--color-calendar-start-text);
+}
+
+.week-view__indicator--due .week-view__indicator-label {
+  color: var(--color-calendar-due-text);
 }
 </style>

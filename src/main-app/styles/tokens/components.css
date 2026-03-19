@@ -66,22 +66,22 @@
     --color-toast-success-text: #065f46;
 
     /* Calendar */
-    --color-calendar-scheduled: #bae6fd;
-    --color-calendar-scheduled-border: #0284c7;
-    --color-calendar-scheduled-text: #0c4a6e;
-    --color-calendar-deferred: #e0f2fe;
-    --color-calendar-deferred-border: #38bdf8;
-    --color-calendar-deferred-text: #075985;
+    --color-calendar-scheduled: var(--color-action-bg-light);
+    --color-calendar-scheduled-border: var(--color-action);
+    --color-calendar-scheduled-text: var(--color-action-dark);
+    --color-calendar-deferred: var(--color-action-bg-subtle);
+    --color-calendar-deferred-border: var(--color-action);
+    --color-calendar-deferred-text: var(--color-action-dark);
     --color-calendar-today-bg: #fef3c7;
     --color-calendar-today-border: #f59e0b;
     --color-calendar-grid-line: #e5e7eb;
     --color-calendar-hour-text: #9ca3af;
     --color-calendar-weekend-bg: #f9fafb;
     --color-calendar-outside-business: #f8f9fa;
-    /* Calendar: start_after (yellow/amber) */
-    --color-calendar-start: #fef3c7;
-    --color-calendar-start-border: #f59e0b;
-    --color-calendar-start-text: #92400e;
+    /* Calendar: start_after (green) */
+    --color-calendar-start: rgba(22, 163, 74, 0.12);
+    --color-calendar-start-border: #16a34a;
+    --color-calendar-start-text: #166534;
     /* Calendar: due-only (red) */
     --color-calendar-due: #fee2e2;
     --color-calendar-due-border: #ef4444;
@@ -91,8 +91,8 @@
     --color-calendar-overdue-border: #dc2626;
     --color-calendar-overdue-text: #7f1d1d;
     /* Chip colors for MetadataRow */
-    --color-chip-start-text: #92400e;
-    --color-chip-start-icon: #f59e0b;
+    --color-chip-start-text: #166534;
+    --color-chip-start-icon: #16a34a;
     --color-chip-due-text: #991b1b;
     --color-chip-due-icon: #ef4444;
 

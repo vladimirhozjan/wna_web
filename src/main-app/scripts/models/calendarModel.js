@@ -100,6 +100,13 @@ export function calendarModel() {
         for (const item of items.value) {
             if (item.scheduled_date === dateStr) {
                 result.push({ ...item, _displayReason: 'scheduled' })
+            } else {
+                if (item.start_date === dateStr) {
+                    result.push({ ...item, _displayReason: 'start' })
+                }
+                if (item.due_date === dateStr) {
+                    result.push({ ...item, _displayReason: 'due' })
+                }
             }
         }
         return result
@@ -108,9 +115,20 @@ export function calendarModel() {
     function getItemsForDateRange(startDate, endDate) {
         const startStr = formatDate(startDate)
         const endStr = formatDate(endDate)
-        return items.value.filter(item => {
-            return item.scheduled_date && item.scheduled_date >= startStr && item.scheduled_date <= endStr
-        })
+        const result = []
+        for (const item of items.value) {
+            if (item.scheduled_date && item.scheduled_date >= startStr && item.scheduled_date <= endStr) {
+                result.push({ ...item, _displayReason: 'scheduled' })
+            } else {
+                if (item.start_date && item.start_date >= startStr && item.start_date <= endStr) {
+                    result.push({ ...item, _displayReason: 'start' })
+                }
+                if (item.due_date && item.due_date >= startStr && item.due_date <= endStr) {
+                    result.push({ ...item, _displayReason: 'due' })
+                }
+            }
+        }
+        return result
     }
 
     function getItemCountForDate(date) {

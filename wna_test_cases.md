@@ -4399,6 +4399,82 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-144b: Calendar Day/Week View - Start Date Indicators
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in, at least one action exists with `start_date` and `start_time` set (e.g., start_date = today, start_time = 10:00)
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) and switch to Day view
+2. Navigate to the date matching the action's start_date
+3. Verify a yellow dot appears on the left edge of the time grid at the 10:00 position
+4. Verify a yellow horizontal line extends from the dot across the full width of the grid
+5. Verify a yellow gradient fades downward from the line to transparent (~24px height)
+6. Verify the action's title is displayed below the gradient in yellow/amber text
+7. Click on the action title text and verify it navigates to the action detail page
+8. Switch to Week view
+9. Verify the same yellow dot+line+gradient+title indicator appears in the correct day column at the correct time position
+10. Verify an action with start_date but no start_time appears in the all-day section (not as a timed indicator)
+
+**Expected Result:** Actions with start_date and start_time display as yellow line indicators in the time grid (day and week views). The indicator has a dot, line, downward gradient, and title below. Actions without start_time appear in the all-day section. Clicking the title navigates to action detail.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-144c: Calendar Day/Week View - Due Date Indicators
+**Priority:** High | **Area:** Calendar
+
+**Preconditions:** User is logged in, at least one action exists with `due_date` and `due_time` set (no scheduled_date), e.g., due_date = today, due_time = 14:00
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) and switch to Day view
+2. Navigate to the date matching the action's due_date
+3. Verify the action's title is displayed above the indicator in red text
+4. Verify a red gradient fades upward from the line position to transparent (~24px height), under the title text
+5. Verify a red dot appears on the left edge of the time grid at the 14:00 position
+6. Verify a red horizontal line extends from the dot across the full width of the grid
+7. Click on the action title text and verify it navigates to the action detail page
+8. Switch to Week view
+9. Verify the same red title+gradient+dot+line indicator appears in the correct day column
+10. Verify an action with due_date but no due_time appears in the all-day section (not as a timed indicator)
+
+**Expected Result:** Actions with due_date and due_time (no scheduled_date) display as red line indicators with the title above and gradient fading upward. Actions without due_time appear in the all-day section. Clicking the title navigates to action detail.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-144d: Calendar Current Time Indicator Uses Accent Color
+**Priority:** Low | **Area:** Calendar
+
+**Preconditions:** User is logged in, viewing today's date in Day or Week view
+
+**Steps:**
+1. Navigate to the Calendar page (/calendar) and switch to Day view
+2. Verify the current time indicator (dot + horizontal line) uses the app's accent color (not red)
+3. Switch to Week view
+4. Verify the current time indicator in today's column uses the accent color
+5. Navigate to a different date (not today) and verify no current time indicator is shown
+
+**Expected Result:** The current time indicator uses the accent color (--color-action) in both day and week views, distinguishing it from the red due date indicators.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 8: Projects
 
 ---
