@@ -91,7 +91,7 @@ const isItemOverdue = computed(() =>
 )
 
 const missingNextAction = computed(() =>
-    props.entityType === 'project' && !props.item.next_action_id
+    props.entityType === 'project' && !props.item.next_action_id && props.item.state !== 'SOMEDAY'
 )
 
 const recurrenceDescription = computed(() => {

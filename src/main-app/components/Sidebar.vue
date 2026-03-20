@@ -153,6 +153,7 @@
 import { onMounted, computed } from "vue";
 import { authModel } from "../scripts/core/authModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
+import { confirmModel } from "../scripts/core/confirmModel.js";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { nextActionModel } from "../scripts/models/nextActionModel.js";
 import { todayModel } from "../scripts/models/todayModel.js";
@@ -190,6 +191,7 @@ import { engageModel } from "../scripts/models/engageModel.js";
 
 const auth = authModel();
 const toaster = errorModel();
+const confirm = confirmModel();
 const mover = moveModel();
 const { items: stuffItems, loadStuff } = stuffModel();
 const { items: actionItems, loadActions: loadNextActions } = nextActionModel();
@@ -265,6 +267,17 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…';
 }
 
+async function confirmAndTransformProjectToAction(id) {
+  const confirmed = await confirm.show({
+    title: 'Convert to Action',
+    message: 'Converting this project to an action will trash its backlog actions. Continue?',
+    confirmText: 'Convert',
+    cancelText: 'Cancel'
+  });
+  if (!confirmed) return null;
+  return apiClient.transformProjectToAction(id);
+}
+
 async function onDropToInbox(data) {
   try {
     if (data.sourceType === 'someday' && data.type === 'STUFF') {
@@ -295,7 +308,8 @@ async function onDropToNextAction(data) {
       if (data.state === 'NEXT') return;
       await apiClient.undeferAction(data.id);
     } else if (data.sourceType === 'project') {
-      await apiClient.transformProjectToAction(data.id);
+      const result = await confirmAndTransformProjectToAction(data.id);
+      if (!result) return;
     } else if (data.sourceType === 'someday') {
       if (data.type === 'STUFF') {
         const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
@@ -306,7 +320,8 @@ async function onDropToNextAction(data) {
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
       } else if (data.type === 'PROJECT') {
-        await apiClient.transformProjectToAction(data.id);
+        const result = await confirmAndTransformProjectToAction(data.id);
+        if (!result) return;
       } else return;
     } else if (data.sourceType === 'completed') {
       if (data.type === 'STUFF') {
@@ -318,7 +333,8 @@ async function onDropToNextAction(data) {
       } else if (data.type === 'ACTION') {
         await apiClient.uncompleteAction(data.id);
       } else if (data.type === 'PROJECT') {
-        await apiClient.transformProjectToAction(data.id);
+        const result = await confirmAndTransformProjectToAction(data.id);
+        if (!result) return;
       } else return;
     } else if (data.sourceType === 'reference' && data.source_type === 2) {
       await apiClient.transformFileToOriginal(data.id, 'action');
@@ -436,7 +452,8 @@ async function onDropToToday(data) {
       if (data.state === 'TODAY') return;
       await apiClient.todayAction(data.id);
     } else if (data.sourceType === 'project') {
-      const result = await apiClient.transformProjectToAction(data.id);
+      const result = await confirmAndTransformProjectToAction(data.id);
+      if (!result) return;
       await apiClient.todayAction(result.id);
     } else if (data.sourceType === 'someday') {
       if (data.type === 'STUFF') {
@@ -446,7 +463,8 @@ async function onDropToToday(data) {
         await apiClient.activateAction(data.id);
         await apiClient.todayAction(data.id);
       } else if (data.type === 'PROJECT') {
-        const result = await apiClient.transformProjectToAction(data.id);
+        const result = await confirmAndTransformProjectToAction(data.id);
+        if (!result) return;
         await apiClient.todayAction(result.id);
       } else return;
     } else if (data.sourceType === 'completed') {
@@ -457,7 +475,8 @@ async function onDropToToday(data) {
         await apiClient.uncompleteAction(data.id);
         await apiClient.todayAction(data.id);
       } else if (data.type === 'PROJECT') {
-        const result = await apiClient.transformProjectToAction(data.id);
+        const result = await confirmAndTransformProjectToAction(data.id);
+        if (!result) return;
         await apiClient.todayAction(result.id);
       } else return;
     } else {
@@ -473,6 +492,20 @@ async function onDropToToday(data) {
 
 async function onDropToCalendar(data) {
   if (data.sourceType === 'action' && data.state === 'CALENDAR') return;
+
+  // Confirm project-to-action conversion before asking for schedule details
+  const isProjectConvert = data.sourceType === 'project'
+    || (data.sourceType === 'someday' && data.type === 'PROJECT')
+    || (data.sourceType === 'completed' && data.type === 'PROJECT');
+  if (isProjectConvert) {
+    const confirmed = await confirm.show({
+      title: 'Convert to Action',
+      message: 'Converting this project to an action will trash its backlog actions. Continue?',
+      confirmText: 'Convert',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
+  }
 
   const scheduleData = await mover.showSchedule({
     date: '',
@@ -495,6 +528,7 @@ async function onDropToCalendar(data) {
     } else if (data.sourceType === 'action') {
       await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
     } else if (data.sourceType === 'project') {
+      // Confirmation already shown above
       const result = await apiClient.transformProjectToAction(data.id);
       await apiClient.deferAction(result.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
     } else if (data.sourceType === 'someday') {
@@ -508,6 +542,7 @@ async function onDropToCalendar(data) {
         await apiClient.activateAction(data.id);
         await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
       } else if (data.type === 'PROJECT') {
+        // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
         await apiClient.deferAction(result.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
       } else return;
@@ -522,6 +557,7 @@ async function onDropToCalendar(data) {
         await apiClient.uncompleteAction(data.id);
         await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
       } else if (data.type === 'PROJECT') {
+        // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
         await apiClient.deferAction(result.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
       } else return;
@@ -539,6 +575,20 @@ async function onDropToCalendar(data) {
 async function onDropToWaitingFor(data) {
   if (data.sourceType === 'action' && data.state === 'WAITING') return;
 
+  // Confirm project-to-action conversion before asking for waiting details
+  const isProjectConvert = data.sourceType === 'project'
+    || (data.sourceType === 'someday' && data.type === 'PROJECT')
+    || (data.sourceType === 'completed' && data.type === 'PROJECT');
+  if (isProjectConvert) {
+    const confirmed = await confirm.show({
+      title: 'Convert to Action',
+      message: 'Converting this project to an action will trash its backlog actions. Continue?',
+      confirmText: 'Convert',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
+  }
+
   const waitingFor = await mover.showWaiting({
     waitingFor: ''
   });
@@ -555,6 +605,7 @@ async function onDropToWaitingFor(data) {
     } else if (data.sourceType === 'action') {
       await apiClient.waitAction(data.id, waitingFor);
     } else if (data.sourceType === 'project') {
+      // Confirmation already shown above
       const result = await apiClient.transformProjectToAction(data.id);
       await apiClient.waitAction(result.id, waitingFor);
     } else if (data.sourceType === 'someday') {
@@ -565,6 +616,7 @@ async function onDropToWaitingFor(data) {
         await apiClient.activateAction(data.id);
         await apiClient.waitAction(data.id, waitingFor);
       } else if (data.type === 'PROJECT') {
+        // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
         await apiClient.waitAction(result.id, waitingFor);
       } else return;
@@ -576,6 +628,7 @@ async function onDropToWaitingFor(data) {
         await apiClient.uncompleteAction(data.id);
         await apiClient.waitAction(data.id, waitingFor);
       } else if (data.type === 'PROJECT') {
+        // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
         await apiClient.waitAction(result.id, waitingFor);
       } else return;
@@ -591,6 +644,16 @@ async function onDropToWaitingFor(data) {
 }
 
 async function onDropToReference(data) {
+  if (data.sourceType === 'project') {
+    const confirmed = await confirm.show({
+      title: 'Convert to Reference',
+      message: 'This will convert the project and all its actions to a reference file. Continue?',
+      confirmText: 'Convert',
+      cancelText: 'Cancel'
+    });
+    if (!confirmed) return;
+  }
+
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.transformStuffToFile(data.id);

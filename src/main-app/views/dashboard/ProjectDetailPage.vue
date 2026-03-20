@@ -212,7 +212,7 @@
                   </div>
                   <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
                 </div>
-                <div v-else class="next-action-prompt" @click="onExpandAndFocus">
+                <div v-else-if="!isSomeday" class="next-action-prompt" @click="onExpandAndFocus">
                   <WarningIcon class="next-action-prompt__icon" viewBox="0 0 48 48" />
                   <div class="next-action-prompt__text">
                     <strong class="text-body-m fw-bold">What's the next physical step?</strong>
@@ -762,14 +762,16 @@ function truncateTitle(title, maxLen = 30) {
 }
 
 async function onComplete() {
-  const confirmed = await confirm.show({
-    title: 'Complete Project',
-    message: `Are you sure you want to mark "${project.value.title}" as complete?`,
-    confirmText: 'Complete',
-    cancelText: 'Cancel'
-  })
-
-  if (!confirmed) return
+  const hasActions = orderedActions.value.length > 0
+  if (hasActions) {
+    const confirmed = await confirm.show({
+      title: 'Complete Project',
+      message: `This will also complete all active actions in this project. Are you sure?`,
+      confirmText: 'Complete',
+      cancelText: 'Cancel'
+    })
+    if (!confirmed) return
+  }
 
   actionLoading.value = 'complete'
   const title = truncateTitle(project.value.title)
@@ -827,15 +829,22 @@ async function navigateToNextOrPrev() {
       params: { id: data.id },
       query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
+    // Reload actions for new project
+    await loadProjectActions()
   } catch {
     router.push({ name: backRoute })
   }
 }
 
 async function onTrash() {
+  const hasActions = orderedActions.value.length > 0
+  const message = hasActions
+    ? `This will also move all actions in this project to trash. Are you sure?`
+    : `Are you sure you want to move "${project.value.title}" to trash?`
+
   const confirmed = await confirm.show({
     title: 'Move to Trash',
-    message: `Are you sure you want to move "${project.value.title}" to trash?`,
+    message,
     confirmText: 'Move to Trash',
     cancelText: 'Cancel'
   })
@@ -898,6 +907,16 @@ async function onMoveTo(target) {
   }
 
   if (target === 'ACTION') {
+    if (backlogItems.value.length > 0) {
+      const confirmed = await confirm.show({
+        title: 'Convert to Action',
+        message: `This will trash all backlog actions in this project. Continue?`,
+        confirmText: 'Convert',
+        cancelText: 'Cancel'
+      })
+      if (!confirmed) return
+    }
+
     actionLoading.value = 'move'
     try {
       await apiClient.transformProjectToAction(project.value.id)
@@ -913,6 +932,16 @@ async function onMoveTo(target) {
   }
 
   if (target === 'REFERENCE') {
+    if (orderedActions.value.length > 0) {
+      const confirmed = await confirm.show({
+        title: 'Convert to Reference',
+        message: `This will convert the project and all its actions to a reference file. Continue?`,
+        confirmText: 'Convert',
+        cancelText: 'Cancel'
+      })
+      if (!confirmed) return
+    }
+
     actionLoading.value = 'move'
     try {
       await apiClient.transformProjectToFile(project.value.id)
@@ -931,11 +960,15 @@ async function onMoveTo(target) {
     actionLoading.value = 'move'
     const oldState = project.value.state
     project.value.state = 'SOMEDAY'
+    const hasActions = orderedActions.value.length > 0
 
     try {
       await apiClient.somedayProject(project.value.id)
       statsModel().refreshStats()
-      toaster.success(`"${truncateTitle(project.value.title)}" moved to Someday`)
+      const msg = hasActions
+        ? `"${truncateTitle(project.value.title)}" moved to Someday. Active actions shelved.`
+        : `"${truncateTitle(project.value.title)}" moved to Someday`
+      toaster.success(msg)
       await navigateToNextOrPrev()
     } catch (err) {
       project.value.state = oldState

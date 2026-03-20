@@ -4769,18 +4769,18 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in and a project exists with a title and outcome
 
 **Steps:**
-1. Navigate to the project detail page (/project/:id)
-2. Locate the "Complete" button or action (e.g., in the header or actions area)
-3. Click "Complete"
-4. Verify a confirmation may be shown (if applicable) and confirm
-5. Verify a success toast appears (e.g., "Project completed")
-6. Verify the user is redirected to the Projects list or the project is marked as completed
-7. Navigate to the Projects page (/projects)
-8. Verify the completed project is no longer in the active projects list
-9. Navigate to the Completed page (/completed)
-10. Verify the completed project appears in the completed items list
+1. Navigate to the project detail page (/project/:id) for a project with actions
+2. Click "Complete"
+3. Verify a confirmation dialog warns "This will also complete all active actions in this project. Are you sure?"
+4. Confirm the dialog
+5. Verify a success toast appears (e.g., '"Project" completed')
+6. Verify the user is redirected to the Projects list or next project
+7. Navigate to the Projects page (/projects) and verify the project is no longer listed
+8. Navigate to the Completed page (/completed) and verify the project appears
+9. Verify that the project's actions also appear in the Completed list
+10. Repeat with a project that has NO actions — verify no confirmation dialog is shown (completes immediately)
 
-**Expected Result:** Completing a project from its detail page moves it from the active projects list to the completed items. A success toast confirms the action.
+**Expected Result:** Completing a project from its detail page moves it and all its active actions to completed. Confirmation only shown when project has actions.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4818,23 +4818,20 @@ Use the table below to log each full or partial test run.
 ### TC-157: Move Project to Someday
 **Priority:** Medium | **Area:** Projects
 
-**Preconditions:** User is logged in and a project exists in the active Projects list
+**Preconditions:** User is logged in and a project exists in the active Projects list with at least one action
 
 **Steps:**
 1. Navigate to the Projects page (/projects) and note the project title (e.g., "Launch new website")
 2. Click on the project to navigate to its detail page (/project/:id)
-3. Locate the Move dropdown/button
-4. Click the Move dropdown to open it
-5. Verify "Someday" is listed as a valid destination
-6. Select "Someday"
-7. Verify a success toast or visual confirmation is shown
-8. Verify the user is redirected or the page updates to reflect the move
-9. Navigate to the Projects page (/projects)
-10. Verify "Launch new website" is no longer in the active projects list
-11. Navigate to the Someday page (/someday)
-12. Verify "Launch new website" appears in the Someday list
+3. Note that the project has active actions (e.g., NEXT or CALENDAR actions)
+4. Click the Move dropdown and select "Someday"
+5. Verify a success toast shows: '"Launch new website" moved to Someday. Active actions shelved.'
+6. Navigate to the Projects page (/projects) and verify the project is no longer listed
+7. Navigate to the Someday page (/someday) and verify the project appears
+8. Verify the project's actions are no longer in Next/Today/Waiting lists (they are shelved to BACKLOG)
+9. Repeat with a project that has NO actions — verify toast says only "moved to Someday" (no "shelved" mention)
 
-**Expected Result:** Moving a project to Someday from its detail page removes it from the active Projects list and places it in the Someday list.
+**Expected Result:** Moving a project to Someday shelves its active actions to backlog. Toast message reflects whether actions were shelved.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4850,17 +4847,19 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in and viewing an active project detail page
 
 **Steps:**
-1. Navigate to a project detail page
-2. Open the Move dropdown
-3. Verify it shows: Next Actions, Reference, Someday
-4. Select "Next Actions"
-5. Verify the project is transformed into an action and appears in Next Actions
-6. Create another project and navigate to its detail page
+1. Navigate to a project detail page that has backlog actions
+2. Open the Move dropdown and select "Next Actions"
+3. Verify a confirmation dialog warns "This will trash all backlog actions in this project. Continue?"
+4. Confirm and verify the project is transformed into an action in Next Actions
+5. Verify backlog actions appear in Trash
+6. Create another project with actions and navigate to its detail page
 7. Open the Move dropdown and select "Reference"
-8. Verify the project is transformed to a file in Reference
-9. Navigate to Reference page and verify the file exists
+8. Verify a confirmation dialog warns "This will convert the project and all its actions to a reference file. Continue?"
+9. Confirm and verify the project is transformed to a file in Reference
+10. Create a project with NO backlog actions — verify "Next Actions" conversion proceeds without confirmation
+11. Create a project with NO actions — verify "Reference" conversion proceeds without confirmation
 
-**Expected Result:** Projects can be converted to actions or reference files via the Move dropdown using backend transform endpoints.
+**Expected Result:** Converting a project to action/reference shows confirmation only when the project has actions that will be affected.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4884,8 +4883,11 @@ Use the table below to log each full or partial test run.
 8. Verify the project is transformed to an action in Next Actions
 9. With another someday project, click "Activate"
 10. Verify the project moves back to active Projects
+11. Verify the success toast says "moved to Projects"
+12. Verify actions that were shelved to BACKLOG are restored to their previous states (NEXT, TODAY, etc.)
+13. Verify the project detail page does NOT show the Next Action section while in Someday state
 
-**Expected Result:** Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash.
+**Expected Result:** Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash. Activating restores shelved actions. Next Action section is hidden for Someday projects.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6386,7 +6388,11 @@ Use the table below to log each full or partial test run.
    - If it was a Project (projects icon), go to Projects (/projects)
 8. Verify the restored item appears in the correct bucket
 
-**Expected Result:** Clicking "Restore" on a trashed item removes it from the Trash and returns it to its original bucket. A success toast with "restored" confirms the action. The item is accessible again in its original location.
+9. For a trashed PROJECT: Click "Restore" and verify the toast says '"Project" and its actions restored'
+10. Verify the project's cascade-trashed actions also disappear from the Trash list
+11. Navigate to Projects and verify the project is there; check its actions are also restored
+
+**Expected Result:** Clicking "Restore" on a trashed item removes it from the Trash and returns it to its original bucket. A success toast with "restored" confirms the action. Restoring a project also restores its cascade-trashed actions.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11285,4 +11291,200 @@ Use the table below to log each full or partial test run.
 |------|-----|---------|
 |      |     |         |
 |      |     |         |
+|      |     |         |
+
+---
+
+## Section 28: Project Cascade Operations
+
+### TC-391: Complete Project Without Actions - No Confirmation
+**Priority:** High | **Area:** Projects
+
+**Preconditions:** User is logged in and a project exists with NO actions (no next action, no backlog)
+
+**Steps:**
+1. Navigate to the project detail page
+2. Verify the Next Action section shows "What's the next physical step?" prompt (no actions)
+3. Click "Complete"
+4. Verify NO confirmation dialog is shown — the project completes immediately
+5. Verify a success toast appears
+6. Navigate to Completed page and verify the project is there
+
+**Expected Result:** Completing a project with no actions proceeds without a confirmation dialog.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-392: Trash Project With Actions - Cascade Confirmation
+**Priority:** High | **Area:** Projects
+
+**Preconditions:** User is logged in and a project exists with at least one action (next action or backlog)
+
+**Steps:**
+1. Navigate to the project detail page and verify it has actions
+2. Click "Trash"
+3. Verify a confirmation dialog appears with the message: "This will also move all actions in this project to trash. Are you sure?"
+4. Click "Cancel" and verify nothing happens
+5. Click "Trash" again and confirm
+6. Verify a success toast appears
+7. Navigate to the Trash page
+8. Verify both the project AND its actions appear in the Trash list
+
+**Expected Result:** Trashing a project with actions shows a cascade warning. Both the project and its actions appear in Trash.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-393: Trash Project Without Actions - Standard Confirmation
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User is logged in and a project exists with NO actions
+
+**Steps:**
+1. Navigate to the project detail page for a project with no actions
+2. Click "Trash"
+3. Verify the confirmation dialog shows the standard message (no mention of actions)
+4. Confirm and verify the project is trashed
+
+**Expected Result:** Trashing a project without actions shows a standard confirmation without cascade warning.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-394: Uncomplete Action Blocked by Completed Parent Project (409)
+**Priority:** High | **Area:** Completed Items
+
+**Preconditions:** User has completed a project (which cascade-completed its actions). Both the project and an action appear in the Completed list.
+
+**Steps:**
+1. Navigate to the Completed page (/completed)
+2. Find a completed action that belongs to the completed project
+3. Uncheck the action's checkbox to attempt to restore it
+4. Verify an error toast appears: "Cannot restore this action — its parent project is completed or trashed. Restore the project first."
+5. Verify the action remains in the Completed list (checkbox re-checks)
+6. Now uncheck the parent project first to restore it
+7. Then attempt to uncheck the action again
+8. Verify the action is now successfully restored
+
+**Expected Result:** Uncompleting an action whose parent project is completed or trashed fails with a 409 error and a helpful message guiding the user to restore the project first.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-395: Restore Action Blocked by Trashed Parent Project (409)
+**Priority:** High | **Area:** Trash
+
+**Preconditions:** User has trashed a project (which cascade-trashed its actions). Both the project and an action appear in the Trash list.
+
+**Steps:**
+1. Navigate to the Trash page (/trash)
+2. Find a trashed action that belongs to the trashed project
+3. Click "Restore" on the action
+4. Verify an error toast appears: "Cannot restore this action — its parent project is completed or trashed. Restore the project first."
+5. Verify the action remains in the Trash list
+6. Now click "Restore" on the parent project
+7. Verify the project AND its cascade-trashed actions are all restored
+8. Verify the toast says '"Project" and its actions restored'
+
+**Expected Result:** Restoring a trashed action whose parent project is also trashed fails with a helpful 409 error. Restoring the project itself restores all cascade-trashed actions.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-396: Someday Project Activate
+**Priority:** Medium | **Area:** Someday
+
+**Preconditions:** User has a project in SOMEDAY state that previously had active actions (which were shelved to BACKLOG when the project was moved to Someday)
+
+**Steps:**
+1. Navigate to the Someday page (/someday)
+2. Find the project item (identified by project icon)
+3. Click "Activate"
+4. Verify the success toast says: '"Project" moved to Projects'
+5. Navigate to the Projects page and verify the project is active
+6. Open the project detail and verify actions are restored (e.g., previously NEXT actions are back in NEXT state)
+
+**Expected Result:** Activating a someday project restores its shelved actions to their previous states.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-397: Uncomplete Project Toast
+**Priority:** Medium | **Area:** Completed Items / Projects
+
+**Preconditions:** User has a completed project in the Completed list
+
+**Steps:**
+1. Navigate to the Completed page
+2. Uncheck the project's checkbox
+3. Verify the success toast says: '"Project" restored'
+4. Navigate to the Projects page and verify the project is active
+
+**Expected Result:** Uncompleting a project restores it to active state with a standard restored toast.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-398: Convert Project to Action - Backlog Confirmation
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User has a project with at least one backlog action (expand actions to verify)
+
+**Steps:**
+1. Navigate to the project detail page
+2. Expand the actions list and verify backlog actions exist
+3. Open the Move dropdown and select "Next Actions"
+4. Verify a confirmation dialog: "This will trash all backlog actions in this project. Continue?"
+5. Cancel and verify nothing happens
+6. Select "Next Actions" again and confirm
+7. Verify the project is converted to an action in Next Actions
+8. Verify backlog actions appear in Trash
+
+**Expected Result:** Converting a project with backlog actions to an action warns about the backlog being trashed.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-399: Convert Project to Reference - Actions Confirmation
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User has a project with actions (next action and/or backlog)
+
+**Steps:**
+1. Navigate to the project detail page with actions
+2. Open the Move dropdown and select "Reference"
+3. Verify a confirmation dialog: "This will convert the project and all its actions to a reference file. Continue?"
+4. Cancel and verify nothing happens
+5. Select "Reference" again and confirm
+6. Verify the project is converted to a reference file
+7. Navigate to Reference page and verify the file exists
+
+**Expected Result:** Converting a project with actions to reference warns about all actions being included in the reference file.
+
+| Date | P/F | Comment |
+|------|-----|---------|
 |      |     |         |

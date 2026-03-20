@@ -24,7 +24,7 @@ function normalizeError(error) {
             case 404:
                 return {status, message: "Resource not found (404)."}
             case 409:
-                return {status, message: "Conflict (409). Resource already exists."}
+                return {status, message: "Conflict. The request cannot be completed."}
             case 413:
                 return {status, message: "File too large or storage quota exceeded."}
             case 422:

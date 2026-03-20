@@ -67,6 +67,8 @@ const confirm = confirmModel()
 
 watch(error, (err) => {
   if (!err) return
+  // Skip 409 errors — handled directly in onRestoreOne with a specific message
+  if (err.status === 409) return
   const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
   toaster.push(msg)
 })
@@ -88,11 +90,18 @@ async function onRestoreOne(item) {
   const title = truncateTitle(item.title)
   try {
     await restoreItem(item)
-    toaster.success(`"${title}" restored`)
+    if (item.type === 'PROJECT') {
+      toaster.success(`"${title}" and its actions restored`)
+    } else {
+      toaster.success(`"${title}" restored`)
+    }
     // Reload list to backfill removed item
     loadTrash({ reset: true }).catch(() => {})
   } catch (err) {
-    toaster.push(err.message || 'Failed to restore item')
+    const msg = (err.status === 409 && item.type === 'ACTION')
+      ? 'Cannot restore this action — its parent project is completed or trashed. Restore the project first.'
+      : (err.message || 'Failed to restore item')
+    toaster.push(msg)
   }
 }
 

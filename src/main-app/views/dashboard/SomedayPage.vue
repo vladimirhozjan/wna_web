@@ -246,7 +246,11 @@ async function onActivate(id) {
   activatingId.value = id
   try {
     await activateItem(item)
-    toaster.success(`"${title}" moved to ${typeLabels[item.type]}`)
+    if (item.type === 'PROJECT') {
+      toaster.success(`"${title}" moved to Projects`)
+    } else {
+      toaster.success(`"${title}" moved to ${typeLabels[item.type]}`)
+    }
     // Reload list to backfill removed item
     loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
   } catch (err) {

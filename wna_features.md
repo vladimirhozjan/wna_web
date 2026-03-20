@@ -554,11 +554,22 @@ Configurable in Settings page:
 - Completed project: "Undo" only
 - Someday project: "Activate", "Complete", "Move" dropdown (Next Actions, Reference), "Trash"
 
+**Cascade behaviors:**
+- **Complete project:** If the project has unfinished actions, a confirmation warns "This will also complete all active actions in this project." No confirmation if there are no actions.
+- **Trash project:** If the project has unfinished actions, the confirmation warns "This will also move all actions in this project to trash." Standard confirmation if there are no actions.
+- **Move to Someday:** Shelves active actions (NEXT, TODAY, CALENDAR, WAITING) to BACKLOG. Toast informs: "Active actions shelved."
+- **Activate (from Someday):** Restores shelved actions from BACKLOG to their previous states. Toast: "moved to Projects"
+- **Undo (from Completed):** Restores project to active. Toast: "restored to projects"
+- **Convert to Action:** If backlog actions exist, confirmation warns "This will trash all backlog actions in this project."
+- **Convert to Reference:** If any actions exist, confirmation warns "This will convert the project and all its actions to a reference file."
+- **Restore (from Trash):** Also restores cascade-trashed actions. Toast: "Project and its actions restored."
+
 **Outcome section:** Click-to-edit textarea; placeholder "What does done look like?"
 
-**Next Action section (active projects only):**
+**Next Action section (active and someday projects, hidden for completed):**
 - Shows the current next action as a card with checkbox + inline editable title + "→ Next" link
-- When no next action exists: Warning icon + "What's the next physical step?" + "Every active project needs a next action"
+- When no next action exists (active projects only): Warning icon + "What's the next physical step?" + "Every active project needs a next action"
+- Someday projects: The warning prompt is hidden (actions are shelved to backlog, so having no next action is expected)
 - Expand/collapse toggle shows backlog action count (+N)
 
 **Expanded action list:**
@@ -620,6 +631,7 @@ Configurable in Settings page:
 
 **Per-item actions:**
 - **Activate:** Moves item back to its original bucket (Stuff → Inbox, Action → Next, Project → Projects); shows toast with destination
+- **Activate project:** Also restores shelved actions from BACKLOG to their previous states. Toast: "moved to Projects"
 - **Trash:** With confirmation dialog
 
 **Item click:** Navigates to the correct detail page (stuff-detail, action-detail, or project-detail) based on item type
@@ -697,6 +709,14 @@ Configurable in Settings page:
 - Cursor-based pagination
 - Items are draggable to sidebar targets for quick restore to original bucket
 
+**Uncomplete project behavior:**
+- Restores the project to active state
+- Toast: "restored to projects"
+
+**Uncomplete action conflict (409):**
+- If a completed action's parent project is also completed or trashed, uncompleting the action is blocked
+- Error message: "Cannot restore this action — its parent project is completed or trashed. Restore the project first."
+
 **Item click:** Navigates to correct detail page with "Undo" button context
 
 **Empty state:** "No completed items" + instructional text
@@ -724,6 +744,8 @@ Configurable in Settings page:
 
 **Per-item action:**
 - **Restore:** Moves item back to its original bucket; shows toast "restored"
+- **Restore project:** Also restores cascade-trashed actions (actions that were trashed together with the project). Toast: "and its actions restored"
+- **Restore action conflict (409):** If a trashed action's parent project is completed or trashed, restore is blocked. Error message: "Cannot restore this action — its parent project is completed or trashed. Restore the project first."
 
 **Empty state:** "Trash is empty" + instructional text
 
