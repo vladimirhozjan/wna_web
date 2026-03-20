@@ -352,16 +352,19 @@ const comparisonRows = [
   color: var(--color-text-secondary);
 }
 
-@media (min-width: 769px) {
-  .compare-table { display: table; }
-  .compare-cards { display: none; }
-}
-
-/* Mobile cards — hidden on desktop */
+/* Mobile cards — hidden on desktop, shown on mobile */
 .compare-cards {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 12px;
+}
+
+@media (min-width: 769px) {
+  .compare-table { display: table; }
+}
+
+@media (max-width: 768px) {
+  .compare-cards { display: flex; }
 }
 
 .compare-card {
