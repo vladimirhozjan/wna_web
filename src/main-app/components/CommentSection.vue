@@ -12,13 +12,13 @@
 
     <!-- Comment list -->
     <template v-else>
-      <!-- Empty state: clickable placeholder like Description -->
-      <div v-if="comments.length === 0 && !editing" class="detail-section-wrapper">
+      <!-- Clickable placeholder when not editing -->
+      <div v-if="!atLimit && !editing" class="detail-section-wrapper">
         <p class="text-body-m detail-section-content detail-section-content--empty" @click="startEditing">Add a comment...</p>
       </div>
 
-      <!-- Add comment (always first, above comment list) -->
-      <div v-if="!atLimit && (comments.length > 0 || editing)" class="comment-add">
+      <!-- Add comment textarea (only when editing) -->
+      <div v-if="!atLimit && editing" class="comment-add">
         <textarea
             ref="textareaRef"
             v-model="newMessage"
@@ -326,12 +326,18 @@ function formatRelativeTime(dateStr) {
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
   padding: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
   outline: none;
-  width: 100%;
   resize: none;
   background: var(--color-bg-primary);
   box-sizing: border-box;
   line-height: var(--lh-relaxed);
+}
+
+.comment-textarea::placeholder {
+  color: var(--color-text-tertiary);
+  font-style: italic;
 }
 
 .comment-textarea:focus {
