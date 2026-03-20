@@ -95,6 +95,16 @@ export function recurringModel() {
         }
     }
 
+    async function moveRecurring(id, destination) {
+        error.value = null
+        try {
+            await apiClient.moveRecurring(id, destination)
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
     async function spawnRecurring(id) {
         error.value = null
 
@@ -120,6 +130,7 @@ export function recurringModel() {
         createRecurring,
         updateRecurring,
         deleteRecurring,
+        moveRecurring,
         spawnRecurring,
     }
 }

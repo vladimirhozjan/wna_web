@@ -31,9 +31,10 @@
           :has-more="false"
           :loading-ids="loadingIds"
           no-checkbox
-          :disabled="true"
+          source-type="recurring"
           @click="onItemClick"
           @delete="onDelete"
+          @move="onMove"
       >
         <template #subtitle="{ item }">
           <MetadataRow :item="item" entity-type="recurring" />
@@ -78,6 +79,7 @@ const {
   loadRecurring,
   createRecurring,
   deleteRecurring,
+  moveRecurring,
 } = recurringModel()
 
 const showAdd = ref(false)
@@ -85,10 +87,12 @@ const newTitle = ref('')
 const add_input = ref(null)
 const adding = ref(false)
 const deletingId = ref(null)
+const movingId = ref(null)
 
 const loadingIds = computed(() => {
   const ids = []
   if (deletingId.value) ids.push(deletingId.value)
+  if (movingId.value) ids.push(movingId.value)
   return ids
 })
 
@@ -127,6 +131,17 @@ async function onAdd() {
 
 function onItemClick(item) {
   router.push({ name: 'recurring-detail', params: { id: item.id } })
+}
+
+async function onMove(id, newIndex) {
+  movingId.value = id
+  try {
+    await moveRecurring(id, newIndex)
+  } catch (e) {
+    await loadRecurring().catch(() => {})
+  } finally {
+    movingId.value = null
+  }
 }
 
 function truncateTitle(title, maxLen = 30) {

@@ -1465,6 +1465,15 @@ export async function spawnRecurring(id) {
     }
 }
 
+export async function moveRecurring(id, destination) {
+    try {
+        const res = await httpApi.post(`/v1/recurring/${id}/move`, {destination}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Stats API ──
 
 export async function getStats() {
@@ -1677,6 +1686,7 @@ const apiClient = {
     updateRecurring,
     deleteRecurring,
     spawnRecurring,
+    moveRecurring,
     // Stats API
     getStats,
     // Overdue API

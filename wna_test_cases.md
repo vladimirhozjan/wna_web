@@ -7749,6 +7749,36 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-262b: Reorder Recurring Action Templates via Drag-and-Drop
+**Priority:** High | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in. At least 3 recurring action templates exist in the Recurring list.
+
+**Steps:**
+1. Navigate to `/calendar` and click the "Recurring" view toggle
+2. Verify all 3 recurring templates are displayed in the list
+3. Note the initial order of the templates (e.g., "Template A", "Template B", "Template C")
+4. Long-press (touch) or click-and-hold (mouse, 150ms delay) on "Template C"
+5. Verify the item becomes visually picked up (chosen state styling)
+6. Drag "Template C" above "Template A" (to the top of the list)
+7. Release the drag
+8. Verify the list now shows: "Template C", "Template A", "Template B"
+9. Navigate away from the Calendar page and return to the Recurring view
+10. Verify the new order persists: "Template C", "Template A", "Template B"
+11. Drag "Template A" between "Template C" and "Template B"
+12. Verify the list now shows: "Template C", "Template A", "Template B" (no change since it was already there — try a different move)
+13. If only 3 items exist, verify the drag hint animation (wiggle on first item) appears on first visit
+
+**Expected Result:** Recurring templates can be reordered via drag-and-drop with the same UX as other lists (Next, Inbox, Projects). The new order persists across navigation. Visual feedback (chosen/ghost states) is shown during drag.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 17: Context Tags & Filtering
 
 ---

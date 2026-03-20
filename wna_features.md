@@ -486,6 +486,7 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 ### 8.7 Recurring View
 
 - List of all recurring action templates (see [Recurring Actions](#17-recurring-actions))
+- **Drag-to-reorder:** Templates can be reordered by dragging, same UX as other lists (150ms delay on touch, wiggle hint on first visit)
 
 ### 8.8 Calendar Item Interactions
 
