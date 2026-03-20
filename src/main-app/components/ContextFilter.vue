@@ -20,7 +20,7 @@
                 type="button"
                 class="text-body-m context-filter__item"
                 :class="{ 'context-filter__item--active': activeTag === tag }"
-                @click="onSelect(tag)"
+                @click="onSelect(tag, close)"
             >
               {{ tag }}
             </button>
@@ -69,8 +69,9 @@ onMounted(() => {
   loadTags()
 })
 
-function onSelect(tag) {
+function onSelect(tag, closeFn) {
   setTag(tag)
+  closeFn()
 }
 
 function onClear(closeFn) {
