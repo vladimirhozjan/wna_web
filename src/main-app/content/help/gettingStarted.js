@@ -1,13 +1,13 @@
 export const gettingStarted = [
   {
-    title: 'What is GTD?',
+    title: 'What is WhatsNextAction?',
     description:
-      'Getting Things Done (GTD) is a productivity methodology by David Allen. The core idea is simple: your mind is for having ideas, not holding them. By capturing everything that has your attention into a trusted external system, clarifying what each item means, and organizing the results into clear categories, you free up mental space to focus and engage with your work. WhatsNextAction is built from the ground up around these principles.',
+      'WhatsNextAction is built on a simple idea: your mind is for having ideas, not holding them. By capturing everything that has your attention into a trusted external system, clarifying what each item means, and organizing the results into clear categories, you free up mental space to focus and engage with your work.',
   },
   {
     title: 'Creating Your Account',
     description:
-      'Tap "Start Free" on the landing page to open the registration dialog. Enter your email, choose a password (at least 8 characters with a letter, a digit, and a symbol), and confirm it. After registering, a verification email is sent to your address — click the link in the email to verify your account. Once verified, you are automatically logged in and taken to your Dashboard. You can also sign in from the "Sign In" button if you already have an account.',
+      'Tap "Start Free" on the landing page to open the registration dialog. Enter your email, choose a password (at least 8 characters with a letter, a digit, and a symbol), and confirm it. After registering, a verification email is sent to your address — click the link to verify your account. If you don\'t see the email, use the Resend button (available every 60 seconds). The app detects verification automatically — once you click the link in any browser, you\'ll be logged in without returning to the original tab. You can also sign in from the "Sign In" button if you already have an account.',
   },
   {
     title: 'Your First Five Minutes',
@@ -15,7 +15,7 @@ export const gettingStarted = [
       'Open your Inbox and do a brain dump — type everything on your mind and press Enter after each one. Tasks, ideas, errands, reminders, things you need to buy, calls to make — get it all out. Don\'t think about organizing, just capture. Once you have a handful of items, tap the Clarify button at the top. The app will walk you through each item step by step, helping you decide what it is and where it belongs.',
   },
   {
-    title: 'The Five Steps of GTD',
+    title: 'The Five Steps',
     description:
       '1. Capture — Collect everything into your Inbox using Quick Add or the Inbox input. 2. Clarify — Process each item: is it actionable? Is it one step or many? Can you do it in two minutes? 3. Organize — The Clarify wizard places items into Next Actions, Projects, Calendar, Waiting For, Someday/Maybe, or Reference. 4. Reflect — Do a Weekly Review to keep your system current and complete. 5. Engage — Work from your Next Actions and Today lists with confidence that nothing is falling through the cracks.',
   },
@@ -27,7 +27,7 @@ export const gettingStarted = [
   {
     title: 'Navigating the App',
     description:
-      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a GTD bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Completed, and Trash. Count badges next to each item show how many items are in that bucket. The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
+      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Completed, and Trash. Count badges next to each item show how many items are in that bucket. The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
   },
   {
     title: 'Quick Add — Capture From Anywhere',
@@ -52,7 +52,7 @@ export const gettingStarted = [
   {
     title: 'Setting Up Your First Project',
     description:
-      'A project in GTD is any outcome that needs more than one action to complete. Go to Projects and add one with a title and an outcome — "What does done look like?" Then add action steps from the project detail page. The first action becomes your Next Action automatically, and when you complete it, the next one in the backlog promotes to take its place.',
+      'A project is any outcome that needs more than one action to complete. Go to Projects and add one with a title and an outcome — "What does done look like?" Then add action steps from the project detail page. The first action becomes your Next Action automatically, and when you complete it, the next one in the backlog promotes to take its place.',
   },
   {
     title: 'Attaching Files and Adding Comments',
@@ -62,6 +62,11 @@ export const gettingStarted = [
   {
     title: 'Customizing Your Settings',
     description:
-      'Visit Settings to personalize the app. Set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, choose whether new items appear at the top or bottom of lists, and enable or disable the Weekly Review section. You can also change your password and manage active sessions from here. Changes save automatically.',
+      'Visit Settings to personalize the app. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review section, manage email notifications, change your password, and review active sessions from here. Changes save automatically.',
+  },
+  {
+    title: 'Email Notifications',
+    description:
+      'WhatsNextAction can send you helpful email reminders: tasks due today, a daily next-actions summary, and alerts when a project is missing a next action. Control these from Settings — a master toggle turns all notifications on or off, and individual toggles let you enable or disable each type. Urgent emails like password resets and login alerts are always delivered and cannot be turned off.',
   },
 ]

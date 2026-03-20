@@ -1,13 +1,13 @@
 <template>
-  <transition name="gtd-tip">
-    <div v-if="visible" class="gtd-tip" :class="`gtd-tip--${variant}`">
-      <div class="gtd-tip__icon" v-if="$slots.icon">
+  <transition name="tip-tricks">
+    <div v-if="visible" class="tip-tricks" :class="`tip-tricks--${variant}`">
+      <div class="tip-tricks__icon" v-if="$slots.icon">
         <slot name="icon" />
       </div>
-      <div class="text-body-m gtd-tip__content">
+      <div class="text-body-m tip-tricks__content">
         <slot />
       </div>
-      <button v-if="dismissible" class="gtd-tip__close" @click="dismiss" aria-label="Dismiss tip">
+      <button v-if="dismissible" class="tip-tricks__close" @click="dismiss" aria-label="Dismiss tip">
         &times;
       </button>
     </div>
@@ -38,7 +38,7 @@ defineExpose({ dismiss, visible })
 </script>
 
 <style scoped>
-.gtd-tip {
+.tip-tricks {
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -49,29 +49,29 @@ defineExpose({ dismiss, visible })
   margin: 0 0 16px 0;
 }
 
-.gtd-tip--quote {
+.tip-tricks--quote {
   border-left-color: var(--color-text-tertiary);
   font-style: italic;
 }
 
-.gtd-tip__icon {
+.tip-tricks__icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   color: var(--color-action);
 }
 
-.gtd-tip--quote .gtd-tip__icon {
+.tip-tricks--quote .tip-tricks__icon {
   color: var(--color-text-tertiary);
 }
 
-.gtd-tip__content {
+.tip-tricks__content {
   flex: 1;
   color: var(--color-text-primary);
   line-height: var(--lh-relaxed);
 }
 
-.gtd-tip__close {
+.tip-tricks__close {
   flex-shrink: 0;
   background: none;
   border: none;
@@ -82,17 +82,17 @@ defineExpose({ dismiss, visible })
   padding: 0 2px;
 }
 
-.gtd-tip__close:hover {
+.tip-tricks__close:hover {
   color: var(--color-text-primary);
 }
 
-.gtd-tip-enter-active,
-.gtd-tip-leave-active {
+.tip-tricks-enter-active,
+.tip-tricks-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.gtd-tip-enter-from,
-.gtd-tip-leave-to {
+.tip-tricks-enter-from,
+.tip-tricks-leave-to {
   opacity: 0;
   transform: translateY(-8px);
 }

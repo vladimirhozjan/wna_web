@@ -77,13 +77,13 @@
       </div>
     </section>
 
-    <!-- GTD Best Practices -->
+    <!-- Productivity Best Practices -->
     <section v-if="!isSearching || filteredPractices.length" class="section section--gray">
       <div class="section-inner">
         <div class="section-header">
           <h2 class="text-h2 section-heading">
             <ThumbUpIcon class="section-heading__icon" />
-            GTD Best Practices
+            Productivity Best Practices
           </h2>
           <router-link v-if="!isSearching && bestPractices.length > PRACTICES_LIMIT" to="/help/best-practices" class="text-body-s fw-medium show-more show-more--desktop">
             Show all

@@ -135,7 +135,7 @@ const tiers = [
     name: 'Free',
     monthlyPrice: 0,
     yearlyPrice: 0,
-    description: 'Get started with the basics of GTD.',
+    description: 'Get started with the essentials.',
     featured: false,
     ctaText: 'Start for Free',
     features: [
@@ -193,7 +193,7 @@ const comparisonRows = [
   { feature: 'Stuff items',                  free: '10',      pro: '100',       business: 'Unlimited' },
   { feature: 'Context tags',                 free: '5',       pro: '25',        business: 'Unlimited' },
   { feature: 'Inbox capture',                free: true,      pro: true,        business: true },
-  { feature: 'GTD clarify wizard',           free: true,      pro: true,        business: true },
+  { feature: 'Clarify wizard',           free: true,      pro: true,        business: true },
   { feature: 'Next actions',                 free: true,      pro: true,        business: true },
   { feature: 'Calendar view',                free: true,      pro: true,        business: true },
   { feature: 'Weekly review',                free: true,      pro: true,        business: true },
@@ -352,16 +352,19 @@ const comparisonRows = [
   color: var(--color-text-secondary);
 }
 
-@media (min-width: 769px) {
-  .compare-table { display: table; }
-  .compare-cards { display: none; }
-}
-
-/* Mobile cards — hidden on desktop */
+/* Mobile cards — hidden on desktop, shown on mobile */
 .compare-cards {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 12px;
+}
+
+@media (min-width: 769px) {
+  .compare-table { display: table; }
+}
+
+@media (max-width: 768px) {
+  .compare-cards { display: flex; }
 }
 
 .compare-card {

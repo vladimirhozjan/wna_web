@@ -1,7 +1,7 @@
 <template>
   <section class="cta-banner">
     <div class="cta-inner">
-      <h2 class="text-h2 cta-heading">Ready to Get Things Done?</h2>
+      <h2 class="text-h2 cta-heading">Ready to Take Control?</h2>
       <p class="text-body-m cta-subtitle">Start organizing your life for free today.</p>
       <button class="text-body-m fw-semibold cta-btn" @click="$emit('open-register')">Start Free</button>
     </div>

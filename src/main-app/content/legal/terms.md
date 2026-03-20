@@ -16,7 +16,7 @@ By creating an account or using the Service, you agree to be bound by these Term
 
 ## 2. Service Description
 
-WhatsNextAction is a web-based productivity platform implementing the Getting Things Done (GTD) methodology. The Service provides tools for capturing, clarifying, organizing, reviewing, and engaging with tasks and projects.
+WhatsNextAction is a web-based productivity platform designed for stress-free productivity, inspired by proven task management principles. The Service provides tools for capturing, clarifying, organizing, reviewing, and engaging with tasks and projects.
 
 ### Core Features
 
@@ -35,6 +35,7 @@ The Service includes the following functionality:
 - **Recurring Actions** - Automated repeating action templates
 - **Context Tags** - Tag-based filtering for context-specific work
 - **Quick Add** - Rapid inbox capture from any page
+- **Email Notifications** - Optional task reminders, daily summaries, and project nudges delivered by email
 
 Feature availability depends on your subscription plan (see Section 5).
 
@@ -46,7 +47,7 @@ You must be at least **15 years old** to use the Service. By registering, you re
 
 ### 3.2 Account Creation
 
-To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol).
+To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol). You must verify your email address before you can access the Service.
 
 ### 3.3 Account Security
 
@@ -95,6 +96,7 @@ Usage limits apply based on your subscription plan:
 | Attachments per item | 10 | 10 | 10 |
 | Max file size | 50 MB | 50 MB | 50 MB |
 | Comments per item | 50 | 50 | 50 |
+| Comment max length | 2000 chars | 2000 chars | 2000 chars |
 
 We reserve the right to modify these limits with reasonable notice.
 
