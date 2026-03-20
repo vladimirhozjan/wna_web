@@ -31,11 +31,17 @@ export const faq = [
       'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely or use "End Others" to revoke all sessions except the one you are currently using.',
   },
 
-  // --- GTD Concepts ---
   {
-    question: 'What is Getting Things Done (GTD)?',
+    question: 'I didn\'t get the verification email. What do I do?',
     answer:
-      'Getting Things Done is a productivity methodology created by David Allen. It is built on five steps: Capture everything that has your attention, Clarify what each item means and what action it requires, Organize the results into the right categories, Reflect on your system regularly, and Engage with confidence knowing nothing is slipping through the cracks. WhatsNextAction implements this methodology so you can achieve stress-free productivity.',
+      'Check your spam or junk folder first. If it\'s not there, use the "Resend Verification Email" button on the verification screen — you can resend every 60 seconds. The app will automatically detect when you verify from any browser or device and log you in. If you still have trouble, contact support@whatsnextaction.com.',
+  },
+
+  // --- Methodology ---
+  {
+    question: 'What methodology does WhatsNextAction use?',
+    answer:
+      'WhatsNextAction is built on a five-step productivity system: Capture everything that has your attention, Clarify what each item means and what action it requires, Organize the results into the right categories, Reflect on your system regularly, and Engage with confidence knowing nothing is slipping through the cracks. This approach helps you achieve stress-free productivity.',
   },
   {
     question: "What's the difference between a project and an action?",
@@ -50,7 +56,7 @@ export const faq = [
   {
     question: 'What is the Weekly Review?',
     answer:
-      'The Weekly Review is a cornerstone of GTD. It is a routine where you step back and review your entire system to make sure it is complete and current. WhatsNextAction guides you through six steps: empty your Inbox, review Next Actions, review Waiting For items, review Projects, review Someday/Maybe, and review your Calendar. You can enable it in Settings and even set up a recurring reminder.',
+      'The Weekly Review is a cornerstone of effective productivity. It is a routine where you step back and review your entire system to make sure it is complete and current. WhatsNextAction guides you through six steps: empty your Inbox, review Next Actions, review Waiting For items, review Projects, review Someday/Maybe, and review your Calendar. You can enable it in Settings and even set up a recurring reminder.',
   },
 
   // --- Inbox & Clarify ---
@@ -67,7 +73,7 @@ export const faq = [
   {
     question: 'What happens during Clarify?',
     answer:
-      'Clarify is a guided, step-by-step wizard that helps you process each Inbox item according to GTD principles. First you decide whether the item is actionable. If not, you can file it as Reference, park it in Someday/Maybe, or Trash it. If it is actionable, you decide whether it is a single action or a multi-step project. Single actions that take less than two minutes should be done immediately (the two-minute rule). Otherwise, you create an action with optional tags, dates, and a description, or create a project with an outcome definition.',
+      'Clarify is a guided, step-by-step wizard that helps you process each Inbox item according to proven productivity principles. First you decide whether the item is actionable. If not, you can file it as Reference, park it in Someday/Maybe, or Trash it. If it is actionable, you decide whether it is a single action or a multi-step project. Single actions that take less than two minutes should be done immediately (the two-minute rule). Otherwise, you create an action with optional tags, dates, and a description, or create a project with an outcome definition.',
   },
 
   // --- Moving & Organizing ---
@@ -101,12 +107,12 @@ export const faq = [
   {
     question: 'Can I set due dates and deferred dates?',
     answer:
-      'Yes. On any action\'s detail page, expand the Dates section. You can set a due date with an optional time for hard deadlines. You can also defer an action with either "Scheduled for" (a specific date, time, and duration that appears on your Calendar) or "Start after" (a tickler date that hides the action until that day, then surfaces it in Next Actions).',
+      'Yes. On any action\'s detail page, expand the Dates section. You can set a due date with an optional time for hard deadlines. You can also defer an action with either "Scheduled for" (a specific date, time, and duration that appears on your Calendar) or "Start after" (a tickler date that hides the action until that day, then surfaces it in Next Actions). Note: scheduled dates and due dates are mutually exclusive — setting one clears the other. Start-after dates and due dates can coexist.',
   },
   {
     question: 'How does the Calendar work?',
     answer:
-      'The Calendar shows your time-specific actions and commitments — your "hard landscape" in GTD terms. It offers Day, Week, Month, Year, and Recurring views. In Day and Week views, scheduled actions appear as time blocks based on their start time and duration. You can click an empty time slot to create a new action, drag items to reschedule them, and switch to the Recurring view to manage repeating action templates. Calendar settings (week start day, time format, business hours) are configurable in Settings.',
+      'The Calendar shows your time-specific actions and commitments — your "hard landscape". It offers Day, Week, Month, Year, and Recurring views. In Day and Week views, scheduled actions appear as time blocks based on their start time and duration. You can click an empty time slot to create a new action, drag items to reschedule them, and switch to the Recurring view to manage repeating action templates. Calendar settings (week start day, time format, business hours) are configurable in Settings.',
   },
   {
     question: 'What are recurring actions?',
@@ -147,7 +153,7 @@ export const faq = [
   {
     question: 'How does the Reference file manager work?',
     answer:
-      'Reference is your non-actionable file storage — the GTD "Reference" bucket. It works like a file manager with folders, file uploads (up to 50 MB per file), global search, and a separate trash. You can create folders, upload files by clicking or dragging, rename and move items, and preview images, PDFs, and text files in the browser. Your storage quota is shown in the toolbar. Stuff items clarified as "Reference" are automatically saved here as text notes.',
+      'Reference is your non-actionable file storage — the Reference bucket. It works like a file manager with folders, file uploads (up to 50 MB per file), global search, and a separate trash. You can create folders, upload files by clicking or dragging, rename and move items, and preview images, PDFs, and text files in the browser. Your storage quota is shown in the toolbar. Stuff items clarified as "Reference" are automatically saved here as text notes.',
   },
 
   // --- Trash & Recovery ---
@@ -174,6 +180,35 @@ export const faq = [
     question: 'What are the limits on attachments and comments?',
     answer:
       'Each item (action, project, or stuff) supports up to 10 file attachments with a maximum of 50 MB per file. Comments are limited to 50 per item, with each comment up to 2000 characters. These limits apply across all plans.',
+  },
+
+  // --- Appearance & Notifications ---
+  {
+    question: 'Can I switch to dark mode?',
+    answer:
+      'Yes. Go to Settings and find the Application section. Choose Light, Dark, or System Default. System Default follows your operating system\'s preference and updates live when you change it.',
+  },
+  {
+    question: 'How do I change my avatar?',
+    answer:
+      'WhatsNextAction uses Gravatar for profile pictures. Create a free account at gravatar.com with the same email you use for WhatsNextAction, and your avatar will appear automatically. If you don\'t have a Gravatar, the app displays a colored circle with your initials.',
+  },
+  {
+    question: 'How do I manage email notifications?',
+    answer:
+      'Go to Settings and find the Notifications section. A master toggle turns all email notifications on or off. Below it, individual toggles let you control specific emails: tasks due today, daily next-action summaries, and project-needs-next-action alerts. Urgent emails like password resets and login alerts are always delivered and cannot be disabled.',
+  },
+  {
+    question: 'What does "overdue" mean and how are overdue items shown?',
+    answer:
+      'An item is overdue when its due date is in the past. Overdue items are highlighted with a red left border and light red background in all list views. On the Dashboard, a red alert banner appears at the top showing how many items are overdue. In the Calendar, overdue items appear in dark red.',
+  },
+
+  // --- Account Management ---
+  {
+    question: 'How do I delete my account?',
+    answer:
+      'You can delete your account from the Settings page. Upon deletion, all your content is permanently removed within 30 days, including backup copies. If you have an active paid subscription, it will be cancelled and the standard cancellation terms apply. This action cannot be undone.',
   },
 
   // --- Device & Accessibility ---

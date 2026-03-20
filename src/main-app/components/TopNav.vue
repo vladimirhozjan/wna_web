@@ -7,7 +7,7 @@
 
     <!-- Center nav links (landing/public context, desktop only) -->
     <nav v-if="context === 'landing'" class="topnav-center desktop-only">
-      <a href="/#why-gtd" class="nav-link text-body-s">Why GTD</a>
+      <a href="/#why-us" class="nav-link text-body-s">Why Us</a>
       <a href="/#features" class="nav-link text-body-s">Features</a>
       <router-link to="/pricing" class="nav-link text-body-s">Pricing</router-link>
       <router-link to="/help" class="nav-link text-body-s">Help</router-link>

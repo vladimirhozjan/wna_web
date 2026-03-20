@@ -8,7 +8,7 @@
           Back to Help
         </router-link>
 
-        <h1 class="text-h1 heading">GTD Best Practices</h1>
+        <h1 class="text-h1 heading">Productivity Best Practices</h1>
 
         <div class="card-grid">
           <div v-for="item in bestPractices" :key="item.title" class="card">

@@ -49,8 +49,9 @@ We automatically collect certain technical data when you use the Service:
 Your application settings are stored to provide a personalized experience:
 
 - Calendar preferences (week start day, time format, business hours)
-- Display preferences (view modes, item positioning)
+- Display preferences (view modes, item positioning, theme)
 - Tag presets and context filters
+- Notification preferences (email notification toggles)
 - Dismissed tips and hints
 
 ### 2.5 Data We Do Not Collect
@@ -78,9 +79,10 @@ Where we rely on legitimate interest, we have conducted a balancing test and det
 
 We use your personal data exclusively for the following purposes:
 
-- **Providing the Service** - storing and organizing your GTD content, synchronizing across your sessions
+- **Providing the Service** - storing and organizing your content, synchronizing across your sessions
 - **Authentication and security** - verifying your identity, managing login sessions, detecting unauthorized access
-- **Account communications** - sending password reset emails, security notifications, and essential service updates
+- **Account communications** - sending password reset emails, email verification, login alerts, security notifications, and essential service updates
+- **Task notifications** - sending optional email reminders such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
 - **Subscription management** - processing payments, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
 - **Legal compliance** - fulfilling our legal obligations under applicable law
@@ -103,14 +105,18 @@ We share your personal data only with the following categories of recipients, st
 
 - **Payment service provider** - processes subscription payments. Your payment details (card number, billing address) are handled directly by the payment processor and are never stored on our servers. The payment processor acts as an independent data controller for payment data.
 
-### 5.4 What We Do Not Do
+### 5.4 Avatar Service
+
+- **Gravatar (Automattic, Inc.)** — We send a one-way SHA-256 hash of your lowercase email address to gravatar.com to retrieve your profile avatar image. No other personal data is shared with Gravatar. If no Gravatar account exists for your email, no image is returned and a local fallback (your initials) is displayed instead.
+
+### 5.5 What We Do Not Do
 
 - We do **not** sell your personal data to any third party
 - We do **not** share your data with advertisers or data brokers
 - We do **not** use your content to train machine learning models
-- We do **not** provide any third party with access to your GTD content
+- We do **not** provide any third party with access to your content
 
-### 5.5 Legal Obligations
+### 5.6 Legal Obligations
 
 We may disclose your data if required to do so by law, court order, or a binding request from a competent authority.
 

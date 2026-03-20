@@ -7,7 +7,7 @@
     </template>
 
     <!-- Nav links (guest: always, authenticated: mobile only) -->
-    <a href="/#why-gtd" :class="['text-body-s', 'topnav-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Why GTD</a>
+    <a href="/#why-us" :class="['text-body-s', 'topnav-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Why Us</a>
     <a href="/#features" :class="['text-body-s', 'topnav-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Features</a>
     <router-link to="/pricing" :class="['text-body-s', 'topnav-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Pricing</router-link>
     <router-link to="/help" :class="['text-body-s', 'topnav-item', { 'mobile-only': authenticated }]" @click="$emit('close')">Help</router-link>

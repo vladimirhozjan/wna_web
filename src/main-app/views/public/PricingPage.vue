@@ -135,7 +135,7 @@ const tiers = [
     name: 'Free',
     monthlyPrice: 0,
     yearlyPrice: 0,
-    description: 'Get started with the basics of GTD.',
+    description: 'Get started with the essentials.',
     featured: false,
     ctaText: 'Start for Free',
     features: [
@@ -193,7 +193,7 @@ const comparisonRows = [
   { feature: 'Stuff items',                  free: '10',      pro: '100',       business: 'Unlimited' },
   { feature: 'Context tags',                 free: '5',       pro: '25',        business: 'Unlimited' },
   { feature: 'Inbox capture',                free: true,      pro: true,        business: true },
-  { feature: 'GTD clarify wizard',           free: true,      pro: true,        business: true },
+  { feature: 'Clarify wizard',           free: true,      pro: true,        business: true },
   { feature: 'Next actions',                 free: true,      pro: true,        business: true },
   { feature: 'Calendar view',                free: true,      pro: true,        business: true },
   { feature: 'Weekly review',                free: true,      pro: true,        business: true },
