@@ -69,14 +69,16 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 ### 2.1 Registration
 
 - **Entry points:** "Start Here" / "Start Free" buttons on landing page, `/register` URL
-- **Fields:** Email, Password, Confirm Password
+- **Heading:** "Create Your Account"
+- **Fields:** Email (placeholder: "Enter your email address"), Password (placeholder: "Enter your password"), Confirm Password (placeholder: "Confirm your password")
+- **Terms of Service checkbox:** "I agree to the Terms of Service and Privacy Policy" — must be checked before the Register button enables
 - **Presentation:** Modal dialog overlay with blur backdrop on the landing page
 - **Password requirements:** Minimum 8 characters, must contain at least one letter, one digit, and one symbol
 - **Validation (client-side):**
   - Email format check (`user@domain.tld`)
   - Password strength regex check
   - Confirm password must match
-  - Submit button disabled until all three fields are non-empty
+  - Submit button disabled until all three fields are non-empty AND the ToS checkbox is checked
 - **On success:** User account is created but **not yet authenticated**. The dialog transitions to the "verify-sent" mode showing a confirmation message that a verification email has been sent. The user must verify their email before they can log in.
 - **Error handling:**
   - HTTP 409: "Email already exists. Change email or sign in."
@@ -133,6 +135,8 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 ### 2.3 Login
 
 - **Entry points:** "Sign In" button on landing page, `/login` URL
+- **Heading:** "Welcome Back"
+- **Submit button:** "Sign In"
 - **Fields:** Email, Password
 - **Validation:** Same email and password format checks as registration
 - **On success:** Tokens stored, redirected to `/engage`
@@ -152,7 +156,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 ### 2.5 Reset Password
 
-- **Entry points:** Reset link in password reset email (`/reset?token=<reset_token>`), or via Forgot Password flow in Auth dialog
+- **Entry points:** Reset link in password reset email (`/reset-password?token=<reset_token>`), or via Forgot Password flow in Auth dialog
 - **Fields:** New Password, Confirm New Password
 - **Validation:** Same password strength rules as registration; confirm must match
 - **On success:** Password updated, transitions to login form
@@ -164,6 +168,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Click outside (on backdrop) closes the dialog
 - Animated transitions between auth modes (fade + slide up)
 - **7 dialog modes:** login, register, forgot, reset, verify-sent, unverified, closed
+- **Mode switching links:** Registration→Login via "Sign In" link; Login→Registration via "Create new account" button
 - Switching modes clears errors; email is preserved when navigating to login; passwords are always cleared
 - All form state is component-local (not persisted to localStorage)
 
@@ -177,7 +182,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 ### 2.8 Logout
 
 - **Entry points:** TopNav avatar dropdown "Logout", Settings page session row "End", Sidebar footer "Logout"
-- **Confirmation:** A confirmation dialog ("Are you sure you want to log out?") is shown before proceeding
+- **Confirmation:** A confirmation dialog ("Are you sure you want to log out?") with "Cancel" and "Log out" buttons is shown before proceeding
 - **Behavior:** Calls logout API, clears localStorage tokens, broadcasts cross-tab logout signal, redirects to landing page
 - **Server failure:** Silently ignored (localStorage is always cleared)
 
@@ -204,14 +209,14 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Mobile: Hamburger menu with the same links and buttons
 
 **Right side (authenticated):**
-- Quick Add button (captures new inbox items from any page)
+- "+ Quick Add" button (captures new inbox items from any page)
 - Mobile: Hamburger icon to open sidebar drawer
 - Desktop: User avatar with dropdown menu containing "Settings", "Logout" (plus "My Dashboard" on public pages only)
 
 ### 3.2 Sidebar (Desktop)
 
-- 260px fixed-width left panel, always visible above 768px
-- **Navigation items** (each with icon and count badge):
+- 260px fixed-width left panel, always visible above 768px, `complementary` ARIA role
+- **Navigation items** (buttons, not links; each with icon and count badge):
   - Dashboard (`/engage`)
   - Context Filter (tag-based work context selector)
   - Next Action, Today, Inbox, Projects, Calendar, Waiting For, Someday / Maybe
@@ -236,7 +241,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
   - Request URL: `https://gravatar.com/avatar/{sha256hash}?s=72&d=404`
   - `d=404` tells Gravatar to return HTTP 404 if no account exists, triggering the fallback
   - Hash is computed client-side using the Web Crypto API (no external dependencies)
-- **Fallback:** If Gravatar returns 404 or the image fails to load, displays a colored circle with the first two characters of the email (uppercased)
+- **Fallback:** If Gravatar returns 404 or the image fails to load, displays a colored circle with the user's initials (uppercased)
 - Background color of the fallback is deterministically generated from the email (consistent per user)
 
 ---
@@ -249,23 +254,23 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - **URL:** `/inbox`
 
 **Adding items:**
-- Text input + "Add" button at the top
+- Text input (placeholder "Add new stuff") + "Add" button, always visible at the top
 - Press Enter to submit
 - Input hidden when in clarify mode
 
 **Item list:**
-- Scrollable list with cursor-based pagination (10 items per page, "Load more" button)
+- All items load at once (no pagination)
 - Total item count shown in sidebar badge
 
 **Per-item operations:**
 - **Checkbox (complete):** Marks the stuff item as done, removes it from the list, shows success toast
 - **Inline title edit:** Click the title text to edit inline; Enter or blur saves, Escape cancels
-- **Trash:** Trash icon (visible on hover/always on touch) with confirmation dialog
+- **Trash:** ✕ button (visible on hover/always on touch) with "Move to Trash" confirmation dialog
 - **Drag to reorder:** Long-press on touch (150ms delay) or drag on desktop; calls API to persist new position
 - **Click to detail:** Navigates to `StuffDetailPage`
 
 **Clarify mode:**
-- Activated by the "Clarify" button in the page header (only shown when items exist)
+- Activated by the "Clarify" button in the page header (only shown when items exist); an "Exit" button appears in the header to leave clarify mode
 - Can also be auto-started via URL query `?clarify=1`
 - Desktop: List shrinks to 320px, ClarifyPanel opens side-by-side
 - Mobile: ClarifyPanel opens as full-screen overlay
@@ -274,7 +279,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Clicking a different item in the list switches the clarify target
 - After completing clarification of an item, it is removed from the list; when all items are clarified, clarify mode exits automatically
 
-**Empty state:** Inbox icon + "Your inbox is empty" + instructional text
+**Empty state:** Inbox icon + "Your inbox is empty" + "Capture everything on your mind. Add new stuff above to get started."
 
 **Inbox Zero celebration:**
 - When the user clears the last item from the inbox (via clarify, complete, trash, drag-to-sidebar, or from the detail page), a brief celebration animation plays
@@ -289,7 +294,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - **Navigation:** Position-based arrows (First, Previous, Next, Last) to browse through the inbox or other lists
 - **Automatic type routing:** When navigating through mixed-type lists (completed, someday), automatically redirects to the correct detail page type (action or project) if needed
 
-**Title:** Click-to-edit auto-resizing textarea. Shows strikethrough if completed.
+**Title:** Displayed as h2 heading. Click-to-edit auto-resizing textarea. Shows strikethrough if completed.
 
 **Action buttons (state-dependent):**
 - Normal stuff: "Clarify" (primary), "Done" (ghost), "Move" dropdown, "Trash" (danger)
@@ -317,15 +322,15 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 ### 5.1 Step 1: Is It Actionable?
 
-- **Question:** "Is this actionable?" with two options: Yes / No
+- **Question:** "Is it actionable?" with two options: "Yes Y" / "No N" (keyboard shortcuts Y and N)
 - **If No** → proceeds to non-actionable destinations
 - **If Yes** → proceeds to Step 2
 
 ### 5.2 Non-Actionable Destinations (if No)
 
-- **Reference** - Files it as a reference item. The stuff item is converted to a text file in the reference file system.
-- **Someday / Maybe** - Parks it for future consideration. The stuff item's state changes to SOMEDAY.
-- **Trash** - Deletes the item.
+- **Reference** button - Files it as a reference item. The stuff item is converted to a text file in the reference file system.
+- **Someday** button - Parks it for future consideration. The stuff item's state changes to SOMEDAY.
+- **Trash** button - Deletes the item.
 - All three options execute immediately (no further steps).
 
 ### 5.3 Step 2: Single Action or Project?
@@ -359,10 +364,10 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 ### 5.7 Clarify Panel UI
 
 - **Modes:** Inline (side panel in inbox), Modal (right slide-over from detail), Fullscreen (mobile overlay)
-- **Header:** Step counter (e.g., "2/4"), back button, close (X) button
+- **Header:** "Clarify" h2 heading, step counter (e.g., "1/3"), back button, close (×) button
 - **Progress bar:** Animated width showing progress percentage
 - **Context label:** "Processing: [item title]"
-- **Done state:** Green checkmark + "Item processed successfully!"
+- **Done state:** Panel auto-advances to the next item or closes when all items are processed (no explicit success message shown)
 - **Keyboard shortcuts:** Escape to cancel, Backspace to go back (when not in an input field)
 
 ---
@@ -372,18 +377,19 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 ### 6.1 Next Page
 
 - **URL:** `/next`
+- **Page heading:** "Next"
 - **Purpose:** List of all actionable, ready-to-do actions
 
 **Adding items:**
-- Collapsible add form (toggle with +/- button in header)
-- Title input + "Add" button; creates action with state NEXT
+- Collapsible add form (toggle with +/− button in header, using Unicode minus U+2212), starts expanded
+- Title input (placeholder "Add new action") + "Add" button; creates action with state NEXT
 
 **Item list:**
-- Cursor-based pagination (10 per page)
+- All items load at once (no pagination)
 - Tag filtering via TagFilter component + global context tag
 
 **Per-item operations:**
-- Complete (checkbox), Inline title edit, Trash (with confirmation), Drag to reorder, Click to navigate to detail
+- Complete (checkbox), Inline title edit, Trash (✕ button with "Move to Trash" confirmation), Drag to reorder, Click to navigate to detail
 
 **Empty states:**
 - With tag filter: "No actions for this context" + tag name
@@ -1065,7 +1071,7 @@ Presets are customizable in Settings.
 - Located in the Top Navigation bar (when authenticated)
 - Provides rapid inbox capture from any page
 
-**Collapsed state:** Button with "+" icon and "Quick Add" label (label hidden on mobile)
+**Collapsed state:** Button with "+ Quick Add" label (label hidden on mobile)
 
 **Expanded state:**
 - Text input auto-focuses
@@ -1245,7 +1251,7 @@ Presets are customizable in Settings.
 
 ### 25.5 Item List Common Features
 
-- Cursor-based pagination with "Load more" button
+- All items load at once (no pagination for Inbox, Next Actions, Today; cursor-based pagination with "Load more" used for Completed, Trash, and Reference files)
 - Per-item loading spinners (spinning ring replaces action buttons)
 - Empty state with icon + message + instructional text
 - Overdue items highlighted with red left border

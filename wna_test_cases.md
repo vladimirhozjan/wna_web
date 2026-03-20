@@ -61,11 +61,13 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to `http://localhost:5173/` (the landing page).
 2. Locate and click the "Start Here" call-to-action button.
-3. Verify the authentication dialog opens and the registration form is displayed (fields: email, password, confirm password).
+3. Verify the authentication dialog opens with the heading "Create Your Account" and the registration form is displayed (fields: email with placeholder "Enter your email address", password with placeholder "Enter your password", confirm password with placeholder "Confirm your password", and a Terms of Service checkbox).
 4. Enter a valid, unused email address in the email field (e.g., `testuser_001@example.com`).
 5. Enter a valid password that meets all requirements: minimum 8 characters, at least 1 letter, at least 1 digit, and at least 1 symbol (e.g., `TestPass1!`).
 6. Enter the same password in the confirm password field.
-7. Click the "Register" (or equivalent submit) button.
+7. Check the Terms of Service checkbox ("I agree to the Terms of Service and Privacy Policy").
+8. Verify the "Register" button is now enabled (it was disabled before the ToS checkbox was checked).
+9. Click the "Register" button.
 8. Wait for the request to complete.
 
 **Expected Result:**
@@ -197,20 +199,24 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to `http://localhost:5173/` (the landing page).
 2. Click "Start Here" to open the authentication dialog in registration mode.
-3. Observe the submit button with all three fields (email, password, confirm password) empty.
+3. Observe the submit button with all three fields (email, password, confirm password) empty and the ToS checkbox unchecked.
 4. Verify the submit button is visually disabled (greyed out, cursor not pointer) and cannot be clicked.
-5. Enter only an email address in the email field. Leave password and confirm password empty.
+5. Enter only an email address in the email field. Leave password and confirm password empty. Leave ToS unchecked.
 6. Verify the submit button remains disabled.
 7. Enter a password in the password field. Leave confirm password empty.
 8. Verify the submit button remains disabled.
-9. Enter the matching password in the confirm password field.
-10. Verify the submit button is now enabled (visually active, cursor is pointer).
-11. Clear the email field, leaving password and confirm password filled.
-12. Verify the submit button returns to the disabled state.
+9. Enter the matching password in the confirm password field. Leave ToS unchecked.
+10. Verify the submit button remains disabled (ToS checkbox is still unchecked).
+11. Check the ToS checkbox.
+12. Verify the submit button is now enabled (visually active, cursor is pointer).
+13. Uncheck the ToS checkbox.
+14. Verify the submit button returns to the disabled state.
+15. Clear the email field, leaving password and confirm password filled and ToS checked.
+16. Verify the submit button returns to the disabled state.
 
 **Expected Result:**
-- The submit button is disabled whenever any of the three fields (email, password, confirm password) is empty.
-- The submit button becomes enabled only when all three fields have non-empty values.
+- The submit button is disabled whenever any of the three fields (email, password, confirm password) is empty OR the Terms of Service checkbox is unchecked.
+- The submit button becomes enabled only when all three fields have non-empty values AND the ToS checkbox is checked.
 - Clicking a disabled button produces no action, no API call, and no error.
 
 | Date | P/F | Comment |
@@ -231,10 +237,12 @@ Use the table below to log each full or partial test run.
 2. Click "Sign In" in the top navigation to open the authentication dialog in login mode.
 3. Enter the registered email address in the email field: `testuser@example.com`.
 4. Enter the correct password in the password field: `TestPass1!`.
-5. Click the "Log In" (or equivalent submit) button.
-6. Wait for the request to complete.
+5. Verify the login form has heading "Welcome Back".
+6. Click the "Sign In" submit button.
+7. Wait for the request to complete.
 
 **Expected Result:**
+- The login form displays the heading "Welcome Back" and a "Sign In" button.
 - The login request succeeds with no error messages.
 - The user is redirected to `/engage` (the main dashboard).
 - The authentication dialog closes.
@@ -260,12 +268,12 @@ Use the table below to log each full or partial test run.
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Enter the registered email address: `testuser@example.com`.
 4. Enter an incorrect password: `WrongPassword1!`.
-5. Click the "Log In" submit button.
+5. Click the "Sign In" submit button.
 6. Wait for the backend response.
 
 **Expected Result:**
 - The backend returns HTTP 401 (Unauthorized).
-- An error message is displayed to the user indicating invalid credentials (e.g., "Invalid email or password" or similar).
+- An error message is displayed to the user indicating invalid credentials (e.g., "Incorrect email and/or password. Please correct your credentials." or similar).
 - The user remains on the login form.
 - No tokens are stored in localStorage.
 - The password field is cleared or remains filled (note which behavior occurs).
@@ -288,7 +296,7 @@ Use the table below to log each full or partial test run.
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Enter an invalid email format in the email field: `notanemail`.
 4. Enter any password in the password field: `TestPass1!`.
-5. Click the "Log In" submit button.
+5. Click the "Sign In" submit button.
 6. Wait for the response.
 
 **Expected Result:**
@@ -314,7 +322,7 @@ Use the table below to log each full or partial test run.
 1. Navigate to `http://localhost:5173/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Leave both the email and password fields empty.
-4. Observe the state of the "Log In" submit button.
+4. Observe the state of the "Sign In" submit button.
 5. Attempt to click the submit button.
 6. Enter only an email address, leave the password empty. Observe the submit button state.
 7. Clear the email, enter only a password. Observe the submit button state.
@@ -370,7 +378,7 @@ Use the table below to log each full or partial test run.
 
 **Expected Result:**
 - An authentication modal/dialog opens overlaid on the landing page.
-- The dialog is in login mode (shows email and password fields, a "Log In" button).
+- The dialog is in login mode (shows email and password fields, a "Sign In" button).
 - The landing page content is visible behind the dialog (with a blur backdrop effect).
 - The dialog is centered on screen.
 - The form is functional and ready for input.
@@ -392,8 +400,8 @@ Use the table below to log each full or partial test run.
 1. Navigate to `http://localhost:5173/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Verify the login form is displayed with email and password fields.
-4. Locate the "Forgot your password?" link on the login form.
-5. Click the "Forgot your password?" link.
+4. Locate the "Forgot your password? Reset it" link on the login form.
+5. Click the "Reset it" link.
 6. Observe the transition.
 
 **Expected Result:**
@@ -535,14 +543,14 @@ Use the table below to log each full or partial test run.
 3. Verify the login form is displayed (email field, password field, submit button).
 4. Enter an email address in the email field: `testuser@example.com`.
 5. Enter a password in the password field: `SomePass1!`.
-6. Locate and click the link/button to switch to registration mode (e.g., "Don't have an account? Register" or similar).
+6. Locate and click the "Create new account" button to switch to registration mode.
 7. Verify the form transitions to registration mode.
 8. Check the email field: does it retain the previously entered email (`testuser@example.com`)?
 9. Check the password field: is it cleared?
 10. Check the confirm password field: is it empty?
 11. Check for any lingering error messages from the previous mode: they should be cleared.
 12. Now enter a password and confirm password in the registration form.
-13. Click the link/button to switch back to login mode (e.g., "Already have an account? Sign In").
+13. Click the "Sign In" link to switch back to login mode.
 14. Verify the form transitions back to login mode.
 15. Check the email field: does it still retain the email from step 4?
 16. Check the password field: is it cleared?
@@ -576,7 +584,7 @@ Use the table below to log each full or partial test run.
 5. Carefully observe the transition animation between login and register forms.
 6. Switch back to login mode.
 7. Observe the reverse transition animation.
-8. Click "Forgot your password?" to navigate to the forgot password form.
+8. Click "Forgot your password? Reset it" to navigate to the forgot password form.
 9. Observe the transition animation.
 10. Navigate back to the login form and observe the reverse animation.
 
@@ -767,11 +775,11 @@ Use the table below to log each full or partial test run.
 3. Observe the application behavior.
 4. Check the URL in the address bar after the page loads.
 5. Attempt to navigate to other protected routes:
-   a. `http://localhost:5173/engage/inbox`
-   b. `http://localhost:5173/engage/next`
-   c. `http://localhost:5173/engage/projects`
-   d. `http://localhost:5173/engage/calendar`
-   e. `http://localhost:5173/engage/settings`
+   a. `http://localhost:5173/inbox`
+   b. `http://localhost:5173/next`
+   c. `http://localhost:5173/projects`
+   d. `http://localhost:5173/calendar`
+   e. `http://localhost:5173/settings`
 6. For each, observe the redirect behavior and final URL.
 
 **Expected Result:**
@@ -971,7 +979,7 @@ Use the table below to log each full or partial test run.
 2. Click "Sign In" to open the login form.
 3. Enter the unverified email address.
 4. Enter the correct password.
-5. Click the "Login" submit button.
+5. Click the "Sign In" submit button.
 6. Observe the auth dialog behavior.
 
 **Expected Result:**
@@ -1255,7 +1263,7 @@ Use the table below to log each full or partial test run.
 1. Navigate to `http://localhost:5173/`.
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. Observe the registration form.
-4. Switch to the login form by clicking the "Log in" toggle.
+4. Switch to the login form by clicking the "Sign In" link.
 5. Observe the login form.
 
 **Expected Result:**
@@ -1576,8 +1584,8 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Log in with valid credentials on a desktop browser
 2. Observe the top navigation bar after login
-3. Verify a "Quick Add" button is visible in the nav bar
-4. Click the "Quick Add" button and verify it opens an input for adding stuff
+3. Verify a "+ Quick Add" button is visible in the nav bar
+4. Click the "+ Quick Add" button and verify it opens an input for adding stuff
 5. Verify the user avatar is displayed on the right side of the nav bar
 6. Click the user avatar to open the dropdown menu
 7. Verify the dropdown contains: "Settings" and "Logout" options (no "My Dashboard" since already on dashboard)
@@ -1586,7 +1594,7 @@ Use the table below to log each full or partial test run.
 10. On a public page (e.g. landing page) while authenticated, click the avatar and verify "My Dashboard" appears in the dropdown
 11. Click "My Dashboard" and verify navigation to the dashboard view
 
-**Expected Result:** The authenticated desktop nav bar shows a "Quick Add" button and a user avatar. The Quick Add button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with "Settings" and "Logout" (no "My Dashboard" when already on the dashboard). On public pages, the dropdown also includes "My Dashboard" at the top. Each option navigates to the correct destination. Logout clears the session and redirects to the landing page.
+**Expected Result:** The authenticated desktop nav bar shows a "+ Quick Add" button and a user avatar (with the user's initials). The "+ Quick Add" button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with "Settings" and "Logout" (no "My Dashboard" when already on the dashboard). On public pages, the dropdown also includes "My Dashboard" at the top. Each option navigates to the correct destination. Logout clears the session and redirects to the landing page.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1671,7 +1679,7 @@ Use the table below to log each full or partial test run.
 5. Verify the count has incremented by 1
 6. Complete one stuff item by clicking its checkbox
 7. Wait at least 300ms and verify the Inbox count badge decrements by 1
-8. Delete another stuff item via the trash icon
+8. Delete another stuff item via the ✕ button
 9. Wait at least 300ms and verify the Inbox count badge decrements by 1 and the Trash count badge increments by 1
 10. Navigate to different pages and verify all badges reflect current item counts
 
@@ -1755,11 +1763,11 @@ Use the table below to log each full or partial test run.
 6. Log out and log in with an account that has no profile avatar image
 7. Observe the avatar area on desktop
 8. Verify a colored circle fallback is displayed at 36px
-9. Verify the fallback shows the first 2 characters of the user's email address, uppercased
+9. Verify the fallback shows the user's initials, uppercased
 10. Verify the text is legible against the background color
 11. Check on mobile that the fallback circle is 32px
 
-**Expected Result:** The user avatar displays as a 36px circle on desktop and 32px on mobile. When an avatar image is set, it is shown cropped to the circle. When no image is set, a colored circle fallback is shown containing the first 2 characters of the user's email address in uppercase. The fallback text is legible against the background color.
+**Expected Result:** The user avatar displays as a 36px circle on desktop and 32px on mobile. When an avatar image is set, it is shown cropped to the circle. When no image is set, a colored circle fallback is shown containing the user's initials in uppercase. The fallback text is legible against the background color.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1928,7 +1936,7 @@ Use the table below to log each full or partial test run.
 6. Verify the badge updates to previous count + 3
 7. Complete one item by clicking its checkbox
 8. Verify the badge decrements by 1
-9. Delete one item via the trash icon
+9. Delete one item via the ✕ button
 10. Verify the badge decrements by 1 again
 11. Navigate away from the Inbox page and back, verify the badge still shows the correct count
 
@@ -2008,20 +2016,19 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Inbox page on a desktop browser
-2. Hover over an item in the list
-3. Verify a trash icon appears on hover
-4. Click the trash icon
-5. Verify a confirmation dialog appears (ConfirmDialog) with title "Delete", a message asking "Are you sure?", and "Delete" and "Cancel" buttons
-6. Click "Cancel"
-7. Verify the dialog closes and the item remains in the list
-8. Hover over the same item again and click the trash icon
-9. Click "Delete" in the confirmation dialog
-10. Verify the item is removed from the inbox list
-11. Verify the Inbox sidebar badge decrements by 1
-12. Navigate to the Trash page and verify the deleted item appears there
-13. Test on a touch device (or emulated touch): verify the trash icon is always visible (not only on hover)
+2. Locate the ✕ button on an item in the list
+3. Click the ✕ button
+4. Verify a "Move to Trash" confirmation dialog appears asking for confirmation, with "Cancel" and "Move to Trash" buttons
+5. Click "Cancel"
+6. Verify the dialog closes and the item remains in the list
+7. Click the ✕ button on the same item again
+8. Click "Move to Trash" in the confirmation dialog
+9. Verify the item is removed from the inbox list
+10. Verify the Inbox sidebar badge decrements by 1
+11. Navigate to the Trash page and verify the deleted item appears there
+12. Test on a touch device (or emulated touch): verify the ✕ button is always visible (not only on hover)
 
-**Expected Result:** On desktop, the trash icon appears on hover. On touch devices, it is always visible. Clicking the trash icon opens a confirmation dialog. Cancelling the dialog preserves the item. Confirming deletion removes the item from the inbox, decrements the sidebar badge, and moves the item to Trash.
+**Expected Result:** Each item has a ✕ button. Clicking the ✕ button opens a "Move to Trash" confirmation dialog. Cancelling the dialog preserves the item. Confirming moves the item to Trash, removes it from the inbox, and decrements the sidebar badge.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2083,24 +2090,20 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-064: Inbox Pagination / Load More
+### TC-064: Inbox Loads All Items at Once
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains more than 10 stuff items (add items until there are at least 15).
 
 **Steps:**
 1. Navigate to the Inbox page
-2. Verify only the first batch of items is loaded (e.g., 10 items visible)
-3. Scroll to the bottom of the list
-4. Verify a "Load more" button is visible (or infinite scroll triggers automatically)
-5. Click "Load more" (or scroll to trigger infinite scroll)
-6. Verify additional items are loaded and appended to the list
-7. Verify previously loaded items are still visible above the newly loaded items
-8. Continue loading until all items are displayed
-9. Verify "Load more" is no longer visible when all items are loaded
-10. Verify the total number of displayed items matches the expected count
+2. Verify all items are loaded at once (no pagination)
+3. Scroll through the list
+4. Verify there is no "Load more" button
+5. Verify the total number of displayed items matches the expected count
+6. Verify all items are visible without needing to trigger additional loading
 
-**Expected Result:** The inbox initially loads a limited batch of items. A "Load more" button or infinite scroll mechanism allows loading additional items. Items are appended without removing previously loaded ones. When all items are loaded, the load more mechanism is no longer shown.
+**Expected Result:** All inbox items load at once on page load. There is no "Load more" button or pagination mechanism. All items are visible in a single scrollable list.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2140,9 +2143,9 @@ Use the table below to log each full or partial test run.
 1. Ensure the inbox is completely empty (no items)
 2. Navigate to the Inbox page
 3. Verify an empty state illustration or icon is displayed (inbox icon)
-4. Verify the text "Your inbox is empty" (or similar) is displayed
-5. Verify instructional text is shown explaining what the inbox is for or how to add items
-6. Verify no list items, no "Load more" button, and no loading spinner are visible
+4. Verify the text "Your inbox is empty" is displayed
+5. Verify instructional text is shown: "Capture everything on your mind. Add new stuff above to get started."
+6. Verify no list items and no loading spinner are visible
 7. Add a new item via the input field
 8. Verify the empty state disappears and the item list appears with the new item
 
@@ -2320,7 +2323,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Inbox page and click an item to go to the Stuff Detail page (/stuff/:id)
-2. Verify the page loads with the item's title displayed prominently
+2. Verify the page loads with the item's title displayed as an h2 heading
 3. Click on the title text
 4. Verify it becomes an editable textarea (click-to-edit)
 5. Modify the title and click outside (blur) to save
@@ -2389,15 +2392,16 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to the Inbox page
 2. Activate clarify mode by clicking the "Clarify" button (or navigate to a stuff item's detail and click "Clarify")
-3. Verify the ClarifyPanel opens and displays the first step of the workflow
-4. Verify the question "Is this actionable?" (or equivalent) is prominently displayed
+3. Verify the ClarifyPanel opens with "Clarify" as the h2 heading and displays the first step of the workflow
+4. Verify the question "Is it actionable?" is prominently displayed
 5. Verify the item's title is shown as context (e.g., "Processing: [item title]")
-6. Verify two options are presented: "Yes" and "No"
+6. Verify two options are presented: "Yes Y" and "No N" (with keyboard shortcut hints)
 7. Verify no other workflow steps are visible (step 1 of the multi-step flow)
-8. Verify a step counter is displayed (e.g., "1/4" or similar)
-9. Verify a progress bar shows the current progress
+8. Verify a step counter is displayed (e.g., "1/3")
+9. Verify a close (×) button is available in the panel header
+10. Verify a progress bar shows the current progress
 
-**Expected Result:** The first step of the clarify workflow displays the question "Is this actionable?" with Yes and No options. The item being processed is identified by its title in the panel. A step counter and progress bar indicate the user is at step 1 of the workflow.
+**Expected Result:** The first step of the clarify workflow displays the heading "Clarify", the question "Is it actionable?" with "Yes Y" and "No N" buttons. The item being processed is identified by its title in the panel. A step counter (e.g., "1/3") and progress bar indicate the user is at step 1 of the workflow.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2417,7 +2421,7 @@ Use the table below to log each full or partial test run.
 2. Verify the panel advances to a sub-step presenting options for non-actionable items (e.g., Reference, Someday, Trash)
 3. Select "Reference"
 4. Verify the stuff item is converted to a text file in the reference system (API call to transform endpoint)
-5. Verify a success indicator appears (e.g., green checkmark with "Item processed successfully!")
+5. Verify the panel auto-advances to the next item or closes if no items remain
 6. Verify the item is removed from the inbox
 7. Navigate to the Reference page
 8. Verify the item appears in the Reference section as a reference entry
@@ -2443,7 +2447,7 @@ Use the table below to log each full or partial test run.
 2. Verify the panel advances to present non-actionable options
 3. Select "Someday"
 4. Verify the stuff item's state changes to SOMEDAY (API call)
-5. Verify a success indicator appears
+5. Verify the panel auto-advances to the next item or closes if no items remain
 6. Verify the item is removed from the inbox
 7. Navigate to the Someday/Maybe page
 8. Verify the item appears in the Someday list with its original title
@@ -2469,7 +2473,7 @@ Use the table below to log each full or partial test run.
 2. Verify the panel advances to present non-actionable options
 3. Select "Trash"
 4. Verify the stuff item is deleted (API call)
-5. Verify a success indicator appears
+5. Verify the panel auto-advances to the next item or closes if no items remain
 6. Verify the item is removed from the inbox
 7. Navigate to the Trash page
 8. Verify the deleted item appears in the Trash
@@ -2547,11 +2551,11 @@ Use the table below to log each full or partial test run.
 4. Verify a "Complete" or "Done" button is prominently displayed
 5. Click the "Complete" button
 6. Verify the stuff item is marked as completed (API call to /v1/stuff/{id}/complete)
-7. Verify a success indicator appears (e.g., green checkmark + "Item processed successfully!")
+7. Verify the panel auto-advances to the next item or closes if no items remain
 8. Verify the item is removed from the inbox
 9. Navigate to the Completed page and verify the item appears there
 
-**Expected Result:** Choosing "Yes" for the two-minute rule displays a "Do It Now" encouragement screen. Clicking "Complete" marks the stuff as done, removes it from the inbox, and shows a success confirmation. The item appears in the Completed section.
+**Expected Result:** Choosing "Yes" for the two-minute rule displays a "Do It Now" encouragement screen. Clicking "Complete" marks the stuff as done, removes it from the inbox, and the panel auto-advances to the next item or closes. The item appears in the Completed section.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2640,7 +2644,7 @@ Use the table below to log each full or partial test run.
 2. Optionally fill in Description, Tags, and date fields
 3. Click the "Confirm" or "Create Action" button
 4. Verify an API call is made to /v1/stuff/{id}/transform to transform the stuff item into an action
-5. Verify a success indicator appears (e.g., green checkmark + "Item processed successfully!")
+5. Verify the panel auto-advances to the next item or closes if no items remain
 6. Verify the item is removed from the inbox
 7. Navigate to the Next Actions page
 8. Verify the newly created action appears in the list with the correct title
@@ -2699,7 +2703,7 @@ Use the table below to log each full or partial test run.
 3. Optionally fill in Description and Tags
 4. Click the "Confirm" or "Create Project" button
 5. Verify an API call is made to /v1/stuff/{id}/transform to transform the stuff item into a project
-6. Verify a success indicator appears (e.g., green checkmark + "Item processed successfully!")
+6. Verify the panel auto-advances to the next item or closes if no items remain
 7. Verify the item is removed from the inbox
 8. Navigate to the Projects page
 9. Verify the newly created project appears in the list with the correct title and outcome
@@ -2723,20 +2727,21 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Observe the ClarifyPanel when it first opens at step 1
-2. Verify a step counter is displayed (e.g., "1/4" or "Step 1 of 4")
-3. Verify a progress bar is displayed showing current progress through the workflow
-4. Verify a context label is present showing "Processing: [item title]" (or equivalent)
-5. Verify a close button (X) is present in the top-right area of the panel
-6. Advance to step 2 by selecting "Yes" (actionable)
-7. Verify the step counter updates (e.g., "2/4")
-8. Verify the progress bar advances
-9. Verify a back button is present to return to the previous step
-10. Click the back button and verify the panel returns to step 1
-11. Verify the step counter reverts to "1/4" and the progress bar adjusts
-12. Click the close button (X)
-13. Verify the ClarifyPanel closes and clarify mode exits
+2. Verify a "Clarify" h2 heading is displayed
+3. Verify a step counter is displayed (e.g., "1/3")
+4. Verify a progress bar is displayed showing current progress through the workflow
+5. Verify a context label is present showing "Processing: [item title]" (or equivalent)
+6. Verify a close button (×) is present in the panel header
+7. Advance to step 2 by selecting "Yes" (actionable)
+8. Verify the step counter updates (e.g., "2/3")
+9. Verify the progress bar advances
+10. Verify a back button is present to return to the previous step
+11. Click the back button and verify the panel returns to step 1
+12. Verify the step counter reverts to "1/3" and the progress bar adjusts
+13. Click the close button (×)
+14. Verify the ClarifyPanel closes and clarify mode exits
 
-**Expected Result:** The ClarifyPanel displays a step counter, progress bar, context label with the item title, back button (from step 2 onward), and close (X) button. The step counter and progress bar update as the user advances through steps. The back button returns to the previous step. The close button exits clarify mode.
+**Expected Result:** The ClarifyPanel displays a "Clarify" h2 heading, a step counter (e.g., "1/3"), progress bar, context label with the item title, back button (from step 2 onward), and close (×) button. The step counter and progress bar update as the user advances through steps. The back button returns to the previous step. The close button exits clarify mode.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2746,21 +2751,20 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-088: Clarify Done State
+### TC-088: Clarify Auto-Advance After Processing
 **Priority:** Medium | **Area:** Clarify Workflow
 
-**Preconditions:** User is authenticated. Clarify mode is active on a stuff item.
+**Preconditions:** User is authenticated. Clarify mode is active on a stuff item. Inbox contains at least 2 items.
 
 **Steps:**
 1. Complete the clarify workflow for an item (choose any valid path, e.g., Not actionable -> Trash)
 2. After the final step is confirmed, observe the ClarifyPanel
-3. Verify a green checkmark icon or animation is displayed
-4. Verify the text "Item processed successfully!" (or equivalent success message) is shown
-5. Verify the panel either auto-advances to the next item after a brief delay or provides a button to continue
-6. If there are more items in the inbox, verify the panel transitions to the next item's step 1
-7. If there are no more items, verify clarify mode exits (as tested in TC-071)
+3. Verify the panel auto-advances to the next item without showing an explicit success message
+4. Verify the panel transitions to the next item's step 1 ("Is it actionable?")
+5. Complete the clarify workflow for the remaining item
+6. If there are no more items, verify clarify mode exits automatically (as tested in TC-071)
 
-**Expected Result:** After completing the clarify workflow for an item, the panel briefly displays a success state with a green checkmark and "Item processed successfully!" message. The panel then either auto-advances to the next inbox item or, if the inbox is empty, exits clarify mode.
+**Expected Result:** After completing the clarify workflow for an item, the panel auto-advances to the next inbox item without displaying a separate success message or "Item processed successfully!" screen. If the inbox is empty, clarify mode exits automatically.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2877,9 +2881,9 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in and on the Next Actions page (/next)
 
 **Steps:**
-1. Observe the page header area for the add action form (collapsed by default)
-2. Click the "+" button to expand the collapsible add form
-3. Verify the form expands revealing a title input field and an "Add" button
+1. Observe the page heading "Next" and the add action form area (form starts expanded by default)
+2. Verify the form is visible with a title input (placeholder "Add new action") and an "Add" button
+3. Verify the form can be toggled with +/− button (Unicode minus U+2212)
 4. Leave the title input empty and verify the "Add" button is disabled
 5. Type "Buy groceries for dinner" into the title input
 6. Verify the "Add" button becomes enabled
@@ -2888,7 +2892,7 @@ Use the table below to log each full or partial test run.
 9. Verify a success toast is shown confirming creation
 10. Verify the input field is cleared after successful creation
 11. Verify the form remains open for quick successive additions
-12. Click the "-" button to collapse the form
+12. Click the "−" button (Unicode minus U+2212) to collapse the form
 13. Verify the form collapses and only the "+" button is visible
 
 **Expected Result:** The collapsible form toggles open/closed with +/- button. New action is created with state NEXT and appears in the list. Input clears after creation. Add button is disabled when title is empty.
@@ -2968,22 +2972,21 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Next Actions page (/next)
-2. Hover over an action item in the list
-3. Verify a trash icon becomes visible in the actions area (right side of the item)
-4. Note the title of the action
-5. Click the trash icon
-6. Verify a confirmation dialog appears with title "Delete", a message asking for confirmation, and "Delete" and "Cancel" buttons
-7. Click "Cancel"
-8. Verify the dialog closes and the action remains in the list
-9. Click the trash icon again
-10. Verify the confirmation dialog appears again
-11. Click "Delete" (confirm)
-12. Verify the action is removed from the Next Actions list
-13. Verify a success toast appears confirming deletion
-14. Navigate to the Trash page (/trash)
-15. Verify the deleted action appears in the trash
+2. Locate the ✕ button on an action item in the list
+3. Note the title of the action
+4. Click the ✕ button
+5. Verify a "Move to Trash" confirmation dialog appears asking for confirmation, with "Cancel" and "Move to Trash" buttons
+6. Click "Cancel"
+7. Verify the dialog closes and the action remains in the list
+8. Click the ✕ button again
+9. Verify the confirmation dialog appears again
+10. Click "Move to Trash" (confirm)
+11. Verify the action is removed from the Next Actions list
+12. Verify a success toast appears confirming the move to trash
+13. Navigate to the Trash page (/trash)
+14. Verify the deleted action appears in the trash
 
-**Expected Result:** Trash icon appears on hover. Clicking it shows a confirmation dialog. Cancelling preserves the item. Confirming removes the item from the list, shows a success toast, and moves it to trash.
+**Expected Result:** Each action has a ✕ button. Clicking it shows a "Move to Trash" confirmation dialog. Cancelling preserves the item. Confirming removes the item from the list, shows a success toast, and moves it to trash.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3030,7 +3033,7 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to the Next Actions page (/next)
 2. Note the title and ID of the first action in the list
-3. Click on the action item (not on the checkbox, trash icon, or title edit area — click the navigable area of the item)
+3. Click on the action item (not on the checkbox, ✕ button, or title edit area — click the navigable area of the item)
 4. Verify the browser navigates to /action/:id where :id matches the action's ID
 5. Verify the action detail page loads displaying the correct action information
 6. Click the browser back button
@@ -3046,25 +3049,20 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-098: Next Actions Pagination (Load More)
+### TC-098: Next Actions Loads All Items at Once
 **Priority:** Medium | **Area:** Next Actions
 
-**Preconditions:** User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed one page)
+**Preconditions:** User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed 10)
 
 **Steps:**
 1. Navigate to the Next Actions page (/next)
-2. Verify that the initial load shows the first batch of actions (up to 10 items)
-3. Scroll to the bottom of the list
-4. Verify a "Load more" button or infinite scroll trigger is present
-5. Note the number of currently displayed actions
-6. Click the "Load more" button (or scroll to trigger infinite scroll)
-7. Verify additional actions are appended to the list below the existing ones
-8. Verify the total number of displayed actions has increased
-9. If more actions remain, repeat clicking "Load more"
-10. Verify all actions eventually load
-11. Verify no duplicate actions appear in the list
+2. Verify all actions are loaded at once (no pagination)
+3. Scroll through the list
+4. Verify there is no "Load more" button
+5. Verify the total number of displayed actions matches the expected count
+6. Verify no duplicate actions appear in the list
 
-**Expected Result:** When more than one page of actions exists, a "Load more" mechanism is available. Clicking it loads additional actions appended to the list without duplicates. All actions can eventually be loaded.
+**Expected Result:** All next actions load at once on page load. There is no "Load more" button or pagination mechanism. All items are visible in a single scrollable list.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3117,8 +3115,7 @@ Use the table below to log each full or partial test run.
 3. Verify an empty state message is shown with text "No next actions" (or similar)
 4. Verify instructional/helper text is displayed below the main message explaining what next actions are or how to create them
 5. Verify the add action form (+) button is still accessible and functional
-6. Verify no "Load more" button is shown
-7. Verify no tag filter chips are displayed
+6. Verify no tag filter chips are displayed
 
 **Expected Result:** When no next actions exist and no filter is active, the page shows a "No next actions" message with instructional text guiding the user. The add form remains accessible.
 
@@ -3316,7 +3313,7 @@ Use the table below to log each full or partial test run.
 1. Navigate to the Today page (/today)
 2. **Complete:** Click the checkbox on the first action. Verify it is removed from the list and a success toast appears. Check the Completed page to confirm.
 3. **Inline Edit:** Click the title of the second action. Verify it becomes editable. Change the text and press Enter. Verify the new title is saved. Click the title again, change text, press Escape. Verify the edit is cancelled. Click the title, change text, click elsewhere (blur). Verify the change is saved.
-4. **Trash:** Hover over an action and click the trash icon. Verify a confirmation dialog appears. Click "Delete". Verify the action is removed and a success toast appears. Check the Trash page to confirm.
+4. **Trash:** Click the ✕ button on an action. Verify a "Move to Trash" confirmation dialog appears. Click "Move to Trash". Verify the action is removed and a success toast appears. Check the Trash page to confirm.
 5. **Drag Reorder:** Note the order of remaining actions. Drag an action to a different position. Verify the new order is reflected. Reload the page and verify the order persists.
 6. **Tag Filter:** Click the tag filter icon. Select a tag. Verify only matching actions are shown. Verify filter chips appear. Click X on a chip to remove it. Click "Clear all" to restore the full list.
 
@@ -3341,7 +3338,6 @@ Use the table below to log each full or partial test run.
 3. Verify an empty state message is shown with text "No actions for today" (or similar)
 4. Verify instructional text is displayed: "Move actions here to focus on what matters most today." (or similar guidance)
 5. Verify the add action form (+) button is still accessible
-6. Verify no "Load more" button is shown
 
 **Expected Result:** When no today actions exist, the page shows "No actions for today" with instructional text about moving actions to focus on what matters. The add form remains accessible.
 
