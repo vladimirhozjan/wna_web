@@ -1,8 +1,8 @@
 <template>
   <section class="hero">
     <div class="hero-inner">
-      <h1 class="text-display hero-heading">Capture. Clarify. Organize.<br>Reflect. Engage.</h1>
-      <p class="text-subtitle hero-subtitle">Achieve stress-free productivity with the GTD methodology.</p>
+      <h1 class="text-display hero-heading">Stress-Free Productivity</h1>
+      <p class="text-subtitle hero-subtitle">With a system you can trust.</p>
       <div class="hero-actions">
         <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
         <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>

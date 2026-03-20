@@ -1614,11 +1614,11 @@ async function onActivate() {
 .detail-title-input {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: -8px;
+  right: -8px;
   color: var(--color-text-primary);
   margin: 0;
-  padding: 5px 0;
+  padding: 5px 8px;
   border: 1px solid var(--color-input-border);
   border-radius: 6px;
   line-height: var(--lh-normal);
@@ -1746,9 +1746,10 @@ async function onActivate() {
   color: var(--color-text-primary);
   border: 1px solid var(--color-input-border);
   border-radius: 4px;
-  padding: 4px 0;
+  padding: 4px 8px;
+  margin-left: -8px;
+  margin-right: -8px;
   outline: none;
-  width: 100%;
   resize: none;
   background: var(--color-bg-primary);
   box-sizing: border-box;

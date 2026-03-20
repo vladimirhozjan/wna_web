@@ -4,9 +4,14 @@
       <h2 class="text-h1 color-text-primary">How It Works</h2>
       <div class="steps">
         <div v-for="(step, i) in steps" :key="step.title" class="step">
-          <div class="step-number">{{ i + 1 }}</div>
-          <h3 class="text-h4">{{ step.title }}</h3>
-          <p class="text-body-s step-desc">{{ step.description }}</p>
+          <div class="step-left">
+            <div class="step-number">{{ i + 1 }}</div>
+            <div v-if="i < steps.length - 1" class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <h3 class="text-h4">{{ step.title }}</h3>
+            <p class="text-body-s step-desc">{{ step.description }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -24,6 +29,14 @@ const steps = [
     description: 'Process each item: Is it actionable? What\'s the next step? Our guided wizard walks you through it.',
   },
   {
+    title: 'Organize',
+    description: 'Place each item where it belongs — Next Actions, Projects, Calendar, Waiting For, Someday, or Reference.',
+  },
+  {
+    title: 'Reflect',
+    description: 'Do a Weekly Review to keep your system current, complete, and trustworthy.',
+  },
+  {
     title: 'Engage',
     description: 'Work from your Next Actions list with confidence, knowing nothing is falling through the cracks.',
   },
@@ -34,26 +47,36 @@ const steps = [
 .section {
   padding: var(--section-py-mobile) var(--section-px);
   background: var(--color-bg-primary);
-  text-align: center;
 }
 
 .section-inner {
   max-width: var(--section-max-width);
   margin: 0 auto;
+  text-align: center;
 }
 
 .steps {
   display: flex;
   flex-direction: column;
-  gap: 32px;
   margin-top: 40px;
-  position: relative;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .step {
   display: flex;
+  align-items: stretch;
+  text-align: left;
+}
+
+.step-left {
+  display: flex;
   flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  margin-right: 20px;
 }
 
 .step-number {
@@ -68,48 +91,31 @@ const steps = [
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
 }
 
-.step .text-h4 {
-  margin-top: 16px;
+.step-line {
+  width: 2px;
+  flex: 1;
+  background: var(--color-border-light);
+}
+
+.step-body {
+  padding-bottom: 32px;
+  padding-top: 10px;
+}
+
+.step:last-child .step-body {
+  padding-bottom: 0;
 }
 
 .step-desc {
   color: var(--color-text-secondary);
-  margin-top: 8px;
-  max-width: 280px;
+  margin-top: 6px;
 }
 
 @media (min-width: 769px) {
   .section {
     padding: var(--section-py) var(--section-px);
-  }
-
-  .steps {
-    flex-direction: row;
-    justify-content: center;
-    gap: 0;
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .step {
-    flex: 1;
-  }
-
-  /* Connector line behind the circles */
-  .steps::before {
-    content: '';
-    position: absolute;
-    top: 24px;
-    left: calc(100% / 6);
-    right: calc(100% / 6);
-    height: 2px;
-    background: var(--color-border-light);
-    z-index: 0;
   }
 }
 </style>

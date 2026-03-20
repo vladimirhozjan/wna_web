@@ -9,7 +9,7 @@
 
       <div class="review-body">
 
-        <GtdTip
+        <TipTricks
             v-if="!hasReminder"
             ref="setupTip"
             storage-key="tip_review_setup"
@@ -21,7 +21,7 @@
               Create reminder
             </Btn>
           </div>
-        </GtdTip>
+        </TipTricks>
 
         <div class="card">
           <div class="card-header">
@@ -80,7 +80,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
-import GtdTip from '../../components/GtdTip.vue'
+import TipTricks from '../../components/TipTricks.vue'
 import { reviewModel } from '../../scripts/models/reviewModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'

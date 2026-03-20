@@ -1,5 +1,5 @@
 <template>
-  <section class="section">
+  <section class="section" id="why-us">
     <div class="section-inner">
       <h2 class="text-h1 color-text-primary">Designed for Clarity and Focus</h2>
       <div class="items-row">
@@ -18,8 +18,8 @@
 <script setup>
 const items = [
   {
-    title: 'Pure GTD',
-    description: 'Built with strict adherence to the Getting Things Done methodology. No compromises, no shortcuts.',
+    title: 'Methodology-Driven',
+    description: 'Built around a proven five-step system for capturing, clarifying, and organizing your work. No compromises, no shortcuts.',
     svg: '<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>',
   },
   {

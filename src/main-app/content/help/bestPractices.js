@@ -1,5 +1,10 @@
 export const bestPractices = [
   {
+    title: 'Start From the Dashboard',
+    description:
+      'Begin each work session on the Engage page. It gives you a bird\'s-eye view of what needs attention: overdue items flagged in red, your Today list, a snapshot of Next Actions, Waiting For items, and nudges when your Inbox needs clarifying or projects are stuck. Set a context filter to focus on where you are (@office, @home) and let the Dashboard tell you what to do next.',
+  },
+  {
     title: 'The Two-Minute Rule',
     description:
       'If an item takes less than two minutes to complete, do it immediately instead of tracking it. The overhead of organizing, reviewing, and re-engaging with a tiny task costs more time than just doing it. During Clarify, WhatsNextAction asks "Can you do this in less than 2 minutes?" — if yes, do it now and mark it done on the spot.',
@@ -12,7 +17,7 @@ export const bestPractices = [
   {
     title: 'Do a Weekly Review',
     description:
-      'The Weekly Review is what makes GTD work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. Enable it in Settings and create a recurring reminder so you never skip it.',
+      'The Weekly Review is what makes your system work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. Enable it in Settings and create a recurring reminder so you never skip it.',
   },
   {
     title: 'Write Clear Next Actions',
@@ -37,7 +42,7 @@ export const bestPractices = [
   {
     title: 'Reserve Due Dates for Hard Deadlines',
     description:
-      'In GTD, a due date means "this must be done by this date or there are real consequences." Tax filing deadlines, contract expirations, and flight departures are due dates. "I\'d like to finish this by Friday" is not. Overusing due dates creates false urgency and makes the real deadlines harder to spot. Use your Next Actions list and context filtering to prioritize instead.',
+      'A due date means "this must be done by this date or there are real consequences." Tax filing deadlines, contract expirations, and flight departures are due dates. "I\'d like to finish this by Friday" is not. Overusing due dates creates false urgency and makes the real deadlines harder to spot. Use your Next Actions list and context filtering to prioritize instead.',
   },
   {
     title: 'Every Project Needs a Next Action',
@@ -65,8 +70,13 @@ export const bestPractices = [
       'Check Settings periodically to review your active sessions. You can see which devices are logged in, how recently each was active, and end any session remotely. If you log in on a shared computer and forget to sign out, you can revoke that session from any other device.',
   },
   {
+    title: 'Automate With Recurring Actions',
+    description:
+      'Use recurring action templates for tasks that repeat on a schedule — weekly reviews, monthly reports, daily standups. Set the frequency, pick the days, and optionally add a time and duration. The app automatically spawns a new action instance each cycle so you never have to remember to create it yourself. Access recurring templates from the Calendar\'s Recurring view (Pro and Business plans).',
+  },
+  {
     title: 'Trust Your System',
     description:
-      'GTD only works if you trust your system completely. That means capturing everything — not just the big things. It means processing your Inbox regularly instead of letting it pile up. It means doing your Weekly Review even when you feel on top of things. The moment you start keeping things in your head "just in case," the system breaks down. Put it all in, keep it current, and let go.',
+      'Your productivity system only works if you trust it completely. That means capturing everything — not just the big things. It means processing your Inbox regularly instead of letting it pile up. It means doing your Weekly Review even when you feel on top of things. The moment you start keeping things in your head "just in case," the system breaks down. Put it all in, keep it current, and let go.',
   },
 ]

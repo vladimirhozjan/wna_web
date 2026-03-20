@@ -113,12 +113,14 @@ defineEmits(['cta-click'])
   text-align: center;
   color: var(--color-text-secondary);
   margin-top: 4px;
+  min-height: 17px;
 }
 
 .tier__description {
   text-align: center;
   color: var(--color-text-secondary);
   margin-top: 12px;
+  min-height: 51px;
 }
 
 .tier__cta {

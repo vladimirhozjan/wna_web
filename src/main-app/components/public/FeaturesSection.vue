@@ -2,7 +2,7 @@
   <section class="section" id="features">
     <div class="section-inner">
       <h2 class="text-h1 color-text-primary">Your Trusted System, Organized</h2>
-      <p class="text-body-m section-subtitle">Everything you need to implement GTD — nothing you don't.</p>
+      <p class="text-body-m section-subtitle">Everything you need to stay organized — nothing you don't.</p>
       <div class="features-grid">
         <div v-for="feature in features" :key="feature.title" class="feature-card">
           <div class="icon-wrap">

@@ -31,13 +31,11 @@
             <span class="text-body-m attachment-item-name">{{ att.file_name }}</span>
             <span class="text-body-s attachment-item-size">{{ formatSize(att.size_bytes) }}</span>
           </div>
-          <div class="attachment-item-actions">
-            <button class="attachment-action-btn" title="Download" @click.stop="download(att)">
-              <DownloadIcon class="attachment-action-icon" />
+          <div class="attachment-item-actions" @click.stop>
+            <button class="attachment-action-btn" title="Download" @click="download(att)">
+              <DownloadIcon />
             </button>
-            <button class="attachment-action-btn attachment-action-btn--danger" title="Delete" @click.stop="remove(att)">
-              <TrashIcon class="attachment-action-icon" />
-            </button>
+            <ActionBtn @click="remove(att)" />
           </div>
         </div>
       </div>
@@ -84,7 +82,7 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import RefFileIcon from './reference/RefFileIcon.vue'
 import RefPreviewModal from './reference/RefPreviewModal.vue'
 import DownloadIcon from '../assets/DownloadIcon.vue'
-import TrashIcon from '../assets/TrashIcon.vue'
+import ActionBtn from './ActionBtn.vue'
 import { listAttachments, uploadAttachment, downloadAttachment, deleteAttachment } from '../scripts/core/apiClient.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
@@ -469,14 +467,9 @@ function formatSize(bytes) {
 }
 
 .attachment-action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
+  padding: 4px 8px;
   border: none;
-  background: none;
+  background: transparent;
   border-radius: 4px;
   cursor: pointer;
   color: var(--color-text-secondary);
@@ -484,23 +477,12 @@ function formatSize(bytes) {
 
 .attachment-action-btn:hover {
   background: var(--color-bg-hover, var(--color-bg-secondary));
-  color: var(--color-text-primary);
+  color: var(--color-action);
 }
 
-.attachment-action-btn--danger:hover {
-  color: var(--color-danger);
-}
-
-.attachment-action-icon {
-  width: 36px;
-  height: 36px;
-  padding: 6px;
-  box-sizing: border-box;
-}
-
-.attachment-action-icon :deep(svg) {
-  width: 100%;
-  height: 100%;
+.attachment-action-btn :deep(svg) {
+  width: 16px;
+  height: 16px;
 }
 
 /* ── Upload progress ── */
