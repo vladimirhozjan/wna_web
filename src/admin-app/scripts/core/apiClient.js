@@ -36,10 +36,10 @@ function normalizeError(error) {
 
 // --- Auth endpoints ---
 
-export async function login({ email, password, otp_code }) {
+export async function login({ email, password, code }) {
     try {
         const body = { email, password }
-        if (otp_code) body.otp_code = otp_code
+        if (code) body.code = code
         const res = await httpApi.post('/auth/login', body)
 
         if (res.data.access_token) {
@@ -47,6 +47,23 @@ export async function login({ email, password, otp_code }) {
         }
         if (res.data.refresh_token) {
             localStorage.setItem('admin_refresh_token', res.data.refresh_token)
+        }
+
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function refreshToken() {
+    try {
+        const refresh_token = localStorage.getItem('admin_refresh_token')
+        if (!refresh_token) throw { status: 401, message: 'No refresh token' }
+
+        const res = await httpApi.post('/auth/refresh', { refresh_token })
+
+        if (res.data.access_token) {
+            localStorage.setItem('admin_auth_token', res.data.access_token)
         }
 
         return res.data
@@ -93,6 +110,7 @@ export async function resetPassword(email) {
 
 export default {
     login,
+    refreshToken,
     setPassword,
     getOtpSetup,
     confirmOtp,

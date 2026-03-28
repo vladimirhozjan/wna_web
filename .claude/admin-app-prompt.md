@@ -5,10 +5,10 @@ Replace `{PHASE}` and `{STEPS}` and paste into a new conversation.
 ---
 
 ```
-Task: Implement admin-app Phase {PHASE} — {STEPS}
+Task: Implement admin-app Sprit 2
 
 ### Context — read these files first (do NOT skip any):
-1. `.claude/admin-web-requirements.md` — Find Phase {PHASE}, read every step.
+1. `.claude/admin-web-requirements.md` — Find defined sprint, read every step.
 2. `.claude/general-guidelines.md` — Code style and rules. Follow strictly.
 3. `.claude/ci.md` — Build config, runtime config, Vite proxy.
 4. `../wna_backend/.claude/admin-api.md` — Backend API spec. Before implementing any API call, verify the endpoint exists here. If missing, STOP that step and report what is missing.

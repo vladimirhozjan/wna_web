@@ -70,12 +70,12 @@ export function authModel() {
         }
     }
 
-    async function login(email, password, otpCode) {
+    async function login(email, password, code) {
         loading.value = true
         error.value = null
 
         try {
-            const data = await apiClient.login({ email, password, otp_code: otpCode })
+            const data = await apiClient.login({ email, password, code })
 
             const token = localStorage.getItem('admin_auth_token')
             if (token) {
