@@ -6,7 +6,7 @@
           <h3 class="text-body-l fw-semibold title">{{ confirm.state.title }}</h3>
           <p class="text-body-m message">{{ confirm.state.message }}</p>
           <div class="actions">
-            <Btn variant="secondary" size="sm" @click="confirm.state.onCancel">
+            <Btn variant="ghost" size="sm" @click="confirm.state.onCancel">
               {{ confirm.state.cancelText }}
             </Btn>
             <Btn variant="danger" size="sm" @click="confirm.state.onConfirm">
@@ -71,7 +71,6 @@ watch(() => confirm.state.visible, (visible) => {
   gap: 10px;
 }
 
-/* Transitions */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

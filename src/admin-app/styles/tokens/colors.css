@@ -1,0 +1,75 @@
+:root {
+    /* Brand */
+    --color-action: #4f46e5;
+    --color-action-dark: #312e81;
+
+    /* Text */
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #4b5563;
+    --color-text-tertiary: #9CA3AF;
+    --color-text-error: #7f1c1d;
+    --color-text-danger: #dc2626;
+    --color-text-success: #059669;
+    --color-text-inverse: #ffffff;
+    --color-text-prefill: #D1D5DB;
+
+    /* Backgrounds */
+    --color-app-background: #f8fafc;
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F1F5F9;
+    --color-bg-hover: #E2E8F0;
+    --color-bg-accent-light: #eef2ff;
+
+    /* Borders */
+    --color-border-light: #e2e8f0;
+    --color-border-subtle: #f1f5f9;
+    --color-border-medium: #cbd5e1;
+
+    /* Status */
+    --color-danger: #ef4444;
+    --color-danger-light: #FEE2E2;
+    --color-warning: #d97706;
+    --color-warning-light: #fef3c7;
+    --color-success: #16a34a;
+    --color-success-light: #dcfce7;
+
+    /* Semantic */
+    --color-info: #3b82f6;
+    --color-info-light: #dbeafe;
+
+    /* Overlays */
+    --color-overlay: rgba(0, 0, 0, 0.5);
+    --color-overlay-light: rgba(0, 0, 0, 0.4);
+    --color-overlay-heavy: rgba(0, 0, 0, 0.6);
+    --color-popup-backdrop: rgba(241, 245, 249, 0.5);
+
+    /* Focus & action opacity */
+    --color-focus-ring: rgba(79, 70, 229, 0.2);
+    --color-danger-ring: rgba(239, 68, 68, 0.2);
+    --color-action-subtle: rgba(79, 70, 229, 0.1);
+    --color-action-bg-subtle: rgba(79, 70, 229, 0.08);
+    --color-action-bg-light: rgba(79, 70, 229, 0.1);
+    --color-action-shadow: rgba(79, 70, 229, 0.12);
+    --color-action-shadow-md: rgba(79, 70, 229, 0.15);
+    --color-action-ring: rgba(79, 70, 229, 0.2);
+    --color-danger-bg-subtle: rgba(254, 226, 226, 0.35);
+    --color-danger-bg-medium: rgba(254, 226, 226, 0.55);
+
+    /* Admin: Role badge colors */
+    --color-role-super-admin: #7c3aed;
+    --color-role-super-admin-bg: #f5f3ff;
+    --color-role-admin: #2563eb;
+    --color-role-admin-bg: #eff6ff;
+    --color-role-support: #0891b2;
+    --color-role-support-bg: #ecfeff;
+    --color-role-viewer: #6b7280;
+    --color-role-viewer-bg: #f3f4f6;
+
+    /* Admin: Status badge colors */
+    --color-status-active: #16a34a;
+    --color-status-active-bg: #dcfce7;
+    --color-status-pending: #d97706;
+    --color-status-pending-bg: #fef3c7;
+    --color-status-disabled: #dc2626;
+    --color-status-disabled-bg: #fee2e2;
+}

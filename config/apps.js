@@ -9,7 +9,13 @@ export const APPS = {
         plugins: [
             vue(),
             vueDevTools({ launchEditor: 'idea' })
-        ]
+        ],
+        proxy: {
+            '/v1': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+            }
+        }
     },
     'admin-app': {
         root: 'src/admin-app',
@@ -18,6 +24,24 @@ export const APPS = {
         plugins: [
             vue(),
             vueDevTools({ launchEditor: 'idea' })
-        ]
+        ],
+        proxy: {
+            '/auth': {
+                target: 'http://localhost:8004',
+                changeOrigin: true,
+            },
+            '/health': {
+                target: 'http://localhost:8004',
+                changeOrigin: true,
+            },
+            '/readiness': {
+                target: 'http://localhost:8004',
+                changeOrigin: true,
+            },
+            '/version': {
+                target: 'http://localhost:8004',
+                changeOrigin: true,
+            },
+        }
     }
 }

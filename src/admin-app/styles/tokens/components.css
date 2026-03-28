@@ -1,0 +1,67 @@
+:root {
+    /* Button loader */
+    --color-btn-loader-top: #fff;
+    --color-btn-loader-fade-1: rgba(255,255,255,0.3);
+
+    /* Button: primary */
+    --color-btn-primary-bg: #4f46e5;
+    --color-btn-primary-text: #FFFFFF;
+    --color-btn-primary-hover: #4338ca;
+    --color-btn-primary-active: #3730a3;
+    --color-btn-primary-dis-bg: #a5b4fc;
+    --color-btn-primary-dis-txt: #f2f2f2;
+
+    /* Button: ghost */
+    --color-btn-ghost-bg: #eef2ff;
+    --color-btn-ghost-text: #4338ca;
+    --color-btn-ghost-border: #c7d2fe;
+    --color-btn-ghost-hover: #e0e7ff;
+    --color-btn-ghost-active: #c7d2fe;
+    --color-btn-ghost-dis-bg: #f0f2f8;
+    --color-btn-ghost-dis-txt: #8b94c6;
+    --color-btn-ghost-dis-brd: #d4d8e9;
+
+    /* Button: danger */
+    --color-btn-danger-bg: #ef4444;
+    --color-btn-danger-text: #FFFFFF;
+    --color-btn-danger-hover: #eb1414;
+    --color-btn-danger-active: #bc1010;
+    --color-btn-danger-dis-bg: #e1b7b7;
+    --color-btn-danger-dis-txt: #f2f2f2;
+
+    /* Button: ghost-danger */
+    --color-btn-ghost-danger-bg: #fef2f2;
+    --color-btn-ghost-danger-text: #dc2626;
+    --color-btn-ghost-danger-border: #fecaca;
+    --color-btn-ghost-danger-hover: #fee2e2;
+    --color-btn-ghost-danger-active: #fecaca;
+    --color-btn-ghost-danger-dis-bg: #fef2f2;
+    --color-btn-ghost-danger-dis-txt: #f87171;
+    --color-btn-ghost-danger-dis-brd: #fecaca;
+
+    /* Menu items */
+    --color-menu-item-default-text: var(--color-text-primary);
+    --color-menu-item-hover-bg: #eef2ff;
+    --color-menu-item-hover-txt: #4338ca;
+    --color-menu-item-active-bg: #eef2ff;
+    --color-menu-item-active-txt: #4f46e5;
+
+    /* Inputs */
+    --color-input-background: #FFFFFF;
+    --color-input-border: #CBD5E1;
+    --color-input-border-focus: #4f46e5;
+    --color-input-border-error: #f9c6c6;
+    --color-input-background-error: #fef2f2;
+    --color-popup-background: #FFFFFF;
+    --color-sidebar-background: #FFFFFF;
+
+    /* Links */
+    --color-link-text: #4f46e5;
+    --color-link-hover: #3730a3;
+
+    /* Toasts */
+    --color-toast-error-bg: #fecaca;
+    --color-toast-error-text: #7f1c1d;
+    --color-toast-success-bg: #d1fae5;
+    --color-toast-success-text: #065f46;
+}

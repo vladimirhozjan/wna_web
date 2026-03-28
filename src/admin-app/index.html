@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>WNA Admin</title>
+    <style>
+      /* Splash screen - shown immediately, replaced when Vue mounts */
+      .splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0f172a;
+        pointer-events: none;
+      }
+      .splash-wrapper {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+      }
+      .splash-text {
+        font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #94a3b8;
+        margin: 0;
+      }
+      .splash-icon {
+        width: 100px;
+        height: 100px;
+      }
+      .splash-spinner {
+        position: absolute;
+        inset: 0;
+        border: 6px solid rgba(79, 70, 229, 0.15);
+        border-top-color: #4f46e5;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Splash screen - replaced when Vue mounts -->
+      <div class="splash">
+        <div class="splash-wrapper">
+          <div class="splash-spinner"></div>
+          <svg class="splash-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="14" fill="url(#splash-grad)"/>
+            <path d="M15 4L7 16h6.5L13 24 21 12h-6.5L15 4z" fill="#ffffff"/>
+            <defs>
+              <linearGradient id="splash-grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#312e81"/>
+                <stop offset="100%" stop-color="#4f46e5"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <p class="splash-text">Loading admin panel...</p>
+        </div>
+      </div>
+    </div>
+    <!--config.js comes from CI, do not remove it-->
+    <script src="/config.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

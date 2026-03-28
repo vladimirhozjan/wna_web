@@ -5,7 +5,6 @@
     </span>
 
     <Teleport to="body">
-      <!-- Desktop dropdown -->
       <template v-if="isOpen && !isMobile">
         <div class="dropdown-backdrop" @click="close"></div>
         <div class="dropdown-menu" :style="menuStyle" ref="menuRef">
@@ -13,7 +12,6 @@
         </div>
       </template>
 
-      <!-- Mobile action sheet -->
       <template v-if="isOpen && isMobile">
         <div class="dropdown-sheet-overlay" @click="close">
           <div class="dropdown-sheet" @click.stop>
@@ -45,7 +43,7 @@ const props = defineProps({
   },
   align: {
     type: String,
-    default: 'left' // 'left' or 'right'
+    default: 'left'
   }
 })
 
@@ -56,8 +54,6 @@ const menuRef = ref(null)
 const internalOpen = ref(false)
 const isMobile = ref(false)
 const menuStyle = ref({})
-
-// Support both controlled (v-model) and uncontrolled usage
 const isOpen = ref(false)
 
 function prePosition() {
@@ -137,16 +133,11 @@ function onKeydown(e) {
 
 function positionMenu() {
   if (!wrapperRef.value) return
-
   const rect = wrapperRef.value.getBoundingClientRect()
   const menuHeight = menuRef.value?.offsetHeight || 200
   const menuWidth = menuRef.value?.offsetWidth || 160
-
-  // Check if menu would go off screen at bottom
   const spaceBelow = window.innerHeight - rect.bottom
   const showAbove = spaceBelow < menuHeight && rect.top > menuHeight
-
-  // Check horizontal alignment
   const alignRight = props.align === 'right' || (rect.left + menuWidth > window.innerWidth)
 
   menuStyle.value = {
@@ -186,7 +177,6 @@ onUnmounted(() => {
   display: inline-flex;
 }
 
-/* Desktop dropdown */
 .dropdown-backdrop {
   position: fixed;
   inset: 0;
@@ -204,7 +194,6 @@ onUnmounted(() => {
   padding: 8px;
 }
 
-/* Mobile action sheet */
 .dropdown-sheet-overlay {
   position: fixed;
   inset: 0;
@@ -225,12 +214,8 @@ onUnmounted(() => {
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .dropdown-sheet-header {
@@ -266,37 +251,23 @@ onUnmounted(() => {
 </style>
 
 <style>
-/* Global styles for dropdown items - can be used by parent components */
 .dropdown-item {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 0;
+  padding: 8px 12px;
   background: none;
   border: none;
   text-align: left;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
+  font-size: var(--font-size-body-s);
   color: var(--color-text-primary);
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .dropdown-item:hover {
   background: var(--color-bg-secondary);
-}
-
-.dropdown-item-icon {
-  width: 32px;
-  height: 32px;
-  padding: 5px;
-  box-sizing: border-box;
-  margin-right: 4px;
-  color: var(--color-text-tertiary);
-  flex-shrink: 0;
-}
-
-.dropdown-item:hover .dropdown-item-icon {
-  color: var(--color-action);
 }
 
 .dropdown-item--danger {
@@ -307,17 +278,10 @@ onUnmounted(() => {
   background: rgba(220, 38, 38, 0.08);
 }
 
-/* Mobile-specific item styles */
 @media (max-width: 768px) {
   .dropdown-item {
     padding: 12px 16px;
     font-size: var(--font-size-body-l);
-  }
-
-  .dropdown-item-icon {
-    width: 32px;
-    height: 32px;
-    margin-right: 8px;
   }
 }
 </style>

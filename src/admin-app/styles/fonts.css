@@ -1,0 +1,33 @@
+/* Libre Bodoni – Headings */
+@font-face {
+    font-family: 'Libre Bodoni';
+    src: url('../../main-app/assets/fonts/Libre_Bodoni/LibreBodoni-VariableFont_wght.ttf') format('truetype');
+    font-weight: 400 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Libre Bodoni';
+    src: url('../../main-app/assets/fonts/Libre_Bodoni/LibreBodoni-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 400 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Montserrat – UI & Body */
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../../main-app/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../../main-app/assets/fonts/Montserrat/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}

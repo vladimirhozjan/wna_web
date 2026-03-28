@@ -2175,8 +2175,9 @@ Use the table below to log each full or partial test run.
 8. Verify the clarify panel shows the title of the currently selected item as context
 9. Click a different item in the shrunk list
 10. Verify the blue highlight moves to the clicked item and the ClarifyPanel updates to show that item's clarify workflow
+11. Verify the browser did NOT navigate to the StuffDetailPage — the URL remains on the Inbox page
 
-**Expected Result:** Clicking the "Clarify" button in the inbox header activates clarify mode. On desktop, the inbox list compresses to 320px on the left and the ClarifyPanel opens side-by-side on the right. The first item is highlighted in blue as the current target. Clicking a different item switches the clarify target.
+**Expected Result:** Clicking the "Clarify" button in the inbox header activates clarify mode. On desktop, the inbox list compresses to 320px on the left and the ClarifyPanel opens side-by-side on the right. The first item is highlighted in blue as the current target. Clicking a different item switches the clarify target instead of navigating to the detail page.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2212,7 +2213,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-069: Clarify Mode Item Interactions (Disabled State)
+### TC-069: Clarify Mode Item Interactions
 **Priority:** High | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated on desktop. Inbox contains at least 3 stuff items. Clarify mode is activated from the inbox header.
@@ -2221,15 +2222,15 @@ Use the table below to log each full or partial test run.
 1. Navigate to the Inbox page and activate clarify mode by clicking the "Clarify" button
 2. Verify the first item is highlighted in blue
 3. Attempt to click on the title of any item to trigger inline editing
-4. Verify inline editing does NOT activate (items are disabled in clarify mode)
-5. Hover over an item and verify action buttons (trash, etc.) are NOT visible or are disabled
-6. Verify the checkbox on each item is disabled or hidden
-7. Click on a different item in the list (not the currently highlighted one)
-8. Verify the blue highlight moves to the clicked item
-9. Verify the ClarifyPanel updates to reflect the newly selected item
-10. Verify no other interactions (drag-to-reorder, navigation to detail page) are possible while in clarify mode
+4. Verify inline editing does NOT activate (items are not editable in clarify mode)
+5. Hover over an item and verify action buttons (trash, etc.) are NOT visible
+6. Verify the checkbox on each item is not interactive
+7. Attempt to drag an item to reorder and verify drag-to-reorder is disabled
+8. Click on a different item in the list (not the currently highlighted one)
+9. Verify the blue highlight moves to the clicked item and the ClarifyPanel updates to reflect the newly selected item
+10. Verify the browser did NOT navigate to the StuffDetailPage — the URL remains on the Inbox page
 
-**Expected Result:** In clarify mode, all item interactions are disabled except for selecting a different item as the clarify target. Inline editing, action buttons, checkboxes, drag-to-reorder, and navigation to detail pages are all suppressed. Clicking an item only changes the blue highlight and updates the ClarifyPanel target.
+**Expected Result:** In clarify mode, item interactions are disabled (no inline editing, no action buttons, no checkbox, no drag-to-reorder, no navigation to detail page). The only interaction that works is clicking an item to switch the clarify target: the blue highlight moves to the clicked item and the ClarifyPanel updates to show that item's clarify workflow.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3157,26 +3158,32 @@ Use the table below to log each full or partial test run.
 ### TC-102: Action Detail Page Full Content
 **Priority:** High | **Area:** Next Actions
 
-**Preconditions:** User is logged in and at least one action exists with the following attributes set: title, description, tags, deferred date, due date, association with a project, at least one attachment, and at least one comment
+**Preconditions:** User is logged in. Two actions exist: (A) an action with title, description, tags, a start date, a due date, association with a project, at least one attachment, and at least one comment; (B) an action with a scheduled date (with time and duration). Both are in the Next Actions list.
 
 **Steps:**
 1. Navigate to the Next Actions page (/next)
-2. Click on the action item to navigate to /action/:id
+2. Click on action A to navigate to /action/:id
 3. Verify the action detail page loads
-4. Verify the action title is displayed prominently and is editable (click-to-edit)
-5. Verify the description section is displayed with the current description text, editable on click
-6. Verify the tags section shows the assigned tags as chips
-7. Verify the deferred date (defer_until) is displayed in the dates section
-8. Verify the due date (due_date) is displayed in the dates section
-9. Verify a project link is shown indicating which project this action belongs to
-10. Click the project link and verify it navigates to the project detail page
-11. Navigate back to the action detail page
-12. Verify the attachments section displays the uploaded attachment(s)
-13. Verify the comments section displays the existing comment(s) with author and timestamp
-14. Verify metadata is displayed (e.g., creation date, last modified date)
-15. Verify navigation arrows (First/Previous/Next/Last) are present for position-based navigation
+4. Verify the action title is displayed prominently as an h2 and is editable (click-to-edit textarea; Enter saves, Escape cancels)
+5. Verify action buttons are shown: "Done" (ghost), "Move" dropdown, "Trash" (danger)
+6. Verify the project link is shown indicating which project this action belongs to
+7. Click the project link and verify it navigates to the project detail page
+8. Navigate back to the action detail page
+9. Verify the description section is displayed with the current description text, editable on click
+10. Verify the tags section shows the assigned tags as chips
+11. Expand the dates section (collapsible) and verify three date rows: Scheduled, Start, Due
+12. Verify the "Scheduled" row shows "Not available (has start or due date)" because action A has start/due dates set
+13. Verify the "Start" row shows the start date value
+14. Verify the "Due" row shows the due date value
+15. Verify the attachments section displays the uploaded attachment(s)
+16. Verify the comments section displays the existing comment(s) with user avatar and relative timestamp
+17. Verify metadata is displayed at the bottom (created date, updated date)
+18. Verify navigation arrows (First/Previous/Next/Last) are present for position-based navigation
+19. Navigate to action B (which has a scheduled date with time and duration)
+20. Expand the dates section and verify the "Scheduled" row shows the date, time, and duration (e.g., "Mar 25, 2026, 09:00 (30 min)")
+21. Verify the "Start" and "Due" rows both show "Not available (has scheduled date)"
 
-**Expected Result:** The action detail page displays all fields: title, description, tags, deferred date, due date, project link (navigable), attachments, comments, and metadata. All editable fields support click-to-edit.
+**Expected Result:** The action detail page displays all fields: title (click-to-edit), action buttons (Done, Move, Trash), project link (navigable), description (click-to-edit), tags (as chips), dates section (collapsible, with Scheduled/Start/Due rows respecting mutual exclusivity), attachments, comments (with avatar and relative timestamp), and metadata. Scheduled date is mutually exclusive with start/due dates — when one is set, the others show "Not available".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3885,7 +3892,7 @@ Use the table below to log each full or partial test run.
 ### TC-129: Calendar Drag Reschedule
 **Priority:** Medium | **Area:** Calendar | **Smoke Test**
 
-**Preconditions:** User is logged in, at least one scheduled action and one due-only action (has due_date but no scheduled_date or start_date) exist on the calendar, using Day or Week view
+**Preconditions:** User is logged in, at least one scheduled action, one start_after action, and one due-only action exist on the calendar, using Day or Week view
 
 **Steps:**
 1. Navigate to the Calendar page (/calendar) and switch to Day view
@@ -3899,19 +3906,16 @@ Use the table below to log each full or partial test run.
 9. Identify a scheduled action on one day (e.g., Monday)
 10. Drag the action to a different day (e.g., Wednesday at the same time)
 11. Verify the action moves to the new day column automatically (no popover)
-12. Identify a due-only action (red styling) on the calendar
-13. Drag the due-only action to a different day
-14. Verify a popover appears with two options: "Scheduled for [date]" and "Start after [date]"
-15. Click "Scheduled for [date]"
-16. Verify the action is rescheduled as a scheduled action (blue styling)
-17. Verify the due_date is cleared (mutual exclusivity)
-18. Reload the page and verify the new schedule persists
-19. Create another due-only action and drag it, this time select "Start after [date]"
-20. Verify the action is rescheduled as a start_after action (yellow styling)
-21. Verify the due_date is preserved
-22. Verify clicking outside the popover cancels the drag operation
+12. Identify a start_after action (green styling) on the calendar
+13. Drag it to a different day
+14. Verify the action moves to the new day automatically (no popover), retaining green styling
+15. Identify a due-only action (red styling) on the calendar
+16. Drag the due-only action to a different day
+17. Verify the action is automatically rescheduled as a scheduled action (blue styling) on the new date — no popover appears
+18. Verify the due_date is cleared (mutual exclusivity with scheduled_date)
+19. Reload the page and verify the new schedule persists
 
-**Expected Result:** Dragging a scheduled or start_after action auto-reschedules without a popover. Dragging a due-only action shows a type-selection popover. "Scheduled for" clears due_date (mutual exclusivity). "Start after" preserves due_date. Changes persist across reloads.
+**Expected Result:** All drag reschedules happen automatically without a popover. The type is auto-detected from the item's existing dates: scheduled items stay scheduled, start_after items stay start_after, and due-only items default to scheduled (clearing the due_date due to mutual exclusivity). Changes persist across reloads.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4055,7 +4059,7 @@ Use the table below to log each full or partial test run.
 2. Locate the scheduled action
 3. Verify it displays with **blue** styling (blue background, blue left border, blue text)
 4. Locate the start_after action
-5. Verify it displays with **yellow/amber** styling (amber background, amber left border, amber text)
+5. Verify it displays with **green** styling (green background, green left border, green text)
 6. Locate the due-only action (due today)
 7. Verify it displays with **red** styling (red background, red left border, red text)
 8. Navigate to the date of the overdue due-only action
@@ -4063,7 +4067,7 @@ Use the table below to log each full or partial test run.
 10. Switch to Week view and verify the same four color states are visible
 11. Switch to Month view and verify the same four color states are visible in the day cells
 
-**Expected Result:** Calendar items display in four distinct visual states: scheduled (blue), start_after (yellow/amber), due-only (red), and overdue (dark red). The color coding is consistent across Day, Week, and Month views.
+**Expected Result:** Calendar items display in four distinct visual states: scheduled (blue), start_after (green), due-only (red), and overdue (dark red). The color coding is consistent across Day, Week, and Month views.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4081,21 +4085,21 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to the Calendar page (/calendar) in Month view for March
 2. Locate March 15 in the calendar grid
-3. Verify the action appears on March 15 with **yellow/amber** styling (start_after display)
+3. Verify the action appears on March 15 with **green** styling (start_after display)
 4. Locate March 20 in the calendar grid
 5. Verify the **same action** also appears on March 20 with **red** styling (due display)
 6. Switch to Week view for the week containing March 15
-7. Verify the action appears on March 15 with yellow/amber styling
+7. Verify the action appears on March 15 with green styling
 8. Navigate to the week containing March 20
 9. Verify the action appears on March 20 with red styling
 10. Switch to Day view for March 15
-11. Verify the action appears with yellow/amber styling
+11. Verify the action appears with green styling
 12. Navigate to Day view for March 20
 13. Verify the action appears with red styling
 14. Click the action on March 20 to navigate to the action detail
 15. Verify the detail page shows both start_date (March 15) and due_date (March 20)
 
-**Expected Result:** An action with both start_date and due_date appears on both dates in the calendar. On the start_date it shows yellow/amber styling. On the due_date it shows red styling. Both reference the same action.
+**Expected Result:** An action with both start_date and due_date appears on both dates in the calendar. On the start_date it shows green styling. On the due_date it shows red styling. Both reference the same action.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4105,7 +4109,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-136: Calendar Quick-Add - Type Selector
+### TC-136: Calendar Quick-Add - Scheduled Action
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in, viewing the Calendar page in Month or Day view
@@ -4113,23 +4117,20 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to the Calendar page (/calendar) in Month view
 2. Click on an empty day cell to open the quick-add form
-3. Verify the quick-add form appears with a title input field
-4. Verify the form shows two radio buttons: "Scheduled" (default selected) and "Start after"
-5. Type a title (e.g., "Team meeting")
-6. With "Scheduled" selected, verify NO due date input is shown
-7. Press Enter to submit
-8. Verify the action is created as a scheduled action (blue styling) on the selected date
-9. Click another empty day cell
-10. Select "Start after" radio button
-11. Verify a due date input field appears
-12. Type a title and optionally set a due date
-13. Press Enter to submit
-14. Verify the action is created as a start_after action (yellow/amber styling) on the selected date
-15. If a due date was set, verify the action also appears on the due date with red styling
-16. Switch to Day view and repeat the same flow by clicking an empty time slot
-17. Verify the type selector and due date input work the same way in the Day view quick-add form
+3. Verify the quick-add form appears with a title input field (placeholder: "New action...")
+4. Type a title (e.g., "Team meeting")
+5. Press Enter to submit
+6. Verify the action is created as a scheduled action (blue styling) on the selected date
+7. Verify the quick-add form closes after submission
+8. Switch to Day view
+9. Click on an empty time slot (e.g., 2:00 PM)
+10. Verify the quick-add form appears in the clicked time slot
+11. Type a title and press Enter
+12. Verify the action is created as a scheduled action at the clicked time with default 30-minute duration
+13. Press Escape on an open quick-add form without typing
+14. Verify the form closes without creating an action
 
-**Expected Result:** The calendar quick-add form includes a type selector ("Scheduled" / "Start after"). "Scheduled" creates a scheduled action. "Start after" creates a deferred action and optionally accepts a due date. The due date field only appears when "Start after" is selected.
+**Expected Result:** The calendar quick-add form is a simple title input. Submitting creates a scheduled action on the selected date (and time, if clicked on a time slot in Day/Week view). Empty submissions or Escape cancel the form. Actions created from time slots get a default 30-minute duration.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4248,14 +4249,14 @@ Use the table below to log each full or partial test run.
 2. Locate Action A (scheduled)
 3. Verify its MetadataRow chip shows "Scheduled Mar 18" with a **blue** calendar icon and blue text
 4. Locate Action B (start_after)
-5. Verify its MetadataRow chip shows "Starts Mar 15" with a **yellow/amber** calendar icon and amber text
+5. Verify its MetadataRow chip shows "Starts Mar 15" with a **green** calendar icon and green text
 6. Locate Action C (due in future)
 7. Verify its MetadataRow chip shows "Due Mar 25" with a **red** calendar icon and red text
 8. Locate Action D (overdue)
 9. Verify its MetadataRow chip shows "Overdue Mar 1" with a **dark red** calendar icon and dark red text
 10. Verify that Action D's chip uses darker red compared to Action C's red
 
-**Expected Result:** MetadataRow date chips use color-coded styling: scheduled (blue), start_after (yellow/amber), due (red), overdue (dark red). The "Scheduled" label is fully spelled out (not "Sched"). Due chips show "Due [date]" and overdue chips show "Overdue [date]".
+**Expected Result:** MetadataRow date chips use color-coded styling: scheduled (blue), start_after (green), due (red), overdue (dark red). The "Scheduled" label is fully spelled out (not "Sched"). Due chips show "Due [date]" and overdue chips show "Overdue [date]".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4302,7 +4303,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-142: Calendar Drag Popover for Due-Only Items
+### TC-142: Calendar Drag Reschedule for Due-Only Items
 **Priority:** Medium | **Area:** Calendar
 
 **Preconditions:** User is logged in. A due-only action exists on the calendar (has due_date, has start_date in the past so it was loaded, but the item currently shows on its due_date with red styling).
@@ -4311,23 +4312,16 @@ Use the table below to log each full or partial test run.
 1. Navigate to the Calendar page (/calendar) in Month view
 2. Locate the due-only action (red styling)
 3. Drag the action to a different day cell
-4. Verify a popover appears near the drop location with two buttons:
-   - "Scheduled for [target date]"
-   - "Start after [target date]"
-5. Click "Scheduled for [date]"
-6. Verify the action is rescheduled as a scheduled action on the target date (blue styling)
-7. Verify the due_date is cleared (mutual exclusivity with scheduled)
-8. Undo by navigating to the action detail and clearing the scheduled date
-9. Set a due date again and drag the due-only action to another day
-10. When the popover appears, click "Start after [date]"
-11. Verify the action is rescheduled as a start_after action on the target date (yellow/amber styling)
-12. Verify the due_date is **preserved**
-13. Drag the due-only action again, but this time click outside the popover
-14. Verify the popover closes and the action is NOT rescheduled (drag is cancelled)
-15. Repeat in Week view (all-day and timed drops) to verify popover appears for due-only items
-16. Repeat in Day view to verify popover appears for due-only items
+4. Verify the action is automatically rescheduled as a scheduled action on the target date (blue styling) — no popover appears
+5. Verify the due_date is cleared (mutual exclusivity with scheduled_date)
+6. Verify the action now shows on the new date with blue styling
+7. Reload the page and verify the reschedule persists
+8. Switch to Week view and drag a due-only action to a different day
+9. Verify the same auto-reschedule behavior (no popover, becomes scheduled)
+10. Switch to Day view and drag a due-only action to a different time slot
+11. Verify the action is rescheduled as scheduled at the new time
 
-**Expected Result:** Dragging a due-only item on the calendar shows a type-selection popover. "Scheduled for" clears due_date. "Start after" preserves due_date. Clicking outside cancels. The popover works in Month, Week, and Day views.
+**Expected Result:** Dragging a due-only item on the calendar auto-reschedules it as a "scheduled" action on the target date (same behavior as dragging any other item — no type-selection popover). The due_date is cleared due to mutual exclusivity with scheduled_date. Changes persist across reloads.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4340,21 +4334,21 @@ Use the table below to log each full or partial test run.
 ### TC-143: Calendar Drag Auto-Detects Type for Scheduled and Start Items
 **Priority:** Medium | **Area:** Calendar
 
-**Preconditions:** User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (yellow/amber).
+**Preconditions:** User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (green).
 
 **Steps:**
 1. Navigate to the Calendar page (/calendar) in Month view
 2. Locate the scheduled action (blue styling)
 3. Drag it to a different day cell
-4. Verify NO popover appears — the action is automatically rescheduled as "scheduled" on the new date
+4. Verify the action is automatically rescheduled as "scheduled" on the new date (no popover)
 5. Verify the action retains blue styling on the new date
-6. Locate the start_after action (yellow/amber styling)
+6. Locate the start_after action (green styling)
 7. Drag it to a different day cell
-8. Verify NO popover appears — the action is automatically rescheduled as "start" on the new date
-9. Verify the action retains yellow/amber styling on the new date
+8. Verify the action is automatically rescheduled as "start" on the new date (no popover)
+9. Verify the action retains green styling on the new date
 10. Reload the page and verify both actions are on their new dates
 
-**Expected Result:** Dragging a scheduled action auto-reschedules as "scheduled" (no popover). Dragging a start_after action auto-reschedules as "start" (no popover). The popover only appears for due-only items that have no existing scheduled/start date to auto-detect from.
+**Expected Result:** Dragging a scheduled action auto-reschedules as "scheduled". Dragging a start_after action auto-reschedules as "start". All drag reschedules happen automatically without a popover — the type is auto-detected from the item's existing dates.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4373,19 +4367,19 @@ Use the table below to log each full or partial test run.
 1. Navigate to /settings and set the Theme dropdown to "Dark" in the Application section
 2. Navigate to the Calendar page (/calendar)
 3. Verify scheduled items (blue) are visible and readable against the dark background
-4. Verify start_after items (yellow/amber) are visible and readable against the dark background
+4. Verify start_after items (green) are visible and readable against the dark background
 5. Verify due-only items (red) are visible and readable against the dark background
 6. Verify overdue items (dark red) are visible and readable against the dark background
 7. Navigate to a list view (e.g., /next)
 8. Verify MetadataRow date chips use appropriate dark theme colors:
    - Scheduled: blue text/icon
-   - Start: amber/yellow text/icon
+   - Start: amber/yellow text/icon (note: MetadataRow chips use amber in dark theme, distinct from green calendar items)
    - Due: light red text/icon
    - Overdue: light red text/icon (distinguishable from non-overdue due)
 9. Verify all four calendar item types have sufficient contrast in dark theme
 10. Navigate to /settings and switch Theme to "Light"; verify the light theme colors are correct
 
-**Expected Result:** All four calendar item color states (scheduled, start, due, overdue) and MetadataRow chip colors render with appropriate dark theme overrides. Text and icons are readable against the dark background.
+**Expected Result:** All four calendar item color states (scheduled=blue, start=green, due=red, overdue=dark red) and MetadataRow chip colors render with appropriate dark theme overrides. Note: calendar start items use green while MetadataRow start chips use amber/yellow in dark theme. Text and icons are readable against the dark background.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4403,16 +4397,16 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to the Calendar page (/calendar) and switch to Day view
 2. Navigate to the date matching the action's start_date
-3. Verify a yellow dot appears on the left edge of the time grid at the 10:00 position
-4. Verify a yellow horizontal line extends from the dot across the full width of the grid
-5. Verify a yellow gradient fades downward from the line to transparent (~24px height)
-6. Verify the action's title is displayed below the gradient in yellow/amber text
+3. Verify a green dot appears on the left edge of the time grid at the 10:00 position
+4. Verify a green horizontal line extends from the dot across the full width of the grid
+5. Verify a green gradient fades downward from the line to transparent (~24px height)
+6. Verify the action's title is displayed below the gradient in green text
 7. Click on the action title text and verify it navigates to the action detail page
 8. Switch to Week view
-9. Verify the same yellow dot+line+gradient+title indicator appears in the correct day column at the correct time position
+9. Verify the same green dot+line+gradient+title indicator appears in the correct day column at the correct time position
 10. Verify an action with start_date but no start_time appears in the all-day section (not as a timed indicator)
 
-**Expected Result:** Actions with start_date and start_time display as yellow line indicators in the time grid (day and week views). The indicator has a dot, line, downward gradient, and title below. Actions without start_time appear in the all-day section. Clicking the title navigates to action detail.
+**Expected Result:** Actions with start_date and start_time display as green line indicators in the time grid (day and week views). The indicator has a dot, line, downward gradient, and title below. Actions without start_time appear in the all-day section. Clicking the title navigates to action detail.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4881,9 +4875,9 @@ Use the table below to log each full or partial test run.
 10. Verify the project moves back to active Projects
 11. Verify the success toast says "moved to Projects"
 12. Verify actions that were shelved to BACKLOG are restored to their previous states (NEXT, TODAY, etc.)
-13. Verify the project detail page does NOT show the Next Action section while in Someday state
+13. Verify the Next Action section is visible but the "What's the next physical step?" prompt is NOT shown while in Someday state (the section header and expand button are present, but no warning prompt about needing a next action)
 
-**Expected Result:** Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash. Activating restores shelved actions. Next Action section is hidden for Someday projects.
+**Expected Result:** Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash. Activating restores shelved actions. The Next Action section is visible for Someday projects, but the "next action required" prompt is hidden — only active projects show the prompt when no next action exists.
 
 | Date | P/F | Comment |
 |------|-----|---------|

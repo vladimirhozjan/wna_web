@@ -154,7 +154,7 @@ export function todayModel() {
         error.value = null
 
         try {
-            await apiClient.moveAction(actionId, toIndex)
+            await apiClient.moveTodayAction(actionId, toIndex)
         } catch (err) {
             error.value = err
             throw err

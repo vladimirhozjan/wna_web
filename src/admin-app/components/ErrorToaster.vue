@@ -1,0 +1,96 @@
+<template>
+  <div class="toast-wrapper">
+    <TransitionGroup tag="div" name="toast" class="toast-inner">
+      <div
+          v-for="e in error.state.errors"
+          :key="e.id"
+          class="text-body-s toast"
+          :class="`toast--${e.type || 'error'}`"
+          @click="error.remove(e.id)"
+      >
+        <svg v-if="e.type === 'success'" class="toast__icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+          <polyline points="5,8.5 7,10.5 11,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        {{ e.message }}
+      </div>
+    </TransitionGroup>
+  </div>
+</template>
+
+<script setup>
+import { errorModel } from '../scripts/core/errorModel.js'
+
+const error = errorModel()
+</script>
+
+<style scoped>
+.toast-wrapper {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+}
+
+.toast-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toast__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  animation: toast-icon-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes toast-icon-pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+.toast--error {
+  background: var(--color-toast-error-bg);
+  color: var(--color-toast-error-text);
+}
+
+.toast--success {
+  background: var(--color-toast-success-bg);
+  color: var(--color-toast-success-text);
+}
+
+:global(.toast-enter-from) {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+:global(.toast-enter-active),
+:global(.toast-leave-active) {
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+:global(.toast-enter-to) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:global(.toast-leave-to) {
+  opacity: 0;
+  transform: scale(0.85);
+}
+</style>

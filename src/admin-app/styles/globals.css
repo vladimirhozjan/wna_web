@@ -1,0 +1,18 @@
+@import './styles.css';
+
+body {
+    background-color: var(--color-app-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-default);
+    margin: 0;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html, body {
+    min-height: 100%;
+    min-width: 320px;
+}
+
+h1, h2, h3, h4, p {
+    margin: 0;
+}

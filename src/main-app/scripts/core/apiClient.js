@@ -667,6 +667,15 @@ export async function todayAction(actionId) {
     }
 }
 
+export async function moveTodayAction(actionId, position) {
+    try {
+        const res = await httpApi.post(`/v1/today/${actionId}/move`, {position}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getTodayActionByPosition(position) {
     try {
         const res = await httpApi.get(`/v1/today/pos/${position}`, {headers: authHeaders()})
@@ -1610,6 +1619,7 @@ const apiClient = {
     // Today API
     listTodayActions,
     todayAction,
+    moveTodayAction,
     getTodayActionByPosition,
     // Project API
     addProject,

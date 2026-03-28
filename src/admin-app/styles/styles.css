@@ -1,0 +1,151 @@
+@import './fonts.css';
+@import './tokens.css';
+
+/* Libre Bodoni – Headings */
+
+.text-hero {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-hero);
+    line-height: var(--lh-hero);
+    font-weight: var(--font-weight-bold);
+}
+
+.text-h1 {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-h1);
+    line-height: var(--lh-h1);
+    font-weight: var(--font-weight-bold);
+}
+
+.text-h2 {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-h2);
+    line-height: var(--lh-h2);
+    font-weight: var(--font-weight-bold);
+}
+
+.text-h3 {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-h3);
+    line-height: var(--lh-h3);
+    font-weight: var(--font-weight-bold);
+}
+
+/* Montserrat – UI & Body */
+
+.text-body {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-body);
+    line-height: var(--lh-body);
+    font-weight: var(--font-weight-normal);
+}
+
+.text-body-s {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-body-s);
+    line-height: var(--lh-body-s);
+    font-weight: var(--font-weight-normal);
+}
+
+.text-body-l {
+    font-family: var(--font-family-default);
+    font-size: clamp(17px, 2.2vw, 18px);
+    line-height: 1.22;
+    font-weight: var(--font-weight-normal);
+}
+
+.text-body-m {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-body);
+    line-height: var(--lh-body);
+    font-weight: var(--font-weight-normal);
+}
+
+.text-label {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-label);
+    line-height: var(--lh-label);
+    font-weight: var(--font-weight-medium);
+}
+
+.text-caption {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-caption);
+    line-height: var(--lh-caption);
+    font-weight: var(--font-weight-normal);
+}
+
+.text-overline {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-overline);
+    line-height: var(--lh-overline);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.text-link {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-link);
+    line-height: var(--lh-link);
+    font-weight: var(--font-weight-semibold);
+}
+
+.text-footnote {
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-caption);
+    line-height: var(--lh-caption);
+    font-weight: var(--font-weight-normal);
+}
+
+/* Page title */
+.page-title {
+    font-family: var(--font-family-default);
+    font-size: 24px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 32px;
+    margin: 0;
+}
+
+/* Card */
+.card {
+    background: var(--color-bg-primary);
+    border-radius: 12px;
+    border: 1px solid var(--color-border-light);
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: background 0.25s, border-color 0.25s;
+}
+
+.card:last-child {
+    margin-bottom: 0;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: var(--color-bg-secondary);
+}
+
+/* Color utility classes */
+.color-text-primary   { color: var(--color-text-primary); }
+.color-text-secondary { color: var(--color-text-secondary); }
+.color-text-tertiary  { color: var(--color-text-tertiary); }
+.color-text-error     { color: var(--color-text-error); }
+.color-text-danger    { color: var(--color-text-danger); }
+.color-text-success   { color: var(--color-text-success); }
+.color-text-inverse   { color: var(--color-text-inverse); }
+.bg-primary           { background-color: var(--color-bg-primary); }
+.bg-secondary         { background-color: var(--color-bg-secondary); }
+
+/* Font weight utility classes */
+.fw-light    { font-weight: var(--font-weight-light); }
+.fw-normal   { font-weight: var(--font-weight-normal); }
+.fw-medium   { font-weight: var(--font-weight-medium); }
+.fw-semibold { font-weight: var(--font-weight-semibold); }
+.fw-bold     { font-weight: var(--font-weight-bold); }

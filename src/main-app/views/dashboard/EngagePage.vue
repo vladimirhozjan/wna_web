@@ -395,7 +395,7 @@ async function onUpdate(id, { title }) {
 async function onTodayMove(id, newIndex) {
     movingId.value = id
     try {
-        await apiClient.moveAction(id, newIndex)
+        await apiClient.moveTodayAction(id, newIndex)
     } catch (e) {
         await loadDashboard({ tags: effectiveTags.value })
     } finally {

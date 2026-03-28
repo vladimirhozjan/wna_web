@@ -274,9 +274,9 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Can also be auto-started via URL query `?clarify=1`
 - Desktop: List shrinks to 320px, ClarifyPanel opens side-by-side
 - Mobile: ClarifyPanel opens as full-screen overlay
-- Items in the list are disabled during clarify (no inline edit, no action buttons)
+- Items in the list are disabled during clarify (no inline edit, no action buttons, no checkbox, no drag-to-reorder)
 - A blue highlight indicates the item currently being processed
-- Clicking a different item in the list switches the clarify target
+- Clicking an item switches the clarify target (does not navigate to the detail page)
 - After completing clarification of an item, it is removed from the list; when all items are clarified, clarify mode exits automatically
 
 **Empty state:** Inbox icon + "Your inbox is empty" + "Capture everything on your mind. Add new stuff above to get started."
