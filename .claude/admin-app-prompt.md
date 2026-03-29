@@ -5,7 +5,7 @@ Replace `{PHASE}` and `{STEPS}` and paste into a new conversation.
 ---
 
 ```
-Task: Implement admin-app Sprit 2
+Task: Implement admin-app Sprit 3
 
 ### Context — read these files first (do NOT skip any):
 1. `.claude/admin-web-requirements.md` — Find defined sprint, read every step.
@@ -20,4 +20,5 @@ Study `src/main-app/` for code style and patterns. Re-implement independently in
 ### After implementation:
 - Verify build: `APP=admin-app npm run build`
 - List any missing backend endpoints
+- mark in [admin-web-requirements.md](admin-web-requirements.md) whats done
 ```

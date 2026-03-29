@@ -500,26 +500,26 @@ Admin can manage their own account:
 
 Based on dependencies and the backend checklist status:
 
-**Sprint 1 (Foundation):**
-1. Step 0.1 — Scaffold (directory structure, index.html, main.js, App.vue)
-2. Step 0.2 — HTTP layer (domains, httpApi, apiClient, errorModel, confirmModel)
-3. Step 0.3 — Vite proxy config
-4. Step 0.4 — Base styles (tokens, globals, themes)
-5. Step 2.5 — Base components (Btn, Inpt, ErrorToaster, ConfirmDialog, Modal, Badge, DataTable)
-6. Step 1.1 — Auth model
-7. Step 1.2 — Router with guards
-8. Step 2.4 — AuthLayout
+**Sprint 1 (Foundation): DONE**
+1. ~~Step 0.1 — Scaffold (directory structure, index.html, main.js, App.vue)~~
+2. ~~Step 0.2 — HTTP layer (domains, httpApi, apiClient, errorModel, confirmModel)~~
+3. ~~Step 0.3 — Vite proxy config~~
+4. ~~Step 0.4 — Base styles (tokens, globals, themes)~~
+5. ~~Step 2.5 — Base components (Btn, Inpt, ErrorToaster, ConfirmDialog, Modal, Badge, DataTable)~~
+6. ~~Step 1.1 — Auth model~~
+7. ~~Step 1.2 — Router with guards~~
+8. ~~Step 2.4 — AuthLayout~~
 
-**Sprint 2 (Auth Flow):**
-9. Step 1.3 — Login page
-10. Step 1.4 — Set password page
-11. Step 1.5 — OTP setup page (+ add `qrcode` dependency)
+**Sprint 2 (Auth Flow): DONE**
+9. ~~Step 1.3 — Login page~~
+10. ~~Step 1.4 — Set password page~~
+11. ~~Step 1.5 — OTP setup page (+ add `qrcode` dependency)~~
 
-**Sprint 3 (Layout & Navigation):**
-13. Step 2.1 — AdminLayout
-14. Step 2.2 — Sidebar navigation
-15. Step 2.3 — Admin profile section
-16. Step 3.1-3.3 — Dashboard page + model
+**Sprint 3 (Layout & Navigation): DONE**
+13. ~~Step 2.1 — AdminLayout~~
+14. ~~Step 2.2 — Sidebar navigation~~
+15. ~~Step 2.3 — Admin profile section~~
+16. ~~Step 3.1-3.3 — Dashboard page + model~~ (partial: health + audit + quick actions implemented; user overview, platform activity, security alerts, GDPR widgets awaiting backend endpoints)
 
 **Sprint 4 (Core Management):**
 17. Step 4.1-4.4 — Admin user management

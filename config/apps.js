@@ -42,6 +42,10 @@ export const APPS = {
                 target: 'http://localhost:8004',
                 changeOrigin: true,
             },
+            '/admin': {
+                target: 'http://localhost:8004',
+                changeOrigin: true,
+            },
         }
     }
 }

@@ -108,6 +108,35 @@ export async function resetPassword(email) {
     }
 }
 
+// --- Dashboard endpoints ---
+
+export async function getAdminServiceVersion() {
+    try {
+        const res = await httpApi.get('/version')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getAdminServiceHealth() {
+    try {
+        const res = await httpApi.get('/health')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getAuditLog(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/audit-log', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -115,4 +144,7 @@ export default {
     getOtpSetup,
     confirmOtp,
     resetPassword,
+    getAdminServiceVersion,
+    getAdminServiceHealth,
+    getAuditLog,
 }
