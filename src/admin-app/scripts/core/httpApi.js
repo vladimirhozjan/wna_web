@@ -31,12 +31,16 @@ httpApi.interceptors.request.use(async (req) => {
         const expiresIn = payload.exp - now
 
         if (expiresIn < 60) {
-            // Token about to expire — refresh it
+            // Token about to expire — refresh it (inline to avoid circular import)
             if (!refreshPromise) {
-                const { refreshToken } = await import('./apiClient.js')
-                refreshPromise = refreshToken().finally(() => {
-                    refreshPromise = null
-                })
+                const refresh_token = localStorage.getItem('admin_refresh_token')
+                refreshPromise = httpApi.post('/auth/refresh', { refresh_token })
+                    .then(res => {
+                        if (res.data.access_token) {
+                            localStorage.setItem('admin_auth_token', res.data.access_token)
+                        }
+                    })
+                    .finally(() => { refreshPromise = null })
             }
             try {
                 await refreshPromise
