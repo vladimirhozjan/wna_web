@@ -128,9 +128,189 @@ export async function getAdminServiceHealth() {
     }
 }
 
+export async function getSystemHealth() {
+    try {
+        const res = await httpApi.get('/admin/system-health')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getDashboardUserOverview() {
+    try {
+        const res = await httpApi.get('/admin/dashboard/user-overview')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getDashboardPlatformActivity() {
+    try {
+        const res = await httpApi.get('/admin/dashboard/platform-activity')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getDashboardRecentActivity() {
+    try {
+        const res = await httpApi.get('/admin/dashboard/recent-activity')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getDashboardSecurityAlerts() {
+    try {
+        const res = await httpApi.get('/admin/dashboard/security-alerts')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getAuditLog(params = {}) {
     try {
         const res = await httpApi.get('/admin/audit-log', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// --- Platform user management endpoints ---
+
+export async function listPlatformUsers(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/platform-users', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUser(id) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${id}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function disablePlatformUser(id) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${id}/disable`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function enablePlatformUser(id) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${id}/enable`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deletePlatformUser(id, emailConfirmation) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${id}/delete`, { email_confirmation: emailConfirmation })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function forceLogoutPlatformUser(id) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${id}/force-logout`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function resetPlatformUserPassword(id) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${id}/reset-password`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// --- Admin profile endpoints ---
+
+export async function changePassword(currentPassword, newPassword) {
+    try {
+        const res = await httpApi.put('/admin/profile/password', {
+            current_password: currentPassword,
+            new_password: newPassword,
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function resetOtp(code) {
+    try {
+        const res = await httpApi.post('/admin/profile/otp/reset', { code })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// --- Admin user management endpoints ---
+
+export async function listAdmins(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/users', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createAdmin(email, role) {
+    try {
+        const res = await httpApi.post('/admin/users', { email, role })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateAdmin(id, data) {
+    try {
+        const res = await httpApi.put(`/admin/users/${id}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function disableAdmin(id) {
+    try {
+        const res = await httpApi.post(`/admin/users/${id}/disable`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function forceResetAdmin(id) {
+    try {
+        const res = await httpApi.post(`/admin/users/${id}/force-reset`)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -146,5 +326,24 @@ export default {
     resetPassword,
     getAdminServiceVersion,
     getAdminServiceHealth,
+    getSystemHealth,
+    getDashboardUserOverview,
+    getDashboardPlatformActivity,
+    getDashboardRecentActivity,
+    getDashboardSecurityAlerts,
     getAuditLog,
+    listAdmins,
+    createAdmin,
+    updateAdmin,
+    disableAdmin,
+    forceResetAdmin,
+    listPlatformUsers,
+    getPlatformUser,
+    disablePlatformUser,
+    enablePlatformUser,
+    deletePlatformUser,
+    forceLogoutPlatformUser,
+    resetPlatformUserPassword,
+    changePassword,
+    resetOtp,
 }

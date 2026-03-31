@@ -519,17 +519,17 @@ Based on dependencies and the backend checklist status:
 13. ~~Step 2.1 — AdminLayout~~
 14. ~~Step 2.2 — Sidebar navigation~~
 15. ~~Step 2.3 — Admin profile section~~
-16. ~~Step 3.1-3.3 — Dashboard page + model~~ (partial: health + audit + quick actions implemented; user overview, platform activity, security alerts, GDPR widgets awaiting backend endpoints)
+16. ~~Step 3.1-3.3 — Dashboard page + model~~ (all widgets implemented: system health, user overview, platform activity, security alerts, recent audit, quick actions; GDPR widget awaiting backend endpoints)
 
-**Sprint 4 (Core Management):**
-17. Step 4.1-4.4 — Admin user management
-18. Step 5.1-5.3 — Platform user management
-19. Step 8.1-8.2 — Audit log
+**Sprint 4 (Core Management): DONE**
+17. ~~Step 4.1-4.4 — Admin user management~~
+18. ~~Step 5.1-5.3 — Platform user management~~ (list, detail with WNA summary + login history, disable/enable, delete with email confirmation, force logout, reset password)
+19. ~~Step 8.1-8.2 — Audit log~~ (export button deferred: no export endpoint in admin-api.md)
 
-**Sprint 5 (Extended Features):**
-20. Step 7.1-7.3 — System health
-21. Step 12.1 — Admin settings (change password, re-configure OTP)
-22. Step 6.1-6.2 — Content browser
+**Sprint 5 (Extended Features): DONE (partial)**
+20. ~~Step 7.1-7.3 — System health~~ (aggregated health via /admin/system-health, auto-refresh; active user charts deferred to V2)
+21. ~~Step 12.1 — Admin settings~~ (change password with strength indicator, re-configure OTP with identity verification)
+22. Step 6.1-6.2 — Content browser — **BLOCKED: no content browsing endpoints in admin-api.md**
 
 **Sprint 6 (Compliance & Analytics):**
 23. Step 9.1-9.3 — GDPR requests

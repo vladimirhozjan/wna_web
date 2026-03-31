@@ -5,7 +5,7 @@ Replace `{PHASE}` and `{STEPS}` and paste into a new conversation.
 ---
 
 ```
-Task: Implement admin-app Sprit 3
+Task: Implement admin-app Phase 1
 
 ### Context — read these files first (do NOT skip any):
 1. `.claude/admin-web-requirements.md` — Find defined sprint, read every step.

@@ -2,28 +2,57 @@
   <div class="dashboard">
     <div class="dashboard-grid">
       <!-- System Health -->
-      <Card title="System Health" subtitle="admin_service">
+      <Card title="System Health">
         <div v-if="dashboard.healthLoading.value" class="widget-loading">
           <Spinner size="sm" />
         </div>
         <div v-else-if="dashboard.healthData.value" class="health-widget">
-          <div class="health-row">
-            <StatusDot :color="dashboard.healthData.value.health?.status === 'OK' ? 'green' : 'red'" />
-            <span class="text-body-s fw-medium">admin_service</span>
-            <span class="text-caption color-text-tertiary health-version">
-              {{ dashboard.healthData.value.version?.version || '—' }}
-            </span>
+          <div class="health-overall">
+            <StatusDot :color="overallHealthColor" />
+            <span class="text-body-s fw-medium">{{ dashboard.healthData.value.overall_status }}</span>
           </div>
-          <div v-if="dashboard.healthData.value.version" class="health-meta">
-            <span class="text-caption color-text-tertiary">
-              Build: {{ formatBuildTime(dashboard.healthData.value.version.build_time) }}
-            </span>
-            <span class="text-caption color-text-tertiary">
-              {{ dashboard.healthData.value.version.git_commit?.slice(0, 8) }}
-            </span>
+          <div class="health-services">
+            <div v-for="svc in dashboard.healthData.value.services" :key="svc.name" class="health-row">
+              <StatusDot :color="svc.status === 'up' ? 'green' : 'red'" />
+              <span class="text-body-s">{{ svc.name }}</span>
+              <span class="text-caption color-text-tertiary health-version">
+                {{ svc.version || svc.error || '—' }}
+              </span>
+            </div>
           </div>
         </div>
-        <p v-else class="text-caption color-text-tertiary">Unable to reach service.</p>
+        <p v-else class="text-caption color-text-tertiary">Unable to reach services.</p>
+      </Card>
+
+      <!-- User Overview -->
+      <Card title="User Overview">
+        <div v-if="dashboard.userOverviewLoading.value" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else-if="dashboard.userOverview.value" class="stats-grid">
+          <Stat label="Total Users" :value="dashboard.userOverview.value.total_users" size="lg" />
+          <Stat label="Signups Today" :value="dashboard.userOverview.value.signups_today" />
+          <Stat label="Signups This Week" :value="dashboard.userOverview.value.signups_this_week" />
+          <Stat label="DAU" :value="dashboard.userOverview.value.dau" />
+          <Stat label="Active Sessions (15m)" :value="dashboard.userOverview.value.active_sessions_15min" />
+        </div>
+        <p v-else class="text-caption color-text-tertiary">Unable to load user stats.</p>
+      </Card>
+
+      <!-- Platform Activity -->
+      <Card title="Platform Activity">
+        <div v-if="dashboard.platformActivityLoading.value" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else-if="dashboard.platformActivity.value" class="stats-grid">
+          <Stat label="Total Stuff" :value="dashboard.platformActivity.value.total_stuff" />
+          <Stat label="Total Actions" :value="dashboard.platformActivity.value.total_actions" />
+          <Stat label="Total Projects" :value="dashboard.platformActivity.value.total_projects" />
+          <Stat label="Completed Today" :value="dashboard.platformActivity.value.actions_completed_today" />
+          <Stat label="Completed This Week" :value="dashboard.platformActivity.value.actions_completed_this_week" />
+          <Stat label="Avg Inbox Size" :value="dashboard.platformActivity.value.avg_inbox_size" />
+        </div>
+        <p v-else class="text-caption color-text-tertiary">Unable to load platform stats.</p>
       </Card>
 
       <!-- Recent Admin Activity -->
@@ -44,6 +73,21 @@
         <template v-if="canViewAudit">
           <RouterLink to="/audit" class="text-caption widget-link">View all &rarr;</RouterLink>
         </template>
+      </Card>
+
+      <!-- Security Alerts -->
+      <Card title="Security Alerts">
+        <div v-if="dashboard.securityAlertsLoading.value" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else-if="dashboard.securityAlerts.value" class="stats-grid">
+          <Stat
+              label="Failed Admin Logins (24h)"
+              :value="dashboard.securityAlerts.value.failed_admin_logins_24h"
+              :trend-direction="dashboard.securityAlerts.value.failed_admin_logins_24h > 5 ? 'up' : 'neutral'"
+          />
+        </div>
+        <p v-else class="text-caption color-text-tertiary">Unable to load security alerts.</p>
       </Card>
 
       <!-- Quick Actions -->
@@ -67,19 +111,6 @@
           </RouterLink>
         </div>
       </Card>
-
-      <!-- Placeholder widgets for missing endpoints -->
-      <Card title="User Overview" subtitle="Coming soon">
-        <p class="text-caption color-text-tertiary">Awaiting backend endpoint.</p>
-      </Card>
-
-      <Card title="Platform Activity" subtitle="Coming soon">
-        <p class="text-caption color-text-tertiary">Awaiting backend endpoint.</p>
-      </Card>
-
-      <Card title="Security Alerts" subtitle="Coming soon">
-        <p class="text-caption color-text-tertiary">Awaiting backend endpoint.</p>
-      </Card>
     </div>
   </div>
 </template>
@@ -89,6 +120,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { format, parseISO } from 'date-fns'
 import Card from '../components/Card.vue'
 import Spinner from '../components/Spinner.vue'
+import Stat from '../components/Stat.vue'
 import StatusDot from '../components/StatusDot.vue'
 import { dashboardModel } from '../scripts/models/dashboardModel.js'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
@@ -98,6 +130,13 @@ const auth = authModel()
 
 const role = computed(() => auth.currentAdmin.value?.role)
 const canViewAudit = computed(() => hasMinRole(role.value, 'admin'))
+
+const overallHealthColor = computed(() => {
+  const status = dashboard.healthData.value?.overall_status
+  if (status === 'healthy') return 'green'
+  if (status === 'degraded') return 'yellow'
+  return 'red'
+})
 
 const ACTION_LABELS = {
   bootstrap_super_admin: 'Bootstrap Admin',
@@ -110,6 +149,11 @@ const ACTION_LABELS = {
   admin_force_reset: 'Admin Force Reset',
   password_changed: 'Password Changed',
   otp_reset: 'OTP Reset',
+  user_disabled: 'User Disabled',
+  user_enabled: 'User Enabled',
+  user_deleted: 'User Deleted',
+  user_logout_forced: 'User Force Logout',
+  user_password_reset_requested: 'User Password Reset',
 }
 
 function formatAction(action) {
@@ -120,15 +164,6 @@ function formatTime(timestamp) {
   if (!timestamp) return '—'
   try {
     return format(parseISO(timestamp), 'MMM d, HH:mm')
-  } catch {
-    return timestamp
-  }
-}
-
-function formatBuildTime(timestamp) {
-  if (!timestamp) return '—'
-  try {
-    return format(parseISO(timestamp), 'MMM d, yyyy')
   } catch {
     return timestamp
   }
@@ -179,7 +214,30 @@ onUnmounted(() => {
   padding: 16px 0;
 }
 
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+}
+
 /* Health widget */
+.health-overall {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-transform: capitalize;
+}
+
+.health-services {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .health-row {
   display: flex;
   align-items: center;
@@ -188,14 +246,6 @@ onUnmounted(() => {
 
 .health-version {
   margin-left: auto;
-}
-
-.health-meta {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--color-border-subtle);
 }
 
 /* Audit widget */

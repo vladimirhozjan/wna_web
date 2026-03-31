@@ -9,6 +9,15 @@ export function dashboardModel() {
     const healthData = ref(null)
     const healthLoading = ref(false)
 
+    const userOverview = ref(null)
+    const userOverviewLoading = ref(false)
+
+    const platformActivity = ref(null)
+    const platformActivityLoading = ref(false)
+
+    const securityAlerts = ref(null)
+    const securityAlertsLoading = ref(false)
+
     const auditData = ref([])
     const auditLoading = ref(false)
 
@@ -17,11 +26,7 @@ export function dashboardModel() {
     async function loadHealth() {
         healthLoading.value = true
         try {
-            const [health, version] = await Promise.all([
-                apiClient.getAdminServiceHealth().catch(() => null),
-                apiClient.getAdminServiceVersion().catch(() => null),
-            ])
-            healthData.value = { health, version }
+            healthData.value = await apiClient.getSystemHealth()
         } catch {
             healthData.value = null
         } finally {
@@ -29,10 +34,43 @@ export function dashboardModel() {
         }
     }
 
+    async function loadUserOverview() {
+        userOverviewLoading.value = true
+        try {
+            userOverview.value = await apiClient.getDashboardUserOverview()
+        } catch {
+            userOverview.value = null
+        } finally {
+            userOverviewLoading.value = false
+        }
+    }
+
+    async function loadPlatformActivity() {
+        platformActivityLoading.value = true
+        try {
+            platformActivity.value = await apiClient.getDashboardPlatformActivity()
+        } catch {
+            platformActivity.value = null
+        } finally {
+            platformActivityLoading.value = false
+        }
+    }
+
+    async function loadSecurityAlerts() {
+        securityAlertsLoading.value = true
+        try {
+            securityAlerts.value = await apiClient.getDashboardSecurityAlerts()
+        } catch {
+            securityAlerts.value = null
+        } finally {
+            securityAlertsLoading.value = false
+        }
+    }
+
     async function loadRecentAudit() {
         auditLoading.value = true
         try {
-            const data = await apiClient.getAuditLog({ limit: 10, offset: 0 })
+            const data = await apiClient.getDashboardRecentActivity()
             auditData.value = data.items || []
         } catch {
             auditData.value = []
@@ -44,6 +82,9 @@ export function dashboardModel() {
     async function refresh() {
         await Promise.all([
             loadHealth(),
+            loadUserOverview(),
+            loadPlatformActivity(),
+            loadSecurityAlerts(),
             loadRecentAudit(),
         ])
     }
@@ -64,6 +105,12 @@ export function dashboardModel() {
     instance = {
         healthData,
         healthLoading,
+        userOverview,
+        userOverviewLoading,
+        platformActivity,
+        platformActivityLoading,
+        securityAlerts,
+        securityAlertsLoading,
         auditData,
         auditLoading,
         refresh,
