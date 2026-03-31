@@ -229,7 +229,8 @@ function formatBytes(bytes) {
   }
 
   .toolbar__quota {
-    display: none;
+    flex: 1 1 100%;
+    align-items: flex-start;
   }
 }
 </style>

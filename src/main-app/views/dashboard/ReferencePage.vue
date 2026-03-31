@@ -834,7 +834,7 @@ function formatSize(bytes) {
 /* Attachments tab */
 .att-toolbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 8px 16px;
   border-bottom: 1px solid var(--color-border-light);
 }
