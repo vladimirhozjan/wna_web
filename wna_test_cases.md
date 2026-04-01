@@ -2090,7 +2090,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-064: Inbox Loads All Items at Once
+### TC-064: Inbox Pagination / Load More
 **Priority:** Medium | **Area:** Inbox / Stuff
 
 **Preconditions:** User is authenticated. Inbox contains more than 10 stuff items (add items until there are at least 15).
@@ -2752,7 +2752,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-088: Clarify Auto-Advance After Processing
+### TC-088: Clarify Done State
 **Priority:** Medium | **Area:** Clarify Workflow
 
 **Preconditions:** User is authenticated. Clarify mode is active on a stuff item. Inbox contains at least 2 items.
@@ -3050,7 +3050,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-098: Next Actions Loads All Items at Once
+### TC-098: Next Actions Pagination (Load More)
 **Priority:** Medium | **Area:** Next Actions
 
 **Preconditions:** User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed 10)
@@ -5951,7 +5951,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-201: View Mode Toggle - List and Grid
+### TC-201: View Mode Toggle
 **Priority:** Medium | **Area:** Reference / File Manager
 
 **Preconditions:** User is logged in and on the Reference page with at least a few files and folders
@@ -11317,7 +11317,7 @@ Use the table below to log each full or partial test run.
 
 ## Section 28: Project Cascade Operations
 
-### TC-391: Complete Project Without Actions - No Confirmation
+### TC-406: Complete Project Without Actions - No Confirmation
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with NO actions (no next action, no backlog)
@@ -11338,7 +11338,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-392: Trash Project With Actions - Cascade Confirmation
+### TC-407: Trash Project With Actions - Cascade Confirmation
 **Priority:** High | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with at least one action (next action or backlog)
@@ -11361,7 +11361,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-393: Trash Project Without Actions - Standard Confirmation
+### TC-408: Trash Project Without Actions - Standard Confirmation
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User is logged in and a project exists with NO actions
@@ -11380,7 +11380,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-394: Uncomplete Action Blocked by Completed Parent Project (409)
+### TC-409: Uncomplete Action Blocked by Completed Parent Project (409)
 **Priority:** High | **Area:** Completed Items
 
 **Preconditions:** User has completed a project (which cascade-completed its actions). Both the project and an action appear in the Completed list.
@@ -11403,7 +11403,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-395: Restore Action Blocked by Trashed Parent Project (409)
+### TC-410: Restore Action Blocked by Trashed Parent Project (409)
 **Priority:** High | **Area:** Trash
 
 **Preconditions:** User has trashed a project (which cascade-trashed its actions). Both the project and an action appear in the Trash list.
@@ -11426,7 +11426,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-396: Someday Project Activate
+### TC-411: Someday Project Activate
 **Priority:** Medium | **Area:** Someday
 
 **Preconditions:** User has a project in SOMEDAY state that previously had active actions (which were shelved to BACKLOG when the project was moved to Someday)
@@ -11447,7 +11447,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-397: Uncomplete Project Toast
+### TC-412: Uncomplete Project Toast
 **Priority:** Medium | **Area:** Completed Items / Projects
 
 **Preconditions:** User has a completed project in the Completed list
@@ -11466,7 +11466,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-398: Convert Project to Action - Backlog Confirmation
+### TC-413: Convert Project to Action - Backlog Confirmation
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User has a project with at least one backlog action (expand actions to verify)
@@ -11489,7 +11489,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-399: Convert Project to Reference - Actions Confirmation
+### TC-414: Convert Project to Reference - Actions Confirmation
 **Priority:** Medium | **Area:** Projects
 
 **Preconditions:** User has a project with actions (next action and/or backlog)
