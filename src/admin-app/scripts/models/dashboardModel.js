@@ -18,6 +18,9 @@ export function dashboardModel() {
     const securityAlerts = ref(null)
     const securityAlertsLoading = ref(false)
 
+    const gdprData = ref(null)
+    const gdprLoading = ref(false)
+
     const auditData = ref([])
     const auditLoading = ref(false)
 
@@ -67,6 +70,17 @@ export function dashboardModel() {
         }
     }
 
+    async function loadGdpr() {
+        gdprLoading.value = true
+        try {
+            gdprData.value = await apiClient.getDashboardGdprRequests()
+        } catch {
+            gdprData.value = null
+        } finally {
+            gdprLoading.value = false
+        }
+    }
+
     async function loadRecentAudit() {
         auditLoading.value = true
         try {
@@ -85,6 +99,7 @@ export function dashboardModel() {
             loadUserOverview(),
             loadPlatformActivity(),
             loadSecurityAlerts(),
+            loadGdpr(),
             loadRecentAudit(),
         ])
     }
@@ -111,6 +126,8 @@ export function dashboardModel() {
         platformActivityLoading,
         securityAlerts,
         securityAlertsLoading,
+        gdprData,
+        gdprLoading,
         auditData,
         auditLoading,
         refresh,

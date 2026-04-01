@@ -38,12 +38,6 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="6" r="3"/><path d="M1 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="14" cy="5" r="2.5"/><path d="M19 16c0-2.5-2-4.5-4.5-4.5"/></svg>'
   },
   {
-    label: 'Content & Data',
-    route: '/content',
-    minRole: 'support',
-    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h5l2 2h7v12H3V3z"/></svg>'
-  },
-  {
     label: 'GDPR Requests',
     route: '/gdpr',
     minRole: 'admin',

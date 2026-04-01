@@ -519,22 +519,22 @@ Based on dependencies and the backend checklist status:
 13. ~~Step 2.1 — AdminLayout~~
 14. ~~Step 2.2 — Sidebar navigation~~
 15. ~~Step 2.3 — Admin profile section~~
-16. ~~Step 3.1-3.3 — Dashboard page + model~~ (all widgets implemented: system health, user overview, platform activity, security alerts, recent audit, quick actions; GDPR widget awaiting backend endpoints)
+16. ~~Step 3.1-3.3 — Dashboard page + model~~ (all 7 widgets implemented: system health, user overview, platform activity, security alerts, pending GDPR, recent audit, quick actions)
 
 **Sprint 4 (Core Management): DONE**
 17. ~~Step 4.1-4.4 — Admin user management~~
 18. ~~Step 5.1-5.3 — Platform user management~~ (list, detail with WNA summary + login history, disable/enable, delete with email confirmation, force logout, reset password)
-19. ~~Step 8.1-8.2 — Audit log~~ (export button deferred: no export endpoint in admin-api.md)
+19. ~~Step 8.1-8.2 — Audit log~~ (full: filters, detail panel, export CSV/JSON for super_admin)
 
-**Sprint 5 (Extended Features): DONE (partial)**
+**Sprint 5 (Extended Features): DONE**
 20. ~~Step 7.1-7.3 — System health~~ (aggregated health via /admin/system-health, auto-refresh; active user charts deferred to V2)
 21. ~~Step 12.1 — Admin settings~~ (change password with strength indicator, re-configure OTP with identity verification)
-22. Step 6.1-6.2 — Content browser — **BLOCKED: no content browsing endpoints in admin-api.md**
+22. ~~Step 6.1-6.2 — Content browser~~ (tab-based: items with type/state filters + pagination, tags with usage counts, attachments + reference files with pagination, data-stats summary)
 
-**Sprint 6 (Compliance & Analytics):**
-23. Step 9.1-9.3 — GDPR requests
-24. Step 10.1-10.2 — Analytics
-25. Step 11.1-11.2 — Feature flags
+**Sprint 6 (Compliance & Analytics): DONE**
+23. ~~Step 9.1-9.3 — GDPR requests~~ (list with status filter, detail panel, trigger export/deletion modals, cancel pending deletions, download completed exports)
+24. ~~Step 10.1-10.2 — Analytics~~ (Chart.js: signup growth stacked bar, active users line chart, feature usage horizontal bar, platform health stats)
+25. ~~Step 11.1-11.2 — Feature flags~~ (list with toggle, create/edit modal with segment config: all/percentage/user_ids, delete with confirmation)
 
 ---
 

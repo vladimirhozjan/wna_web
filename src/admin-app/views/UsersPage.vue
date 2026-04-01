@@ -28,6 +28,9 @@
       <template #cell-email="{ value }">
         <span class="fw-medium">{{ value }}</span>
       </template>
+      <template #cell-subscription_tier="{ value }">
+        <Badge type="role" :value="value || 'free'" />
+      </template>
       <template #cell-email_verified="{ value }">
         <StatusDot :color="value ? 'green' : 'gray'" :title="value ? 'Verified' : 'Unverified'" />
       </template>
@@ -70,6 +73,7 @@ const toaster = errorModel()
 
 const columns = [
   { key: 'email', label: 'Email', sortable: false },
+  { key: 'subscription_tier', label: 'Tier', sortable: false, width: '80px' },
   { key: 'email_verified', label: 'Verified', sortable: false, width: '80px' },
   { key: 'disabled', label: 'Status', sortable: false, width: '100px' },
   { key: 'created_at', label: 'Created', sortable: false, width: '150px' },

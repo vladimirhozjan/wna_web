@@ -1,8 +1,38 @@
 <template>
   <div class="detail-section-area attachment-section">
-    <div class="attachment-header">
+    <div class="attachment-toolbar">
       <label class="text-body-s fw-semibold detail-section-label">Attachments</label>
-      <span v-if="!loading && attachments.length > 0" class="text-footnote attachment-count">{{ attachments.length }} / 10</span>
+      <div class="attachment-toolbar-right">
+        <input
+            v-if="attachments.length > 0"
+            v-model="searchQuery"
+            type="text"
+            class="text-body-s attachment-search"
+            placeholder="Search files..."
+            @keydown.escape="searchQuery = ''"
+        />
+        <div v-if="attachments.length > 0" class="attachment-view-toggle">
+          <button
+              type="button"
+              class="view-btn"
+              :class="{ 'view-btn--active': viewMode === 'list' }"
+              @click="viewMode = 'list'"
+              title="List view"
+          >
+            <ListViewIcon />
+          </button>
+          <button
+              type="button"
+              class="view-btn"
+              :class="{ 'view-btn--active': viewMode === 'grid' }"
+              @click="viewMode = 'grid'"
+              title="Grid view"
+          >
+            <GridViewIcon />
+          </button>
+        </div>
+        <span v-if="!loading && attachments.length > 0" class="text-footnote attachment-count">{{ attachments.length }} / 10</span>
+      </div>
     </div>
 
     <!-- Loading state -->
@@ -24,8 +54,8 @@
       </div>
 
       <!-- File list -->
-      <div v-if="attachments.length > 0" class="attachment-list">
-        <div v-for="att in attachments" :key="att.id" class="attachment-item" @click="openPreview(att)">
+      <div v-if="filteredAttachments.length > 0" class="attachment-list" :class="{ 'attachment-list--grid': viewMode === 'grid' }">
+        <div v-for="att in filteredAttachments" :key="att.id" class="attachment-item" :class="{ 'attachment-item--grid': viewMode === 'grid' }" @click="openPreview(att)">
           <RefFileIcon :mime-type="att.mime_type" class="attachment-item-icon" />
           <div class="attachment-item-info">
             <span class="text-body-m attachment-item-name">{{ att.file_name }}</span>
@@ -82,6 +112,8 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import RefFileIcon from './reference/RefFileIcon.vue'
 import RefPreviewModal from './reference/RefPreviewModal.vue'
 import DownloadIcon from '../assets/DownloadIcon.vue'
+import ListViewIcon from '../assets/ListViewIcon.vue'
+import GridViewIcon from '../assets/GridViewIcon.vue'
 import ActionBtn from './ActionBtn.vue'
 import { listAttachments, uploadAttachment, downloadAttachment, deleteAttachment } from '../scripts/core/apiClient.js'
 import { errorModel } from '../scripts/core/errorModel.js'
@@ -101,6 +133,14 @@ const uploading = ref(false)
 const progress = ref(0)
 const fileInput = ref(null)
 const dragover = ref(false)
+const searchQuery = ref('')
+const viewMode = ref('list')
+
+const filteredAttachments = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return attachments.value
+  return attachments.value.filter(a => a.file_name?.toLowerCase().includes(q))
+})
 
 // Preview state (same shape as referenceModel.preview)
 const preview = reactive({
@@ -346,14 +386,76 @@ function formatSize(bytes) {
   font-style: italic;
 }
 
-.attachment-header {
+.attachment-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.attachment-header .detail-section-label {
+.attachment-toolbar .detail-section-label {
   margin-bottom: 0;
+}
+
+.attachment-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attachment-search {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  width: 140px;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.attachment-search:focus {
+  outline: none;
+  border-color: var(--color-action);
+  box-shadow: 0 0 0 1px rgba(65, 133, 222, 0.2);
+}
+
+.attachment-search::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.attachment-view-toggle {
+  display: flex;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.view-btn {
+  background: none;
+  border: none;
+  padding: 5px 7px;
+  cursor: pointer;
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.view-btn :deep(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+.view-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.view-btn--active {
+  background: var(--color-bg-secondary);
+  color: var(--color-action);
 }
 
 .attachment-count {
@@ -395,6 +497,37 @@ function formatSize(bytes) {
   flex-direction: column;
   gap: 0;
   margin-top: 4px;
+}
+
+.attachment-list--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.attachment-item--grid {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px 6px;
+  border-bottom: none;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+}
+
+.attachment-item--grid .attachment-item-info {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.attachment-item--grid .attachment-item-name {
+  font-size: var(--font-size-xs);
+  max-width: 90px;
+}
+
+.attachment-item--grid .attachment-item-actions {
+  opacity: 1;
 }
 
 .attachment-item {

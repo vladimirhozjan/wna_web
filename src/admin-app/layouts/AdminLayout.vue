@@ -24,7 +24,7 @@
         <h1 class="text-body-l fw-semibold topnav-title">{{ pageTitle }}</h1>
       </header>
       <main class="content">
-        <slot />
+        <RouterView />
       </main>
     </div>
   </div>

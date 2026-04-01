@@ -50,15 +50,18 @@
             v-for="file in files"
             :key="'fi-' + file.id"
             class="list-row list-row--file"
-            draggable="true"
+            :draggable="mode === 'file'"
             @click="$emit('preview-file', file)"
-            @dragstart="onFileDragStart($event, file)"
-            @dragend="drag.endDrag()"
+            @dragstart="mode === 'file' && onFileDragStart($event, file)"
+            @dragend="mode === 'file' && drag.endDrag()"
         >
           <td class="col-icon">
             <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
           </td>
-          <td class="col-name"><FileName :name="file.name" /></td>
+          <td class="col-name">
+            <FileName :name="file.name" />
+            <a v-if="file._subtitle" class="file-subtitle text-body-s" @click.stop="$emit('subtitle-click', file)">{{ file._subtitle }}</a>
+          </td>
           <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
           <td class="col-modified">{{ formatDate(file.created_at) }}</td>
           <td class="col-actions" @click.stop>
@@ -67,14 +70,17 @@
                 <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
               </template>
               <template #default="{ close }">
-                <button class="dropdown-item" @click="close(); $emit('download-file', file)">
+                <button v-if="mode === 'trash'" class="dropdown-item" @click="close(); $emit('restore-file', file)">
+                  <DownloadIcon class="dropdown-item-icon" /> Restore
+                </button>
+                <button v-if="mode !== 'trash'" class="dropdown-item" @click="close(); $emit('download-file', file)">
                   <DownloadIcon class="dropdown-item-icon" /> Download
                 </button>
-                <button class="dropdown-item" @click="close(); $emit('rename-file', file)">
+                <button v-if="mode === 'file'" class="dropdown-item" @click="close(); $emit('rename-file', file)">
                   <RenameIcon class="dropdown-item-icon" /> Rename
                 </button>
                 <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash-file', file)">
-                  <TrashIcon class="dropdown-item-icon" /> Move to Trash
+                  <TrashIcon class="dropdown-item-icon" /> {{ mode === 'trash' ? 'Delete permanently' : mode === 'attachment' ? 'Delete' : 'Move to Trash' }}
                 </button>
               </template>
             </Dropdown>
@@ -117,6 +123,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  mode: {
+    type: String,
+    default: 'file',
+  },
 })
 
 const emit = defineEmits([
@@ -127,6 +137,8 @@ const emit = defineEmits([
   'download-file',
   'rename-file',
   'trash-file',
+  'restore-file',
+  'subtitle-click',
   'load-more',
   'move-file',
 ])
@@ -238,6 +250,20 @@ function formatDate(dateStr) {
 .col-name :deep(.filename) {
   display: flex;
   width: 100%;
+}
+
+.file-subtitle {
+  display: block;
+  color: var(--color-action);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.file-subtitle:hover {
+  text-decoration: underline;
 }
 
 .col-size {

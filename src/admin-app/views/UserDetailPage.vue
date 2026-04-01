@@ -29,6 +29,10 @@
           <Badge type="status" :value="user.disabled ? 'disabled' : 'active'" />
         </div>
         <div class="info-row">
+          <span class="text-label color-text-secondary">Tier</span>
+          <Badge type="role" :value="user.subscription_tier || 'free'" />
+        </div>
+        <div class="info-row">
           <span class="text-label color-text-secondary">Login Provider</span>
           <span class="text-body-s">{{ user.login_provider || '—' }}</span>
         </div>
@@ -133,6 +137,29 @@
           </Btn>
         </div>
 
+        <!-- Change Tier (super_admin only) -->
+        <div v-if="hasMinRole(role, 'super_admin')" class="action-row">
+          <div class="action-info">
+            <span class="text-body-s fw-medium">Change Tier</span>
+            <span class="text-caption color-text-tertiary">Update subscription tier</span>
+          </div>
+          <div class="action-control">
+            <select v-model="selectedTier" class="text-body-s select-input" :disabled="actionLoading">
+              <option value="free">Free</option>
+              <option value="pro">Pro</option>
+              <option value="team">Team</option>
+            </select>
+            <Btn
+                variant="ghost" size="sm"
+                :disabled="selectedTier === (user.subscription_tier || 'free') || actionLoading"
+                :loading="actionLoading"
+                @click="handleChangeTier"
+            >
+              Apply
+            </Btn>
+          </div>
+        </div>
+
         <!-- Delete Account (super_admin only) -->
         <div v-if="hasMinRole(role, 'super_admin')" class="action-row action-row--danger">
           <div class="action-info">
@@ -150,10 +177,17 @@
         </div>
       </div>
 
-      <!-- Browse Data link -->
-      <RouterLink v-if="hasMinRole(role, 'support')" :to="`/content/${user.id}`" class="text-body-s browse-link">
-        Browse User Data &rarr;
-      </RouterLink>
+      <!-- Browse Data -->
+      <div v-if="hasMinRole(role, 'support')" class="browse-card card">
+        <RouterLink :to="`/content/${user.id}`" class="browse-btn">
+          <svg class="browse-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h5l2 2h7v12H3V3z"/></svg>
+          <div class="browse-text">
+            <span class="text-body-s fw-medium">Browse User Data</span>
+            <span class="text-caption color-text-tertiary">View inbox, actions, projects, tags, attachments</span>
+          </div>
+          <span class="text-body-s color-text-tertiary">&rarr;</span>
+        </RouterLink>
+      </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -211,6 +245,7 @@ const loading = ref(true)
 const actionLoading = ref(false)
 
 const role = computed(() => auth.currentAdmin.value?.role)
+const selectedTier = ref('free')
 
 // Delete modal state
 const showDeleteModal = ref(false)
@@ -221,6 +256,7 @@ async function load() {
   loading.value = true
   try {
     user.value = await apiClient.getPlatformUser(route.params.id)
+    if (user.value) selectedTier.value = user.value.subscription_tier || 'free'
   } catch (err) {
     toaster.push(err.message || 'Failed to load user')
     user.value = null
@@ -232,6 +268,27 @@ async function load() {
 function formatDate(val) {
   if (!val) return '—'
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
+}
+
+async function handleChangeTier() {
+  const confirmed = await confirm.show({
+    title: 'Change Tier',
+    message: `Change ${user.value.email}'s tier to ${selectedTier.value}?`,
+    confirmText: 'Change Tier',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  actionLoading.value = true
+  try {
+    await apiClient.changePlatformUserTier(user.value.id, selectedTier.value)
+    toaster.success('Tier updated')
+    await load()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to change tier')
+  } finally {
+    actionLoading.value = false
+  }
 }
 
 async function handleToggleDisabled() {
@@ -459,14 +516,57 @@ onMounted(load)
   gap: 2px;
 }
 
-/* Browse link */
-.browse-link {
-  color: var(--color-link-text);
-  text-decoration: none;
+.action-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.browse-link:hover {
-  color: var(--color-link-hover);
+.select-input {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--color-input-border-focus);
+}
+
+/* Browse card */
+.browse-card {
+  padding: 0;
+}
+
+.browse-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.browse-btn:hover {
+  background: var(--color-bg-secondary);
+}
+
+.browse-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--color-action);
+}
+
+.browse-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
 }
 
 /* Delete modal */

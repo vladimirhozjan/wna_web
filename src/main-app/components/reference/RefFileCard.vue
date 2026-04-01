@@ -1,7 +1,8 @@
 <template>
-  <div class="file-card" draggable="true" @click="$emit('preview', file)" @dragstart="onDragStart" @dragend="drag.endDrag()">
+  <div class="file-card" :draggable="mode === 'file'" @click="$emit('preview', file)" @dragstart="mode === 'file' && onDragStart($event)" @dragend="mode === 'file' && drag.endDrag()">
     <RefFileIcon class="file-card__icon" :mime-type="file.mime_type" />
     <FileName class="file-card__name" :name="file.name" />
+    <a v-if="file._subtitle" class="file-card__subtitle text-body-s" @click.stop="$emit('subtitle-click', file)">{{ file._subtitle }}</a>
     <span class="file-card__size">{{ formatSize(file.size_bytes) }}</span>
     <div class="file-card__actions" @click.stop>
       <Dropdown align="right" title="File actions">
@@ -9,14 +10,17 @@
           <button class="file-card__menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
         </template>
         <template #default="{ close }">
-          <button class="dropdown-item" @click="close(); $emit('download', file)">
+          <button v-if="mode === 'trash'" class="dropdown-item" @click="close(); $emit('restore', file)">
+            <DownloadIcon class="dropdown-item-icon" /> Restore
+          </button>
+          <button v-if="mode !== 'trash'" class="dropdown-item" @click="close(); $emit('download', file)">
             <DownloadIcon class="dropdown-item-icon" /> Download
           </button>
-          <button class="dropdown-item" @click="close(); $emit('rename', file)">
+          <button v-if="mode === 'file'" class="dropdown-item" @click="close(); $emit('rename', file)">
             <RenameIcon class="dropdown-item-icon" /> Rename
           </button>
           <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash', file)">
-            <TrashIcon class="dropdown-item-icon" /> Move to Trash
+            <TrashIcon class="dropdown-item-icon" /> {{ mode === 'trash' ? 'Delete permanently' : mode === 'attachment' ? 'Delete' : 'Move to Trash' }}
           </button>
         </template>
       </Dropdown>
@@ -41,9 +45,13 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  mode: {
+    type: String,
+    default: 'file',
+  },
 })
 
-defineEmits(['preview', 'download', 'rename', 'trash'])
+defineEmits(['preview', 'download', 'rename', 'trash', 'restore', 'subtitle-click'])
 
 function onDragStart(evt) {
   const file = props.file
@@ -100,6 +108,21 @@ function formatSize(bytes) {
   color: var(--color-text-primary);
   text-align: center;
   max-width: 100%;
+}
+
+.file-card__subtitle {
+  color: var(--color-action);
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.file-card__subtitle:hover {
+  text-decoration: underline;
 }
 
 .file-card__size {
