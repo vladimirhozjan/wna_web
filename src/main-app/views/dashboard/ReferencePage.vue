@@ -98,14 +98,15 @@
 
       <!-- Attachments Tab -->
       <template v-if="activeTab === 'attachments'">
-        <div class="att-toolbar">
-          <div v-if="attachmentsQuota" class="att-quota">
-            <span class="text-footnote quota-text">{{ formatSize(attachmentsQuota.used_bytes) }} / {{ formatSize(attachmentsQuota.quota_bytes) }}</span>
-            <div class="quota-bar">
-              <div class="quota-bar__fill" :style="{ width: attachmentsQuotaPercent + '%' }"></div>
-            </div>
-          </div>
-        </div>
+        <RefToolbar
+            :show-breadcrumbs="false"
+            :show-actions="false"
+            :search-query="attSearchQuery"
+            :view-mode="attViewMode"
+            :quota="attachmentsQuota"
+            @search="attSearchQuery = $event"
+            @set-view="attViewMode = $event"
+        />
 
         <!-- Loading -->
         <div v-if="attModel_.loading.value && attModel_.items.value.length === 0" class="ref-loading">
@@ -121,54 +122,45 @@
           </p>
         </div>
 
-        <!-- Attachment list -->
-        <div v-else class="att-list">
-          <div
-              v-for="att in attModel_.items.value"
-              :key="att.id"
-              class="att-row"
-              @click="openAttachmentPreview(att)"
-          >
-            <div class="att-row__main">
-              <RefFileIcon class="att-file-icon" :mime-type="att.mime_type" />
-              <div class="att-row__content">
-                <span class="text-body-m att-row__name">
-                  <FileName :name="att.file_name" />
-                </span>
-                <div class="att-row__meta">
-                  <router-link :to="parentRoute(att)" class="att-meta-chip" @click.stop>
-                    <ItemTypeIcon :type="att.item_type.toUpperCase()" />
-                    <span class="att-meta-chip__text">{{ att.item_title || 'Untitled' }}</span>
-                  </router-link>
-                  <span class="att-meta-size text-footnote">{{ formatSize(att.size_bytes) }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="att-row__actions" @click.stop>
-              <button class="att-action-btn att-action-btn--download" title="Download" @click="onDownloadAttachment(att)">
-                <DownloadIcon />
-              </button>
-              <ActionBtn @click="onDeleteAttachment(att)" />
-            </div>
-          </div>
-          <div v-if="attModel_.hasMore.value" class="load-more">
-            <Btn variant="ghost" size="sm" @click="attModel_.loadMore()">Load more</Btn>
-          </div>
-        </div>
+        <!-- Attachment list view -->
+        <RefListView
+            v-else-if="attViewMode === 'list'"
+            :files="normalizedAttachments"
+            :has-more="attModel_.hasMore.value"
+            mode="attachment"
+            @preview-file="openAttachmentPreview($event._raw)"
+            @download-file="onDownloadAttachment($event._raw)"
+            @trash-file="onDeleteAttachment($event._raw)"
+            @subtitle-click="onAttachmentSubtitleClick($event._raw)"
+            @load-more="attModel_.loadMore()"
+        />
+
+        <!-- Attachment grid view -->
+        <RefGridView
+            v-else
+            :files="normalizedAttachments"
+            :has-more="attModel_.hasMore.value"
+            mode="attachment"
+            @preview-file="openAttachmentPreview($event._raw)"
+            @download-file="onDownloadAttachment($event._raw)"
+            @trash-file="onDeleteAttachment($event._raw)"
+            @subtitle-click="onAttachmentSubtitleClick($event._raw)"
+            @load-more="attModel_.loadMore()"
+        />
       </template>
 
       <!-- Trash Tab -->
       <template v-if="activeTab === 'trash'">
-        <div class="trash-toolbar">
-          <Btn
-              variant="ghost"
-              size="sm"
-              @click="onEmptyTrash"
-              :disabled="trashModel_.files.value.length === 0"
-          >
-            Empty Trash
-          </Btn>
-        </div>
+        <RefToolbar
+            :show-breadcrumbs="false"
+            :show-actions="false"
+            :show-empty-trash="trashModel_.files.value.length > 0"
+            :search-query="trashSearchQuery"
+            :view-mode="trashViewMode"
+            @search="trashSearchQuery = $event"
+            @set-view="trashViewMode = $event"
+            @empty-trash="onEmptyTrash"
+        />
 
         <!-- Loading -->
         <div v-if="trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-loading">
@@ -184,31 +176,29 @@
           </p>
         </div>
 
-        <!-- Trash file list -->
-        <div v-else class="trash-list">
-          <table class="text-body-m trash-table">
-            <thead>
-              <tr>
-                <th class="text-body-s fw-medium col-name">Name</th>
-                <th class="text-body-s fw-medium col-size">Size</th>
-                <th class="text-body-s fw-medium col-actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="file in trashModel_.files.value" :key="file.id" class="trash-row">
-                <td class="col-name"><FileName :name="file.name" /></td>
-                <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
-                <td class="col-actions">
-                  <Btn variant="link" size="sm" @click="onRestoreFile(file)">Restore</Btn>
-                  <Btn variant="link" size="sm" class="danger-link" @click="onPermanentDelete(file)">Delete</Btn>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div v-if="trashModel_.hasMore.value" class="load-more">
-            <Btn variant="ghost" size="sm" @click="trashModel_.loadMore()">Load more</Btn>
-          </div>
-        </div>
+        <!-- Trash list view -->
+        <RefListView
+            v-else-if="trashViewMode === 'list'"
+            :files="filteredTrash"
+            :has-more="trashModel_.hasMore.value"
+            mode="trash"
+            @preview-file="model.openPreview($event)"
+            @restore-file="onRestoreFile($event)"
+            @trash-file="onPermanentDelete($event)"
+            @load-more="trashModel_.loadMore()"
+        />
+
+        <!-- Trash grid view -->
+        <RefGridView
+            v-else
+            :files="filteredTrash"
+            :has-more="trashModel_.hasMore.value"
+            mode="trash"
+            @preview-file="model.openPreview($event)"
+            @restore-file="onRestoreFile($event)"
+            @trash-file="onPermanentDelete($event)"
+            @load-more="trashModel_.loadMore()"
+        />
       </template>
 
       <!-- Modals -->
@@ -239,18 +229,15 @@ import RefListView from '../../components/reference/RefListView.vue'
 import RefGridView from '../../components/reference/RefGridView.vue'
 import RefPreviewModal from '../../components/reference/RefPreviewModal.vue'
 import RefRenameModal from '../../components/reference/RefRenameModal.vue'
-import RefFileIcon from '../../components/reference/RefFileIcon.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
 import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
-import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
-import ActionBtn from '../../components/ActionBtn.vue'
 import {referenceModel} from '../../scripts/models/referenceModel.js'
 import {referenceTrashModel} from '../../scripts/models/referenceTrashModel.js'
 import {attachmentListModel} from '../../scripts/models/attachmentListModel.js'
 import SegmentSwitch from '../../components/SegmentSwitch.vue'
-import FileName from '../../components/reference/FileName.vue'
+
 import {errorModel} from '../../scripts/core/errorModel.js'
 import {confirmModel} from '../../scripts/core/confirmModel.js'
 import {downloadAttachment, deleteAttachment, transformFileToOriginal} from '../../scripts/core/apiClient.js'
@@ -264,6 +251,36 @@ const toaster = errorModel()
 const confirm = confirmModel()
 
 const activeTab = ref('files')
+const attSearchQuery = ref('')
+const attViewMode = ref('list')
+
+const filteredAttachments = computed(() => {
+  const q = attSearchQuery.value.toLowerCase().trim()
+  if (!q) return attModel_.items.value
+  return attModel_.items.value.filter(a => a.file_name?.toLowerCase().includes(q))
+})
+
+// Trash search/view
+const trashSearchQuery = ref('')
+const trashViewMode = ref('list')
+
+const filteredTrash = computed(() => {
+  const q = trashSearchQuery.value.toLowerCase().trim()
+  if (!q) return trashModel_.files.value
+  return trashModel_.files.value.filter(f => f.name?.toLowerCase().includes(q))
+})
+
+const normalizedAttachments = computed(() => {
+  return filteredAttachments.value.map(att => ({
+    id: att.id,
+    name: att.file_name,
+    mime_type: att.mime_type,
+    size_bytes: att.size_bytes,
+    created_at: att.created_at,
+    _subtitle: att.item_title || 'Untitled',
+    _raw: att,
+  }))
+})
 const fileInputRef = ref(null)
 
 const filesQuota = computed(() => {
@@ -277,10 +294,10 @@ const filesQuota = computed(() => {
 
 const attachmentsQuota = computed(() => {
   const q = model.quota.value
-  if (!q || q.attachment_bytes == null) return null
+  if (!q) return null
   return {
-    used_bytes: q.attachment_bytes,
-    quota_bytes: q.quota_bytes,
+    used_bytes: q.attachment_bytes ?? 0,
+    quota_bytes: q.quota_bytes ?? 0,
   }
 })
 
@@ -571,6 +588,10 @@ async function onEmptyTrash() {
   }
 }
 
+function onAttachmentSubtitleClick(att) {
+  router.push(parentRoute(att))
+}
+
 function parentRoute(att) {
   const type = (att.item_type || '').toLowerCase()
   const name = type === 'action' ? 'action' : type === 'project' ? 'project' : 'stuff'
@@ -757,73 +778,6 @@ function formatSize(bytes) {
   color: var(--color-text-danger);
 }
 
-/* Trash tab */
-.trash-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.trash-list {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-.trash-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.trash-table thead th {
-  text-align: left;
-  padding: 8px 12px;
-  color: var(--color-text-tertiary);
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.trash-row td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--color-border-light);
-  color: var(--color-text-primary);
-}
-
-.trash-table .col-name {
-  overflow: hidden;
-}
-
-.trash-table .col-name :deep(.filename) {
-  display: flex;
-  width: 100%;
-}
-
-.trash-table .col-size {
-  width: 80px;
-}
-
-.trash-table .col-actions {
-  width: 160px;
-}
-
-.trash-row .col-size {
-  color: var(--color-text-secondary);
-}
-
-.trash-row .col-actions {
-  white-space: nowrap;
-  text-align: right;
-  padding-right: 4px;
-}
-
-.trash-table thead .col-actions {
-  text-align: right;
-}
-
-.danger-link {
-  color: var(--color-text-danger) !important;
-}
 
 .load-more {
   display: flex;
@@ -831,13 +785,6 @@ function formatSize(bytes) {
   padding: 16px;
 }
 
-/* Attachments tab */
-.att-toolbar {
-  display: flex;
-  justify-content: flex-start;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--color-border-light);
-}
 
 .att-quota {
   display: flex;
@@ -1009,13 +956,7 @@ function formatSize(bytes) {
     gap: 8px;
   }
 
-  .trash-table .col-size {
-    display: none;
-  }
 
-  .trash-table .col-actions {
-    width: 120px;
-  }
 
   .att-meta-chip {
     max-width: 140px;

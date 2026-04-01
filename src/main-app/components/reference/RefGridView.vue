@@ -16,10 +16,13 @@
           v-for="file in files"
           :key="'fi-' + file.id"
           :file="file"
+          :mode="mode"
           @preview="$emit('preview-file', file)"
           @download="$emit('download-file', file)"
           @rename="$emit('rename-file', file)"
           @trash="$emit('trash-file', file)"
+          @restore="$emit('restore-file', file)"
+          @subtitle-click="$emit('subtitle-click', file)"
       />
     </template>
   </div>
@@ -46,6 +49,10 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  mode: {
+    type: String,
+    default: 'file',
+  },
 })
 
 defineEmits([
@@ -56,6 +63,8 @@ defineEmits([
   'download-file',
   'rename-file',
   'trash-file',
+  'restore-file',
+  'subtitle-click',
   'load-more',
   'move-file',
 ])

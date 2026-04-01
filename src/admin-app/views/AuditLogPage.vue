@@ -1,6 +1,15 @@
 <template>
   <div class="page">
-    <h1 class="page-title">Audit Log</h1>
+    <div class="page-header">
+      <h1 class="page-title">Audit Log</h1>
+      <div v-if="hasMinRole(role, 'super_admin')" class="export-controls">
+        <select v-model="exportFormat" class="text-body-s filter-select">
+          <option value="csv">CSV</option>
+          <option value="json">JSON</option>
+        </select>
+        <Btn variant="ghost" size="sm" :loading="exporting" @click="handleExport">Export</Btn>
+      </div>
+    </div>
 
     <!-- Filters -->
     <div class="filters">
@@ -12,6 +21,7 @@
         <option value="">All targets</option>
         <option value="admin_user">Admin User</option>
         <option value="platform_user">Platform User</option>
+        <option value="feature_flag">Feature Flag</option>
       </select>
     </div>
 
@@ -70,14 +80,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { format, parseISO } from 'date-fns'
 import DataTable from '../components/DataTable.vue'
 import Pagination from '../components/Pagination.vue'
+import Btn from '../components/Btn.vue'
+import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
+const auth = authModel()
 const toaster = errorModel()
+const role = computed(() => auth.currentAdmin.value?.role)
 
 const ACTION_OPTIONS = [
   'bootstrap_super_admin',
@@ -95,6 +109,11 @@ const ACTION_OPTIONS = [
   'user_deleted',
   'user_logout_forced',
   'user_password_reset_requested',
+  'gdpr_data_export_requested',
+  'gdpr_account_deletion_requested',
+  'feature_flag_created',
+  'feature_flag_updated',
+  'feature_flag_deleted',
 ]
 
 const ACTION_LABELS = {
@@ -113,6 +132,11 @@ const ACTION_LABELS = {
   user_deleted: 'User Deleted',
   user_logout_forced: 'User Force Logout',
   user_password_reset_requested: 'User Password Reset',
+  gdpr_data_export_requested: 'GDPR Data Export',
+  gdpr_account_deletion_requested: 'GDPR Account Deletion',
+  feature_flag_created: 'Feature Flag Created',
+  feature_flag_updated: 'Feature Flag Updated',
+  feature_flag_deleted: 'Feature Flag Deleted',
 }
 
 const columns = [
@@ -168,6 +192,44 @@ function toggleExpand(row) {
   expandedEntry.value = expandedEntry.value?.id === row.id ? null : row
 }
 
+// Export
+const exportFormat = ref('csv')
+const exporting = ref(false)
+
+async function handleExport() {
+  exporting.value = true
+  try {
+    const params = { format: exportFormat.value }
+    if (filterAction.value) params.action = filterAction.value
+    if (filterTargetType.value) params.target_type = filterTargetType.value
+
+    const res = await apiClient.exportAuditLog(params)
+
+    if (exportFormat.value === 'json') {
+      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' })
+      downloadBlob(blob, `audit-log-export-${format(new Date(), 'yyyy-MM-dd')}.json`)
+    } else {
+      downloadBlob(res.data, `audit-log-export-${format(new Date(), 'yyyy-MM-dd')}.csv`)
+    }
+    toaster.success('Export downloaded')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to export audit log')
+  } finally {
+    exporting.value = false
+  }
+}
+
+function downloadBlob(blob, filename) {
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  window.URL.revokeObjectURL(url)
+  a.remove()
+}
+
 onMounted(load)
 </script>
 
@@ -176,8 +238,17 @@ onMounted(load)
   padding: 24px;
 }
 
-.page-title {
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
+}
+
+.export-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .filters {

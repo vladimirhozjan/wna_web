@@ -74,6 +74,10 @@ export function createViteConfig(mode, envVars, appConfig) {
             }
         },
 
+        optimizeDeps: {
+            include: ['qrcode'],
+        },
+
         server: {
             proxy: appConfig.proxy || {}
         }

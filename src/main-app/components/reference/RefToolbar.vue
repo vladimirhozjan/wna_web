@@ -1,6 +1,6 @@
 <template>
-  <div class="toolbar">
-    <div class="toolbar__left">
+  <div class="toolbar" :class="{ 'toolbar--right-only': !showBreadcrumbs }">
+    <div v-if="showBreadcrumbs" class="toolbar__left">
       <RefBreadcrumb
           :breadcrumbs="breadcrumbs"
           @navigate="$emit('navigate', $event)"
@@ -18,8 +18,9 @@
             @keydown.escape="$emit('search', '')"
         />
       </div>
-      <Btn variant="ghost" size="sm" @click="$emit('new-folder')">New Folder</Btn>
-      <Btn variant="primary" size="sm" @click="$emit('upload')">Upload</Btn>
+      <Btn v-if="showActions" variant="ghost" size="sm" @click="$emit('new-folder')">New Folder</Btn>
+      <Btn v-if="showActions" variant="primary" size="sm" @click="$emit('upload')">Upload</Btn>
+      <Btn v-if="showEmptyTrash" variant="ghost" size="sm" @click="$emit('empty-trash')">Empty Trash</Btn>
       <div class="toolbar__view-toggle">
         <button
             class="view-btn"
@@ -74,9 +75,21 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  showBreadcrumbs: {
+    type: Boolean,
+    default: true,
+  },
+  showActions: {
+    type: Boolean,
+    default: true,
+  },
+  showEmptyTrash: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-defineEmits(['navigate', 'search', 'new-folder', 'upload', 'set-view', 'move-file'])
+defineEmits(['navigate', 'search', 'new-folder', 'upload', 'set-view', 'move-file', 'empty-trash'])
 
 const quotaPercent = computed(() => {
   if (!props.quota || !props.quota.quota_bytes) return 0
@@ -102,6 +115,10 @@ function formatBytes(bytes) {
   border-bottom: 1px solid var(--color-border-light);
   flex-wrap: wrap;
   box-sizing: border-box;
+}
+
+.toolbar--right-only {
+  justify-content: flex-end;
 }
 
 .toolbar__left {
@@ -216,6 +233,11 @@ function formatBytes(bytes) {
     flex-wrap: wrap;
     gap: 8px;
     width: 100%;
+    order: -1;
+  }
+
+  .toolbar__left {
+    order: 1;
   }
 
   .toolbar__search {
@@ -230,7 +252,7 @@ function formatBytes(bytes) {
 
   .toolbar__quota {
     flex: 1 1 100%;
-    align-items: flex-start;
+    align-items: flex-end;
   }
 }
 </style>

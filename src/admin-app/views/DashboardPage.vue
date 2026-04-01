@@ -90,6 +90,24 @@
         <p v-else class="text-caption color-text-tertiary">Unable to load security alerts.</p>
       </Card>
 
+      <!-- Pending GDPR -->
+      <Card title="Pending GDPR Requests">
+        <div v-if="dashboard.gdprLoading.value" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else-if="dashboard.gdprData.value" class="gdpr-widget">
+          <Stat label="Pending Requests" :value="dashboard.gdprData.value.pending_count" size="lg" />
+          <div v-if="dashboard.gdprData.value.items?.length" class="gdpr-recent">
+            <div v-for="req in dashboard.gdprData.value.items" :key="req.id" class="gdpr-row">
+              <span class="text-body-s fw-medium">{{ req.request_type === 'data_export' ? 'Export' : 'Deletion' }}</span>
+              <span class="text-caption color-text-tertiary">{{ req.user_email }}</span>
+            </div>
+          </div>
+          <RouterLink v-if="hasMinRole(role, 'admin')" to="/gdpr" class="text-caption widget-link">View all &rarr;</RouterLink>
+        </div>
+        <p v-else class="text-caption color-text-tertiary">Unable to load GDPR data.</p>
+      </Card>
+
       <!-- Quick Actions -->
       <Card title="Quick Actions">
         <div class="quick-actions">
@@ -154,6 +172,11 @@ const ACTION_LABELS = {
   user_deleted: 'User Deleted',
   user_logout_forced: 'User Force Logout',
   user_password_reset_requested: 'User Password Reset',
+  gdpr_data_export_requested: 'GDPR Data Export',
+  gdpr_account_deletion_requested: 'GDPR Account Deletion',
+  feature_flag_created: 'Flag Created',
+  feature_flag_updated: 'Flag Updated',
+  feature_flag_deleted: 'Flag Deleted',
 }
 
 function formatAction(action) {
@@ -280,6 +303,28 @@ onUnmounted(() => {
 .audit-time {
   white-space: nowrap;
   margin-left: 12px;
+}
+
+/* GDPR widget */
+.gdpr-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gdpr-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.gdpr-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
 }
 
 /* Quick actions */

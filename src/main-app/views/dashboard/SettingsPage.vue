@@ -5,17 +5,32 @@
       <!-- Header -->
       <div class="settings-header">
         <h1 class="page-title">Settings</h1>
+        <div class="settings-header-right">
+          <div v-if="searchVisible" class="settings-search-wrap">
+            <Inpt
+                ref="searchInput"
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search settings..."
+                @input="onSearchInput"
+            />
+          </div>
+          <button type="button" class="settings-search-btn" :class="{ 'settings-search-btn--active': searchVisible }" @click="toggleSearch" aria-label="Search settings">
+            <SearchIcon />
+          </button>
+        </div>
       </div>
 
       <!-- Body -->
       <div class="settings-body">
 
         <!-- Account Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('account')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('account')">
             <h2 class="settings-section-title">Account</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('account') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('account')" class="settings-section-body">
             <div class="settings-row">
               <span class="settings-label">Email</span>
               <span class="settings-value">{{ userEmail }}</span>
@@ -27,21 +42,43 @@
           </div>
         </div>
 
-        <!-- Sessions Section -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="settings-section-title">Sessions</h2>
-            <Btn
-                v-if="sessions.length > 1"
-                variant="ghost"
-                size="sm"
-                :loading="revokingAll"
-                @click="onRevokeAllSessions"
-            >
-              End Others
-            </Btn>
+        <!-- Plan Section -->
+        <div v-if="tier && sectionVisible('plan')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('plan')">
+            <h2 class="settings-section-title">Plan</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('plan') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('plan')" class="settings-section-body">
+            <div class="settings-row">
+              <span class="settings-label">Current plan</span>
+              <span class="settings-value fw-semibold" :class="tier === 'team' ? 'color-text-success' : ''">{{ tierLabel }}</span>
+            </div>
+            <div v-if="tierLimits && tierLimits.max_projects !== -1" class="settings-row">
+              <span class="settings-label">Projects</span>
+              <span class="settings-value">{{ stats?.projects?.count ?? 0 }} / {{ tierLimits.max_projects }}</span>
+            </div>
+            <div v-if="tierLimits && tierLimits.max_tags !== -1" class="settings-row">
+              <span class="settings-label">Tags</span>
+              <span class="settings-value">{{ stats?.tags?.count ?? 0 }} / {{ tierLimits.max_tags }}</span>
+            </div>
+            <div v-if="tierLimits && tierLimits.max_storage_bytes !== -1" class="settings-row">
+              <span class="settings-label">Storage</span>
+              <span class="settings-value">{{ formatBytes(stats?.storage?.used ?? 0) }} / {{ formatBytes(tierLimits.max_storage_bytes) }}</span>
+            </div>
+            <div v-if="tierLimits && tierLimits.max_projects === -1" class="settings-row">
+              <span class="settings-label">Limits</span>
+              <span class="settings-value">Unlimited</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sessions Section -->
+        <div v-if="sectionVisible('sessions')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('sessions')">
+            <h2 class="settings-section-title">Sessions</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('sessions') }">&#8250;</span>
+          </div>
+          <div v-if="isExpanded('sessions')" class="settings-section-body">
             <div v-if="loadingSessions" class="settings-loading">
               <span class="settings-spinner"></span>
               <span>Loading sessions...</span>
@@ -93,11 +130,12 @@
         </div>
 
         <!-- Application Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('application')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('application')">
             <h2 class="settings-section-title">Application</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('application') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('application')" class="settings-section-body">
             <div class="settings-row">
               <span class="settings-label">Theme</span>
               <Select
@@ -121,11 +159,12 @@
         </div>
 
         <!-- Tags Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('tags')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('tags')">
             <h2 class="settings-section-title">Tags</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('tags') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('tags')" class="settings-section-body">
             <div class="settings-row settings-row--column">
               <span class="settings-label">Quick-add presets</span>
               <span class="text-body-s settings-hint">These appear as clickable suggestions below the tag input. Leave empty to use defaults.</span>
@@ -160,11 +199,12 @@
         </div>
 
         <!-- Calendar Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('calendar')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('calendar')">
             <h2 class="settings-section-title">Calendar</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('calendar') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('calendar')" class="settings-section-body">
           <div class="settings-row">
             <span class="settings-label">Week starts on</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.weekStart }">
@@ -229,11 +269,12 @@
         </div>
 
         <!-- Review Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('review')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('review')">
             <h2 class="settings-section-title">Review</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('review') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('review')" class="settings-section-body">
             <div class="settings-row">
               <div>
                 <span class="settings-label">Weekly Review</span>
@@ -251,11 +292,12 @@
         </div>
 
         <!-- Notifications Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('notifications')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('notifications')">
             <h2 class="settings-section-title">Notifications</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('notifications') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('notifications')" class="settings-section-body">
             <div class="settings-row">
               <div>
                 <span class="settings-label">Email notifications</span>
@@ -317,11 +359,12 @@
         </div>
 
         <!-- About Section -->
-        <div class="card">
-          <div class="card-header">
+        <div v-if="sectionVisible('about')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('about')">
             <h2 class="settings-section-title">About</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('about') }">&#8250;</span>
           </div>
-          <div class="settings-section-body">
+          <div v-if="isExpanded('about')" class="settings-section-body">
             <div class="settings-row">
               <span class="settings-label">Version</span>
               <span class="settings-value">{{ appVersion }}</span>
@@ -398,6 +441,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
+import SearchIcon from '../../assets/SearchIcon.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
@@ -413,6 +457,7 @@ import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
 import { changePassword, listSessions, revokeSession, revokeAllSessions } from '../../scripts/core/apiClient.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
+import { statsModel } from '../../scripts/models/statsModel.js'
 
 const router = useRouter()
 const auth = authModel()
@@ -422,8 +467,86 @@ const settings = settingsModel()
 const notifications = notificationModel()
 const theme = themeModel()
 
+const { stats } = statsModel()
+
+// Search
+const searchVisible = ref(false)
+const searchInput = ref(null)
+const searchQuery = ref('')
+
+function toggleSearch() {
+  searchVisible.value = !searchVisible.value
+  if (searchVisible.value) {
+    nextTick(() => searchInput.value?.focus?.() || searchInput.value?.focus())
+  } else {
+    searchQuery.value = ''
+  }
+}
+
+const SECTION_KEYWORDS = {
+  account: 'account email password login',
+  plan: 'plan tier subscription free pro team projects tags storage limits upgrade',
+  sessions: 'sessions devices logout active current',
+  application: 'application theme dark light position new items',
+  tags: 'tags presets quick add',
+  calendar: 'calendar week start time format business hours days',
+  review: 'review weekly sidebar',
+  notifications: 'notifications email reminder due today next actions project',
+  about: 'about version',
+}
+
+function sectionVisible(name) {
+  if (!searchQuery.value.trim()) return true
+  const q = searchQuery.value.toLowerCase()
+  return SECTION_KEYWORDS[name]?.includes(q) ?? false
+}
+
+function onSearchInput() {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (q) {
+    for (const name in SECTION_KEYWORDS) {
+      if (SECTION_KEYWORDS[name].includes(q)) {
+        expandedSections.value.add(name)
+      }
+    }
+  }
+}
+
+// Collapsible sections — all collapsed by default
+const expandedSections = ref(new Set())
+
+function toggleSection(name) {
+  if (expandedSections.value.has(name)) {
+    expandedSections.value.delete(name)
+  } else {
+    expandedSections.value.add(name)
+  }
+}
+
+function isExpanded(name) {
+  return expandedSections.value.has(name)
+}
+
 // User data
 const userEmail = computed(() => auth.currentUser.value?.email || '')
+
+// Plan
+const tier = computed(() => auth.currentUser.value?.subscription_tier)
+const tierLimits = computed(() => auth.currentUser.value?.tier_limits)
+const tierLabel = computed(() => {
+  const t = tier.value
+  if (t === 'pro') return 'Pro'
+  if (t === 'team') return 'Team'
+  return 'Free'
+})
+function formatBytes(bytes) {
+  if (!bytes) return '0 B'
+  const units = ['B', 'KB', 'MB', 'GB']
+  let i = 0
+  let size = bytes
+  while (size >= 1024 && i < units.length - 1) { size /= 1024; i++ }
+  return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
+}
 
 // App version from Vite define
 const appVersion = __APP_VERSION__
@@ -797,14 +920,85 @@ async function onLogout() {
   height: 100%;
 }
 
+.card-header--toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-header--toggle:hover {
+  background: var(--color-bg-secondary);
+}
+
+.section-chevron {
+  font-size: 18px;
+  color: var(--color-text-tertiary);
+  transition: transform 0.15s ease;
+  transform: rotate(0deg);
+  line-height: 1;
+}
+
+.section-chevron--open {
+  transform: rotate(90deg);
+}
+
 .settings-header {
   flex-shrink: 0;
   padding: 0 16px;
   margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .settings-header h1 {
   margin: 0;
+}
+
+.settings-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-search-wrap {
+  width: 180px;
+}
+
+.settings-search-wrap :deep(label) {
+  width: auto;
+}
+
+.settings-search-wrap :deep(input) {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 6px 10px;
+}
+
+.settings-search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--color-text-tertiary);
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.settings-search-btn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-hover);
+}
+
+.settings-search-btn--active {
+  color: var(--color-action);
+}
+
+.settings-search-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .settings-body {

@@ -1,15 +1,37 @@
 import {httpApi} from './httpApi.js'
+import {upgradeModel} from './upgradeModel.js'
 
 function normalizeError(error) {
     // Axios response error
     if (error.response) {
         const status = error.response.status
-        const backendMsg = error.response.data?.message || error.response.data?.error
+        const data = error.response.data || {}
+        const backendMsg = data.message || data.error
+
+        // Tier limit errors (403 with upgrade_message or limit field)
+        if (status === 403 && (data.upgrade_message || data.limit != null)) {
+            const upgrade = upgradeModel()
+            upgrade.show({
+                message: data.upgrade_message || backendMsg || 'You have reached a limit on your current plan.',
+                limit: data.limit,
+            })
+            return {status, message: backendMsg || 'Limit reached'}
+        }
+
+        // File/storage limit errors (413)
+        if (status === 413) {
+            const upgrade = upgradeModel()
+            upgrade.show({
+                message: data.upgrade_message || backendMsg || 'File too large or storage quota exceeded.',
+                limit: data.limit,
+            })
+            return {status, message: backendMsg || 'File too large or storage quota exceeded.'}
+        }
 
         // Backend message → has priority
         if (backendMsg) {
             const normalized = {status, message: backendMsg}
-            if (error.response.data?.user_id) normalized.user_id = error.response.data.user_id
+            if (data.user_id) normalized.user_id = data.user_id
             return normalized
         }
 
@@ -25,8 +47,6 @@ function normalizeError(error) {
                 return {status, message: "Resource not found (404)."}
             case 409:
                 return {status, message: "Conflict. The request cannot be completed."}
-            case 413:
-                return {status, message: "File too large or storage quota exceeded."}
             case 422:
                 return {status, message: "Unprocessable entity (422). Invalid input."}
             default:

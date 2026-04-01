@@ -1,27 +1,16 @@
 <template>
   <div class="sidebar-profile">
-    <Dropdown align="left" title="Account">
-      <template #trigger>
-        <button type="button" class="profile-trigger">
-          <div class="profile-info">
-            <StatusDot :color="statusColor" :title="auth.currentAdmin.value?.status" />
-            <span class="text-body-s fw-medium profile-email">{{ auth.currentAdmin.value?.email }}</span>
-          </div>
-          <Badge type="role" :value="auth.currentAdmin.value?.role || 'viewer'" />
-        </button>
-      </template>
-
-      <template #default="{ close }">
-        <button class="dropdown-item" @click="goSettings(close)">
-          <svg class="dropdown-item-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="3"/><path d="M10 1v3m0 12v3m-9-9h3m12 0h3m-2.4-6.4l-2.1 2.1m-8.5 8.5l-2.1 2.1m0-12.6l2.1 2.1m8.5 8.5l2.1 2.1"/></svg>
-          Settings
-        </button>
-        <button class="dropdown-item dropdown-item--danger" @click="handleLogout(close)">
-          <svg class="dropdown-item-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17H3V3h4"/><path d="M10 10h8m0 0l-3-3m3 3l-3 3"/></svg>
-          Logout
-        </button>
-      </template>
-    </Dropdown>
+    <button type="button" class="profile-trigger" @click="goSettings">
+      <div class="profile-top">
+        <StatusDot :color="statusColor" :title="auth.currentAdmin.value?.status" />
+        <span class="text-body-s fw-medium profile-email">{{ auth.currentAdmin.value?.email }}</span>
+      </div>
+      <Badge type="role" :value="auth.currentAdmin.value?.role || 'viewer'" />
+    </button>
+    <button type="button" class="logout-btn text-body-s" @click="handleLogout">
+      <svg class="logout-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17H3V3h4"/><path d="M10 10h8m0 0l-3-3m3 3l-3 3"/></svg>
+      Logout
+    </button>
   </div>
 </template>
 
@@ -30,11 +19,10 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { authModel } from '../scripts/core/authModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
-import Dropdown from './Dropdown.vue'
 import Badge from './Badge.vue'
 import StatusDot from './StatusDot.vue'
 
-defineEmits(['navigate'])
+const emit = defineEmits(['navigate'])
 
 const router = useRouter()
 const auth = authModel()
@@ -47,13 +35,12 @@ const statusColor = computed(() => {
   return 'yellow'
 })
 
-function goSettings(close) {
-  close()
+function goSettings() {
+  emit('navigate')
   router.push({ name: 'settings' })
 }
 
-async function handleLogout(close) {
-  close()
+async function handleLogout() {
   const confirmed = await confirm.show({
     title: 'Log out',
     message: 'Are you sure you want to log out?',
@@ -70,12 +57,16 @@ async function handleLogout(close) {
 .sidebar-profile {
   padding: 16px 12px;
   border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .profile-trigger {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   width: 100%;
   padding: 8px 10px;
   background: none;
@@ -89,11 +80,12 @@ async function handleLogout(close) {
   background: var(--color-bg-secondary);
 }
 
-.profile-info {
+.profile-top {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
+  max-width: 100%;
 }
 
 .profile-email {
@@ -103,10 +95,28 @@ async function handleLogout(close) {
   white-space: nowrap;
 }
 
-.dropdown-item-icon {
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text-tertiary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.logout-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-danger);
+}
+
+.logout-icon {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  margin-right: 8px;
 }
 </style>
