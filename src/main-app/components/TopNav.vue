@@ -3,6 +3,7 @@
     <router-link to="/" class="topnav-left">
       <AppIcon />
       <span class="topnav-title" :class="{ 'dashboard-title': context === 'dashboard' }"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
+      <span v-if="isBeta" class="topnav-beta">BETA</span>
     </router-link>
 
     <!-- Center nav links (landing/public context, desktop only) -->
@@ -66,6 +67,7 @@ import TopNavDropdown from "./TopNavDropdown.vue";
 import AppIcon from "../assets/AppIcon.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
+import { flagsModel } from "../scripts/core/flagsModel.js";
 
 const props = defineProps({
   authenticated: {
@@ -81,6 +83,8 @@ const props = defineProps({
     default: "dashboard",
   },
 });
+
+const { isBeta } = flagsModel()
 
 const router = useRouter();
 const showMobile = ref(false);
@@ -195,6 +199,18 @@ onBeforeUnmount(() => {
 
 .topnav-title-accent {
   color: var(--color-action);
+}
+
+.topnav-beta {
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  color: var(--color-action);
+  border: 1px solid var(--color-action);
+  border-radius: 4px;
+  vertical-align: middle;
 }
 
 .topnav-right {

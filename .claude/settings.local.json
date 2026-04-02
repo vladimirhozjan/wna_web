@@ -25,7 +25,8 @@
       "Bash(curl:*)",
       "Bash(/Users/vladimirhozjan/.local/share/claude/versions/2.1.56 --ripgrep \"scheduled_duration\" /Users/vladimirhozjan/Documents/wna_web/develop-b/src/main-app/scripts/apiClient.js)",
       "Bash(grep:*)",
-      "Bash(/Users/vladimirhozjan/Documents/wna_web/develop-a/wna_test_cases.md:*)"
+      "Bash(/Users/vladimirhozjan/Documents/wna_web/develop-a/wna_test_cases.md:*)",
+      "Bash(find /Users/vladimirhozjan/Documents/wna_web/develop-a -name *api*.md -type f)"
     ]
   }
 }

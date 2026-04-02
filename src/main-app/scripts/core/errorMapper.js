@@ -35,10 +35,16 @@ export function mapApiError(error, scenario=ErrorScenario.GENERIC) {
                 return "Incorrect email and/or password. Please correct your credentials.";
             }
         } else if (scenario === ErrorScenario.GOOGLE_LOGIN) {
+            if (status === 403 && msg === 'registration_disabled') {
+                return "registration_disabled";
+            }
             if (status === 401) {
                 return "Google authentication failed.";
             }
         } else if (scenario === ErrorScenario.REGISTER) {
+            if (status === 403 && msg === 'registration_disabled') {
+                return "registration_disabled";
+            }
             if (status === 409) {
                 return "Email already exists. Change email or sign in.";
             }

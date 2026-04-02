@@ -21,6 +21,7 @@ import {ref, watch} from 'vue'
 import {useRouter} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
+import {flagsModel} from '../../scripts/core/flagsModel.js'
 import HeroSection from '../../components/public/HeroSection.vue'
 import HowItWorksSection from '../../components/public/HowItWorksSection.vue'
 import FeaturesSection from '../../components/public/FeaturesSection.vue'
@@ -37,6 +38,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { isBeta } = flagsModel()
 
 const authMode = ref(null)
 

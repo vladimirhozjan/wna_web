@@ -177,6 +177,7 @@ const ACTION_LABELS = {
   feature_flag_created: 'Flag Created',
   feature_flag_updated: 'Flag Updated',
   feature_flag_deleted: 'Flag Deleted',
+  user_invited: 'User Invited',
 }
 
 function formatAction(action) {

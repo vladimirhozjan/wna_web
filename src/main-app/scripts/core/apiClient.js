@@ -188,6 +188,15 @@ export async function refreshToken() {
     }
 }
 
+export async function getPublicFlags() {
+    try {
+        const res = await httpApi.get('/v1/flags/public')
+        return res.data
+    } catch {
+        return { flags: [] }
+    }
+}
+
 export async function getUser() {
     try {
         const res = await httpApi.get('/v1/user/get', {headers: authHeaders()})
@@ -1589,6 +1598,7 @@ const apiClient = {
     loginUser,
     registerUser,
     refreshToken,
+    getPublicFlags,
     getUser,
     forgotPassword,
     resetPassword,

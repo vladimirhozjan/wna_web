@@ -114,6 +114,7 @@ const ACTION_OPTIONS = [
   'feature_flag_created',
   'feature_flag_updated',
   'feature_flag_deleted',
+  'user_invited',
 ]
 
 const ACTION_LABELS = {
@@ -137,6 +138,7 @@ const ACTION_LABELS = {
   feature_flag_created: 'Feature Flag Created',
   feature_flag_updated: 'Feature Flag Updated',
   feature_flag_deleted: 'Feature Flag Deleted',
+  user_invited: 'User Invited',
 }
 
 const columns = [

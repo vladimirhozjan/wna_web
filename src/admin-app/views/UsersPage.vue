@@ -1,6 +1,9 @@
 <template>
   <div class="page">
-    <h1 class="page-title">Users</h1>
+    <div class="page-header">
+      <h1 class="page-title">Users</h1>
+      <Btn v-if="hasMinRole(role, 'admin')" variant="primary" size="sm" @click="showInviteModal = true">Invite User</Btn>
+    </div>
 
     <div class="toolbar">
       <SearchInput v-model="search" placeholder="Search by email..." @update:model-value="resetAndLoad" />
@@ -53,11 +56,45 @@
         />
       </template>
     </DataTable>
+
+    <!-- Invite User Modal -->
+    <Modal :visible="showInviteModal" title="Invite User" @close="closeInviteModal">
+      <form @submit.prevent="handleInvite" class="invite-form">
+        <Inpt
+            v-model="inviteEmail"
+            v-model:error="inviteEmailError"
+            type="email"
+            title="Email"
+            placeholder="user@example.com"
+            :disabled="inviting"
+        />
+
+        <label class="select-label">
+          <span class="text-label color-text-primary">Tier</span>
+          <select v-model="inviteTier" class="text-body-m select-input" :disabled="inviting">
+            <option value="free">Free</option>
+            <option value="pro">Pro</option>
+            <option value="team">Team</option>
+          </select>
+        </label>
+
+        <p class="text-caption color-text-secondary invite-hint">
+          An invitation email with a set-password link will be sent to this address.
+        </p>
+
+        <p v-if="inviteError" class="text-body-s color-text-danger invite-error">{{ inviteError }}</p>
+      </form>
+
+      <template #actions>
+        <Btn variant="ghost" size="sm" @click="closeInviteModal" :disabled="inviting">Cancel</Btn>
+        <Btn variant="primary" size="sm" @click="handleInvite" :loading="inviting" :disabled="inviting">Invite</Btn>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { format, parseISO } from 'date-fns'
 import DataTable from '../components/DataTable.vue'
@@ -65,11 +102,18 @@ import Pagination from '../components/Pagination.vue'
 import SearchInput from '../components/SearchInput.vue'
 import Badge from '../components/Badge.vue'
 import StatusDot from '../components/StatusDot.vue'
+import Btn from '../components/Btn.vue'
+import Modal from '../components/Modal.vue'
+import Inpt from '../components/Inpt.vue'
+import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const router = useRouter()
+const auth = authModel()
 const toaster = errorModel()
+
+const role = computed(() => auth.currentAdmin.value?.role)
 
 const columns = [
   { key: 'email', label: 'Email', sortable: false },
@@ -88,6 +132,14 @@ const pageSize = 20
 const search = ref('')
 const sortKey = ref('created_at')
 const sortDir = ref('desc')
+
+// Invite modal
+const showInviteModal = ref(false)
+const inviteEmail = ref('')
+const inviteEmailError = ref('')
+const inviteTier = ref('free')
+const inviteError = ref('')
+const inviting = ref(false)
 
 async function load() {
   loading.value = true
@@ -124,6 +176,40 @@ function formatDate(val) {
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
 }
 
+function closeInviteModal() {
+  showInviteModal.value = false
+  inviteEmail.value = ''
+  inviteEmailError.value = ''
+  inviteTier.value = 'free'
+  inviteError.value = ''
+}
+
+async function handleInvite() {
+  inviteError.value = ''
+  inviteEmailError.value = ''
+
+  if (!inviteEmail.value.trim()) {
+    inviteEmailError.value = 'Email is required'
+    return
+  }
+
+  inviting.value = true
+  try {
+    await apiClient.invitePlatformUser(inviteEmail.value.trim(), inviteTier.value)
+    toaster.success('Invitation sent to ' + inviteEmail.value.trim())
+    closeInviteModal()
+    await load()
+  } catch (err) {
+    if (err.status === 409) {
+      inviteError.value = 'A user with this email already exists'
+    } else {
+      inviteError.value = err.message || 'Failed to send invitation'
+    }
+  } finally {
+    inviting.value = false
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -132,7 +218,10 @@ onMounted(load)
   padding: 24px;
 }
 
-.page-title {
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
 }
 
@@ -155,5 +244,39 @@ onMounted(load)
 .filter-select:focus {
   outline: none;
   border-color: var(--color-input-border-focus);
+}
+
+.invite-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.select-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.select-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 1px var(--color-action-ring);
+}
+
+.invite-hint {
+  margin: 0;
+}
+
+.invite-error {
+  margin: 0;
 }
 </style>

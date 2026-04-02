@@ -5,40 +5,61 @@
         <div class="auth-dialog" @click.stop :key="props.mode || 'closed'">
 
           <section v-if="props.mode === 'register'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Create Your Account</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                Start your journey to better clarity and control.
-              </p>
-            </div>
-            <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
-                  v-model:error="emailError"/>
-            <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
-                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
-                  v-model:error="passwordError"/>
-            <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
-                  placeholder="Confirm your password" v-model:error="confirmError"/>
-            <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
-              <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
-              <span class="text-body-s">
-                I agree to the
-                <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
-                and
-                <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
-              </span>
-            </label>
-            <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
-            <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
-            <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
-            <div v-if="googleSsoEnabled" class="or-divider">
-              <span class="or-divider__line"></span>
-              <span class="or-divider__text text-body-s color-text-secondary">or</span>
-              <span class="or-divider__line"></span>
-            </div>
-            <Btn v-if="googleSsoEnabled" variant="ghost" @click="redirectToGoogle" class="google-sso-btn">
-              <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-              Sign up with Google
-            </Btn>
+            <!-- Beta closed state -->
+            <template v-if="registrationDisabled">
+              <div class="beta-notice">
+                <h2 class="text-h2 color-text-primary">We're in Closed Beta</h2>
+                <p class="text-body-s color-text-secondary beta-message">
+                  Thanks for your interest in WhatsNextAction! We're currently fine-tuning the experience
+                  with a small group of early users before opening the doors to everyone.
+                </p>
+                <p class="text-body-s color-text-secondary beta-message">
+                  Want early access? We'd love to hear from you — drop us a line and tell us a bit about yourself.
+                </p>
+                <a href="mailto:info@whatsnextaction.com" class="beta-contact-btn">
+                  Get in touch
+                </a>
+                <p class="text-caption color-text-tertiary beta-email">info@whatsnextaction.com</p>
+              </div>
+              <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
+            </template>
+            <!-- Normal registration form -->
+            <template v-else>
+              <div>
+                <h2 class="text-h2 color-text-primary">Create Your Account</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  Start your journey to better clarity and control.
+                </p>
+              </div>
+              <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                    v-model:error="emailError"/>
+              <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
+                    footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                    v-model:error="passwordError"/>
+              <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
+                    placeholder="Confirm your password" v-model:error="confirmError"/>
+              <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
+                <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
+                <span class="text-body-s">
+                  I agree to the
+                  <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
+                  and
+                  <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
+                </span>
+              </label>
+              <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
+              <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
+              <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
+              <div v-if="googleSsoEnabled" class="or-divider">
+                <span class="or-divider__line"></span>
+                <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                <span class="or-divider__line"></span>
+              </div>
+              <Btn v-if="googleSsoEnabled" variant="ghost" @click="redirectToGoogle" class="google-sso-btn">
+                <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Sign up with Google
+              </Btn>
+            </template>
           </section>
 
           <section v-else-if="props.mode === 'login'">
@@ -64,8 +85,10 @@
               <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
               Sign in with Google
             </Btn>
-            <div class="separator"></div>
-            <Btn class="btn-not-wide" variant="ghost" @click="goToRegister">Create new account</Btn>
+            <template v-if="!registrationDisabled">
+              <div class="separator"></div>
+              <Btn class="btn-not-wide" variant="ghost" @click="goToRegister">Create new account</Btn>
+            </template>
           </section>
 
           <section v-else-if="props.mode === 'forgot'">
@@ -139,9 +162,11 @@ import {authModel} from '../scripts/core/authModel.js'
 import {errorModel} from '../scripts/core/errorModel.js'
 import {mapApiError, ErrorScenario} from '../scripts/core/errorMapper.js'
 import {isGoogleSsoEnabled, redirectToGoogle} from '../scripts/core/googleSso.js'
+import {flagsModel} from '../scripts/core/flagsModel.js'
 
 const auth = authModel()
 const error = errorModel()
+const { isBeta } = flagsModel()
 
 const googleSsoEnabled = isGoogleSsoEnabled()
 
@@ -167,6 +192,8 @@ const passwordError = ref('')
 const confirmError = ref('')
 const agreeTerms = ref(false)
 const agreeError = ref('')
+const registrationDisabledByApi = ref(false)
+const registrationDisabled = computed(() => isBeta.value || registrationDisabledByApi.value)
 
 const reset_token = ref('')
 const userId = ref(null)
@@ -384,8 +411,12 @@ async function doRegister() {
     startVerificationPolling()
   } catch (err) {
     console.log(err)
-    error.push('Registration failed with error: ' + mapApiError(err, ErrorScenario.REGISTER)
-    )
+    const mapped = mapApiError(err, ErrorScenario.REGISTER)
+    if (mapped === 'registration_disabled') {
+      registrationDisabledByApi.value = true
+    } else {
+      error.push('Registration failed with error: ' + mapped)
+    }
   }
 }
 
@@ -486,6 +517,36 @@ h2 {
 .subtitle {
   text-align: center;
   margin: 10px 20px 0 20px;
+}
+
+.beta-notice {
+  text-align: center;
+}
+
+.beta-message {
+  margin: 12px 0 0;
+  line-height: var(--lh-relaxed);
+}
+
+.beta-contact-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 24px;
+  background: var(--color-action);
+  color: var(--color-btn-primary-text);
+  border-radius: 6px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-body-s);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.beta-contact-btn:hover {
+  background: var(--color-action-dark);
+}
+
+.beta-email {
+  margin: 8px 0 0;
 }
 
 .agree-checkbox {

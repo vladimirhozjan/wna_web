@@ -268,6 +268,17 @@ export async function resetPlatformUserPassword(id) {
     }
 }
 
+export async function invitePlatformUser(email, tier) {
+    try {
+        const body = { email }
+        if (tier) body.tier = tier
+        const res = await httpApi.post('/admin/platform-users/invite', body)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function changePlatformUserTier(id, tier) {
     try {
         const res = await httpApi.put(`/admin/platform-users/${id}/tier`, { tier })
@@ -568,6 +579,7 @@ export default {
     deletePlatformUser,
     forceLogoutPlatformUser,
     resetPlatformUserPassword,
+    invitePlatformUser,
     changePlatformUserTier,
     getUserItems,
     getUserTags,
