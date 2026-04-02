@@ -124,19 +124,42 @@ export function authModel() {
         }
     }
 
+    async function _forceRefreshToken() {
+        const data = await apiClient.refreshToken()
+        const token = localStorage.getItem('admin_auth_token')
+        if (token) {
+            const claims = decodeJwt(token)
+            if (claims) {
+                currentAdmin.value = claims
+                localStorage.setItem('admin_current_user', JSON.stringify(claims))
+            }
+        }
+        return data
+    }
+
     async function confirmOtp(code) {
         loading.value = true
         error.value = null
 
         try {
             const data = await apiClient.confirmOtp(code)
+            await _forceRefreshToken()
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        } finally {
+            loading.value = false
+        }
+    }
 
-            // After OTP confirm, status transitions to active
-            if (currentAdmin.value) {
-                currentAdmin.value = { ...currentAdmin.value, status: 'active' }
-                localStorage.setItem('admin_current_user', JSON.stringify(currentAdmin.value))
-            }
+    async function resetOtp(code) {
+        loading.value = true
+        error.value = null
 
+        try {
+            const data = await apiClient.resetOtp(code)
+            await _forceRefreshToken()
             return data
         } catch (err) {
             error.value = err
