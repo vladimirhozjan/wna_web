@@ -9,7 +9,7 @@
           v-model:error="emailError"
           type="email"
           title="Email"
-          placeholder="admin@whatsnextaction.com"
+          placeholder="Enter your email"
           :disabled="auth.loading.value"
           @enter="handleSubmit"
       />

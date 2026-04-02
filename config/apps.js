@@ -33,6 +33,9 @@ export const APPS = {
             '/health': {
                 target: 'http://localhost:8004',
                 changeOrigin: true,
+                bypass(req) {
+                    if (req.headers.accept?.includes('text/html')) return req.url
+                },
             },
             '/readiness': {
                 target: 'http://localhost:8004',
