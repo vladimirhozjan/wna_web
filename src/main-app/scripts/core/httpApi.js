@@ -15,7 +15,11 @@ function isAuthPath(url) {
     return AUTH_PATHS.some(p => url && url.startsWith(p))
 }
 
+let loggingOut = false
+
 function logout() {
+    if (loggingOut) return
+    loggingOut = true
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('refresh_token_hash')
@@ -27,6 +31,7 @@ function logout() {
 let refreshPromise = null
 
 function doRefresh() {
+    if (loggingOut) return Promise.reject({ status: 401, message: 'Logging out' })
     if (!refreshPromise) {
         refreshPromise = apiClient.refreshToken()
             .then(data => {
