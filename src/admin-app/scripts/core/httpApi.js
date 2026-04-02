@@ -8,57 +8,60 @@ export const httpApi = axios.create({
     timeout: 30000,
 })
 
-// Paths that should not trigger 401 redirect or auto-refresh
 const AUTH_PATHS = ['/auth/login', '/auth/refresh', '/auth/set-password', '/auth/reset-password']
 
 function isAuthPath(url) {
     return AUTH_PATHS.some(p => url && url.startsWith(p))
 }
 
+function logout() {
+    localStorage.removeItem('admin_auth_token')
+    localStorage.removeItem('admin_refresh_token')
+    localStorage.removeItem('admin_current_user')
+    localStorage.setItem('admin_logout', Date.now().toString())
+    window.location.href = '/login'
+}
+
 let refreshPromise = null
+
+function doRefresh() {
+    if (!refreshPromise) {
+        const refresh_token = localStorage.getItem('admin_refresh_token')
+        refreshPromise = httpApi.post('/auth/refresh', { refresh_token })
+            .then(res => {
+                if (res.data.access_token) {
+                    localStorage.setItem('admin_auth_token', res.data.access_token)
+                }
+            })
+            .finally(() => { refreshPromise = null })
+    }
+    return refreshPromise
+}
 
 httpApi.interceptors.request.use(async (req) => {
     const access_token = localStorage.getItem('admin_auth_token')
     if (!access_token) return req
 
-    // Don't attach token or auto-refresh for public auth endpoints
     if (isAuthPath(req.url)) return req
 
-    // Check if token is about to expire (within 60s)
     try {
         const payload = JSON.parse(atob(access_token.split('.')[1]))
         const now = Math.floor(Date.now() / 1000)
         const expiresIn = payload.exp - now
 
         if (expiresIn < 60) {
-            // Token about to expire — refresh it (inline to avoid circular import)
-            if (!refreshPromise) {
-                const refresh_token = localStorage.getItem('admin_refresh_token')
-                refreshPromise = httpApi.post('/auth/refresh', { refresh_token })
-                    .then(res => {
-                        if (res.data.access_token) {
-                            localStorage.setItem('admin_auth_token', res.data.access_token)
-                        }
-                    })
-                    .finally(() => { refreshPromise = null })
-            }
             try {
-                await refreshPromise
+                await doRefresh()
                 const newToken = localStorage.getItem('admin_auth_token')
                 req.headers.Authorization = `Bearer ${newToken}`
                 return req
             } catch {
-                // Refresh failed — clear auth and redirect
-                localStorage.removeItem('admin_auth_token')
-                localStorage.removeItem('admin_refresh_token')
-                localStorage.removeItem('admin_current_user')
-                localStorage.setItem('admin_logout', Date.now().toString())
-                window.location.href = '/login'
+                logout()
                 throw new axios.Cancel('Session expired')
             }
         }
-    } catch {
-        // Token decode failed — use it as-is, let the server reject it
+    } catch (e) {
+        if (axios.isCancel(e)) throw e
     }
 
     req.headers.Authorization = `Bearer ${access_token}`
@@ -67,14 +70,22 @@ httpApi.interceptors.request.use(async (req) => {
 
 httpApi.interceptors.response.use(
     (response) => response,
-    (error) => {
-        // Don't redirect on 401 for auth endpoints (login, refresh, etc.)
-        if (error.response?.status === 401 && !isAuthPath(error.config?.url)) {
-            localStorage.removeItem('admin_auth_token')
-            localStorage.removeItem('admin_refresh_token')
-            localStorage.removeItem('admin_current_user')
-            localStorage.setItem('admin_logout', Date.now().toString())
-            window.location.href = '/login'
+    async (error) => {
+        const originalReq = error.config
+        if (
+            error.response?.status === 401
+            && !isAuthPath(originalReq?.url)
+            && !originalReq._retried
+        ) {
+            originalReq._retried = true
+            try {
+                await doRefresh()
+                const newToken = localStorage.getItem('admin_auth_token')
+                originalReq.headers.Authorization = `Bearer ${newToken}`
+                return httpApi(originalReq)
+            } catch {
+                logout()
+            }
         }
         return Promise.reject(error)
     }

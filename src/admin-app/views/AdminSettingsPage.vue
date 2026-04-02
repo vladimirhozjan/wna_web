@@ -186,13 +186,8 @@ async function handleResetOtp() {
 
   otpLoading.value = true
   try {
-    await apiClient.resetOtp(otpCode.value.trim())
+    await auth.resetOtp(otpCode.value.trim())
     toaster.success('OTP reset — redirecting to setup')
-    // Status transitions to pending_otp_setup, update auth state
-    if (auth.currentAdmin.value) {
-      auth.currentAdmin.value = { ...auth.currentAdmin.value, status: 'pending_otp_setup' }
-      localStorage.setItem('admin_current_user', JSON.stringify(auth.currentAdmin.value))
-    }
     router.push({ name: 'otp-setup' })
   } catch (err) {
     otpFormError.value = err.message || 'Failed to reset OTP'
