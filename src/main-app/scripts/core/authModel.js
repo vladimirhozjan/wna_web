@@ -13,6 +13,14 @@ window.addEventListener('storage', (event) => {
     }
 })
 
+window.addEventListener('token_refreshed', async () => {
+    try {
+        const user = await apiClient.getUser()
+        currentUser.value = user
+        localStorage.setItem('current_user', JSON.stringify(user))
+    } catch { /* ignore — stale profile is acceptable */ }
+})
+
 const currentUser = ref(null)
 const loading = ref(false)
 const error = ref(null)

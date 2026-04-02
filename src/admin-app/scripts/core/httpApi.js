@@ -31,6 +31,7 @@ function doRefresh() {
             .then(res => {
                 if (res.data.access_token) {
                     localStorage.setItem('admin_auth_token', res.data.access_token)
+                    window.dispatchEvent(new Event('admin_token_refreshed'))
                 }
             })
             .finally(() => { refreshPromise = null })

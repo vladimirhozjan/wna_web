@@ -28,9 +28,12 @@ let refreshPromise = null
 
 function doRefresh() {
     if (!refreshPromise) {
-        refreshPromise = apiClient.refreshToken().finally(() => {
-            refreshPromise = null
-        })
+        refreshPromise = apiClient.refreshToken()
+            .then(data => {
+                window.dispatchEvent(new Event('token_refreshed'))
+                return data
+            })
+            .finally(() => { refreshPromise = null })
     }
     return refreshPromise
 }

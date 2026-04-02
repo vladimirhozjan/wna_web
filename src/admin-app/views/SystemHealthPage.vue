@@ -44,6 +44,22 @@
                 <span class="text-caption color-text-secondary">Commit</span>
                 <span class="text-body-s font-mono">{{ svc.git_commit.slice(0, 12) }}</span>
               </div>
+              <div v-if="svc.git_branch" class="meta-row">
+                <span class="text-caption color-text-secondary">Branch</span>
+                <span class="text-body-s font-mono">{{ svc.git_branch }}</span>
+              </div>
+              <div v-if="svc.build_time" class="meta-row">
+                <span class="text-caption color-text-secondary">Build time</span>
+                <span class="text-body-s">{{ formatBuildTime(svc.build_time) }}</span>
+              </div>
+              <div v-if="svc.build_type" class="meta-row">
+                <span class="text-caption color-text-secondary">Build type</span>
+                <span class="text-body-s">{{ svc.build_type }}</span>
+              </div>
+              <div v-if="svc.compiler" class="meta-row">
+                <span class="text-caption color-text-secondary">Compiler</span>
+                <span class="text-body-s">{{ svc.compiler }}</span>
+              </div>
             </div>
             <div v-else class="service-error">
               <span class="text-body-s color-text-danger">{{ svc.error || 'Service unreachable' }}</span>
@@ -93,6 +109,11 @@ async function load() {
 function formatTime(iso) {
   if (!iso) return ''
   try { return format(new Date(iso), 'HH:mm:ss') } catch { return iso }
+}
+
+function formatBuildTime(iso) {
+  if (!iso) return ''
+  try { return format(new Date(iso), 'yyyy-MM-dd HH:mm') } catch { return iso }
 }
 
 onMounted(() => {

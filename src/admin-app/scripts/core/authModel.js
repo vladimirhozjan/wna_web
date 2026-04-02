@@ -11,6 +11,17 @@ window.addEventListener('storage', (event) => {
     }
 })
 
+window.addEventListener('admin_token_refreshed', () => {
+    const token = localStorage.getItem('admin_auth_token')
+    if (token) {
+        const claims = decodeJwt(token)
+        if (claims) {
+            currentAdmin.value = claims
+            localStorage.setItem('admin_current_user', JSON.stringify(claims))
+        }
+    }
+})
+
 const ROLE_LEVELS = {
     viewer: 0,
     support: 1,
