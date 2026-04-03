@@ -10,6 +10,7 @@
   </LandingLayout>
   <AuthDialog
       v-model:mode="authMode"
+      :token="props.token"
       @logged-in="onSuccess"
       @registered="onSuccess"
       @password-reset-success="onSuccessPasswordReset"
@@ -34,6 +35,10 @@ const props = defineProps({
   mode: {
     type: String,
     default: null, // 'login' | 'register' | 'forgot' | 'reset' | null
+  },
+  token: {
+    type: String,
+    default: '',
   },
 })
 

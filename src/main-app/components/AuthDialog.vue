@@ -175,6 +175,10 @@ const props = defineProps({
     type: String,
     default: null, // 'login' | 'register' | 'forgot' | 'reset' | 'verify-sent' | 'unverified' | null
   },
+  token: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits([
@@ -195,8 +199,12 @@ const agreeError = ref('')
 const registrationDisabledByApi = ref(false)
 const registrationDisabled = computed(() => isBeta.value || registrationDisabledByApi.value)
 
-const reset_token = ref('')
+const reset_token = ref(props.token || '')
 const userId = ref(null)
+
+watch(() => props.token, (t) => {
+  if (t) reset_token.value = t
+})
 
 const resending = ref(false)
 const resendCooldown = ref(0)

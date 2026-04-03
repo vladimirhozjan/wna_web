@@ -30,6 +30,7 @@ const routes = [
     {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}},
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
     {path: '/reset', name: 'reset', component: LandingPage, props: {mode: 'reset'}},
+    {path: '/reset-password', name: 'reset-password', component: LandingPage, props: route => ({mode: 'reset', token: route.query.token || ''})},
     {path: '/verify', name: 'verify-email', component: VerifyEmailPage},
     {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage},
     {path: '/engage', name: 'engage', component: EngagePage},
