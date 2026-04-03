@@ -37,7 +37,7 @@
             </div>
             <div class="settings-row">
               <span class="settings-label">Password</span>
-              <Btn variant="ghost" size="sm" @click="openPasswordModal">Change Password</Btn>
+              <Btn variant="secondary" size="sm" @click="openPasswordModal">Change Password</Btn>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@
 
             <div v-else-if="sessionsError" class="settings-error">
               <span>{{ sessionsError }}</span>
-              <Btn variant="ghost" size="sm" @click="loadSessions">Retry</Btn>
+              <Btn variant="secondary" size="sm" @click="loadSessions">Retry</Btn>
             </div>
 
             <div v-else-if="sessions.length === 0" class="settings-empty">
@@ -186,7 +186,7 @@
                       @click="saveTagPresets"
                   >Save</Btn>
                   <Btn
-                      variant="ghost"
+                      variant="secondary"
                       size="sm"
                       :disabled="savingTagPresets"
                       @mousedown.prevent
@@ -416,7 +416,7 @@
             </div>
 
             <div class="password-modal-footer">
-              <Btn variant="ghost" size="md" @click="closePasswordModal" :disabled="changingPassword">
+              <Btn variant="secondary" size="md" @click="closePasswordModal" :disabled="changingPassword">
                 Cancel
               </Btn>
               <Btn

@@ -7,8 +7,8 @@
           <path d="M15 4L7 16h6.5L13 24 21 12h-6.5L15 4z" fill="#ffffff"/>
           <defs>
             <linearGradient id="auth-grad" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#312e81"/>
-              <stop offset="100%" stop-color="#4f46e5"/>
+              <stop offset="0%" stop-color="#92400e"/>
+              <stop offset="100%" stop-color="#d97706"/>
             </linearGradient>
           </defs>
         </svg>

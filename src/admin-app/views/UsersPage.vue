@@ -86,7 +86,7 @@
       </form>
 
       <template #actions>
-        <Btn variant="ghost" size="sm" @click="closeInviteModal" :disabled="inviting">Cancel</Btn>
+        <Btn variant="secondary" size="sm" @click="closeInviteModal" :disabled="inviting">Cancel</Btn>
         <Btn variant="primary" size="sm" @click="handleInvite" :loading="inviting" :disabled="inviting">Invite</Btn>
       </template>
     </Modal>

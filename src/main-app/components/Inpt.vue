@@ -8,7 +8,7 @@
         :type="props.type"
         :disabled="props.disabled"
         class="text-body-m color-text-primary"
-        :class="{ 'input-error': error }"
+        :class="{ 'input-error': error, 'input-success': success }"
         @input="handleInput"
         @keydown.enter="$emit('enter')"
     />
@@ -33,6 +33,10 @@ const props = defineProps({
     required: true,
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  success: {
     type: Boolean,
     default: false,
   }
@@ -92,6 +96,11 @@ input::placeholder {
 input.input-error {
   border-color: var(--color-input-border-error);
   background: var(--color-input-background-error);
+}
+
+input.input-success {
+  border-color: var(--color-input-border-success);
+  background: var(--color-input-background-success);
 }
 
 </style>

@@ -665,7 +665,7 @@ async function onDropToWaiting(data) {
   text-decoration: none;
   flex-shrink: 0;
   margin-left: 12px;
-  border: 1.5px solid var(--color-btn-ghost-border);
+  border: 1.5px solid var(--color-btn-secondary-border);
   border-radius: 4px;
   padding: 5px 12px;
   line-height: 14px;

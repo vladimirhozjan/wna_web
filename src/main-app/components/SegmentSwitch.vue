@@ -60,7 +60,7 @@ defineEmits(['update:modelValue'])
 }
 
 .segment-switch__option--active {
-  background: var(--color-btn-ghost-bg);
+  background: var(--color-btn-secondary-bg);
   color: var(--color-action);
   font-weight: var(--font-weight-semibold);
   box-shadow: 0 1px 3px var(--color-action-shadow);

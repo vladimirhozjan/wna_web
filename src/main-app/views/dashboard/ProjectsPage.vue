@@ -6,7 +6,7 @@
           <h1 class="page-title">Projects</h1>
           <div class="header-actions">
             <TagFilter v-model="filterTags" />
-            <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+            <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
           </div>
         </div>
         <div class="add-input" v-if="showAdd">

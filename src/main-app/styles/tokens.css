@@ -2,5 +2,4 @@
 @import './tokens/components.css';
 @import './tokens/typography.css';
 @import './tokens/layout.css';
-@import './accents/ocean.css';
 @import './themes/dark.css';

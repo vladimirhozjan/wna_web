@@ -98,7 +98,7 @@
           Delete
         </Btn>
         <div class="actions-spacer"></div>
-        <Btn variant="ghost" size="sm" @click="closeModal" :disabled="saving">Cancel</Btn>
+        <Btn variant="secondary" size="sm" @click="closeModal" :disabled="saving">Cancel</Btn>
         <Btn variant="primary" size="sm" :loading="saving" @click="handleSave">
           {{ editingFlag ? 'Save' : 'Create' }}
         </Btn>

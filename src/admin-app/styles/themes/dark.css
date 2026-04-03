@@ -6,7 +6,7 @@
     --color-bg-primary: #111111;
     --color-bg-secondary: #1a1a1a;
     --color-bg-hover: #222222;
-    --color-bg-accent-light: rgba(99, 102, 241, 0.12);
+    --color-bg-accent-light: rgba(251, 191, 36, 0.12);
 
     /* Text */
     --color-text-primary: #ffffff;
@@ -32,8 +32,8 @@
     --color-success-light: rgba(52, 211, 153, 0.15);
 
     /* Semantic */
-    --color-info: #60a5fa;
-    --color-info-light: rgba(96, 165, 250, 0.15);
+    --color-info: #38bdf8;
+    --color-info-light: rgba(56, 189, 248, 0.15);
 
     /* Overlays */
     --color-overlay: rgba(0, 0, 0, 0.7);
@@ -42,16 +42,16 @@
     --color-popup-backdrop: rgba(0, 0, 0, 0.7);
 
     /* Focus & action */
-    --color-action: #818cf8;
-    --color-action-dark: #4f46e5;
-    --color-focus-ring: rgba(129, 140, 248, 0.3);
+    --color-action: #fbbf24;
+    --color-action-dark: #d97706;
+    --color-focus-ring: rgba(251, 191, 36, 0.3);
     --color-danger-ring: rgba(239, 68, 68, 0.3);
-    --color-action-subtle: rgba(129, 140, 248, 0.15);
-    --color-action-bg-subtle: rgba(129, 140, 248, 0.1);
-    --color-action-bg-light: rgba(129, 140, 248, 0.12);
-    --color-action-shadow: rgba(129, 140, 248, 0.15);
-    --color-action-shadow-md: rgba(129, 140, 248, 0.2);
-    --color-action-ring: rgba(129, 140, 248, 0.3);
+    --color-action-subtle: rgba(251, 191, 36, 0.15);
+    --color-action-bg-subtle: rgba(251, 191, 36, 0.1);
+    --color-action-bg-light: rgba(251, 191, 36, 0.12);
+    --color-action-shadow: rgba(251, 191, 36, 0.15);
+    --color-action-shadow-md: rgba(251, 191, 36, 0.2);
+    --color-action-ring: rgba(251, 191, 36, 0.3);
     --color-danger-bg-subtle: rgba(239, 68, 68, 0.12);
     --color-danger-bg-medium: rgba(239, 68, 68, 0.2);
 
@@ -60,9 +60,11 @@
     --color-popup-background: #1a1a1a;
     --color-input-background: #111111;
     --color-input-border: #333333;
-    --color-input-border-focus: #818cf8;
+    --color-input-border-focus: #fbbf24;
     --color-input-border-error: #7f1d1d;
     --color-input-background-error: rgba(127, 29, 29, 0.2);
+    --color-input-border-success: #34d399;
+    --color-input-background-success: rgba(52, 211, 153, 0.1);
     --shadow-auth: 0 18px 50px rgba(0, 0, 0, 0.6);
 
     /* Shadows */
@@ -70,24 +72,40 @@
     --shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.4);
     --shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.5);
     --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-focus-ring: 0 0 0 2px rgba(251, 191, 36, 0.3);
+    --shadow-focus-ring-wide: 0 0 0 3px rgba(251, 191, 36, 0.3);
 
     /* Buttons: primary */
-    --color-btn-primary-bg: #4f46e5;
-    --color-btn-primary-hover: #6366f1;
-    --color-btn-primary-active: #4338ca;
+    --color-btn-primary-bg: #d97706;
+    --color-btn-primary-hover: #f59e0b;
+    --color-btn-primary-active: #b45309;
     --color-btn-primary-text: #FFFFFF;
-    --color-btn-primary-dis-bg: #2e2b5e;
-    --color-btn-primary-dis-txt: #4a4680;
+    --color-btn-primary-dis-bg: #4a3510;
+    --color-btn-primary-dis-txt: #7a6530;
+
+    /* Button: secondary */
+    --color-btn-secondary-bg: rgba(251, 191, 36, 0.12);
+    --color-btn-secondary-text: #fde68a;
+    --color-btn-secondary-border: rgba(251, 191, 36, 0.25);
+    --color-btn-secondary-hover: rgba(251, 191, 36, 0.2);
+    --color-btn-secondary-active: rgba(251, 191, 36, 0.3);
+    --color-btn-secondary-dis-bg: rgba(251, 191, 36, 0.06);
+    --color-btn-secondary-dis-txt: #5a4a20;
+    --color-btn-secondary-dis-brd: rgba(251, 191, 36, 0.12);
+
+    /* Button: outline */
+    --color-btn-outline-text: #fbbf24;
+    --color-btn-outline-border: #fbbf24;
+    --color-btn-outline-hover: rgba(251, 191, 36, 0.12);
+    --color-btn-outline-active: rgba(251, 191, 36, 0.2);
+    --color-btn-outline-dis-txt: #5a4a20;
+    --color-btn-outline-dis-brd: rgba(251, 191, 36, 0.15);
 
     /* Button: ghost */
-    --color-btn-ghost-bg: rgba(129, 140, 248, 0.12);
-    --color-btn-ghost-text: #a5b4fc;
-    --color-btn-ghost-border: rgba(129, 140, 248, 0.25);
-    --color-btn-ghost-hover: rgba(129, 140, 248, 0.2);
-    --color-btn-ghost-active: rgba(129, 140, 248, 0.3);
-    --color-btn-ghost-dis-bg: rgba(129, 140, 248, 0.06);
-    --color-btn-ghost-dis-txt: #3f3d6e;
-    --color-btn-ghost-dis-brd: rgba(129, 140, 248, 0.12);
+    --color-btn-ghost-text: #a0a0a0;
+    --color-btn-ghost-hover: #1a1a1a;
+    --color-btn-ghost-active: #222222;
+    --color-btn-ghost-dis-txt: #555555;
 
     /* Button: danger */
     --color-btn-danger-bg: #dc2626;
@@ -114,13 +132,13 @@
     /* Menu items */
     --color-menu-item-default-text: #a0a0a0;
     --color-menu-item-hover-bg: #1a1a1a;
-    --color-menu-item-hover-txt: #a5b4fc;
+    --color-menu-item-hover-txt: #fde68a;
     --color-menu-item-active-bg: #1a1a1a;
-    --color-menu-item-active-txt: #818cf8;
+    --color-menu-item-active-txt: #fbbf24;
 
     /* Links */
-    --color-link-text: #818cf8;
-    --color-link-hover: #a5b4fc;
+    --color-link-text: #fbbf24;
+    --color-link-hover: #fde68a;
 
     /* Toasts */
     --color-toast-error-bg: #450a0a;

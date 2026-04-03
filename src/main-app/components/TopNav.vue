@@ -18,11 +18,11 @@
     <div v-if="!authenticated">
       <div class="topnav-right desktop-only">
         <Btn size="md" variant="primary" @click="$emit('open-register')">Start Here</Btn>
-        <Btn size="md" variant="ghost" @click="$emit('open-login')">Sign In</Btn>
+        <Btn size="md" variant="secondary" @click="$emit('open-login')">Sign In</Btn>
       </div>
 
       <div class="mobile-only">
-        <Btn class="hamburger" variant="ghost" size="sm" @click="toggleMobile">☰</Btn>
+        <Btn class="hamburger" variant="secondary" size="sm" @click="toggleMobile">☰</Btn>
       </div>
 
       <TopNavDropdown

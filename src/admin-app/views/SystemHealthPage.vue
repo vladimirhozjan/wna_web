@@ -6,7 +6,7 @@
         <span v-if="lastRefreshed" class="text-caption color-text-tertiary">
           Updated: {{ formatTime(lastRefreshed) }}
         </span>
-        <Btn variant="ghost" size="sm" :loading="loading" :disabled="loading" @click="load">
+        <Btn variant="secondary" size="sm" :loading="loading" :disabled="loading" @click="load">
           Refresh
         </Btn>
       </div>

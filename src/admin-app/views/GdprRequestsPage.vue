@@ -3,7 +3,7 @@
     <div class="page-header">
       <h1 class="page-title">GDPR Requests</h1>
       <div class="header-actions">
-        <Btn variant="ghost" size="sm" @click="showExportModal = true">New Export</Btn>
+        <Btn variant="secondary" size="sm" @click="showExportModal = true">New Export</Btn>
         <Btn v-if="hasMinRole(role, 'super_admin')" variant="ghost-danger" size="sm" @click="showDeletionModal = true">New Deletion</Btn>
       </div>
     </div>
@@ -86,7 +86,7 @@
         <div class="detail-actions">
           <Btn
               v-if="expandedRequest.status === 'completed' && expandedRequest.request_type === 'data_export'"
-              variant="ghost" size="sm"
+              variant="secondary" size="sm"
               :loading="downloadLoading"
               @click="handleDownload(expandedRequest.id)"
           >
@@ -109,7 +109,7 @@
       <p class="text-body-s color-text-secondary">Enter the platform user ID to export their data.</p>
       <Inpt v-model="exportUserId" v-model:error="exportError" type="text" title="User ID" placeholder="UUID" :disabled="exportLoading" />
       <template #actions>
-        <Btn variant="ghost" size="sm" @click="closeExportModal" :disabled="exportLoading">Cancel</Btn>
+        <Btn variant="secondary" size="sm" @click="closeExportModal" :disabled="exportLoading">Cancel</Btn>
         <Btn variant="primary" size="sm" :loading="exportLoading" @click="handleExport">Trigger Export</Btn>
       </template>
     </Modal>
@@ -122,7 +122,7 @@
         <Inpt v-model="deletionEmail" v-model:error="deletionEmailError" type="email" title="Email Confirmation" placeholder="Type user email to confirm" :disabled="deletionLoading" />
       </div>
       <template #actions>
-        <Btn variant="ghost" size="sm" @click="closeDeletionModal" :disabled="deletionLoading">Cancel</Btn>
+        <Btn variant="secondary" size="sm" @click="closeDeletionModal" :disabled="deletionLoading">Cancel</Btn>
         <Btn variant="danger" size="sm" :loading="deletionLoading" @click="handleDeletion">Initiate Deletion</Btn>
       </template>
     </Modal>

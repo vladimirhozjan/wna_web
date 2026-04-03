@@ -50,7 +50,7 @@
           </template>
 
           <div class="actions">
-            <Btn variant="ghost" size="sm" @click="move.close">
+            <Btn variant="secondary" size="sm" @click="move.close">
               Cancel
             </Btn>
             <Btn

@@ -55,7 +55,7 @@
               <option value="super_admin">Super Admin</option>
             </select>
             <Btn
-                variant="ghost" size="sm"
+                variant="secondary" size="sm"
                 :disabled="selectedRole === admin.role || actionLoading"
                 :loading="actionLoading"
                 @click="handleChangeRole"

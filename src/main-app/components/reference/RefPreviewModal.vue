@@ -5,7 +5,7 @@
         <div class="preview-header">
           <span class="text-body-m fw-medium preview-filename">{{ preview.file?.name }}</span>
           <div class="preview-header-actions">
-            <Btn v-if="restoreLabel" variant="ghost" size="sm" @click="$emit('restore')">{{ restoreLabel }}</Btn>
+            <Btn v-if="restoreLabel" variant="secondary" size="sm" @click="$emit('restore')">{{ restoreLabel }}</Btn>
             <Btn variant="primary" size="sm" @click="$emit('download')">Download</Btn>
             <Btn variant="ghost-danger" size="sm" @click="$emit('close')">Close</Btn>
           </div>

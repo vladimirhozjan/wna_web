@@ -111,7 +111,7 @@
               Got it
             </Btn>
             <Btn
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 :loading="actionLoading === 'done'"
                 @click="onMarkDone"
@@ -121,7 +121,7 @@
           </template>
           <template v-else>
             <Btn
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 :loading="actionLoading === 'done'"
                 @click="onMarkDone"
@@ -132,7 +132,7 @@
           <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :loading="actionLoading === 'move'"
               >
@@ -199,7 +199,7 @@
                   @click="saveField('description')"
               >Save</Btn>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :disabled="savingField === 'description'"
                   @mousedown.prevent
@@ -234,7 +234,7 @@
                     @click="saveTags"
                 >Save</Btn>
                 <Btn
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     :disabled="savingField === 'tags'"
                     @mousedown.prevent
@@ -297,7 +297,7 @@
                 />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'scheduled'" @mousedown.prevent @click="saveScheduledField">Save</Btn>
-                  <Btn variant="ghost" size="sm" :disabled="savingField === 'scheduled'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                  <Btn variant="secondary" size="sm" :disabled="savingField === 'scheduled'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
                   <Btn v-if="action.scheduled_date" variant="ghost-danger" size="sm" :disabled="savingField === 'scheduled'" @mousedown.prevent @click="clearScheduledField">Clear</Btn>
                 </div>
               </div>
@@ -332,7 +332,7 @@
                 />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'start_date'" @mousedown.prevent @click="saveStartField">Save</Btn>
-                  <Btn variant="ghost" size="sm" :disabled="savingField === 'start_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                  <Btn variant="secondary" size="sm" :disabled="savingField === 'start_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
                   <Btn v-if="action.start_date" variant="ghost-danger" size="sm" :disabled="savingField === 'start_date'" @mousedown.prevent @click="clearStartField">Clear</Btn>
                 </div>
               </div>
@@ -367,7 +367,7 @@
                 />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :loading="savingField === 'due_date'" @mousedown.prevent @click="saveDateField('due_date')">Save</Btn>
-                  <Btn variant="ghost" size="sm" :disabled="savingField === 'due_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                  <Btn variant="secondary" size="sm" :disabled="savingField === 'due_date'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
                   <Btn v-if="action.due_date" variant="ghost-danger" size="sm" :disabled="savingField === 'due_date'" @mousedown.prevent @click="clearDateField('due_date')">Clear</Btn>
                 </div>
               </div>

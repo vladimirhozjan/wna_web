@@ -18,7 +18,7 @@
             </Btn>
             <Btn
                 v-if="clarifyMode"
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 @click="exitClarifyMode"
             >

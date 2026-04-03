@@ -2,7 +2,7 @@
   <div class="recurring-view">
     <div class="recurring-view__header">
       <div class="recurring-view__header-actions">
-        <Btn variant="ghost" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+        <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
       </div>
     </div>
     <div class="recurring-view__add" v-if="showAdd">

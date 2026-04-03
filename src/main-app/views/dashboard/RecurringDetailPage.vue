@@ -94,7 +94,7 @@
               ></textarea>
               <div v-if="editingField === 'description'" class="detail-section-actions">
                 <Btn variant="primary" size="sm" :disabled="savingField === 'description'" :loading="savingField === 'description'" @mousedown.prevent @click="saveField('description')">Save</Btn>
-                <Btn variant="ghost" size="sm" :disabled="savingField === 'description'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                <Btn variant="secondary" size="sm" :disabled="savingField === 'description'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
               </div>
           </div>
         </div>
@@ -142,7 +142,7 @@
                 <TagInput v-model="editTags" :disabled="savingField === 'tags'" />
                 <div class="detail-section-actions">
                   <Btn variant="primary" size="sm" :disabled="savingField === 'tags'" :loading="savingField === 'tags'" @mousedown.prevent @click="saveTags">Save</Btn>
-                  <Btn variant="ghost" size="sm" :disabled="savingField === 'tags'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
+                  <Btn variant="secondary" size="sm" :disabled="savingField === 'tags'" @mousedown.prevent @click="cancelEdit">Cancel</Btn>
                 </div>
               </template>
           </div>

@@ -85,7 +85,7 @@
         </div>
 
         <div class="clarify-substep-actions">
-          <Btn variant="ghost" size="md" @click="backToChoose">Back</Btn>
+          <Btn variant="secondary" size="md" @click="backToChoose">Back</Btn>
           <Btn
               type="submit"
               variant="primary"
@@ -142,7 +142,7 @@
         </div>
 
         <div class="clarify-substep-actions">
-          <Btn variant="ghost" size="md" @click="backToChoose">Back</Btn>
+          <Btn variant="secondary" size="md" @click="backToChoose">Back</Btn>
           <Btn
               type="submit"
               variant="primary"

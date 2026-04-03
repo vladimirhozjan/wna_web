@@ -79,7 +79,7 @@
               Activate
             </Btn>
             <Btn
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 :loading="actionLoading === 'complete'"
                 @click="onComplete"
@@ -89,7 +89,7 @@
           </template>
           <template v-else>
             <Btn
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 :loading="actionLoading === 'complete'"
                 @click="onComplete"
@@ -100,7 +100,7 @@
           <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :loading="actionLoading === 'move'"
               >
@@ -152,7 +152,7 @@
                   @click="saveField('outcome')"
               >Save</Btn>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :disabled="savingField === 'outcome'"
                   @mousedown.prevent
@@ -348,7 +348,7 @@
                   @click="saveField('description')"
               >Save</Btn>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :disabled="savingField === 'description'"
                   @mousedown.prevent
@@ -383,7 +383,7 @@
                     @click="saveTags"
                 >Save</Btn>
                 <Btn
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     :disabled="savingField === 'tags'"
                     @mousedown.prevent
@@ -1745,7 +1745,7 @@ async function onAddAction() {
 }
 
 .action-item--ghost {
-  background: var(--color-btn-ghost-hover);
+  background: var(--color-btn-secondary-hover);
   opacity: 0.5;
 }
 

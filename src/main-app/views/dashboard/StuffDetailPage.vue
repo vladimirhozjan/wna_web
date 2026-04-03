@@ -88,7 +88,7 @@
               Clarify
             </Btn>
             <Btn
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 :loading="actionLoading === 'done'"
                 @click="onMarkDone"
@@ -99,7 +99,7 @@
           <Dropdown v-if="!isCompleted && !isSomeday" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :loading="actionLoading === 'move'"
               >
@@ -154,7 +154,7 @@
                   @click="saveField('description')"
               >Save</Btn>
               <Btn
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   :disabled="savingField === 'description'"
                   @mousedown.prevent

@@ -8,7 +8,7 @@
         @enter="onConfirm"
     />
     <template #actions>
-      <Btn variant="ghost" size="sm" @click="onCancel">Cancel</Btn>
+      <Btn variant="secondary" size="sm" @click="onCancel">Cancel</Btn>
       <Btn variant="primary" size="sm" @click="onConfirm" :disabled="!nameValue.trim()">
         {{ rename.type === 'new-folder' ? 'Create' : 'Rename' }}
       </Btn>

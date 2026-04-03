@@ -1,5 +1,6 @@
 <template>
   <span class="badge" :class="badgeClass">
+    <span class="badge__dot" v-if="showDot"></span>
     {{ label }}
   </span>
 </template>
@@ -10,11 +11,11 @@ import { computed } from 'vue'
 const props = defineProps({
   type: {
     type: String,
-    default: 'role',
+    default: 'role', // role, status, primary, active, pending, failed, draft
   },
   value: {
     type: String,
-    required: true,
+    default: '',
   },
 })
 
@@ -32,13 +33,20 @@ const STATUS_LABELS = {
   disabled: 'Disabled',
 }
 
+const GENERIC_TYPES = ['primary', 'active', 'pending', 'failed', 'draft']
+
+const isGeneric = computed(() => GENERIC_TYPES.includes(props.type))
+
+const showDot = computed(() => isGeneric.value && props.type !== 'draft')
+
 const label = computed(() => {
   if (props.type === 'role') return ROLE_LABELS[props.value] || props.value
   if (props.type === 'status') return STATUS_LABELS[props.value] || props.value
-  return props.value
+  return props.value || props.type
 })
 
 const badgeClass = computed(() => {
+  if (isGeneric.value) return `badge--generic-${props.type}`
   if (props.type === 'role') return `badge--role-${props.value}`
   if (props.type === 'status') {
     if (props.value === 'active') return 'badge--status-active'
@@ -53,6 +61,7 @@ const badgeClass = computed(() => {
 .badge {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: var(--font-size-xs);
@@ -61,6 +70,46 @@ const badgeClass = computed(() => {
   white-space: nowrap;
 }
 
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: currentColor;
+}
+
+/* Generic types */
+.badge--generic-primary {
+  color: var(--color-action);
+  background: var(--color-bg-accent-light);
+  border-radius: 9999px;
+}
+
+.badge--generic-active {
+  color: var(--color-success);
+  background: var(--color-success-light);
+  border-radius: 9999px;
+}
+
+.badge--generic-pending {
+  color: var(--color-warning);
+  background: var(--color-warning-light);
+  border-radius: 9999px;
+}
+
+.badge--generic-failed {
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+  border-radius: 9999px;
+}
+
+.badge--generic-draft {
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-secondary);
+  border-radius: 9999px;
+}
+
+/* Role types */
 .badge--role-super_admin {
   color: var(--color-role-super-admin);
   background: var(--color-role-super-admin-bg);
@@ -81,6 +130,7 @@ const badgeClass = computed(() => {
   background: var(--color-role-viewer-bg);
 }
 
+/* Status types */
 .badge--status-active {
   color: var(--color-status-active);
   background: var(--color-status-active-bg);

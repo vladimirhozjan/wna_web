@@ -20,7 +20,7 @@ import {computed} from 'vue'
 const props = defineProps({
   variant: {
     type: String,
-    default: 'primary', // primary, ghost, danger, ghost-danger, icon, link
+    default: 'primary', // primary, secondary, outline, ghost, danger, ghost-danger, icon, link
   },
   size: {
     type: String,
@@ -52,7 +52,7 @@ const classes = computed(() => ([
 <style scoped>
 .base-btn {
   position: relative;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   transition: 0.15s background, 0.15s color, 0.15s border;
@@ -93,6 +93,7 @@ const classes = computed(() => ([
 .base-btn--lg {
   padding: 14px 20px;
   font-size: var(--font-size-body-m);
+  border-radius: 12px;
 }
 
 /* VARIANTS */
@@ -112,11 +113,45 @@ const classes = computed(() => ([
   color: var(--color-btn-primary-dis-txt);
 }
 
-.base-btn--ghost {
-  background: var(--color-btn-ghost-bg);
-  color: var(--color-btn-ghost-text);
-  border: 1px solid var(--color-btn-ghost-border);
+.base-btn--secondary {
+  background: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border: 1px solid var(--color-btn-secondary-border);
   font-weight: var(--font-weight-semibold);
+}
+.base-btn--secondary:hover:not(:disabled) {
+  background: var(--color-btn-secondary-hover);
+}
+.base-btn--secondary:active {
+  background: var(--color-btn-secondary-active);
+}
+.base-btn--secondary:disabled {
+  background: var(--color-btn-secondary-dis-bg);
+  color: var(--color-btn-secondary-dis-txt);
+  border: 1px solid var(--color-btn-secondary-dis-brd);
+}
+
+.base-btn--outline {
+  background: transparent;
+  color: var(--color-btn-outline-text);
+  border: 1px solid var(--color-btn-outline-border);
+  font-weight: var(--font-weight-semibold);
+}
+.base-btn--outline:hover:not(:disabled) {
+  background: var(--color-btn-outline-hover);
+}
+.base-btn--outline:active {
+  background: var(--color-btn-outline-active);
+}
+.base-btn--outline:disabled {
+  color: var(--color-btn-outline-dis-txt);
+  border: 1px solid var(--color-btn-outline-dis-brd);
+}
+
+.base-btn--ghost {
+  background: transparent;
+  color: var(--color-btn-ghost-text);
+  font-weight: var(--font-weight-medium);
 }
 .base-btn--ghost:hover:not(:disabled) {
   background: var(--color-btn-ghost-hover);
@@ -125,9 +160,7 @@ const classes = computed(() => ([
   background: var(--color-btn-ghost-active);
 }
 .base-btn--ghost:disabled {
-  background: var(--color-btn-ghost-dis-bg);
   color: var(--color-btn-ghost-dis-txt);
-  border: 1px solid var(--color-btn-ghost-dis-brd);
 }
 
 .base-btn--danger {
@@ -172,11 +205,11 @@ const classes = computed(() => ([
   user-select: none;
 }
 .base-btn--icon:hover:not(:disabled) {
-  background: var(--color-btn-ghost-bg);
+  background: var(--color-btn-secondary-bg);
   color: var(--color-action);
 }
 .base-btn--icon:active {
-  background: var(--color-btn-ghost-hover);
+  background: var(--color-btn-secondary-hover);
 }
 .base-btn--icon:disabled {
   color: var(--color-text-tertiary);
@@ -189,11 +222,11 @@ const classes = computed(() => ([
   padding: 4px 8px;
 }
 .base-btn--link:hover:not(:disabled) {
-  background: var(--color-btn-ghost-bg);
+  background: var(--color-btn-secondary-bg);
   color: var(--color-link-hover);
 }
 .base-btn--link:active {
-  background: var(--color-btn-ghost-hover);
+  background: var(--color-btn-secondary-hover);
 }
 .base-btn--link:disabled {
   color: var(--color-text-tertiary);

@@ -141,7 +141,7 @@ function onDrop(e) {
 
 .menu-item.drop-target {
   color: var(--color-menu-item-hover-txt);
-  background: var(--color-btn-ghost-hover);
+  background: var(--color-btn-secondary-hover);
 }
 
 .icon {

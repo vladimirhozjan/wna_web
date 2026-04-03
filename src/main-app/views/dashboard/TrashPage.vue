@@ -4,7 +4,7 @@
       <div class="trash-header">
         <h1 class="page-title">Trash</h1>
         <div class="trash-actions">
-          <Btn variant="ghost" size="sm" @click="onEmptyTrash" :disabled="items.length === 0">
+          <Btn variant="secondary" size="sm" @click="onEmptyTrash" :disabled="items.length === 0">
             Empty Trash
           </Btn>
         </div>

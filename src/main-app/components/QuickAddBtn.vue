@@ -52,7 +52,7 @@ function submit() {
   gap: 6px;
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1.5px solid var(--color-btn-ghost-border);
+  border: 1.5px solid var(--color-btn-secondary-border);
   background: var(--color-bg-accent-light);
   color: var(--color-action);
   cursor: pointer;
@@ -77,7 +77,7 @@ function submit() {
 .quick-add-input {
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1.5px solid var(--color-btn-ghost-border);
+  border: 1.5px solid var(--color-btn-secondary-border);
   background: var(--color-bg-accent-light);
   color: var(--color-text-primary);
   outline: none;

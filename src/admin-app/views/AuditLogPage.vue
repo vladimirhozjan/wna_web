@@ -7,7 +7,7 @@
           <option value="csv">CSV</option>
           <option value="json">JSON</option>
         </select>
-        <Btn variant="ghost" size="sm" :loading="exporting" @click="handleExport">Export</Btn>
+        <Btn variant="secondary" size="sm" :loading="exporting" @click="handleExport">Export</Btn>
       </div>
     </div>
 

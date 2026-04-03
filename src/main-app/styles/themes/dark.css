@@ -1,11 +1,16 @@
 /* Dark theme — non-accent base color overrides */
 
 [data-theme="dark"] {
+    /* Brand */
+    --color-action: #22d3ee;
+    --color-action-dark: #0e7490;
+
     /* Backgrounds */
     --color-app-background: #090909;
     --color-bg-primary: #111111;
     --color-bg-secondary: #1a1a1a;
     --color-bg-hover: #222222;
+    --color-bg-accent-light: rgba(34, 211, 238, 0.12);
 
     /* Text */
     --color-text-primary: #ffffff;
@@ -29,6 +34,8 @@
     --color-warning-light: rgba(251, 191, 36, 0.15);
     --color-success: #34d399;
     --color-success-light: rgba(52, 211, 153, 0.15);
+    --color-info: #38bdf8;
+    --color-info-light: rgba(56, 189, 248, 0.15);
 
     /* Semantic */
     --color-project: #f59e0b;
@@ -38,6 +45,10 @@
     --color-highlight-yellow: rgba(254, 240, 138, 0.2);
     --color-avatar-fallback: #94a3b8;
 
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #06b6d4, #22d3ee);
+    --gradient-dark: linear-gradient(135deg, #06b6d4, #22d3ee);
+
     /* Overlays */
     --color-overlay: rgba(0, 0, 0, 0.7);
     --color-overlay-light: rgba(0, 0, 0, 0.5);
@@ -45,8 +56,15 @@
     --color-overlay-opaque: rgba(0, 0, 0, 0.95);
     --color-popup-backdrop: rgba(0, 0, 0, 0.7);
 
-    /* Focus & danger opacity */
+    /* Focus & action opacity */
+    --color-focus-ring: rgba(34, 211, 238, 0.3);
     --color-danger-ring: rgba(239, 68, 68, 0.3);
+    --color-action-subtle: rgba(34, 211, 238, 0.15);
+    --color-action-bg-subtle: rgba(34, 211, 238, 0.1);
+    --color-action-bg-light: rgba(34, 211, 238, 0.12);
+    --color-action-shadow: rgba(34, 211, 238, 0.15);
+    --color-action-shadow-md: rgba(34, 211, 238, 0.2);
+    --color-action-ring: rgba(34, 211, 238, 0.3);
     --color-danger-bg-subtle: rgba(239, 68, 68, 0.12);
     --color-danger-bg-medium: rgba(239, 68, 68, 0.2);
 
@@ -55,9 +73,11 @@
     --color-popup-background: #1a1a1a;
     --color-input-background: #111111;
     --color-input-border: #333333;
-    --color-input-border-focus: #555555;
+    --color-input-border-focus: #22d3ee;
     --color-input-border-error: #7f1d1d;
     --color-input-background-error: rgba(127, 29, 29, 0.2);
+    --color-input-border-success: #34d399;
+    --color-input-background-success: rgba(52, 211, 153, 0.1);
     --shadow-auth: 0 18px 50px rgba(0, 0, 0, 0.6);
 
     /* Shadows */
@@ -65,9 +85,40 @@
     --shadow-popover: 0 4px 10px rgba(0, 0, 0, 0.4);
     --shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.5);
     --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --shadow-focus-ring: 0 0 0 2px rgba(34, 211, 238, 0.3);
+    --shadow-focus-ring-wide: 0 0 0 3px rgba(34, 211, 238, 0.3);
 
-    /* Button: primary text stays white in dark */
+    /* Button: primary */
+    --color-btn-primary-bg: #0e7490;
     --color-btn-primary-text: #FFFFFF;
+    --color-btn-primary-hover: #0891b2;
+    --color-btn-primary-active: #0b5e76;
+    --color-btn-primary-dis-bg: #193e4a;
+    --color-btn-primary-dis-txt: #3f7080;
+
+    /* Button: secondary */
+    --color-btn-secondary-bg: rgba(34, 211, 238, 0.12);
+    --color-btn-secondary-text: #67e8f9;
+    --color-btn-secondary-border: rgba(34, 211, 238, 0.25);
+    --color-btn-secondary-hover: rgba(34, 211, 238, 0.2);
+    --color-btn-secondary-active: rgba(34, 211, 238, 0.3);
+    --color-btn-secondary-dis-bg: rgba(34, 211, 238, 0.06);
+    --color-btn-secondary-dis-txt: #306A78;
+    --color-btn-secondary-dis-brd: rgba(34, 211, 238, 0.12);
+
+    /* Button: outline */
+    --color-btn-outline-text: #22d3ee;
+    --color-btn-outline-border: #22d3ee;
+    --color-btn-outline-hover: rgba(34, 211, 238, 0.12);
+    --color-btn-outline-active: rgba(34, 211, 238, 0.2);
+    --color-btn-outline-dis-txt: #306A78;
+    --color-btn-outline-dis-brd: rgba(34, 211, 238, 0.15);
+
+    /* Button: ghost */
+    --color-btn-ghost-text: #a0a0a0;
+    --color-btn-ghost-hover: #1a1a1a;
+    --color-btn-ghost-active: #222222;
+    --color-btn-ghost-dis-txt: #555555;
 
     /* Button: danger */
     --color-btn-danger-bg: #dc2626;
@@ -94,7 +145,13 @@
     /* Menu items */
     --color-menu-item-default-text: #a0a0a0;
     --color-menu-item-hover-bg: #1a1a1a;
+    --color-menu-item-hover-txt: #67e8f9;
     --color-menu-item-active-bg: #1a1a1a;
+    --color-menu-item-active-txt: #22d3ee;
+
+    /* Links */
+    --color-link-text: #22d3ee;
+    --color-link-hover: #67e8f9;
 
     /* Toasts */
     --color-toast-error-bg: #450a0a;
@@ -127,10 +184,10 @@
     --color-chip-due-text: #fca5a5;
     --color-chip-due-icon: #ef4444;
 
-    /* Heat map (fallback — accents override these) */
+    /* Heat map */
     --color-heat-0: #111111;
-    --color-heat-1: rgba(107, 163, 232, 0.25);
-    --color-heat-2: rgba(107, 163, 232, 0.4);
-    --color-heat-3: rgba(107, 163, 232, 0.45);
-    --color-heat-4: rgba(107, 163, 232, 0.6);
+    --color-heat-1: rgba(34, 211, 238, 0.25);
+    --color-heat-2: rgba(34, 211, 238, 0.4);
+    --color-heat-3: rgba(34, 211, 238, 0.45);
+    --color-heat-4: rgba(34, 211, 238, 0.6);
 }

@@ -6,7 +6,7 @@
           <h3 class="text-body-l fw-semibold title">{{ confirm.state.title }}</h3>
           <p class="text-body-m message">{{ confirm.state.message }}</p>
           <div class="actions">
-            <Btn variant="ghost" size="sm" @click="confirm.state.onCancel">
+            <Btn variant="secondary" size="sm" @click="confirm.state.onCancel">
               {{ confirm.state.cancelText }}
             </Btn>
             <Btn variant="danger" size="sm" @click="confirm.state.onConfirm">

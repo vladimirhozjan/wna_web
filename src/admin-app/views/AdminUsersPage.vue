@@ -68,7 +68,7 @@
       </form>
 
       <template #actions>
-        <Btn variant="ghost" size="sm" @click="closeCreateModal" :disabled="creating">Cancel</Btn>
+        <Btn variant="secondary" size="sm" @click="closeCreateModal" :disabled="creating">Cancel</Btn>
         <Btn variant="primary" size="sm" @click="handleCreate" :loading="creating" :disabled="creating">Create</Btn>
       </template>
     </Modal>

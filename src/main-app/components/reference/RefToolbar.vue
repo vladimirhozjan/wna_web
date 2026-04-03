@@ -18,9 +18,9 @@
             @keydown.escape="$emit('search', '')"
         />
       </div>
-      <Btn v-if="showActions" variant="ghost" size="sm" @click="$emit('new-folder')">New Folder</Btn>
+      <Btn v-if="showActions" variant="secondary" size="sm" @click="$emit('new-folder')">New Folder</Btn>
       <Btn v-if="showActions" variant="primary" size="sm" @click="$emit('upload')">Upload</Btn>
-      <Btn v-if="showEmptyTrash" variant="ghost" size="sm" @click="$emit('empty-trash')">Empty Trash</Btn>
+      <Btn v-if="showEmptyTrash" variant="secondary" size="sm" @click="$emit('empty-trash')">Empty Trash</Btn>
       <div class="toolbar__view-toggle">
         <button
             class="view-btn"

@@ -4,28 +4,42 @@
     --color-btn-loader-fade-1: rgba(255,255,255,0.3);
 
     /* Button: primary */
-    --color-btn-primary-bg: #4f46e5;
+    --color-btn-primary-bg: #d97706;
     --color-btn-primary-text: #FFFFFF;
-    --color-btn-primary-hover: #4338ca;
-    --color-btn-primary-active: #3730a3;
-    --color-btn-primary-dis-bg: #a5b4fc;
+    --color-btn-primary-hover: #b45309;
+    --color-btn-primary-active: #92400e;
+    --color-btn-primary-dis-bg: #c8a871;
     --color-btn-primary-dis-txt: #f2f2f2;
 
-    /* Button: ghost */
-    --color-btn-ghost-bg: #eef2ff;
-    --color-btn-ghost-text: #4338ca;
-    --color-btn-ghost-border: #c7d2fe;
-    --color-btn-ghost-hover: #e0e7ff;
-    --color-btn-ghost-active: #c7d2fe;
-    --color-btn-ghost-dis-bg: #f0f2f8;
-    --color-btn-ghost-dis-txt: #8b94c6;
-    --color-btn-ghost-dis-brd: #d4d8e9;
+    /* Button: secondary (subtle bg + border + accent text) */
+    --color-btn-secondary-bg: #fffbeb;
+    --color-btn-secondary-text: #b45309;
+    --color-btn-secondary-border: #fde68a;
+    --color-btn-secondary-hover: #fef3c7;
+    --color-btn-secondary-active: #fde68a;
+    --color-btn-secondary-dis-bg: #fefce8;
+    --color-btn-secondary-dis-txt: #a18a5e;
+    --color-btn-secondary-dis-brd: #e8ddb5;
+
+    /* Button: outline (transparent bg + accent border) */
+    --color-btn-outline-text: #d97706;
+    --color-btn-outline-border: #d97706;
+    --color-btn-outline-hover: #fffbeb;
+    --color-btn-outline-active: #fef3c7;
+    --color-btn-outline-dis-txt: #a18a5e;
+    --color-btn-outline-dis-brd: #e8ddb5;
+
+    /* Button: ghost (no bg, gray text) */
+    --color-btn-ghost-text: var(--color-text-secondary);
+    --color-btn-ghost-hover: var(--color-bg-secondary);
+    --color-btn-ghost-active: var(--color-bg-hover);
+    --color-btn-ghost-dis-txt: var(--color-text-tertiary);
 
     /* Button: danger */
-    --color-btn-danger-bg: #ef4444;
+    --color-btn-danger-bg: #dc2626;
     --color-btn-danger-text: #FFFFFF;
-    --color-btn-danger-hover: #eb1414;
-    --color-btn-danger-active: #bc1010;
+    --color-btn-danger-hover: #b91c1c;
+    --color-btn-danger-active: #991b1b;
     --color-btn-danger-dis-bg: #e1b7b7;
     --color-btn-danger-dis-txt: #f2f2f2;
 
@@ -41,23 +55,25 @@
 
     /* Menu items */
     --color-menu-item-default-text: var(--color-text-primary);
-    --color-menu-item-hover-bg: #eef2ff;
-    --color-menu-item-hover-txt: #4338ca;
-    --color-menu-item-active-bg: #eef2ff;
-    --color-menu-item-active-txt: #4f46e5;
+    --color-menu-item-hover-bg: #fffbeb;
+    --color-menu-item-hover-txt: #b45309;
+    --color-menu-item-active-bg: #fffbeb;
+    --color-menu-item-active-txt: #d97706;
 
     /* Inputs */
     --color-input-background: #FFFFFF;
     --color-input-border: #CBD5E1;
-    --color-input-border-focus: #4f46e5;
+    --color-input-border-focus: #d97706;
     --color-input-border-error: #f9c6c6;
     --color-input-background-error: #fef2f2;
+    --color-input-border-success: #16a34a;
+    --color-input-background-success: #f0fdf4;
     --color-popup-background: #FFFFFF;
     --color-sidebar-background: #FFFFFF;
 
     /* Links */
-    --color-link-text: #4f46e5;
-    --color-link-hover: #3730a3;
+    --color-link-text: #d97706;
+    --color-link-hover: #92400e;
 
     /* Toasts */
     --color-toast-error-bg: #fecaca;

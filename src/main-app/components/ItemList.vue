@@ -84,7 +84,7 @@
     <!-- Load more -->
     <div class="load-more" v-if="hasMore && items.length > 0">
       <Btn
-          variant="ghost"
+          variant="secondary"
           size="sm"
           :loading="loading"
           :disabled="disabled"
@@ -310,7 +310,7 @@ function onExternalDrop(e) {
 }
 
 .item-wrapper-ghost .item {
-  background-color: var(--color-btn-ghost-hover);
+  background-color: var(--color-btn-secondary-hover);
 }
 
 .item-wrapper-ghost .item > * {

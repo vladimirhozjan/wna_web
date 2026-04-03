@@ -4,28 +4,42 @@
     --color-btn-loader-fade-1: rgba(255,255,255,0.3);
 
     /* Button: primary */
-    --color-btn-primary-bg: #4185DE;
+    --color-btn-primary-bg: #0e7490;
     --color-btn-primary-text: #FFFFFF;
-    --color-btn-primary-hover: #236ac7;
-    --color-btn-primary-active: #1c539c;
-    --color-btn-primary-dis-bg: #acbfd7;
+    --color-btn-primary-hover: #0b5e76;
+    --color-btn-primary-active: #084c60;
+    --color-btn-primary-dis-bg: #8cbbc8;
     --color-btn-primary-dis-txt: #f2f2f2;
 
-    /* Button: ghost */
-    --color-btn-ghost-bg: #ecf3fc;
-    --color-btn-ghost-text: #356dc0;
-    --color-btn-ghost-border: #c6daf6;
-    --color-btn-ghost-hover: #c1d8f5;
-    --color-btn-ghost-active: #95bcee;
-    --color-btn-ghost-dis-bg: #f1f4f8;
-    --color-btn-ghost-dis-txt: #95a9c6;
-    --color-btn-ghost-dis-brd: #d2dce9;
+    /* Button: secondary (subtle bg + border + accent text) */
+    --color-btn-secondary-bg: #ecfeff;
+    --color-btn-secondary-text: #0e7490;
+    --color-btn-secondary-border: #a5f3fc;
+    --color-btn-secondary-hover: #cffafe;
+    --color-btn-secondary-active: #a5f3fc;
+    --color-btn-secondary-dis-bg: #f0f7f8;
+    --color-btn-secondary-dis-txt: #6d9aa7;
+    --color-btn-secondary-dis-brd: #c0dfe5;
+
+    /* Button: outline (transparent bg + accent border) */
+    --color-btn-outline-text: #0e7490;
+    --color-btn-outline-border: #0e7490;
+    --color-btn-outline-hover: #ecfeff;
+    --color-btn-outline-active: #cffafe;
+    --color-btn-outline-dis-txt: #6d9aa7;
+    --color-btn-outline-dis-brd: #c0dfe5;
+
+    /* Button: ghost (no bg, gray text) */
+    --color-btn-ghost-text: var(--color-text-secondary);
+    --color-btn-ghost-hover: var(--color-bg-secondary);
+    --color-btn-ghost-active: var(--color-bg-hover);
+    --color-btn-ghost-dis-txt: var(--color-text-tertiary);
 
     /* Button: danger */
-    --color-btn-danger-bg: #ef4444;
+    --color-btn-danger-bg: #dc2626;
     --color-btn-danger-text: #FFFFFF;
-    --color-btn-danger-hover: #eb1414;
-    --color-btn-danger-active: #bc1010;
+    --color-btn-danger-hover: #b91c1c;
+    --color-btn-danger-active: #991b1b;
     --color-btn-danger-dis-bg: #e1b7b7;
     --color-btn-danger-dis-txt: #f2f2f2;
 
@@ -42,22 +56,24 @@
     /* Menu items */
     --color-menu-item-default-text: var(--color-text-primary);
     --color-menu-item-hover-bg: white;
-    --color-menu-item-hover-txt: #236ac7;
+    --color-menu-item-hover-txt: #0b5e76;
     --color-menu-item-active-bg: white;
     --color-menu-item-active-txt: var(--color-action);
 
     /* Inputs */
     --color-input-background: #FFFFFF;
     --color-input-border: #D1D5DB;
-    --color-input-border-focus: #4185DE;
+    --color-input-border-focus: #0e7490;
     --color-input-border-error: #f9c6c6;
     --color-input-background-error: #fef2f2;
+    --color-input-border-success: #16a34a;
+    --color-input-background-success: #f0fdf4;
     --color-popup-background: #FFFFFF;
     --color-sidebar-background: #FFFFFF;
 
     /* Links */
-    --color-link-text: #4185DE;
-    --color-link-hover: #0951ae;
+    --color-link-text: #0e7490;
+    --color-link-hover: #0b5e76;
 
     /* Toasts */
     --color-toast-error-bg: #fecaca;
@@ -84,7 +100,7 @@
     --color-calendar-start-text: #166534;
     /* Calendar: due-only (red) */
     --color-calendar-due: #fee2e2;
-    --color-calendar-due-border: #ef4444;
+    --color-calendar-due-border: #dc2626;
     --color-calendar-due-text: #991b1b;
     /* Calendar: overdue (darker red) */
     --color-calendar-overdue: #fecaca;
@@ -94,12 +110,12 @@
     --color-chip-start-text: #166534;
     --color-chip-start-icon: #16a34a;
     --color-chip-due-text: #991b1b;
-    --color-chip-due-icon: #ef4444;
+    --color-chip-due-icon: #dc2626;
 
-    /* Heat map (fallback — accents override these) */
+    /* Heat map */
     --color-heat-0: #fafbfc;
-    --color-heat-1: rgba(65, 133, 222, 0.2);
-    --color-heat-2: rgba(65, 133, 222, 0.35);
-    --color-heat-3: rgba(65, 133, 222, 0.4);
-    --color-heat-4: rgba(65, 133, 222, 0.6);
+    --color-heat-1: rgba(14, 116, 144, 0.2);
+    --color-heat-2: rgba(14, 116, 144, 0.35);
+    --color-heat-3: rgba(14, 116, 144, 0.4);
+    --color-heat-4: rgba(14, 116, 144, 0.6);
 }

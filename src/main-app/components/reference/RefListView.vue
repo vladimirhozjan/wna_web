@@ -90,7 +90,7 @@
     </table>
   </div>
   <div v-if="hasMore" class="load-more">
-    <Btn variant="ghost" size="sm" @click="$emit('load-more')">Load more</Btn>
+    <Btn variant="secondary" size="sm" @click="$emit('load-more')">Load more</Btn>
   </div>
 </template>
 

@@ -24,7 +24,7 @@ const darkColor = '#164e63'
   height: 32px;
   border-radius: 50%;
   background: var(--color-bg-accent-light);
-  border: 2px solid var(--color-btn-ghost-border);
+  border: 2px solid var(--color-btn-secondary-border);
   display: flex;
   align-items: center;
   justify-content: center;

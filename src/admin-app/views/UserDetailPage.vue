@@ -112,7 +112,7 @@
             <span class="text-caption color-text-tertiary">Send a password reset email to this user</span>
           </div>
           <Btn
-              variant="ghost" size="sm"
+              variant="secondary" size="sm"
               :loading="actionLoading"
               :disabled="actionLoading"
               @click="handleResetPassword"
@@ -150,7 +150,7 @@
               <option value="team">Team</option>
             </select>
             <Btn
-                variant="ghost" size="sm"
+                variant="secondary" size="sm"
                 :disabled="selectedTier === (user.subscription_tier || 'free') || actionLoading"
                 :loading="actionLoading"
                 @click="handleChangeTier"
@@ -205,7 +205,7 @@
       <p v-if="deleteError" class="text-body-s color-text-danger delete-error">{{ deleteError }}</p>
 
       <template #actions>
-        <Btn variant="ghost" size="sm" @click="showDeleteModal = false" :disabled="actionLoading">Cancel</Btn>
+        <Btn variant="secondary" size="sm" @click="showDeleteModal = false" :disabled="actionLoading">Cancel</Btn>
         <Btn
             variant="danger" size="sm"
             :loading="actionLoading"

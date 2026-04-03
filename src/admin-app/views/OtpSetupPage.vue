@@ -14,7 +14,7 @@
     <!-- Setup error -->
     <div v-else-if="setupError" class="error-state">
       <p class="text-body-s color-text-danger">{{ setupError }}</p>
-      <Btn variant="ghost" size="sm" @click="loadSetup">Retry</Btn>
+      <Btn variant="secondary" size="sm" @click="loadSetup">Retry</Btn>
     </div>
 
     <!-- QR code + confirm form -->

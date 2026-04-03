@@ -36,7 +36,7 @@
           </span>
           <div class="comment-add-actions">
             <Btn
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 :disabled="posting"
                 @mousedown.prevent

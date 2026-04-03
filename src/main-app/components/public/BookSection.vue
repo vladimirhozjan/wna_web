@@ -16,7 +16,7 @@
             Learn the complete methodology that inspired this app.
           </p>
           <Btn
-            variant="ghost"
+            variant="secondary"
             size="md"
             class="book-btn"
             @click="openBook"
