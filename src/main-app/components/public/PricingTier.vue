@@ -9,14 +9,14 @@
         <span class="text-display">Free</span>
       </template>
       <template v-else>
-        <span class="text-h2 tier__currency">€</span>
+        <span class="text-h2 tier__currency">$</span>
         <span class="text-display">{{ price }}</span>
-        <span class="text-body-m tier__period">/{{ period === 'year' ? 'mo' : 'month' }}</span>
+        <span class="text-body-m tier__period">/{{ perUser ? 'user/' : '' }}{{ period === 'year' ? 'mo' : 'month' }}</span>
       </template>
     </div>
 
     <p v-if="period === 'year'" class="text-footnote tier__footnote" :style="{ visibility: price > 0 ? 'visible' : 'hidden' }">
-      Billed annually at €{{ price * 12 }}
+      Billed annually at ${{ yearlyTotal || Math.round(price * 12) }}{{ perUser ? '/user' : '' }}
     </p>
 
     <p class="text-body-s tier__description">{{ description }}</p>
@@ -25,6 +25,7 @@
         :variant="featured ? 'primary' : 'ghost'"
         size="lg"
         class="tier__cta"
+        :disabled="disabled"
         @click="$emit('cta-click')"
     >
       {{ ctaText }}
@@ -51,6 +52,9 @@ defineProps({
   features:    { type: Array, default: () => [] },
   featured:    { type: Boolean, default: false },
   ctaText:     { type: String, default: 'Get Started' },
+  perUser:     { type: Boolean, default: false },
+  yearlyTotal: { type: Number, default: 0 },
+  disabled:    { type: Boolean, default: false },
 })
 
 defineEmits(['cta-click'])

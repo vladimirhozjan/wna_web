@@ -20,7 +20,7 @@
               @click="yearly = true"
           >
             Yearly
-            <span class="save-badge text-footnote">Save 20%</span>
+            <span class="save-badge text-footnote">3 months free</span>
           </button>
         </div>
 
@@ -35,7 +35,10 @@
               :description="tier.description"
               :features="tier.features"
               :featured="tier.featured"
-              :cta-text="tier.ctaText"
+              :cta-text="isBeta ? 'Coming soon' : tier.ctaText"
+              :per-user="tier.perUser || false"
+              :yearly-total="tier.yearlyTotal || 0"
+              :disabled="isBeta"
               @cta-click="tier.action"
           />
         </div>
@@ -54,34 +57,42 @@
               <th class="text-body-s">Feature</th>
               <th class="text-body-s">Free</th>
               <th class="text-body-s">Pro</th>
-              <th class="text-body-s">Business</th>
+              <th class="text-body-s">Team</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in comparisonRows" :key="row.feature">
-              <td class="text-body-s compare-feature">{{ row.feature }}</td>
-              <td class="text-body-s compare-value" v-for="val in [row.free, row.pro, row.business]" :key="val">
-                <CheckIcon v-if="val === true" class="icon-check" />
-                <span v-else-if="val === false" class="icon-dash">—</span>
-                <span v-else>{{ val }}</span>
-              </td>
-            </tr>
+            <template v-for="row in comparisonRows" :key="row.group || row.feature">
+              <tr v-if="row.group" class="compare-group-row">
+                <td colspan="4" class="text-body-s fw-semibold compare-group">{{ row.group }}</td>
+              </tr>
+              <tr v-else>
+                <td class="text-body-s compare-feature">{{ row.feature }}</td>
+                <td class="text-body-s compare-value" v-for="val in [row.free, row.pro, row.team]" :key="val">
+                  <CheckIcon v-if="val === true" class="icon-check" />
+                  <span v-else-if="val === false" class="icon-dash">—</span>
+                  <span v-else>{{ val }}</span>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
 
         <!-- Mobile cards -->
         <div class="compare-cards">
-          <div v-for="row in comparisonRows" :key="row.feature" class="compare-card">
-            <span class="text-body-s compare-card__feature">{{ row.feature }}</span>
-            <div class="compare-card__values">
-              <div v-for="(val, plan) in { Free: row.free, Pro: row.pro, Business: row.business }" :key="plan" class="compare-card__cell">
-                <span class="text-footnote compare-card__plan">{{ plan }}</span>
-                <CheckIcon v-if="val === true" class="icon-check" />
-                <span v-else-if="val === false" class="icon-dash">—</span>
-                <span v-else class="text-body-s">{{ val }}</span>
+          <template v-for="row in comparisonRows" :key="row.group || row.feature">
+            <div v-if="row.group" class="compare-cards__group text-body-s fw-semibold">{{ row.group }}</div>
+            <div v-else class="compare-card">
+              <span class="text-body-s compare-card__feature">{{ row.feature }}</span>
+              <div class="compare-card__values">
+                <div v-for="(val, plan) in { Free: row.free, Pro: row.pro, Team: row.team }" :key="plan" class="compare-card__cell">
+                  <span class="text-footnote compare-card__plan">{{ plan }}</span>
+                  <CheckIcon v-if="val === true" class="icon-check" />
+                  <span v-else-if="val === false" class="icon-dash">—</span>
+                  <span v-else class="text-body-s">{{ val }}</span>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
     </section>
@@ -102,6 +113,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { flagsModel } from '../../scripts/core/flagsModel.js'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import PricingTier from '../../components/public/PricingTier.vue'
@@ -109,6 +121,7 @@ import CtaBanner from '../../components/public/CtaBanner.vue'
 import CheckIcon from '../../assets/CheckIcon.vue'
 
 const router = useRouter()
+const { isBeta } = flagsModel()
 const authMode = ref(null)
 const yearly = ref(true)
 
@@ -135,51 +148,52 @@ const tiers = [
     name: 'Free',
     monthlyPrice: 0,
     yearlyPrice: 0,
-    description: 'Get started with the essentials.',
+    description: 'Get started with GTD for free.',
     featured: false,
     ctaText: 'Start for Free',
     features: [
-      '10 MB reference & attachment space',
-      'Up to 10 projects',
-      'Up to 50 actions',
-      'Up to 10 stuff items',
-      '5 context tags',
-      'Email support',
+      'Unlimited stuff & actions',
+      'Up to 7 projects',
+      'Up to 10 tags',
+      'View-only reference files',
+      '50 MB storage',
+      'Community support',
     ],
     action: () => openAuth('register'),
   },
   {
     name: 'Pro',
-    monthlyPrice: 25,
-    yearlyPrice: 20,
-    description: 'For individuals serious about productivity.',
+    monthlyPrice: 11,
+    yearlyPrice: 8,
+    yearlyTotal: 96,
+    description: 'For the individual power user.',
     featured: true,
     ctaText: 'Contact Us',
     features: [
-      '250 MB reference & attachment space',
-      'Up to 100 projects',
-      'Up to 500 actions',
-      'Up to 100 stuff items',
-      '25 context tags',
+      'Unlimited stuff & actions',
+      'Unlimited projects & tags',
       'Recurring actions',
+      'Full reference files',
+      '250 MB storage',
       'Priority support',
     ],
     action: () => { window.location.href = 'mailto:support@whatsnextaction.com' },
   },
   {
-    name: 'Business',
-    monthlyPrice: 60,
-    yearlyPrice: 48,
-    description: 'For teams and power users who need it all.',
+    name: 'Team',
+    monthlyPrice: 18,
+    yearlyPrice: 13,
+    yearlyTotal: 156,
+    perUser: true,
+    description: 'For teams that delegate work together.',
     featured: false,
     ctaText: 'Contact Us',
     features: [
-      '1 GB reference & attachment space',
-      'Unlimited projects',
-      'Unlimited actions',
-      'Unlimited stuff items',
-      'Unlimited context tags',
+      'Unlimited stuff & actions',
+      'Unlimited projects & tags',
       'Recurring actions',
+      'Full reference files',
+      '1 GB/user storage',
       'Dedicated support',
     ],
     action: () => { window.location.href = 'mailto:support@whatsnextaction.com' },
@@ -187,23 +201,17 @@ const tiers = [
 ]
 
 const comparisonRows = [
-  { feature: 'Reference / attachment space', free: '10 MB',   pro: '250 MB',    business: '1 GB' },
-  { feature: 'Projects',                     free: '10',      pro: '100',       business: 'Unlimited' },
-  { feature: 'Actions',                      free: '50',      pro: '500',       business: 'Unlimited' },
-  { feature: 'Stuff items',                  free: '10',      pro: '100',       business: 'Unlimited' },
-  { feature: 'Context tags',                 free: '5',       pro: '25',        business: 'Unlimited' },
-  { feature: 'Inbox capture',                free: true,      pro: true,        business: true },
-  { feature: 'Clarify wizard',           free: true,      pro: true,        business: true },
-  { feature: 'Next actions',                 free: true,      pro: true,        business: true },
-  { feature: 'Calendar view',                free: true,      pro: true,        business: true },
-  { feature: 'Weekly review',                free: true,      pro: true,        business: true },
-  { feature: 'Waiting-for tracking',         free: true,      pro: true,        business: true },
-  { feature: 'Someday / maybe',              free: true,      pro: true,        business: true },
-  { feature: 'Completion history',           free: true,      pro: true,        business: true },
-  { feature: 'Recurring actions',            free: false,     pro: true,        business: true },
-  { feature: 'Email support',                free: true,      pro: true,        business: true },
-  { feature: 'Priority support',             free: false,     pro: true,        business: true },
-  { feature: 'Dedicated support',            free: false,     pro: false,       business: true },
+  { group: 'Core' },
+  { feature: 'Stuff & Actions',     free: 'Unlimited',  pro: 'Unlimited',  team: 'Unlimited' },
+  { feature: 'Projects',            free: '7',           pro: 'Unlimited',  team: 'Unlimited' },
+  { feature: 'Tags',                free: '10',          pro: 'Unlimited',  team: 'Unlimited' },
+  { feature: 'Recurring actions',   free: false,         pro: true,         team: true },
+  { feature: 'Reference files',     free: 'View only',   pro: 'Full',       team: 'Full' },
+  { group: 'Storage' },
+  { feature: 'WNA hosted storage',  free: '50 MB',       pro: '250 MB',     team: '1 GB/user' },
+  { feature: 'Max attachment size', free: '5 MB',        pro: '20 MB',      team: '50 MB' },
+  { group: 'Support' },
+{ feature: 'Support',             free: 'Community',   pro: 'Priority',   team: 'Dedicated' },
 ]
 </script>
 
@@ -333,14 +341,24 @@ const comparisonRows = [
 }
 
 .compare-table th {
-  background: var(--color-bg-hover);
-  color: var(--color-text-primary);
+  color: var(--color-text-tertiary);
   font-weight: var(--font-weight-semibold);
 }
 
 .compare-table th:first-child,
 .compare-table td:first-child {
   text-align: left;
+}
+
+.compare-group-row td {
+  border-bottom: none;
+}
+
+.compare-group {
+  color: var(--color-text-tertiary);
+  text-align: left;
+  padding: 20px 14px 6px;
+  font-weight: var(--font-weight-semibold);
 }
 
 .compare-feature {
@@ -365,6 +383,11 @@ const comparisonRows = [
 
 @media (max-width: 768px) {
   .compare-cards { display: flex; }
+}
+
+.compare-cards__group {
+  color: var(--color-text-primary);
+  padding: 8px 0 4px;
 }
 
 .compare-card {
