@@ -15,7 +15,7 @@
       </template>
     </div>
 
-    <p v-if="period === 'year'" class="text-footnote tier__footnote" :style="{ visibility: price > 0 ? 'visible' : 'hidden' }">
+    <p class="text-footnote tier__footnote" :style="{ visibility: period === 'year' && price > 0 ? 'visible' : 'hidden' }">
       Billed annually at ${{ yearlyTotal || Math.round(price * 12) }}{{ perUser ? '/user' : '' }}
     </p>
 
