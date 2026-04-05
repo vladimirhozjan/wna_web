@@ -1,16 +1,14 @@
-# WNA Web -- Frontend
+# WNA Web — Frontend
 
-WNA Web is a **multi-app Vue 3 + Vite 7** frontend project optimized
-for:
+WNA Web is a **multi-app Vue 3 + Vite 7** frontend project optimized for:
 
--   ✔ multiple applications (`main-app`, `admin-app`)\
--   ✔ multiple environments (`local`, `development`, `production`)\
--   ✔ production code obfuscation\
--   ✔ Docker + Nginx runtime\
--   ✔ GKE (Google Kubernetes Engine) deployment\
--   ✔ SPA routing with fallback
+- multiple applications (`main-app`, `admin-app`)
+- multiple environments (`development`, `production`)
+- Docker + Nginx runtime
+- GKE (Google Kubernetes Engine) deployment
+- SPA routing with fallback
 
-------------------------------------------------------------------------
+---
 
 ## Recommended Browser Setup
 
@@ -21,181 +19,151 @@ for:
     - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
     - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
 
-------------------------------------------------------------------------
+---
 
-## Customize configuration
+## Project Structure
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+```
+wna_web/
+├── config/
+│   ├── vite.core.js        # Shared Vite config factory (aliases, minification, proxy)
+│   └── apps.js             # App definitions (root dir, port, proxy targets)
+├── src/
+│   ├── main-app/           # User-facing GTD application
+│   │   ├── index.html
+│   │   ├── main.js
+│   │   ├── router/
+│   │   ├── layouts/
+│   │   ├── views/
+│   │   ├── components/
+│   │   ├── scripts/
+│   │   └── styles/
+│   └── admin-app/          # Internal admin panel
+│       ├── index.html
+│       ├── main.js
+│       ├── router/
+│       ├── layouts/
+│       ├── views/
+│       ├── components/
+│       ├── scripts/
+│       └── styles/
+├── dist/                   # Generated builds
+├── vite.config.js          # Entry point (reads APP env var)
+├── package.json
+├── Dockerfile
+└── nginx.conf
+```
 
-------------------------------------------------------------------------
-
-# Project Structure
-
-    project/
-    │
-    ├─ apps/
-    │   ├─ main-app/
-    │   │   ├─ index.html
-    │   │   └─ src/
-    │   ├─ admin-app/
-    │       ├─ index.html
-    │       └─ src/
-    │
-    ├─ config/
-    │   ├─ vite.core.js
-    │   ├─ apps.js
-    │   ├─ domains.js
-    │
-    ├─ dist/
-    │   └─ (generated builds)
-    │
-    ├─ vite.config.js
-    ├─ package.json
-    ├─ Dockerfile
-    └─ nginx.conf
-
-------------------------------------------------------------------------
-
-# Installation
+---
 
 ## Requirements
 
--   Node **20.19+**
--   npm / yarn / pnpm
--   Docker (for production build)
--   Kubernetes + GKE (for deployment)
+- Node `^20.19.0 || >=22.12.0`
+- npm
 
-## Install dependencies
+## Install Dependencies
 
-``` bash
-    npm ci
+```bash
+npm ci
 ```
 
-------------------------------------------------------------------------
+---
 
-# Local Development
+## Local Development
 
-Start Vite dev server:
-
-``` bash
-    npm run dev
+```bash
+npm run dev:main          # Start main-app  → http://localhost:6222
+npm run dev:admin         # Start admin-app → http://localhost:7222
 ```
 
-Default address:
+The dev server uses Vite proxy to forward API requests:
+- main-app: `/v1/*` → `http://localhost:8000` (router_service)
+- admin-app: `/auth/*`, `/admin/*` → `http://localhost:8004` (admin_service)
 
-    http://localhost:5173
+---
 
-------------------------------------------------------------------------
+## Environment Variables
 
-# Environment Variables
+App selection is via the `APP` env var (set automatically by the npm scripts):
 
-You can use `.env.local`, `.env.development`, `.env.production`.
-
-Example:
-
-    APP=main-app
-
--   `APP` selects which frontend app to build.
-
-------------------------------------------------------------------------
-
-# Build Commands
-
-## Generic build
-
-``` bash
-    npm run build
+```
+APP=main-app    # or admin-app
 ```
 
-## Environment-specific builds
+---
 
-``` bash
-    npm run build:local
-    npm run build:dev
-    npm run build:prod
+## Build Commands
+
+```bash
+npm run build:main        # Build main-app  → dist/main-app/
+npm run build:admin       # Build admin-app → dist/admin-app/
+npm run clean             # Remove dist folder
 ```
 
-## App-specific builds
+---
 
-``` bash
-    npm run build:main
-    npm run build:admin
+## Runtime Configuration
+
+Both apps load runtime configuration from `/config.js`, which is **not** part of the build output. It is injected at deployment time (mounted into the Nginx container via ConfigMap).
+
+This allows the same Docker image to run in different environments by changing only the config.
+
+### main-app config.js
+
+```javascript
+window.RUNTIME_CONFIG = {
+  API_DOMAIN: "https://api-dev.whatsnextaction.com",
+  GOOGLE_CLIENT_ID: "783327214800-xxx.apps.googleusercontent.com"
+};
 ```
 
-## Combined (environment + app)
+### admin-app config.js
 
-``` bash
-    npm run build:main:prod
-    npm run build:admin:dev
+```javascript
+window.RUNTIME_CONFIG = {
+  ADMIN_API_DOMAIN: "https://admin-dev.whatsnextaction.com"
+};
 ```
 
-------------------------------------------------------------------------
+---
 
-# Production Obfuscation
+## Production Obfuscation
 
 The project uses:
 
--   **Terser** (minification + mangle)
--   **rollup-plugin-obfuscator** (advanced obfuscation)
+- **Terser** (minification + mangle, console/debugger stripped)
+- **rollup-plugin-obfuscator** (advanced obfuscation — configured but currently disabled, see `config/vite.core.js:9`)
 
-Obfuscation activates **automatically in production mode**.
+---
 
-Manual trigger:
+## Docker
 
-``` bash
-    npm run obfuscate
+Since GKE Ingress terminates HTTPS, Nginx listens only on HTTP (port 8080).
+
+### Build Docker image
+
+```bash
+# main-app
+docker build --build-arg APP=main-app -t wna-web-main .
+
+# admin-app
+docker build --build-arg APP=admin-app -t wna-web-admin .
 ```
 
-------------------------------------------------------------------------
+### Local test
 
-# Injected Runtime Domains
-
-Compile-time domain injection:
-
-``` js
-console.log(__APP_DOMAIN__)
-console.log(__API_DOMAIN__)
+```bash
+docker run -p 8080:8080 -v $(pwd)/config.main.js:/usr/share/nginx/html/config.js:ro wna-web-main
+docker run -p 8081:8080 -v $(pwd)/config.admin.js:/usr/share/nginx/html/config.js:ro wna-web-admin
 ```
 
-Axios example:
+---
 
-``` js
-import axios from 'axios'
-
-export const api = axios.create({
-  baseURL: __API_DOMAIN__
-})
-```
-
-------------------------------------------------------------------------
-
-# Docker (GKE-ready, no SSL)
-
-Since GKE Ingress terminates HTTPS, Nginx listens only on HTTP.
-
-## Build Docker image:
-
-``` bash
-    docker build -t wna-web .
-```
-
-## Local test:
-
-``` bash
-    docker run -p 8080:8080 wna-web
-```
-
-Access app:
-
-    http://localhost:8080
-
-------------------------------------------------------------------------
-
-# Nginx Configuration
+## Nginx Configuration
 
 `nginx.conf`:
 
-``` nginx
+```nginx
 server {
     listen 8080;
     server_name _;
@@ -203,108 +171,45 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location = /config.js {
+        expires -1;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
     location / {
         try_files $uri $uri/ /index.html;
+    }
+
+    location = /healthz {
+        access_log off;
+        return 200 'ok';
+        add_header Content-Type text/plain;
     }
 }
 ```
 
-------------------------------------------------------------------------
+---
 
-# GKE Deployment
+## GKE Deployment
 
-## Deployment
+Full Kubernetes manifests (Deployments, Services, Ingress, ConfigMaps, ManagedCertificates) for both apps are documented in `.claude/ci.md`.
 
-``` yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: wna-web
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: wna-web
-  template:
-    metadata:
-      labels:
-        app: wna-web
-    spec:
-      containers:
-        - name: wna-web
-          image: gcr.io/YOUR_PROJECT/wna-web:latest
-          ports:
-            - containerPort: 8080
-```
+| App       | Domain (dev)                  | Domain (prod)               |
+|-----------|-------------------------------|------------------------------|
+| main-app  | `dev.whatsnextaction.com`      | `whatsnextaction.com`         |
+| admin-app | `admin-dev.whatsnextaction.com`| `admin.whatsnextaction.com`   |
 
-## Service
+---
 
-``` yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: wna-web-service
-spec:
-  type: NodePort
-  selector:
-    app: wna-web
-  ports:
-    - port: 8080
-      targetPort: 8080
-```
-
-## Ingress + Managed Certificate
-
-``` yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: wna-web
-  annotations:
-    kubernetes.io/ingress.class: "gce"
-    networking.gke.io/managed-certificates: wna-cert
-spec:
-  rules:
-    - host: dev.whatsnextaction.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: wna-web-service
-                port:
-                  number: 8080
-```
-
-### ManagedCertificate
-
-``` yaml
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: wna-cert
-spec:
-  domains:
-    - dev.whatsnextaction.com
-```
-
-------------------------------------------------------------------------
-
-# Utilities
+## Utilities
 
 Clean build folder:
 
-``` bash
-    npm run clean
+```bash
+npm run clean
 ```
-
-------------------------------------------------------------------------
-
-# Debug Production Build (without obfuscation)
-
-``` bash
-    vite build --mode staging
-```
-
-
