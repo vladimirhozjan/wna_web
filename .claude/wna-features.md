@@ -209,8 +209,8 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Mobile: Hamburger menu with the same links and buttons
 
 **Right side (authenticated):**
-- "+ Quick Add" button (captures new inbox items from any page)
-- Mobile: Hamburger icon to open sidebar drawer
+- "+ Quick Add" button (captures new inbox items from any page; hidden on mobile — replaced by FAB)
+- Mobile: Animated hamburger icon (☰ → X) to toggle sidebar drawer
 - Desktop: User avatar with dropdown menu containing "Settings", "Logout" (plus "My Dashboard" on public pages only)
 
 ### 3.2 Sidebar (Desktop)
@@ -230,8 +230,9 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 ### 3.3 Sidebar Drawer (Mobile)
 
 - Slide-in drawer from the left on viewports <= 768px
+- Triggered by animated hamburger icon (☰ → X with CSS transition) in TopNav, or overlay tap to close
 - Semi-transparent overlay with blur effect
-- Click on overlay closes the drawer
+- Auto-closes on route change (navigating via sidebar menu items)
 - Contains the same Sidebar content
 
 ### 3.4 User Avatar
@@ -1069,17 +1070,21 @@ Presets are customizable in Settings.
 
 ### 22.1 QuickAddBtn
 
-- Located in the Top Navigation bar (when authenticated)
 - Provides rapid inbox capture from any page
 
-**Collapsed state:** Button with "+ Quick Add" label (label hidden on mobile)
-
-**Expanded state:**
-- Text input auto-focuses
-- Enter submits the item to inbox and clears the input (stays expanded for rapid multi-capture)
+**Desktop (TopNav inline):**
+- Button with "+ Quick Add" label in TopNav
+- Click expands to inline input (min 200px)
+- Enter submits to inbox and clears (stays expanded for rapid multi-capture)
 - Escape or blur collapses and clears
-- Mobile: Input expands to fill the top navigation bar width (fixed positioned overlay)
-- Desktop: Inline input (min 200px)
+
+**Mobile (FAB — floating action button):**
+- QuickAdd is hidden from TopNav on mobile
+- 52px circular "+" FAB fixed at bottom-right (20px inset)
+- Tap FAB → expands into a full-width pill-shaped input bar at the bottom with "Add" button
+- Enter or "Add" button submits to inbox, clears input, keeps focus for multi-capture
+- Escape collapses back to FAB
+- FAB hides behind sidebar overlay when sidebar drawer is open (z-index 899 < overlay 900)
 
 ---
 
@@ -1271,13 +1276,15 @@ Presets are customizable in Settings.
 
 ### 25.7 Mobile Adaptations
 
-- Sidebar hidden; replaced with slide-in drawer (hamburger trigger)
+- Sidebar hidden; replaced with slide-in drawer triggered by animated hamburger (☰ → X) in TopNav
+- Sidebar auto-closes on route change
+- User avatar hidden on mobile dashboard (profile accessible via Settings)
+- Quick Add moved from TopNav to a floating action button (FAB) at bottom-right
 - Dropdowns render as bottom action sheets (sliding up from bottom)
 - Select components render as full-width bottom sheets with headers
 - Modals may render full-screen instead of centered overlay
 - Action buttons always visible on touch devices (no hover-to-reveal)
 - Reduced metadata display (fewer tags shown, hint text hidden)
-- Quick Add input becomes a fixed full-width overlay on the nav bar
 
 ### 25.8 Keyboard Shortcuts
 

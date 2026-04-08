@@ -1612,14 +1612,17 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Log in with valid credentials on a mobile-width browser (or set DevTools viewport to 375px)
 2. Observe the top navigation bar after login
-3. Verify a hamburger icon is displayed in the nav bar
-4. Tap the hamburger icon
-5. Verify that a sidebar drawer slides in from the left side of the screen
-6. Verify the drawer contains all sidebar navigation items (Dashboard, Inbox, Next Action, Projects, etc.)
-7. Tap any navigation item and verify it routes correctly and the drawer closes
-8. Re-open the drawer and verify it can be closed by tapping the overlay area outside the drawer
+3. Verify an animated hamburger icon (☰) is displayed in the nav bar (no user avatar visible)
+4. Verify the Quick Add button is NOT visible in the top nav (it is replaced by the FAB)
+5. Tap the hamburger icon
+6. Verify the hamburger animates to an X shape
+7. Verify that a sidebar drawer slides in from the left side of the screen
+8. Verify the drawer contains all sidebar navigation items (Dashboard, Inbox, Next Action, Projects, etc.)
+9. Tap the X icon and verify the drawer closes and the icon animates back to ☰
+10. Re-open the drawer, tap any navigation item and verify it routes correctly and the drawer auto-closes
+11. Re-open the drawer and verify it can also be closed by tapping the overlay area outside the drawer
 
-**Expected Result:** On mobile authenticated view, the hamburger icon replaces the full sidebar. Tapping it opens a slide-in sidebar drawer from the left containing all navigation items. Selecting a nav item routes to the correct page and closes the drawer. The drawer can also be dismissed by tapping the overlay outside it.
+**Expected Result:** On mobile authenticated view, the hamburger icon (☰ with animated transition to X) replaces the avatar. Tapping it toggles a slide-in sidebar drawer. The drawer auto-closes on navigation. The user avatar and Quick Add button are hidden on mobile (Quick Add is available via the FAB at bottom-right).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9681,23 +9684,25 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-329: Quick Add Mobile Layout
+### TC-329: Quick Add Mobile Layout (FAB)
 **Priority:** Medium | **Area:** Quick Add
 
 **Preconditions:** User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 375px).
 
 **Steps:**
-1. On a mobile viewport, locate the Quick Add "+" button in the top nav.
-2. Tap the "+" button.
-3. Verify the input field expands to fill the full width of the top navigation bar.
-4. Verify the expanded input appears as a fixed-positioned overlay within the top nav area.
-5. Verify the input is auto-focused and the keyboard opens (on a real device).
-6. Type a title and press Enter (or the keyboard submit button).
-7. Verify the item is added and the input clears.
-8. Press Escape or tap outside to collapse.
-9. Verify the Quick Add returns to its collapsed "+" icon state.
+1. On a mobile viewport, verify the Quick Add button is NOT in the top nav bar.
+2. Verify a circular "+" FAB (floating action button) is visible at the bottom-right corner.
+3. Tap the "+" FAB.
+4. Verify the FAB is replaced by a full-width pill-shaped input bar at the bottom of the screen.
+5. Verify the input bar has a text input and an "Add" button.
+6. Verify the input is auto-focused and the keyboard opens (on a real device).
+7. Type a title and press Enter (or tap the "Add" button).
+8. Verify the item is added to the inbox, a success toast appears, and the input clears but stays expanded for rapid multi-capture.
+9. Press Escape to collapse.
+10. Verify the FAB returns to its collapsed "+" icon state.
+11. Open the sidebar drawer and verify the FAB is hidden behind the overlay.
 
-**Expected Result:** On mobile, the Quick Add input expands to fill the entire top navigation width as a fixed-positioned overlay. It functions correctly for adding items and collapses properly.
+**Expected Result:** On mobile, Quick Add is a floating action button (FAB) at the bottom-right instead of being in the top nav. Tapping it expands into a pill-shaped input bar. Items are added to the inbox. The input stays open for multi-capture. Escape collapses back to the FAB. The FAB hides behind the sidebar overlay when the drawer is open.
 
 | Date | P/F | Comment |
 |------|-----|---------|

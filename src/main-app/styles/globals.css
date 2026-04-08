@@ -17,5 +17,12 @@ h1, h2, h3, h4, p {
     margin: 0;
 }
 
+/* Push toast above FAB input bar when expanded (mobile) */
+@media (max-width: 768px) {
+    html[data-fab-open] .toast-wrapper {
+        bottom: 84px;
+    }
+}
+
 
 

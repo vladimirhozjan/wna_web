@@ -36,9 +36,22 @@
 
     <!-- AUTHENTICATED -->
     <div v-else class="topnav-auth-right">
-      <QuickAddBtn @add="onQuickAdd" />
+      <QuickAddBtn class="quick-add-desktop" @add="onQuickAdd" />
 
-      <div class="avatar-container" ref="avatarContainerRef">
+      <!-- Mobile hamburger (dashboard only) -->
+      <button
+        v-if="context === 'dashboard'"
+        class="hamburger-menu"
+        :class="{ open: sidebarOpen }"
+        @click="$emit('toggle-sidebar')"
+      >
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+
+      <!-- Avatar + dropdown (hidden on mobile in dashboard) -->
+      <div class="avatar-container" :class="{ 'hide-mobile-dashboard': context === 'dashboard' }" ref="avatarContainerRef">
         <UserAvatar
           :email="user?.email"
           @toggle-menu="onAvatarClick"
@@ -82,6 +95,10 @@ const props = defineProps({
     type: String,
     default: "dashboard",
   },
+  sidebarOpen: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const { isBeta } = flagsModel()
@@ -95,7 +112,7 @@ const toggleMobile = () => {
   showMobile.value = !showMobile.value;
 };
 
-const emit = defineEmits(["open-login", "open-register", "logout", "open-sidebar"]);
+const emit = defineEmits(["open-login", "open-register", "logout", "toggle-sidebar"]);
 
 function clickRegister() {
   showMobile.value = false;
@@ -123,11 +140,7 @@ function handleLogout() {
 }
 
 function onAvatarClick() {
-  if (props.context === "dashboard" && window.innerWidth <= 768) {
-    emit("open-sidebar");
-  } else {
-    showDropdown.value = !showDropdown.value;
-  }
+  showDropdown.value = !showDropdown.value;
 }
 
 const { addStuff } = stuffModel();
@@ -239,6 +252,43 @@ onBeforeUnmount(() => {
   display: none;
 }
 
+/* Hamburger menu button (mobile dashboard only) */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hamburger-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-text-primary);
+  border-radius: 1px;
+  transition: transform 0.25s ease, opacity 0.15s ease;
+}
+
+.hamburger-menu.open .hamburger-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger-menu.open .hamburger-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.open .hamburger-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
 @media (max-width: 768px) {
   .desktop-only {
     display: none !important;
@@ -252,6 +302,15 @@ onBeforeUnmount(() => {
     background: none;
     border: none;
     margin-right: -4px;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .hide-mobile-dashboard,
+  .quick-add-desktop {
+    display: none !important;
   }
 
   .topnav {
