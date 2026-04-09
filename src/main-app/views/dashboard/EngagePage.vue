@@ -622,7 +622,7 @@ async function onDropToWaiting(data) {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 13px;
-  color: var(--color-text-tertiary);
+  color: var(--color-action);
 }
 
 .nudge {

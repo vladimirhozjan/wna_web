@@ -220,8 +220,8 @@ onBeforeUnmount(() => {
   font-size: 10px;
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.05em;
-  color: #78909C;
-  border: 1px solid #B0BEC5;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-muted);
   border-radius: 4px;
   vertical-align: middle;
 }
@@ -272,7 +272,7 @@ onBeforeUnmount(() => {
   display: block;
   width: 22px;
   height: 2px;
-  background: #5A7A8A;
+  background: var(--color-text-muted);
   border-radius: 1px;
   transition: transform 0.25s ease, opacity 0.15s ease;
 }

@@ -7,6 +7,7 @@
     --color-text-primary: #1A2E3B;
     --color-text-secondary: #4b5563;
     --color-text-tertiary: #90A4AE;
+    --color-text-muted: #78909C;
     --color-text-error: #7f1c1d;
     --color-text-danger: #dc2626;
     --color-text-success: #059669;
@@ -24,6 +25,7 @@
     --color-border-light: #e5e7eb;
     --color-border-subtle: #f3f4f6;
     --color-border-medium: #C5D5DB;
+    --color-border-muted: #B0BEC5;
 
     /* Status */
     --color-danger: #dc2626;

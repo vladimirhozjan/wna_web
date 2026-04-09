@@ -7,6 +7,8 @@
     --shadow-focus-ring: 0 0 0 2px rgba(14, 116, 144, 0.2);
     --shadow-focus-ring-wide: 0 0 0 3px rgba(14, 116, 144, 0.2);
     --shadow-focus-ring-danger: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-fab: 0 4px 14px rgba(55, 48, 163, 0.3);
     --shadow-auth: 0 18px 50px rgba(15, 23, 42, 0.2);
 
     /* Cards */

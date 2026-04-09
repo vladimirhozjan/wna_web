@@ -106,7 +106,7 @@ function onDrop(e) {
   cursor: pointer;
   width: 100%;
   transition: all 0.2s ease;
-  padding: 8px 16px;
+  padding: 12px 16px;
   color: var(--color-text-secondary);
   column-gap: 10px;
   font-size: 13px;
@@ -132,8 +132,8 @@ function onDrop(e) {
   content: '';
   position: absolute;
   left: 0;
-  top: 4px;
-  bottom: 4px;
+  top: 0;
+  bottom: 0;
   width: 3px;
   background: var(--color-action);
   border-radius: 0 4px 4px 0;
@@ -163,14 +163,10 @@ function onDrop(e) {
   font-size: 11px;
   font-weight: 700;
   color: var(--color-text-tertiary);
-  background: var(--color-bg-secondary);
-  border-radius: 9999px;
-  padding: 1px 7px;
   line-height: 13px;
 }
 
 .badge-blue {
   color: var(--color-action);
-  background: var(--color-bg-accent-light);
 }
 </style>

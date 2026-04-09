@@ -137,6 +137,13 @@
 
     <div class="sidebar-footer">
 
+      <div v-if="auth.currentUser.value" class="sidebar-user">
+        <UserAvatar :email="auth.currentUser.value?.email" :size="32" />
+        <div class="sidebar-user__info">
+          <span class="text-label sidebar-user__email">{{ auth.currentUser.value?.email }}</span>
+        </div>
+      </div>
+
       <SidebarMenuItem label="Settings" :to="{ name: 'settings' }">
         <template #icon><SettingsIcon/></template>
       </SidebarMenuItem>
@@ -171,6 +178,7 @@ import { useRouter } from "vue-router";
 
 import SidebarMenuItem from "./SidebarMenuItem.vue";
 import ContextFilter from "./ContextFilter.vue";
+import UserAvatar from "./UserAvatar.vue";
 import NextIcon from "../assets/NextIcon.vue";
 import CalendarIcon from "../assets/CalendarIcon.vue";
 import TodayIcon from "../assets/TodayIcon.vue";
@@ -237,7 +245,7 @@ const reviewBadge = computed(() => {
 const reviewBadgeColor = computed(() => {
   const days = daysSinceReview.value;
   if (days >= 14) return 'var(--color-danger)';
-  if (days >= 7) return '#ea580c';
+  if (days >= 7) return 'var(--color-review)';
   return null;
 });
 
@@ -773,7 +781,6 @@ function removeFromSource(data) {
   border-right: 1px solid var(--color-border-light);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   padding: 12px 0;
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
@@ -782,6 +789,9 @@ function removeFromSource(data) {
   display: flex;
   flex-direction: column;
   padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .sidebar-section-label {
@@ -803,5 +813,25 @@ function removeFromSource(data) {
   padding: 8px 0 0;
   display: flex;
   flex-direction: column;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+.sidebar-user__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-user__email {
+  color: var(--color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

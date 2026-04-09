@@ -205,7 +205,7 @@ onMounted(() => {
     background: var(--color-btn-primary-bg);
     color: var(--color-btn-primary-text);
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(55, 48, 163, 0.3);
+    box-shadow: var(--shadow-fab);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
