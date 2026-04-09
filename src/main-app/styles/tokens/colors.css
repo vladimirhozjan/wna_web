@@ -1,12 +1,12 @@
 :root {
     /* Brand */
-    --color-action: #0e7490;
+    --color-action: #2E7D8C;
     --color-action-dark: #164e63;
 
     /* Text */
-    --color-text-primary: #1f2937;
+    --color-text-primary: #1A2E3B;
     --color-text-secondary: #4b5563;
-    --color-text-tertiary: #9CA3AF;
+    --color-text-tertiary: #90A4AE;
     --color-text-error: #7f1c1d;
     --color-text-danger: #dc2626;
     --color-text-success: #059669;
@@ -14,19 +14,20 @@
     --color-text-prefill: #D1D5DB;
 
     /* Backgrounds */
-    --color-app-background: #f9fafb;
+    --color-app-background: #F0F4F5;
     --color-bg-primary: #FFFFFF;
-    --color-bg-secondary: #F3F4F6;
-    --color-bg-hover: #E5E7EB;
+    --color-bg-secondary: #E5E7EB;
+    --color-bg-hover: #D1D5DB;
     --color-bg-accent-light: #ecfeff;
 
     /* Borders */
     --color-border-light: #e5e7eb;
     --color-border-subtle: #f3f4f6;
-    --color-border-medium: #dddddd;
+    --color-border-medium: #C5D5DB;
 
     /* Status */
     --color-danger: #dc2626;
+    --color-danger-soft: #E05C5C;
     --color-danger-light: #FEE2E2;
     --color-warning: #d97706;
     --color-warning-light: #fef3c7;
@@ -44,7 +45,7 @@
     --color-avatar-fallback: #777777;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #0e7490, #22d3ee);
+    --gradient-primary: linear-gradient(135deg, #2E7D8C, #22d3ee);
     --gradient-dark: linear-gradient(135deg, #06b6d4, #22d3ee);
 
     /* Dark theme (landing page) */
@@ -67,14 +68,14 @@
     --color-popup-backdrop:  rgba(247, 249, 251, 0.5);
 
     /* Focus & action opacity */
-    --color-focus-ring: rgba(14, 116, 144, 0.2);
+    --color-focus-ring: rgba(46, 125, 140, 0.2);
     --color-danger-ring: rgba(220, 38, 38, 0.2);
-    --color-action-subtle: rgba(14, 116, 144, 0.1);
-    --color-action-bg-subtle: rgba(14, 116, 144, 0.08);
-    --color-action-bg-light: rgba(14, 116, 144, 0.1);
-    --color-action-shadow: rgba(14, 116, 144, 0.12);
-    --color-action-shadow-md: rgba(14, 116, 144, 0.15);
-    --color-action-ring: rgba(14, 116, 144, 0.2);
+    --color-action-subtle: rgba(46, 125, 140, 0.1);
+    --color-action-bg-subtle: rgba(46, 125, 140, 0.08);
+    --color-action-bg-light: rgba(46, 125, 140, 0.1);
+    --color-action-shadow: rgba(46, 125, 140, 0.12);
+    --color-action-shadow-md: rgba(46, 125, 140, 0.15);
+    --color-action-ring: rgba(46, 125, 140, 0.2);
     --color-danger-bg-subtle: rgba(254, 226, 226, 0.35);
     --color-danger-bg-medium: rgba(254, 226, 226, 0.55);
 }

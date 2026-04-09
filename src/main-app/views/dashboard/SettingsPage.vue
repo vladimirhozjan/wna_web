@@ -1004,7 +1004,7 @@ async function onLogout() {
 .settings-body {
   flex: 1;
   overflow-y: auto;
-  padding: 0 10px 20px;
+  padding: 0 0 20px;
 }
 
 /* Section title in card header */

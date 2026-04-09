@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
+  height: 64px;
   border-bottom: 1px solid var(--color-border-light);
   padding: 0 20px;
   gap: 12px;
@@ -220,8 +220,8 @@ onBeforeUnmount(() => {
   font-size: 10px;
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.05em;
-  color: var(--color-action);
-  border: 1px solid var(--color-action);
+  color: #78909C;
+  border: 1px solid #B0BEC5;
   border-radius: 4px;
   vertical-align: middle;
 }
@@ -270,9 +270,9 @@ onBeforeUnmount(() => {
 
 .hamburger-bar {
   display: block;
-  width: 20px;
+  width: 22px;
   height: 2px;
-  background: var(--color-text-primary);
+  background: #5A7A8A;
   border-radius: 1px;
   transition: transform 0.25s ease, opacity 0.15s ease;
 }

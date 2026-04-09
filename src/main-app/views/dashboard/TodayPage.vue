@@ -281,7 +281,7 @@ async function onMove(id, newIndex) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-right: 10px;
+  padding-right: 0;
 }
 
 .header-actions {
@@ -292,13 +292,13 @@ async function onMove(id, newIndex) {
 
 h1 {
   margin: 0;
-  padding: 0 10px;
+  padding: 0;
 }
 
 .add-input {
   display: flex;
   gap: 10px;
-  padding: 0 10px;
+  padding: 0;
   margin-bottom: 5px;
 }
 
@@ -311,7 +311,7 @@ h1 {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 0 10px 20px;
+  padding: 0 0 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }

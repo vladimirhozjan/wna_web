@@ -40,9 +40,8 @@
         <Btn variant="primary" size="sm" @click="fabSubmit">Add</Btn>
       </div>
       <button v-if="!fabExpanded" class="mobile-fab" @click="fabExpand">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-          <rect x="10" y="4" width="2" height="14" rx="1" fill="currentColor"/>
-          <rect x="4" y="10" width="14" height="2" rx="1" fill="currentColor"/>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="pointer-events: none;">
+          <path d="M8.183 19.872V11.628H0V8.182H8.183V0h3.486v8.182h8.183v3.446h-8.183v8.244H8.183Z" fill="currentColor"/>
         </svg>
       </button>
     </div>
@@ -153,7 +152,7 @@ onMounted(() => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding-top: 8px;
+  padding: 8px 8px 0;
 }
 
 @media (min-width: 769px) {
@@ -190,8 +189,8 @@ onMounted(() => {
   .mobile-fab-area {
     display: block;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 18px;
+    right: 16px;
     z-index: 899;
   }
 
@@ -199,15 +198,17 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
     border: none;
     background: var(--color-btn-primary-bg);
     color: var(--color-btn-primary-text);
     cursor: pointer;
-    box-shadow: var(--shadow-elevated);
+    box-shadow: 0 4px 14px rgba(55, 48, 163, 0.3);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-fab:active {

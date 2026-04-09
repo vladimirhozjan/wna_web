@@ -165,7 +165,7 @@ function onComplete() {
 
 .review-header {
   flex-shrink: 0;
-  padding: 0 10px;
+  padding: 0;
 }
 
 .review-header h1 {
@@ -181,7 +181,7 @@ function onComplete() {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 0 10px 20px;
+  padding: 0 0 20px;
 }
 
 .review-card-title {

@@ -13,7 +13,7 @@
 
     /* Button: secondary (subtle bg + border + accent text) */
     --color-btn-secondary-bg: #ecfeff;
-    --color-btn-secondary-text: #0e7490;
+    --color-btn-secondary-text: #2E7D8C;
     --color-btn-secondary-border: #a5f3fc;
     --color-btn-secondary-hover: #cffafe;
     --color-btn-secondary-active: #a5f3fc;
@@ -22,8 +22,8 @@
     --color-btn-secondary-dis-brd: #c0dfe5;
 
     /* Button: outline (transparent bg + accent border) */
-    --color-btn-outline-text: #0e7490;
-    --color-btn-outline-border: #0e7490;
+    --color-btn-outline-text: #2E7D8C;
+    --color-btn-outline-border: #2E7D8C;
     --color-btn-outline-hover: #ecfeff;
     --color-btn-outline-active: #cffafe;
     --color-btn-outline-dis-txt: #6d9aa7;
@@ -63,7 +63,7 @@
     /* Inputs */
     --color-input-background: #FFFFFF;
     --color-input-border: #D1D5DB;
-    --color-input-border-focus: #0e7490;
+    --color-input-border-focus: #2E7D8C;
     --color-input-border-error: #f9c6c6;
     --color-input-background-error: #fef2f2;
     --color-input-border-success: #16a34a;
@@ -72,7 +72,7 @@
     --color-sidebar-background: #FFFFFF;
 
     /* Links */
-    --color-link-text: #0e7490;
+    --color-link-text: #2E7D8C;
     --color-link-hover: #0b5e76;
 
     /* Toasts */
@@ -114,8 +114,8 @@
 
     /* Heat map */
     --color-heat-0: #fafbfc;
-    --color-heat-1: rgba(14, 116, 144, 0.2);
-    --color-heat-2: rgba(14, 116, 144, 0.35);
-    --color-heat-3: rgba(14, 116, 144, 0.4);
-    --color-heat-4: rgba(14, 116, 144, 0.6);
+    --color-heat-1: rgba(46, 125, 140, 0.2);
+    --color-heat-2: rgba(46, 125, 140, 0.35);
+    --color-heat-3: rgba(46, 125, 140, 0.4);
+    --color-heat-4: rgba(46, 125, 140, 0.6);
 }

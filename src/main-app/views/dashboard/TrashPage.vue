@@ -142,20 +142,20 @@ async function onEmptyTrash() {
 
 .trash-header h1 {
   margin: 0;
-  padding: 0 10px;
+  padding: 0;
 }
 
 .trash-actions {
   display: flex;
   gap: 8px;
-  padding-right: 10px;
+  padding-right: 0;
 }
 
 .trash-content {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 0 10px 20px;
+  padding: 0 0 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }

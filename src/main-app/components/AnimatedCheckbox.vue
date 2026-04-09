@@ -11,7 +11,7 @@
       <rect
           class="animated-checkbox__box"
           x="1" y="1" width="16" height="16" rx="3"
-          stroke-width="1.5"
+          stroke-width="2"
       />
       <polyline
           class="animated-checkbox__check"

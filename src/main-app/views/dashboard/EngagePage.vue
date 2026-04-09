@@ -500,7 +500,7 @@ async function onDropToWaiting(data) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-right: 10px;
+  padding-right: 0;
 }
 
 .header-actions {
@@ -510,14 +510,14 @@ async function onDropToWaiting(data) {
 }
 
 .page-title {
-  padding: 0 10px;
+  padding: 0;
 }
 
 .engage-content {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 0 10px 20px;
+  padding: 0 0 20px;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }
@@ -594,9 +594,6 @@ async function onDropToWaiting(data) {
   font-size: 11px;
   font-weight: 700;
   color: var(--color-action);
-  background: var(--color-bg-accent-light);
-  border-radius: 9999px;
-  padding: 1px 8px;
 }
 
 .section__link,
@@ -665,8 +662,8 @@ async function onDropToWaiting(data) {
   text-decoration: none;
   flex-shrink: 0;
   margin-left: 12px;
-  border: 1.5px solid var(--color-btn-secondary-border);
-  border-radius: 4px;
+  border: 1px solid var(--color-action);
+  border-radius: 6px;
   padding: 5px 12px;
   line-height: 14px;
   background: transparent;
