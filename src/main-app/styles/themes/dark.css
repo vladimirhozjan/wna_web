@@ -11,10 +11,13 @@
     --color-bg-secondary: #1a1a1a;
     --color-bg-hover: #222222;
     --color-bg-accent-light: rgba(34, 211, 238, 0.12);
+    --color-bg-subtle: #0f0f0f;
 
     /* Text */
     --color-text-primary: #ffffff;
+    --color-text-primary-dark: #f1f5f9;
     --color-text-secondary: #a0a0a0;
+    --color-text-secondary-light: #9ca3af;
     --color-text-tertiary: #555555;
     --color-text-error: #fca5a5;
     --color-text-danger: #f87171;
@@ -44,6 +47,11 @@
     --color-highlight-amber: rgba(253, 230, 138, 0.2);
     --color-highlight-yellow: rgba(254, 240, 138, 0.2);
     --color-avatar-fallback: #94a3b8;
+
+    /* Dark page tokens */
+    --color-bg-dark-deep: #050505;
+    --color-border-dark-subtle: #1a1a1a;
+    --color-action-medium: #22d3ee;
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, #06b6d4, #22d3ee);

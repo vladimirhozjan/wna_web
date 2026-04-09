@@ -136,7 +136,6 @@ function onDrop(e) {
   bottom: 0;
   width: 3px;
   background: var(--color-action);
-  border-radius: 0 4px 4px 0;
 }
 
 .menu-item.drop-target {
