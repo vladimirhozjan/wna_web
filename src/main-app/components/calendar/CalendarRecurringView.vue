@@ -2,7 +2,7 @@
   <div class="recurring-view">
     <div class="recurring-view__header">
       <div class="recurring-view__header-actions" v-if="items.length > 0">
-        <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+        <Btn variant="secondary" size="sm" @click="showAdd ? showAdd = false : openAdd()">{{ showAdd ? '−' : '+' }}</Btn>
       </div>
     </div>
     <div class="recurring-view__add" v-if="showAdd">
@@ -67,10 +67,14 @@ import MetadataRow from '../MetadataRow.vue'
 import EmptyState from '../EmptyState.vue'
 import RecurringIcon from '../../assets/RecurringIcon.vue'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
+import { authModel } from '../../scripts/core/authModel.js'
+import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 
 const router = useRouter()
+const auth = authModel()
+const upgrade = upgradeModel()
 const toaster = errorModel()
 const confirm = confirmModel()
 
@@ -110,6 +114,11 @@ onMounted(() => {
 })
 
 function openAdd() {
+  const tier = auth.currentUser.value?.subscription_tier || 'free'
+  if (tier === 'free') {
+    upgrade.show({ message: 'Recurring templates let you automate repeating actions. This feature is available on Pro and Team plans.' })
+    return
+  }
   showAdd.value = true
   nextTick(() => add_input.value?.focus())
 }

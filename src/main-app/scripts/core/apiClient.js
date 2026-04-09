@@ -1,6 +1,22 @@
 import {httpApi} from './httpApi.js'
 import {upgradeModel} from './upgradeModel.js'
 
+function friendlyUpgradeMessage(raw) {
+    if (!raw) return 'You\'ve reached a limit on your current plan. Upgrade to unlock more and keep your system growing.'
+    const lower = raw.toLowerCase()
+    if (lower.includes('project'))
+        return 'You\'ve reached the project limit on your current plan. Upgrade to Pro for unlimited projects and keep organizing your work.'
+    if (lower.includes('tag'))
+        return 'You\'ve reached the tag limit on your current plan. Upgrade to Pro for unlimited tags and better context filtering.'
+    if (lower.includes('storage') || lower.includes('file'))
+        return 'You\'ve reached your storage limit. Upgrade your plan for more space to keep your reference files organized.'
+    if (lower.includes('recurring'))
+        return 'Recurring templates let you automate repeating actions. This feature is available on Pro and Team plans.'
+    if (lower.includes('reference'))
+        return 'Full reference file management is available on Pro and Team plans. Upgrade to upload and organize your files.'
+    return raw
+}
+
 function normalizeError(error) {
     // Axios response error
     if (error.response) {
@@ -12,7 +28,7 @@ function normalizeError(error) {
         if (status === 403 && (data.upgrade_message || data.limit != null)) {
             const upgrade = upgradeModel()
             upgrade.show({
-                message: data.upgrade_message || backendMsg || 'You have reached a limit on your current plan.',
+                message: friendlyUpgradeMessage(data.upgrade_message || backendMsg),
                 limit: data.limit,
             })
             return {status, message: backendMsg || 'Limit reached'}
@@ -22,7 +38,7 @@ function normalizeError(error) {
         if (status === 413) {
             const upgrade = upgradeModel()
             upgrade.show({
-                message: data.upgrade_message || backendMsg || 'File too large or storage quota exceeded.',
+                message: friendlyUpgradeMessage(data.upgrade_message || backendMsg || 'storage'),
                 limit: data.limit,
             })
             return {status, message: backendMsg || 'File too large or storage quota exceeded.'}

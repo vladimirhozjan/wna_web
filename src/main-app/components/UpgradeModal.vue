@@ -10,7 +10,7 @@
           <div class="dialog-body">
             <p class="text-body-m message">{{ upgrade.state.message }}</p>
             <p class="text-body-s color-text-secondary hint">
-              Contact support or visit your account settings to upgrade.
+              Visit your account settings to upgrade your plan.
             </p>
           </div>
           <div class="dialog-actions">
@@ -78,11 +78,11 @@ const upgrade = upgradeModel()
 }
 
 .dialog-body {
-  padding: 16px 24px;
+  padding: 24px 24px;
 }
 
 .message {
-  margin: 0 0 8px;
+  margin: 0 0 16px;
   color: var(--color-text-primary);
 }
 
@@ -93,7 +93,7 @@ const upgrade = upgradeModel()
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
-  padding: 0 24px 20px;
+  padding: 8px 24px 24px;
 }
 
 .btn-close {
@@ -108,7 +108,7 @@ const upgrade = upgradeModel()
 }
 
 .btn-close:hover {
-  background: var(--color-action-hover);
+  background: var(--color-action-dark);
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
