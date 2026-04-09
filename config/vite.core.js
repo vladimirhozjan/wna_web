@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname  = path.dirname(__filename)
 
 export function createViteConfig(mode, envVars, appConfig) {
-    let isProduction = false //todo: to odkomentiraj preden gres live: mode === 'production'
+    let isProduction = mode === 'production'
     const plugins = [...appConfig.plugins]
 
     if (isProduction) {
