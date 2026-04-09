@@ -82,11 +82,7 @@
                 <p class="text-body-m celebration__subtitle">You're in control.</p>
               </div>
               <template v-else>
-                <InboxIcon class="empty-state__icon" />
-                <h2 class="text-h3 empty-state__title">Your inbox is empty</h2>
-                <p class="text-body-m empty-state__text">
-                  Capture everything on your mind. Add new stuff above to get started.
-                </p>
+                <EmptyState :icon="InboxIcon" title="Your inbox is empty" text="Capture everything on your mind. Add new stuff above to get started." />
               </template>
             </template>
           </ItemList>
@@ -138,6 +134,7 @@ import Inpt from '../../components/Inpt.vue'
 import ItemList from '../../components/ItemList.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import InboxIcon from '../../assets/InboxIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import CompletedIcon from '../../assets/CompletedIcon.vue'
 import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
@@ -462,23 +459,6 @@ h1 {
   margin-bottom: 4px;
 }
 
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 
 /* Celebration */
 .celebration {

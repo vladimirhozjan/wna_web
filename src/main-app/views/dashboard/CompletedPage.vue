@@ -26,11 +26,7 @@
           </template>
           <template #actions><span></span></template>
           <template #empty>
-            <CompletedIcon class="empty-state__icon" />
-            <h2 class="text-h3 empty-state__title">No completed items</h2>
-            <p class="text-body-m empty-state__text">
-              Items you complete will appear here. You can restore them or move them to trash.
-            </p>
+            <EmptyState :icon="CompletedIcon" title="No completed items" text="Items you complete will appear here. You can restore them or move them to trash." />
           </template>
         </ItemList>
         </div>
@@ -45,6 +41,7 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import CompletedIcon from '../../assets/CompletedIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { completedModel } from '../../scripts/models/completedModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
@@ -183,22 +180,5 @@ async function onItemCheck(id, checked) {
   touch-action: pan-y;
 }
 
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 
 </style>

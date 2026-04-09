@@ -5,7 +5,7 @@
       <div class="engage-header">
         <div class="header-row">
           <h1 class="page-title">Engage</h1>
-          <div class="header-actions">
+          <div class="header-actions" v-if="!noActionItems">
             <TagFilter v-model="filterTags" />
           </div>
         </div>
@@ -145,14 +145,7 @@
           <!-- Empty state: truly empty -->
           <div v-else-if="isEmpty" class="card">
             <div class="empty-state">
-              <EngageIcon class="empty-state__icon" />
-              <h2 class="text-h3 empty-state__title">Ready to get things done?</h2>
-              <p class="text-body-m empty-state__text">
-                Capture what's on your mind and let your system take care of the rest.
-              </p>
-              <Btn variant="primary" size="sm" class="empty-state__btn" @click="router.push({ name: 'inbox' })">
-                Go to Inbox
-              </Btn>
+              <EmptyState :icon="EngageIcon" title="Ready to get things done?" text="Capture what's on your mind and let your system take care of the rest." buttonText="Go to Inbox" @action="router.push({ name: 'inbox' })" />
             </div>
           </div>
 
@@ -172,6 +165,7 @@ import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import EngageIcon from '../../assets/EngageIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'
@@ -681,27 +675,5 @@ async function onDropToWaiting(data) {
   justify-content: center;
   padding: 48px 24px;
   text-align: center;
-}
-
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
-
-.empty-state__btn {
-  margin-top: 16px;
 }
 </style>

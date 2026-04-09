@@ -329,8 +329,12 @@ function onExternalDrop(e) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 64px 24px;
   text-align: center;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-card);
 }
 
 .loading-state {

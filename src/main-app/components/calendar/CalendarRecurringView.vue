@@ -1,7 +1,7 @@
 <template>
   <div class="recurring-view">
     <div class="recurring-view__header">
-      <div class="recurring-view__header-actions">
+      <div class="recurring-view__header-actions" v-if="items.length > 0">
         <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
       </div>
     </div>
@@ -43,13 +43,13 @@
           <ActionBtn @click="onDelete(item.id)" />
         </template>
         <template #empty>
-          <svg class="recurring-view__empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
-          </svg>
-          <h2 class="text-h3 empty-state__title">No recurring templates</h2>
-          <p class="text-body-m empty-state__text">
-            Create recurring templates to automatically schedule actions on a repeating basis.
-          </p>
+          <EmptyState
+            :icon="RecurringIcon"
+            title="No recurring templates"
+            text="Create recurring templates to automatically schedule actions on a repeating basis."
+            buttonText="Add Template"
+            @action="openAdd"
+          />
         </template>
       </ItemList>
     </div>
@@ -64,6 +64,8 @@ import ActionBtn from '../ActionBtn.vue'
 import Btn from '../Btn.vue'
 import Inpt from '../Inpt.vue'
 import MetadataRow from '../MetadataRow.vue'
+import EmptyState from '../EmptyState.vue'
+import RecurringIcon from '../../assets/RecurringIcon.vue'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
@@ -106,6 +108,11 @@ onMounted(() => {
   items.value = []
   loadRecurring().catch(() => {})
 })
+
+function openAdd() {
+  showAdd.value = true
+  nextTick(() => add_input.value?.focus())
+}
 
 watch(showAdd, (v) => {
   if (v) nextTick(() => add_input.value?.focus())
@@ -215,21 +222,4 @@ async function onDelete(id) {
   touch-action: pan-y;
 }
 
-.recurring-view__empty-icon {
-  width: 48px;
-  height: 48px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 </style>

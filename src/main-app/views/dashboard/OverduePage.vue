@@ -27,11 +27,7 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <WarningIcon class="empty-state__icon" />
-            <h2 class="text-h3 empty-state__title">No overdue items</h2>
-            <p class="text-body-m empty-state__text">
-              You're all caught up. Overdue actions will appear here when they pass their due date.
-            </p>
+            <EmptyState :icon="WarningIcon" title="No overdue items" text="You're all caught up. Overdue actions will appear here when they pass their due date." />
           </template>
         </ItemList>
         </div>
@@ -48,6 +44,7 @@ import ItemList from '../../components/ItemList.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import WarningIcon from '../../assets/WarningIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import { overdueModel } from '../../scripts/models/overdueModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
@@ -203,21 +200,4 @@ async function onTrash(id) {
   touch-action: pan-y;
 }
 
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 </style>

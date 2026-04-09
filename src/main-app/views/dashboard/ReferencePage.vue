@@ -34,13 +34,13 @@
 
           <!-- Empty state -->
           <div v-else-if="!model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0" class="ref-empty">
-            <ReferenceIcon class="empty-state__icon" />
-            <h2 class="text-h3 empty-state__title">
-              {{ model.searchQuery.value ? 'No results found' : 'No files yet' }}
-            </h2>
-            <p class="text-body-m empty-state__text">
-              {{ model.searchQuery.value ? 'Try a different search term.' : 'Upload files or create folders to organize your reference material.' }}
-            </p>
+            <EmptyState
+                :icon="ReferenceIcon"
+                :title="model.searchQuery.value ? 'No results found' : 'No files yet'"
+                :text="model.searchQuery.value ? 'Try a different search term.' : 'Upload files or create folders to organize your reference material.'"
+                :buttonText="model.searchQuery.value ? '' : 'Upload File'"
+                @action="triggerUpload"
+            />
           </div>
 
           <!-- List view -->
@@ -115,11 +115,7 @@
 
         <!-- Empty state -->
         <div v-else-if="!attModel_.loading.value && attModel_.items.value.length === 0" class="ref-empty">
-          <AttachmentIcon class="empty-state__icon" />
-          <h2 class="text-h3 empty-state__title">No attachments</h2>
-          <p class="text-body-m empty-state__text">
-            Attachments added to your items will appear here.
-          </p>
+          <EmptyState :icon="AttachmentIcon" title="No attachments" text="Attachments added to your items will appear here." />
         </div>
 
         <!-- Attachment list view -->
@@ -169,11 +165,7 @@
 
         <!-- Empty trash -->
         <div v-else-if="!trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-empty">
-          <TrashIcon class="empty-state__icon" />
-          <h2 class="text-h3 empty-state__title">Trash is empty</h2>
-          <p class="text-body-m empty-state__text">
-            Files you delete will appear here. You can restore them or permanently delete them.
-          </p>
+          <EmptyState :icon="TrashIcon" title="Trash is empty" text="Files you delete will appear here. You can restore them or permanently delete them." />
         </div>
 
         <!-- Trash list view -->
@@ -230,6 +222,7 @@ import RefGridView from '../../components/reference/RefGridView.vue'
 import RefPreviewModal from '../../components/reference/RefPreviewModal.vue'
 import RefRenameModal from '../../components/reference/RefRenameModal.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
 import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
@@ -703,23 +696,6 @@ function formatSize(bytes) {
   text-align: center;
 }
 
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 
 /* Upload progress indicator */
 .upload-progress {

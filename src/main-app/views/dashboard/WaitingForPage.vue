@@ -4,7 +4,7 @@
       <div class="waiting-header">
         <div class="header-row">
           <h1 class="page-title">Waiting For</h1>
-          <div class="header-actions">
+          <div class="header-actions" v-if="items.length > 0">
             <TagFilter v-model="filterTags" />
             <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
           </div>
@@ -66,11 +66,7 @@
               <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <WaitingIcon class="empty-state__icon" />
-              <h2 class="text-h3 empty-state__title">Nothing waiting</h2>
-              <p class="text-body-m empty-state__text">
-                Move actions here when you're waiting on someone or something.
-              </p>
+              <EmptyState :icon="WaitingIcon" title="Nothing waiting" text="Move actions here when you're waiting on someone or something." buttonText="Add Action" @action="openAdd" />
             </template>
           </template>
         </ItemList>
@@ -90,6 +86,7 @@ import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import WaitingIcon from '../../assets/WaitingIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { waitingModel } from '../../scripts/models/waitingModel.js'
@@ -175,6 +172,11 @@ async function onAdd() {
   finally { adding.value = false }
   newTitle.value = ''
   newWaitingFor.value = ''
+  nextTick(() => add_input.value?.focus())
+}
+
+function openAdd() {
+  showAdd.value = true
   nextTick(() => add_input.value?.focus())
 }
 
@@ -334,21 +336,4 @@ h1 {
   touch-action: pan-y;
 }
 
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 </style>

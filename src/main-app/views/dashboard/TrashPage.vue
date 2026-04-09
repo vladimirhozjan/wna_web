@@ -28,11 +28,7 @@
             <Btn variant="link" size="sm" @click="onRestoreOne(item)">Restore</Btn>
           </template>
           <template #empty>
-            <TrashIcon class="empty-state__icon" />
-            <h2 class="text-h3 empty-state__title">Trash is empty</h2>
-            <p class="text-body-m empty-state__text">
-              Items you delete will appear here. You can restore them or empty the trash permanently.
-            </p>
+            <EmptyState :icon="TrashIcon" title="Trash is empty" text="Items you delete will appear here. You can restore them or empty the trash permanently." />
           </template>
         </ItemList>
         </div>
@@ -47,6 +43,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { trashModel } from '../../scripts/models/trashModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
@@ -160,23 +157,6 @@ async function onEmptyTrash() {
   touch-action: pan-y;
 }
 
-.empty-state__icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-text-tertiary);
-  margin-bottom: 16px;
-}
-
-.empty-state__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
-}
-
-.empty-state__text {
-  color: var(--color-text-secondary);
-  margin: 0;
-  max-width: 300px;
-}
 
 /* Remove action color on click/active */
 .trash-content :deep(.item:not(.item--no-hover):active) {
