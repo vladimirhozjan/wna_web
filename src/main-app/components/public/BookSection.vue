@@ -1,7 +1,7 @@
 <template>
   <section class="section">
     <div class="section-inner">
-      <div class="book-layout">
+      <div class="book-card">
         <div class="book-image-wrap">
           <img
             src="https://images3.penguinrandomhouse.com/cover/9780143126560"
@@ -10,13 +10,13 @@
           />
         </div>
         <div class="book-text">
-          <h2 class="text-h2 color-text-primary">Want to Know More About GTD?</h2>
-          <p class="text-body-m book-desc">
+          <h2 class="text-h3 book-title">Want to Know More About GTD?</h2>
+          <p class="text-body-s book-desc">
             Getting Things Done by David Allen is the definitive guide to stress-free productivity.
             Learn the complete methodology that inspired this app.
           </p>
           <Btn
-            variant="secondary"
+            variant="primary"
             size="md"
             class="book-btn"
             @click="openBook"
@@ -46,11 +46,16 @@ function openBook() {
   margin: 0 auto;
 }
 
-.book-layout {
+.book-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
+  border: var(--card-border);
+  border-radius: 24px;
+  padding: 32px;
+  background: var(--color-bg-primary);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .book-image-wrap {
@@ -58,24 +63,29 @@ function openBook() {
 }
 
 .book-image {
-  width: 180px;
+  width: 140px;
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .book-text {
   text-align: center;
 }
 
+.book-title {
+  color: var(--color-text-primary-dark);
+}
+
 .book-desc {
-  color: var(--color-text-secondary);
-  margin-top: 12px;
+  color: var(--color-text-secondary-light);
+  margin-top: 16px;
+  line-height: var(--lh-legal);
 }
 
 .book-btn {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 @media (min-width: 769px) {
@@ -83,13 +93,11 @@ function openBook() {
     padding: var(--section-py) var(--section-px);
   }
 
-  .book-layout {
+  .book-card {
     flex-direction: row;
-    align-items: center;
-  }
-
-  .book-image {
-    width: 200px;
+    align-items: flex-start;
+    gap: 32px;
+    padding: 40px 48px;
   }
 
   .book-text {

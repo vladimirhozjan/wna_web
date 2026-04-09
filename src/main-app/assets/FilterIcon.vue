@@ -1,6 +1,6 @@
 <template>
-  <svg viewBox="0 0 14 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 0H14L9 6V11L5 9V6L0 0Z"/>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
   </svg>
 </template>
 

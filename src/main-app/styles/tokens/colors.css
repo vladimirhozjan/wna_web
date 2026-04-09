@@ -5,7 +5,9 @@
 
     /* Text */
     --color-text-primary: #1A2E3B;
+    --color-text-primary-dark: #111827;
     --color-text-secondary: #4b5563;
+    --color-text-secondary-light: #6B7280;
     --color-text-tertiary: #90A4AE;
     --color-text-muted: #78909C;
     --color-text-error: #7f1c1d;
@@ -20,6 +22,7 @@
     --color-bg-secondary: #E5E7EB;
     --color-bg-hover: #D1D5DB;
     --color-bg-accent-light: #ecfeff;
+    --color-bg-subtle: #F9FAFB;
 
     /* Borders */
     --color-border-light: #e5e7eb;
@@ -53,6 +56,9 @@
     /* Dark theme (landing page) */
     --color-bg-dark: #1E293B;
     --color-bg-dark-card: #283548;
+    --color-bg-dark-deep: #111827;
+    --color-border-dark-subtle: #1F2937;
+    --color-action-medium: #0891B2;
     --color-text-on-dark: #F1F5F9;
     --color-text-on-dark-secondary: #94A3B8;
     --color-border-dark: rgba(148, 163, 184, 0.15);

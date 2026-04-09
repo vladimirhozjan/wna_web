@@ -89,6 +89,7 @@
 .text-display  { font-family: var(--font-family-heading); font-size: var(--font-size-hero); line-height: var(--lh-hero); font-weight: var(--font-weight-bold); }
 .text-subtitle { font-family: var(--font-family-default); font-size: clamp(15px, 2.2vw, 18px); line-height: 1.22; font-weight: var(--font-weight-medium); }
 .text-h4       { font-family: var(--font-family-heading); font-size: clamp(18px, 2.8vw, 20px); line-height: 1.2; font-weight: var(--font-weight-bold); }
+.text-h4-italic { font-family: var(--font-family-heading); font-size: clamp(18px, 2.8vw, 20px); line-height: 1.2; font-weight: var(--font-weight-bold); font-style: italic; }
 .text-body-l   { font-family: var(--font-family-default); font-size: clamp(17px, 2.2vw, 18px); line-height: 1.22; font-weight: var(--font-weight-normal); }
 .text-body-m   { font-family: var(--font-family-default); font-size: var(--font-size-body); line-height: var(--lh-body); font-weight: var(--font-weight-normal); }
 .text-footnote { font-family: var(--font-family-default); font-size: var(--font-size-caption); line-height: var(--lh-caption); font-weight: var(--font-weight-normal); }

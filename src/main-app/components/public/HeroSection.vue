@@ -1,11 +1,16 @@
 <template>
   <section class="hero">
-    <div class="hero-inner">
-      <h1 class="text-display hero-heading">Stress-Free Productivity</h1>
-      <p class="text-subtitle hero-subtitle">With a system you can trust.</p>
-      <div class="hero-actions">
-        <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
-        <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
+    <div class="hero-bg-overlay">
+      <div class="hero-inner">
+        <svg class="hero-bolt" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+          <path fill="currentColor" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/>
+        </svg>
+        <h1 class="text-display hero-heading">Stress-Free Productivity</h1>
+        <p class="text-body-m hero-subtitle">With a system you can trust.</p>
+        <div class="hero-actions">
+          <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
+          <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
+        </div>
       </div>
     </div>
   </section>
@@ -24,9 +29,15 @@ function scrollToFeatures() {
 
 <style scoped>
 .hero {
-  padding: 60px var(--section-px) 48px;
-  background: var(--color-bg-dark);
+  background: url('../../assets/hero-bg.png') center / cover no-repeat;
+  background-color: var(--color-action-dark);
   text-align: center;
+}
+
+.hero-bg-overlay {
+  padding: 80px var(--section-px) 64px;
+  min-height: 350px;
+  background-color: rgba(22, 78, 99, 0.75);
 }
 
 .hero-inner {
@@ -34,21 +45,34 @@ function scrollToFeatures() {
   margin: 0 auto;
 }
 
+.hero-bolt {
+  width: 64px;
+  height: 64px;
+  color: var(--color-text-on-dark);
+  margin-bottom: 36px;
+}
+
 .hero-heading {
   color: var(--color-text-on-dark);
 }
 
 .hero-subtitle {
-  color: var(--color-text-on-dark-secondary);
+  color: var(--color-text-on-dark);
   margin-top: 16px;
 }
 
 .hero-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 32px;
+  gap: 16px;
+  margin-top: 40px;
   align-items: center;
+}
+
+.hero-actions {
+  --color-btn-primary-bg: #0891B2;
+  --color-btn-primary-hover: #0e7490;
+  --color-btn-primary-active: #155e75;
 }
 
 .hero-actions :deep(.base-btn) {
@@ -63,8 +87,8 @@ function scrollToFeatures() {
   padding: 14px 20px;
   color: var(--color-text-on-dark);
   background: transparent;
-  border: 1px solid var(--color-text-on-dark-secondary);
-  border-radius: 6px;
+  border: 1px solid var(--color-text-on-dark);
+  border-radius: 8px;
   cursor: pointer;
   transition: 0.15s background, 0.15s border-color;
   width: 100%;
@@ -73,11 +97,10 @@ function scrollToFeatures() {
 
 .hero-ghost-btn:hover {
   background: var(--color-on-dark-glass);
-  border-color: var(--color-text-on-dark);
 }
 
 @media (min-width: 769px) {
-  .hero {
+  .hero-bg-overlay {
     padding: 100px var(--section-px) 80px;
   }
 

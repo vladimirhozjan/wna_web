@@ -5,12 +5,13 @@
         <div class="footer-brand">
           <div class="footer-logo">
             <AppIcon />
-            <span class="text-h4 color-text-primary">WhatsNextAction</span>
+            <span class="footer-brand-name"><span class="footer-brand-primary">WhatsNext</span><span class="footer-brand-accent">Action</span></span>
           </div>
+          <p class="text-caption footer-tagline">Stress-free productivity</p>
         </div>
 
         <div class="footer-col">
-          <h4 class="footer-heading text-label">Product</h4>
+          <h4 class="footer-heading text-overline">Product</h4>
           <ul class="footer-links">
             <li><a href="/#features" class="footer-link text-body-s">Features</a></li>
             <li><router-link to="/pricing" class="footer-link text-body-s">Pricing</router-link></li>
@@ -18,14 +19,14 @@
         </div>
 
         <div class="footer-col">
-          <h4 class="footer-heading text-label">Support</h4>
+          <h4 class="footer-heading text-overline">Support</h4>
           <ul class="footer-links">
             <li><router-link to="/help" class="footer-link text-body-s">Help &amp; FAQ</router-link></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <h4 class="footer-heading text-label">Legal</h4>
+          <h4 class="footer-heading text-overline">Legal</h4>
           <ul class="footer-links">
             <li><router-link to="/legal/terms" class="footer-link text-body-s">Terms of Service</router-link></li>
             <li><router-link to="/legal/privacy" class="footer-link text-body-s">Privacy Policy</router-link></li>
@@ -33,6 +34,9 @@
         </div>
       </div>
 
+      <div class="footer-bottom">
+        <p class="text-footnote footer-copyright">&copy; 2026 WhatsNextAction. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 </template>
@@ -43,8 +47,7 @@ import AppIcon from '../../assets/AppIcon.vue'
 
 <style scoped>
 .public-footer {
-  background: var(--color-bg-secondary);
-  border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-dark-deep);
 }
 
 .footer-inner {
@@ -61,13 +64,33 @@ import AppIcon from '../../assets/AppIcon.vue'
 
 .footer-brand {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .footer-logo {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.footer-brand-name {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.footer-brand-primary {
+  color: var(--color-text-inverse);
+}
+
+.footer-brand-accent {
+  color: var(--color-action-medium);
+}
+
+.footer-tagline {
+  color: var(--color-text-secondary);
+  line-height: var(--lh-relaxed);
 }
 
 .footer-col {
@@ -77,7 +100,7 @@ import AppIcon from '../../assets/AppIcon.vue'
 }
 
 .footer-heading {
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary-light);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
@@ -93,28 +116,23 @@ import AppIcon from '../../assets/AppIcon.vue'
 }
 
 .footer-link {
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   text-decoration: none;
   transition: color 0.15s;
 }
 
 .footer-link:hover {
-  color: var(--color-action);
+  color: var(--color-text-inverse);
 }
 
 .footer-bottom {
-  border-top: 1px solid var(--color-border-light);
+  border-top: 1px solid var(--color-border-dark-subtle);
   padding: 20px var(--section-px);
-  text-align: center;
 }
 
-.footer-bottom .text-footnote {
-  color: var(--color-text-tertiary);
+.footer-copyright {
+  color: var(--color-text-secondary);
   margin: 0;
-}
-
-.footer-bottom .text-footnote + .text-footnote {
-  margin-top: 4px;
 }
 
 @media (min-width: 769px) {
