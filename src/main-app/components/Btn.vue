@@ -81,12 +81,12 @@ const classes = computed(() => ([
 
 /* SIZES */
 .base-btn--sm {
-  padding: 6px 12px;
+  padding: 6px 16px;
   font-size: var(--font-size-body-s);
 }
 
 .base-btn--md {
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-size: var(--font-size-body-s);
 }
 
@@ -137,6 +137,7 @@ const classes = computed(() => ([
   border: 1px solid var(--color-btn-outline-border);
   font-weight: var(--font-weight-semibold);
 }
+
 .base-btn--outline:hover:not(:disabled) {
   background: var(--color-btn-outline-hover);
 }

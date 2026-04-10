@@ -42,11 +42,10 @@ defineExpose({ dismiss, visible })
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 14px 16px;
-  background: var(--color-bg-secondary);
-  border-left: 3px solid var(--color-action);
-  border-radius: 6px;
-  margin: 0 0 16px 0;
+  padding: 16px 20px;
+  background: var(--color-bg-accent-light);
+  border-left: 4px solid var(--color-info);
+  border-radius: 8px;
 }
 
 .tip-tricks--quote {
@@ -67,7 +66,7 @@ defineExpose({ dismiss, visible })
 
 .tip-tricks__content {
   flex: 1;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   line-height: var(--lh-relaxed);
 }
 

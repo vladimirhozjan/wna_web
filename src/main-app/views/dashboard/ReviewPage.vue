@@ -17,15 +17,28 @@
         >
           <div class="tip-content">
             <p>Set up a recurring reminder so you never miss a weekly review.</p>
-            <Btn variant="primary" size="sm" :loading="creatingReminder" @click="createReminder">
+            <Btn variant="outline" size="sm" :loading="creatingReminder" @click="createReminder">
               Create reminder
             </Btn>
           </div>
         </TipTricks>
 
-        <div class="card">
-          <div class="card-header">
+        <div class="review-actions">
+          <Btn v-if="!inReview" variant="primary" size="md" @click="startReview">
+            Start Review
+          </Btn>
+          <Btn v-else variant="primary" size="md" :disabled="!allStepsComplete" @click="onComplete">
+            Complete Review
+          </Btn>
+          <span v-if="inReview" class="review-progress text-body-s">
+            {{ completedCount }} of {{ reviewSteps.length }} complete
+          </span>
+        </div>
+
+        <div class="card review-card" :class="{ 'review-card--disabled': !inReview }">
+          <div class="card-header review-card-header">
             <span class="review-card-title">Review Steps</span>
+
           </div>
           <div class="review-steps">
             <div
@@ -49,25 +62,13 @@
               <span v-if="stepCount(step.statsKey) != null" class="review-step__count text-footnote">
                 {{ stepCount(step.statsKey) }}
               </span>
-              <router-link :to="{ name: step.route }" class="review-step__go text-body-s">
+              <Btn variant="outline" size="sm" class="review-step__go" @click="router.push({ name: step.route })">
                 Go
-              </router-link>
+              </Btn>
             </div>
           </div>
         </div>
 
-        <div v-if="inReview" class="review-progress text-body-s">
-          {{ completedCount }} of {{ reviewSteps.length }} complete
-        </div>
-
-        <div class="review-actions">
-          <Btn v-if="!inReview" variant="primary" @click="startReview">
-            Start Review
-          </Btn>
-          <Btn v-else variant="primary" :disabled="!allStepsComplete" @click="onComplete">
-            Complete Review
-          </Btn>
-        </div>
 
       </div>
 
@@ -173,8 +174,8 @@ function onComplete() {
 }
 
 .review-last {
-  color: var(--color-text-tertiary);
-  margin: 4px 0 0 0;
+  color: var(--color-text-secondary);
+  margin: 2px 0 24px 0;
 }
 
 .review-body {
@@ -182,27 +183,59 @@ function onComplete() {
   overflow-y: auto;
   min-height: 0;
   padding: 0 0 20px;
-}
-
-.review-card-title {
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--font-family-default);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 13px;
-  color: var(--color-action);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .tip-content {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
+}
+
+.tip-content :deep(.btn) {
+  min-width: 169px;
 }
 
 .tip-content p {
   margin: 0;
+  font-size: var(--font-size-body-s);
+}
+
+/* ── Actions ── */
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── Card ── */
+.review-card {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-radius);
+}
+
+.review-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.review-card-title {
+  font-size: var(--font-size-overline);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-default);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-action);
+}
+
+.review-card--disabled .review-steps {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 /* ── Steps ── */
@@ -214,15 +247,10 @@ function onComplete() {
 .review-step {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--color-border-subtle);
+  gap: 16px;
+  padding: 18px 20px;
+  border-top: 1px solid var(--color-border-subtle);
   transition: background 0.15s ease;
-  border-left: 3px solid transparent;
-}
-
-.review-step:last-child {
-  border-bottom: none;
 }
 
 .review-step:hover {
@@ -230,7 +258,7 @@ function onComplete() {
 }
 
 .review-step--checked {
-  border-left-color: var(--color-success);
+  background: var(--color-bg-subtle);
 }
 
 .review-step--checked .review-step__title,
@@ -245,10 +273,11 @@ function onComplete() {
 }
 
 .review-step__checkbox input {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
-  accent-color: var(--color-success);
+  accent-color: var(--color-action);
+  border-radius: 4px;
 }
 
 .review-step__checkbox input:disabled {
@@ -265,55 +294,41 @@ function onComplete() {
 }
 
 .review-step__title {
-  font-size: 14px;
-  color: var(--color-text-primary);
+  font-size: var(--font-size-body-s);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary-dark);
 }
 
 .review-step__hint {
   color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
 }
 
 .review-step__count {
   flex-shrink: 0;
-  color: var(--color-text-tertiary);
-  background: var(--color-bg-secondary);
+  color: var(--color-action);
+  background: var(--color-bg-accent-light);
   padding: 2px 8px;
   border-radius: 10px;
   min-width: 20px;
   text-align: center;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
 }
 
 .review-step__go {
   flex-shrink: 0;
-  color: var(--color-link-text);
-  text-decoration: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.review-step__go:hover {
-  color: var(--color-link-hover);
-  background: var(--color-bg-secondary);
 }
 
 /* ── Progress ── */
 .review-progress {
-  padding: 12px 0;
   color: var(--color-text-secondary);
-  text-align: center;
-}
-
-/* ── Actions ── */
-.review-actions {
-  display: flex;
-  justify-content: center;
-  padding: 8px 0;
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .review-step {
-    padding: 12px 8px;
+    padding: 14px 8px;
     gap: 8px;
   }
 
