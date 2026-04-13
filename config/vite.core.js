@@ -25,7 +25,7 @@ export function createViteConfig(mode, envVars, appConfig) {
                     simplify: true,
                     splitStrings: false,
                     stringArray: true,
-                    stringArrayEncoding: ['base64'],
+                    stringArrayEncoding: [],
                     stringArrayThreshold: 0.75,
                     reservedStrings: ['\\.js$', '\\.css$', '^\\./', '^/assets/'],
                     transformObjectKeys: false,
