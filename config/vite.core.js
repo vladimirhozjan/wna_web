@@ -23,7 +23,7 @@ export function createViteConfig(mode, envVars, appConfig) {
                     identifierNamesGenerator: 'hexadecimal',
                     numbersToExpressions: true,
                     simplify: true,
-                    splitStrings: true,
+                    splitStrings: false,
                     stringArray: true,
                     stringArrayEncoding: ['base64'],
                     stringArrayThreshold: 0.75,
