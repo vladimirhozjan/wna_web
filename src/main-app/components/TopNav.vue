@@ -178,7 +178,7 @@ onBeforeUnmount(() => {
 .topnav {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 902;
   display: flex;
   align-items: center;
   justify-content: space-between;
