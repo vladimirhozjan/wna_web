@@ -197,6 +197,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.topnav-left:active {
+  opacity: 0.6;
 }
 
 .topnav-title {
@@ -266,6 +272,12 @@ onBeforeUnmount(() => {
   border: none;
   cursor: pointer;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.hamburger-menu:active {
+  opacity: 0.5;
 }
 
 .hamburger-bar {
@@ -283,6 +295,7 @@ onBeforeUnmount(() => {
 
 .hamburger-menu.open .hamburger-bar:nth-child(2) {
   opacity: 0;
+  transform: scaleX(0);
 }
 
 .hamburger-menu.open .hamburger-bar:nth-child(3) {

@@ -81,6 +81,7 @@ const features = [
   padding: var(--section-py-mobile) var(--section-px);
   background: var(--color-bg-subtle);
   text-align: center;
+  scroll-margin-top: 64px;
 }
 
 .section-inner {

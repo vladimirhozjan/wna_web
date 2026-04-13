@@ -93,6 +93,12 @@ defineEmits(["toggle-menu"]);
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.avatar-wrapper:active {
+  opacity: 0.6;
 }
 
 .avatar-img {
