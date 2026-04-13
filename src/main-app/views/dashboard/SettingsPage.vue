@@ -1005,6 +1005,7 @@ async function onLogout() {
   flex: 1;
   overflow-y: auto;
   padding: 0 0 20px;
+  touch-action: pan-y;
 }
 
 /* Section title in card header */

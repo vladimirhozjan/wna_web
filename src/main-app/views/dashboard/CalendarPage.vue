@@ -166,5 +166,6 @@ async function onReschedule({ actionId, newDate, newTime, forcedType }) {
   flex: 1;
   min-height: 0;
   margin-bottom: 10px;
+  touch-action: pan-y;
 }
 </style>

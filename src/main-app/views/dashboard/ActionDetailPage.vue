@@ -1532,6 +1532,7 @@ async function onActivate() {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  touch-action: pan-y;
 }
 
 /* ── Meta (State) ── */

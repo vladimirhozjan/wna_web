@@ -665,6 +665,7 @@ function formatSize(bytes) {
   overflow-y: auto;
   min-height: 0;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .ref-loading {

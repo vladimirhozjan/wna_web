@@ -186,6 +186,7 @@ function onComplete() {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  touch-action: pan-y;
 }
 
 .tip-content {

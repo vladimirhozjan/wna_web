@@ -792,6 +792,7 @@ function removeFromSource(data) {
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  touch-action: pan-y;
 }
 
 .sidebar-section-label {
