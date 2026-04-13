@@ -925,8 +925,8 @@ async function onLogout() {
   user-select: none;
 }
 
-.card-header--toggle:last-child {
-  border-bottom: none;
+.card-header--toggle:only-child {
+  border-bottom: none !important;
 }
 
 .card-header--toggle:hover {
