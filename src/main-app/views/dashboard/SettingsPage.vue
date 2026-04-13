@@ -925,6 +925,10 @@ async function onLogout() {
   user-select: none;
 }
 
+.card-header--toggle:last-child {
+  border-bottom: none;
+}
+
 .card-header--toggle:hover {
   background: var(--color-bg-secondary);
 }
