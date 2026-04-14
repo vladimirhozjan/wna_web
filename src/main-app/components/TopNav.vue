@@ -50,8 +50,8 @@
         <span class="hamburger-bar"></span>
       </button>
 
-      <!-- Avatar + dropdown (hidden on mobile in dashboard) -->
-      <div class="avatar-container" :class="{ 'hide-mobile-dashboard': context === 'dashboard' }" ref="avatarContainerRef">
+      <!-- Avatar + dropdown (hidden in dashboard context) -->
+      <div v-if="context !== 'dashboard'" class="avatar-container" ref="avatarContainerRef">
         <UserAvatar
           :email="user?.email"
           @toggle-menu="onAvatarClick"
@@ -321,7 +321,6 @@ onBeforeUnmount(() => {
     display: flex;
   }
 
-  .hide-mobile-dashboard,
   .quick-add-desktop {
     display: none !important;
   }
