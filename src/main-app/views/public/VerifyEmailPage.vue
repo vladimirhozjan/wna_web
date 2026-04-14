@@ -12,7 +12,7 @@
         <!-- Success -->
         <div v-else-if="status === 'success'" class="verify-state">
           <span class="verify-icon verify-icon--success">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <CheckmarkIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Email verified!</h2>
           <p class="text-body-s color-text-secondary">
@@ -23,7 +23,7 @@
         <!-- Invalid (no token) -->
         <div v-else-if="status === 'invalid'" class="verify-state">
           <span class="verify-icon verify-icon--warning">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <ExclamationIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Invalid verification link</h2>
           <p class="text-body-s color-text-secondary">
@@ -34,7 +34,7 @@
         <!-- Expired / bad token -->
         <div v-else-if="status === 'expired'" class="verify-state">
           <span class="verify-icon verify-icon--warning">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <ExclamationIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Link invalid or expired</h2>
           <p class="text-body-s color-text-secondary">
@@ -49,7 +49,7 @@
         <!-- Network error -->
         <div v-else-if="status === 'error'" class="verify-state">
           <span class="verify-icon verify-icon--error">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <CrossIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Something went wrong</h2>
           <p class="text-body-s color-text-secondary">
@@ -71,6 +71,9 @@ import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import { authModel } from '../../scripts/core/authModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import CheckmarkIcon from '../../assets/CheckmarkIcon.vue'
+import ExclamationIcon from '../../assets/ExclamationIcon.vue'
+import CrossIcon from '../../assets/CrossIcon.vue'
 
 const route = useRoute()
 const router = useRouter()

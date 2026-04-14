@@ -1,26 +1,10 @@
 <template>
   <div class="alert" :class="`alert--${type}`">
     <div class="alert__icon">
-      <!-- Info -->
-      <svg v-if="type === 'info'" width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <rect width="18" height="18" rx="4" fill="currentColor" fill-opacity="0.15"/>
-        <path d="M9 5.5V5M9 8v4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <!-- Success -->
-      <svg v-else-if="type === 'success'" width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <rect width="18" height="18" rx="4" fill="currentColor" fill-opacity="0.15"/>
-        <path d="M5.5 9.5L7.5 11.5L12.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <!-- Warning -->
-      <svg v-else-if="type === 'warning'" width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <rect width="18" height="18" rx="4" fill="currentColor" fill-opacity="0.15"/>
-        <path d="M9 6v3.5M9 12v-.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <!-- Error -->
-      <svg v-else width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <rect width="18" height="18" rx="4" fill="currentColor" fill-opacity="0.15"/>
-        <path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
+      <AlertInfoIcon v-if="type === 'info'" width="18" height="18" />
+      <AlertSuccessIcon v-else-if="type === 'success'" width="18" height="18" />
+      <AlertWarningIcon v-else-if="type === 'warning'" width="18" height="18" />
+      <AlertErrorIcon v-else width="18" height="18" />
     </div>
     <div class="alert__body">
       <div class="alert__title text-label">{{ title }}</div>
@@ -30,6 +14,11 @@
 </template>
 
 <script setup>
+import AlertInfoIcon from '../assets/AlertInfoIcon.vue'
+import AlertSuccessIcon from '../assets/AlertSuccessIcon.vue'
+import AlertWarningIcon from '../assets/AlertWarningIcon.vue'
+import AlertErrorIcon from '../assets/AlertErrorIcon.vue'
+
 defineProps({
   type: {
     type: String,

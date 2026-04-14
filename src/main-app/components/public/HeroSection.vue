@@ -2,9 +2,7 @@
   <section class="hero">
     <div class="hero-bg-overlay">
       <div class="hero-inner">
-        <svg class="hero-bolt" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <path fill="currentColor" d="M37 92L45.8 54.6L21.6 54.6L59 4L50.2 41.4L74.4 41.4L37 92Z"/>
-        </svg>
+        <BoltIcon class="hero-bolt" />
         <h1 class="text-display hero-heading">Stress-Free Productivity</h1>
         <p class="text-body-m hero-subtitle">With a system you can trust.</p>
         <div class="hero-actions">
@@ -18,6 +16,7 @@
 
 <script setup>
 import Btn from '../Btn.vue'
+import BoltIcon from '../../assets/BoltIcon.vue'
 
 defineEmits(['open-register'])
 

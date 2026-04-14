@@ -40,9 +40,7 @@
         <Btn variant="primary" size="sm" @click="fabSubmit">Add</Btn>
       </div>
       <button v-if="!fabExpanded" class="mobile-fab" @click="fabExpand">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="pointer-events: none;">
-          <path d="M8.183 19.872V11.628H0V8.182H8.183V0h3.486v8.182h8.183v3.446h-8.183v8.244H8.183Z" fill="currentColor"/>
-        </svg>
+        <PlusIcon width="20" height="20" style="pointer-events: none;" />
       </button>
     </div>
   </div>
@@ -55,6 +53,7 @@ import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
 import Btn from "../components/Btn.vue";
 import { authModel } from "../scripts/core/authModel.js";
+import PlusIcon from "../assets/PlusIcon.vue";
 import { settingsModel } from "../scripts/models/settingsModel.js";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";

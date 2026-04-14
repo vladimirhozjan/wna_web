@@ -29,7 +29,7 @@
           @keydown.escape="open = null"
       />
       <span v-if="is12h" class="text-body-m ti-period" @click.stop="togglePeriod">{{ period }}</span>
-      <svg class="ti-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <ChevronDownIcon class="ti-arrow" width="10" height="6" />
     </div>
     <!-- Hour dropdown -->
     <div v-if="open === 'hour'" class="ti-dropdown">
@@ -57,6 +57,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { settingsModel } from '../scripts/models/settingsModel.js'
+import ChevronDownIcon from '../assets/ChevronDownIcon.vue'
 
 const props = defineProps({
   modelValue: { type: [String, null], default: null },

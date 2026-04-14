@@ -12,7 +12,7 @@
         <!-- Beta closed -->
         <div v-else-if="status === 'beta'" class="sso-state">
           <span class="sso-icon sso-icon--warning">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <ExclamationIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Closed Beta</h2>
           <p class="text-body-s color-text-secondary">
@@ -27,7 +27,7 @@
         <!-- Error -->
         <div v-else-if="status === 'error'" class="sso-state">
           <span class="sso-icon sso-icon--error">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <CrossIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Sign-in failed</h2>
           <p class="text-body-s color-text-secondary">{{ errorMessage }}</p>
@@ -37,7 +37,7 @@
         <!-- Invalid (no code) -->
         <div v-else-if="status === 'invalid'" class="sso-state">
           <span class="sso-icon sso-icon--warning">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <ExclamationIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Invalid sign-in link</h2>
           <p class="text-body-s color-text-secondary">
@@ -59,6 +59,8 @@ import Btn from '../../components/Btn.vue'
 import {authModel} from '../../scripts/core/authModel.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
 import {flagsModel} from '../../scripts/core/flagsModel.js'
+import ExclamationIcon from '../../assets/ExclamationIcon.vue'
+import CrossIcon from '../../assets/CrossIcon.vue'
 
 const route = useRoute()
 const router = useRouter()

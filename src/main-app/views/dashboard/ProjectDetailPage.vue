@@ -213,7 +213,7 @@
                   <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
                 </div>
                 <div v-else-if="!isSomeday" class="next-action-prompt" @click="onExpandAndFocus">
-                  <WarningIcon class="next-action-prompt__icon" viewBox="0 0 48 48" />
+                  <WarningIcon class="next-action-prompt__icon" />
                   <div class="next-action-prompt__text">
                     <strong class="text-body-m fw-bold">What's the next physical step?</strong>
                     <span class="text-body-s">Every active project needs a next action.</span>
@@ -1645,7 +1645,7 @@ async function onAddAction() {
 }
 
 .next-action-prompt:hover {
-  background: #fde68a;
+  background: var(--color-warning-light);
 }
 
 .next-action-prompt__icon {

@@ -14,9 +14,7 @@
       @dragend="onDragEnd"
   >
     <span v-if="showTime && time" class="fw-semibold calendar-item__time">{{ time }}</span>
-    <svg v-if="item.recurring_parent_id" class="calendar-item__recurring" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
-    </svg>
+    <RecurringIcon v-if="item.recurring_parent_id" class="calendar-item__recurring" width="12" height="12" />
     <span class="calendar-item__title">{{ item.title }}</span>
   </div>
 </template>
@@ -24,6 +22,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
+import RecurringIcon from '../../assets/RecurringIcon.vue'
 
 const props = defineProps({
   item: {

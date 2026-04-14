@@ -14,7 +14,7 @@
           @keydown.escape="open = false"
       />
       <span class="text-body-s dur-unit">min</span>
-      <svg class="dur-arrow" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <ChevronDownIcon class="dur-arrow" width="10" height="6" />
     </div>
     <div v-if="open" class="dur-dropdown">
       <div
@@ -32,6 +32,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import ChevronDownIcon from '../assets/ChevronDownIcon.vue'
 
 const OPTIONS = [
   { value: 15, label: '15 min' },
