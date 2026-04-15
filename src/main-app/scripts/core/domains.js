@@ -1,6 +1,6 @@
 const rc = (typeof window !== 'undefined' && window.RUNTIME_CONFIG) || {}
 
-export const PAGE_SIZE = rc.PAGE_SIZE || 50
+export const PAGE_SIZE = rc.PAGE_SIZE || 10
 
 export function getDomains() {
     if (!rc.GOOGLE_CLIENT_ID) {
