@@ -153,7 +153,7 @@ function onCheck(checked) {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 13px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--color-border-subtle);
   cursor: pointer;
   transition: background 0.15s ease;
@@ -161,7 +161,7 @@ function onCheck(checked) {
 }
 
 .item:has(.item__subtitle-row) {
-  padding: 11px 20px 9px;
+  padding: 11px 16px;
 }
 
 .item__main-row {
