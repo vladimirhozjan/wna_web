@@ -1,5 +1,6 @@
 import {ref, reactive, computed} from 'vue'
 import apiClient from '../core/apiClient.js'
+import { PAGE_SIZE } from '../core/domains.js'
 import { statsModel } from './statsModel.js'
 
 let instance = null
@@ -13,7 +14,7 @@ export function referenceModel() {
     const files = ref([])
     const totalFiles = ref(0)
     const offset = ref(0)
-    const limit = ref(20)
+    const limit = ref(PAGE_SIZE)
     const viewMode = ref(localStorage.getItem('ref_view_mode') || 'list')
     const loading = ref(false)
     const error = ref(null)

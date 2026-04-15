@@ -1,5 +1,6 @@
 import {httpApi} from './httpApi.js'
 import {upgradeModel} from './upgradeModel.js'
+import {PAGE_SIZE} from './domains.js'
 
 function friendlyUpgradeMessage(raw) {
     if (!raw) return 'You\'ve reached a limit on your current plan. Upgrade to unlock more and keep your system growing.'
@@ -363,7 +364,7 @@ export async function moveStuff(stuffId, destination) {
     }
 }
 
-export async function listStuff({limit = 10, cursor = null} = {}) {
+export async function listStuff({limit = PAGE_SIZE, cursor = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -605,7 +606,7 @@ export async function getAction(actionId) {
     }
 }
 
-export async function listActions({limit = 10, cursor = null, tags = null} = {}) {
+export async function listActions({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -689,7 +690,7 @@ export async function clearDueDate(actionId) {
 
 // ── Today API ──
 
-export async function listTodayActions({limit = 10, cursor = null, tags = null} = {}) {
+export async function listTodayActions({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -826,7 +827,7 @@ export async function getProject(projectId) {
     }
 }
 
-export async function listProjects({limit = 10, cursor = null, tags = null} = {}) {
+export async function listProjects({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -900,7 +901,7 @@ export async function listProjectActions(projectId, {limit = 100, cursor = null}
 
 // ── Someday API ──
 
-export async function listSomeday({limit = 10, cursor = null, tags = null} = {}) {
+export async function listSomeday({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -961,7 +962,7 @@ export async function activateProject(projectId) {
 
 // ── Completed API ──
 
-export async function listCompleted({limit = 10, cursor = null} = {}) {
+export async function listCompleted({limit = PAGE_SIZE, cursor = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -1014,7 +1015,7 @@ export async function uncompleteProject(projectId) {
 
 // ── Waiting For API ──
 
-export async function listWaiting({limit = 10, cursor = null, tags = null} = {}) {
+export async function listWaiting({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -1088,7 +1089,7 @@ export async function getCalendarDensity({ start, end }) {
 
 // ── Trash API ──
 
-export async function listTrash({limit = 10, cursor = null} = {}) {
+export async function listTrash({limit = PAGE_SIZE, cursor = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit
@@ -1210,7 +1211,7 @@ export async function uploadRefFile(file, folder_id = null, onProgress = null) {
     }
 }
 
-export async function listRefFiles({folder_id = null, type = null, q = null, limit = 20, offset = 0} = {}) {
+export async function listRefFiles({folder_id = null, type = null, q = null, limit = PAGE_SIZE, offset = 0} = {}) {
     try {
         const params = {limit, offset}
         if (folder_id) params.folder_id = folder_id
@@ -1286,7 +1287,7 @@ export async function getRefQuota() {
     }
 }
 
-export async function listRefTrash({limit = 20, offset = 0} = {}) {
+export async function listRefTrash({limit = PAGE_SIZE, offset = 0} = {}) {
     try {
         const params = {limit, offset}
         const res = await httpApi.get('/v1/reference/trash', {params, headers: authHeaders()})
@@ -1429,7 +1430,7 @@ export async function deleteAttachment(entityType, itemId, attachmentId) {
     }
 }
 
-export async function listAllAttachments({limit = 20, offset = 0} = {}) {
+export async function listAllAttachments({limit = PAGE_SIZE, offset = 0} = {}) {
     try {
         const res = await httpApi.get('/v1/reference/attachments', {
             headers: authHeaders(),
@@ -1541,7 +1542,7 @@ export async function getStats() {
 
 // ── Overdue API ──
 
-export async function listOverdue({limit = 10, cursor = null} = {}) {
+export async function listOverdue({limit = PAGE_SIZE, cursor = null} = {}) {
     try {
         const params = {}
         if (limit) params.limit = limit

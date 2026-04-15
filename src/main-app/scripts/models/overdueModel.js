@@ -1,12 +1,13 @@
 import { ref } from 'vue'
 import apiClient from '../core/apiClient.js'
+import { PAGE_SIZE } from '../core/domains.js'
 import { statsModel } from './statsModel.js'
 
 const items = ref([])
 const loading = ref(false)
 const error = ref(null)
 const cursor = ref(null)
-const limit = ref(10)
+const limit = ref(PAGE_SIZE)
 const hasMore = ref(true)
 const totalItems = ref(0)
 

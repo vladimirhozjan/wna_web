@@ -42,6 +42,7 @@ APP=admin-app vite build
 | `APP` | Which app to build | `main-app` or `admin-app` |
 | `PROJECT_VERSION` | Version string injected as `__APP_VERSION__` | `1.2.3` or git tag |
 
+
 **Build output:** Static files (HTML, JS, CSS, fonts, images) in `dist/<app-name>/`. The `index.html` references hashed assets in `assets/` subdirectory.
 
 ---
@@ -56,7 +57,8 @@ This allows the same Docker image to run in different environments (dev, staging
 ```javascript
 window.RUNTIME_CONFIG = {
   API_DOMAIN: "https://api-dev.whatsnextaction.com",
-  GOOGLE_CLIENT_ID: "783327214800-xxx.apps.googleusercontent.com"
+  GOOGLE_CLIENT_ID: "783327214800-xxx.apps.googleusercontent.com",
+  PAGE_SIZE: 10
 };
 ```
 
@@ -64,6 +66,7 @@ window.RUNTIME_CONFIG = {
 |-------|-----|------|
 | `API_DOMAIN` | `https://api-dev.whatsnextaction.com` | `https://api.whatsnextaction.com` |
 | `GOOGLE_CLIENT_ID` | (dev client ID) | (prod client ID) |
+| `PAGE_SIZE` | `10` | omitted (defaults to `50`) |
 
 ### admin-app config.js
 ```javascript
@@ -539,6 +542,7 @@ Suggested pipeline (GitHub Actions, Cloud Build, or equivalent):
 | Admin access restriction | IP allowlist | VPN + IP allowlist |
 | Code obfuscation | Disabled | Enabled (`vite.core.js:9`) |
 | Console output | Stripped (Terser) | Stripped (Terser) |
+| List page size | 10 items | 50 items |
 
 ---
 
@@ -551,6 +555,7 @@ Suggested pipeline (GitHub Actions, Cloud Build, or equivalent):
 | `config/apps.js` | App definitions (root dir, port, build output dir) |
 | `config/vite.core.js` | Shared Vite config factory (aliases, minification, proxy) |
 | `vite.config.js` | Root Vite entry (loads env, selects app from `APP` env var) |
+| `src/main-app/scripts/core/domains.js` | Runtime config (`API_DOMAIN`, `GOOGLE_CLIENT_ID`, `PAGE_SIZE`) |
 | `package.json` | Dependencies, build scripts, Node engine requirement |
 | `k8s/main-app/` | K8s manifests for main-app (suggested location) |
 | `k8s/admin-app/` | K8s manifests for admin-app (suggested location) |
