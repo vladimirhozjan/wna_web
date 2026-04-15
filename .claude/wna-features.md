@@ -36,6 +36,7 @@
 26. [Email System (Backend)](#26-email-system-backend)
 27. [Notification Settings](#27-notification-settings)
 28. [Limits & Quotas](#28-limits--quotas)
+29. [Feedback Button](#29-feedback-button)
 
 ---
 
@@ -1383,6 +1384,31 @@ The backend defines 8 email templates with variable substitution (`{{variable}}`
 | Max attachment file size | 50 MB | 50 MB | 50 MB |
 | Comments per item | 50 | 50 | 50 |
 | Comment max length | 2000 chars | 2000 chars | 2000 chars |
+
+---
+
+## 29. Feedback Button
+
+A floating feedback button is available on every page (both dashboard and public/landing pages). It provides quick access to support and bug reporting.
+
+### 29.1 Appearance & Position
+
+- Small circular button (40×40px) with a speech bubble icon, fixed to the bottom-right corner
+- **Desktop:** `bottom: 24px; right: 24px`
+- **Mobile (≤768px):** `bottom: 92px; right: 16px` — positioned above the Quick Add FAB to avoid overlap
+- Uses elevated shadow for visibility; adapts to light and dark themes
+
+### 29.2 Popover Menu
+
+Clicking the button opens an upward popover with two options:
+
+| Option | Action | Email |
+|---|---|---|
+| Contact Support | Opens email client with pre-filled subject | `support@whatsnextaction.com` (Subject: "Support Request - WhatsNextAction") |
+| Report a Bug | Opens email client with pre-filled subject | `bug@whatsnextaction.com` (Subject: "Bug Report - WhatsNextAction") |
+
+- Clicking outside the popover closes it
+- Selecting an option closes the popover and opens the user's default email client
 
 ---
 

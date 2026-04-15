@@ -11513,3 +11513,139 @@ Use the table below to log each full or partial test run.
 | Date | P/F | Comment |
 |------|-----|---------|
 |      |     |         |
+
+---
+
+## Section 29: Feedback Button
+
+### TC-410: Feedback Button Visible on Dashboard
+**Priority:** High | **Area:** Feedback
+
+**Preconditions:** User is logged in
+
+**Steps:**
+1. Navigate to any dashboard page (e.g., Inbox, Next Actions, Projects)
+2. Verify a small circular button with a speech bubble icon is visible in the bottom-right corner
+
+**Expected Result:** Feedback button is visible and does not overlap with any content or controls.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-411: Feedback Button Visible on Public Pages
+**Priority:** High | **Area:** Feedback
+
+**Preconditions:** User is not logged in (or on a public page)
+
+**Steps:**
+1. Navigate to the landing page
+2. Verify the feedback button is visible in the bottom-right corner
+3. Navigate to pricing, help, or legal pages and verify it remains visible
+
+**Expected Result:** Feedback button is present on all public pages.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-412: Feedback Popover Opens and Closes
+**Priority:** High | **Area:** Feedback
+
+**Preconditions:** Feedback button is visible
+
+**Steps:**
+1. Click the feedback button
+2. Verify a popover appears above the button with two options: "Contact Support" and "Report a Bug"
+3. Click outside the popover
+4. Verify the popover closes
+
+**Expected Result:** Popover opens on click and closes when clicking outside.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-413: Contact Support Opens Email
+**Priority:** High | **Area:** Feedback
+
+**Preconditions:** Feedback button is visible
+
+**Steps:**
+1. Click the feedback button to open the popover
+2. Click "Contact Support"
+3. Verify the default email client opens with:
+   - To: `support@whatsnextaction.com`
+   - Subject: "Support Request - WhatsNextAction"
+4. Verify the popover closes after clicking
+
+**Expected Result:** Email client opens with pre-filled recipient and subject for support.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-414: Report a Bug Opens Email
+**Priority:** High | **Area:** Feedback
+
+**Preconditions:** Feedback button is visible
+
+**Steps:**
+1. Click the feedback button to open the popover
+2. Click "Report a Bug"
+3. Verify the default email client opens with:
+   - To: `bug@whatsnextaction.com`
+   - Subject: "Bug Report - WhatsNextAction"
+4. Verify the popover closes after clicking
+
+**Expected Result:** Email client opens with pre-filled recipient and subject for bug reports.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-415: Feedback Button Mobile Positioning
+**Priority:** Medium | **Area:** Feedback
+
+**Preconditions:** User is logged in, viewport ≤ 768px
+
+**Steps:**
+1. Open the app on a mobile viewport (or resize browser to ≤ 768px)
+2. Verify the feedback button is positioned above the Quick Add FAB button
+3. Verify both buttons are visible and do not overlap
+4. Click the feedback button and verify the popover opens correctly
+
+**Expected Result:** Feedback button sits above the FAB on mobile with no overlap.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-416: Feedback Button Dark Theme
+**Priority:** Medium | **Area:** Feedback
+
+**Preconditions:** User is logged in with dark theme enabled
+
+**Steps:**
+1. Enable dark theme via Settings
+2. Verify the feedback button adapts to dark theme colors (dark background, appropriate borders)
+3. Click to open popover and verify it also uses dark theme colors
+4. Hover over menu items and verify hover states are visible
+
+**Expected Result:** Feedback button and popover correctly adapt to dark theme.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
