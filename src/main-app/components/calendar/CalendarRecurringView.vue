@@ -231,4 +231,8 @@ async function onDelete(id) {
   touch-action: pan-y;
 }
 
+.recurring-view__content :deep(.item) {
+  background: var(--color-bg-primary);
+}
+
 </style>

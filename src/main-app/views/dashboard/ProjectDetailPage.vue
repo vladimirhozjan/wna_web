@@ -164,155 +164,77 @@
 
         <!-- Next Action section -->
         <div v-if="!isCompleted" class="detail-section-area">
-          <div class="next-action-header">
-            <label class="text-body-s fw-semibold detail-section-label">Next Action</label>
-            <button
-                v-if="orderedActions.length > 0 || !actionsLoading"
-                class="text-body-s next-action-expand-btn"
-                @click="actionsExpanded = !actionsExpanded"
-            >
-              {{ actionsExpanded ? '▲' : '▼' }} {{ backlogItems.length > 0 ? `+${backlogItems.length}` : '' }}
-            </button>
-          </div>
+          <label class="text-body-s fw-semibold detail-section-label">Next Action</label>
           <div class="next-action-wrapper">
             <div v-if="actionsLoading" class="next-action-loading">
               <Spinner :size="16" />
             </div>
             <template v-else>
-              <!-- Collapsed: Next action card -->
-              <template v-if="!actionsExpanded">
-                <div v-if="nextAction" class="next-action-card" @click="goToActionDetail(nextAction)">
-                  <input
-                      type="checkbox"
-                      class="next-action-checkbox"
-                      :checked="false"
-                      :disabled="completingActionId === nextAction.id"
-                      @click.stop
-                      @change="onCompleteNextAction"
-                  />
-                  <span
-                      v-if="editingActionId !== nextAction.id"
-                      class="text-body-m next-action-title"
-                      @click.stop="startEditAction(nextAction)"
-                  >{{ nextAction.title }}</span>
-                  <span v-else class="action-input-wrapper" @click.stop>
-                    <span ref="actionInputMeasure" class="text-body-m action-input-measure">{{ editActionValue || ' ' }}</span>
-                    <input
-                        ref="actionTitleInput"
-                        v-model="editActionValue"
-                        class="text-body-m action-input-auto"
-                        :style="{ width: actionInputWidth + 'px' }"
-                        @keyup.enter="saveActionTitle(nextAction.id)"
-                        @keyup.esc="cancelEditAction"
-                        @blur="saveActionTitle(nextAction.id)"
-                    />
-                  </span>
-                  <div class="next-action-actions" @click.stop>
-                    <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
-                  </div>
-                  <Spinner v-if="completingActionId === nextAction.id" :size="20" class="next-action-spinner" />
-                </div>
-                <div v-else-if="!isSomeday" class="next-action-prompt" @click="onExpandAndFocus">
-                  <WarningIcon class="next-action-prompt__icon" />
-                  <div class="next-action-prompt__text">
-                    <strong class="text-body-m fw-bold">What's the next physical step?</strong>
-                    <span class="text-body-s">Every active project needs a next action.</span>
-                  </div>
-                </div>
-              </template>
+              <!-- Add input at top (visible when items exist or user clicked warning) -->
+              <div v-if="orderedActions.length > 0 || addInputVisible" class="actions-quick-add actions-quick-add--top">
+                <input
+                    ref="quickAddInput"
+                    v-model="newActionTitle"
+                    class="text-body-m actions-quick-add-input"
+                    type="text"
+                    placeholder="Add action..."
+                    :disabled="addingAction"
+                    @keydown.enter="onAddAction"
+                    @blur="onAddInputBlur"
+                />
+                <Btn
+                    variant="primary"
+                    size="sm"
+                    class="actions-quick-add-btn"
+                    :disabled="!newActionTitle.trim() || addingAction"
+                    :loading="addingAction"
+                    @mousedown.prevent
+                    @click="onAddAction"
+                >Add</Btn>
+              </div>
 
-              <!-- Expanded: full action list -->
-              <div v-else class="actions-expanded">
-                <div ref="actionsScrollRef" class="actions-list-scroll">
-                  <VueDraggable
-                      v-if="orderedActions.length > 0"
-                      v-model="orderedActions"
-                      :delay="150"
-                      :delay-on-touch-only="true"
-                      :animation="150"
-                      chosen-class="action-item--chosen"
-                      ghost-class="action-item--ghost"
-                      @end="onBacklogReorder"
+              <!-- Warning when no actions -->
+              <div v-if="orderedActions.length === 0 && !isSomeday && !addInputVisible" class="next-action-prompt" @click="focusAddInput">
+                <WarningIcon class="next-action-prompt__icon" />
+                <div class="next-action-prompt__text">
+                  <strong class="text-body-m fw-bold">What's the next physical step?</strong>
+                  <span class="text-body-s">Every active project needs a next action.</span>
+                </div>
+              </div>
+
+              <!-- Action list -->
+              <div v-if="orderedActions.length > 0" ref="actionsScrollRef" class="actions-list-scroll">
+                <VueDraggable
+                    v-model="orderedActions"
+                    :delay="150"
+                    :delay-on-touch-only="true"
+                    :animation="150"
+                    chosen-class="action-wrapper--chosen"
+                    ghost-class="action-wrapper--ghost"
+                    @end="onBacklogReorder"
+                >
+                  <div
+                      v-for="action in orderedActions"
+                      :key="action.id"
+                      class="action-wrapper"
                   >
-                    <div
-                        v-for="(action, index) in orderedActions"
-                        :key="action.id"
-                        :class="index === 0 ? 'next-action-card next-action-card--in-list' : 'action-item'"
-                        @click="goToActionDetail(action)"
-                    >
-                      <!-- First item: next action card style -->
-                      <template v-if="index === 0">
-                        <input
-                            type="checkbox"
-                            class="next-action-checkbox"
-                            :checked="false"
-                            :disabled="completingActionId === action.id"
-                            @click.stop
-                            @change="onCompleteNextAction"
-                        />
-                        <span
-                            v-if="editingActionId !== action.id"
-                            class="text-body-m next-action-title"
-                            @click.stop="startEditAction(action)"
-                        >{{ action.title }}</span>
-                        <span v-else class="action-input-wrapper" @click.stop>
-                          <span ref="actionInputMeasure" class="text-body-m action-input-measure">{{ editActionValue || ' ' }}</span>
-                          <input
-                              ref="actionTitleInput"
-                              v-model="editActionValue"
-                              class="text-body-m action-input-auto"
-                              :style="{ width: actionInputWidth + 'px' }"
-                              @keyup.enter="saveActionTitle(action.id)"
-                              @keyup.esc="cancelEditAction"
-                              @blur="saveActionTitle(action.id)"
-                          />
-                        </span>
-                        <div class="next-action-actions" @click.stop>
-                          <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
+                    <div class="action-row">
+                      <Item
+                          :id="action.id"
+                          :title="action.title"
+                          :loading="completingActionId === action.id"
+                          @update="onActionUpdate"
+                          @check="() => onCompleteAction(action)"
+                          @click="goToActionDetail(action)"
+                      >
+                        <template #actions>
                           <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
-                        </div>
-                        <Spinner v-if="completingActionId === action.id" :size="20" class="next-action-spinner" />
-                      </template>
-                      <!-- Other items: regular backlog style -->
-                      <template v-else>
-                        <span
-                            v-if="editingActionId !== action.id"
-                            class="text-body-m action-title"
-                            @click.stop="startEditAction(action)"
-                        >{{ action.title }}</span>
-                        <span v-else class="action-input-wrapper" @click.stop>
-                          <span ref="actionInputMeasure" class="text-body-m action-input-measure">{{ editActionValue || ' ' }}</span>
-                          <input
-                              ref="actionTitleInput"
-                              v-model="editActionValue"
-                              class="text-body-m action-input-auto"
-                              :style="{ width: actionInputWidth + 'px' }"
-                              @keyup.enter="saveActionTitle(action.id)"
-                              @keyup.esc="cancelEditAction"
-                              @blur="saveActionTitle(action.id)"
-                          />
-                        </span>
-                        <div class="action-item-actions" @click.stop>
-                          <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
-                        </div>
-                      </template>
+                        </template>
+                      </Item>
+                      <a v-if="action.state !== 'BACKLOG'" class="text-footnote action-state-link" @click.stop="goToActionList(action.state)">{{ actionStateLabel(action.state) }}</a>
                     </div>
-                  </VueDraggable>
-                </div>
-
-                <!-- Quick-add at bottom -->
-                <div class="actions-quick-add">
-                  <input
-                      ref="quickAddInput"
-                      v-model="newActionTitle"
-                      class="text-body-m actions-quick-add-input"
-                      type="text"
-                      placeholder="+ Add action..."
-                      :disabled="addingAction"
-                      @keydown.enter="onAddAction"
-                  />
-                  <Spinner v-if="addingAction" :size="16" class="actions-quick-add-spinner" />
-                </div>
+                  </div>
+                </VueDraggable>
               </div>
             </template>
           </div>
@@ -445,6 +367,7 @@ import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
+import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
@@ -478,12 +401,7 @@ const editTags = ref([])
 // Actions state
 const actionsLoading = ref(false)
 const orderedActions = ref([])
-const actionsExpanded = ref(false)
-const editingActionId = ref(null)
-const editActionValue = ref('')
-const actionTitleInput = ref(null)
-const actionInputMeasure = ref(null)
-const actionInputWidth = ref(50)
+const addInputVisible = ref(false)
 const completingActionId = ref(null)
 const trashingActionId = ref(null)
 const newActionTitle = ref('')
@@ -514,8 +432,6 @@ const FROM_LABELS = {
 
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
-const nextAction = computed(() => orderedActions.value[0] || null)
-const backlogItems = computed(() => orderedActions.value.slice(1))
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
 const fromCompleted = computed(() => fromSource.value === 'completed')
 const fromSomeday = computed(() => fromSource.value === 'someday')
@@ -531,17 +447,6 @@ watch(error, (err) => {
   if (!err) return
   const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
   toaster.push(msg)
-})
-
-watch(editActionValue, () => {
-  nextTick(() => {
-    const measure = Array.isArray(actionInputMeasure.value)
-      ? actionInputMeasure.value[0]
-      : actionInputMeasure.value
-    if (measure) {
-      actionInputWidth.value = Math.max(50, measure.offsetWidth + 2)
-    }
-  })
 })
 
 onMounted(async () => {
@@ -908,7 +813,7 @@ async function onMoveTo(target) {
   }
 
   if (target === 'ACTION') {
-    if (backlogItems.value.length > 0) {
+    if (orderedActions.value.length > 1) {
       const confirmed = await confirm.show({
         title: 'Convert to Action',
         message: `This will trash all backlog actions in this project. Continue?`,
@@ -980,6 +885,29 @@ async function onMoveTo(target) {
   }
 }
 
+const ACTION_STATE_LABELS = {
+  NEXT: 'Next Action',
+  TODAY: 'Today',
+  WAITING: 'Waiting For',
+  CALENDAR: 'Calendar',
+}
+
+const ACTION_STATE_ROUTES = {
+  NEXT: 'next',
+  TODAY: 'today',
+  WAITING: 'waiting-for',
+  CALENDAR: 'calendar',
+}
+
+function actionStateLabel(state) {
+  return ACTION_STATE_LABELS[state] || state
+}
+
+function goToActionList(state) {
+  const name = ACTION_STATE_ROUTES[state]
+  if (name) router.push({ name })
+}
+
 // ── Project Actions functions ──
 
 async function loadProjectActions() {
@@ -997,64 +925,27 @@ async function loadProjectActions() {
   }
 }
 
-function startEditAction(action) {
-  actionInputWidth.value = 50
-  editingActionId.value = action.id
-  editActionValue.value = action.title
-  nextTick(() => {
-    const measure = Array.isArray(actionInputMeasure.value)
-      ? actionInputMeasure.value[0]
-      : actionInputMeasure.value
-    if (measure) {
-      actionInputWidth.value = Math.max(50, measure.offsetWidth + 2)
-    }
-    const input = Array.isArray(actionTitleInput.value)
-      ? actionTitleInput.value[0]
-      : actionTitleInput.value
-    if (input) {
-      input.focus()
-      input.select()
-    }
-  })
-}
-
-function cancelEditAction() {
-  editingActionId.value = null
-  editActionValue.value = ''
-}
-
-async function saveActionTitle(actionId) {
-  if (editingActionId.value !== actionId) return
-
-  const newTitle = editActionValue.value.trim()
-  const action = orderedActions.value.find(a => a.id === actionId)
-
-  if (!newTitle || newTitle === action?.title) {
-    editingActionId.value = null
-    return
-  }
-
+async function onActionUpdate(actionId, data) {
   try {
-    await apiClient.updateAction(actionId, { title: newTitle })
+    await apiClient.updateAction(actionId, data)
     const idx = orderedActions.value.findIndex(a => a.id === actionId)
-    if (idx >= 0) orderedActions.value[idx].title = newTitle
-    editingActionId.value = null
+    if (idx >= 0) orderedActions.value[idx].title = data.title
   } catch {
     toaster.push('Failed to update action')
+    await loadProjectActions()
   }
 }
 
-async function onCompleteNextAction() {
-  if (!nextAction.value) return
+async function onCompleteAction(action) {
+  if (!action) return
 
-  completingActionId.value = nextAction.value.id
-  const title = truncateTitle(nextAction.value.title)
+  completingActionId.value = action.id
+  const title = truncateTitle(action.title)
 
   try {
-    await apiClient.completeAction(nextAction.value.id)
+    await apiClient.completeAction(action.id)
     statsModel().refreshStats()
     toaster.success(`"${title}" completed`)
-    // Reload actions - backend auto-promotes first backlog item
     await loadProjectActions()
   } catch {
     toaster.push('Failed to complete action')
@@ -1069,10 +960,6 @@ function goToActionDetail(act) {
     params: { id: act.id },
     query: { from: 'project', project_id: project.value.id, project_title: project.value.title }
   })
-}
-
-function goToNextActions() {
-  router.push({ name: 'next' })
 }
 
 async function onTrashAction(action) {
@@ -1090,7 +977,7 @@ async function onTrashAction(action) {
     await apiClient.trashAction(action.id)
     statsModel().refreshStats()
     toaster.success(`"${truncateTitle(action.title)}" moved to trash`)
-    if (action.id === nextAction.value?.id) {
+    if (action.id === orderedActions.value[0]?.id) {
       await loadProjectActions()
     } else {
       orderedActions.value = orderedActions.value.filter(a => a.id !== action.id)
@@ -1119,11 +1006,17 @@ async function onBacklogReorder(evt) {
   }
 }
 
-function onExpandAndFocus() {
-  actionsExpanded.value = true
+function focusAddInput() {
+  addInputVisible.value = true
   nextTick(() => {
     quickAddInput.value?.focus()
   })
+}
+
+function onAddInputBlur() {
+  if (orderedActions.value.length === 0 && !newActionTitle.value.trim()) {
+    addInputVisible.value = false
+  }
 }
 
 async function onAddAction() {
@@ -1141,7 +1034,6 @@ async function onAddAction() {
     newActionTitle.value = ''
     statsModel().refreshStats()
     toaster.success(`"${truncateTitle(title)}" added`)
-    // Scroll to bottom and keep focus for next entry
     nextTick(() => {
       if (actionsScrollRef.value) {
         actionsScrollRef.value.scrollTop = actionsScrollRef.value.scrollHeight
@@ -1490,86 +1382,6 @@ async function onAddAction() {
   padding: 12px 0;
 }
 
-.next-action-card {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: 6px;
-}
-
-.next-action-checkbox {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--color-action);
-  flex-shrink: 0;
-}
-
-.next-action-title {
-  color: var(--color-text-primary);
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
-
-.next-action-title:hover {
-  text-decoration: underline;
-}
-
-/* ── Auto-sizing action input (matches Item component) ── */
-.action-input-wrapper {
-  position: relative;
-  display: inline-block;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.action-input-measure {
-  position: absolute;
-  visibility: hidden;
-  white-space: pre;
-}
-
-.action-input-auto {
-  color: var(--color-text-primary);
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--color-action);
-  padding: 0;
-  margin: 0;
-  outline: none;
-  min-width: 50px;
-  max-width: 100%;
-}
-
-.next-action-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.next-action-spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -10px;
-  margin-left: -10px;
-}
-
-.next-action-empty {
-  color: var(--color-text-tertiary);
-  font-style: italic;
-  margin: 0;
-  padding: 8px 0;
-}
-
 .next-action-prompt {
   display: flex;
   align-items: center;
@@ -1609,121 +1421,79 @@ async function onAddAction() {
   color: var(--color-text-secondary);
 }
 
-
-
-/* ── Next Action header with expand button ── */
-.next-action-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.next-action-expand-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-text-tertiary);
-  padding: 4px 8px;
+/* ── Action list ── */
+.actions-list-scroll {
+  max-height: 615px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--color-bg-primary);
   border-radius: 4px;
 }
 
-.next-action-expand-btn:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-secondary);
-}
-
-
-/* ── Expanded actions area ── */
-.actions-expanded {
-  margin-top: 8px;
-}
-
-.actions-list-scroll {
-  max-height: 420px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.next-action-card--in-list {
+.action-wrapper {
   cursor: grab;
   user-select: none;
-  border-radius: 6px 6px 0 0;
+  -webkit-touch-callout: none;
 }
 
-.next-action-card--in-list:active {
+.action-wrapper:active {
   cursor: grabbing;
 }
 
-.action-item {
+.action-wrapper--chosen .item {
+  background: var(--color-bg-hover);
+}
+
+.action-wrapper--ghost .item {
+  background: var(--color-btn-secondary-hover);
+}
+
+.action-wrapper--ghost .item > * {
+  opacity: 0;
+}
+
+.action-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
   background: var(--color-bg-primary);
-  border-bottom: 1px solid var(--color-border-light);
   transition: background 0.15s ease;
-  cursor: grab;
-  user-select: none;
 }
 
-.action-item:first-of-type {
-  border-top: 1px solid var(--color-border-light);
-}
-
-.action-item:hover {
-  background: var(--color-bg-hover);
-}
-
-.action-item:active {
-  cursor: grabbing;
-}
-
-.action-item--chosen {
-  background: var(--color-bg-hover);
-}
-
-.action-item--ghost {
-  background: var(--color-btn-secondary-hover);
-  opacity: 0.5;
-}
-
-.action-title {
-  color: var(--color-text-primary);
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
-
-.action-title:hover {
-  text-decoration: underline;
-}
-
-
-.action-item-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-  margin-left: auto;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.action-item:hover .action-item-actions {
-  opacity: 1;
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .action-item-actions {
-    opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  .action-row:hover {
+    background: var(--color-bg-hover);
   }
 }
 
+.action-row :deep(.item) {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+}
+
+.action-row :deep(.item:hover) {
+  background: transparent;
+}
+
+.action-state-link {
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  white-space: nowrap;
+  padding-right: 16px;
+  flex-shrink: 0;
+}
+
+.action-state-link:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
 /* ── Actions quick-add ── */
-.actions-quick-add {
-  position: relative;
+.actions-quick-add--top {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -1734,7 +1504,8 @@ async function onAddAction() {
   border-radius: 4px;
   padding: 10px 12px;
   outline: none;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -1752,11 +1523,8 @@ async function onAddAction() {
   color: var(--color-text-tertiary);
 }
 
-.actions-quick-add-spinner {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  margin-top: -8px;
+.actions-quick-add-btn {
+  flex-shrink: 0;
 }
 
 /* ── Responsive ── */
