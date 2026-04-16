@@ -25,6 +25,7 @@
     </div>
 
     <div class="recurring-view__content">
+      <div class="card">
       <ItemList
           v-model="items"
           :loading="loading"
@@ -52,6 +53,7 @@
           />
         </template>
       </ItemList>
+      </div>
     </div>
   </div>
 </template>
@@ -229,10 +231,6 @@ async function onDelete(id) {
   min-height: 0;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-}
-
-.recurring-view__content :deep(.item) {
-  background: var(--color-bg-primary);
 }
 
 </style>
