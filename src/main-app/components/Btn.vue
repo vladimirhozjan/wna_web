@@ -5,7 +5,7 @@
       v-bind="$attrs"
   >
     <!-- Loader -->
-    <span v-if="loading" class="base-btn__loader"></span>
+    <Spinner v-if="loading" :size="14" class="base-btn__loader" />
 
     <!-- Button content -->
     <span class="base-btn__content">
@@ -16,6 +16,7 @@
 
 <script setup>
 import {computed} from 'vue'
+import Spinner from './Spinner.vue'
 
 const props = defineProps({
   variant: {
@@ -63,19 +64,10 @@ const classes = computed(() => ([
 
 .base-btn__loader {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--color-btn-loader-fade-1);
-  border-top-color: var(--color-btn-loader-top);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  inset: 0;
+  margin: auto;
+  --spinner-track: var(--color-btn-loader-fade-1);
+  --spinner-indicator: var(--color-btn-loader-top);
 }
 
 

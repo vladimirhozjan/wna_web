@@ -8,12 +8,13 @@
       <CloseIcon width="14" height="14" />
     </slot>
   </button>
-  <span v-else class="action-btn-spinner"></span>
+  <Spinner v-else :size="14" />
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import CloseIcon from '../assets/CloseIcon.vue'
+import Spinner from './Spinner.vue'
 
 const props = defineProps({
   variant: {
@@ -68,16 +69,4 @@ const classes = computed(() => [
   background: var(--color-action-bg-light);
 }
 
-.action-btn-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 </style>

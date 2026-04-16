@@ -13,7 +13,7 @@
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst"><ChevronsLeftIcon class="detail-nav-icon" /></Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
             <span class="text-body-s detail-position">
-              <span class="detail-nav-spinner" v-if="navigating"></span>
+              <Spinner v-if="navigating" :size="18" class="detail-nav-spinner" />
               {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
             <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext"><TriangleRightIcon class="detail-nav-icon" /></Btn>
@@ -24,7 +24,7 @@
 
       <!-- Loading state -->
       <div v-if="pageLoading" class="detail-loading">
-        <span class="detail-spinner"></span>
+        <Spinner />
       </div>
 
       <!-- Content -->
@@ -35,7 +35,7 @@
           <ProjectsIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
-              <span class="detail-spinner"></span>
+              <Spinner />
             </div>
             <h2
                 class="text-h2 detail-title"
@@ -176,7 +176,7 @@
           </div>
           <div class="next-action-wrapper">
             <div v-if="actionsLoading" class="next-action-loading">
-              <span class="detail-spinner-sm"></span>
+              <Spinner :size="16" />
             </div>
             <template v-else>
               <!-- Collapsed: Next action card -->
@@ -210,7 +210,7 @@
                   <div class="next-action-actions" @click.stop>
                     <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
                   </div>
-                  <span v-if="completingActionId === nextAction.id" class="next-action-spinner"></span>
+                  <Spinner v-if="completingActionId === nextAction.id" :size="20" class="next-action-spinner" />
                 </div>
                 <div v-else-if="!isSomeday" class="next-action-prompt" @click="onExpandAndFocus">
                   <WarningIcon class="next-action-prompt__icon" />
@@ -271,7 +271,7 @@
                           <ActionBtn variant="primary" @click="goToNextActions">→ Next</ActionBtn>
                           <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
                         </div>
-                        <span v-if="completingActionId === action.id" class="next-action-spinner"></span>
+                        <Spinner v-if="completingActionId === action.id" :size="20" class="next-action-spinner" />
                       </template>
                       <!-- Other items: regular backlog style -->
                       <template v-else>
@@ -311,7 +311,7 @@
                       :disabled="addingAction"
                       @keydown.enter="onAddAction"
                   />
-                  <span v-if="addingAction" class="actions-quick-add-spinner"></span>
+                  <Spinner v-if="addingAction" :size="16" class="actions-quick-add-spinner" />
                 </div>
               </div>
             </template>
@@ -445,6 +445,7 @@ import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
+import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -988,17 +989,7 @@ async function loadProjectActions() {
   try {
     const data = await getProjectActions(project.value.id)
     const actions = Array.isArray(data) ? data : (data.items || [])
-    const next = actions.find(a => a.state === 'NEXT')
-    const backlog = actions.filter(a => a.state === 'BACKLOG')
-
-    // If no NEXT action but there are backlog items, treat first backlog as next action
-    if (!next && backlog.length > 0) {
-      orderedActions.value = backlog
-    } else if (next) {
-      orderedActions.value = [next, ...backlog]
-    } else {
-      orderedActions.value = []
-    }
+    orderedActions.value = actions.sort((a, b) => a.backlog_position - b.backlog_position)
   } catch {
     toaster.push('Failed to load project actions')
   } finally {
@@ -1114,33 +1105,17 @@ async function onTrashAction(action) {
 async function onBacklogReorder(evt) {
   if (evt.oldIndex === evt.newIndex) return
 
-  // If position 0 changed, update the project's next action
-  if (evt.oldIndex === 0 || evt.newIndex === 0) {
-    const newNextAction = orderedActions.value[0]
-    if (!newNextAction) return
+  const movedAction = orderedActions.value[evt.newIndex]
+  if (!movedAction) return
 
-    try {
-      await updateProject(project.value.id, {
-        title: project.value.title,
-        description: project.value.description,
-        outcome: project.value.outcome,
-        next_action_id: newNextAction.id,
-      })
-    } catch {
-      toaster.push('Failed to update next action')
+  try {
+    await apiClient.moveProjectAction(movedAction.id, evt.newIndex)
+    if (evt.oldIndex === 0 || evt.newIndex === 0) {
       await loadProjectActions()
     }
-  } else {
-    // Backlog-to-backlog reorder: position is newIndex - 1 (index 0 is next action)
-    const movedAction = orderedActions.value[evt.newIndex]
-    if (!movedAction) return
-
-    try {
-      await apiClient.moveAction(movedAction.id, evt.newIndex - 1)
-    } catch {
-      toaster.push('Failed to reorder backlog')
-      await loadProjectActions()
-    }
+  } catch {
+    toaster.push('Failed to reorder actions')
+    await loadProjectActions()
   }
 }
 
@@ -1256,16 +1231,8 @@ async function onAddAction() {
 
 .detail-nav-spinner {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  background: var(--color-bg-primary);
+  inset: 0;
+  margin: auto;
 }
 
 .detail-loading {
@@ -1513,28 +1480,6 @@ async function onAddAction() {
   cursor: not-allowed;
 }
 
-/* ── Spinners ── */
-.detail-spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.detail-spinner-sm {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* ── Next Action section ── */
 .next-action-wrapper {
@@ -1616,13 +1561,6 @@ async function onAddAction() {
   left: 50%;
   margin-top: -10px;
   margin-left: -10px;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  background: var(--color-bg-secondary);
 }
 
 .next-action-empty {
@@ -1819,12 +1757,6 @@ async function onAddAction() {
   top: 50%;
   right: 12px;
   margin-top: -8px;
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
 }
 
 /* ── Responsive ── */

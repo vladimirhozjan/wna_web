@@ -29,7 +29,7 @@
         <RefUploadZone @upload="onUploadFiles" class="ref-content">
           <!-- Loading -->
           <div v-if="model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0" class="ref-loading">
-            <span class="spinner"></span>
+            <Spinner :size="28" />
           </div>
 
           <!-- Empty state -->
@@ -110,7 +110,7 @@
 
         <!-- Loading -->
         <div v-if="attModel_.loading.value && attModel_.items.value.length === 0" class="ref-loading">
-          <span class="spinner"></span>
+          <Spinner :size="28" />
         </div>
 
         <!-- Empty state -->
@@ -160,7 +160,7 @@
 
         <!-- Loading -->
         <div v-if="trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-loading">
-          <span class="spinner"></span>
+          <Spinner :size="28" />
         </div>
 
         <!-- Empty trash -->
@@ -234,6 +234,7 @@ import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import {errorModel} from '../../scripts/core/errorModel.js'
 import {confirmModel} from '../../scripts/core/confirmModel.js'
 import {downloadAttachment, deleteAttachment, transformFileToOriginal} from '../../scripts/core/apiClient.js'
+import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -675,18 +676,6 @@ function formatSize(bytes) {
   padding: 60px 20px;
 }
 
-.spinner {
-  width: 28px;
-  height: 28px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 .ref-empty {
   display: flex;

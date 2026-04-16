@@ -12,7 +12,7 @@
 
     <div class="calendar-header__title-wrapper">
       <h2 class="text-h4 fw-semibold calendar-header__title">{{ title }}</h2>
-      <span v-if="loading" class="calendar-header__spinner"></span>
+      <Spinner v-if="loading" :size="18" />
     </div>
 
     <div class="calendar-header__views">
@@ -33,6 +33,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { formatMonthYear, formatDate, format } from '../../scripts/core/dateUtils.js'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
+import Spinner from '../Spinner.vue'
 
 const props = defineProps({
   currentDate: {
@@ -172,21 +173,6 @@ const title = computed(() => {
   margin: 0;
 }
 
-.calendar-header__spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: header-spin 0.8s linear infinite;
-  flex-shrink: 0;
-}
-
-@keyframes header-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 .calendar-header__views {
   display: flex;

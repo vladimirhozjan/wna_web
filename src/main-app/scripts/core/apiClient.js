@@ -647,6 +647,15 @@ export async function moveAction(actionId, destination) {
     }
 }
 
+export async function moveProjectAction(actionId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/project/action/${actionId}/move`, {destination}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function deferAction(actionId, type, date, time = null, duration = null) {
     try {
         const body = { type, date, add_to_top: addToTop() }
@@ -1654,6 +1663,7 @@ const apiClient = {
     deleteAction,
     trashAction,
     moveAction,
+    moveProjectAction,
     getActionByPosition,
     completeAction,
     changeActionState,

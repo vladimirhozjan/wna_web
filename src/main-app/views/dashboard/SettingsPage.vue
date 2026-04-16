@@ -80,7 +80,7 @@
           </div>
           <div v-if="isExpanded('sessions')" class="settings-section-body">
             <div v-if="loadingSessions" class="settings-loading">
-              <span class="settings-spinner"></span>
+              <Spinner :size="16" />
               <span>Loading sessions...</span>
             </div>
 
@@ -147,7 +147,7 @@
             <div class="settings-row">
               <span class="settings-label">New items position in the list</span>
               <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
-                <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"></span>
+                <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <Select
                     v-model="addPosition"
                     :options="positionOptions"
@@ -208,7 +208,7 @@
           <div class="settings-row">
             <span class="settings-label">Week starts on</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.weekStart }">
-              <span v-if="settings.state.saving.weekStart" class="settings-saving-spinner"></span>
+              <span v-if="settings.state.saving.weekStart" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
               <Select v-model="weekStart" :options="weekStartOptions" title="Week starts on" />
             </div>
           </div>
@@ -216,7 +216,7 @@
           <div class="settings-row">
             <span class="settings-label">Time format</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timeFormat }">
-              <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"></span>
+              <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
               <Select
                   v-model="timeFormat"
                   :options="timeFormatOptions"
@@ -228,7 +228,7 @@
           <div class="settings-row">
             <span class="settings-label">Business hours start</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursStart }">
-              <span v-if="settings.state.saving.businessHoursStart" class="settings-saving-spinner"></span>
+              <span v-if="settings.state.saving.businessHoursStart" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
               <Select
                   v-model="businessHoursStart"
                   :options="hourOptions"
@@ -240,7 +240,7 @@
           <div class="settings-row">
             <span class="settings-label">Business hours end</span>
             <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursEnd }">
-              <span v-if="settings.state.saving.businessHoursEnd" class="settings-saving-spinner"></span>
+              <span v-if="settings.state.saving.businessHoursEnd" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
               <Select
                   v-model="businessHoursEnd"
                   :options="hourOptions"
@@ -252,7 +252,7 @@
           <div class="settings-row settings-row--column">
             <span class="settings-label">Business days</span>
             <div class="settings-days-control" :class="{ 'settings-control--saving': settings.state.saving.businessDays }">
-              <span v-if="settings.state.saving.businessDays" class="settings-saving-spinner"></span>
+              <span v-if="settings.state.saving.businessDays" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
               <div class="settings-days">
                 <label v-for="day in dayOptions" :key="day.value" class="text-body-s settings-day-checkbox">
                   <input
@@ -281,7 +281,7 @@
                 <p class="text-body-s settings-hint">Show the Weekly Review section in the sidebar</p>
               </div>
               <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.reviewEnabled }">
-                <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"></span>
+                <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
                   <input type="checkbox" v-model="reviewEnabled" />
                   <span class="settings-toggle-slider"></span>
@@ -304,7 +304,7 @@
                 <p class="text-body-s settings-hint">Receive email notifications for tasks and reminders</p>
               </div>
               <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
-                <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"></span>
+                <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
                   <input type="checkbox" v-model="emailEnabled" />
                   <span class="settings-toggle-slider"></span>
@@ -318,7 +318,7 @@
                 <p class="text-body-s settings-hint">Daily reminder for tasks due today</p>
               </div>
               <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.taskDueToday }">
-                <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"></span>
+                <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
                   <input type="checkbox" v-model="taskDueToday" :disabled="!notifications.state.emailEnabled" />
                   <span class="settings-toggle-slider"></span>
@@ -332,7 +332,7 @@
                 <p class="text-body-s settings-hint">Summary of your next actions for the day</p>
               </div>
               <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyNextActions }">
-                <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"></span>
+                <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
                   <input type="checkbox" v-model="dailyNextActions" :disabled="!notifications.state.emailEnabled" />
                   <span class="settings-toggle-slider"></span>
@@ -346,7 +346,7 @@
                 <p class="text-body-s settings-hint">Alert when a project has no next action defined</p>
               </div>
               <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.projectNeedsNextAction }">
-                <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"></span>
+                <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
                   <input type="checkbox" v-model="projectNeedsNextAction" :disabled="!notifications.state.emailEnabled" />
                   <span class="settings-toggle-slider"></span>
@@ -458,6 +458,7 @@ import { changePassword, listSessions, revokeSession, revokeAllSessions } from '
 import { notificationModel } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
+import Spinner from '../../components/Spinner.vue'
 
 const router = useRouter()
 const auth = authModel()
@@ -1135,14 +1136,8 @@ async function onLogout() {
   z-index: 1;
 }
 
-.settings-saving-spinner::after {
-  content: '';
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-action-ring);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.settings-saving-spin {
+  --spinner-track: var(--color-action-ring);
 }
 
 /* Loading, error, empty states */
@@ -1160,18 +1155,6 @@ async function onLogout() {
   color: var(--color-danger);
 }
 
-.settings-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* Sessions list */
 .sessions-list {

@@ -37,7 +37,7 @@
       </div>
 
       <!-- Spinner overlay -->
-      <span v-if="loading" class="item__spinner"></span>
+      <Spinner v-if="loading" :size="20" class="item__spinner" />
 
       <div class="item__separator"></div>
 
@@ -59,6 +59,7 @@
 <script setup>
 import { ref, nextTick, watch } from 'vue'
 import AnimatedCheckbox from './AnimatedCheckbox.vue'
+import Spinner from './Spinner.vue'
 
 const props = defineProps({
   id: {
@@ -307,16 +308,6 @@ function onCheck(checked) {
   left: 50%;
   margin-top: -10px;
   margin-left: -10px;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 </style>

@@ -13,7 +13,7 @@
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst"><ChevronsLeftIcon class="detail-nav-icon" /></Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
             <span class="text-body-s detail-position">
-              <span class="detail-nav-spinner" v-if="navigating"></span>
+              <Spinner v-if="navigating" :size="18" class="detail-nav-spinner" />
               {{ currentPosition + 1 }} of {{ totalItems }}
             </span>
             <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="navigating || currentPosition >= totalItems - 1" @click="goNext"><TriangleRightIcon class="detail-nav-icon" /></Btn>
@@ -24,7 +24,7 @@
 
       <!-- Loading state -->
       <div v-if="pageLoading" class="detail-loading">
-        <span class="detail-spinner"></span>
+        <Spinner />
       </div>
 
       <!-- Content -->
@@ -35,7 +35,7 @@
           <InboxIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
-              <span class="detail-spinner"></span>
+              <Spinner />
             </div>
             <h2
                 class="text-h2 detail-title"
@@ -241,6 +241,7 @@ import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
+import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -837,16 +838,8 @@ async function onActivate() {
 
 .detail-nav-spinner {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  background: var(--color-bg-primary);
+  inset: 0;
+  margin: auto;
 }
 
 .detail-loading {
@@ -1070,19 +1063,6 @@ async function onActivate() {
   cursor: not-allowed;
 }
 
-/* ── Spinners ── */
-.detail-spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* ── Clarify Slide-over ── */
 .clarify-slideover-overlay {

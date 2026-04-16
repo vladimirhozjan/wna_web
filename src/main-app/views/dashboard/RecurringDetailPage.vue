@@ -12,7 +12,7 @@
 
       <!-- Loading state -->
       <div v-if="pageLoading" class="detail-loading">
-        <span class="detail-spinner"></span>
+        <Spinner />
       </div>
 
       <!-- Content -->
@@ -23,7 +23,7 @@
           <RecurringIcon class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
-              <span class="detail-spinner"></span>
+              <Spinner />
             </div>
             <h2
                 class="text-h2 detail-title"
@@ -188,6 +188,7 @@ import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
+import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -752,19 +753,6 @@ function formatDate(dateStr) {
   color: var(--color-text-tertiary);
 }
 
-/* ── Spinners ── */
-.detail-spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* ── Responsive ── */
 @media (max-width: 768px) {

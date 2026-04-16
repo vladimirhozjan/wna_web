@@ -15,7 +15,7 @@
 
         <!-- Loading state -->
         <div v-if="!initialLoadDone" class="loading-state">
-          <span class="loading-spinner"></span>
+          <Spinner :size="32" />
         </div>
 
         <template v-else>
@@ -176,6 +176,7 @@ import { statsModel } from '../../scripts/models/statsModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
+import Spinner from '../../components/Spinner.vue'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -524,18 +525,6 @@ async function onDropToWaiting(data) {
   padding: 48px 24px;
 }
 
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* Overdue banner */
 .overdue-banner {

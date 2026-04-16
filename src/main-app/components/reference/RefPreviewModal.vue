@@ -12,7 +12,7 @@
         </div>
         <div class="preview-body">
           <div v-if="preview.loading" class="preview-loading">
-            <span class="spinner"></span>
+            <Spinner :size="32" class="preview-spinner" />
           </div>
           <template v-else>
             <img
@@ -43,6 +43,7 @@
 import {computed, ref, watch, nextTick} from 'vue'
 import Btn from '../Btn.vue'
 import FileIcon from '../../assets/FileIcon.vue'
+import Spinner from '../Spinner.vue'
 
 const props = defineProps({
   preview: {
@@ -133,17 +134,9 @@ const isText = computed(() =>
   justify-content: center;
 }
 
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-overlay-white-subtle);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.preview-spinner {
+  --spinner-track: var(--color-overlay-white-subtle);
+  --spinner-indicator: #fff;
 }
 
 .preview-image {

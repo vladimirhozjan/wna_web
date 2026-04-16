@@ -7,7 +7,7 @@
 
     <!-- Loading state -->
     <div v-if="loading" class="comment-loading">
-      <span class="detail-spinner-sm"></span>
+      <Spinner :size="16" />
     </div>
 
     <!-- Comment list -->
@@ -84,6 +84,7 @@ import UserAvatar from './UserAvatar.vue'
 import { listComments, createComment } from '../scripts/core/apiClient.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { authModel } from '../scripts/core/authModel.js'
+import Spinner from './Spinner.vue'
 
 const props = defineProps({
   entityType: { type: String, required: true },
@@ -249,18 +250,6 @@ function formatRelativeTime(dateStr) {
   padding: 12px 0;
 }
 
-.detail-spinner-sm {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 .comment-list {
   display: flex;

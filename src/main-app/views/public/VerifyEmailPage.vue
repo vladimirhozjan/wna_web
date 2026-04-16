@@ -5,7 +5,7 @@
 
         <!-- Loading -->
         <div v-if="status === 'loading'" class="verify-state">
-          <span class="verify-spinner"></span>
+          <Spinner :size="40" />
           <h2 class="text-h2 color-text-primary">Verifying your email...</h2>
         </div>
 
@@ -69,6 +69,7 @@ import { useRoute, useRouter } from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
+import Spinner from '../../components/Spinner.vue'
 import { authModel } from '../../scripts/core/authModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import CheckmarkIcon from '../../assets/CheckmarkIcon.vue'
@@ -189,18 +190,6 @@ async function doResend() {
   margin: 0;
 }
 
-.verify-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 .verify-icon {
   width: 48px;

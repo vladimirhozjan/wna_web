@@ -9,7 +9,7 @@
   >
     <!-- Loading state -->
     <div v-if="loading && items.length === 0" class="loading-state">
-      <span class="loading-spinner"></span>
+      <Spinner :size="32" />
     </div>
 
     <!-- Empty state -->
@@ -104,6 +104,7 @@ import Btn from './Btn.vue'
 import ActionBtn from './ActionBtn.vue'
 import { dragModel } from '../scripts/models/dragModel.js'
 import { isOverdue } from '../scripts/core/dateUtils.js'
+import Spinner from './Spinner.vue'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -344,18 +345,6 @@ function onExternalDrop(e) {
   padding: 48px 24px;
 }
 
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* Drag hint overlay */
 .item-list {

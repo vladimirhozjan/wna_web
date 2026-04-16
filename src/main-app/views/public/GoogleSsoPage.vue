@@ -5,7 +5,7 @@
 
         <!-- Loading -->
         <div v-if="status === 'loading'" class="sso-state">
-          <span class="sso-spinner"></span>
+          <Spinner :size="40" />
           <h2 class="text-h2 color-text-primary">Signing you in...</h2>
         </div>
 
@@ -56,6 +56,7 @@ import {ref, onMounted} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import Btn from '../../components/Btn.vue'
+import Spinner from '../../components/Spinner.vue'
 import {authModel} from '../../scripts/core/authModel.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
 import {flagsModel} from '../../scripts/core/flagsModel.js'
@@ -134,18 +135,6 @@ function goToLogin() {
   margin: 0;
 }
 
-.sso-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-action);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 .sso-icon {
   width: 48px;
