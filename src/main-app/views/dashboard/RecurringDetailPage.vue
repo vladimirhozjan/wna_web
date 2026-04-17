@@ -16,7 +16,7 @@
       </div>
 
       <!-- Content -->
-      <div v-else class="detail-body">
+      <div v-else ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
 
         <!-- Title area -->
         <div class="detail-title-area">
@@ -175,7 +175,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
@@ -213,6 +213,27 @@ const descriptionInput = ref(null)
 const actionLoading = ref(null)
 const editTags = ref([])
 const editTitle = ref('')
+const detailBodyRef = ref(null)
+
+// Auto-hiding scrollbar
+const bodyScrolling = ref(false)
+let bodyScrollTimer = null
+
+function onBodyScroll() {
+  bodyScrolling.value = true
+  clearTimeout(bodyScrollTimer)
+  bodyScrollTimer = setTimeout(() => { bodyScrolling.value = false }, 1000)
+}
+
+watch(detailBodyRef, (el, oldEl) => {
+  if (oldEl) oldEl.removeEventListener('scroll', onBodyScroll)
+  if (el) el.addEventListener('scroll', onBodyScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  clearTimeout(bodyScrollTimer)
+  detailBodyRef.value?.removeEventListener('scroll', onBodyScroll)
+})
 
 onMounted(async () => {
   try {
@@ -500,6 +521,29 @@ function formatDate(dateStr) {
   overflow-y: auto;
   min-height: 0;
   touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.detail-body.scrolling {
+  scrollbar-color: var(--color-border-light) transparent;
+}
+
+.detail-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.detail-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.detail-body::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.detail-body.scrolling::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
 }
 
 /* ── Title area ── */

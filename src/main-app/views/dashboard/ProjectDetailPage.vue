@@ -28,7 +28,7 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="project" class="detail-body">
+      <div v-else-if="project" ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
 
         <!-- Title area -->
         <div class="detail-title-area">
@@ -203,7 +203,7 @@
               </div>
 
               <!-- Action list -->
-              <div v-if="orderedActions.length > 0" ref="actionsScrollRef" class="actions-list-scroll">
+              <div v-if="orderedActions.length > 0" ref="actionsScrollRef" class="actions-list-scroll" :class="{ scrolling: listScrolling }">
                 <VueDraggable
                     v-model="orderedActions"
                     :delay="150"
@@ -342,7 +342,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
@@ -408,6 +408,42 @@ const newActionTitle = ref('')
 const addingAction = ref(false)
 const actionsScrollRef = ref(null)
 const quickAddInput = ref(null)
+const detailBodyRef = ref(null)
+
+// Auto-hiding scrollbar
+const bodyScrolling = ref(false)
+const listScrolling = ref(false)
+let bodyScrollTimer = null
+let listScrollTimer = null
+
+function onBodyScroll() {
+  bodyScrolling.value = true
+  clearTimeout(bodyScrollTimer)
+  bodyScrollTimer = setTimeout(() => { bodyScrolling.value = false }, 1000)
+}
+
+function onListScroll() {
+  listScrolling.value = true
+  clearTimeout(listScrollTimer)
+  listScrollTimer = setTimeout(() => { listScrolling.value = false }, 1000)
+}
+
+watch(detailBodyRef, (el, oldEl) => {
+  if (oldEl) oldEl.removeEventListener('scroll', onBodyScroll)
+  if (el) el.addEventListener('scroll', onBodyScroll, { passive: true })
+})
+
+watch(actionsScrollRef, (el, oldEl) => {
+  if (oldEl) oldEl.removeEventListener('scroll', onListScroll)
+  if (el) el.addEventListener('scroll', onListScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  clearTimeout(bodyScrollTimer)
+  clearTimeout(listScrollTimer)
+  detailBodyRef.value?.removeEventListener('scroll', onBodyScroll)
+  actionsScrollRef.value?.removeEventListener('scroll', onListScroll)
+})
 
 // Navigation state
 const currentPosition = ref(0)
@@ -1138,6 +1174,29 @@ async function onAddAction() {
   overflow-y: auto;
   min-height: 0;
   touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.detail-body.scrolling {
+  scrollbar-color: var(--color-border-light) transparent;
+}
+
+.detail-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.detail-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.detail-body::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.detail-body.scrolling::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
 }
 
 .detail-section-overlay {
@@ -1423,11 +1482,34 @@ async function onAddAction() {
 
 /* ── Action list ── */
 .actions-list-scroll {
-  max-height: 615px;
+  max-height: 630px;
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--color-bg-primary);
   border-radius: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.actions-list-scroll.scrolling {
+  scrollbar-color: var(--color-border-light) transparent;
+}
+
+.actions-list-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.actions-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.actions-list-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.actions-list-scroll.scrolling::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
 }
 
 .action-wrapper {

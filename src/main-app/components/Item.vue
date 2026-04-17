@@ -20,7 +20,7 @@
 
       <!-- Content -->
       <div class="item__content">
-        <span v-if="isEditing" class="item__input-wrapper" @click.stop>
+        <span v-if="isEditing" class="item__input-wrapper" @click.stop @mousedown.stop @pointerdown.stop>
           <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
           <input
               ref="editInput"
@@ -295,6 +295,7 @@ function onCheck(checked) {
 
 .item--editing {
   background: var(--color-bg-primary);
+  user-select: text;
 }
 
 .item--loading {
