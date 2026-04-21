@@ -205,6 +205,11 @@ function onDragEnd(evt) {
 }
 
 function onNativeDragStart(evt, item) {
+  // Don't start native drag when inline-editing text
+  if (evt.currentTarget.querySelector('.item--editing')) {
+    evt.preventDefault()
+    return
+  }
   if (!props.sourceType) return
 
   nativeDraggingId.value = item.id

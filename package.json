@@ -7,8 +7,8 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev:main": "APP=main-app vite",
-    "dev:admin": "APP=admin-app vite --port 7000",
+    "dev:main": "APP=main-app vite --port 6111",
+    "dev:admin": "APP=admin-app vite --port 7111",
     "build:main": "APP=main-app vite build",
     "build:admin": "APP=admin-app vite build",
     "clean": "rimraf dist"

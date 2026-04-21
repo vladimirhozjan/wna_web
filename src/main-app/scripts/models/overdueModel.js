@@ -24,7 +24,6 @@ export function overdueModel() {
         try {
             if (reset) {
                 cursor.value = null
-                hasMore.value = true
             }
 
             const { total_count, items: data } = await apiClient.listOverdue({

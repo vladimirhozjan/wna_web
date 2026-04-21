@@ -36,7 +36,6 @@ export function todayModel() {
 
             if (reset) {
                 cursor.value = null
-                hasMore.value = true
             }
 
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null

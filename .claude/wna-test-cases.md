@@ -10686,7 +10686,7 @@ Use the table below to log each full or partial test run.
 10. Continue clicking "Load more" until all items are loaded.
 11. Verify the "Load more" button disappears when there are no more items to load.
 
-**Expected Result:** Lists with more than 10 items show a "Load more" button at the bottom. Clicking it loads the next page of items appended to the existing list. The button disappears when all items are loaded.
+**Expected Result:** Lists with more than 10 items show a "Load more" button at the bottom. Clicking it loads the next page of items appended to the existing list. The button disappears when all items are loaded. The "Load more" button must not flicker when completing or trashing items triggers a list reload.
 
 | Date | P/F | Comment |
 |------|-----|---------|
