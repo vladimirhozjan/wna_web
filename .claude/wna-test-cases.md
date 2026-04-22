@@ -11649,3 +11649,241 @@ Use the table below to log each full or partial test run.
 | Date | P/F | Comment |
 |------|-----|---------|
 |      |     |         |
+
+---
+
+## Section 30: Connections (Team Tier)
+
+### TC-417: Connections Section Gated Behind Team Tier
+**Priority:** High | **Area:** Connections
+
+**Preconditions:** User is logged in on Free or Pro tier.
+
+**Steps:**
+1. Navigate to Settings
+2. Expand the Connections section
+
+**Expected Result:** The section shows an explanation that Connections require the Team plan, with an "Upgrade to Team" button. No invite form is shown. Clicking the upgrade button opens the upgrade modal.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-418: Invite Connection by Email
+**Priority:** High | **Area:** Connections | **Smoke Test**
+
+**Preconditions:** User is on Team tier and has no pending invitations to the target email.
+
+**Steps:**
+1. Navigate to Settings → Connections
+2. Type a valid email address of another user into the invite field
+3. Click Send
+
+**Expected Result:** A success toast ("Invitation sent to …") appears, the email field clears, and the invitation appears in the "Pending invitations" list with the current time.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-419: Invite Validates Email Format and Self-Invite
+**Priority:** Medium | **Area:** Connections
+
+**Preconditions:** User is on Team tier.
+
+**Steps:**
+1. In the invite field, enter an invalid string (e.g., `not-an-email`) and click Send
+2. Enter the current user's own email and click Send
+3. Leave the field empty and click Send
+
+**Expected Result:**
+1. Inline error: "Enter a valid email address"
+2. Inline error: "You can't invite yourself"
+3. Inline error: "Enter an email address"
+
+No backend request is made in any of the three cases.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-420: Accept Received Invitation
+**Priority:** High | **Area:** Connections
+
+**Preconditions:** User has a pending received invitation in Settings → Connections.
+
+**Steps:**
+1. Expand the Connections section
+2. Click Accept on the received invitation
+
+**Expected Result:** The invitation disappears from the "Received invitations" list. The other user appears in the "Connections" list. A success toast confirms the connection was accepted.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-421: Decline Received Invitation
+**Priority:** Medium | **Area:** Connections
+
+**Preconditions:** User has a pending received invitation in Settings → Connections.
+
+**Steps:**
+1. Expand the Connections section
+2. Click Decline on the received invitation
+
+**Expected Result:** The invitation disappears from the "Received invitations" list and no new connection is created.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-422: Cancel Sent Invitation
+**Priority:** Medium | **Area:** Connections
+
+**Preconditions:** User has an outstanding sent invitation.
+
+**Steps:**
+1. Expand Settings → Connections
+2. Click Cancel on the invitation in the "Pending invitations" list
+3. Confirm in the confirm dialog
+
+**Expected Result:** The invitation is removed from the pending list.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-423: Remove Accepted Connection
+**Priority:** High | **Area:** Connections
+
+**Preconditions:** User has at least one accepted connection.
+
+**Steps:**
+1. Expand Settings → Connections
+2. Click Remove next to an accepted connection
+3. Confirm in the confirm dialog
+
+**Expected Result:** The entry is removed from the Connections list. Any in-flight Waiting For items tied to that connection remain visible (removal does not cancel in-progress delegations).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-424: Received-Invitation Badge on Connections Section
+**Priority:** Low | **Area:** Connections
+
+**Preconditions:** User is on Team tier with at least one pending received invitation, Connections section collapsed.
+
+**Steps:**
+1. Navigate to Settings without expanding Connections
+2. Observe the Connections section header
+
+**Expected Result:** A small numeric badge appears in the Connections header showing the count of pending received invitations. Expanding the section hides the badge.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+## Section 31: In-App Notifications
+
+### TC-425: Notification Bell Visible in Top Nav When Authenticated
+**Priority:** High | **Area:** Notifications | **Smoke Test**
+
+**Preconditions:** User is logged in.
+
+**Steps:**
+1. Load any dashboard page
+2. Inspect the top nav to the right of the Quick Add button
+
+**Expected Result:** A bell icon is visible. If the user has unread in-app notifications, a numeric badge overlays the bell (displays `99+` when over 99). Non-authenticated visitors do not see the bell.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-426: Open Notification Dropdown and Mark as Read
+**Priority:** High | **Area:** Notifications
+
+**Preconditions:** User has at least one unread in-app notification.
+
+**Steps:**
+1. Click the bell in the top nav
+2. Observe the dropdown content
+3. Click one of the unread notifications
+
+**Expected Result:**
+1. The dropdown opens aligned to the right of the bell; notifications load and the panel shows a list with the unread item highlighted and a small dot.
+2. Clicking the notification marks it as read (dot and highlight disappear), decrements the unread badge by one, closes the dropdown, and navigates to the linked entity (stuff, action, project, or the Connections settings section depending on `entity_type`/`type`).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-427: Notification Empty State
+**Priority:** Low | **Area:** Notifications
+
+**Preconditions:** User has no in-app notifications (or all already dismissed).
+
+**Steps:**
+1. Click the notification bell in the top nav
+
+**Expected Result:** The dropdown shows "You're all caught up." No badge is visible on the bell.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-428: Unread Badge Polls Every 30 Seconds
+**Priority:** Medium | **Area:** Notifications
+
+**Preconditions:** User is authenticated with the dashboard open. A second user/process can create a new notification event (e.g., a delegated item) for this user.
+
+**Steps:**
+1. Note the current badge count on the bell
+2. Trigger a new notification for the logged-in user from a second account
+3. Wait up to 30 seconds without navigating or refreshing
+
+**Expected Result:** Within 30 seconds the unread badge increments to reflect the new notification. No full page reload is required.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-429: Non-Team Users Still See In-App Notifications
+**Priority:** Low | **Area:** Notifications
+
+**Preconditions:** User is logged in on Free or Pro tier with at least one personal notification available (e.g., a task due today digest in the log).
+
+**Steps:**
+1. Load the dashboard
+2. Observe the bell and the badge count
+3. Open the dropdown
+
+**Expected Result:** The bell is visible for all tiers (in-app notifications are not Team-tier gated). Any personal notifications (task due today, daily next actions, project needs next action) appear in the dropdown; Team-only notifications (`delegated_to_you`, `delegation_completed`, `connection_invite`) never appear for non-Team users because those events never fire for them.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |

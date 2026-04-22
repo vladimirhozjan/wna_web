@@ -1,9 +1,6 @@
 import { reactive } from 'vue'
 import { getNotificationSettings, updateNotificationSettings } from '../core/apiClient.js'
 
-// Known events from backend
-const EVENTS = ['task_due_today', 'daily_next_actions', 'project_needs_next_action']
-
 let instance = null
 
 export function notificationModel() {

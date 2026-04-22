@@ -20,7 +20,7 @@
 |--------|---------|
 | **UserConnection** | Bidirectional relationship between two Team tier users. Fields: inviter_id, invitee_email, invitee_id, token, status (pending/accepted/declined/removed), created_at, accepted_at. Either side can delegate and share. Either side can remove the connection. |
 | **ProjectMember** | Join table: project_id, user_id, role (owner/write/read-only). Per-project access control for shared projects. Role is set when adding a member to a project and can be changed later by the project owner. |
-| **Notification** | id, user_id, type (delegated_to_you, delegation_completed, connection_invite, assignment_changed), entity_type, entity_id, message, read (boolean), created_at. Notifications are created for all meaningful actions: delegation sent/completed, connection invitations, shared project changes. |
+| **Notification** | **Unified with existing `notification_log`** — no separate entity. Existing columns (`id`, `user_id`, `event`, `type`, `channel`, `status`, `idempotency_key`, `recipient`, `subject`, `error_detail`, `created_at`, `sent_at`) plus P2 additions: `message` (text shown in-app), `entity_type` (action/stuff/project/connection), `entity_id`, `read` (boolean). In-app notifications are rows with `channel='in_app'`; email notifications have `channel='email'`. Same event can produce both an email and an in-app row with the same `idempotency_key`. |
 
 ### Modified Entities
 
@@ -325,9 +325,11 @@ GET    /v1/notifications/unread-count       # Badge count
 
 | # | Story | Priority |
 |---|-------|----------|
-| T-38 | As a user, I receive in-app notifications for all meaningful actions: delegation sent/completed, connection invitations, shared project changes | Must |
+| T-38 | As a user, I receive in-app notifications for meaningful per-item events: delegation sent/completed, connection invitations, project-needs-next-action, shared project changes (Phase 2) | Must |
 | T-39 | As a user, I see a notification badge in the top nav when I have unread notifications | Must |
 | T-40 | As a user, I can configure notification preferences (email, in-app, per event type) | Should |
+
+**In-app channel scope (Phase 1):** `delegated_to_you`, `delegation_completed`, `connection_invite`, `project_needs_next_action`. Bulk digest events (`task_due_today`, `daily_next_actions`) are email-only — they contain rolled-up summaries that would be noise as per-item in-app notifications. Phase 2 will add shared-project events (`action_assigned`, `member_added`, etc.).
 
 ### Epic 6: Weekly Review
 

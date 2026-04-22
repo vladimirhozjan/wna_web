@@ -37,6 +37,8 @@
 27. [Notification Settings](#27-notification-settings)
 28. [Limits & Quotas](#28-limits--quotas)
 29. [Feedback Button](#29-feedback-button)
+30. [Connections (Team Tier)](#30-connections-team-tier)
+31. [In-App Notifications](#31-in-app-notifications)
 
 ---
 
@@ -1409,6 +1411,102 @@ Clicking the button opens an upward popover with two options:
 
 - Clicking outside the popover closes it
 - Selecting an option closes the popover and opens the user's default email client
+
+---
+
+## 30. Connections (Team Tier)
+
+Connections are bidirectional peer-to-peer relationships between Team tier users. They are the foundation for P2 collaboration features (delegation, shared projects). Connections are flat — there is no "team" entity, just a contact list of other WNA users you collaborate with.
+
+### 30.1 Eligibility
+
+- Available only to **Team tier** users. Free and Pro tier users see an upgrade prompt with a link to the pricing page.
+- Backend enforces the tier gate: all `/v1/connections/*` write endpoints return `403` for non-Team users.
+- If a user downgrades from Team, the backend auto-removes all their connections.
+
+### 30.2 UI Location
+
+- Settings → **Connections** section (collapsible card).
+- The section header shows a small numeric badge when there are unopened received invitations.
+
+### 30.3 Invite by Email
+
+- Email input with a **Send** button.
+- Frontend validates the address is a valid email and not the current user's own address before sending.
+- On success: a toast confirms the invitation was sent, and the invitation appears in the "Pending invitations" list.
+- If the invitee already has a WNA account, they receive an in-app notification + email. If they do not yet have an account, the backend email includes a registration link; the invitation stays pending until they register and upgrade to Team.
+
+### 30.4 Received Invitations
+
+- Each pending received invitation displays the inviter's email and the time since it was sent.
+- **Accept** and **Decline** buttons handle the invitation in place (no separate page).
+- Accept: backend adds the connection bidirectionally; the invitation disappears from the received list and the contact appears in the accepted list.
+- Decline: the invitation is removed from the received list.
+
+### 30.5 Sent Invitations
+
+- Each pending sent invitation shows the recipient's email and when it was sent, plus a **Cancel** action to withdraw it.
+
+### 30.6 Accepted Connections
+
+- Each entry shows the other user's email and the date the connection was established.
+- **Remove** button is available on either side — either the inviter or invitee can sever the connection.
+- Remove is confirmed via the standard confirm dialog. In-flight delegations (if any) stay in the assigner's Waiting For and the receiver's Inbox — removing the connection does not cancel in-progress work.
+
+### 30.7 API endpoints
+
+- `POST /v1/connections/invite` — Invite by email
+- `POST /v1/connections/invite/{token}/accept` — Accept invitation
+- `POST /v1/connections/invite/{token}/decline` — Decline invitation
+- `GET /v1/connections` — List accepted connections
+- `GET /v1/connections/pending` — List pending invitations (sent + received)
+- `DELETE /v1/connections/{id}` — Remove connection
+
+### 30.8 Not Yet Implemented (P2 Phase 1)
+
+- Per-connection **delegation** (`POST /v1/action/{id}/delegate`) is part of P2 Phase 1 on the backend. The frontend wiring in the Clarify panel and Action Detail (connection picker for "Delegate to") ships once the backend endpoint is available. The existing free-text Waiting For flow (`POST /v1/action/{id}/wait`) is unchanged.
+- **Shared projects** are P2 Phase 2.
+
+---
+
+## 31. In-App Notifications
+
+In-app notifications surface meaningful events (delegated items, completed delegations, connection invitations) without requiring email. This supplements the existing email-based notification settings (see §27).
+
+### 31.1 Bell in Top Nav
+
+- A bell icon is visible in the authenticated top nav (dashboard and non-dashboard contexts).
+- When there are unread notifications, a small numeric badge shows the count (displayed as `99+` when over 99).
+- Clicking the bell opens a dropdown panel with the most recent notifications.
+
+### 31.2 Notification Dropdown
+
+- Panel shows up to 20 recent notifications with unread items highlighted and marked with a small dot.
+- Each notification displays its message and time since creation (e.g. "12m ago").
+- Clicking an unread notification marks it as read optimistically (badge decrements immediately; rolled back on API error).
+- Clicking a notification routes to the linked entity when available:
+  - `entity_type = stuff` → stuff detail
+  - `entity_type = action` → action detail
+  - `entity_type = project` → project detail
+  - `type = connection_invite` → settings (Connections section)
+- Empty state: "You're all caught up."
+
+### 31.3 Polling
+
+- The unread count is refreshed every 30 seconds while the top nav is mounted (dashboard or landing).
+- Polling starts on mount when authenticated and stops on logout or unmount.
+
+### 31.4 API Endpoints
+
+- `GET /v1/notifications` — List notifications (paginated, returns unread count)
+- `POST /v1/notifications/{id}/read` — Mark as read
+- `GET /v1/notifications/unread-count` — Badge count
+
+### 31.5 Unified with Email Notifications
+
+- In-app notifications share the backend's notification system with email. A notification is stored as a row in `notification_log` with `channel='in_app'` whenever the corresponding event fires. Any authenticated user can receive in-app notifications — the feed is not Team-tier gated.
+- Disableable events (shared with the email channel): `task_due_today`, `daily_next_actions`, `project_needs_next_action`, `delegated_to_you`, `delegation_completed`, `connection_invite`. Backend `GET/PUT /v1/notification/settings` accepts an `in_app` channel alongside `email`. UI controls for the new events and the in-app channel toggle are Phase 3 (T-40).
+- Polling errors are swallowed silently so transient network issues don't surface as toasts.
 
 ---
 

@@ -1620,6 +1620,95 @@ export async function getEngage({tags = null} = {}) {
     }
 }
 
+// ── Connections (P2 — Team Tier Only) ──
+
+export async function inviteConnection(email) {
+    try {
+        const res = await httpApi.post('/v1/connections/invite', {email}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function acceptConnectionInvite(token) {
+    try {
+        const res = await httpApi.post(`/v1/connections/invite/${token}/accept`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function declineConnectionInvite(token) {
+    try {
+        const res = await httpApi.post(`/v1/connections/invite/${token}/decline`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listConnections() {
+    try {
+        const res = await httpApi.get('/v1/connections', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listPendingConnections() {
+    try {
+        const res = await httpApi.get('/v1/connections/pending', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function removeConnection(id) {
+    try {
+        const res = await httpApi.delete(`/v1/connections/${id}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// ── In-App Notifications (P2) ──
+
+export async function listNotifications({limit = 20, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/notifications', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function markNotificationRead(id) {
+    try {
+        const res = await httpApi.post(`/v1/notifications/${id}/read`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getUnreadNotificationCount() {
+    try {
+        const res = await httpApi.get('/v1/notifications/unread-count', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,
@@ -1770,6 +1859,17 @@ const apiClient = {
     // Google Auth API
     googleAuth,
     googleSso,
+    // Connections API (P2)
+    inviteConnection,
+    acceptConnectionInvite,
+    declineConnectionInvite,
+    listConnections,
+    listPendingConnections,
+    removeConnection,
+    // In-App Notifications API (P2)
+    listNotifications,
+    markNotificationRead,
+    getUnreadNotificationCount,
 }
 
 export default apiClient

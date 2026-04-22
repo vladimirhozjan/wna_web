@@ -38,6 +38,55 @@
     <div v-else class="topnav-auth-right">
       <QuickAddBtn class="quick-add-desktop" @add="onQuickAdd" />
 
+      <!-- Notification bell + dropdown -->
+      <Dropdown v-model="notifDropdownOpen" align="right" title="Notifications" class="notifications-dropdown">
+        <template #trigger>
+          <button
+            type="button"
+            class="notifications-btn"
+            :aria-label="`Notifications${notifUnread > 0 ? ' (' + notifUnread + ' unread)' : ''}`"
+          >
+            <svg class="notifications-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span v-if="notifUnread > 0" class="notifications-badge">{{ notifUnread > 99 ? '99+' : notifUnread }}</span>
+          </button>
+        </template>
+        <template #default="{ close }">
+          <div class="notifications-panel">
+            <div class="notifications-header">
+              <span class="fw-semibold">Notifications</span>
+              <span v-if="notifUnread > 0" class="text-body-s notifications-header-count">{{ notifUnread }} unread</span>
+            </div>
+
+            <div v-if="notifLoading && notifList.length === 0" class="notifications-state">
+              <Spinner :size="16" />
+            </div>
+
+            <div v-else-if="notifList.length === 0" class="notifications-state notifications-empty">
+              You're all caught up.
+            </div>
+
+            <ul v-else class="notifications-list">
+              <li
+                v-for="n in notifList"
+                :key="n.id"
+                class="notifications-item"
+                :class="{ 'notifications-item--unread': !n.read }"
+                @click="onNotifClick(n, close)"
+              >
+                <span v-if="!n.read" class="notifications-dot" aria-hidden="true"></span>
+                <div class="notifications-item-body">
+                  <span class="notifications-message">{{ n.message }}</span>
+                  <span class="text-footnote notifications-time">{{ formatNotifTime(n.created_at) }}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </template>
+      </Dropdown>
+
       <!-- Mobile hamburger (dashboard only) -->
       <button
         v-if="context === 'dashboard'"
@@ -71,16 +120,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useRouter } from "vue-router";
 import Btn from "./Btn.vue";
 import UserAvatar from "./UserAvatar.vue";
 import QuickAddBtn from "./QuickAddBtn.vue";
 import TopNavDropdown from "./TopNavDropdown.vue";
+import Dropdown from "./Dropdown.vue";
+import Spinner from "./Spinner.vue";
 import AppIcon from "../assets/AppIcon.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
 import { flagsModel } from "../scripts/core/flagsModel.js";
+import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
 
 const props = defineProps({
   authenticated: {
@@ -146,10 +198,78 @@ function onAvatarClick() {
 const { addStuff } = stuffModel();
 const toaster = errorModel();
 
-function truncateTitle(title, maxLen = 30) {
-  if (!title || title.length <= maxLen) return title;
-  return title.slice(0, maxLen).trim() + "…";
+// Notifications (P2)
+const notifModel = notificationInAppModel();
+const notifList = notifModel.notifications;
+const notifUnread = computed(() => notifModel.unreadCount.value);
+const notifLoading = computed(() => notifModel.loading.value);
+const notifDropdownOpen = ref(false);
+
+watch(notifDropdownOpen, async (open) => {
+  if (!open) return;
+  try {
+    await notifModel.loadList({ reset: true });
+  } catch {
+    // Silent — badge reflects last known state
+  }
+});
+
+async function onNotifClick(n, close) {
+  if (!n.read) {
+    try {
+      await notifModel.markRead(n.id);
+    } catch {
+      // ignore — optimistic update already rolled back
+    }
+  }
+  close();
+  routeForNotification(n);
 }
+
+function routeForNotification(n) {
+  if (!n) return;
+  if (n.entity_type === "stuff" && n.entity_id) {
+    router.push({ name: "stuff-detail", params: { id: n.entity_id } });
+  } else if (n.entity_type === "action" && n.entity_id) {
+    router.push({ name: "action-detail", params: { id: n.entity_id } });
+  } else if (n.entity_type === "project" && n.entity_id) {
+    router.push({ name: "project-detail", params: { id: n.entity_id } });
+  } else if (n.type === "connection_invite") {
+    router.push({ name: "settings" });
+  } else if (n.type === "daily_next_actions") {
+    router.push({ name: "next" });
+  } else if (n.type === "task_due_today") {
+    router.push({ name: "today" });
+  }
+}
+
+function formatNotifTime(dateStr) {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
+
+watch(
+    () => props.authenticated,
+    (v) => {
+      if (v) {
+        notifModel.startPolling();
+      } else {
+        notifModel.stopPolling();
+        notifModel.reset();
+      }
+    },
+    { immediate: false }
+);
 
 async function onQuickAdd(title) {
   try {
@@ -167,10 +287,14 @@ function onClickOutside(e) {
 
 onMounted(() => {
   document.addEventListener("click", onClickOutside);
+  if (props.authenticated) {
+    notifModel.startPolling();
+  }
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", onClickOutside);
+  notifModel.stopPolling();
 });
 </script>
 
@@ -247,6 +371,143 @@ onBeforeUnmount(() => {
 
 .avatar-container {
   position: relative;
+}
+
+/* Notifications bell */
+.notifications-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.notifications-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.notifications-icon {
+  display: block;
+}
+
+.notifications-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--color-action);
+  color: var(--color-btn-primary-text);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* Notifications panel (teleported — scoped styles still apply via data-v attrs) */
+.notifications-panel {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+}
+
+.notifications-header-count {
+  color: var(--color-text-tertiary);
+}
+
+.notifications-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+  color: var(--color-text-tertiary);
+}
+
+.notifications-empty {
+  font-size: var(--font-size-body-s);
+}
+
+.notifications-list {
+  list-style: none;
+  padding: 4px 0;
+  margin: 0;
+  overflow-y: auto;
+}
+
+.notifications-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.notifications-item:hover {
+  background: var(--color-bg-secondary);
+}
+
+.notifications-item--unread {
+  background: var(--color-bg-accent-light, var(--color-bg-secondary));
+}
+
+.notifications-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-action);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.notifications-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.notifications-message {
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.notifications-time {
+  color: var(--color-text-tertiary);
+}
+
+.notifications-dropdown {
+  display: inline-flex;
 }
 
 .desktop-only {
