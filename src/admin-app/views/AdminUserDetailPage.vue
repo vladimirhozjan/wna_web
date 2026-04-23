@@ -37,8 +37,8 @@
         </div>
       </div>
 
-      <!-- Actions card -->
-      <div v-if="!isSelf" class="actions-card card">
+      <!-- Actions card (super_admin only) -->
+      <div v-if="!isSelf && canMutate" class="actions-card card">
         <h3 class="text-label color-text-secondary actions-title">Actions</h3>
 
         <!-- Change Role -->
@@ -101,8 +101,11 @@
         </div>
       </div>
 
-      <p v-else class="text-body-s color-text-tertiary self-note">
+      <p v-else-if="isSelf" class="text-body-s color-text-tertiary self-note">
         You cannot modify your own account from this page. Use Settings to change your password or OTP.
+      </p>
+      <p v-else class="text-body-s color-text-tertiary self-note">
+        Read-only view. Super admin role required to modify admin accounts.
       </p>
     </div>
   </div>
@@ -115,7 +118,7 @@ import { format, parseISO } from 'date-fns'
 import Badge from '../components/Badge.vue'
 import Btn from '../components/Btn.vue'
 import Spinner from '../components/Spinner.vue'
-import { authModel } from '../scripts/core/authModel.js'
+import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
@@ -131,6 +134,7 @@ const actionLoading = ref(false)
 const selectedRole = ref('')
 
 const isSelf = computed(() => admin.value?.id === auth.currentAdmin.value?.id)
+const canMutate = computed(() => hasMinRole(auth.currentAdmin.value?.role, 'super_admin'))
 
 async function load() {
   loading.value = true

@@ -235,7 +235,7 @@ function routeForNotification(n) {
   } else if (n.entity_type === "project" && n.entity_id) {
     router.push({ name: "project-detail", params: { id: n.entity_id } });
   } else if (n.type === "connection_invite") {
-    router.push({ name: "settings" });
+    router.push({ name: "settings", query: { section: "connections" } });
   } else if (n.type === "daily_next_actions") {
     router.push({ name: "next" });
   } else if (n.type === "task_due_today") {

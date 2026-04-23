@@ -2,7 +2,13 @@
   <div class="page">
     <div class="page-header">
       <h1 class="page-title">Admin Users</h1>
-      <Btn variant="primary" size="sm" @click="showCreateModal = true">Create Admin</Btn>
+      <Btn
+          v-if="canMutate"
+          variant="primary"
+          size="sm"
+          @click="showCreateModal = true"
+      >Create Admin</Btn>
+      <span v-else class="text-caption color-text-tertiary">Read-only — super admin required to modify</span>
     </div>
 
     <DataTable
@@ -57,6 +63,7 @@
             <option value="viewer">Viewer</option>
             <option value="support">Support</option>
             <option value="admin">Admin</option>
+            <option value="super_admin">Super Admin</option>
           </select>
         </label>
 
@@ -76,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { format, parseISO } from 'date-fns'
 import DataTable from '../components/DataTable.vue'
@@ -86,10 +93,13 @@ import Btn from '../components/Btn.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const router = useRouter()
 const toaster = errorModel()
+const auth = authModel()
+const canMutate = computed(() => hasMinRole(auth.currentAdmin.value?.role, 'super_admin'))
 
 const columns = [
   { key: 'email', label: 'Email', sortable: false },

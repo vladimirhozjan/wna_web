@@ -24,6 +24,12 @@ export function dashboardModel() {
     const auditData = ref([])
     const auditLoading = ref(false)
 
+    const quickActions = ref([])
+    const quickActionsLoading = ref(false)
+
+    const storageStats = ref(null)
+    const storageStatsLoading = ref(false)
+
     const refreshInterval = ref(null)
 
     async function loadHealth() {
@@ -93,6 +99,30 @@ export function dashboardModel() {
         }
     }
 
+    async function loadQuickActions() {
+        quickActionsLoading.value = true
+        try {
+            const data = await apiClient.getDashboardQuickActions()
+            quickActions.value = Array.isArray(data.actions) ? data.actions : []
+        } catch {
+            quickActions.value = []
+        } finally {
+            quickActionsLoading.value = false
+        }
+    }
+
+    async function loadStorageStats() {
+        storageStatsLoading.value = true
+        try {
+            storageStats.value = await apiClient.getPlatformStorageStats()
+        } catch {
+            // 403 for viewer/support is expected — widget is admin+ only
+            storageStats.value = null
+        } finally {
+            storageStatsLoading.value = false
+        }
+    }
+
     async function refresh() {
         await Promise.all([
             loadHealth(),
@@ -101,6 +131,8 @@ export function dashboardModel() {
             loadSecurityAlerts(),
             loadGdpr(),
             loadRecentAudit(),
+            loadQuickActions(),
+            loadStorageStats(),
         ])
     }
 
@@ -130,6 +162,10 @@ export function dashboardModel() {
         gdprLoading,
         auditData,
         auditLoading,
+        quickActions,
+        quickActionsLoading,
+        storageStats,
+        storageStatsLoading,
         refresh,
         startAutoRefresh,
         stopAutoRefresh,

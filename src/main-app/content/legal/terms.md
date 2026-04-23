@@ -2,7 +2,7 @@
 
 **Last updated:** February 27, 2026
 
-These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **Valhalla core d.o.o.**, Nova vas 1, 2000 Maribor, Slovenia ("we", "us", "our", "Valhalla core").
+These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
 By creating an account or using the Service, you agree to be bound by these Terms. If you do not agree, do not use the Service.
 
@@ -158,11 +158,11 @@ Violation of these terms may result in suspension or termination of your account
 
 ### 7.1 Our Property
 
-The Service, including its design, source code, user interface, icons, graphics, and documentation, is owned by Valhalla core d.o.o. and is protected by copyright, trademark, and other intellectual property laws. All rights not expressly granted in these Terms are reserved.
+The Service, including its design, source code, user interface, icons, graphics, and documentation, is owned by QubForge, tehnološke rešitve, d.o.o. and is protected by copyright, trademark, and other intellectual property laws. All rights not expressly granted in these Terms are reserved.
 
 ### 7.2 Trademark Notice
 
-"WhatsNextAction" is a trademark of Valhalla core d.o.o.
+"WhatsNextAction" is a trademark of QubForge, tehnološke rešitve, d.o.o.
 
 "Getting Things Done" and "GTD" are registered trademarks of the David Allen Company. WhatsNextAction is an independent product and is not affiliated with, endorsed by, or sponsored by the David Allen Company.
 
@@ -234,7 +234,7 @@ If you are a consumer in the European Union, you benefit from mandatory consumer
 
 ## 10. Indemnification
 
-You agree to indemnify and hold harmless Valhalla core d.o.o. from and against any claims, damages, losses, or expenses (including reasonable legal fees) arising from:
+You agree to indemnify and hold harmless QubForge, tehnološke rešitve, d.o.o. from and against any claims, damages, losses, or expenses (including reasonable legal fees) arising from:
 
 - Your use of the Service in violation of these Terms
 - Your Content
@@ -310,7 +310,7 @@ Our email for dispute resolution purposes is: **info@whatsnextaction.com**
 
 ### 15.1 Entire Agreement
 
-These Terms, together with our [Privacy Policy](/legal/privacy), constitute the entire agreement between you and Valhalla core d.o.o. regarding the use of the Service.
+These Terms, together with our [Privacy Policy](/legal/privacy), constitute the entire agreement between you and QubForge, tehnološke rešitve, d.o.o. regarding the use of the Service.
 
 ### 15.2 Severability
 
@@ -328,6 +328,6 @@ You may not assign or transfer your rights or obligations under these Terms with
 
 If you have any questions about these Terms, contact us at:
 
-**Valhalla core d.o.o.**
-Nova vas 1, 2000 Maribor, Slovenia
+**QubForge, tehnološke rešitve, d.o.o.**
+Jakopičeva ulica 9, 2000 Maribor, Slovenia
 Email: **info@whatsnextaction.com**

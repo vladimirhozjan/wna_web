@@ -59,13 +59,13 @@ const routes = [
                 path: 'admins',
                 name: 'admins',
                 component: () => import('../views/AdminUsersPage.vue'),
-                meta: { requiresAuth: true, minRole: 'super_admin' }
+                meta: { requiresAuth: true, minRole: 'admin' }
             },
             {
                 path: 'admins/:id',
                 name: 'admin-detail',
                 component: () => import('../views/AdminUserDetailPage.vue'),
-                meta: { requiresAuth: true, minRole: 'super_admin' }
+                meta: { requiresAuth: true, minRole: 'admin' }
             },
             {
                 path: 'content/:userId',

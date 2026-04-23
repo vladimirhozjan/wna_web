@@ -20,17 +20,24 @@ export function connectionModel() {
         loading.value = true
         error.value = null
         try {
-            const [list, pending] = await Promise.all([
+            // Use allSettled so a 403 on one endpoint (e.g. non-Team tier seeing /v1/connections)
+            // doesn't block loading the other (e.g. received invitations).
+            const [listRes, pendingRes] = await Promise.allSettled([
                 apiClient.listConnections(),
                 apiClient.listPendingConnections(),
             ])
-            connections.value = list.connections || []
-            pendingSent.value = pending.sent || []
-            pendingReceived.value = pending.received || []
+            if (listRes.status === 'fulfilled') {
+                connections.value = listRes.value.connections || []
+            }
+            if (pendingRes.status === 'fulfilled') {
+                pendingSent.value = pendingRes.value.sent || []
+                pendingReceived.value = pendingRes.value.received || []
+            }
+            if (listRes.status === 'rejected' && pendingRes.status === 'rejected') {
+                error.value = pendingRes.reason
+                throw pendingRes.reason
+            }
             loaded.value = true
-        } catch (err) {
-            error.value = err
-            throw err
         } finally {
             loading.value = false
         }

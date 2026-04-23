@@ -137,8 +137,8 @@
           </Btn>
         </div>
 
-        <!-- Change Tier (super_admin only) -->
-        <div v-if="hasMinRole(role, 'super_admin')" class="action-row">
+        <!-- Change Tier (admin+) -->
+        <div v-if="hasMinRole(role, 'admin')" class="action-row">
           <div class="action-info">
             <span class="text-body-s fw-medium">Change Tier</span>
             <span class="text-caption color-text-tertiary">Update subscription tier</span>
@@ -160,8 +160,8 @@
           </div>
         </div>
 
-        <!-- Delete Account (super_admin only) -->
-        <div v-if="hasMinRole(role, 'super_admin')" class="action-row action-row--danger">
+        <!-- Delete Account (admin+) -->
+        <div v-if="hasMinRole(role, 'admin')" class="action-row action-row--danger">
           <div class="action-info">
             <span class="text-body-s fw-medium color-text-danger">Delete Account</span>
             <span class="text-caption color-text-tertiary">Soft-delete with 30-day grace period</span>

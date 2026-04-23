@@ -2,14 +2,14 @@
 
 **Last updated:** February 27, 2026
 
-This Privacy Policy explains how **Valhalla core d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
+This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
 By creating an account or using the Service, you acknowledge that you have read and understood this Privacy Policy.
 
 ## 1. Data Controller
 
-**Valhalla core d.o.o.**
-Nova vas 1, 2000 Maribor, Slovenia
+**QubForge, tehnološke rešitve, d.o.o.**
+Jakopičeva ulica 9, 2000 Maribor, Slovenia
 
 For all privacy-related inquiries, please contact us at:
 **info@whatsnextaction.com**
@@ -211,6 +211,6 @@ We encourage you to review this Privacy Policy periodically. Your continued use 
 
 If you have any questions about this Privacy Policy or our data practices, contact us at:
 
-**Valhalla core d.o.o.**
-Nova vas 1, 2000 Maribor, Slovenia
+**QubForge, tehnološke rešitve, d.o.o.**
+Jakopičeva ulica 9, 2000 Maribor, Slovenia
 Email: **info@whatsnextaction.com**

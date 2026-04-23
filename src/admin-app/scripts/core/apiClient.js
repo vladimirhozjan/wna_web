@@ -182,6 +182,24 @@ export async function getDashboardGdprRequests() {
     }
 }
 
+export async function getDashboardQuickActions() {
+    try {
+        const res = await httpApi.get('/admin/dashboard/quick-actions')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformStorageStats() {
+    try {
+        const res = await httpApi.get('/admin/data-stats/storage')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getAuditLog(params = {}) {
     try {
         const res = await httpApi.get('/admin/audit-log', { params })
@@ -565,6 +583,8 @@ export default {
     getDashboardRecentActivity,
     getDashboardSecurityAlerts,
     getDashboardGdprRequests,
+    getDashboardQuickActions,
+    getPlatformStorageStats,
     getAuditLog,
     exportAuditLog,
     listAdmins,

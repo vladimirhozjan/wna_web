@@ -302,126 +302,123 @@
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('connections') }">&#8250;</span>
           </div>
           <div v-if="isExpanded('connections')" class="settings-section-body">
-            <!-- Non-Team tier: upgrade gate -->
-            <template v-if="!isTeamTier">
-              <div class="settings-row settings-row--column">
+            <!-- Invite form — Team tier only -->
+            <div v-if="isTeamTier" class="settings-row settings-row--column">
+              <span class="settings-label">Invite someone by email</span>
+              <p class="text-body-s settings-hint">
+                They'll receive an invitation. If they're not on WhatsNextAction yet, they'll get a link to sign up.
+              </p>
+              <div class="connections-invite-row">
+                <Inpt
+                    v-model="inviteEmail"
+                    v-model:error="inviteError"
+                    type="email"
+                    placeholder="name@example.com"
+                    @enter="onInvite"
+                />
+                <Btn
+                    variant="primary"
+                    size="md"
+                    :loading="inviting"
+                    :disabled="!inviteEmail.trim() || inviting"
+                    @click="onInvite"
+                >Send</Btn>
+              </div>
+            </div>
+
+            <!-- Loading state -->
+            <div v-if="connections.loading.value && !connections.loaded.value" class="settings-loading">
+              <Spinner :size="16" />
+              <span>Loading connections...</span>
+            </div>
+
+            <template v-else>
+              <!-- Received invitations (all tiers) -->
+              <div v-if="connections.pendingReceived.value.length > 0" class="settings-row settings-row--column">
+                <span class="settings-label">Received invitations</span>
+                <p v-if="!isTeamTier" class="text-body-s settings-hint">
+                  Accepting a connection requires the Team plan. You can decline any invitation on your current plan.
+                </p>
+                <div class="connections-list">
+                  <div v-for="inv in connections.pendingReceived.value" :key="inv.id" class="connection-item">
+                    <div class="connection-info">
+                      <span class="fw-medium">{{ inv.inviter_email }}</span>
+                      <span class="text-body-s connection-meta">invited you · {{ formatRelative(inv.created) }}</span>
+                    </div>
+                    <div class="connection-actions">
+                      <Btn
+                          variant="primary"
+                          size="sm"
+                          :loading="actingId === inv.id && actingType === 'accept'"
+                          :disabled="!!actingId"
+                          @click="onAccept(inv)"
+                      >Accept</Btn>
+                      <Btn
+                          variant="secondary"
+                          size="sm"
+                          :loading="actingId === inv.id && actingType === 'decline'"
+                          :disabled="!!actingId"
+                          @click="onDecline(inv)"
+                      >Decline</Btn>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Non-Team tier: explainer + upgrade CTA (when no invites pending) -->
+              <div v-if="!isTeamTier && connections.pendingReceived.value.length === 0" class="settings-row settings-row--column">
                 <p class="text-body-s settings-hint">
-                  Connections let you collaborate with other WhatsNextAction users — delegate actions and share projects.
-                  Available on the Team plan.
+                  Connections let you collaborate with other WhatsNextAction users — delegate actions and share projects. Available on the Team plan.
                 </p>
                 <Btn variant="primary" size="sm" @click="openUpgrade">Upgrade to Team</Btn>
               </div>
-            </template>
 
-            <!-- Team tier -->
-            <template v-else>
-              <!-- Invite form -->
-              <div class="settings-row settings-row--column">
-                <span class="settings-label">Invite someone by email</span>
-                <p class="text-body-s settings-hint">
-                  They'll receive an invitation. If they're not on WhatsNextAction yet, they'll get a link to sign up.
-                </p>
-                <div class="connections-invite-row">
-                  <Inpt
-                      v-model="inviteEmail"
-                      v-model:error="inviteError"
-                      type="email"
-                      placeholder="name@example.com"
-                      @enter="onInvite"
-                  />
-                  <Btn
-                      variant="primary"
-                      size="md"
-                      :loading="inviting"
-                      :disabled="!inviteEmail.trim() || inviting"
-                      @click="onInvite"
-                  >Send</Btn>
+              <!-- Sent invitations — Team tier only -->
+              <div v-if="isTeamTier && connections.pendingSent.value.length > 0" class="settings-row settings-row--column">
+                <span class="settings-label">Pending invitations</span>
+                <div class="connections-list">
+                  <div v-for="inv in connections.pendingSent.value" :key="inv.id" class="connection-item">
+                    <div class="connection-info">
+                      <span class="fw-medium">{{ inv.invitee_email }}</span>
+                      <span class="text-body-s connection-meta">sent · {{ formatRelative(inv.created) }}</span>
+                    </div>
+                    <div class="connection-actions">
+                      <Btn
+                          variant="ghost"
+                          size="sm"
+                          :loading="actingId === inv.id && actingType === 'remove'"
+                          :disabled="!!actingId"
+                          @click="onRemove(inv)"
+                      >Cancel</Btn>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Load state -->
-              <div v-if="connections.loading.value && !connections.loaded.value" class="settings-loading">
-                <Spinner :size="16" />
-                <span>Loading connections...</span>
+              <!-- Accepted connections — Team tier only -->
+              <div v-if="isTeamTier" class="settings-row settings-row--column">
+                <span class="settings-label">Connections ({{ connections.connections.value.length }})</span>
+                <div v-if="connections.connections.value.length === 0" class="settings-empty">
+                  No connections yet. Invite someone above to get started.
+                </div>
+                <div v-else class="connections-list">
+                  <div v-for="conn in connections.connections.value" :key="conn.id" class="connection-item">
+                    <div class="connection-info">
+                      <span class="fw-medium">{{ conn.email }}</span>
+                      <span class="text-body-s connection-meta">connected · {{ formatRelative(conn.connected_since) }}</span>
+                    </div>
+                    <div class="connection-actions">
+                      <Btn
+                          variant="ghost-danger"
+                          size="sm"
+                          :loading="actingId === conn.id && actingType === 'remove'"
+                          :disabled="!!actingId"
+                          @click="onRemove(conn)"
+                      >Remove</Btn>
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              <template v-else>
-                <!-- Received invitations -->
-                <div v-if="connections.pendingReceived.value.length > 0" class="settings-row settings-row--column">
-                  <span class="settings-label">Received invitations</span>
-                  <div class="connections-list">
-                    <div v-for="inv in connections.pendingReceived.value" :key="inv.id" class="connection-item">
-                      <div class="connection-info">
-                        <span class="fw-medium">{{ inv.inviter_email }}</span>
-                        <span class="text-body-s connection-meta">invited you · {{ formatRelative(inv.created) }}</span>
-                      </div>
-                      <div class="connection-actions">
-                        <Btn
-                            variant="primary"
-                            size="sm"
-                            :loading="actingId === inv.id && actingType === 'accept'"
-                            :disabled="!!actingId"
-                            @click="onAccept(inv)"
-                        >Accept</Btn>
-                        <Btn
-                            variant="secondary"
-                            size="sm"
-                            :loading="actingId === inv.id && actingType === 'decline'"
-                            :disabled="!!actingId"
-                            @click="onDecline(inv)"
-                        >Decline</Btn>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Sent invitations -->
-                <div v-if="connections.pendingSent.value.length > 0" class="settings-row settings-row--column">
-                  <span class="settings-label">Pending invitations</span>
-                  <div class="connections-list">
-                    <div v-for="inv in connections.pendingSent.value" :key="inv.id" class="connection-item">
-                      <div class="connection-info">
-                        <span class="fw-medium">{{ inv.invitee_email }}</span>
-                        <span class="text-body-s connection-meta">sent · {{ formatRelative(inv.created) }}</span>
-                      </div>
-                      <div class="connection-actions">
-                        <Btn
-                            variant="ghost"
-                            size="sm"
-                            :loading="actingId === inv.id && actingType === 'remove'"
-                            :disabled="!!actingId"
-                            @click="onRemove(inv)"
-                        >Cancel</Btn>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Accepted connections -->
-                <div class="settings-row settings-row--column">
-                  <span class="settings-label">Connections ({{ connections.connections.value.length }})</span>
-                  <div v-if="connections.connections.value.length === 0" class="settings-empty">
-                    No connections yet. Invite someone above to get started.
-                  </div>
-                  <div v-else class="connections-list">
-                    <div v-for="conn in connections.connections.value" :key="conn.id" class="connection-item">
-                      <div class="connection-info">
-                        <span class="fw-medium">{{ conn.email }}</span>
-                        <span class="text-body-s connection-meta">connected · {{ formatRelative(conn.connected_since) }}</span>
-                      </div>
-                      <div class="connection-actions">
-                        <Btn
-                            variant="ghost-danger"
-                            size="sm"
-                            :loading="actingId === conn.id && actingType === 'remove'"
-                            :disabled="!!actingId"
-                            @click="onRemove(conn)"
-                        >Remove</Btn>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
             </template>
           </div>
         </div>
@@ -573,8 +570,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import SearchIcon from '../../assets/SearchIcon.vue'
 import Btn from '../../components/Btn.vue'
@@ -598,6 +595,7 @@ import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import Spinner from '../../components/Spinner.vue'
 
 const router = useRouter()
+const route = useRoute()
 const auth = authModel()
 const toaster = errorModel()
 const confirm = confirmModel()
@@ -899,13 +897,25 @@ async function onInvite() {
 }
 
 async function onAccept(inv) {
+  if (!isTeamTier.value) {
+    upgrade.show({
+      message: 'Accepting connections is available on the Team plan. Upgrade to connect with other WhatsNextAction users — delegate actions and share projects.'
+    })
+    return
+  }
   actingId.value = inv.id
   actingType.value = 'accept'
   try {
     // In-app acceptance uses the invitation id as the token
     await connections.accept(inv.token || inv.id)
   } catch (err) {
-    toaster.push(err?.message || 'Could not accept invitation')
+    if (err?.status === 403) {
+      upgrade.show({
+        message: 'Accepting connections requires the Team plan.'
+      })
+    } else {
+      toaster.push(err?.message || 'Could not accept invitation')
+    }
   } finally {
     actingId.value = null
     actingType.value = null
@@ -982,12 +992,21 @@ onMounted(() => {
   notifications.load().catch(() => {
     // Notification settings will fall back to defaults
   })
-  if (isTeamTier.value) {
-    connections.loadAll().catch(() => {
-      // Silent — UI handles empty state
-    })
-  }
+  connections.loadAll().catch(() => {
+    // Silent — UI handles empty state. Non-Team users still need received invitations loaded.
+  })
+
+  applySectionQuery()
 })
+
+watch(() => route.query.section, applySectionQuery)
+
+function applySectionQuery() {
+  const target = route.query.section
+  if (typeof target === 'string' && SECTION_KEYWORDS[target]) {
+    expandedSections.value.add(target)
+  }
+}
 
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)

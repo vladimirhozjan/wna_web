@@ -1418,30 +1418,40 @@ Clicking the button opens an upward popover with two options:
 
 Connections are bidirectional peer-to-peer relationships between Team tier users. They are the foundation for P2 collaboration features (delegation, shared projects). Connections are flat — there is no "team" entity, just a contact list of other WNA users you collaborate with.
 
-### 30.1 Eligibility
+### 30.1 Tier Eligibility
 
-- Available only to **Team tier** users. Free and Pro tier users see an upgrade prompt with a link to the pricing page.
-- Backend enforces the tier gate: all `/v1/connections/*` write endpoints return `403` for non-Team users.
-- If a user downgrades from Team, the backend auto-removes all their connections.
+Connections are a **Team tier** feature, but received invitations are visible to all tiers so recipients always know who is trying to connect.
+
+| Capability | Free | Pro | Team |
+|------------|------|-----|------|
+| See received invitations | Yes | Yes | Yes |
+| Decline received invitations | Yes | Yes | Yes |
+| Accept received invitations | No (triggers upgrade modal) | No (triggers upgrade modal) | Yes |
+| Send invitations | No | No | Yes |
+| See accepted connections list | No | No | Yes |
+| See sent invitations list | No | No | Yes |
+
+Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{token}/accept` return `403 Not Team tier` for Free/Pro. `GET /v1/connections/pending` is open to all tiers so received invitations can be shown. If a user downgrades from Team, the backend auto-removes all their connections.
 
 ### 30.2 UI Location
 
 - Settings → **Connections** section (collapsible card).
-- The section header shows a small numeric badge when there are unopened received invitations.
+- The section header shows a small numeric badge when there are unseen received invitations (badge shown regardless of tier).
 
-### 30.3 Invite by Email
+### 30.3 Invite by Email (Team tier only)
 
-- Email input with a **Send** button.
+- Email input with a **Send** button — rendered only for Team tier users.
 - Frontend validates the address is a valid email and not the current user's own address before sending.
 - On success: a toast confirms the invitation was sent, and the invitation appears in the "Pending invitations" list.
 - If the invitee already has a WNA account, they receive an in-app notification + email. If they do not yet have an account, the backend email includes a registration link; the invitation stays pending until they register and upgrade to Team.
 
-### 30.4 Received Invitations
+### 30.4 Received Invitations (all tiers)
 
 - Each pending received invitation displays the inviter's email and the time since it was sent.
-- **Accept** and **Decline** buttons handle the invitation in place (no separate page).
-- Accept: backend adds the connection bidirectionally; the invitation disappears from the received list and the contact appears in the accepted list.
-- Decline: the invitation is removed from the received list.
+- **Accept** and **Decline** buttons are shown for every tier.
+- **Team tier:** Accept calls the backend; on success the invitation disappears from the received list and the contact appears in the accepted list. Decline removes the invitation from the received list.
+- **Free / Pro tier:** clicking Accept opens the standard upgrade modal with a tier-specific message ("Accepting connections is available on the Team plan…") — no backend call is made. A hint above the list reminds the user: *"Accepting a connection requires the Team plan. You can decline any invitation on your current plan."* Decline still works normally.
+- If the backend returns `403` on Accept (e.g. tier changed mid-session), the upgrade modal is shown as a fallback.
 
 ### 30.5 Sent Invitations
 

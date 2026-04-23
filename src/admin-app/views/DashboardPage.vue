@@ -108,25 +108,37 @@
         <p v-else class="text-caption color-text-tertiary">Unable to load GDPR data.</p>
       </Card>
 
-      <!-- Quick Actions -->
+      <!-- Platform Storage (admin+) -->
+      <Card v-if="hasMinRole(role, 'admin')" title="Platform Storage">
+        <div v-if="dashboard.storageStatsLoading.value" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else-if="dashboard.storageStats.value" class="stats-grid">
+          <Stat label="Attachments" :value="formatBytes(dashboard.storageStats.value.total_attachment_bytes)" />
+          <Stat label="Reference Files" :value="formatBytes(dashboard.storageStats.value.total_reference_bytes)" />
+          <Stat label="Users with Data" :value="dashboard.storageStats.value.total_users_with_data" />
+        </div>
+        <p v-else class="text-caption color-text-tertiary">Unable to load storage stats.</p>
+      </Card>
+
+      <!-- Quick Actions (backend-driven, role-aware) -->
       <Card title="Quick Actions">
-        <div class="quick-actions">
-          <RouterLink v-if="hasMinRole(role, 'support')" to="/users" class="quick-action text-body-s">
-            <svg class="quick-action-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="6" r="3"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
-            Search Users
+        <div v-if="dashboard.quickActionsLoading.value && !dashboard.quickActions.value.length" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else class="quick-actions">
+          <RouterLink
+              v-for="action in dashboard.quickActions.value"
+              :key="action.path"
+              :to="action.path"
+              class="quick-action text-body-s"
+          >
+            <svg class="quick-action-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="10" cy="10" r="7"/><path d="M7 10h6M10 7v6"/>
+            </svg>
+            {{ action.label }}
           </RouterLink>
-          <RouterLink to="/health" class="quick-action text-body-s">
-            <svg class="quick-action-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10h4l2-5 3 10 2-5h5"/></svg>
-            System Health
-          </RouterLink>
-          <RouterLink v-if="hasMinRole(role, 'admin')" to="/audit" class="quick-action text-body-s">
-            <svg class="quick-action-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2h10v16H5z"/><line x1="7.5" y1="6" x2="12.5" y2="6"/><line x1="7.5" y1="9" x2="12.5" y2="9"/></svg>
-            Audit Log
-          </RouterLink>
-          <RouterLink v-if="hasMinRole(role, 'admin')" to="/feature-flags" class="quick-action text-body-s">
-            <svg class="quick-action-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v16"/><path d="M3 3h11l-3 4 3 4H3"/></svg>
-            Feature Flags
-          </RouterLink>
+          <p v-if="!dashboard.quickActions.value.length" class="text-caption color-text-tertiary">No actions available.</p>
         </div>
       </Card>
     </div>
@@ -182,6 +194,16 @@ const ACTION_LABELS = {
 
 function formatAction(action) {
   return ACTION_LABELS[action] || action.replace(/_/g, ' ')
+}
+
+function formatBytes(bytes) {
+  if (bytes == null) return '—'
+  if (bytes === 0) return '0 B'
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  let i = 0
+  let size = bytes
+  while (size >= 1024 && i < units.length - 1) { size /= 1024; i++ }
+  return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
 }
 
 function formatTime(timestamp) {

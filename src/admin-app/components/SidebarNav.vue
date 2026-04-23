@@ -70,7 +70,7 @@ const NAV_ITEMS = [
   {
     label: 'Admin Users',
     route: '/admins',
-    minRole: 'super_admin',
+    minRole: 'admin',
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="6" r="3"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M14.5 3.5l1.5 1.5-3 3-1.5-1.5"/></svg>'
   },
 ]

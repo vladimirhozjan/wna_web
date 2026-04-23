@@ -11654,16 +11654,16 @@ Use the table below to log each full or partial test run.
 
 ## Section 30: Connections (Team Tier)
 
-### TC-417: Connections Section Gated Behind Team Tier
+### TC-417: Connections Section for Non-Team Users Without Pending Invites
 **Priority:** High | **Area:** Connections
 
-**Preconditions:** User is logged in on Free or Pro tier.
+**Preconditions:** User is logged in on Free or Pro tier with no pending received invitations.
 
 **Steps:**
 1. Navigate to Settings
 2. Expand the Connections section
 
-**Expected Result:** The section shows an explanation that Connections require the Team plan, with an "Upgrade to Team" button. No invite form is shown. Clicking the upgrade button opens the upgrade modal.
+**Expected Result:** No invite form, sent list, or accepted connections list is rendered. The section shows an explanatory paragraph that Connections require the Team plan, with an "Upgrade to Team" button. Clicking the upgrade button opens the upgrade modal.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11712,10 +11712,10 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-420: Accept Received Invitation
+### TC-420: Accept Received Invitation (Team Tier)
 **Priority:** High | **Area:** Connections
 
-**Preconditions:** User has a pending received invitation in Settings → Connections.
+**Preconditions:** User is on **Team tier** and has a pending received invitation in Settings → Connections.
 
 **Steps:**
 1. Expand the Connections section
@@ -11729,16 +11729,37 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-421: Decline Received Invitation
+### TC-420b: Accept Received Invitation on Free/Pro Tier Triggers Upgrade
+**Priority:** High | **Area:** Connections
+
+**Preconditions:** User is on **Free or Pro tier** and has a pending received invitation in Settings → Connections.
+
+**Steps:**
+1. Expand the Connections section
+2. Observe the hint above the received invitations list
+3. Click Accept on the received invitation
+
+**Expected Result:**
+1. The section renders the received invitation with both Accept and Decline buttons visible.
+2. A hint reads: "Accepting a connection requires the Team plan. You can decline any invitation on your current plan."
+3. Clicking Accept opens the upgrade modal with a message about connections requiring the Team plan. No backend call is made; the invitation stays in the received list (Network tab shows no `/v1/connections/invite/*/accept` request).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-421: Decline Received Invitation (All Tiers)
 **Priority:** Medium | **Area:** Connections
 
-**Preconditions:** User has a pending received invitation in Settings → Connections.
+**Preconditions:** User has a pending received invitation in Settings → Connections. Run this test once on Team tier and once on Free/Pro tier.
 
 **Steps:**
 1. Expand the Connections section
 2. Click Decline on the received invitation
 
-**Expected Result:** The invitation disappears from the "Received invitations" list and no new connection is created.
+**Expected Result:** The invitation disappears from the "Received invitations" list and no new connection is created. Decline works on every tier (backend does not gate decline on tier).
 
 | Date | P/F | Comment |
 |------|-----|---------|

@@ -34,6 +34,9 @@ export function notificationInAppModel() {
             if (typeof data.unread_count === 'number') unreadCount.value = data.unread_count
             loaded.value = true
             return data
+        } catch (err) {
+            if (import.meta.env.DEV) console.warn('[notifications] list failed:', err)
+            throw err
         } finally {
             loading.value = false
         }
@@ -43,8 +46,8 @@ export function notificationInAppModel() {
         try {
             const data = await apiClient.getUnreadNotificationCount()
             unreadCount.value = data.count || 0
-        } catch {
-            // silent — tier-restricted endpoints return 403 for non-team users
+        } catch (err) {
+            if (import.meta.env.DEV) console.warn('[notifications] unread-count failed:', err)
         }
     }
 
