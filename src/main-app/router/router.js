@@ -40,6 +40,7 @@ const routes = [
     {path: '/projects', name: 'projects', component: ProjectsPage},
     {path: '/reference', name: 'reference', component: ReferencePage},
     {path: '/settings', name: 'settings', component: SettingsPage},
+    {path: '/settings/:section', redirect: to => ({path: '/settings', query: {section: to.params.section}})},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},
     {path: '/completed', name: 'completed', component: CompletedPage},

@@ -19,7 +19,7 @@
 
 <script setup>
 import {ref, watch} from 'vue'
-import {useRouter} from 'vue-router'
+import {useRouter, useRoute} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import {flagsModel} from '../../scripts/core/flagsModel.js'
@@ -43,7 +43,14 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const route = useRoute()
 const { isBeta } = flagsModel()
+
+function resolveRedirect() {
+  const r = route.query.redirect
+  if (typeof r === 'string' && r.startsWith('/') && !r.startsWith('//')) return r
+  return null
+}
 
 const authMode = ref(null)
 
@@ -65,12 +72,15 @@ function closeAuth() {
 
 function onSuccess() {
   closeAuth()
-  router.push({name: 'engage'})
+  const redirect = resolveRedirect()
+  if (redirect) router.push(redirect)
+  else router.push({name: 'engage'})
 }
 
 function onSuccessPasswordReset() {
   closeAuth()
-  router.push({name: 'login'})
+  const redirect = resolveRedirect()
+  router.push({name: 'login', query: redirect ? {redirect} : {}})
 }
 </script>
 

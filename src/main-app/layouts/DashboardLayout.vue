@@ -99,7 +99,7 @@ watch(
     (v) => {
       if (!v) {
         isSidebarOpen.value = false;
-        router.push({ name: "landing" });
+        router.push({ name: "login", query: { redirect: router.currentRoute.value.fullPath } });
       }
     }
 );
@@ -111,7 +111,7 @@ watch(() => router.currentRoute.value.path, () => {
 
 onMounted(() => {
   if (!auth.isAuthenticated.value) {
-    router.push({ name: "landing" });
+    router.push({ name: "login", query: { redirect: router.currentRoute.value.fullPath } });
   } else {
     // Load user settings from API when entering dashboard
     if (!settings.state.loaded) {
