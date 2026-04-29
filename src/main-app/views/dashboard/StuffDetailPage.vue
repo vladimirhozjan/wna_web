@@ -241,6 +241,7 @@ import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
+import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
@@ -264,6 +265,7 @@ const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
+useAutoGrow(descriptionInput)
 const detailBodyRef = ref(null)
 
 // Auto-hiding scrollbar

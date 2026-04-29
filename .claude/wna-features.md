@@ -191,8 +191,10 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 ### 2.9 Route Protection
 
-- Dashboard pages are protected at the layout level: `DashboardLayout` redirects to the landing page on mount if not authenticated
+- Protected routes are guarded globally in `router.beforeEach`: a public-route allowlist (landing, login, register, forgot, reset, reset-password, verify-email, google-sso, pricing, help/*, legal/*) is checked first; any other route requires authentication
+- **Deep-link login flow:** When an unauthenticated user opens a protected URL (e.g. an email link to `/overdue`, `/project/:id`, `/settings/connections`), the guard redirects to `/login?redirect=<original-fullPath>`. The `LandingPage` opens the `AuthDialog` in login mode. After successful login or registration, the user is navigated to the original `redirect` path instead of the default `/engage`. The `redirect` query is also preserved through the password-reset → login hop. Only same-origin paths (starting with `/` and not `//`) are honored to prevent open-redirect abuse.
 - If authentication state changes mid-session (e.g., cross-tab logout), the dashboard reactively redirects to landing
+- `/settings/:section` is rewritten to `/settings?section=:section` so email links like `/settings/connections` resolve to the corresponding expanded section in `SettingsPage`
 - A catch-all route (`/:pathMatch(.*)*`) redirects unknown URLs to `/`
 
 ---

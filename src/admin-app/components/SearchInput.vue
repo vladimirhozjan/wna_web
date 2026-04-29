@@ -11,7 +11,7 @@
         type="text"
         class="text-body-s"
         @input="onInput"
-        @keydown.escape="onClear"
+        @keydown.esc="onClear"
     />
     <button
         v-if="modelValue"

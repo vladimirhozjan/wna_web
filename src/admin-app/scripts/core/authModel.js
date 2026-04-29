@@ -164,22 +164,6 @@ export function authModel() {
         }
     }
 
-    async function resetOtp(code) {
-        loading.value = true
-        error.value = null
-
-        try {
-            const data = await apiClient.resetOtp(code)
-            await _forceRefreshToken()
-            return data
-        } catch (err) {
-            error.value = err
-            throw err
-        } finally {
-            loading.value = false
-        }
-    }
-
     function logout() {
         currentAdmin.value = null
         isAuthenticated.value = false

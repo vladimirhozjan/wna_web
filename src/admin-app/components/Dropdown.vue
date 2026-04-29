@@ -281,7 +281,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .dropdown-item {
     padding: 12px 16px;
-    font-size: var(--font-size-body-l);
+    font-size: var(--font-size-md);
   }
 }
 </style>

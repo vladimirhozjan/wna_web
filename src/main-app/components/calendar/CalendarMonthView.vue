@@ -386,11 +386,11 @@ function onDrop(day, event) {
 
   .month-view__header-cell {
     padding: 8px 4px;
-    font-size: var(--font-size-footnote);
+    font-size: var(--font-size-caption);
   }
 
   .month-view__day-number {
-    font-size: var(--font-size-footnote);
+    font-size: var(--font-size-caption);
     padding: 2px 4px;
   }
 }

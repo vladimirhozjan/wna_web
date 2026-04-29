@@ -206,12 +206,12 @@ async function doResend() {
 }
 
 .verify-icon--warning {
-  background: var(--color-warning-subtle, #fff3cd);
-  color: var(--color-warning, #856404);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
 }
 
 .verify-icon--error {
-  background: var(--color-danger-subtle, #f8d7da);
+  background: var(--color-danger-bg-subtle);
   color: var(--color-danger);
 }
 </style>

@@ -27,7 +27,26 @@
       "Bash(grep:*)",
       "Bash(/Users/vladimirhozjan/Documents/wna_web/develop-a/wna_test_cases.md:*)",
       "Bash(find /Users/vladimirhozjan/Documents/wna_web/develop-a -name *api*.md -type f)",
-      "Bash(find /Users/vladimirhozjan/Documents/wna_web/develop-a -type d -name *landing* -o -type d -name *Landing*)"
+      "Bash(find /Users/vladimirhozjan/Documents/wna_web/develop-a -type d -name *landing* -o -type d -name *Landing*)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(xmllint --version)",
+      "Bash(xmllint --xpath \"//problem\" /Users/vladimirhozjan/Documents/wna_web/develop-a/ES6MissingAwait.xml)",
+      "Bash(xmllint --xpath \"//problem[highlighted_element='loadQuota' or highlighted_element='model.loadQuota' or highlighted_element='loadSessions']\" /Users/vladimirhozjan/Documents/wna_web/develop-a/ES6MissingAwait.xml)",
+      "Bash(xmllint --xpath \"//problem\" /Users/vladimirhozjan/Documents/wna_web/develop-a/JSValidateTypes.xml)",
+      "Bash(xmllint --xpath \"//problem\" /Users/vladimirhozjan/Documents/wna_web/develop-a/JSUnusedLocalSymbols.xml)",
+      "Bash(xmllint --xpath \"//problem\" /Users/vladimirhozjan/Documents/wna_web/develop-a/Annotator.xml)",
+      "Bash(xmllint --xpath \"/problems/problem[position\\(\\) &lt; 20]\" /Users/vladimirhozjan/Documents/wna_web/develop-a/JSUnresolvedReference.xml)",
+      "Bash(xmllint --xpath '/problems/problem[contains\\(file/text\\(\\),\"SettingsPage.vue\"\\)]' /Users/vladimirhozjan/Documents/wna_web/develop-a/JSUnresolvedReference.xml)",
+      "Bash(xmllint --xpath '/problems/problem[position\\(\\) &lt; 8]' /Users/vladimirhozjan/Documents/wna_web/develop-a/HtmlUnknownTag.xml echo \"---\" xmllint --xpath '/problems/problem' /Users/vladimirhozjan/Documents/wna_web/develop-a/HtmlUnknownTag.xml)",
+      "Bash(xmllint --xpath \"/problems/problem[position\\(\\) &lt; 5]\" /Users/vladimirhozjan/Documents/wna_web/develop-a/DuplicatedCode.xml)",
+      "Bash(xmllint --xpath '/problems/problem' /Users/vladimirhozjan/Documents/wna_web/develop-a/JSUnusedGlobalSymbols.xml)",
+      "Bash(xmllint --xpath '/problems/problem' /Users/vladimirhozjan/Documents/wna_web/develop-a/MarkdownIncorrectTableFormatting.xml)",
+      "Bash(sed -n '1,8p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/UserAvatar.vue)",
+      "Bash(sed -n '220,226p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/ContextFilter.vue)",
+      "Bash(sed -n '85,90p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/Btn.vue)",
+      "Bash(sed -n '150,158p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/ItemMoveDropdown.vue)",
+      "Bash(sed -n '172,178p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/Select.vue)",
+      "Bash(xmllint --xpath '/problems/problem' /Users/vladimirhozjan/Documents/wna_web/develop-a/SpellCheckingInspection.xml)"
     ]
   }
 }

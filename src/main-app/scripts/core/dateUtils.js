@@ -136,7 +136,6 @@ export function getDateRange(date, viewMode, weekStartsOn = 0) {
 }
 
 export function navigateDate(date, viewMode, direction) {
-    const amount = direction === 'next' ? 1 : -1
     switch (viewMode) {
         case 'day':
             return direction === 'next' ? addDays(date, 1) : subDays(date, 1)

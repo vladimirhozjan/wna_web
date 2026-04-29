@@ -172,7 +172,7 @@ onUnmounted(() => {
 }
 
 .select-trigger:hover {
-  border-color: var(--color-border);
+  border-color: var(--color-border-light);
 }
 
 .select-trigger--open {

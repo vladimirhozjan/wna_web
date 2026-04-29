@@ -1398,11 +1398,10 @@ export async function uploadAttachment(entityType, itemId, file, onProgress = nu
 
 export async function downloadAttachment(entityType, itemId, attachmentId) {
     try {
-        const res = await httpApi.get(
+        return await httpApi.get(
             `/v1/${entityType}/${itemId}/attachments/${attachmentId}/download`,
             {headers: authHeaders(), responseType: 'blob'}
         )
-        return res
     } catch (err) {
         throw normalizeError(err)
     }

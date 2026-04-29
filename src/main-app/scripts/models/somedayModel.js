@@ -9,6 +9,10 @@ function truncateTitle(title, maxLen = 30) {
     return title.slice(0, maxLen).trim() + '\u2026'
 }
 
+function throwUnknownType(type) {
+    throw new Error(`Unknown item type: ${type}`)
+}
+
 const items = ref([])
 const loading = ref(false)
 const error = ref(null)
@@ -78,7 +82,7 @@ export function somedayModel() {
                     await apiClient.activateProject(item.id)
                     break
                 default:
-                    throw new Error(`Unknown item type: ${item.type}`)
+                    throwUnknownType(item.type)
             }
 
             items.value = items.value.filter(i => i.id !== item.id)
@@ -109,7 +113,7 @@ export function somedayModel() {
                     await apiClient.trashProject(item.id)
                     break
                 default:
-                    throw new Error(`Unknown item type: ${item.type}`)
+                    throwUnknownType(item.type)
             }
 
             items.value = items.value.filter(i => i.id !== item.id)
@@ -140,7 +144,7 @@ export function somedayModel() {
                     await apiClient.updateProject(item.id, data)
                     break
                 default:
-                    throw new Error(`Unknown item type: ${item.type}`)
+                    throwUnknownType(item.type)
             }
         } catch (err) {
             error.value = err

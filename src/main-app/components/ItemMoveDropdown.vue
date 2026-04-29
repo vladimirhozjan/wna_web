@@ -151,6 +151,6 @@ function onMove(destination) {
 }
 
 .dropdown-item--danger:hover {
-  background: var(--color-danger-bg);
+  background: var(--color-danger-bg-subtle);
 }
 </style>

@@ -12,7 +12,7 @@
           :disabled="disabled"
           @input="onHourInput"
           @focus="open = 'hour'"
-          @keydown.escape="open = null"
+          @keydown.esc="open = null"
       />
       <span class="text-body-m ti-sep">:</span>
       <input
@@ -26,7 +26,7 @@
           :disabled="disabled"
           @input="onMinuteInput"
           @focus="open = 'minute'"
-          @keydown.escape="open = null"
+          @keydown.esc="open = null"
       />
       <span v-if="is12h" class="text-body-m ti-period" @click.stop="togglePeriod">{{ period }}</span>
       <ChevronDownIcon class="ti-arrow" width="10" height="6" />
@@ -221,6 +221,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   color: var(--color-text-primary);
   text-align: center;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .ti-input::-webkit-inner-spin-button,

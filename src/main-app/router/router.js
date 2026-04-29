@@ -77,8 +77,15 @@ export default router
 
 const auth = authModel()
 
+const PUBLIC_ROUTE_NAMES = new Set([
+    'landing', 'login', 'register', 'forgot', 'reset', 'reset-password',
+    'verify-email', 'google-sso', 'pricing',
+    'help', 'help-getting-started', 'help-faq', 'help-best-practices',
+    'legal', 'legal-terms', 'legal-privacy',
+])
+
 router.beforeEach((to) => {
-    if (to.meta.requiresAuth && !auth.isAuthenticated.value) {
-        return { name: 'landing' }
-    }
+    if (PUBLIC_ROUTE_NAMES.has(to.name)) return
+    if (auth.isAuthenticated.value) return
+    return { name: 'login', query: { redirect: to.fullPath } }
 })

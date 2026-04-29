@@ -30,7 +30,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { formatMonthYear, formatDate, format } from '../../scripts/core/dateUtils.js'
+import { formatMonthYear, format } from '../../scripts/core/dateUtils.js'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
 import Spinner from '../Spinner.vue'

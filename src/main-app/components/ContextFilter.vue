@@ -220,7 +220,7 @@ function onClear(closeFn) {
 @media (max-width: 768px) {
   .context-filter__item {
     padding: 12px 16px;
-    font-size: var(--font-size-body-l);
+    font-size: var(--font-size-md);
   }
 }
 </style>

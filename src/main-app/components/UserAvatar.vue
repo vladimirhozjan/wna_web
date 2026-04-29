@@ -1,6 +1,6 @@
 <template>
   <div class="avatar-wrapper" @click="$emit('toggle-menu')">
-    <img v-if="gravatarSrc && !gravatarFailed" :src="gravatarSrc" class="avatar-img" @load="onGravatarLoad" @error="onGravatarError" />
+    <img v-if="gravatarSrc && !gravatarFailed" :src="gravatarSrc" :alt="props.email || ''" class="avatar-img" @load="onGravatarLoad" @error="onGravatarError" />
     <div v-else class="avatar-fallback" :style="{ backgroundColor: bgColor }">
       {{ initials }}
     </div>

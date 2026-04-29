@@ -239,8 +239,7 @@ const canAcceptDrop = computed(() => {
   if (!props.acceptDrop.includes(drag.state.sourceType)) return false
   // Don't show drop target if dragged item belongs to this list
   const draggedId = drag.state.draggedItem?.id
-  if (draggedId && items.value.some(i => i.id === draggedId)) return false
-  return true
+  return !(draggedId && items.value.some(i => i.id === draggedId))
 })
 
 const showDropTarget = computed(() => isOverDrop.value && canAcceptDrop.value)

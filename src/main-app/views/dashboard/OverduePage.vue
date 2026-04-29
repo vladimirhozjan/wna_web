@@ -93,7 +93,7 @@ async function loadMore() {
   await loadItems()
 }
 
-function onItemClick(item, index) {
+function onItemClick(item) {
   router.push({
     name: 'action-detail',
     params: { id: item.id },

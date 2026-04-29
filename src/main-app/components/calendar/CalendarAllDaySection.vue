@@ -131,7 +131,7 @@ function onDrop(event) {
   width: 64px;
   padding: 8px 8px;
   font-family: var(--font-family-default);
-  font-size: var(--font-size-footnote);
+  font-size: var(--font-size-caption);
   color: var(--color-calendar-hour-text);
   text-align: right;
   box-sizing: border-box;

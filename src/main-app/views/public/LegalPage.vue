@@ -122,9 +122,9 @@ function onSuccessPasswordReset() {
 }
 
 .prose :deep(h3) {
-  font-size: var(--font-size-h4);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
-  line-height: var(--lh-h4);
+  line-height: var(--lh-h3);
   color: var(--color-text-primary);
   margin: 28px 0 8px;
 }

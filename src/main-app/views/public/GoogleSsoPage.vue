@@ -59,7 +59,6 @@ import Btn from '../../components/Btn.vue'
 import Spinner from '../../components/Spinner.vue'
 import {authModel} from '../../scripts/core/authModel.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
-import {flagsModel} from '../../scripts/core/flagsModel.js'
 import ExclamationIcon from '../../assets/ExclamationIcon.vue'
 import CrossIcon from '../../assets/CrossIcon.vue'
 
@@ -146,12 +145,12 @@ function goToLogin() {
 }
 
 .sso-icon--error {
-  background: var(--color-danger-subtle, #f8d7da);
+  background: var(--color-danger-bg-subtle);
   color: var(--color-danger);
 }
 
 .sso-icon--warning {
-  background: var(--color-warning-subtle, #fff3cd);
-  color: var(--color-warning, #856404);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
 }
 </style>

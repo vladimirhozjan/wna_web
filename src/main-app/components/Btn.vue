@@ -84,7 +84,7 @@ const classes = computed(() => ([
 
 .base-btn--lg {
   padding: 14px 20px;
-  font-size: var(--font-size-body-m);
+  font-size: var(--font-size-body);
   border-radius: 12px;
 }
 

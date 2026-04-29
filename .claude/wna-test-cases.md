@@ -783,11 +783,46 @@ Use the table below to log each full or partial test run.
 6. For each, observe the redirect behavior and final URL.
 
 **Expected Result:**
-- For every protected route (`/engage` and all sub-routes), the Vue Router auth guard intercepts the navigation.
-- The user is redirected to the landing page (`/`) since they are not authenticated.
-- No flash of the dashboard UI is visible before the redirect (the guard should prevent the component from mounting).
+- For every protected route (`/engage` and all sub-routes), the global `router.beforeEach` auth guard intercepts the navigation before any layout mounts.
+- The user is redirected to `/login?redirect=<original-fullPath>` and the `AuthDialog` is shown in login mode (overlay over the landing page).
+- No flash of the dashboard UI is visible before the redirect.
 - The redirect happens consistently for all protected routes tested.
-- After redirect, the user can log in normally and then access `/engage`.
+- After successful login, the user is navigated to the original `redirect` path (not the default `/engage`).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-025b: Deep-Link Login from Email Notifications
+**Priority:** High | **Area:** JWT & Session Management | **Smoke Test**
+
+**Preconditions:** User is NOT logged in. localStorage does not contain `auth_token` or `refresh_token`. A valid user account exists (e.g. a test user with at least one project and one action).
+
+**Steps:**
+1. In the address bar, paste each of the following URLs in turn (these match the URLs used in notification emails: TASK_DUE_TODAY, DAILY_NEXT_ACTIONS, PROJECT_NEEDS_NEXT_ACTION, DELEGATED_TO_YOU, DELEGATION_COMPLETED, CONNECTION_INVITE):
+   a. `http://localhost:5173/overdue`
+   b. `http://localhost:5173/next`
+   c. `http://localhost:5173/inbox`
+   d. `http://localhost:5173/project/<real-project-id>`
+   e. `http://localhost:5173/action/<real-action-id>`
+   f. `http://localhost:5173/settings/connections`
+2. After each navigation, verify: (a) the URL changes to `/login?redirect=<encoded original path>`, (b) the `AuthDialog` opens in login mode over the landing page, (c) no dashboard layout flicker is visible.
+3. With the dialog open on case (a) (`/overdue`), enter valid credentials and submit.
+4. Repeat case (f) (`/settings/connections`) and after login confirm the Connections section is expanded inside Settings.
+5. Open `/register` while logged out — should open `AuthDialog` in register mode without a `redirect` query (CONNECTION_INVITE_REGISTRATION links to plain `/register`).
+6. Test password-reset hop: open `/reset-password?token=<valid-token>&redirect=/overdue`, complete the reset, then log in — verify final navigation lands on `/overdue`.
+
+**Expected Result:**
+- Steps 1–2: every protected URL redirects to `/login?redirect=...` with the popup visible.
+- Step 3: after login, the user lands on `/overdue` (the original requested page), not on `/engage`.
+- Step 4: `/settings/connections` resolves to `/settings?section=connections`; after login, Settings opens with the Connections section already expanded.
+- Step 5: `/register` opens the register dialog; after registration the user lands on `/engage` (no redirect query was set).
+- Step 6: `redirect` query is preserved through the password-reset → login transition; final destination is `/overdue`.
+- Open-redirect protection: pasting `/login?redirect=https://evil.example.com` or `/login?redirect=//evil.example.com` and logging in must NOT navigate off-origin — the user lands on `/engage` instead.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11518,7 +11553,7 @@ Use the table below to log each full or partial test run.
 
 ## Section 29: Feedback Button
 
-### TC-410: Feedback Button Visible on Dashboard
+### TC-430: Feedback Button Visible on Dashboard
 **Priority:** High | **Area:** Feedback
 
 **Preconditions:** User is logged in
@@ -11535,7 +11570,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-411: Feedback Button Visible on Public Pages
+### TC-431: Feedback Button Visible on Public Pages
 **Priority:** High | **Area:** Feedback
 
 **Preconditions:** User is not logged in (or on a public page)
@@ -11553,7 +11588,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-412: Feedback Popover Opens and Closes
+### TC-432: Feedback Popover Opens and Closes
 **Priority:** High | **Area:** Feedback
 
 **Preconditions:** Feedback button is visible
@@ -11572,7 +11607,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-413: Contact Support Opens Email
+### TC-433: Contact Support Opens Email
 **Priority:** High | **Area:** Feedback
 
 **Preconditions:** Feedback button is visible
@@ -11593,7 +11628,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-414: Report a Bug Opens Email
+### TC-434: Report a Bug Opens Email
 **Priority:** High | **Area:** Feedback
 
 **Preconditions:** Feedback button is visible
@@ -11614,7 +11649,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-415: Feedback Button Mobile Positioning
+### TC-435: Feedback Button Mobile Positioning
 **Priority:** Medium | **Area:** Feedback
 
 **Preconditions:** User is logged in, viewport ≤ 768px
@@ -11633,7 +11668,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-416: Feedback Button Dark Theme
+### TC-436: Feedback Button Dark Theme
 **Priority:** Medium | **Area:** Feedback
 
 **Preconditions:** User is logged in with dark theme enabled

@@ -11,7 +11,7 @@
           :disabled="disabled"
           @input="onInput"
           @focus="open = true"
-          @keydown.escape="open = false"
+          @keydown.esc="open = false"
       />
       <span class="text-body-s dur-unit">min</span>
       <ChevronDownIcon class="dur-arrow" width="10" height="6" />
@@ -122,6 +122,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   color: var(--color-text-primary);
   text-align: right;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .dur-input::-webkit-inner-spin-button,

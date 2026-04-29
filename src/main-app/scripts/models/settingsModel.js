@@ -1,4 +1,4 @@
-import { reactive, watch } from 'vue'
+import { reactive } from 'vue'
 import { getSettings, updateSettings } from '../core/apiClient.js'
 
 // Default settings matching backend defaults

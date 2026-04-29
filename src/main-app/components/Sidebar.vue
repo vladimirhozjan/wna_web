@@ -322,7 +322,7 @@ async function onDropToNextAction(data) {
       if (!result) return;
     } else if (data.sourceType === 'someday') {
       if (data.type === 'STUFF') {
-        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         removeFromSource(data);
         toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
         refreshAfterDrop();
@@ -335,7 +335,7 @@ async function onDropToNextAction(data) {
       } else return;
     } else if (data.sourceType === 'completed') {
       if (data.type === 'STUFF') {
-        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         removeFromSource(data);
         toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
         refreshAfterDrop();
@@ -467,7 +467,7 @@ async function onDropToToday(data) {
       await apiClient.todayAction(result.id);
     } else if (data.sourceType === 'someday') {
       if (data.type === 'STUFF') {
-        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         await apiClient.todayAction(result.id);
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
@@ -479,7 +479,7 @@ async function onDropToToday(data) {
       } else return;
     } else if (data.sourceType === 'completed') {
       if (data.type === 'STUFF') {
-        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         await apiClient.todayAction(result.id);
       } else if (data.type === 'ACTION') {
         await apiClient.uncompleteAction(data.id);
@@ -620,7 +620,7 @@ async function onDropToWaitingFor(data) {
       await apiClient.waitAction(result.id, waitingFor);
     } else if (data.sourceType === 'someday') {
       if (data.type === 'STUFF') {
-        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         await apiClient.waitAction(result.id, waitingFor);
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
@@ -632,7 +632,7 @@ async function onDropToWaitingFor(data) {
       } else return;
     } else if (data.sourceType === 'completed') {
       if (data.type === 'STUFF') {
-        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
         await apiClient.waitAction(result.id, waitingFor);
       } else if (data.type === 'ACTION') {
         await apiClient.uncompleteAction(data.id);

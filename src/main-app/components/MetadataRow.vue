@@ -167,8 +167,7 @@ const hasAnyMetadata = computed(() => {
   if (i.description) return true
   if (i.attachment_count > 0) return true
   if (i.comment_count > 0) return true
-  if (i.tags && i.tags.length > 0) return true
-  return false
+  return !!(i.tags && i.tags.length > 0)
 })
 </script>
 

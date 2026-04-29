@@ -9,7 +9,7 @@
             type="text"
             class="text-body-s attachment-search"
             placeholder="Search files..."
-            @keydown.escape="searchQuery = ''"
+            @keydown.esc="searchQuery = ''"
         />
         <div v-if="attachments.length > 0" class="attachment-view-toggle">
           <button
@@ -499,7 +499,6 @@ function formatSize(bytes) {
   align-items: center;
   text-align: center;
   padding: 10px 6px;
-  border-bottom: none;
   border: 1px solid var(--color-border-light);
   border-radius: 8px;
 }

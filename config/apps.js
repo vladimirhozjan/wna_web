@@ -5,7 +5,7 @@ export const APPS = {
     'main-app': {
         root: 'src/main-app',
         port: 8080,
-        buildDir: env => `dist/main-app`,
+        buildDir: () => `dist/main-app`,
         plugins: [
             vue(),
             vueDevTools({ launchEditor: 'idea' })
@@ -20,7 +20,7 @@ export const APPS = {
     'admin-app': {
         root: 'src/admin-app',
         port: 8081,
-        buildDir: env => `dist/admin-app/`,
+        buildDir: () => `dist/admin-app/`,
         plugins: [
             vue(),
             vueDevTools({ launchEditor: 'idea' })

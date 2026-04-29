@@ -15,7 +15,7 @@
             placeholder="Search files..."
             :value="searchQuery"
             @input="$emit('search', $event.target.value)"
-            @keydown.escape="$emit('search', '')"
+            @keydown.esc="$emit('search', '')"
         />
       </div>
       <Btn v-if="showActions" variant="secondary" size="sm" @click="$emit('new-folder')">New Folder</Btn>

@@ -63,7 +63,6 @@ import {
   isToday,
   isSameMonth,
   startOfMonth,
-  startOfWeek,
 } from '../../scripts/core/dateUtils.js'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 

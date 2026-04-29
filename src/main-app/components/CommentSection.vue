@@ -276,7 +276,7 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-avatar-wrap :deep(.avatar-fallback) {
-  font-size: var(--font-size-footnote);
+  font-size: var(--font-size-caption);
 }
 
 .comment-body {

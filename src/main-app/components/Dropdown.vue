@@ -276,7 +276,7 @@ onUnmounted(() => {
   border: none;
   text-align: left;
   font-family: var(--font-family-default), sans-serif;
-  font-size: var(--font-size-body-m);
+  font-size: var(--font-size-body);
   color: var(--color-text-primary);
   cursor: pointer;
 }
@@ -311,7 +311,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .dropdown-item {
     padding: 12px 16px;
-    font-size: var(--font-size-body-l);
+    font-size: var(--font-size-md);
   }
 
   .dropdown-item-icon {

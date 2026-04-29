@@ -54,8 +54,7 @@ const scrollRef = ref(null)
 function scrollToBusinessHours() {
   if (!scrollRef.value) return
   const settings = calendar.getCalendarSettings()
-  const scrollPosition = settings.businessHoursStart * hourHeight
-  scrollRef.value.scrollTop = scrollPosition
+  scrollRef.value.scrollTop = settings.businessHoursStart * hourHeight
 }
 
 onMounted(() => {

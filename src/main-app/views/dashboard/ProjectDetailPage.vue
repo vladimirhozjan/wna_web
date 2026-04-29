@@ -369,6 +369,7 @@ import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
+import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -394,6 +395,8 @@ const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
 const outcomeInput = ref(null)
+useAutoGrow(descriptionInput)
+useAutoGrow(outcomeInput)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
 const editTags = ref([])
@@ -841,12 +844,6 @@ async function onActivate() {
 
 async function onMoveTo(target) {
   showMoveDialog.value = false
-
-  const stateLabels = {
-    ACTION: 'Next Actions',
-    REFERENCE: 'Reference',
-    SOMEDAY: 'Someday'
-  }
 
   if (target === 'ACTION') {
     if (orderedActions.value.length > 1) {

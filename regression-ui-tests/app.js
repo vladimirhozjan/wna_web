@@ -1006,7 +1006,7 @@ function importData(event) {
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const data = JSON.parse(e.target.result);
+      const data = JSON.parse(String(e.target.result));
       if (data.state) {
         state = data.state;
         save();

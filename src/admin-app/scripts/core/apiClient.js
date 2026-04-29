@@ -56,10 +56,10 @@ export async function login({ email, password, code }) {
 }
 
 export async function refreshToken() {
-    try {
-        const refresh_token = localStorage.getItem('admin_refresh_token')
-        if (!refresh_token) throw { status: 401, message: 'No refresh token' }
+    const refresh_token = localStorage.getItem('admin_refresh_token')
+    if (!refresh_token) throw normalizeError({ status: 401, message: 'No refresh token' })
 
+    try {
         const res = await httpApi.post('/auth/refresh', { refresh_token })
 
         if (res.data.access_token) {
@@ -211,11 +211,10 @@ export async function getAuditLog(params = {}) {
 
 export async function exportAuditLog(params = {}) {
     try {
-        const res = await httpApi.get('/admin/audit-log/export', {
+        return await httpApi.get('/admin/audit-log/export', {
             params,
             responseType: params.format === 'json' ? 'json' : 'blob',
         })
-        return res
     } catch (err) {
         throw normalizeError(err)
     }
@@ -442,10 +441,9 @@ export async function getPlatformHealthStats() {
 
 export async function downloadGdprExport(requestId) {
     try {
-        const res = await httpApi.get(`/admin/gdpr-requests/${requestId}/download`, {
+        return await httpApi.get(`/admin/gdpr-requests/${requestId}/download`, {
             responseType: 'blob',
         })
-        return res
     } catch (err) {
         throw normalizeError(err)
     }

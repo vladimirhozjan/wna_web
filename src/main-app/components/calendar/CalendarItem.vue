@@ -78,7 +78,7 @@ function onDragStart(e) {
   emit('drag-start', props.item)
 }
 
-function onDragEnd(e) {
+function onDragEnd() {
   isDragging.value = false
   emit('drag-end', props.item)
 }

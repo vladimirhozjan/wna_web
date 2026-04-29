@@ -35,7 +35,7 @@
           type="text"
           placeholder="Add new stuff"
           @keydown.enter="fabSubmit"
-          @keydown.escape="fabCollapse"
+          @keydown.esc="fabCollapse"
         />
         <Btn variant="primary" size="sm" @click="fabSubmit">Add</Btn>
       </div>
@@ -99,7 +99,7 @@ watch(
     (v) => {
       if (!v) {
         isSidebarOpen.value = false;
-        router.push({ name: "login", query: { redirect: router.currentRoute.value.fullPath } });
+        router.push({ name: "landing" });
       }
     }
 );
@@ -110,15 +110,10 @@ watch(() => router.currentRoute.value.path, () => {
 });
 
 onMounted(() => {
-  if (!auth.isAuthenticated.value) {
-    router.push({ name: "login", query: { redirect: router.currentRoute.value.fullPath } });
-  } else {
-    // Load user settings from API when entering dashboard
-    if (!settings.state.loaded) {
-      settings.load().catch(() => {
-        // Settings will fall back to localStorage, no need to show error
-      });
-    }
+  if (auth.isAuthenticated.value && !settings.state.loaded) {
+    settings.load().catch(() => {
+      // Settings will fall back to localStorage, no need to show error
+    });
   }
 });
 </script>

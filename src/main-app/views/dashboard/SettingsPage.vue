@@ -705,7 +705,7 @@ const themeModeOptions = [
 
 const addPosition = computed({
   get: () => settings.state.newItemsPosition,
-  set: (val) => settings.setNewItemsPosition(val).catch(err => toaster.push('Failed to save setting'))
+  set: (val) => settings.setNewItemsPosition(val).catch(() => toaster.push('Failed to save setting'))
 })
 
 const editingTagPresets = ref(false)
@@ -749,7 +749,7 @@ async function saveTagPresets() {
 
 const reviewEnabled = computed({
   get: () => settings.state.reviewEnabled,
-  set: (val) => settings.setReviewEnabled(val).catch(err => toaster.push('Failed to save setting'))
+  set: (val) => settings.setReviewEnabled(val).catch(() => toaster.push('Failed to save setting'))
 })
 
 const emailEnabled = computed({
@@ -790,22 +790,22 @@ const weekStartOptions = [
 
 const timeFormat = computed({
   get: () => settings.state.timeFormat === '12-hour' ? '12h' : '24h',
-  set: (val) => settings.setTimeFormat(val === '12h' ? '12-hour' : '24-hour').catch(err => toaster.push('Failed to save setting'))
+  set: (val) => settings.setTimeFormat(val === '12h' ? '12-hour' : '24-hour').catch(() => toaster.push('Failed to save setting'))
 })
 
 const businessHoursStart = computed({
   get: () => settings.state.businessHoursStart,
-  set: (val) => settings.setBusinessHoursStart(val).catch(err => toaster.push('Failed to save setting'))
+  set: (val) => settings.setBusinessHoursStart(val).catch(() => toaster.push('Failed to save setting'))
 })
 
 const businessHoursEnd = computed({
   get: () => settings.state.businessHoursEnd,
-  set: (val) => settings.setBusinessHoursEnd(val).catch(err => toaster.push('Failed to save setting'))
+  set: (val) => settings.setBusinessHoursEnd(val).catch(() => toaster.push('Failed to save setting'))
 })
 
 const businessDays = computed({
   get: () => settings.state.businessDays,
-  set: (val) => settings.setBusinessDays(val).catch(err => toaster.push('Failed to save setting'))
+  set: (val) => settings.setBusinessDays(val).catch(() => toaster.push('Failed to save setting'))
 })
 
 const timeFormatOptions = [

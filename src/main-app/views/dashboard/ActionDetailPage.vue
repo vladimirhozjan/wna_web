@@ -434,6 +434,7 @@ import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import { reviewModel } from '../../scripts/models/reviewModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
+import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
@@ -469,6 +470,7 @@ const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
+useAutoGrow(descriptionInput)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
 const detailBodyRef = ref(null)
@@ -1934,7 +1936,7 @@ async function onActivate() {
 }
 
 .dropdown-item--danger:hover {
-  background: var(--color-danger-bg);
+  background: var(--color-danger-bg-subtle);
 }
 
 /* ── Responsive ── */

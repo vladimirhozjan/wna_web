@@ -204,7 +204,7 @@ async function onItemUpdate(id, { title }) {
   }
 }
 
-function onItemCheck(id, checked) {
+function onItemCheck() {
   // Projects don't have a check/complete action
 }
 

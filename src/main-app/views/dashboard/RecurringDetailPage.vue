@@ -188,6 +188,7 @@ import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
+import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
@@ -210,6 +211,7 @@ const editValue = ref('')
 const savingField = ref(null)
 const titleInput = ref(null)
 const descriptionInput = ref(null)
+useAutoGrow(descriptionInput)
 const actionLoading = ref(null)
 const editTags = ref([])
 const editTitle = ref('')

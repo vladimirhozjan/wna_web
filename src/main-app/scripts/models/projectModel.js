@@ -230,8 +230,7 @@ export function projectModel() {
         error.value = null
 
         try {
-            const data = await apiClient.listProjectActions(projectId)
-            return data
+            return await apiClient.listProjectActions(projectId)
         } catch (err) {
             error.value = err
             throw err
