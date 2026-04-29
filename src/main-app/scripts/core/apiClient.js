@@ -19,6 +19,14 @@ function friendlyUpgradeMessage(raw) {
 }
 
 function normalizeError(error) {
+    if (error.response) {
+        const cfg = error.config || {}
+        console.error(`[api] ${cfg.method?.toUpperCase() || 'REQ'} ${cfg.url || ''} → ${error.response.status}`, error.response.data)
+    } else if (error.request) {
+        console.error('[api] no response', error.config?.url || '', error.message)
+    } else {
+        console.error('[api] error', error.message || error)
+    }
     // Axios response error
     if (error.response) {
         const status = error.response.status
@@ -1630,18 +1638,18 @@ export async function inviteConnection(email) {
     }
 }
 
-export async function acceptConnectionInvite(token) {
+export async function acceptConnectionInvite(id) {
     try {
-        const res = await httpApi.post(`/v1/connections/invite/${token}/accept`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/connections/${id}/accept`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
     }
 }
 
-export async function declineConnectionInvite(token) {
+export async function declineConnectionInvite(id) {
     try {
-        const res = await httpApi.post(`/v1/connections/invite/${token}/decline`, {}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/connections/${id}/decline`, {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)

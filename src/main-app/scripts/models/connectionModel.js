@@ -50,16 +50,16 @@ export function connectionModel() {
         return res
     }
 
-    async function accept(token) {
-        const res = await apiClient.acceptConnectionInvite(token)
+    async function accept(id) {
+        const res = await apiClient.acceptConnectionInvite(id)
         await loadAll().catch(() => {})
         errorModel().success('Connection accepted')
         return res
     }
 
-    async function decline(token) {
-        const res = await apiClient.declineConnectionInvite(token)
-        pendingReceived.value = pendingReceived.value.filter(p => p.token !== token && p.id !== token)
+    async function decline(id) {
+        const res = await apiClient.declineConnectionInvite(id)
+        pendingReceived.value = pendingReceived.value.filter(p => p.id !== id)
         return res
     }
 
