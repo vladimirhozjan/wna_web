@@ -414,7 +414,7 @@ import { todayModel } from '../../scripts/models/todayModel.js'
 import { waitingModel } from '../../scripts/models/waitingModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
-import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, todayAction, activateAction } from '../../scripts/core/apiClient.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction } from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
@@ -815,25 +815,34 @@ async function onMoveTo(newState) {
 
   // Special handling for WAITING - need to prompt for waiting_for
   if (newState === 'WAITING') {
-    const waitingFor = await mover.showWaiting({
+    const pick = await mover.showWaiting({
       waitingFor: action.value.waiting_for || ''
     })
-    if (!waitingFor) return // User cancelled
+    if (!pick) return // User cancelled
+
+    const newWaitingFor = pick.kind === 'connection' ? (pick.label || pick.email) : pick.value
 
     actionLoading.value = 'move'
     const oldState = action.value.state
     const oldWaitingFor = action.value.waiting_for
+    const oldWaitingForUserId = action.value.waiting_for_user_id
     action.value.state = 'WAITING'
-    action.value.waiting_for = waitingFor
+    action.value.waiting_for = newWaitingFor
+    if (pick.kind === 'connection') action.value.waiting_for_user_id = pick.userId
 
     try {
-      await waitAction(action.value.id, waitingFor)
+      if (pick.kind === 'connection') {
+        await delegateAction(action.value.id, pick.userId, pick.email)
+      } else {
+        await waitAction(action.value.id, pick.value)
+      }
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(action.value.title)}" moved to Waiting For`)
       await navigateToNextOrPrev()
     } catch {
       action.value.state = oldState
       action.value.waiting_for = oldWaitingFor
+      action.value.waiting_for_user_id = oldWaitingForUserId
       toaster.push('Failed to move action')
     } finally {
       actionLoading.value = null

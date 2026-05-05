@@ -648,16 +648,24 @@ async function onMoveTo(destination) {
 
   // Special handling for waiting - need waiting_for input
   if (destination === 'waiting') {
-    const waitingFor = await mover.showWaiting({ waitingFor: '' })
-    if (!waitingFor) return // User cancelled
+    const pick = await mover.showWaiting({ waitingFor: '' })
+    if (!pick) return // User cancelled
 
     actionLoading.value = 'move'
     try {
-      await apiClient.clarifyToAction(item.value.id, {
-        title: item.value.title,
-        description: item.value.description || '',
-        waitingFor
-      })
+      if (pick.kind === 'connection') {
+        const created = await apiClient.clarifyToAction(item.value.id, {
+          title: item.value.title,
+          description: item.value.description || ''
+        })
+        await apiClient.delegateAction(created.id, pick.userId, pick.email)
+      } else {
+        await apiClient.clarifyToAction(item.value.id, {
+          title: item.value.title,
+          description: item.value.description || '',
+          waitingFor: pick.value
+        })
+      }
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Waiting For`)
       await navigateToNextOrPrev()

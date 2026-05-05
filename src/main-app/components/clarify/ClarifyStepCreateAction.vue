@@ -73,13 +73,11 @@
       <!-- Sub-step: Delegate -->
       <div v-else-if="subStep === 'delegate'" class="clarify-substep">
         <div class="clarify-field">
-          <label class="text-body-s fw-semibold clarify-label" for="action-waiting-for">Who/what are you waiting on?</label>
-          <input
-              id="action-waiting-for"
+          <label class="text-body-s fw-semibold clarify-label">Who/what are you waiting on?</label>
+          <ConnectionPicker
               ref="waitingForInput"
-              v-model="form.waitingFor"
-              type="text"
-              class="text-body-m clarify-input"
+              :model-value="form.delegate"
+              @update:model-value="onDelegatePick"
               placeholder="e.g. John, design team, client approval"
           />
         </div>
@@ -90,7 +88,7 @@
               type="submit"
               variant="primary"
               size="md"
-              :disabled="!form.title.trim() || !form.waitingFor.trim() || loading"
+              :disabled="!form.title.trim() || !hasDelegate || loading"
               :loading="loading"
           >
             Create Action
@@ -159,10 +157,11 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import Btn from '../Btn.vue'
 import TagInput from '../TagInput.vue'
 import DateTimeInput from '../DateTimeInput.vue'
+import ConnectionPicker from '../ConnectionPicker.vue'
 
 const props = defineProps({
   initialData: {
@@ -191,8 +190,20 @@ const form = reactive({
   deferDuration: null,
   dueDate: null,
   dueTime: null,
-  waitingFor: '',
+  delegate: null, // null | {kind:'connection', userId, email, label} | {kind:'text', value}
 })
+
+const hasDelegate = computed(() => {
+  const d = form.delegate
+  if (!d) return false
+  if (d.kind === 'connection') return !!d.userId && !!d.email
+  if (d.kind === 'text') return !!d.value.trim()
+  return false
+})
+
+function onDelegatePick(value) {
+  form.delegate = value
+}
 
 function backToChoose() {
   subStep.value = 'choose'
@@ -216,6 +227,13 @@ onMounted(() => {
 
 function onSubmit() {
   if (!form.title.trim()) return
+  const isDelegate = subStep.value === 'delegate'
+  const d = isDelegate ? form.delegate : null
+  const waitingForText = (() => {
+    if (!isDelegate || !d) return ''
+    if (d.kind === 'connection') return ''  // delegation handled via separate API call
+    return d.value.trim()
+  })()
   emit('submit', {
     title: form.title.trim(),
     description: form.description.trim(),
@@ -226,7 +244,10 @@ function onSubmit() {
     deferDuration: subStep.value === 'defer' ? form.deferDuration : null,
     dueDate: subStep.value === 'defer' ? form.dueDate : null,
     dueTime: subStep.value === 'defer' ? form.dueTime : null,
-    waitingFor: subStep.value === 'delegate' ? form.waitingFor.trim() : '',
+    waitingFor: waitingForText,
+    delegate: isDelegate && d?.kind === 'connection'
+        ? { userId: d.userId, email: d.email }
+        : null,
   })
 }
 </script>

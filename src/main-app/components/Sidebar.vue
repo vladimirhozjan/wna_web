@@ -599,11 +599,19 @@ async function onDropToWaitingFor(data) {
     if (!confirmed) return;
   }
 
-  const waitingFor = await mover.showWaiting({
+  const pick = await mover.showWaiting({
     waitingFor: ''
   });
 
-  if (!waitingFor) return;
+  if (!pick) return;
+
+  const applyWait = async (actionId) => {
+    if (pick.kind === 'connection') {
+      await apiClient.delegateAction(actionId, pick.userId, pick.email);
+    } else {
+      await apiClient.waitAction(actionId, pick.value);
+    }
+  };
 
   try {
     if (data.sourceType === 'stuff') {
@@ -611,36 +619,36 @@ async function onDropToWaitingFor(data) {
         title: data.title,
         description: data.description || ''
       });
-      await apiClient.waitAction(result.id, waitingFor);
+      await applyWait(result.id);
     } else if (data.sourceType === 'action') {
-      await apiClient.waitAction(data.id, waitingFor);
+      await applyWait(data.id);
     } else if (data.sourceType === 'project') {
       // Confirmation already shown above
       const result = await apiClient.transformProjectToAction(data.id);
-      await apiClient.waitAction(result.id, waitingFor);
+      await applyWait(result.id);
     } else if (data.sourceType === 'someday') {
       if (data.type === 'STUFF') {
-        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
-        await apiClient.waitAction(result.id, waitingFor);
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await applyWait(result.id);
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
-        await apiClient.waitAction(data.id, waitingFor);
+        await applyWait(data.id);
       } else if (data.type === 'PROJECT') {
         // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
-        await apiClient.waitAction(result.id, waitingFor);
+        await applyWait(result.id);
       } else return;
     } else if (data.sourceType === 'completed') {
       if (data.type === 'STUFF') {
-        await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
-        await apiClient.waitAction(result.id, waitingFor);
+        const result = await apiClient.clarifyToAction(data.id, { title: data.title, description: data.description || '' });
+        await applyWait(result.id);
       } else if (data.type === 'ACTION') {
         await apiClient.uncompleteAction(data.id);
-        await apiClient.waitAction(data.id, waitingFor);
+        await applyWait(data.id);
       } else if (data.type === 'PROJECT') {
         // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
-        await apiClient.waitAction(result.id, waitingFor);
+        await applyWait(result.id);
       } else return;
     } else {
       return;

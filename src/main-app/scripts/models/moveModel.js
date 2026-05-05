@@ -20,7 +20,8 @@ export function moveModel() {
         time: null,
         duration: null,
         // Waiting fields
-        waitingFor: '',
+        waitingFor: '',          // free text (always reflects label of picked value)
+        waitingDelegate: null,   // null | {kind:'connection', userId, email, label} | {kind:'text', value}
         // Outcome fields
         outcome: '',
         // Callbacks
@@ -60,21 +61,27 @@ export function moveModel() {
     }
 
     /**
-     * Show waiting for input modal
-     * @param {Object} options - Initial values
-     * @returns {Promise<string | null>} - The waiting_for value or null if cancelled
+     * Show waiting for input modal.
+     * Resolves to one of:
+     *   { kind: 'connection', userId, email, label }
+     *   { kind: 'text', value }
+     *   null (cancelled)
      */
     function showWaiting(options = {}) {
         return new Promise((resolve) => {
             state.type = 'waiting'
             state.title = options.title || 'Who/what are you waiting on?'
-            state.waitingFor = options.waitingFor || ''
+            const initial = options.waitingFor || ''
+            state.waitingFor = initial
+            state.waitingDelegate = initial ? { kind: 'text', value: initial } : null
             state.visible = true
 
             state.onConfirm = () => {
-                const value = state.waitingFor.trim()
+                const result = state.waitingDelegate
                 state.visible = false
-                resolve(value || null)
+                if (!result) return resolve(null)
+                if (result.kind === 'text' && !result.value.trim()) return resolve(null)
+                resolve(result)
             }
 
             state.onCancel = () => {

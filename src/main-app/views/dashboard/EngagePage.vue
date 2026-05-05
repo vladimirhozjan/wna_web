@@ -465,10 +465,14 @@ async function onDropToNext(data) {
 
 async function onDropToWaiting(data) {
     if (data.state === 'WAITING') return
-    const waitingFor = await mover.showWaiting({ waitingFor: '' })
-    if (!waitingFor) return
+    const pick = await mover.showWaiting({ waitingFor: '' })
+    if (!pick) return
     try {
-        await apiClient.waitAction(data.id, waitingFor)
+        if (pick.kind === 'connection') {
+            await apiClient.delegateAction(data.id, pick.userId, pick.email)
+        } else {
+            await apiClient.waitAction(data.id, pick.value)
+        }
         await loadDashboard({ tags: effectiveTags.value })
         refreshStats()
         toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`)

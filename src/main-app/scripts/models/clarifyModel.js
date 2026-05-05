@@ -215,7 +215,11 @@ export function clarifyModel() {
                 }
             } else if (state.isSingleAction) {
                 // Create action
-                await apiClient.clarifyToAction(stuffId, state.actionData)
+                const created = await apiClient.clarifyToAction(stuffId, state.actionData)
+                // Real cross-user delegation runs as a follow-up step on the new action
+                if (state.actionData?.delegate?.userId && state.actionData?.delegate?.email && created?.id) {
+                    await apiClient.delegateAction(created.id, state.actionData.delegate.userId, state.actionData.delegate.email)
+                }
             } else {
                 // Create project
                 await apiClient.clarifyToProject(stuffId, state.projectData)

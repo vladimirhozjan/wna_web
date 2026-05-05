@@ -25,13 +25,11 @@
           <!-- Waiting For Modal -->
           <template v-else-if="move.state.type === 'waiting'">
             <div class="form-group">
-              <input
+              <ConnectionPicker
                   ref="waitingInput"
-                  type="text"
-                  v-model="move.state.waitingFor"
-                  class="text-body-m input"
-                  placeholder="e.g., Sarah from Legal"
-                  @keyup.enter="onConfirm"
+                  :model-value="move.state.waitingDelegate"
+                  @update:model-value="onPick"
+                  @enter="onConfirm"
               />
             </div>
           </template>
@@ -73,6 +71,7 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { moveModel } from '../scripts/models/moveModel.js'
 import Btn from './Btn.vue'
 import DateTimeInput from './DateTimeInput.vue'
+import ConnectionPicker from './ConnectionPicker.vue'
 
 const move = moveModel()
 const dateTimeInput = ref(null)
@@ -84,13 +83,24 @@ const isValid = computed(() => {
     return !!move.state.date
   }
   if (move.state.type === 'waiting') {
-    return !!move.state.waitingFor.trim()
+    const v = move.state.waitingDelegate
+    if (!v) return false
+    if (v.kind === 'connection') return !!v.userId && !!v.email
+    if (v.kind === 'text') return !!v.value.trim()
+    return false
   }
   if (move.state.type === 'outcome') {
     return !!move.state.outcome.trim()
   }
   return false
 })
+
+function onPick(value) {
+  move.state.waitingDelegate = value
+  if (!value) move.state.waitingFor = ''
+  else if (value.kind === 'connection') move.state.waitingFor = value.label || value.email
+  else move.state.waitingFor = value.value
+}
 
 const confirmText = computed(() => {
   if (move.state.type === 'schedule') return 'Schedule'

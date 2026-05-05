@@ -624,6 +624,15 @@ Configurable in Settings page:
 - Shows "Got it" button: Removes waiting status, moves action to NEXT
 - Shows "Waiting for" section: Displays the person/thing being waited on + duration since waiting began (e.g., "today", "3d", "2w", "1mo")
 
+### 10.2 Connection picker for delegation
+
+Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveModal` (drag onto Waiting For, Move dropdown, action detail state change) — the "Who/what are you waiting on?" input is a connection-aware combobox:
+
+- Typing filters the user's accepted connections (`GET /v1/connections`) by display label and email.
+- Selecting a connection delegates the action via `POST /v1/action/{id}/delegate` (Team tier only). Backend sets `waiting_for_user_id` on the assigner's action and creates a Stuff in the receiver's inbox; on receiver completion, the assigner's action auto-unwaits to NEXT and gains a "Done." comment.
+- Free text (no connection match) keeps the legacy behavior: `POST /v1/action/{id}/wait` with the typed string.
+- Free / Pro tier users see no connection options (their list is empty) and continue to use plain free-text waiting.
+
 ---
 
 ## 11. Someday / Maybe

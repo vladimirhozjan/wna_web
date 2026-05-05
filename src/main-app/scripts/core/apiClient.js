@@ -1073,6 +1073,15 @@ export async function waitAction(actionId, waitingFor) {
     }
 }
 
+export async function delegateAction(actionId, userId, email) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/delegate`, {user_id: userId, email}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function unwaitAction(actionId) {
     try {
         const res = await httpApi.post(`/v1/action/${actionId}/unwait`, {add_to_top: addToTop()}, {headers: authHeaders()})
@@ -1809,6 +1818,7 @@ const apiClient = {
     moveWaitingPosition,
     waitAction,
     unwaitAction,
+    delegateAction,
     // Tags API
     getTags,
     // Settings API
