@@ -46,7 +46,15 @@
       "Bash(sed -n '85,90p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/Btn.vue)",
       "Bash(sed -n '150,158p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/ItemMoveDropdown.vue)",
       "Bash(sed -n '172,178p' /Users/vladimirhozjan/Documents/wna_web/develop-a/src/main-app/components/Select.vue)",
-      "Bash(xmllint --xpath '/problems/problem' /Users/vladimirhozjan/Documents/wna_web/develop-a/SpellCheckingInspection.xml)"
+      "Bash(xmllint --xpath '/problems/problem' /Users/vladimirhozjan/Documents/wna_web/develop-a/SpellCheckingInspection.xml)",
+      "Bash(\" /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md | grep -i connection)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(sed -n '3320,3325p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
+      "Bash(sed -n '3347,3352p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
+      "Bash(sed -n '4929,4935p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
+      "Bash(sed -n '4995,5001p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
+      "Bash(sed -n '5041,5047p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)"
     ]
   }
 }

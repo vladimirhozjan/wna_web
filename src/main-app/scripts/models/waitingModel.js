@@ -81,18 +81,21 @@ export function waitingModel() {
         }
     }
 
-    async function addWaiting(title, waitingFor) {
+    async function addWaiting(title, waitingFor, delegate = null) {
         loading.value = true
         error.value = null
 
         try {
-            const created = await apiClient.addAction({ title, state: 'WAITING', waiting_for: waitingFor })
+            const body = delegate?.userId && delegate?.email
+                ? { title, delegate_to_user_id: delegate.userId, delegate_to_email: delegate.email }
+                : { title, state: 'WAITING', waiting_for: waitingFor }
+            const created = await apiClient.addAction(body)
             await loadWaiting({ reset: true })
             statsModel().refreshStats()
             errorModel().success(`"${truncateTitle(title)}" added to Waiting For`)
             return created
         } catch (err) {
-            error.value = err
+            if (!delegate) error.value = err
             throw err
         } finally {
             loading.value = false

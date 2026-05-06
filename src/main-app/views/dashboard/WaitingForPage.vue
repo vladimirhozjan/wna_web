@@ -19,16 +19,16 @@
                 @keyup.enter="onAdd"
                 :disabled="adding"
             />
-            <Inpt
-                v-model="newWaitingFor"
-                type="text"
+            <ConnectionPicker
+                :model-value="newDelegate"
+                @update:model-value="newDelegate = $event"
+                @enter="onAdd"
                 placeholder="Waiting for..."
-                @keyup.enter="onAdd"
                 :disabled="adding"
             />
           </div>
           <Btn @click="onAdd"
-               :disabled="adding || !newTitle.trim() || !newWaitingFor.trim()"
+               :disabled="adding || !newTitle.trim() || !hasDelegate"
                :loading="adding"
                class="add-button"
                variant="primary"
@@ -85,6 +85,7 @@ import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
+import ConnectionPicker from '../../components/ConnectionPicker.vue'
 import WaitingIcon from '../../assets/WaitingIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
@@ -93,6 +94,7 @@ import { waitingModel } from '../../scripts/models/waitingModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
@@ -114,15 +116,24 @@ const {
 
 const toaster = errorModel()
 const confirm = confirmModel()
+const upgrade = upgradeModel()
 
 const showAdd = ref(false)
 const newTitle = ref('')
-const newWaitingFor = ref('')
+const newDelegate = ref(null)
 const add_input = ref(null)
 const adding = ref(false)
 const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
 const { activeTag } = contextModel()
+
+const hasDelegate = computed(() => {
+  const d = newDelegate.value
+  if (!d) return false
+  if (d.kind === 'connection') return !!d.userId && !!d.email
+  if (d.kind === 'text') return !!d.value?.trim()
+  return false
+})
 
 const effectiveTags = computed(() => {
   const tags = [...filterTags.value]
@@ -164,14 +175,38 @@ async function loadMore() {
 
 async function onAdd() {
   const t = newTitle.value.trim()
-  const w = newWaitingFor.value.trim()
-  if (!t || !w) return
+  if (!t || !hasDelegate.value) return
+  const d = newDelegate.value
+  const isConnection = d.kind === 'connection'
+  const delegate = isConnection ? { userId: d.userId, email: d.email } : null
+  const waitingForText = isConnection ? null : d.value.trim()
   hasMoreSnapshot.value = hasMore.value
   adding.value = true
-  try { await addWaiting(t, w) } catch { /* error watcher handles it */ }
-  finally { adding.value = false }
-  newTitle.value = ''
-  newWaitingFor.value = ''
+  let failed = false
+  try {
+    await addWaiting(t, waitingForText, delegate)
+  } catch (err) {
+    failed = true
+    if (isConnection) {
+      const status = err?.status
+      if (status === 403) {
+        upgrade.show({ message: 'Delegating actions requires the Team plan.' })
+      } else if (status === 404) {
+        toaster.push('That recipient is no longer a connection.')
+      } else if (status === 400) {
+        toaster.push(err?.message || 'Invalid recipient.')
+      } else {
+        toaster.push(err?.message || 'Failed to add action')
+      }
+    }
+    // Free-text errors flow through the existing error.value watcher.
+  } finally {
+    adding.value = false
+  }
+  if (!failed) {
+    newTitle.value = ''
+    newDelegate.value = null
+  }
   nextTick(() => add_input.value?.focus())
 }
 

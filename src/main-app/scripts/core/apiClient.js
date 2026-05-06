@@ -571,6 +571,8 @@ export async function addAction(data) {
         if (data.tags !== undefined) body.tags = data.tags
         if (data.state) body.state = data.state
         if (data.scheduled_duration) body.scheduled_duration = data.scheduled_duration
+        if (data.delegate_to_user_id) body.delegate_to_user_id = data.delegate_to_user_id
+        if (data.delegate_to_email) body.delegate_to_email = data.delegate_to_email
         body.add_to_top = addToTop()
 
         const res = await httpApi.post('/v1/action', body, {headers: authHeaders()})

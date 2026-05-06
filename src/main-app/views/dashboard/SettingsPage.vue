@@ -353,7 +353,7 @@
                           variant="primary"
                           size="sm"
                           :loading="actingId === inv.id && actingType === 'accept'"
-                          :disabled="!!actingId"
+                          :disabled="!!actingId || !isTeamTier"
                           @click="onAccept(inv)"
                       >Accept</Btn>
                       <Btn
