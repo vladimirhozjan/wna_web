@@ -11,6 +11,7 @@
   <AuthDialog
       v-model:mode="authMode"
       :token="props.token"
+      :prefill-email="prefillEmail"
       @logged-in="onSuccess"
       @registered="onSuccess"
       @password-reset-success="onSuccessPasswordReset"
@@ -18,7 +19,7 @@
 </template>
 
 <script setup>
-import {ref, watch} from 'vue'
+import {ref, computed, watch} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
@@ -53,6 +54,11 @@ function resolveRedirect() {
 }
 
 const authMode = ref(null)
+
+const prefillEmail = computed(() => {
+  const e = route.query.email
+  return typeof e === 'string' ? e : ''
+})
 
 watch(
     () => props.mode,

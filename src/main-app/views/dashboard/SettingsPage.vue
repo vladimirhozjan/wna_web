@@ -336,9 +336,12 @@
               <!-- Received invitations (all tiers) -->
               <div v-if="connections.pendingReceived.value.length > 0" class="settings-row settings-row--column">
                 <span class="settings-label">Received invitations</span>
-                <p v-if="!isTeamTier" class="text-body-s settings-hint">
-                  Accepting a connection requires the Team plan. You can decline any invitation on your current plan.
-                </p>
+                <template v-if="!isTeamTier">
+                  <p class="text-body-s settings-hint">
+                    You can accept these invitations by upgrading to the Team plan. Otherwise, you can decline them on your current plan.
+                  </p>
+                  <Btn variant="primary" size="sm" @click="openUpgrade">Upgrade to Team</Btn>
+                </template>
                 <div class="connections-list">
                   <div v-for="inv in connections.pendingReceived.value" :key="inv.id" class="connection-item">
                     <div class="connection-info">

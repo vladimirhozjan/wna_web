@@ -180,6 +180,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  prefillEmail: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits([
@@ -206,6 +210,16 @@ const userId = ref(null)
 watch(() => props.token, (t) => {
   if (t) reset_token.value = t
 })
+
+watch(
+    [() => props.mode, () => props.prefillEmail],
+    ([m, e]) => {
+      if ((m === 'register' || m === 'login' || m === 'forgot') && e && !email.value) {
+        email.value = e
+      }
+    },
+    { immediate: true }
+)
 
 const resending = ref(false)
 const resendCooldown = ref(0)
