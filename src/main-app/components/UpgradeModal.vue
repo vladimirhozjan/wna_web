@@ -10,7 +10,7 @@
           <div class="dialog-body">
             <p class="text-body-m message">{{ upgrade.state.message }}</p>
             <p class="text-body-s color-text-secondary hint">
-              Visit your account settings to upgrade your plan.
+              WhatsNextAction is currently in beta and self-service upgrades aren't available yet. To enable Team features on your account, please contact <a class="hint-link" href="mailto:support@whatsnextaction.com?subject=Team%20plan%20access">support@whatsnextaction.com</a>.
             </p>
           </div>
           <div class="dialog-actions">
@@ -88,6 +88,15 @@ const upgrade = upgradeModel()
 
 .hint {
   margin: 0;
+}
+
+.hint-link {
+  color: var(--color-action);
+  text-decoration: none;
+}
+
+.hint-link:hover {
+  text-decoration: underline;
 }
 
 .dialog-actions {

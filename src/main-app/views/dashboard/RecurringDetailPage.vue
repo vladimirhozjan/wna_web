@@ -15,6 +15,17 @@
         <Spinner />
       </div>
 
+      <!-- Not found state -->
+      <div v-else-if="notFound" class="detail-not-found">
+        <EmptyState
+            :icon="RecurringIcon"
+            title="This recurring template is no longer available"
+            text="It may have been deleted."
+            buttonText="Go to Calendar"
+            @action="goToCalendar"
+        />
+      </div>
+
       <!-- Content -->
       <div v-else ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
 
@@ -190,6 +201,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
+import EmptyState from '../../components/EmptyState.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -205,6 +217,7 @@ const {
 } = recurringModel()
 
 const template = ref({})
+const notFound = ref(false)
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')
@@ -241,15 +254,23 @@ onMounted(async () => {
   try {
     const data = await getRecurring(route.params.id)
     template.value = { ...data }
-  } catch {
-    toaster.push('Failed to load recurring template')
-    router.push({ name: 'calendar' })
+  } catch (err) {
+    if (err?.status === 404) {
+      notFound.value = true
+    } else {
+      toaster.push('Failed to load recurring template')
+      router.push({ name: 'calendar' })
+    }
   } finally {
     pageLoading.value = false
   }
 })
 
 function goBack() {
+  router.push({ name: 'calendar' })
+}
+
+function goToCalendar() {
   router.push({ name: 'calendar' })
 }
 
@@ -516,6 +537,16 @@ function formatDate(dateStr) {
   display: flex;
   justify-content: center;
   padding: 48px;
+}
+
+.detail-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  padding: 64px 24px;
 }
 
 .detail-body {

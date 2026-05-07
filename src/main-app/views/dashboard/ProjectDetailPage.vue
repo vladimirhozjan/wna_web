@@ -27,6 +27,17 @@
         <Spinner />
       </div>
 
+      <!-- Not found state -->
+      <div v-else-if="notFound" class="detail-not-found">
+        <EmptyState
+            :icon="ProjectsIcon"
+            title="This project is no longer available"
+            text="It may have been completed, deleted, or moved to trash."
+            buttonText="Go to Projects"
+            @action="goToProjects"
+        />
+      </div>
+
       <!-- Content -->
       <div v-else-if="project" ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
 
@@ -369,6 +380,7 @@ import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
+import EmptyState from '../../components/EmptyState.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 
 const route = useRoute()
@@ -388,6 +400,7 @@ const {
 } = projectModel()
 
 const project = ref(null)
+const notFound = ref(false)
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')
@@ -484,6 +497,7 @@ const backLabel = computed(() => {
 
 watch(error, (err) => {
   if (!err) return
+  if (err?.status === 404) return
   const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
   toaster.push(msg)
 })
@@ -501,9 +515,13 @@ onMounted(async () => {
     // Load project actions
     await loadProjectActions()
 
-  } catch {
-    toaster.push('Failed to load project')
-    router.push({ name: 'projects' })
+  } catch (err) {
+    if (err?.status === 404) {
+      notFound.value = true
+    } else {
+      toaster.push('Failed to load project')
+      router.push({ name: 'projects' })
+    }
   } finally {
     pageLoading.value = false
   }
@@ -520,6 +538,10 @@ function goBack() {
   } else {
     router.push({ name: 'projects' })
   }
+}
+
+function goToProjects() {
+  router.push({ name: 'projects' })
 }
 
 function startEdit(field, value) {
@@ -711,7 +733,7 @@ async function onComplete() {
   if (hasActions) {
     const confirmed = await confirm.show({
       title: 'Complete Project',
-      message: `This will also complete all active actions in this project. Are you sure?`,
+      message: `This will complete active action and all actions in backlog. Are you sure?`,
       confirmText: 'Complete',
       cancelText: 'Cancel'
     })
@@ -1164,6 +1186,16 @@ async function onAddAction() {
   display: flex;
   justify-content: center;
   padding: 48px;
+}
+
+.detail-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  padding: 64px 24px;
 }
 
 .detail-body {

@@ -52,10 +52,12 @@
 3. **Receiver** gets a new Stuff item in their Inbox with title, description, and hidden meta (`delegated_from_user_id`, `delegated_from_action_id`)
 4. **Receiver clarifies normally** — "Is this actionable?" → Action / Project / Someday / Reference / Trash. Standard GTD flow, no special handling
 5. **Whatever the receiver creates** (Action or Project) carries the delegation meta forward as a hidden link
-6. **When the receiver completes** the resulting Action or Project:
+6. **When the receiver completes OR trashes** the delegated item — the inbox Stuff itself, or the Action/Project it was clarified into:
    - System writes a comment on the assigner's original action (prefilled "Done." — receiver can extend, e.g., "Done. Report is on your desk.")
-   - Assigner's Waiting For item resolves
+   - Assigner's Waiting For item auto-promotes (state 13 → NEXT, or → CALENDAR if `scheduled_date` is set)
+   - `waiting_for`, `waiting_since`, `waiting_for_user_id` cleared
    - Assigner gets a notification
+   - Same outcome for both completion and trash — receiver-side terminal action is the trigger
 
 ### Delegation + Projects
 
@@ -80,10 +82,10 @@ A normal Stuff item in their Inbox. The only visual difference: a small indicato
 
 ### Edge Cases
 
-- **Receiver trashes it**: Assigner's Waiting For stays open. Real life — people ignore requests. Assigner can follow up manually.
-- **Receiver puts it in Someday**: Same — assigner's Waiting For stays open. Receiver might activate it later.
-- **Receiver sends it to Reference**: Delegation link is lost (Reference is not completable). Assigner's Waiting For stays open forever. Same as trash — expected behavior.
-- **Receiver turns it into a Project**: The delegation link lives on the Project. When the *project* is completed, the assigner gets notified. Individual actions within the project don't trigger notifications.
+- **Receiver trashes it** (Stuff in inbox, clarified Action, or clarified Project): Assigner's Waiting For auto-promotes (NEXT or CALENDAR), "Done." comment is written, assigner is notified. Same outcome as completion — trash is a receiver-side terminal action.
+- **Receiver puts it in Someday**: Assigner's Waiting For stays open. Receiver might activate it later — Someday is a deferral, not a terminal action.
+- **Receiver sends it to Reference**: Delegation link is lost (Reference is not completable). Assigner's Waiting For stays open forever — there's no entity left that carries `delegated_from_action_id`.
+- **Receiver turns it into a Project**: The delegation link lives on the Project. When the *project* is completed or trashed, the assigner gets notified and auto-promoted. Individual actions completed/trashed inside the project do not trigger any notification — only project-level terminal events count.
 - **Assigner wants to cancel**: No recall. You cannot pull Stuff out of someone else's inbox. You can only manually resolve your own Waiting For item. The receiver's inbox item keeps its `delegated_from_action_id` — if the receiver later completes it, the system will still write a comment on the assigner's action (informational), but the Waiting For state won't change since it was already manually resolved.
 - **Connection removed while delegation pending**: Assigner's Waiting For stays open, receiver's Stuff stays in their inbox. Removing a connection does not cancel in-flight delegations.
 
@@ -378,7 +380,7 @@ Clarify integration (connection picker), notification preferences, weekly review
 - **Waiting For dual fields**: `waiting_for` (text) stays for non-connection delegation. `waiting_for_user_id` (nullable) added for connection delegation — links to real user for avatar, name, and completion sync.
 - **Backward compatibility**: Existing text-based `waiting_for` stays for non-connection delegation. Connection delegation sets both `waiting_for` (user's name) and `waiting_for_user_id` (user's ID).
 - **Data isolation**: Personal items are never exposed. Delegation creates a *copy* (new Stuff) in the receiver's system. Shared project actions are shared references visible to all project members — descriptions, attachments, and comments editable by write members; title, tags, due date, status only by the assigned user.
-- **Completion sync**: Any completion event (checkbox, "Do it now" in Clarify, complete Action, complete Project) checks if the entity has `delegated_from_action_id`. If yes → write comment on assigner's original action (prefilled "Done."), resolve assigner's Waiting For, send notification.
+- **Resolution sync**: Any receiver-side terminal event — completion (checkbox, "Do it now" in Clarify, complete Action, complete Project) **or trash** (trash Stuff, trash Action, trash Project) — checks if the entity has `delegated_from_action_id`. If yes → write comment on assigner's original action (prefilled "Done."), auto-promote assigner's Waiting For (state 13 → NEXT, or → CALENDAR if `scheduled_date` set), clear `waiting_for*`, send `delegation_completed` notification. Someday and Reference are NOT terminal — they don't trigger sync. Inside-project action complete/trash also doesn't trigger — only project-level terminal events do.
 - **Concurrent assignment**: Self-assignment uses optimistic locking — first-come-first-served if two members try to claim the same backlog action simultaneously.
 - **Per-project roles**: Stored in ProjectMember join table (project_id, user_id, role). Role is set when adding a member to the project (default is "write"). Project owner can change any member's role at any time.
 - **Project conversion**: Personal → shared: specify connections and their roles. Next Action (even if waiting/deferred) → assigned action, backlog → backlog. Shared → personal: forces unassignment of other members' actions. When last non-owner member is removed, auto-convert back to personal.

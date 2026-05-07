@@ -47,7 +47,7 @@ onUnmounted(() => document.removeEventListener('pointerdown', onClickOutside))
 <style scoped>
 .feedback-wrapper {
   position: fixed;
-  top: 50%;
+  top: 75%;
   right: 0;
   transform: translateY(-50%);
   z-index: 897;
@@ -124,7 +124,7 @@ onUnmounted(() => document.removeEventListener('pointerdown', onClickOutside))
 
 @media (max-width: 768px) {
   .feedback-wrapper {
-    top: 50%;
+    top: 75%;
     right: 0;
     transform: translateY(-50%);
   }

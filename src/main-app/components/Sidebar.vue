@@ -110,6 +110,17 @@
         <template #icon><ReviewIcon/></template>
       </SidebarMenuItem>
 
+      <!-- TEAM -->
+      <div class="sidebar-section-label">Team</div>
+
+      <SidebarMenuItem
+          label="Connections"
+          :to="{ name: 'connections' }"
+          :count="connections.pendingReceivedCount.value"
+      >
+        <template #icon><ConnectionsIcon/></template>
+      </SidebarMenuItem>
+
       <!-- ARCHIVE -->
       <div class="sidebar-section-label">Archive</div>
 
@@ -193,9 +204,11 @@ import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 import ReviewIcon from "../assets/ReviewIcon.vue";
 import EngageIcon from "../assets/EngageIcon.vue";
+import ConnectionsIcon from "../assets/ConnectionsIcon.vue";
 import { reviewModel } from "../scripts/models/reviewModel.js";
 import { settingsModel } from "../scripts/models/settingsModel.js";
 import { engageModel } from "../scripts/models/engageModel.js";
+import { connectionModel } from "../scripts/models/connectionModel.js";
 
 const auth = authModel();
 const toaster = errorModel();
@@ -213,6 +226,7 @@ const { items: overdueItems, loadItems: loadOverdue } = overdueModel();
 const { items: trashItems, loadTrash } = trashModel();
 const { stats, loadStats, refreshStats } = statsModel();
 const engage = engageModel();
+const connections = connectionModel();
 
 function refreshAfterDrop() {
   refreshStats()
@@ -249,7 +263,10 @@ const reviewBadgeColor = computed(() => {
   return null;
 });
 
-onMounted(loadStats);
+onMounted(() => {
+  loadStats()
+  if (!connections.loaded.value) connections.loadAll().catch(() => {})
+});
 
 function formatBytes(bytes) {
   if (!bytes) return '0 B';

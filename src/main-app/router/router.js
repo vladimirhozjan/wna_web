@@ -8,6 +8,7 @@ import InboxPage from '../views/dashboard/InboxPage.vue'
 import ProjectsPage from '../views/dashboard/ProjectsPage.vue'
 import ReferencePage from '../views/dashboard/ReferencePage.vue'
 import SettingsPage from '../views/dashboard/SettingsPage.vue'
+import ConnectionsPage from '../views/dashboard/ConnectionsPage.vue'
 import TodayPage from '../views/dashboard/TodayPage.vue'
 import SomedayPage from '../views/dashboard/SomedayPage.vue'
 import StuffDetailPage from '../views/dashboard/StuffDetailPage.vue'
@@ -41,6 +42,7 @@ const routes = [
     {path: '/reference', name: 'reference', component: ReferencePage},
     {path: '/settings', name: 'settings', component: SettingsPage},
     {path: '/settings/:section', redirect: to => ({path: '/settings', query: {section: to.params.section}})},
+    {path: '/connections', name: 'connections', component: ConnectionsPage},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},
     {path: '/completed', name: 'completed', component: CompletedPage},

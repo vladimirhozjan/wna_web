@@ -27,6 +27,17 @@
         <Spinner />
       </div>
 
+      <!-- Not found state -->
+      <div v-else-if="notFound" class="detail-not-found">
+        <EmptyState
+            :icon="NextIcon"
+            title="This action is no longer available"
+            text="It may have been completed, deleted, or moved."
+            buttonText="Go to Next Actions"
+            @action="goToNext"
+        />
+      </div>
+
       <!-- Content -->
       <div v-else-if="action" ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
 
@@ -436,6 +447,7 @@ import { reviewModel } from '../../scripts/models/reviewModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
+import EmptyState from '../../components/EmptyState.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -464,6 +476,7 @@ const {
 const fromSource = ref(null)
 
 const action = ref(null)
+const notFound = ref(false)
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')
@@ -601,6 +614,7 @@ const datesSummary = computed(() => {
 
 watch(error, (err) => {
   if (!err) return
+  if (err?.status === 404) return
   const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
   toaster.push(msg)
 })
@@ -616,9 +630,13 @@ onMounted(async () => {
     currentPosition.value = Number(route.query.position) || 0
     totalItems.value = Number(route.query.total) || 1
 
-  } catch {
-    toaster.push('Failed to load action')
-    router.push({ name: 'next' })
+  } catch (err) {
+    if (err?.status === 404) {
+      notFound.value = true
+    } else {
+      toaster.push('Failed to load action')
+      router.push({ name: 'next' })
+    }
   } finally {
     pageLoading.value = false
   }
@@ -655,6 +673,10 @@ function goBack() {
 function goToProject() {
   if (!action.value?.project?.id) return
   router.push({ name: 'project-detail', params: { id: action.value.project.id } })
+}
+
+function goToNext() {
+  router.push({ name: 'next' })
 }
 
 function goToRecurring() {
@@ -1550,6 +1572,16 @@ async function onActivate() {
   display: flex;
   justify-content: center;
   padding: 48px;
+}
+
+.detail-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  padding: 64px 24px;
 }
 
 .detail-body {

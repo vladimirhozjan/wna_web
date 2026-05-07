@@ -291,141 +291,6 @@
           </div>
         </div>
 
-        <!-- Connections Section -->
-        <div v-if="sectionVisible('connections')" class="card">
-          <div class="card-header card-header--toggle" @click="toggleSection('connections')">
-            <h2 class="settings-section-title">Connections</h2>
-            <span
-                v-if="isTeamTier && connections.pendingReceivedCount.value > 0 && !isExpanded('connections')"
-                class="settings-inline-badge"
-            >{{ connections.pendingReceivedCount.value }}</span>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('connections') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('connections')" class="settings-section-body">
-            <!-- Invite form — Team tier only -->
-            <div v-if="isTeamTier" class="settings-row settings-row--column">
-              <span class="settings-label">Invite someone by email</span>
-              <p class="text-body-s settings-hint">
-                They'll receive an invitation. If they're not on WhatsNextAction yet, they'll get a link to sign up.
-              </p>
-              <div class="connections-invite-row">
-                <Inpt
-                    v-model="inviteEmail"
-                    v-model:error="inviteError"
-                    type="email"
-                    placeholder="name@example.com"
-                    @enter="onInvite"
-                />
-                <Btn
-                    variant="primary"
-                    size="md"
-                    :loading="inviting"
-                    :disabled="!inviteEmail.trim() || inviting"
-                    @click="onInvite"
-                >Send</Btn>
-              </div>
-            </div>
-
-            <!-- Loading state -->
-            <div v-if="connections.loading.value && !connections.loaded.value" class="settings-loading">
-              <Spinner :size="16" />
-              <span>Loading connections...</span>
-            </div>
-
-            <template v-else>
-              <!-- Received invitations (all tiers) -->
-              <div v-if="connections.pendingReceived.value.length > 0" class="settings-row settings-row--column">
-                <span class="settings-label">Received invitations</span>
-                <template v-if="!isTeamTier">
-                  <p class="text-body-s settings-hint">
-                    You can accept these invitations by upgrading to the Team plan. Otherwise, you can decline them on your current plan.
-                  </p>
-                  <Btn variant="primary" size="sm" @click="openUpgrade">Upgrade to Team</Btn>
-                </template>
-                <div class="connections-list">
-                  <div v-for="inv in connections.pendingReceived.value" :key="inv.id" class="connection-item">
-                    <div class="connection-info">
-                      <span class="fw-medium">{{ inv.inviter_email }}</span>
-                      <span class="text-body-s connection-meta">invited you · {{ formatRelative(inv.created) }}</span>
-                    </div>
-                    <div class="connection-actions">
-                      <Btn
-                          variant="primary"
-                          size="sm"
-                          :loading="actingId === inv.id && actingType === 'accept'"
-                          :disabled="!!actingId || !isTeamTier"
-                          @click="onAccept(inv)"
-                      >Accept</Btn>
-                      <Btn
-                          variant="secondary"
-                          size="sm"
-                          :loading="actingId === inv.id && actingType === 'decline'"
-                          :disabled="!!actingId"
-                          @click="onDecline(inv)"
-                      >Decline</Btn>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Non-Team tier: explainer + upgrade CTA (when no invites pending) -->
-              <div v-if="!isTeamTier && connections.pendingReceived.value.length === 0" class="settings-row settings-row--column">
-                <p class="text-body-s settings-hint">
-                  Connections let you collaborate with other WhatsNextAction users — delegate actions and share projects. Available on the Team plan.
-                </p>
-                <Btn variant="primary" size="sm" @click="openUpgrade">Upgrade to Team</Btn>
-              </div>
-
-              <!-- Sent invitations — Team tier only -->
-              <div v-if="isTeamTier && connections.pendingSent.value.length > 0" class="settings-row settings-row--column">
-                <span class="settings-label">Pending invitations</span>
-                <div class="connections-list">
-                  <div v-for="inv in connections.pendingSent.value" :key="inv.id" class="connection-item">
-                    <div class="connection-info">
-                      <span class="fw-medium">{{ inv.invitee_email }}</span>
-                      <span class="text-body-s connection-meta">sent · {{ formatRelative(inv.created) }}</span>
-                    </div>
-                    <div class="connection-actions">
-                      <Btn
-                          variant="ghost"
-                          size="sm"
-                          :loading="actingId === inv.id && actingType === 'remove'"
-                          :disabled="!!actingId"
-                          @click="onRemove(inv)"
-                      >Cancel</Btn>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Accepted connections — Team tier only -->
-              <div v-if="isTeamTier" class="settings-row settings-row--column">
-                <span class="settings-label">Connections ({{ connections.connections.value.length }})</span>
-                <div v-if="connections.connections.value.length === 0" class="settings-empty">
-                  No connections yet. Invite someone above to get started.
-                </div>
-                <div v-else class="connections-list">
-                  <div v-for="conn in connections.connections.value" :key="conn.id" class="connection-item">
-                    <div class="connection-info">
-                      <span class="fw-medium">{{ conn.email }}</span>
-                      <span class="text-body-s connection-meta">connected · {{ formatRelative(conn.connected_since) }}</span>
-                    </div>
-                    <div class="connection-actions">
-                      <Btn
-                          variant="ghost-danger"
-                          size="sm"
-                          :loading="actingId === conn.id && actingType === 'remove'"
-                          :disabled="!!actingId"
-                          @click="onRemove(conn)"
-                      >Remove</Btn>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </div>
-        </div>
-
         <!-- Notifications Section -->
         <div v-if="sectionVisible('notifications')" class="card">
           <div class="card-header card-header--toggle" @click="toggleSection('notifications')">
@@ -593,8 +458,6 @@ import { changePassword, listSessions, revokeSession, revokeAllSessions } from '
 import { notificationModel } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
-import { connectionModel } from '../../scripts/models/connectionModel.js'
-import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import Spinner from '../../components/Spinner.vue'
 
 const router = useRouter()
@@ -605,8 +468,6 @@ const confirm = confirmModel()
 const settings = settingsModel()
 const notifications = notificationModel()
 const theme = themeModel()
-const connections = connectionModel()
-const upgrade = upgradeModel()
 
 const { stats } = statsModel()
 
@@ -632,7 +493,6 @@ const SECTION_KEYWORDS = {
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
   review: 'review weekly sidebar',
-  connections: 'connections invite team collaborate delegate share member',
   notifications: 'notifications email reminder due today next actions project',
   about: 'about version',
 }
@@ -681,7 +541,6 @@ const tierLabel = computed(() => {
   if (t === 'team') return 'Team'
   return 'Free'
 })
-const isTeamTier = computed(() => tier.value === 'team')
 function formatBytes(bytes) {
   if (!bytes) return '0 B'
   const units = ['B', 'KB', 'MB', 'GB']
@@ -855,126 +714,6 @@ const revokingAll = ref(false)
 const isMobile = ref(false)
 const loggingOut = ref(false)
 
-// Connections state
-const inviteEmail = ref('')
-const inviteError = ref('')
-const inviting = ref(false)
-const actingId = ref(null)
-const actingType = ref(null)
-
-function openUpgrade() {
-  upgrade.show({
-    message: 'Connections and team collaboration are available on the Team plan. Upgrade to invite teammates, delegate actions, and share projects.'
-  })
-}
-
-function isEmailValid(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return re.test(email)
-}
-
-async function onInvite() {
-  const email = inviteEmail.value.trim()
-  inviteError.value = ''
-  if (!email) {
-    inviteError.value = 'Enter an email address'
-    return
-  }
-  if (!isEmailValid(email)) {
-    inviteError.value = 'Enter a valid email address'
-    return
-  }
-  if (email.toLowerCase() === (auth.currentUser.value?.email || '').toLowerCase()) {
-    inviteError.value = "You can't invite yourself"
-    return
-  }
-  inviting.value = true
-  try {
-    await connections.invite(email)
-    inviteEmail.value = ''
-  } catch (err) {
-    inviteError.value = err?.message || 'Could not send invitation'
-  } finally {
-    inviting.value = false
-  }
-}
-
-async function onAccept(inv) {
-  if (!isTeamTier.value) {
-    upgrade.show({
-      message: 'Accepting connections is available on the Team plan. Upgrade to connect with other WhatsNextAction users — delegate actions and share projects.'
-    })
-    return
-  }
-  actingId.value = inv.id
-  actingType.value = 'accept'
-  try {
-    // In-app acceptance uses the invitation id as the token
-    await connections.accept(inv.token || inv.id)
-  } catch (err) {
-    if (err?.status === 403) {
-      upgrade.show({
-        message: 'Accepting connections requires the Team plan.'
-      })
-    } else {
-      toaster.push(err?.message || 'Could not accept invitation')
-    }
-  } finally {
-    actingId.value = null
-    actingType.value = null
-  }
-}
-
-async function onDecline(inv) {
-  actingId.value = inv.id
-  actingType.value = 'decline'
-  try {
-    await connections.decline(inv.token || inv.id)
-  } catch (err) {
-    toaster.push(err?.message || 'Could not decline invitation')
-  } finally {
-    actingId.value = null
-    actingType.value = null
-  }
-}
-
-async function onRemove(item) {
-  const confirmed = await confirm.show({
-    title: 'Remove connection',
-    message: item.email
-        ? `Remove ${item.email} from your connections? In-flight delegations stay open.`
-        : `Cancel the invitation to ${item.invitee_email || item.inviter_email || 'this person'}?`,
-    confirmText: 'Remove',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
-  actingId.value = item.id
-  actingType.value = 'remove'
-  try {
-    await connections.remove(item.id)
-  } catch (err) {
-    toaster.push(err?.message || 'Could not remove')
-  } finally {
-    actingId.value = null
-    actingType.value = null
-  }
-}
-
-function formatRelative(dateStr) {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diffMs = now - date
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString()
-}
-
 // Computed
 const canChangePassword = computed(() => {
   return currentPassword.value.trim() &&
@@ -994,9 +733,6 @@ onMounted(() => {
   })
   notifications.load().catch(() => {
     // Notification settings will fall back to defaults
-  })
-  connections.loadAll().catch(() => {
-    // Silent — UI handles empty state. Non-Team users still need received invitations loaded.
   })
 
   applySectionQuery()
@@ -1431,85 +1167,6 @@ async function onLogout() {
   color: var(--color-danger);
 }
 
-
-/* Connections list */
-.connections-invite-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.connections-invite-row :deep(label) {
-  flex: 1;
-  width: auto;
-}
-
-.connections-invite-row :deep(input) {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.connections-list {
-  display: flex;
-  flex-direction: column;
-  margin-top: 4px;
-}
-
-.connection-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.connection-item:last-child {
-  border-bottom: none;
-}
-
-.connection-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.connection-info .fw-medium {
-  color: var(--color-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.connection-meta {
-  color: var(--color-text-tertiary);
-}
-
-.connection-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.settings-inline-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  margin-left: auto;
-  margin-right: 8px;
-  border-radius: 9px;
-  background: var(--color-action);
-  color: var(--color-btn-primary-text);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
-}
 
 /* Sessions list */
 .sessions-list {
