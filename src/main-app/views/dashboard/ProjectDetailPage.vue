@@ -50,8 +50,8 @@
             </div>
             <h2
                 class="text-h2 detail-title"
-                :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
-                @click="canWrite && startEdit('title', project.title)"
+                :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted, 'detail-title--readonly': !isOwner }"
+                @click="isOwner && startEdit('title', project.title)"
             >{{ project.title }}</h2>
             <textarea
                 v-if="editingField === 'title'"
@@ -152,9 +152,9 @@
             <p
                 v-if="editingField !== 'outcome'"
                 class="text-body-m detail-section-content"
-                :class="{ 'detail-section-content--empty': !project.outcome }"
-                @click="canWrite && startEdit('outcome', project.outcome || '')"
-            >{{ project.outcome || 'What does done look like?' }}</p>
+                :class="{ 'detail-section-content--empty': !project.outcome, 'detail-section-content--readonly': !isOwner }"
+                @click="isOwner && startEdit('outcome', project.outcome || '')"
+            >{{ project.outcome || (isOwner ? 'What does done look like?' : '—') }}</p>
             <textarea
                 v-else
                 ref="outcomeInput"
@@ -381,9 +381,9 @@
             <p
                 v-if="editingField !== 'description'"
                 class="text-body-m detail-section-content"
-                :class="{ 'detail-section-content--empty': !project.description }"
-                @click="canWrite && startEdit('description', project.description || '')"
-            >{{ project.description || (canWrite ? 'Add a description...' : '—') }}</p>
+                :class="{ 'detail-section-content--empty': !project.description, 'detail-section-content--readonly': !isOwner }"
+                @click="isOwner && startEdit('description', project.description || '')"
+            >{{ project.description || (isOwner ? 'Add a description...' : '—') }}</p>
             <textarea
                 v-else
                 ref="descriptionInput"
@@ -419,11 +419,11 @@
         <div class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Tags</label>
           <div class="detail-section-wrapper">
-            <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="canWrite && startTagEdit()">
+            <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit()">
               <span v-if="project.tags && project.tags.length > 0" class="detail-tags-chips">
                 <span v-for="tag in project.tags" :key="tag" class="text-body-s detail-tag-chip">{{ tag }}</span>
               </span>
-              <span v-else class="text-body-m detail-section-content detail-section-content--empty">{{ canWrite ? 'Add tags...' : '—' }}</span>
+              <span v-else class="text-body-m detail-section-content detail-section-content--empty">Add tags...</span>
             </div>
             <template v-else>
               <TagInput
@@ -510,7 +510,7 @@
         </div>
 
         <!-- Attachments section -->
-        <AttachmentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" />
+        <AttachmentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" :readonly="!canWrite" />
 
         <!-- Comments section -->
         <CommentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" />
@@ -1185,13 +1185,17 @@ async function saveTags() {
   project.value.tags = newTags
   savingField.value = 'tags'
 
+  const body = isOwner.value
+    ? {
+        title: project.value.title,
+        description: project.value.description,
+        outcome: project.value.outcome,
+        tags: newTags,
+      }
+    : { tags: newTags }
+
   try {
-    await updateProject(project.value.id, {
-      title: project.value.title,
-      description: project.value.description,
-      outcome: project.value.outcome,
-      tags: newTags,
-    })
+    await updateProject(project.value.id, body)
     tagMdl.addToCache(newTags)
     editingField.value = null
   } catch {
@@ -1941,6 +1945,14 @@ async function onAddAction() {
   background: var(--color-bg-secondary);
 }
 
+.detail-title--readonly {
+  cursor: default;
+}
+
+.detail-title--readonly:hover {
+  background: transparent;
+}
+
 .detail-title--hidden {
   visibility: hidden;
 }
@@ -2019,6 +2031,14 @@ async function onAddAction() {
 
 .detail-section-content:hover {
   background: var(--color-bg-secondary);
+}
+
+.detail-section-content--readonly {
+  cursor: default;
+}
+
+.detail-section-content--readonly:hover {
+  background: transparent;
 }
 
 .detail-section-content--empty {

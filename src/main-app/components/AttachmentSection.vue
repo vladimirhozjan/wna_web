@@ -44,6 +44,7 @@
       <!-- Empty state (drop target) -->
       <div v-if="attachments.length === 0 && !uploading" class="detail-section-wrapper">
         <p
+            v-if="!readonly"
             class="text-body-m detail-section-content detail-section-content--empty attachment-drop-zone"
             :class="{ 'attachment-drop-zone--active': dragover }"
             @click="triggerUpload"
@@ -51,6 +52,7 @@
             @dragleave.prevent="onDragLeave"
             @drop.prevent="onDrop"
         >{{ dragover ? 'Drop file to attach' : 'Attach a file...' }}</p>
+        <p v-else class="text-body-m detail-section-content detail-section-content--empty">—</p>
       </div>
 
       <!-- File list -->
@@ -65,7 +67,7 @@
             <button class="attachment-action-btn" title="Download" @click="download(att)">
               <DownloadIcon />
             </button>
-            <ActionBtn @click="remove(att)" />
+            <ActionBtn v-if="!readonly" @click="remove(att)" />
           </div>
         </div>
       </div>
@@ -80,7 +82,7 @@
 
       <!-- Add more (drop target) -->
       <p
-          v-if="attachments.length > 0 && !atLimit && !uploading"
+          v-if="!readonly && attachments.length > 0 && !atLimit && !uploading"
           class="text-body-m detail-section-content detail-section-content--empty attachment-drop-zone"
           :class="{ 'attachment-drop-zone--active': dragover }"
           @click="triggerUpload"
@@ -123,6 +125,7 @@ import Spinner from './Spinner.vue'
 const props = defineProps({
   entityType: { type: String, required: true },
   itemId: { type: String, required: true },
+  readonly: { type: Boolean, default: false },
 })
 
 const toaster = errorModel()
