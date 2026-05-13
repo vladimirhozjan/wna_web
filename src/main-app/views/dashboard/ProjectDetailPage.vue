@@ -134,11 +134,19 @@
             Share…
           </Btn>
           <Btn
-              v-if="!isCompleted"
+              v-if="!isCompleted && isShared && !isOwner"
+              variant="ghost-danger"
+              size="sm"
+              :loading="actionLoading === 'leave'"
+              @click="onLeaveProject"
+          >
+            Leave
+          </Btn>
+          <Btn
+              v-else-if="!isCompleted"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
-              :disabled="isShared && !isOwner"
               @click="onTrash"
           >
             Trash
@@ -499,13 +507,6 @@
                 @click="openShareModal('add')"
             >Add another member...</p>
 
-            <!-- Footer link: leave project (non-owners only) -->
-            <div v-if="!isOwner && currentMembers.length > 0" class="detail-shared-with__footer">
-              <a
-                  class="text-body-s detail-shared-with__danger-link"
-                  @click="onLeaveProject"
-              >Leave project</a>
-            </div>
           </template>
         </div>
 
@@ -1021,11 +1022,14 @@ async function onLeaveProject() {
     cancelText: 'Cancel',
   })
   if (!confirmed) return
+  actionLoading.value = 'leave'
   try {
     await removeMember(project.value.id, myUserId.value)
     router.push({ name: 'projects' })
   } catch (err) {
     toaster.push(friendlyMemberError(err, 'Could not leave project.'))
+  } finally {
+    actionLoading.value = null
   }
 }
 
@@ -2497,19 +2501,6 @@ async function onAddAction() {
 .detail-shared-with__error {
   margin: 6px 0 0;
   color: var(--color-danger);
-}
-
-.detail-shared-with__footer {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.detail-shared-with__danger-link {
-  color: var(--color-danger);
-  cursor: pointer;
-  text-decoration: underline;
 }
 
 /* ── Share / Add-member modal ── */
