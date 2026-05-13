@@ -59,7 +59,7 @@
             <MetadataRow :item="item" entity-type="project" />
           </template>
           <template #actions="{ item }">
-            <ActionBtn @click="onTrash(item.id)" />
+            <ActionBtn v-if="canTrash(item)" @click="onTrash(item.id)" />
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
@@ -93,8 +93,15 @@ import { projectModel } from '../../scripts/models/projectModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { authModel } from '../../scripts/core/authModel.js'
 
 const router = useRouter()
+const auth = authModel()
+
+function canTrash(item) {
+  if (!item?.shared) return true
+  return item.owner_id ? item.owner_id === auth.currentUser.value?.id : item.my_role === 'owner'
+}
 
 const {
   items,

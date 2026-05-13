@@ -226,6 +226,23 @@ async function onNotifClick(n, close) {
   routeForNotification(n);
 }
 
+const SHARED_PROJECT_EVENT_TYPES = new Set([
+  "project_shared",
+  "project_unshared",
+  "member_added",
+  "member_removed",
+  "member_role_changed",
+  "action_assigned",
+  "action_unassigned",
+]);
+
+const CONNECTION_EVENT_TYPES = new Set([
+  "connection_invite",
+  "connection_invite_registration",
+  "connection_accepted",
+  "connection_declined",
+]);
+
 function routeForNotification(n) {
   if (!n) return;
   if (n.entity_type === "stuff" && n.entity_id) {
@@ -234,7 +251,10 @@ function routeForNotification(n) {
     router.push({ name: "action-detail", params: { id: n.entity_id } });
   } else if (n.entity_type === "project" && n.entity_id) {
     router.push({ name: "project-detail", params: { id: n.entity_id } });
-  } else if (n.type === "connection_invite") {
+  } else if (SHARED_PROJECT_EVENT_TYPES.has(n.type)) {
+    // Shared-project event without a usable entity_id falls back to projects list
+    router.push({ name: "projects" });
+  } else if (CONNECTION_EVENT_TYPES.has(n.type)) {
     router.push({ name: "connections" });
   } else if (n.type === "daily_next_actions") {
     router.push({ name: "next" });

@@ -975,13 +975,13 @@ async function onActivate() {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 50px;
+  padding: 24px 24px 0 32px;
   position: relative;
 }
 
 .detail-type-icon {
   position: absolute;
-  left: 16px;
+  left: 2px;
   width: 18px;
   height: 18px;
   color: var(--color-text-tertiary);
@@ -1045,12 +1045,12 @@ async function onActivate() {
 .detail-actions {
   display: flex;
   gap: 8px;
-  padding: 16px 24px 16px 50px; /* 42px icon + 8px gap */
+  padding: 16px 24px 16px 32px; /* 42px icon + 8px gap */
 }
 
 /* ── Section areas (description) ── */
 .detail-section-area {
-  padding: 12px 24px 12px 50px; /* 42px icon + 8px gap */
+  padding: 12px 24px 12px 32px; /* 42px icon + 8px gap */
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -1121,7 +1121,7 @@ async function onActivate() {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 16px 24px 24px 50px; /* 42px icon + 8px gap */
+  padding: 16px 24px 24px 32px; /* 42px icon + 8px gap */
   margin-top: 8px;
 }
 
@@ -1193,19 +1193,19 @@ async function onActivate() {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 50px;
+    padding: 16px 16px 0 32px;
   }
 
   .detail-actions {
-    padding: 12px 16px 12px 50px;
+    padding: 12px 16px 12px 32px;
   }
 
   .detail-section-area {
-    padding: 12px 16px 12px 50px;
+    padding: 12px 16px 12px 32px;
   }
 
   .detail-metadata {
-    padding: 12px 16px 16px 50px;
+    padding: 12px 16px 16px 32px;
   }
 
   .clarify-slideover {

@@ -1,10 +1,28 @@
 <template>
   <div v-if="hasAnyMetadata" class="metadata-row">
     <div class="metadata-row__indicators">
-      <!-- No next action warning (projects only) -->
+      <!-- Shared project indicator (projects only) -->
+      <span v-if="entityType === 'project' && item.shared" class="chip chip--shared">
+        <SharedIcon class="chip__icon chip__icon--shared" />
+        <span class="chip__text chip__text--shared">Shared</span>
+      </span>
+
+      <!-- No next action warning (personal projects only) -->
       <span v-if="missingNextAction" class="chip chip--warning">
         <WarningIcon class="chip__icon chip__icon--warning" />
         <span class="chip__text chip__text--warning">No next action</span>
+      </span>
+
+      <!-- Delegated from (inbox stuff or actions clarified from delegations) -->
+      <span v-if="delegatedFromLabel" class="chip">
+        <SharedIcon class="chip__icon chip__icon--tertiary" />
+        <span class="chip__text chip__text--tertiary">From: {{ delegatedFromLabel }}</span>
+      </span>
+
+      <!-- Assignee (shared-project actions only) -->
+      <span v-if="entityType === 'action' && item.assigned_to_email" class="chip chip--project">
+        <SharedIcon class="chip__icon chip__icon--project" />
+        <span class="chip__text chip__text--project">{{ assigneeLabel }}</span>
       </span>
 
       <!-- Recurrence rule -->
@@ -78,8 +96,10 @@ import CommentIcon from '../assets/CommentIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
 import WarningIcon from '../assets/WarningIcon.vue'
 import DescriptionIcon from '../assets/DescriptionIcon.vue'
+import SharedIcon from '../assets/SharedIcon.vue'
 import { isOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
 import { describeRRule } from '../scripts/core/rruleUtils.js'
+import { authModel } from '../scripts/core/authModel.js'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -91,8 +111,23 @@ const isItemOverdue = computed(() =>
 )
 
 const missingNextAction = computed(() =>
-    props.entityType === 'project' && !props.item.next_action_id && props.item.state !== 'SOMEDAY'
+    props.entityType === 'project'
+    && !props.item.next_action_id
+    && props.item.state !== 'SOMEDAY'
+    && !props.item.shared
 )
+
+const delegatedFromLabel = computed(() => {
+  return props.item.delegated_from_user_email || props.item.delegated_from_user_name || ''
+})
+
+const assigneeLabel = computed(() => {
+  const email = props.item.assigned_to_email
+  if (!email) return ''
+  const me = authModel().currentUser.value?.id
+  if (me && props.item.assigned_to === me) return 'You'
+  return email
+})
 
 const recurrenceDescription = computed(() => {
   let desc = describeRRule(props.item.recurrence_rule)
@@ -156,7 +191,11 @@ const mobileHiddenTagCount = computed(() => {
 const hasAnyMetadata = computed(() => {
   const i = props.item
   const isAction = props.entityType === 'action'
+  const isProject = props.entityType === 'project'
 
+  if (isProject && i.shared) return true
+  if (delegatedFromLabel.value) return true
+  if (isAction && i.assigned_to_email) return true
   if (missingNextAction.value) return true
   if (i.recurrence_rule) return true
   if (isAction && i.waiting_for) return true
@@ -211,6 +250,20 @@ const hasAnyMetadata = computed(() => {
 
 .chip--project {
   font-weight: 500;
+  color: var(--color-action);
+}
+
+.chip--shared {
+  font-weight: 500;
+  color: var(--color-action);
+}
+
+.chip__icon--shared {
+  color: var(--color-action);
+  opacity: 1;
+}
+
+.chip__text--shared {
   color: var(--color-action);
 }
 

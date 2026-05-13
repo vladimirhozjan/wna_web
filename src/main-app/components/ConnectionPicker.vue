@@ -28,7 +28,7 @@
         <span class="text-body-m cp-option-label">{{ c.email }}</span>
       </div>
       <div
-          v-if="query.trim() && !exactMatch"
+          v-if="allowText && query.trim() && !exactMatch"
           class="cp-option cp-option--free"
           :class="{ 'cp-option--active': highlightedIndex === filtered.length }"
           @mousedown.prevent="selectFreeText()"
@@ -60,6 +60,14 @@ const props = defineProps({
   autofocus: {
     type: Boolean,
     default: false,
+  },
+  excludeUserIds: {
+    type: Array,
+    default: () => [],
+  },
+  allowText: {
+    type: Boolean,
+    default: true,
   },
 })
 
@@ -95,7 +103,8 @@ watch(() => props.modelValue, (v) => {
 const isLoading = computed(() => conn.loading.value && !conn.loaded.value)
 
 const filtered = computed(() => {
-  const list = conn.connections.value || []
+  const exclude = new Set(props.excludeUserIds || [])
+  const list = (conn.connections.value || []).filter(c => !exclude.has(c.user_id))
   const q = query.value.trim().toLowerCase()
   if (!q) return list
   return list.filter(c => (c.email || '').toLowerCase().includes(q))

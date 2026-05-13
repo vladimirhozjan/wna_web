@@ -1694,6 +1694,80 @@ export async function removeConnection(id) {
     }
 }
 
+// ── Shared Projects (P2 — Team Tier Only) ──
+
+export async function shareProject(projectId, members) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/share`, {members}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function unshareProject(projectId) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/unshare`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listProjectMembers(projectId) {
+    try {
+        const res = await httpApi.get(`/v1/project/${projectId}/members`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function addProjectMember(projectId, userId, role) {
+    try {
+        const res = await httpApi.post(`/v1/project/${projectId}/members`, {user_id: userId, role}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateProjectMemberRole(projectId, userId, role) {
+    try {
+        const res = await httpApi.patch(`/v1/project/${projectId}/members/${userId}`, {role}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function removeProjectMember(projectId, userId) {
+    try {
+        const res = await httpApi.delete(`/v1/project/${projectId}/members/${userId}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function assignAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/assign`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function unassignAction(actionId) {
+    try {
+        const res = await httpApi.post(`/v1/action/${actionId}/unassign`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── In-App Notifications (P2) ──
 
 export async function listNotifications({limit = 20, cursor = null} = {}) {
@@ -1885,6 +1959,15 @@ const apiClient = {
     listConnections,
     listPendingConnections,
     removeConnection,
+    // Shared Projects API (P2)
+    shareProject,
+    unshareProject,
+    listProjectMembers,
+    addProjectMember,
+    updateProjectMemberRole,
+    removeProjectMember,
+    assignAction,
+    unassignAction,
     // In-App Notifications API (P2)
     listNotifications,
     markNotificationRead,

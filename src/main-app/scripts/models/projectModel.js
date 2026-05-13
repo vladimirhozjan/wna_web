@@ -1,8 +1,9 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import apiClient from '../core/apiClient.js'
 import { PAGE_SIZE } from '../core/domains.js'
 import { statsModel } from './statsModel.js'
 import { errorModel } from '../core/errorModel.js'
+import { authModel } from '../core/authModel.js'
 
 function truncateTitle(title, maxLen = 30) {
     if (!title || title.length <= maxLen) return title
@@ -18,6 +19,9 @@ const limit = ref(PAGE_SIZE)
 const hasMore = ref(true)
 const totalItems = ref(0)
 const activeTags = ref(null)
+
+const currentMembers = ref([])
+const currentMembersLoading = ref(false)
 
 export function projectModel() {
 
@@ -237,6 +241,157 @@ export function projectModel() {
         }
     }
 
+    // ── Shared project helpers ──
+
+    const myUserId = computed(() => authModel().currentUser.value?.id || null)
+
+    const currentRole = computed(() => {
+        if (!myUserId.value) return null
+        const me = currentMembers.value.find(m => m.user_id === myUserId.value)
+        return me ? me.role : null
+    })
+
+    function isShared(project) {
+        return !!(project && project.shared)
+    }
+
+    function isOwner(project) {
+        if (!project || !myUserId.value) return false
+        if (project.owner_id) return project.owner_id === myUserId.value
+        if (project.my_role) return project.my_role === 'owner'
+        return currentRole.value === 'owner'
+    }
+
+    function canWrite(project) {
+        if (!isShared(project)) return true
+        const tier = authModel().currentUser.value?.subscription_tier
+        if (tier !== 'team') return false
+        const role = project.my_role || currentRole.value
+        return role === 'owner' || role === 'write'
+    }
+
+    async function loadMembers(projectId) {
+        currentMembersLoading.value = true
+        error.value = null
+        try {
+            const data = await apiClient.listProjectMembers(projectId)
+            currentMembers.value = data.members || []
+            return currentMembers.value
+        } catch (err) {
+            error.value = err
+            currentMembers.value = []
+            throw err
+        } finally {
+            currentMembersLoading.value = false
+        }
+    }
+
+    async function shareProject(projectId, members) {
+        error.value = null
+        try {
+            const data = await apiClient.shareProject(projectId, members)
+            if (current.value?.id === projectId) {
+                current.value = { ...current.value, shared: true, owner_id: myUserId.value, my_role: 'owner' }
+            }
+            items.value = items.value.map(i =>
+                i.id === projectId ? { ...i, shared: true, owner_id: myUserId.value, my_role: 'owner' } : i
+            )
+            await loadMembers(projectId)
+            errorModel().success('Project shared')
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
+    async function unshareProject(projectId) {
+        error.value = null
+        try {
+            const data = await apiClient.unshareProject(projectId)
+            if (current.value?.id === projectId) {
+                current.value = { ...current.value, shared: false }
+            }
+            items.value = items.value.map(i =>
+                i.id === projectId ? { ...i, shared: false } : i
+            )
+            currentMembers.value = []
+            errorModel().success('Project unshared')
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
+    async function addMember(projectId, userId, role) {
+        error.value = null
+        try {
+            const data = await apiClient.addProjectMember(projectId, userId, role)
+            await loadMembers(projectId)
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
+    async function updateMemberRole(projectId, userId, role) {
+        error.value = null
+        try {
+            const data = await apiClient.updateProjectMemberRole(projectId, userId, role)
+            currentMembers.value = currentMembers.value.map(m =>
+                m.user_id === userId ? { ...m, role } : m
+            )
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
+    async function removeMember(projectId, userId) {
+        error.value = null
+        try {
+            const data = await apiClient.removeProjectMember(projectId, userId)
+            currentMembers.value = currentMembers.value.filter(m => m.user_id !== userId)
+            if (data?.auto_unshared) {
+                if (current.value?.id === projectId) {
+                    current.value = { ...current.value, shared: false }
+                }
+                items.value = items.value.map(i =>
+                    i.id === projectId ? { ...i, shared: false } : i
+                )
+                currentMembers.value = []
+                errorModel().success('Last member left — project is personal again')
+            }
+            return data
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
+    async function assignAction(actionId) {
+        error.value = null
+        try {
+            return await apiClient.assignAction(actionId)
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
+    async function unassignAction(actionId) {
+        error.value = null
+        try {
+            return await apiClient.unassignAction(actionId)
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
     return {
         items,
         current,
@@ -257,5 +412,21 @@ export function projectModel() {
         moveProject,
         completeProject,
         getProjectActions,
+
+        // Shared projects
+        currentMembers,
+        currentMembersLoading,
+        currentRole,
+        isShared,
+        isOwner,
+        canWrite,
+        loadMembers,
+        shareProject,
+        unshareProject,
+        addMember,
+        updateMemberRole,
+        removeMember,
+        assignAction,
+        unassignAction,
     }
 }

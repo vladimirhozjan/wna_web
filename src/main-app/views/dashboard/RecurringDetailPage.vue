@@ -584,13 +584,13 @@ function formatDate(dateStr) {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 50px;
+  padding: 24px 24px 0 32px;
   position: relative;
 }
 
 .detail-type-icon {
   position: absolute;
-  left: 16px;
+  left: 2px;
   width: 18px;
   height: 18px;
   color: var(--color-text-tertiary);
@@ -664,7 +664,7 @@ function formatDate(dateStr) {
   align-items: center;
   gap: 4px;
   padding: 2px 10px;
-  margin: 8px 0 0 50px;
+  margin: 8px 0 0 32px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
@@ -689,12 +689,12 @@ function formatDate(dateStr) {
 .detail-actions {
   display: flex;
   gap: 8px;
-  padding: 16px 24px 16px 50px;
+  padding: 16px 24px 16px 32px;
 }
 
 /* ── Section areas ── */
 .detail-section-area {
-  padding: 12px 24px 12px 50px;
+  padding: 12px 24px 12px 32px;
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -808,7 +808,7 @@ function formatDate(dateStr) {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 16px 24px 24px 50px;
+  padding: 16px 24px 24px 32px;
   margin-top: 8px;
 }
 
@@ -838,19 +838,19 @@ function formatDate(dateStr) {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 50px;
+    padding: 16px 16px 0 32px;
   }
 
   .detail-actions {
-    padding: 12px 16px 12px 50px;
+    padding: 12px 16px 12px 32px;
   }
 
   .detail-section-area {
-    padding: 12px 16px 12px 50px;
+    padding: 12px 16px 12px 32px;
   }
 
   .detail-metadata {
-    padding: 12px 16px 16px 50px;
+    padding: 12px 16px 16px 32px;
   }
 }
 </style>

@@ -74,6 +74,13 @@
           <span>Recurring</span>
         </div>
 
+        <!-- Assignee chip (shared-project actions) -->
+        <div v-if="isSharedAction" class="text-body-s detail-assignee-chip">
+          <UserAvatar v-if="action.assigned_to" :email="assigneeEmail" class="detail-assignee-chip__avatar" />
+          <span v-if="action.assigned_to">Assigned to {{ assigneeLabel }}</span>
+          <span v-else class="detail-assignee-chip__unassigned">Unassigned</span>
+        </div>
+
         <!-- Weekly Review link -->
         <div v-if="action.recurring_parent_id && action.recurring_parent_id === reviewTemplateId" class="text-body-s detail-review-badge" @click="goToReview">
           <ReviewIcon class="detail-review-badge__icon" />
@@ -157,10 +164,29 @@
             <button class="dropdown-item" @click="onMoveTo('REFERENCE')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
           </Dropdown>
           <Btn
+              v-if="canAssign"
+              variant="primary"
+              size="sm"
+              :loading="assignLoading"
+              @click="onAssignToMe"
+          >
+            Assign to me
+          </Btn>
+          <Btn
+              v-if="isAssignedToMe && !isCompleted"
+              variant="ghost"
+              size="sm"
+              :loading="unassignLoading"
+              @click="onUnassignMine"
+          >
+            Unassign
+          </Btn>
+          <Btn
               v-if="!isCompleted && !isSomeday"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
+              :disabled="isAssignedToOther"
               @click="onTrash"
           >
             Trash
@@ -220,7 +246,10 @@
 
         <!-- Tags section -->
         <div class="detail-section-area">
-          <label class="text-body-s fw-semibold detail-section-label">Tags</label>
+          <label class="text-body-s fw-semibold detail-section-label">
+            Tags
+            <span v-if="isSharedAction" class="detail-tag-private-hint">Private to you</span>
+          </label>
           <div class="detail-section-wrapper">
             <div v-if="editingField !== 'tags'" class="detail-tags-display" @click="startTagEdit">
               <span v-if="action.tags && action.tags.length > 0" class="detail-tags-chips">
@@ -420,12 +449,15 @@ import TagInput from '../../components/TagInput.vue'
 import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
 import DateTimeInput from '../../components/DateTimeInput.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
 import { todayModel } from '../../scripts/models/todayModel.js'
 import { waitingModel } from '../../scripts/models/waitingModel.js'
+import { projectModel } from '../../scripts/models/projectModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
-import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction } from '../../scripts/core/apiClient.js'
+import { authModel } from '../../scripts/core/authModel.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction } from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
@@ -461,6 +493,7 @@ const settings = settingsModel()
 const nextModel = nextActionModel()
 const todayMdl = todayModel()
 const waitingMdl = waitingModel()
+const auth = authModel()
 
 const {
   error,
@@ -545,6 +578,45 @@ const NO_POSITION_SOURCES = ['calendar', 'engage', 'overdue', 'project', 'recurr
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
 const isWaiting = computed(() => action.value?.state === 'WAITING')
+
+// Shared-project flags. We treat the action as belonging to a shared project when
+// the BE includes assignment metadata. This stays inert until the BE adds
+// `assigned_to`/`assigned_to_email`/`project_shared` fields to action responses.
+const myUserId = computed(() => auth.currentUser.value?.id || null)
+const myTier = computed(() => auth.currentUser.value?.subscription_tier || 'free')
+const isSharedAction = computed(() => {
+  const a = action.value
+  if (!a) return false
+  if (a.project_shared === true) return true
+  return Object.prototype.hasOwnProperty.call(a, 'assigned_to')
+})
+const isAssignedToMe = computed(() =>
+    isSharedAction.value && action.value?.assigned_to && action.value.assigned_to === myUserId.value
+)
+const isAssignedToOther = computed(() =>
+    isSharedAction.value && action.value?.assigned_to && action.value.assigned_to !== myUserId.value
+)
+const isUnassigned = computed(() =>
+    isSharedAction.value && !action.value?.assigned_to
+)
+const canAssign = computed(() =>
+    isUnassigned.value && myTier.value === 'team' && (action.value?.my_role !== 'read_only')
+)
+const assigneeLabel = computed(() => {
+  const a = action.value
+  if (!a?.assigned_to) return ''
+  if (a.assigned_to === myUserId.value) return 'You'
+  return a.assigned_to_email || 'a member'
+})
+const assigneeEmail = computed(() => {
+  const a = action.value
+  if (!a?.assigned_to) return ''
+  if (a.assigned_to === myUserId.value) return auth.currentUser.value?.email || ''
+  return a.assigned_to_email || ''
+})
+
+const assignLoading = ref(false)
+const unassignLoading = ref(false)
 const isToday = computed(() => fromSource.value === 'today')
 const fromCalendar = computed(() => fromSource.value === 'calendar')
 const fromWaiting = computed(() => fromSource.value === 'waiting')
@@ -991,6 +1063,39 @@ async function onGotIt() {
 function formatDate(dateStr) {
   if (!dateStr) return '—'
   return new Date(dateStr).toLocaleString()
+}
+
+async function onAssignToMe() {
+  if (!canAssign.value) return
+  assignLoading.value = true
+  try {
+    const data = await assignAction(action.value.id)
+    action.value.assigned_to = data?.assigned_to || myUserId.value
+    action.value.assigned_to_email = auth.currentUser.value?.email || action.value.assigned_to_email
+    toaster.success('Action assigned to you')
+  } catch (err) {
+    const status = err?.status || err?.response?.status
+    if (status === 409) toaster.push('This action was just claimed by another member.')
+    else if (status === 403) toaster.push('You cannot claim actions on this project.')
+    else toaster.push('Failed to claim action.')
+  } finally {
+    assignLoading.value = false
+  }
+}
+
+async function onUnassignMine() {
+  if (!isAssignedToMe.value) return
+  unassignLoading.value = true
+  try {
+    await unassignAction(action.value.id)
+    action.value.assigned_to = null
+    action.value.assigned_to_email = null
+    toaster.success('Action returned to backlog')
+  } catch {
+    toaster.push('Failed to unassign action.')
+  } finally {
+    unassignLoading.value = false
+  }
 }
 
 // Date section functions
@@ -1648,13 +1753,13 @@ async function onActivate() {
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 24px 24px 0 50px;
+  padding: 24px 24px 0 32px;
   position: relative;
 }
 
 .detail-type-icon {
   position: absolute;
-  left: 11px;
+  left: 2px;
   width: 28px;
   height: 28px;
   color: var(--color-text-tertiary);
@@ -1720,7 +1825,7 @@ async function onActivate() {
   align-items: center;
   gap: 4px;
   padding: 2px 10px;
-  margin: 8px 0 0 50px;
+  margin: 8px 0 0 32px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
@@ -1742,7 +1847,7 @@ async function onActivate() {
   align-items: center;
   gap: 4px;
   padding: 2px 10px;
-  margin: 6px 0 0 50px;
+  margin: 6px 0 0 32px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border-light);
   border-radius: 4px;
@@ -1767,12 +1872,12 @@ async function onActivate() {
 .detail-actions {
   display: flex;
   gap: 8px;
-  padding: 16px 24px 16px 50px; /* 42px icon + 8px gap */
+  padding: 16px 24px 16px 32px; /* 42px icon + 8px gap */
 }
 
 /* ── Section areas (description) ── */
 .detail-section-area {
-  padding: 12px 24px 12px 50px; /* 42px icon + 8px gap */
+  padding: 12px 24px 12px 32px; /* 42px icon + 8px gap */
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -1936,7 +2041,7 @@ async function onActivate() {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 16px 24px 24px 50px; /* 42px icon + 8px gap */
+  padding: 16px 24px 24px 32px; /* 42px icon + 8px gap */
   margin-top: 8px;
 }
 
@@ -1995,19 +2100,19 @@ async function onActivate() {
   }
 
   .detail-title-area {
-    padding: 16px 16px 0 50px;
+    padding: 16px 16px 0 32px;
   }
 
   .detail-actions {
-    padding: 12px 16px 12px 50px;
+    padding: 12px 16px 12px 32px;
   }
 
   .detail-section-area {
-    padding: 12px 16px 12px 50px;
+    padding: 12px 16px 12px 32px;
   }
 
   .detail-metadata {
-    padding: 12px 16px 16px 50px;
+    padding: 12px 16px 16px 32px;
   }
 
   .detail-input {
@@ -2087,4 +2192,38 @@ async function onActivate() {
   flex-shrink: 0;
 }
 
+/* ── Shared project additions ── */
+
+.detail-assignee-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 4px 10px;
+  background: var(--color-bg-secondary);
+  border-radius: 9999px;
+  color: var(--color-text-secondary);
+  width: fit-content;
+}
+
+.detail-assignee-chip__avatar :deep(.avatar-wrapper) {
+  width: 22px;
+  height: 22px;
+}
+
+.detail-assignee-chip__avatar :deep(.avatar-fallback) {
+  font-size: 9px;
+}
+
+.detail-assignee-chip__unassigned {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.detail-tag-private-hint {
+  margin-left: 8px;
+  color: var(--color-text-tertiary);
+  font-weight: 400;
+  font-style: italic;
+}
 </style>

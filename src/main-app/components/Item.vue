@@ -12,6 +12,8 @@
             @change="onCheck"
         />
       </div>
+      <!-- Checkbox placeholder (keeps title position aligned with rows that have a checkbox) -->
+      <div v-else-if="reserveCheckbox" class="item__checkbox item__checkbox--placeholder"></div>
 
       <!-- Prefix slot (for icons etc.) -->
       <div v-if="$slots.prefix" class="item__prefix">
@@ -19,7 +21,7 @@
       </div>
 
       <!-- Content -->
-      <div class="item__content">
+      <div class="item__content" :class="{ 'item__content--with-suffix': $slots['title-suffix'] }">
         <span v-if="isEditing" class="item__input-wrapper" @click.stop @mousedown.stop @pointerdown.stop>
           <span ref="inputMeasure" class="item__measure">{{ editValue || ' ' }}</span>
           <input
@@ -34,6 +36,7 @@
           />
         </span>
         <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
+        <slot name="title-suffix" />
       </div>
 
       <!-- Spinner overlay -->
@@ -87,6 +90,10 @@ const props = defineProps({
     default: false
   },
   noCheckbox: {
+    type: Boolean,
+    default: false
+  },
+  reserveCheckbox: {
     type: Boolean,
     default: false
   },
@@ -221,6 +228,10 @@ function onCheck(checked) {
   top: 1px;
 }
 
+.item__checkbox--placeholder {
+  width: 18px;
+}
+
 .item__prefix {
   display: flex;
   align-items: center;
@@ -230,6 +241,19 @@ function onCheck(checked) {
 .item__content {
   min-width: 0;
   flex: 1;
+  overflow: hidden;
+}
+
+/* When a title-suffix is rendered, lay out title + suffix as flex so the title can ellipsis cleanly */
+.item__content--with-suffix {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.item__content--with-suffix .item__title {
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .item__separator {
