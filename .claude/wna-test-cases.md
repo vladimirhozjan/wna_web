@@ -11059,9 +11059,10 @@ Use the table below to log each full or partial test run.
 2. Scroll to the Notifications section.
 3. Verify the first toggle in the section is labelled "Email notifications".
 4. Verify the hint text reads "Receive email notifications for tasks and reminders".
-5. Verify the three individual event toggles (Task due today, Daily next actions, Project needs next action) appear below the master toggle.
+5. Verify all six individual event toggles appear below the master toggle, in this order: "Task due today", "Daily next actions", "Project needs next action", "Delegated to you", "Delegation completed", "Connection invitations".
+6. Verify the footer reads: "In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled."
 
-**Expected Result:** The Notifications section displays a master "Email notifications" toggle at the top, followed by three individual event toggles. The master toggle has its own saving spinner area.
+**Expected Result:** The Notifications section displays a master "Email notifications" toggle at the top, followed by six individual event toggles (one per disableable email event). The master toggle has its own saving spinner area. The in-app/security clarification footer is rendered.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11939,6 +11940,626 @@ No backend request is made in any of the three cases.
 3. Open the dropdown
 
 **Expected Result:** The bell is visible for all tiers (in-app notifications are not Team-tier gated). Any personal notifications (task due today, daily next actions, project needs next action) appear in the dropdown; Team-only notifications (`delegated_to_you`, `delegation_completed`, `connection_invite`) never appear for non-Team users because those events never fire for them.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+## Section 32: Delegation (Team Tier)
+
+### TC-430: Delegate Action to Connection from Action Detail
+**Priority:** High | **Area:** Delegation | **Smoke Test**
+
+**Preconditions:** Logged-in user (assigner) is on Team tier with at least one accepted connection (receiver). The assigner has at least one Action in NEXT state.
+
+**Steps:**
+1. Open the action detail page for an action in NEXT state
+2. Change state to WAITING (Move dropdown or detail form)
+3. In the "Who/what are you waiting on?" combobox, type the receiver's email or name
+4. Select the matching connection from the dropdown
+5. Save / confirm
+
+**Expected Result:** A `POST /v1/action/{id}/delegate` request is sent with `{ user_id }` matching the receiver. The action moves to WAITING; `waiting_for` shows the receiver's display label and `waiting_for_user_id` is set. The action now appears on the assigner's Waiting For page with the receiver's name + relative "since" duration.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-431: Delegated Stuff Appears in Receiver Inbox with "From:" Indicator
+**Priority:** High | **Area:** Delegation
+
+**Preconditions:** Receiver is logged in. Assigner (TC-430) has just delegated an action to receiver.
+
+**Steps:**
+1. As receiver, navigate to the Inbox page
+2. Locate the new Stuff item created by the delegation
+3. Open the Stuff detail page
+
+**Expected Result:** The new Stuff item shows a small "From: [assigner email or display name]" indicator both in the inbox row and on the Stuff detail page (rendered by `MetadataRow`). The item is otherwise a normal Stuff entry — no special clarify path; it can be processed like any other inbox item.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-432: Connection Picker Blocks Self-Delegation
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Logged-in Team-tier user with at least one accepted connection.
+
+**Steps:**
+1. Open any flow that uses the connection-aware "Who/what are you waiting on?" combobox (Action Detail state change, Clarify "Delegate It", Move modal, Waiting For add)
+2. Type the current user's own email or display name into the combobox
+
+**Expected Result:** The current user is NOT shown as a selectable option in the dropdown. Other accepted connections matching the search ARE shown. If the user types their own full email and presses Enter, the value is treated as free text (legacy waiting), not delegated — `POST /v1/action/{id}/delegate` is not called with `user_id == self`.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-433: Receiver Completion Auto-Resolves Assigner's Waiting For
+**Priority:** High | **Area:** Delegation | **Smoke Test**
+
+**Preconditions:** A delegation exists per TC-430. Receiver has clarified the delegated Stuff into an Action (state = NEXT) on their side.
+
+**Steps:**
+1. As receiver, complete the resulting Action (check the box on the action list, or complete from the action detail page)
+2. As assigner, refresh the Waiting For page and the original action's detail page (or wait up to 30s for notification polling)
+
+**Expected Result:**
+- Assigner's original action moves out of WAITING. It promotes to NEXT (or to CALENDAR if `scheduled_date` is set on the action).
+- `waiting_for`, `waiting_for_user_id`, and `waiting_since` are cleared.
+- A new comment appears on the action with text starting with "Done." (the receiver may have appended additional text).
+- Assigner's notification bell shows a `delegation_completed` in-app notification (within 30s polling window).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-434: Receiver Trash Also Auto-Resolves the Delegation
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** A delegation exists per TC-430. Receiver has clarified into an Action OR left it as Stuff in their inbox.
+
+**Steps:**
+1. As receiver, trash the Stuff item OR trash the resulting Action
+2. As assigner, refresh the Waiting For page
+
+**Expected Result:** Same outcome as TC-433 — assigner's action auto-promotes out of WAITING, fields are cleared, "Done." comment is written, and a `delegation_completed` notification is fired. Trash is treated identically to completion as a receiver-side terminal event.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-435: Free-Text Waiting Still Works for Non-Connection Recipients
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Logged-in user (any tier — no connections required for free text).
+
+**Steps:**
+1. Open the Waiting For page and add a new item
+2. In the "Who/what are you waiting on?" combobox, type a name that does not match any connection (e.g., "John from Vendor Co")
+3. Submit (Enter or Save)
+
+**Expected Result:** The action is created in WAITING state with `waiting_for` set to the typed string and `waiting_for_user_id` left null. The backend call is `POST /v1/action/{id}/wait` (legacy), NOT `/v1/action/{id}/delegate`. The item appears in Waiting For with the free-text label and a "since" duration.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-436: Tier Downgrade Blocks New Delegations but Preserves In-Flight
+**Priority:** High | **Area:** Delegation
+
+**Preconditions:** A user previously on Team tier with an active in-flight delegation (per TC-430). The user has been downgraded to Free or Pro.
+
+**Steps:**
+1. As the downgraded user, attempt to delegate a new action via the connection picker (try selecting any connection in the dropdown)
+2. Observe the response
+3. Locate the existing in-flight delegation in Waiting For — verify it still appears with `waiting_for_user_id` populated
+4. Have the receiver complete the in-flight delegation
+5. Refresh and check the assigner's Waiting For
+
+**Expected Result:**
+1. Picker may still show connections (read-only) but `POST /v1/action/{id}/delegate` returns 403 with a tier-related message; an upgrade modal or error toast surfaces. No new delegation row is created.
+2. The pre-existing in-flight delegation is unchanged — backend does not auto-resolve on downgrade.
+3. After the receiver completes, the resolution sync still fires normally (assigner's Waiting For unwaits, "Done." comment lands, notification posts) even though the assigner is no longer on Team tier.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+## Section 33: Shared Projects (Team Tier)
+
+### TC-437: Share Personal Project with a Connection (Owner)
+**Priority:** High | **Area:** Shared Projects | **Smoke Test**
+
+**Preconditions:** Logged-in user is on Team tier, owns a personal project (active, not completed), and has at least one accepted connection.
+
+**Steps:**
+1. Open Project Detail for the personal project
+2. Click the **Share…** button in the action button row
+3. In the share modal, search for and select one or more connections
+4. Click **Share**
+
+**Expected Result:** A `POST /v1/project/{id}/share` request is sent with the selected `members` (default role `write`). On success the modal closes, a success toast appears ("Project shared"), the **Shared** badge appears beside the project title, and a "Shared with" section is rendered listing the new members + the owner. The project layout switches from the personal "Next Action" section to the shared "Backlog" section.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-438: Tier Gate on Share Button
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user on Free or Pro tier owns a personal project.
+
+**Steps:**
+1. Open Project Detail
+2. Click the **Share…** button (visible because user owns a personal project)
+
+**Expected Result:** The share modal does NOT open. Instead the standard upgrade modal appears with a message indicating sharing is a Team plan feature. No backend request is made.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-439: Owner Edits Project Title, Outcome, and Description
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** A shared project exists; logged-in user is the owner.
+
+**Steps:**
+1. Click the project title — it becomes an editable textarea. Change the value and blur (or press Enter)
+2. Click the outcome paragraph — it becomes editable. Change the value and click Save
+3. Click the description paragraph — same flow
+4. Observe the network tab on each save
+
+**Expected Result:** Each save fires `PUT /v1/project/{id}` with the full body `{ title, description, outcome }` (and `tags` on the tag save). The new value persists after page reload. No 403 is returned.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-440: Write Member Sees Title/Outcome/Description as View-Only
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** A shared project exists; logged-in user is a **write** member (not the owner).
+
+**Steps:**
+1. Open the shared project detail page
+2. Hover over the title — observe the cursor and hover background
+3. Click the title
+4. Repeat for outcome and description
+
+**Expected Result:**
+- Title shows no pointer cursor on hover, no hover background highlight, and clicking does nothing (no inline edit textarea appears).
+- Outcome and description behave identically. Empty outcome shows "—" (not "What does done look like?"). Empty description shows "—" (not "Add a description...").
+- No `PUT /v1/project/{id}` request is fired.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-441: Read-Only Member Sees Same Fields as View-Only
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** A shared project exists; logged-in user is a **read-only** member.
+
+**Steps:**
+1. Open the shared project detail page
+2. Attempt to click title, outcome, description (one by one)
+
+**Expected Result:** Identical to TC-440 — title/outcome/description are not editable, no inline editor opens, placeholders show "—", no `PUT` is fired. The user sees the same view-only experience as a write member for project metadata.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-442: Tags Are Editable by All Roles (Private Per User)
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** A shared project exists with three test users — owner, write member, read-only member.
+
+**Steps:**
+1. As owner, open the project detail and add a tag (e.g., `@home`)
+2. Save and reload — observe own tags
+3. Sign in as the write member, open the same project, observe the tags shown, then add a different tag (e.g., `@office`)
+4. Sign in as the read-only member, open the same project, observe the tags shown, then add a third tag (e.g., `<5min`)
+5. Inspect the network tab on each save
+
+**Expected Result:**
+- Each user sees only their own tags on the project — owner sees `@home`, write member sees `@office`, read-only sees `<5min`. Tags are private per user; other members' tags are not visible.
+- For the write and read-only members the save body is `PUT /v1/project/{id}` with body `{ tags: [...] }` only — NOT including title/description/outcome. Backend does not return 403.
+- For the owner the save body includes the full `{ title, description, outcome, tags }`.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-443: Write Member Adds and Reorders Backlog Actions
+**Priority:** High | **Area:** Shared Projects | **Smoke Test**
+
+**Preconditions:** Logged-in user is a write member of a shared project that already has at least 2 unassigned backlog actions.
+
+**Steps:**
+1. Open the project detail
+2. In the Backlog section, type a new action title in the quick-add input and press Enter / click Add
+3. Drag one of the existing backlog rows to reorder the list
+
+**Expected Result:**
+- New action is created in the project backlog (state = BACKLOG, no `assigned_to`) and appears at the top of the backlog list.
+- Drag-to-reorder triggers `onBacklogReorder` and persists the new order on the backend; reload preserves it.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-444: Read-Only Member Cannot Add or Reorder Backlog
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user is a read-only member of a shared project with existing backlog actions.
+
+**Steps:**
+1. Open the project detail
+2. Look at the Backlog section
+3. Attempt to drag a backlog row to a new position
+
+**Expected Result:** The quick-add input above the backlog is NOT rendered. The empty-state link "Add the first action" is replaced by "No actions yet." for an empty project. Dragging a row has no effect — the `VueDraggable` instance has `:disabled="!canWrite"`. Item rows show no checkbox (per `canCompleteAction`) and no inline title editing.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-445: Self-Assign One Backlog Action at a Time
+**Priority:** High | **Area:** Shared Projects | **Smoke Test**
+
+**Preconditions:** Logged-in user is a write member with no currently assigned action on a shared project that has multiple unassigned backlog items.
+
+**Steps:**
+1. Open the project detail
+2. Click the **Assign to me** (PersonAddIcon) button on an unassigned action row
+3. After the assign succeeds, attempt to click **Assign to me** on a second unassigned action
+
+**Expected Result:**
+- First call fires `POST /v1/action/{id}/assign`. The row updates to show the green "You" badge and a PersonRemoveIcon (Unassign) button. The action also appears in the user's personal Next Actions list.
+- The "Assign to me" button on every other unassigned row in the same project is now hidden (the per-row `hasActionButtons` check requires `!myAssignedAction`). The user must complete, trash, or unassign before claiming another action.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-446: Unassign Returns Action to Backlog
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user has one assigned action on a shared project (per TC-445).
+
+**Steps:**
+1. Open the project detail
+2. Click the **Unassign** (PersonRemoveIcon) button on the assigned action
+
+**Expected Result:** `POST /v1/action/{id}/unassign` fires. The "You" badge is removed and the row reverts to unassigned. The action no longer appears in the user's personal Next Actions. The user can now self-assign another backlog action (Assign to me buttons reappear on other rows).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-447: Trashing an Assigned Action Does NOT Return It to Backlog
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user has an assigned action on a shared project (per TC-445).
+
+**Steps:**
+1. Open the project detail
+2. Click the trash (×) button on your assigned action row, confirm the dialog
+
+**Expected Result:** The action is permanently trashed. It does NOT reappear in the project backlog (trash is final per spec). The user is now free to self-assign another backlog action.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-448: Read-Only Member Cannot Self-Assign or See Assign Buttons
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user is a read-only member of a shared project with unassigned backlog actions.
+
+**Steps:**
+1. Open the project detail
+2. Inspect the per-row buttons on unassigned and assigned actions
+
+**Expected Result:** No "Assign to me" icon button appears on any unassigned row (gated by `canWrite`). For actions assigned to other members, the assignee chip is shown but no controls. No checkbox is rendered on any row. No inline title edit is allowed. No quick-add input is shown.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-449: Non-Owner Member Sees "Leave" Button Instead of "Trash"
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user is a non-owner member (write or read-only) of a shared project. The project is not completed.
+
+**Steps:**
+1. Open the project detail
+2. Inspect the action button row at the top
+
+**Expected Result:**
+- "Trash" button is NOT visible.
+- "Leave" button (ghost-danger variant) is visible in its place.
+- "Complete" button is NOT visible (owner only).
+- "Share…" button is NOT visible (owner only).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-450: Leave Project Removes Membership and Routes to /projects
+**Priority:** High | **Area:** Shared Projects | **Smoke Test**
+
+**Preconditions:** Logged-in user is a non-owner member of a shared project (per TC-449). The user may or may not have an assigned action.
+
+**Steps:**
+1. Open the project detail
+2. Click **Leave**
+3. In the confirm dialog, click **Leave**
+
+**Expected Result:**
+- Confirm dialog shows: "You will lose access. Any actions assigned to you return to the backlog."
+- On confirm, `DELETE /v1/project/{id}/members/{my_user_id}` is called. The Leave button shows the loading spinner during the request.
+- On success, the user is routed to `/projects`. The project no longer appears in their projects list. If the user had an assigned action, it returns to the project's backlog (visible to remaining members).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-451: Owner Removes a Member; Their Assigned Action Returns to Backlog
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user is the owner of a shared project. A non-owner member has an in-progress assigned action.
+
+**Steps:**
+1. Open the project detail
+2. In the "Shared with" section, click the remove (×) button next to the member with the assigned action
+3. Confirm the dialog
+
+**Expected Result:** Confirm dialog shows the member's email and warns "[email] will lose access. Their assigned actions return to the backlog." On confirm, `DELETE /v1/project/{id}/members/{uid}` fires. The member is removed from the list. The previously assigned action returns to the backlog (visible as unassigned, no "You" or assignee chip).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-452: Owner Changes a Member's Role
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user is the owner of a shared project with at least one non-owner member.
+
+**Steps:**
+1. Open the project detail
+2. In the "Shared with" section, click the role dropdown next to a non-owner member
+3. Select a different role (Write ↔ Read-only)
+
+**Expected Result:** `PATCH /v1/project/{id}/members/{uid}` fires with the new role. The dropdown updates to show the selected role. As the affected member (in another session), reloading the project should reflect the new permission set — e.g., a downgrade from write to read-only hides the quick-add input and self-assign buttons.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-453: Attachments Are Read-Only for Read-Only Members
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** A shared project has at least one project-level attachment uploaded by the owner. Logged-in user is a read-only member.
+
+**Steps:**
+1. Open the project detail and scroll to Attachments
+2. Inspect the empty drop zone (if no attachments) or "Attach another file..." link
+3. Inspect the per-attachment action buttons
+
+**Expected Result:**
+- The "Attach a file..." / "Attach another file..." drop zones are NOT rendered. Empty state shows "—" instead.
+- The per-attachment delete button is NOT rendered. Only the download button is visible.
+- The user can still click an attachment to open the preview modal and download it.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-454: All Members (Including Read-Only) Can Comment
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** A shared project exists. Test once as write member and once as read-only member.
+
+**Steps:**
+1. As each role, open the project detail
+2. Scroll to the Comments section
+3. Click "Add a comment...", type a message, click Save
+
+**Expected Result:** For BOTH the write and read-only members, the comment is created successfully (`POST` to the comments endpoint). The new comment appears in the list with the user's avatar and timestamp. Read-only members are NOT blocked from commenting — comments are the one edit capability granted to them per the P2 spec.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-455: Completed Section Shows "Completed By" on Shared Projects
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** A shared project has at least one action that has been completed by a non-owner member.
+
+**Steps:**
+1. Open the project detail (as any member of the project)
+2. Click the **Completed** chevron to expand the section
+3. Inspect the network tab for the request fired on first expand
+
+**Expected Result:**
+- A single `GET /v1/project/{id}/completed?limit=100` request is fired (NOT a paginated walk over `/v1/completed`).
+- The list of completed actions appears. For shared projects, each row shows the action title plus a meta line of the form "completed by [email] · [relative date]". For personal projects (regression), only the relative date is shown — no "completed by" prefix.
+- Re-collapsing and re-expanding does NOT re-fetch (the result is cached in `completedLoaded`).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+## Section 34: P2 Notification Preferences
+
+### TC-456: Toggle "Delegated to you" Email Preference
+**Priority:** Medium | **Area:** Settings, Notifications
+
+**Preconditions:** Logged-in user with master "Email notifications" toggle ON.
+
+**Steps:**
+1. Navigate to /settings → Notifications
+2. Turn the **Delegated to you** toggle OFF
+3. In DevTools Network tab, inspect the `PUT /v1/notification/settings` request body
+4. Reload the page
+
+**Expected Result:**
+- Body contains `{"disabled_events": {"email": [..., "delegated_to_you"]}}` — `delegated_to_you` is included in the disabled list along with any other already-disabled events. Master `"*"` is NOT in the array.
+- Backend returns 200 with the updated `disabled_events`.
+- After reload, the **Delegated to you** toggle is OFF; all other toggles are unchanged.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-457: Toggle "Delegation completed" Email Preference
+**Priority:** Medium | **Area:** Settings, Notifications
+
+**Preconditions:** Logged-in user with master "Email notifications" toggle ON.
+
+**Steps:**
+1. Navigate to /settings → Notifications
+2. Turn the **Delegation completed** toggle OFF
+3. Inspect the PUT body
+4. Reload
+
+**Expected Result:** PUT body contains `delegation_completed` in `disabled_events.email`. After reload, the toggle is OFF; the corresponding email event will not fire (assigner won't get the email when a delegated action is completed). The in-app notification still arrives in the bell dropdown — in-app delivery is not affected.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-458: Toggle "Connection invitations" Email Preference
+**Priority:** Medium | **Area:** Settings, Notifications
+
+**Preconditions:** Logged-in user with master "Email notifications" toggle ON.
+
+**Steps:**
+1. Navigate to /settings → Notifications
+2. Turn the **Connection invitations** toggle OFF
+3. Inspect the PUT body
+4. Reload
+5. From a second account, send a connection invitation to the user under test
+6. Check the inbox of the user under test
+
+**Expected Result:**
+- PUT body contains `connection_invite` in `disabled_events.email`.
+- After reload, the toggle is OFF.
+- The user does NOT receive the connection-invite email.
+- The user's notification bell DOES show the connection_invite as an in-app row (in-app cannot be disabled).
+- The user's "Received invitations" list in Settings → Connections still shows the new invitation.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-459: Master Toggle OFF Disables All Six Individual Toggles
+**Priority:** Medium | **Area:** Settings, Notifications
+
+**Preconditions:** Logged-in user; master "Email notifications" toggle ON; some individual toggles in mixed states.
+
+**Steps:**
+1. Navigate to /settings → Notifications
+2. Turn the master "Email notifications" toggle OFF
+3. Observe the six individual toggles (Task due today, Daily next actions, Project needs next action, Delegated to you, Delegation completed, Connection invitations)
+4. Inspect the PUT body
+5. Reload
+6. Turn the master toggle back ON
+
+**Expected Result:**
+- Step 2 sends `{"disabled_events": {"email": ["*"]}}` — wildcard disabling all email events.
+- All six individual toggles become visually disabled (greyed, no pointer events) but their in-memory state is preserved.
+- After reload, master is OFF and individuals are still disabled.
+- Step 6 sends the rebuilt individual disabled list (e.g., `{"disabled_events": {"email": ["delegated_to_you"]}}` if that one was OFF before the master). Individuals re-enable; previously OFF ones remain OFF.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-460: In-App Channel Cannot Be Disabled
+**Priority:** High | **Area:** Settings, Notifications
+
+**Preconditions:** Logged-in user with at least one in-app notification visible in the bell dropdown.
+
+**Steps:**
+1. Navigate to /settings → Notifications
+2. Verify there is no toggle, control, or hint for an "in-app" channel anywhere in the section
+3. Verify the footer note reads: "In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled."
+4. (Optional, manual API call) Send `PUT /v1/notification/settings` with body `{"disabled_events": {"in_app": ["delegated_to_you"]}}`
+5. Trigger an in-app notification (e.g., have a connection delegate an action to you)
+6. Open the notification bell
+
+**Expected Result:**
+- The Settings UI exposes ONLY email controls — no in-app channel toggles.
+- Step 4: backend returns 400 with an "invalid channel key (only `email` is allowed)" error message.
+- Step 6: the in-app notification appears in the bell regardless of any preference attempt; in-app delivery is always on.
 
 | Date | P/F | Comment |
 |------|-----|---------|

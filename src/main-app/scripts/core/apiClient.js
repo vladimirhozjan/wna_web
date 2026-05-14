@@ -994,6 +994,19 @@ export async function listCompleted({limit = PAGE_SIZE, cursor = null} = {}) {
     }
 }
 
+export async function listProjectCompleted(projectId, {limit = 20, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get(`/v1/project/${projectId}/completed`, {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getCompletedByPosition(position) {
     try {
         const res = await httpApi.get(`/v1/completed/pos/${position}`, {headers: authHeaders()})
@@ -1882,6 +1895,7 @@ const apiClient = {
     restoreAction,
     restoreProject,
     listCompleted,
+    listProjectCompleted,
     getCompletedByPosition,
     uncompleteStuff,
     uncompleteAction,
