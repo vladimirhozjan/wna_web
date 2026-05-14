@@ -850,7 +850,7 @@ function hasActionButtons(action) {
 function assigneeLabel(action) {
   if (!action?.assigned_to) return ''
   if (action.assigned_to === myUserId.value) return 'You'
-  return action.assigned_to_email || memberEmailFor(action.assigned_to) || 'member'
+  return action.assigned_to_email || memberEmailFor(action.assigned_to) || 'Unconnected member'
 }
 
 function memberEmailFor(userId) {
@@ -879,7 +879,7 @@ function memberChipLabel(m) {
   if (m.user_id === myUserId.value) {
     return `${m.email || memberEmailFor(m.user_id) || auth.currentUser.value?.email || 'You'} (you)`
   }
-  return m.email || memberEmailFor(m.user_id) || 'member'
+  return m.email || memberEmailFor(m.user_id) || 'Unconnected member'
 }
 
 function roleLabel(role) {
@@ -1613,20 +1613,8 @@ async function toggleCompleted() {
   if (completedExpanded.value && !completedLoaded.value) {
     completedLoading.value = true
     try {
-      // Backend gap: no per-project completed endpoint. Filter the unified feed
-      // until BE supports `?project_id=` on /v1/completed.
-      const all = []
-      let cursor = null
-      let safety = 5
-      while (safety-- > 0) {
-        const res = await apiClient.listCompleted({ limit: 100, cursor })
-        const items = res?.items || []
-        all.push(...items)
-        if (!items.length || items.length < 100) break
-        cursor = items[items.length - 1].id
-      }
-      completedActions.value = all
-          .filter(i => i.type === 'ACTION' && (i.project?.id === project.value.id || i.project_id === project.value.id))
+      const res = await apiClient.listProjectCompleted(project.value.id, { limit: 100 })
+      completedActions.value = res?.items || []
       completedLoaded.value = true
     } catch {
       toaster.push('Failed to load completed tasks')

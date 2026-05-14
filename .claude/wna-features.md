@@ -39,6 +39,8 @@
 29. [Feedback Button](#29-feedback-button)
 30. [Connections (Team Tier)](#30-connections-team-tier)
 31. [In-App Notifications](#31-in-app-notifications)
+32. [Delegation (Team Tier)](#32-delegation-team-tier)
+33. [Shared Projects (Team Tier)](#33-shared-projects-team-tier)
 
 ---
 
@@ -600,7 +602,23 @@ Configurable in Settings page:
 - Description (click-to-edit)
 - Attachments (max 10)
 - Comments
+- Completed (collapsible — lists previously completed actions in this project; see §33.6)
 - Metadata (created/updated timestamps)
+
+**Shared project additions** (visible when `project.shared = true`):
+
+- **Shared badge** beside the project title.
+- **"Share…" button** (owner only, hidden when completed) — opens the share / add-member modal.
+- **"Backlog" section** replaces the personal "Next Action" section. Single flat list of all project actions with assignee chip per row. Write members can add and reorder; read-only members see view-only.
+- **Per-row controls**:
+  - Unassigned + caller is write/owner + has no current assigned action → "Assign to me" icon button
+  - Action assigned to caller → "You" badge + "Unassign" icon button
+  - Action assigned to someone else → assignee email/name, plus "· waiting" suffix when in WAITING state
+  - Trash button on a row only when caller can delete it (unassigned + write/owner, OR assigned to caller)
+- **Field-level permissions** are described in §33.4 below. In short: owner edits title/outcome/description; all members edit their own private tags; write+owner manage attachments; everyone comments.
+- **"Leave" button** replaces "Trash" for non-owner members in the action button row. Click → confirm dialog; on confirm, the user is removed from the project and routed back to Projects.
+- **"Shared with" section** lists project members with avatars and roles; owner sees a role dropdown for non-owner members and a per-member remove button. Owner sees "Add another member..." link when there are addable connections.
+- **Completed section** — for shared projects, each completed row shows "completed by [email] · [date]".
 
 ---
 
@@ -972,6 +990,12 @@ Presets are customizable in Settings.
 - HTTP 409: "Attachment limit reached"
 - HTTP 413: "File too large or storage quota exceeded"
 
+**Read-only mode (`readonly` prop):**
+- Used on shared projects when the caller is a read-only member (`<AttachmentSection :readonly="!canWrite" />`)
+- Hides the empty-state drop zone, the "Attach another file..." link, and the per-file delete button
+- Empty state renders "—" instead of "Attach a file..."
+- Download remains available for all attachments
+
 ---
 
 ## 20. Comments
@@ -1002,6 +1026,8 @@ Presets are customizable in Settings.
 **Limit reached state:**
 - "Comment limit reached (50 / 50)" notice shown
 - Add form hidden
+
+**Shared projects:** Comments are NOT role-gated. All members of a shared project — including read-only members — can post comments on the project itself and on any action within it. This is the only edit capability granted to read-only members per the P2 spec.
 
 ---
 
@@ -1374,12 +1400,16 @@ The backend defines 8 email templates with variable substitution (`{{variable}}`
   - When ON, the backend receives the individual disabled list (or empty array if all enabled)
   - Individual event toggles appear below the master toggle and are disabled (greyed out) when the master is OFF
   - Individual event states are preserved in memory; turning the master back ON restores previous individual settings
-- **Individual event toggles:**
-  - Task due today — daily reminder for tasks due today
-  - Daily next actions — summary of next actions for the day
-  - Project needs next action — alert when a project has no next action
-- **Urgent notifications** (email verification, password reset, password changed) are always delivered and cannot be disabled by the user
-- **Normal notifications** (login alerts, task reminders) can be disabled per event type and per channel (email, push)
+- **Individual event toggles** (each maps 1:1 to a backend event name in `disabled_events.email`):
+  - **Task due today** (`task_due_today`) — daily reminder for tasks due today
+  - **Daily next actions** (`daily_next_actions`) — summary of next actions for the day
+  - **Project needs next action** (`project_needs_next_action`) — alert when a project has no next action
+  - **Delegated to you** (`delegated_to_you`) — email when a connection delegates an action to you
+  - **Delegation completed** (`delegation_completed`) — email when an action you delegated is completed
+  - **Connection invitations** (`connection_invite`) — email when someone invites you to connect
+- **In-app notifications cannot be disabled.** The backend only accepts the `email` channel in `disabled_events`. In-app notifications are intentionally low-volume per-item events and are always delivered. The notification bell in the top nav (§31) always shows them.
+- **Urgent notifications** (email verification, welcome, password reset, password changed, login alert) are always delivered and cannot be disabled.
+- The footer note in the Notifications section reads: *"In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled."*
 
 ---
 
@@ -1483,10 +1513,10 @@ Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{to
 - `GET /v1/connections/pending` — List pending invitations (sent + received)
 - `DELETE /v1/connections/{id}` — Remove connection
 
-### 30.8 Not Yet Implemented (P2 Phase 1)
+### 30.8 Related P2 Features
 
-- Per-connection **delegation** (`POST /v1/action/{id}/delegate`) is part of P2 Phase 1 on the backend. The frontend wiring in the Clarify panel and Action Detail (connection picker for "Delegate to") ships once the backend endpoint is available. The existing free-text Waiting For flow (`POST /v1/action/{id}/wait`) is unchanged.
-- **Shared projects** are P2 Phase 2.
+- Per-connection **delegation** is implemented and documented in §32. The connection picker is wired into the Clarify panel ("Delegate It" substep) and Action Detail (state changes that land in WAITING).
+- **Shared Projects** are implemented and documented in §33. Sharing is initiated from Project Detail by the project owner.
 
 ---
 
@@ -1526,8 +1556,194 @@ In-app notifications surface meaningful events (delegated items, completed deleg
 ### 31.5 Unified with Email Notifications
 
 - In-app notifications share the backend's notification system with email. A notification is stored as a row in `notification_log` with `channel='in_app'` whenever the corresponding event fires. Any authenticated user can receive in-app notifications — the feed is not Team-tier gated.
-- Disableable events (shared with the email channel): `task_due_today`, `daily_next_actions`, `project_needs_next_action`, `delegated_to_you`, `delegation_completed`, `connection_invite`. Backend `GET/PUT /v1/notification/settings` accepts an `in_app` channel alongside `email`. UI controls for the new events and the in-app channel toggle are Phase 3 (T-40).
+- **In-app notifications cannot be disabled.** Per the backend contract (`PUT /v1/notification/settings` accepts only the `email` channel in `disabled_events`), in-app delivery is always on. Email preferences for the same event names — including the P2 events `delegated_to_you`, `delegation_completed`, `connection_invite` — are managed in Settings → Notifications (§27.1).
 - Polling errors are swallowed silently so transient network issues don't surface as toasts.
+
+---
+
+## 32. Delegation (Team Tier)
+
+Delegation is fire-and-forget assignment of an action to one of your accepted connections. The assigner's action moves to Waiting For; a new Stuff item appears in the receiver's Inbox; the receiver clarifies it like any other Stuff. **Self-delegation is blocked.**
+
+### 32.1 Where Delegation Can Be Triggered
+
+The same connection-aware "Who/what are you waiting on?" combobox is used everywhere an action lands in WAITING:
+
+- **Clarify panel** — "Delegate It" substep
+- **Action Detail** — state change to WAITING via the Move dropdown or detail form
+- **Move modal** — drag onto Waiting For in the sidebar
+- **Waiting For page** — adding a new waiting item
+
+Typing filters accepted connections (`GET /v1/connections`) by display label and email. Selecting a connection delegates via `POST /v1/action/{id}/delegate`. Free-text input falls back to legacy `POST /v1/action/{id}/wait`.
+
+### 32.2 Assigner Side
+
+- Action moves to WAITING with `waiting_for` (user's display label) and `waiting_for_user_id` (real user ID) populated.
+- Action appears in the assigner's Waiting For list with the receiver's name and "since" duration.
+- The assigner sees no information about how the receiver organizes the work — it's a black box.
+- **No recall.** The assigner cannot pull the delegation back. They can only manually resolve their own Waiting For.
+
+### 32.3 Receiver Side
+
+- New Stuff item lands in the receiver's Inbox with title + description copied from the assigner's action.
+- The Inbox row and the Stuff Detail page both show a small "From: [assigner name/email]" indicator (rendered by `MetadataRow`).
+- Receiver clarifies normally — Action / Project / Someday / Reference / Trash. No special flow.
+- Hidden meta (`delegated_from_user_id`, `delegated_from_action_id`) carries forward when Stuff transforms into Action or Project.
+
+### 32.4 Resolution Sync
+
+Any receiver-side **terminal event** triggers automatic resolution on the assigner's side:
+
+- **Completion**: receiver checks the box on the Stuff/Action/Project, clicks "Do it now" in Clarify, or completes from the detail page
+- **Trash**: receiver trashes the Stuff/Action/Project — same outcome as completion (real life: discarded delegations also unblock the assigner)
+
+When triggered:
+- A "Done." comment is written on the assigner's original action (the receiver may extend the message)
+- Assigner's action auto-promotes from WAITING → NEXT (or → CALENDAR if `scheduled_date` is set)
+- `waiting_for`, `waiting_since`, `waiting_for_user_id` are cleared
+- Assigner receives a `delegation_completed` in-app + email notification
+
+**Non-terminal**: Sending the item to Someday or Reference does NOT trigger sync.
+
+### 32.5 Delegation Chains
+
+Re-delegation is allowed. Each link is independent:
+
+- Alice → Bob → Carol
+- Carol completes → Bob's Waiting For resolves, Bob is notified
+- Bob completes → Alice's Waiting For resolves, Alice is notified
+
+### 32.6 Edge Cases
+
+- **Self-delegation blocked**: the connection picker excludes the current user (`excludeUserIds` includes self).
+- **Tier downgrade**: a non-Team user cannot create new delegations (`POST /v1/action/{id}/delegate` returns 403). In-flight delegations they are part of (either side) continue to function — completing on either side still unwaits and notifies as expected.
+- **Connection removed mid-delegation**: in-flight delegations are NOT cancelled. The assigner's Waiting For stays open and the receiver's Stuff stays in their inbox.
+- **Receiver sends to Reference**: delegation link is lost (Reference is non-completable). The assigner's Waiting For stays open until manually resolved.
+- **Assigner deletes their action**: not implemented yet (no UI to "abandon" without resolving).
+
+### 32.7 API Endpoints
+
+- `POST /v1/action/{id}/delegate` — Delegate an action to a connection
+  - Body: `{ user_id: string }`
+  - 403 when caller is not Team tier or `user_id` matches the caller
+  - 404 if the target user is not an accepted connection
+
+---
+
+## 33. Shared Projects (Team Tier)
+
+A shared project is a personal project that has been shared with one or more accepted connections, each assigned a per-project role (write or read-only). There is no "create shared project" entry point — sharing is the conversion path.
+
+### 33.1 Sharing a Personal Project
+
+- Trigger: **"Share…"** button in the Project Detail action row (owner only, hidden when the project is completed)
+- Opens the **Share / Add member modal**:
+  - Search box filters accepted connections by email
+  - Multi-select list with checkmarks
+  - Selected connections receive the **Write** role by default
+  - Submit calls `POST /v1/project/{id}/share` with `{ members: [{ user_id, role }, …] }`
+- On success: the project becomes shared, the badge appears, and the shared layout (backlog, members list, completed section) renders
+- Tier gate: `myTier !== 'team'` opens the upgrade modal instead of the share dialog
+
+### 33.2 Roles
+
+Set per-project. Owner can change any non-owner member's role at any time via a dropdown next to the member's name in the "Shared with" section.
+
+| Role | Edit project metadata | Manage backlog | Self-assign | Edit action descriptions/attachments | Edit own private tags | Add comments | Manage members | Trash project |
+|---|---|---|---|---|---|---|---|---|
+| **Owner** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Write** | 🚫 | ✅ | ✅ | ✅ | ✅ | ✅ | 🚫 | 🚫 |
+| **Read-only** | 🚫 | 🚫 | 🚫 | 🚫 | ✅ | ✅ | 🚫 | 🚫 |
+
+"Edit project metadata" = title, outcome, description, project-level attachments.
+
+### 33.3 Backlog View
+
+For shared projects the personal "Next Action" section is replaced by a **Backlog** section: a single flat list of all project actions (assigned + unassigned) with assignee chips per row.
+
+- **Add action** (write members): quick-add input above the list. Hidden for read-only members.
+- **Reorder** (write members): drag-and-drop. The draggable is `:disabled="!canWrite"` so read-only members cannot reorder.
+- **Per-row assignee display**:
+  - Unassigned: no chip
+  - Assigned to current caller: green "You" badge
+  - Assigned to someone else: their email/display label, plus "· waiting" when the action is in WAITING state
+- **Per-row controls** (visible when applicable):
+  - **Assign to me** (PersonAddIcon): unassigned action + caller is write/owner + caller has no current assigned action on this project
+  - **Unassign** (PersonRemoveIcon): action is assigned to caller
+  - **Trash**: caller is write/owner on an unassigned action, OR caller is the assignee
+- **Inline title edit** on a row is allowed only when `canWrite && (!action.assigned_to || isAssignedToMe(action))`.
+- **Checkbox** on a row appears only when `canCompleteAction(action)` returns true (unassigned + write/owner, or assigned to caller).
+
+### 33.4 Project-Level Field Permissions
+
+Field gating is enforced both in the UI and in the save handlers. Per the P2 spec, project-level fields are **owner-only**; tags are **always editable** since they are private per user.
+
+| Field | Owner | Write | Read-only |
+|---|---|---|---|
+| Title | ✅ click-to-edit | view only (no pointer cursor, no hover bg) | view only (no pointer cursor, no hover bg) |
+| Outcome | ✅ click-to-edit, placeholder "What does done look like?" | view only, placeholder "—" | view only, placeholder "—" |
+| Description | ✅ click-to-edit, placeholder "Add a description..." | view only, placeholder "—" | view only, placeholder "—" |
+| Tags (private per user) | ✅ click-to-edit, placeholder "Add tags..." | ✅ click-to-edit, placeholder "Add tags..." | ✅ click-to-edit, placeholder "Add tags..." |
+| Attachments (upload/delete) | ✅ | ✅ | 🚫 download only (see §19.1 read-only mode) |
+| Comments | ✅ | ✅ | ✅ |
+
+**Save body shape** — `PUT /v1/project/{id}` is atomic on the backend. The frontend selects the body based on the caller's role:
+
+- **Owner** (personal or shared): full body — `{ title, description, outcome, tags }`
+- **Non-owner** (write OR read-only): tags-only — `{ tags }`. Sending any of `title` / `outcome` / `description` returns 403 and rejects the tag write too.
+
+### 33.5 Members ("Shared with") Section
+
+- Lists all project members with avatar + display label, ordered: owner first, then current user, then by joined date.
+- Owner badge or per-role label next to each name.
+- **Owner-only controls**:
+  - Role dropdown for non-owner members (Write / Read-only) → `PATCH /v1/project/{id}/members/{uid}`
+  - Per-member remove button → `DELETE /v1/project/{id}/members/{uid}`
+  - "Add another member..." link (when there are addable connections) → opens the Add member variant of the share modal
+- **Non-owner**: see the list with no edit controls. Leave is handled via the action button row (see §33.7), not from this section.
+
+### 33.6 Completed Section
+
+Collapsible "Completed" section is rendered for **all projects** (personal and shared).
+
+- **Data source:** `GET /v1/project/{id}/completed` (per-project endpoint). Returns only completed actions belonging to this project, ordered by `completed_at DESC`. Caller must be the owner (personal) or a project member (shared).
+- **Personal projects**: each row shows the action title + completion date.
+- **Shared projects**: each row shows the title + "completed by [email] · [date]" (the completer is resolved from the action's `completed_by` field against the members list).
+- Empty state: "No completed tasks yet."
+- Loaded lazily on first expand to avoid blocking the project page; first page is 100 items.
+
+### 33.7 Leaving a Shared Project
+
+- Non-owner members see a **"Leave"** button in the action button row (where owners see "Trash"). Trash is not visible to non-owners.
+- Click → confirm dialog: *"You will lose access. Any actions assigned to you return to the backlog."*
+- On confirm: `DELETE /v1/project/{id}/members/{my_user_id}` is called; on success, the user is routed back to `/projects`.
+- If the user is the **last non-owner**, the project automatically reverts to a personal project on the owner's side (auto-conversion).
+
+### 33.8 Owner Removing a Member
+
+- Owner clicks the per-member remove button in "Shared with".
+- Confirm dialog: *"[email] will lose access. Their assigned actions return to the backlog."*
+- On confirm: `DELETE /v1/project/{id}/members/{uid}`. The member's in-progress assigned action returns to backlog; completed actions stay.
+- If the removed member was the last non-owner, the project auto-reverts to personal.
+
+### 33.9 What's NOT Yet Implemented
+
+- **Force-convert shared → personal** (`POST /v1/project/{id}/unshare`): apiClient wraps the endpoint but no UI surface exposes it yet. Auto-conversion (last non-owner removed) still works via the backend.
+- **Per-user private tags on actions**: backend stores them; frontend reads/writes them at the action level — see Action Detail. Project-level tags follow the same per-user-private rule and the conditional save body shape above.
+- **Real-time updates**: shared project state still polls (no WebSocket). Members may need to refresh to see other members' changes.
+
+### 33.10 API Endpoints
+
+- `POST /v1/project/{id}/share` — Convert personal → shared with initial members
+- `POST /v1/project/{id}/unshare` — Convert shared → personal (force) — apiClient wired, no UI yet
+- `GET /v1/project/{id}/members` — List project members with roles
+- `POST /v1/project/{id}/members` — Add a member (must be a connection)
+- `PATCH /v1/project/{id}/members/{uid}` — Change a member's role
+- `DELETE /v1/project/{id}/members/{uid}` — Remove a member (or self → leave)
+- `POST /v1/action/{id}/assign` — Self-assign an unassigned backlog action
+- `POST /v1/action/{id}/unassign` — Return your assigned action to the backlog
+- `PUT /v1/project/{id}` — Update project; body shape depends on caller role (see §33.4)
+- `GET /v1/project/{id}/completed` — List completed actions for this project (used by §33.6)
 
 ---
 
