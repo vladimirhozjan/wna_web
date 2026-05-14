@@ -1019,9 +1019,11 @@ Presets are customizable in Settings.
 **Comment display:**
 - Newest first
 - Each comment shows:
-  - User avatar (initial-based, 28px)
+  - Author's user avatar (initial-based, 28px) — resolved from `comment.user_id`
+  - Author's email (above timestamp) — resolved from `comment.user_id` via: self check → project members (passed as `:members` prop) → connection list → fallback `Unconnected member`
   - Relative timestamp ("Just now", "3 minutes ago", "Yesterday", "5 days ago", formatted date for older)
   - Comment text in a rounded bubble
+- Backend payload returns `user_id` (UUID) per comment (`GET /v1/{entity}/{id}/comments`); the frontend resolves the email/avatar locally — backend does not return `user_email`.
 
 **Limit reached state:**
 - "Comment limit reached (50 / 50)" notice shown

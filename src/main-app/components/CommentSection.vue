@@ -63,10 +63,11 @@
       <div v-if="comments.length > 0" class="comment-list">
         <div v-for="comment in comments" :key="comment.id" class="comment-item">
           <div class="comment-avatar-wrap">
-            <UserAvatar :email="userEmail" :size="28" />
+            <UserAvatar :email="commentEmail(comment)" :size="28" />
           </div>
           <div class="comment-body">
             <div class="comment-meta">
+              <span class="text-footnote comment-author">{{ commentEmail(comment) }}</span>
               <span class="text-footnote comment-timestamp">{{ formatRelativeTime(comment.created_at) }}</span>
             </div>
             <p class="text-body-m comment-message">{{ comment.message }}</p>
@@ -84,15 +85,20 @@ import UserAvatar from './UserAvatar.vue'
 import { listComments, createComment } from '../scripts/core/apiClient.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { authModel } from '../scripts/core/authModel.js'
+import { connectionModel } from '../scripts/models/connectionModel.js'
 import Spinner from './Spinner.vue'
 
 const props = defineProps({
   entityType: { type: String, required: true },
   itemId: { type: String, required: true },
+  // Optional list of project members `[{ user_id, email }, ...]`. Passed by shared-project
+  // pages so author resolution can find members who aren't in the caller's connections.
+  members: { type: Array, default: () => [] },
 })
 
 const toaster = errorModel()
 const { currentUser } = authModel()
+const conn = connectionModel()
 
 const userEmail = ref('')
 const comments = ref([])
@@ -107,6 +113,7 @@ const atLimit = computed(() => comments.value.length >= 50)
 
 onMounted(async () => {
   userEmail.value = currentUser.value?.email || ''
+  if (!conn.loaded.value) conn.loadAll().catch(() => {})
   await loadComments()
 })
 
@@ -116,6 +123,17 @@ watch(() => props.itemId, () => {
   editing.value = false
   loadComments()
 })
+
+function commentEmail(comment) {
+  const uid = comment.user_id
+  if (!uid) return ''
+  if (uid === currentUser.value?.id) return userEmail.value
+  const m = props.members.find(x => x.user_id === uid)
+  if (m?.email) return m.email
+  const c = (conn.connections.value || []).find(x => x.user_id === uid)
+  if (c?.email) return c.email
+  return 'Unconnected member'
+}
 
 async function loadComments() {
   loading.value = true
@@ -285,7 +303,15 @@ function formatRelativeTime(dateStr) {
 }
 
 .comment-meta {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 2px;
+}
+
+.comment-author {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  word-break: break-all;
 }
 
 .comment-timestamp {

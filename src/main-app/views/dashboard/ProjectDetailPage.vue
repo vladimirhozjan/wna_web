@@ -514,7 +514,7 @@
         <AttachmentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" :readonly="!canWrite" />
 
         <!-- Comments section -->
-        <CommentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" />
+        <CommentSection v-if="project.id" :entity-type="'project'" :item-id="project.id" :members="currentMembers || []" />
 
         <!-- Completed tasks (all projects) -->
         <div class="detail-section-area">
