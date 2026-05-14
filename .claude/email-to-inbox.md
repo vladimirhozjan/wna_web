@@ -88,7 +88,8 @@ CREATE TABLE inbox_email_log (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX idx_inbox_email_log_message_id ON inbox_email_log(message_id);
+-- Composite index: same email CC'd to multiple WNA users creates separate log entries
+CREATE UNIQUE INDEX idx_inbox_email_log_msg_user ON inbox_email_log(message_id, COALESCE(user_id, id));
 ```
 
 ### Key Design Decisions
@@ -98,8 +99,11 @@ CREATE UNIQUE INDEX idx_inbox_email_log_message_id ON inbox_email_log(message_id
 - **Tier info from user_service** — email_service calls user_service via HMAC to check tier, storage limits. email_service does not duplicate user data.
 - **Rate counter in email_service DB** — `emails_today` on `inbox_email_address`. Checked and incremented atomically during hash lookup. Reset daily by internal cron endpoint.
 - **Lazy hash generation** — not generated at registration. Generated when user first clicks "Generate Address" in Settings. Avoids entries for users who never use the feature.
+- **JWT validation** — user-facing endpoints validate JWT tokens independently (using `jwt::identity` from backend_common), same as all other services. Extracts `user_id` from token subject claim.
+- **Tier check on user-facing endpoints** — `generate`, `regenerate`, and `GET inbox-email` all call user_service via HMAC (`GET /internal/v1/user/{id}/tier`) to verify user is Pro/Team. Returns 403 for Free tier.
 - **Drogon-native** — uses Drogon's HTTP framework for API endpoints, Trantor's TcpClient for IMAP IDLE connection, same patterns as all other services.
-- **Secrets in K8s Secrets** — Zoho IMAP credentials and HMAC signing key. Never in config files or source code.
+- **GDPR / user deletion** — email_service exposes `DELETE /internal/inbox-email/{user_id}` for user purge cascade. user_service calls this during `purge_deleted_users` cron (same pattern as notification_service cleanup).
+- **Secrets in K8s Secrets** — Zoho IMAP credentials and HMAC signing key stored in secret.json (mounted from K8s Secret). Never hardcoded.
 
 ---
 
@@ -310,7 +314,7 @@ If IMAP IDLE proves problematic with Zoho, email_service can fall back to a **po
 |-------|-------|
 | Per user per day | 50 emails |
 | Global throughput | Natural backpressure from processing speed. Excess queues in Zoho IMAP. |
-| Daily reset | Internal cron endpoint `POST /internal/v1/inbox-email/reset-daily` resets all `emails_today` counters to 0 at midnight UTC. |
+| Daily reset | Cron endpoint `POST /cron/reset-daily-email-counters` resets all `emails_today` counters to 0 at midnight UTC. |
 
 ### Spam Protection
 
@@ -413,18 +417,34 @@ POST /internal/v1/stuff              # Create Stuff on behalf of user
                                       # → { id }
 ```
 
-### Internal (email_service, not exposed via router)
+### Internal HMAC (user_service → email_service, for GDPR purge)
 
 ```
-POST /internal/v1/inbox-email/reset-daily  # Reset all emails_today counters to 0
-                                            # Called by K8s CronJob at midnight UTC
+DELETE /internal/inbox-email/{user_id}  # Delete user's inbox email address + log entries
+                                         # Called by user_service during purge_deleted_users cron
+                                         # Same cascade pattern as notification_service cleanup
 ```
 
-### Admin (via router_service → email_service)
+### Cron (email_service, called by K8s CronJob)
 
 ```
+POST /cron/reset-daily-email-counters  # Reset all emails_today counters to 0
+                                        # Called by K8s CronJob at midnight UTC
+                                        # Follows existing /cron/* endpoint pattern
+```
+
+### Admin (via admin_service → email_service via HMAC)
+
+Admin endpoints live in **admin_service** (consistent with existing pattern where admin_service is the single admin gateway). admin_service proxies to email_service via HMAC internally.
+
+```
+# admin_service user-facing endpoints:
 GET  /admin/inbox-email/users/{id}   # User's inbox email config + usage
 GET  /admin/inbox-email/stats        # Global stats (active addresses, processed/failed today)
+
+# email_service internal endpoints (called by admin_service via HMAC):
+GET  /internal/inbox-email/users/{id}  # Returns address, emails_today, regen_count, created_at
+GET  /internal/inbox-email/stats       # Returns total_active, processed_today, failed_today
 ```
 
 ---
@@ -475,20 +495,22 @@ GET  /admin/inbox-email/stats        # Global stats (active addresses, processed
 | E-23 | As the platform, inbox.whatsnextaction.com has MX → Zoho with catch-all | Must |
 | E-24 | As the platform, dev uses Mailpit IMAP for testing | Must |
 
-### Epic 5: Security
+### Epic 5: Security & GDPR
 
 | # | Story | Priority |
 |---|-------|----------|
 | E-25 | As the system, hashes are HMAC-SHA256 with server secret, not guessable | Must |
 | E-26 | As the system, no bounce/auto-reply ever sent | Must |
+| E-27 | As the system, when a user is purged (GDPR), their inbox_email_address and inbox_email_log entries are deleted via cascade call from user_service | Must |
+| E-28 | As the system, hash collision on generation is retried up to 3 times with different input | Must |
 
 ### Epic 6: Admin & Monitoring
 
 | # | Story | Priority |
 |---|-------|----------|
-| E-27 | As an admin, I can view a user's inbox email and daily usage | Should |
-| E-28 | As an admin, I can view global Email to Inbox stats | Should |
-| E-29 | As the platform, email_service health and processing metrics are monitored | Should |
+| E-29 | As an admin, I can view a user's inbox email and daily usage | Should |
+| E-30 | As an admin, I can view global Email to Inbox stats | Should |
+| E-31 | As the platform, email_service health and processing metrics are monitored | Should |
 
 ### Epic 7: Future Polish (Out of Scope for Now)
 
@@ -502,33 +524,151 @@ Deferred:
 
 ## 11. Implementation Phases
 
-**Phase 1 — email_service + Core Pipeline** (E-1, E-2, E-7, E-8, E-11–E-13, E-15–E-21, E-23, E-25, E-26)
-New email_service microservice (Drogon, own DB). IMAP IDLE via Trantor TcpClient. MIME parsing via mailio. Hash generation + lookup. Internal HMAC endpoints to user_service (tier check) and core_service (stuff creation). inbox_email_log with idempotency. Rate limiting. DNS + Zoho catch-all. Frontend: Settings section (generate + display + copy). Text only, no attachments yet.
+**Phase 1 — email_service + Core Pipeline** (E-1, E-2, E-7, E-8, E-11–E-13, E-15–E-21, E-23, E-25, E-26, E-27, E-28)
+New email_service microservice (Drogon, own DB, JWT validation, HMAC identity). IMAP IDLE via Trantor TcpClient. MIME parsing via mailio. Hash generation + lookup + collision retry. Tier check on user-facing endpoints. Internal HMAC endpoints to user_service (tier) and core_service (stuff creation with `add_to_top=true`). inbox_email_log with idempotency. Rate limiting. GDPR purge endpoint. DNS + Zoho catch-all. Router service routing update (specific pattern before generic). HMAC key mesh update across all services. Frontend: Settings section (generate + display + copy). Text only, no attachments yet.
 
 **Phase 2 — Attachments & Tiers** (E-4, E-6, E-9, E-10)
-MIME attachment extraction via mailio. Tier-based size/quota enforcement (via user_service tier info). Description notes for skipped attachments. Free tier lockout. Downgrade handling.
+MIME attachment extraction via mailio. Tier-based size/quota enforcement (via user_service tier info). Description notes for skipped attachments. Free tier lockout. Downgrade handling (address stays in DB, tier check rejects).
 
-**Phase 3 — Regeneration & Admin** (E-3, E-27, E-28)
-Regenerate endpoint + confirmation dialog. Admin endpoints.
+**Phase 3 — Regeneration & Admin** (E-3, E-29, E-30)
+Regenerate endpoint + confirmation dialog. Admin endpoints (in admin_service, proxied to email_service via HMAC).
 
-**Phase 4 — Polish & Monitoring** (E-14, E-22, E-24, E-29)
-Retry logic. Poll fallback mode. Mailpit IMAP in dev. Health metrics.
+**Phase 4 — Polish & Monitoring** (E-14, E-22, E-24, E-31)
+Retry logic. Poll fallback mode. Mailpit IMAP in dev (`--enable-imap` flag). Health metrics.
 
 ---
 
 ## 12. Key Technical Considerations
 
+### Service Architecture
+
 - **email_service is a full Drogon microservice** — same patterns as user_service, core_service, etc. CMake build, vcpkg dependencies, Drogon controllers, JSON config, K8s Deployment.
+- **JWT validation** — user-facing endpoints validate JWT using `jwt::identity` from backend_common. Requires `jwt.secret` in secret.json (same shared secret as all services).
+- **Single replica** — only 1 pod reads from the catch-all mailbox. Multiple replicas would process the same emails. Sequential processing within the event loop — one email at a time.
+- **Email size limit** — skip messages >25 MB total (Zoho's own limit). Prevents memory issues from enormous emails.
+
+### IMAP & MIME
+
 - **IMAP transport via Trantor TcpClient** — Drogon's built-in async TCP client. TLS support via `enableSSL()`. Event-loop callbacks naturally support IMAP IDLE push. ~1000-1500 LOC for the IMAP command/response layer.
-- **MIME parsing via mailio** — MIT license, C++17, Boost-based (Boost already in stack). Handles multipart, base64, quoted-printable, charset conversion, attachment extraction.
+- **IMAP MOVE fallback** — MOVE is an extension (RFC 6851). If Zoho doesn't support it, fall back to `COPY` + `STORE +FLAGS (\Deleted)` + `EXPUNGE` to move messages to Failed/RateLimited folders.
+- **MIME parsing via mailio** — MIT license, C++17, Boost-based (Boost already in stack). Handles multipart, base64, quoted-printable, charset conversion, attachment extraction. **Must be added to vcpkg.json** (not currently a dependency).
 - **Fallback: libetpan** — if Trantor IMAP proves too costly, libetpan (BSD-3) has IDLE + MIME. fd-based IDLE integrates with Drogon's event loop. Risk: dormant since 2021.
-- **Stuff creation via HMAC to core_service** — `POST /internal/v1/stuff` with `user_id` + attachments as base64. Preserves service ownership.
-- **Tier info via HMAC to user_service** — email_service does not store tier data. Calls `GET /internal/v1/user/{id}/tier` per email to get current limits.
 - **Email body format** — always plain text in Stuff `description`. HTML converted to plain text via tag stripping. No markdown.
-- **Secrets in K8s Secrets** — Zoho IMAP credentials (`IMAP_HOST`, `IMAP_USER`, `IMAP_PASS`) and `INBOX_EMAIL_SECRET` for hash generation. Mounted as environment variables.
-- **Single replica** — only 1 pod reads from the catch-all mailbox. Multiple replicas would process the same emails. Scaling is not needed (single mailbox, sequential processing).
-- **Daily counter reset** — K8s CronJob calls `POST /internal/v1/inbox-email/reset-daily` at midnight UTC. Resets all `emails_today` to 0.
-- **Testing** — Unit tests: hash generation, IMAP response parsing, email body cleaning, reply chain stripping. Integration: Mailpit IMAP in dev. E2E: real email to dev subdomain.
+- **Zoho IMAP auth** — uses app-specific password with plain LOGIN command. Zoho supports this when 2FA is enabled on the catch-all account.
+
+### Inter-Service Communication
+
+- **Stuff creation via HMAC to core_service** — `POST /internal/v1/stuff` with `user_id`, `add_to_top=true` (email-captured items appear at top of inbox), attachments as base64. Preserves service ownership.
+- **Tier info via HMAC to user_service** — email_service does not store tier data. Calls `GET /internal/v1/user/{id}/tier` during email processing AND on user-facing endpoints (generate/get/regenerate return 403 for Free tier).
+- **GDPR cascade** — user_service calls `DELETE /internal/inbox-email/{user_id}` during purge cron. email_service deletes `inbox_email_address` + `inbox_email_log` entries for that user.
+
+### HMAC Key Setup
+
+email_service needs a full HMAC identity integrated into the existing key mesh:
+
+```
+email_service secret.json:
+  hmac.receiver.keys: { "wna_router": "<router-secret>", "wna_admin": "<admin-secret>", "wna_user": "<user-secret>" }
+  hmac.sender: { id: "wna_email", secret: "<email-secret>" }
+
+Updates to other services:
+  user_service  → hmac.receiver.keys: add "wna_email": "<email-secret>"
+  core_service  → hmac.receiver.keys: add "wna_email": "<email-secret>"
+  router_service → services config: add "email": { url: "http://email-service:1500", connections: 4, max_queue_size: 1000 }
+  admin_service  → hmac.receiver.keys: no change (admin calls email_service, not the other way)
+```
+
+### Router Service Routing
+
+Router uses regex patterns in `services.cpp`. Adding email_service requires:
+- New regex `/v1/user/inbox-email(.*)` → email_service. **Must be registered before** the existing `/v1/user/(.*)` → user_service pattern (more specific first).
+- No admin routing change needed — admin endpoints stay in admin_service (which calls email_service via HMAC internally).
+
+### Config File Structure
+
+```json
+// email_service config.json
+{
+  "app": { "threads_num": 2, "enable_server_header": false },
+  "listeners": [{ "address": "0.0.0.0", "port": 1500, "https": false }],
+  "db_clients": [{ "name": "default", "rdbms": "postgresql",
+    "host": "localhost", "port": 5432, "dbname": "wna_email_db",
+    "connection_number": 4, "auto": false }],
+  "log": { "log_level": "DEBUG" },
+  "custom_config": {
+    "hmac": { "receiver": { "clock_skew_seconds": 300 } },
+    "services": {
+      "user": { "url": "http://localhost:8001", "connections": 4, "max_queue_size": 1000 },
+      "core": { "url": "http://localhost:8002", "connections": 4, "max_queue_size": 1000 }
+    },
+    "imap": { "host": "localhost", "port": 1143, "mode": "poll",
+              "idle_reissue_seconds": 1500, "reconnect_max_seconds": 60 },
+    "inbox": { "domain": "inbox.whatsnextaction.com", "daily_limit": 50 }
+  }
+}
+
+// email_service secret.json
+{
+  "db_clients": [{ "user": "wna_email", "passwd": "<generated>" }],
+  "custom_config": {
+    "jwt": { "issuer": "wna", "audience": "wna", "secret": "<shared-jwt-secret>" },
+    "hmac": {
+      "receiver": { "keys": { "wna_router": "<router-secret>", "wna_admin": "<admin-secret>", "wna_user": "<user-secret>" } },
+      "sender": { "id": "wna_email", "secret": "<email-secret>" }
+    },
+    "imap": { "username": "<zoho-imap-user>", "password": "<zoho-app-password>" },
+    "inbox": { "email_secret": "<64-char-hex-for-hash-generation>" }
+  }
+}
+```
+
+### Hash Collision Handling
+
+12 hex chars = 48 bits. Collision probability negligible at <1M users (~10^-9). If `UNIQUE` constraint fails during insert, retry with `HMAC-SHA256(user_id + attempt_counter, secret)`, up to 3 attempts.
+
+### Stuff `source` Column Migration
+
+```sql
+-- core_service migration: add source column to item_meta
+ALTER TABLE item_meta ADD COLUMN source VARCHAR(20) NOT NULL DEFAULT 'manual';
+```
+
+Existing `GET /v1/inbox` response will include the `source` field once serialization is updated. Frontend can use it later for email badge (deferred).
+
+### Downgrade Handling
+
+When a user downgrades from Pro/Team to Free:
+- **Address row stays in DB** (not deleted) — reactivates if user re-upgrades
+- **User-facing endpoints** (`GET /v1/user/inbox-email`) check tier via user_service HMAC call → return 403 for Free
+- **Email processing** — step 8 checks tier → rejects with `status=failed` if Free. Email moved to Failed folder.
+- **Frontend** — Settings page hides Email to Inbox section for Free tier (same as first-time Free state)
+
+### Notifications
+
+No in-app notification when an email is captured. The user forwarded the email themselves — they know it's coming. This matches Quick Add behavior (no notification on manual capture).
+
+### Mailpit IMAP
+
+Current docker-compose only exposes SMTP (:1025) and Web UI (:8025). To enable IMAP for email_service dev testing:
+```yaml
+mailpit:
+  image: axllent/mailpit:latest
+  command: ["--enable-imap"]
+  ports:
+    - "1025:1025"   # SMTP
+    - "8025:8025"   # Web UI
+    - "1143:1143"   # IMAP
+```
+
+### Daily Counter Reset
+
+K8s CronJob calls `POST http://email-service:1500/cron/reset-daily-email-counters` at midnight UTC using `curlimages/curl:latest` (matches existing cron pattern in `cronjobs.yaml`).
+
+### Testing
+
+- **Unit tests**: hash generation, hash collision retry, IMAP response parsing (tagged, untagged, literals), email body cleaning, reply chain stripping, subject prefix stripping
+- **Integration**: Mailpit IMAP in dev (poll mode). Send test emails via Mailpit API, verify Stuff creation.
+- **E2E**: real email to `inbox-dev.whatsnextaction.com`, verify Stuff appears in user's Inbox
 
 ---
 
@@ -538,13 +678,13 @@ Retry logic. Poll fallback mode. Mailpit IMAP in dev. Health metrics.
 
 | Service | Changes |
 |---------|---------|
-| **email_service** (new) | New Drogon microservice. Own DB (`wna_email_db`): `inbox_email_address`, `inbox_email_log` tables. IMAP IDLE client via Trantor TcpClient. MIME parsing via mailio. User-facing endpoints: `GET /v1/user/inbox-email`, `POST .../generate`, `POST .../regenerate`. Admin endpoints. Internal: daily counter reset. HMAC client calls to user_service and core_service. Config: `INBOX_EMAIL_SECRET`, `IMAP_HOST`, `IMAP_USER`, `IMAP_PASS`, `IMAP_MODE`, `INBOX_EMAIL_DOMAIN`. |
-| **core_service** | New internal HMAC endpoint: `POST /internal/v1/stuff` (accepts `user_id` + base64 attachments). Modify Stuff model: add `source VARCHAR(20) DEFAULT 'manual'` column. |
-| **user_service** | New internal HMAC endpoint: `GET /internal/v1/user/{id}/tier` (returns tier, storage_used, storage_limit, max_attachment_size, active status). |
-| **router_service** | Route `/v1/user/inbox-email*` to email_service. Route `/admin/inbox-email/*` to email_service. |
-| **admin_service** | No changes (email admin endpoints live on email_service, routed directly). |
+| **email_service** (new) | New Drogon microservice. Own DB (`wna_email_db`): `inbox_email_address`, `inbox_email_log` tables. JWT validation via `jwt::identity`. IMAP IDLE client via Trantor TcpClient. MIME parsing via mailio (add to vcpkg.json). User-facing endpoints: `GET/POST /v1/user/inbox-email*` (with tier check via HMAC to user_service). Internal: `DELETE /internal/inbox-email/{user_id}` (GDPR purge), `GET/GET /internal/inbox-email/*` (admin proxy), `/cron/reset-daily-email-counters`. HMAC client calls to user_service and core_service. Config/secret: see Config File Structure section. |
+| **core_service** | New internal HMAC endpoint: `POST /internal/v1/stuff` (accepts `user_id`, `add_to_top`, base64 attachments). DB migration: `ALTER TABLE item_meta ADD COLUMN source VARCHAR(20) NOT NULL DEFAULT 'manual'`. |
+| **user_service** | New internal HMAC endpoint: `GET /internal/v1/user/{id}/tier` (returns tier, storage_used, storage_limit, max_attachment_size, active). Add email_client to purge cascade: calls `DELETE /internal/inbox-email/{user_id}` during `purge_deleted_users` cron. HMAC receiver keys: add `wna_email`. |
+| **router_service** | Add email_service to `services` config. Add regex `/v1/user/inbox-email(.*)` → email_service **before** existing `/v1/user/(.*)` → user_service pattern. HMAC sender key shared with email_service. |
+| **admin_service** | New proxy endpoints: `GET /admin/inbox-email/users/{id}`, `GET /admin/inbox-email/stats` — calls email_service internal endpoints via HMAC. HMAC sender key added to email_service receiver. |
 | **notification_service** | No changes. |
-| **backend_common** | HMAC client helpers for new internal endpoints. |
+| **backend_common** | New `email_client` class for HMAC calls to email_service (GDPR purge). HMAC client helpers for new internal endpoints. |
 
 ### wna_web
 
@@ -560,13 +700,15 @@ Minimal changes — only Settings page.
 | Area | Changes |
 |------|---------|
 | **DNS** | MX + SPF + DKIM records for `inbox.whatsnextaction.com` |
-| **K8s Secrets** | `email-service-secret`: `INBOX_EMAIL_SECRET`, `IMAP_HOST`, `IMAP_USER`, `IMAP_PASS` |
-| **K8s Deployment** | `email-service-deployment.yaml`: 1 replica, Drogon on port 1500, liveness probe `/health`, env from Secrets + ConfigMaps, resources |
+| **K8s Secrets** | `email-service-secret`: secret.json (DB creds, JWT secret, HMAC keys, IMAP creds, inbox email secret). Also update user-service-secret, core-service-secret, router-service-secret, admin-service-secret to include `wna_email` HMAC key. |
+| **K8s Deployment** | `email-service-deployment.yaml`: 1 replica, Drogon on port 1500, readinessProbe `/health` (delay 5s, period 10s), livenessProbe `/readiness` (delay 15s, period 20s), `runAsUser: 1000`, env from Secrets + ConfigMaps |
 | **K8s Service** | `email-service-service.yaml`: ClusterIP exposing port 1500 |
-| **K8s CronJob** | `email-daily-reset-cronjob.yaml`: calls `POST /internal/v1/inbox-email/reset-daily` at midnight UTC |
-| **ConfigMaps** | email_service config: service URLs (user_service, core_service), IMAP mode (idle/poll), IDLE re-issue interval, inbox email domain |
-| **DB init** | New database `wna_email_db` + init SQL for `inbox_email_address` and `inbox_email_log` tables |
-| **Mailpit** (dev) | Add IMAP port (1143) to Mailpit deployment |
+| **K8s CronJob** | Add to `cronjobs.yaml`: `reset-daily-email-counters` (schedule `0 0 * * *`, target `POST http://email-service:1500/cron/reset-daily-email-counters`, using `curlimages/curl:latest`) |
+| **ConfigMaps** | `email-service-configmap.yaml`: config.json (see Config File Structure section) |
+| **DB init** | `backend/db_tools/sql/email_service/000_create_db.sql` + `001_init.sql` for `wna_email_db` |
+| **core_service migration** | `backend/db_tools/sql/core_service/00N_add_source_column.sql`: `ALTER TABLE item_meta ADD COLUMN source VARCHAR(20) NOT NULL DEFAULT 'manual'` |
+| **Mailpit** (dev) | Add `command: ["--enable-imap"]` and port `1143:1143` to Mailpit in docker-compose |
+| **setup_secrets.sh** | Add email_service secret generation: IMAP username/password prompts, INBOX_EMAIL_SECRET via `openssl rand -hex 32`, email_service HMAC sender key |
 | **Monitoring** | Prometheus scrape config for email_service /metrics endpoint |
 
 ---
@@ -577,8 +719,16 @@ Minimal changes — only Settings page.
 2. **Architecture**: New `email_service` Drogon microservice with own DB — owns hashes, email log, IMAP connection
 3. **Delivery model**: IMAP IDLE (push, near real-time) as primary, with poll fallback via config flag
 4. **IMAP client**: Trantor TcpClient (Drogon built-in async TCP) for IMAP transport
-5. **MIME parsing**: mailio (MIT, C++17, Boost-based)
+5. **MIME parsing**: mailio (MIT, C++17, Boost-based) — must be added to vcpkg.json
 6. **IMAP fallback**: libetpan (BSD-3) if Trantor implementation proves too costly
-7. **Secrets**: Zoho IMAP credentials + HMAC key in K8s Secrets
-8. **Frontend scope**: Minimal — Settings page only (generate/display/copy/regenerate address)
-9. **Polish items**: Deferred to future iterations
+7. **Secrets**: Full secret.json with DB creds, JWT secret, HMAC keys, IMAP creds, inbox email secret
+8. **JWT validation**: Independent validation using `jwt::identity` from backend_common
+9. **Admin routing**: Admin endpoints stay in admin_service (proxied to email_service via HMAC) — consistent with existing pattern
+10. **Router routing**: Specific `/v1/user/inbox-email*` pattern registered before generic `/v1/user/*`
+11. **GDPR**: email_service exposes `DELETE /internal/inbox-email/{user_id}` for purge cascade from user_service
+12. **Cron pattern**: `/cron/reset-daily-email-counters` using existing `curlimages/curl` CronJob pattern
+13. **Stuff position**: Email-captured items appear at top of inbox (`add_to_top=true`)
+14. **Downgrade**: Address row stays in DB (reactivates on re-upgrade), tier check rejects at API + processing
+15. **Notifications**: No notification on email capture (matches Quick Add behavior)
+16. **Frontend scope**: Minimal — Settings page only (generate/display/copy/regenerate address)
+17. **Polish items**: Deferred to future iterations
