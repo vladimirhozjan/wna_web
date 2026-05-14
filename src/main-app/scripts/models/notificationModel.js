@@ -15,6 +15,9 @@ export function notificationModel() {
         taskDueToday: true,
         dailyNextActions: true,
         projectNeedsNextAction: true,
+        delegatedToYou: true,
+        delegationCompleted: true,
+        connectionInvite: true,
 
         loading: false,
         loaded: false,
@@ -23,6 +26,9 @@ export function notificationModel() {
             taskDueToday: false,
             dailyNextActions: false,
             projectNeedsNextAction: false,
+            delegatedToYou: false,
+            delegationCompleted: false,
+            connectionInvite: false,
         },
         error: null,
     })
@@ -40,6 +46,9 @@ export function notificationModel() {
         state.taskDueToday = !isDisabled('task_due_today')
         state.dailyNextActions = !isDisabled('daily_next_actions')
         state.projectNeedsNextAction = !isDisabled('project_needs_next_action')
+        state.delegatedToYou = !isDisabled('delegated_to_you')
+        state.delegationCompleted = !isDisabled('delegation_completed')
+        state.connectionInvite = !isDisabled('connection_invite')
     }
 
     function buildDisabledEmail() {
@@ -48,6 +57,9 @@ export function notificationModel() {
         if (!state.taskDueToday) disabled.push('task_due_today')
         if (!state.dailyNextActions) disabled.push('daily_next_actions')
         if (!state.projectNeedsNextAction) disabled.push('project_needs_next_action')
+        if (!state.delegatedToYou) disabled.push('delegated_to_you')
+        if (!state.delegationCompleted) disabled.push('delegation_completed')
+        if (!state.connectionInvite) disabled.push('connection_invite')
         return disabled
     }
 
@@ -119,6 +131,18 @@ export function notificationModel() {
         return toggleEvent('projectNeedsNextAction', 'project_needs_next_action', value)
     }
 
+    async function setDelegatedToYou(value) {
+        return toggleEvent('delegatedToYou', 'delegated_to_you', value)
+    }
+
+    async function setDelegationCompleted(value) {
+        return toggleEvent('delegationCompleted', 'delegation_completed', value)
+    }
+
+    async function setConnectionInvite(value) {
+        return toggleEvent('connectionInvite', 'connection_invite', value)
+    }
+
     instance = {
         state,
         load,
@@ -126,6 +150,9 @@ export function notificationModel() {
         setTaskDueToday,
         setDailyNextActions,
         setProjectNeedsNextAction,
+        setDelegatedToYou,
+        setDelegationCompleted,
+        setConnectionInvite,
     }
 
     return instance

@@ -354,7 +354,49 @@
               </div>
             </div>
 
-            <p class="text-body-s settings-hint settings-info-note">Security notifications are always enabled.</p>
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Delegated to you</span>
+                <p class="text-body-s settings-hint">Email when a connection delegates an action to you</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.delegatedToYou }">
+                <span v-if="notifications.state.saving.delegatedToYou" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="delegatedToYou" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Delegation completed</span>
+                <p class="text-body-s settings-hint">Email when an action you delegated is completed</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.delegationCompleted }">
+                <span v-if="notifications.state.saving.delegationCompleted" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="delegationCompleted" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Connection invitations</span>
+                <p class="text-body-s settings-hint">Email when someone invites you to connect</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.connectionInvite }">
+                <span v-if="notifications.state.saving.connectionInvite" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="connectionInvite" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <p class="text-body-s settings-hint settings-info-note">In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled.</p>
           </div>
         </div>
 
@@ -632,6 +674,21 @@ const dailyNextActions = computed({
 const projectNeedsNextAction = computed({
   get: () => notifications.state.projectNeedsNextAction,
   set: (val) => notifications.setProjectNeedsNextAction(val).catch(() => toaster.push('Failed to save notification setting'))
+})
+
+const delegatedToYou = computed({
+  get: () => notifications.state.delegatedToYou,
+  set: (val) => notifications.setDelegatedToYou(val).catch(() => toaster.push('Failed to save notification setting'))
+})
+
+const delegationCompleted = computed({
+  get: () => notifications.state.delegationCompleted,
+  set: (val) => notifications.setDelegationCompleted(val).catch(() => toaster.push('Failed to save notification setting'))
+})
+
+const connectionInvite = computed({
+  get: () => notifications.state.connectionInvite,
+  set: (val) => notifications.setConnectionInvite(val).catch(() => toaster.push('Failed to save notification setting'))
 })
 
 const positionOptions = [
