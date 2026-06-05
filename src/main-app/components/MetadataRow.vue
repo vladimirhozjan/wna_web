@@ -118,7 +118,11 @@ const missingNextAction = computed(() =>
 )
 
 const delegatedFromLabel = computed(() => {
-  return props.item.delegated_from_user_email || props.item.delegated_from_user_name || ''
+  // Backend returns a nested object: delegated_from { user_id, name, action_id }
+  return props.item.delegated_from?.name
+      || props.item.delegated_from_user_email
+      || props.item.delegated_from_user_name
+      || ''
 })
 
 const assigneeLabel = computed(() => {

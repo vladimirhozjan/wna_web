@@ -54,7 +54,9 @@
       "Bash(sed -n '3347,3352p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
       "Bash(sed -n '4929,4935p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
       "Bash(sed -n '4995,5001p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
-      "Bash(sed -n '5041,5047p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)"
+      "Bash(sed -n '5041,5047p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
+      "Read(//Users/vladimirhozjan/Documents/wna_backend/**)",
+      "Read(//Users/vladimirhozjan/Documents/wna_backend/.claude/**)"
     ]
   }
 }

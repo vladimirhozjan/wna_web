@@ -12564,3 +12564,72 @@ No backend request is made in any of the three cases.
 | Date | P/F | Comment |
 |------|-----|---------|
 |      |     |         |
+
+---
+
+### TC-461: Non-Team Member Sees Read-Only Notice on Shared Project
+**Priority:** Medium | **Area:** Shared Projects, Tier Limits
+
+**Preconditions:** A user who is a member (owner or non-owner) of a shared project but is NOT on the Team plan — e.g. a Team user who shared/joined a project and later downgraded to Free or Pro. The project is active (not completed).
+
+**Steps:**
+1. Log in as the non-Team member and open the shared project's detail page
+2. Observe the top of the Backlog section
+3. Confirm the write controls are absent (no "Add action" input, no "Assign to me" buttons, backlog not reorderable)
+4. Click the "Upgrade to Team" button in the notice
+5. (Comparison) Log in as a Team-plan member of the same project and open it
+
+**Expected Result:**
+- Steps 1–2: a notice appears at the top of the Backlog reading: "You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit." with an "Upgrade to Team" button.
+- Step 3: all write controls are hidden (gated by `canWrite`), consistent with read-only access; comments and attachment download remain available.
+- Step 4: the upgrade modal opens with a message about working on shared projects.
+- Step 5: the Team-plan member does NOT see the notice; their write controls render normally.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-462: Backlog Row Hides Assignee Name When Action Is Waiting
+**Priority:** Medium | **Area:** Shared Projects, Delegation
+
+**Preconditions:** A shared project with at least three backlog actions: (a) one assigned to another member in an active state (e.g. NEXT/TODAY), (b) one assigned to another member who has delegated it onward so it is in WAITING state, and (c) one assigned to the current caller. Viewer is any member of the project.
+
+**Steps:**
+1. Open the shared project's detail page
+2. Inspect the assignee display on action (a) — assigned to another member, not waiting
+3. Inspect the assignee display on action (b) — assigned to another member, WAITING state
+4. Inspect the assignee display on action (c) — assigned to the caller
+
+**Expected Result:**
+- Action (a): shows the other member's email/display label.
+- Action (b): shows only "Waiting" — the assignee's name is NOT shown (the delegation detail lives in that member's own Waiting For, which is private to them).
+- Action (c): shows the green "You" badge.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-463: Inbox Shows "From: [name]" Indicator on Delegated Items
+**Priority:** Medium | **Area:** Inbox, Delegation
+
+**Preconditions:** Two Team-tier users who are connected (User A and User B). User A delegates an action to User B (via Clarify delegate substep or Action Detail). User B also has at least one self-captured inbox item.
+
+**Steps:**
+1. Log in as User B and open /inbox
+2. Locate the item that arrived from User A's delegation
+3. Inspect its row beneath the title
+4. Inspect a self-captured inbox item's row
+5. Open the delegated item into clarify and confirm it processes like any other stuff
+
+**Expected Result:**
+- Step 2–3: the delegated row shows a "From: [name]" chip where the name is User A's email (sourced from `delegated_from.name` in the `GET /v1/inbox` response).
+- Step 4: the self-captured item shows no "From:" chip (and no metadata row unless it has a description/attachment/comment).
+- Step 5: the delegated item goes through the standard clarify flow with no special handling.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |

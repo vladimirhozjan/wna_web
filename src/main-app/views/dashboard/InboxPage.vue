@@ -67,6 +67,9 @@
               @move="onMove"
               @load-more="loadMore"
           >
+            <template #subtitle="{ item }">
+              <MetadataRow :item="item" entity-type="stuff" />
+            </template>
             <template #actions="{ item }">
               <ActionBtn v-if="!clarifyMode" @click="onTrash(item.id)" />
             </template>
@@ -132,6 +135,7 @@ import { statsModel } from '../../scripts/models/statsModel.js'
 import Btn from "../../components/Btn.vue";
 import Inpt from '../../components/Inpt.vue'
 import ItemList from '../../components/ItemList.vue'
+import MetadataRow from '../../components/MetadataRow.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import InboxIcon from '../../assets/InboxIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'

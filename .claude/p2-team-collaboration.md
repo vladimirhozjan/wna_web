@@ -62,7 +62,7 @@
 ### Delegation + Projects
 
 - **Personal project Next Action**: can be delegated. The action stays as the project's Next Action but moves to Waiting For state. You're blocked on this project until the delegation resolves. No auto-promotion.
-- **Shared project assigned action**: can be delegated. The action stays assigned to you but moves to Waiting For state. You're blocked on this shared project — can't claim another backlog action until the delegation resolves. The shared project view shows "assigned to you, waiting on [name]."
+- **Shared project assigned action**: can be delegated. The action stays assigned to you but moves to Waiting For state. You're blocked on this shared project — can't claim another backlog action until the delegation resolves. Because the action is already claimed by you, no other member can claim it regardless.
 - **Self-delegation is blocked** — you cannot delegate to yourself. The connection picker does not show yourself.
 
 ### Delegation Chains
@@ -144,7 +144,7 @@ A connection can be Write on "Website Redesign" but Read-only on "Finance Audit.
 - **Write members can create**: Write members can add new actions to the backlog.
 - **Write members can reorder**: Write members can reorder the backlog list.
 - **Backlog = unassigned only**: The backlog contains only actions not assigned to anyone.
-- **No recurrence**: Shared project actions cannot have recurrence rules.
+- **No recurrence**: Shared project actions cannot have recurrence rules. **Enforcement is frontend-only** — the same trade-off as the share/connection validation in §2/§11: the backend (`POST /v1/action` with the `project_id` of a shared project) does NOT reject a supplied `recurrence_rule`. A stored rule is inert because shared actions never enter the NEXT/CALENDAR completion path that spawns the next recurring instance. The frontend simply hides the recurrence control on shared-project actions. Revisit only if recurrence spawning is ever wired into the shared flow.
 - **No cross-project moves**: Actions cannot be moved between personal and shared projects (or between shared projects). To add something to a shared project, create a new action in its backlog.
 
 ### Member Removal
@@ -214,7 +214,7 @@ There are no global/connection-level roles. All permissions are per-project. Any
 | **Waiting For** | Shows real user name/avatar for connection delegations. Free text for non-connection. Resolved items show completion comment. |
 | **Inbox** | Delegated items show small "From: [name]" indicator |
 | **Projects List** | Shared projects appear alongside personal projects with a shared badge |
-| **Project Detail (shared)** | Backlog with "Assign to me" button (write members). Current assignments visible (including waiting state). Completed tasks with who did it. Write members edit descriptions/attachments. All members can comment. Per-member role management for project owner. Add/remove members. |
+| **Project Detail (shared)** | Backlog with "Assign to me" button (write members). Current assignments visible. Completed tasks with who did it. Write members edit descriptions/attachments. All members can comment. Per-member role management for project owner. Add/remove members. |
 | **Project Detail (all)** | New "Completed" section showing completed tasks |
 | **Notifications** | Badge/toast for all meaningful actions: delegated to you, delegation completed, connection invite, shared project changes |
 

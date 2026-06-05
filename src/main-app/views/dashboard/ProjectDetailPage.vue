@@ -273,6 +273,13 @@
 
         <!-- Shared project: single flat list of all actions with assignee chip per row -->
         <div v-if="!isCompleted && isShared" class="detail-section-area">
+          <!-- Non-Team read-only notice -->
+          <div v-if="myTier !== 'team'" class="shared-readonly-notice">
+            <p class="text-body-s shared-readonly-text">
+              You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit.
+            </p>
+            <Btn variant="primary" size="sm" @click="openSharedUpgrade">Upgrade to Team</Btn>
+          </div>
           <label class="text-body-s fw-semibold detail-section-label">Backlog</label>
           <div class="next-action-wrapper">
             <div v-if="actionsLoading" class="next-action-loading">
@@ -339,7 +346,8 @@
                       >
                         <template #actions>
                           <span v-if="action.assigned_to && !isAssignedToMe(action)" class="text-body-s action-assignee-right">
-                            {{ assigneeLabel(action) }}<span v-if="action.state === 'WAITING'"> · waiting</span>
+                            <template v-if="action.state === 'WAITING'">Waiting</template>
+                            <template v-else>{{ assigneeLabel(action) }}</template>
                           </span>
                           <span v-if="isAssignedToMe(action)" class="text-body-s action-assignee-self">You</span>
                           <span v-if="hasActionButtons(action)" class="action-row-buttons">
@@ -914,6 +922,12 @@ const shareModalChoices = computed(() => {
   if (!q) return base
   return base.filter(c => (c.email || '').toLowerCase().includes(q))
 })
+
+function openSharedUpgrade() {
+  upgradeModel().show({
+    message: 'Working on shared projects — assigning actions, creating backlog items, and editing — is available on the Team plan.',
+  })
+}
 
 function openShareModal(mode) {
   if (myTier.value !== 'team') {
@@ -2157,6 +2171,23 @@ async function onAddAction() {
 
 .next-action-prompt:hover {
   background: var(--color-warning-light);
+}
+
+.shared-readonly-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: var(--color-action-subtle);
+  border-left: 3px solid var(--color-action);
+  border-radius: 4px;
+}
+
+.shared-readonly-text {
+  margin: 0;
+  color: var(--color-text-secondary);
 }
 
 .next-action-prompt__icon {

@@ -258,7 +258,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 ### 4.1 Inbox Page
 
-- **Purpose:** Capture zone for raw, unprocessed items ("Stuff"). Items in the inbox have no metadata - no tags, dates, or delegation.
+- **Purpose:** Capture zone for raw, unprocessed items ("Stuff"). Items you capture yourself have no metadata - no tags or dates. The one exception is items that arrived via delegation (see "Delegated-item indicator" below).
 - **URL:** `/inbox`
 
 **Adding items:**
@@ -269,6 +269,11 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 **Item list:**
 - All items load at once (no pagination)
 - Total item count shown in sidebar badge
+
+**Delegated-item indicator (T-9):**
+- When an item arrived in the inbox because a connection delegated an action to you, the row shows a "From: [name]" chip (via `MetadataRow`, `entity-type="stuff"`), where the name is the delegator's email
+- Backend supplies this in the inbox/stuff response as `delegated_from { user_id, name, action_id }`; non-delegated items have no chip
+- Other than this indicator, the item behaves like any other stuff and goes through the normal clarify flow
 
 **Per-item operations:**
 - **Checkbox (complete):** Marks the stuff item as done, removes it from the list, shows success toast
@@ -1646,6 +1651,7 @@ A shared project is a personal project that has been shared with one or more acc
   - Submit calls `POST /v1/project/{id}/share` with `{ members: [{ user_id, role }, …] }`
 - On success: the project becomes shared, the badge appears, and the shared layout (backlog, members list, completed section) renders
 - Tier gate: `myTier !== 'team'` opens the upgrade modal instead of the share dialog
+- **Non-Team read-only notice:** when a member views a shared project while not on the Team plan (e.g. after a downgrade), a notice at the top of the Backlog section explains they have read-only access and offers an "Upgrade to Team" button (opens the upgrade modal). Write controls are already hidden via `canWrite`; the notice supplies the missing explanation.
 
 ### 33.2 Roles
 
@@ -1668,7 +1674,7 @@ For shared projects the personal "Next Action" section is replaced by a **Backlo
 - **Per-row assignee display**:
   - Unassigned: no chip
   - Assigned to current caller: green "You" badge
-  - Assigned to someone else: their email/display label, plus "· waiting" when the action is in WAITING state
+  - Assigned to someone else: their email/display label. When that action is in WAITING state, the row shows just "Waiting" (the assignee's name is hidden — the delegation detail lives in their own Waiting For)
 - **Per-row controls** (visible when applicable):
   - **Assign to me** (PersonAddIcon): unassigned action + caller is write/owner + caller has no current assigned action on this project
   - **Unassign** (PersonRemoveIcon): action is assigned to caller
