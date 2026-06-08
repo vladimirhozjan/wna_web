@@ -4,8 +4,12 @@
     <circle cx="9" cy="7" r="4"/>
     <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    <circle v-if="pending" cx="21" cy="3" r="3" fill="var(--color-danger)" stroke="none"/>
   </svg>
 </template>
 
 <script setup>
+defineProps({
+  pending: { type: Boolean, default: false },
+})
 </script>

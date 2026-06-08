@@ -16,6 +16,9 @@ export function connectionModel() {
 
     const pendingReceivedCount = computed(() => pendingReceived.value.length)
 
+    // Sidebar numeric badge: accepted connections + invitations the user has sent (network size).
+    const networkCount = computed(() => connections.value.length + pendingSent.value.length)
+
     async function loadAll() {
         loading.value = true
         error.value = null
@@ -84,6 +87,7 @@ export function connectionModel() {
         pendingSent,
         pendingReceived,
         pendingReceivedCount,
+        networkCount,
         loading,
         loaded,
         error,

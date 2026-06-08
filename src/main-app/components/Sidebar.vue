@@ -116,9 +116,9 @@
       <SidebarMenuItem
           label="Connections"
           :to="{ name: 'connections' }"
-          :count="connections.pendingReceivedCount.value"
+          :count="connections.networkCount.value"
       >
-        <template #icon><ConnectionsIcon/></template>
+        <template #icon><ConnectionsIcon :pending="connections.pendingReceivedCount.value > 0"/></template>
       </SidebarMenuItem>
 
       <!-- ARCHIVE -->

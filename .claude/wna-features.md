@@ -194,9 +194,9 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 ### 2.9 Route Protection
 
 - Protected routes are guarded globally in `router.beforeEach`: a public-route allowlist (landing, login, register, forgot, reset, reset-password, verify-email, google-sso, pricing, help/*, legal/*) is checked first; any other route requires authentication
-- **Deep-link login flow:** When an unauthenticated user opens a protected URL (e.g. an email link to `/overdue`, `/project/:id`, `/settings/connections`), the guard redirects to `/login?redirect=<original-fullPath>`. The `LandingPage` opens the `AuthDialog` in login mode. After successful login or registration, the user is navigated to the original `redirect` path instead of the default `/engage`. The `redirect` query is also preserved through the password-reset → login hop. Only same-origin paths (starting with `/` and not `//`) are honored to prevent open-redirect abuse.
+- **Deep-link login flow:** When an unauthenticated user opens a protected URL (e.g. an email link to `/overdue`, `/project/:id`, `/connections`), the guard redirects to `/login?redirect=<original-fullPath>`. The `LandingPage` opens the `AuthDialog` in login mode. After successful login or registration, the user is navigated to the original `redirect` path instead of the default `/engage`. The `redirect` query is also preserved through the password-reset → login hop. Only same-origin paths (starting with `/` and not `//`) are honored to prevent open-redirect abuse.
 - If authentication state changes mid-session (e.g., cross-tab logout), the dashboard reactively redirects to landing
-- `/settings/:section` is rewritten to `/settings?section=:section` so email links like `/settings/connections` resolve to the corresponding expanded section in `SettingsPage`
+- `/settings/:section` is rewritten to `/settings?section=:section` so email links like `/settings/notifications` resolve to the corresponding expanded section in `SettingsPage`
 - A catch-all route (`/:pathMatch(.*)*`) redirects unknown URLs to `/`
 
 ---
@@ -1483,8 +1483,9 @@ Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{to
 
 ### 30.2 UI Location
 
-- Settings → **Connections** section (collapsible card).
-- The section header shows a small numeric badge when there are unseen received invitations (badge shown regardless of tier).
+- Top-level **Connections** item in the sidebar (under the "Team" section), routing to `/connections` (`ConnectionsPage`).
+- The sidebar item shows a small **numeric badge** equal to the user's network size — accepted connections **plus** invitations the user has sent that are still pending (`connections.length + pendingSent.length`). The badge is hidden when this total is 0.
+- A **red dot** on the Connections icon (the same `--color-danger` indicator used for overdue items on Today/Next/Calendar/Waiting) appears when there are **received** pending invitations awaiting an accept/decline decision (`pendingReceived.length > 0`). The dot is shown regardless of tier so recipients always see when someone is trying to connect.
 
 ### 30.3 Invite by Email (Team tier only)
 

@@ -497,14 +497,14 @@
     "section": "1: Authentication & Account",
     "preconditions": "User is NOT logged in. localStorage does not contain `auth_token` or `refresh_token`. A valid user account exists (e.g. a test user with at least one project and one action).",
     "steps": [
-      "In the address bar, paste each of the following URLs in turn (these match the URLs used in notification emails: TASK_DUE_TODAY, DAILY_NEXT_ACTIONS, PROJECT_NEEDS_NEXT_ACTION, DELEGATED_TO_YOU, DELEGATION_COMPLETED, CONNECTION_INVITE): a. `http://localhost:5173/overdue` b. `http://localhost:5173/next` c. `http://localhost:5173/inbox` d. `http://localhost:5173/project/<real-project-id>` e. `http://localhost:5173/action/<real-action-id>` f. `http://localhost:5173/settings/connections`",
+      "In the address bar, paste each of the following URLs in turn (these match the URLs used in notification emails: TASK_DUE_TODAY, DAILY_NEXT_ACTIONS, PROJECT_NEEDS_NEXT_ACTION, DELEGATED_TO_YOU, DELEGATION_COMPLETED, CONNECTION_INVITE): a. `http://localhost:5173/overdue` b. `http://localhost:5173/next` c. `http://localhost:5173/inbox` d. `http://localhost:5173/project/<real-project-id>` e. `http://localhost:5173/action/<real-action-id>` f. `http://localhost:5173/connections`",
       "After each navigation, verify: (a) the URL changes to `/login?redirect=<encoded original path>`, (b) the `AuthDialog` opens in login mode over the landing page, (c) no dashboard layout flicker is visible.",
       "With the dialog open on case (a) (`/overdue`), enter valid credentials and submit.",
-      "Repeat case (f) (`/settings/connections`) and after login confirm the Connections section is expanded inside Settings.",
+      "Repeat case (f) (`/connections`) and after login confirm the Connections page is shown.",
       "Open `/register` while logged out — should open `AuthDialog` in register mode without a `redirect` query (CONNECTION_INVITE_REGISTRATION links to plain `/register`).",
       "Test password-reset hop: open `/reset-password?token=<valid-token>&redirect=/overdue`, complete the reset, then log in — verify final navigation lands on `/overdue`."
     ],
-    "expected": "- Steps 1–2: every protected URL redirects to `/login?redirect=...` with the popup visible.\n- Step 3: after login, the user lands on `/overdue` (the original requested page), not on `/engage`.\n- Step 4: `/settings/connections` resolves to `/settings?section=connections`; after login, Settings opens with the Connections section already expanded.\n- Step 5: `/register` opens the register dialog; after registration the user lands on `/engage` (no redirect query was set).\n- Step 6: `redirect` query is preserved through the password-reset → login transition; final destination is `/overdue`.\n- Open-redirect protection: pasting `/login?redirect=https://evil.example.com` or `/login?redirect=//evil.example.com` and logging in must NOT navigate off-origin — the user lands on `/engage` instead."
+    "expected": "- Steps 1–2: every protected URL redirects to `/login?redirect=...` with the popup visible.\n- Step 3: after login, the user lands on `/overdue` (the original requested page), not on `/engage`.\n- Step 4: `/connections` is a protected route; after login the user lands on the Connections page (sidebar \"Connections\" entry is active).\n- Step 5: `/register` opens the register dialog; after registration the user lands on `/engage` (no redirect query was set).\n- Step 6: `redirect` query is preserved through the password-reset → login transition; final destination is `/overdue`.\n- Open-redirect protection: pasting `/login?redirect=https://evil.example.com` or `/login?redirect=//evil.example.com` and logging in must NOT navigate off-origin — the user lands on `/engage` instead."
   },
   {
     "id": "TC-026",
@@ -9010,17 +9010,16 @@
   },
   {
     "id": "TC-417",
-    "name": "Connections Section for Non-Team Users Without Pending Invites",
+    "name": "Connections Page for Non-Team Users Without Pending Invites",
     "priority": "High",
     "area": "Connections",
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is logged in on Free or Pro tier with no pending received invitations.",
     "steps": [
-      "Navigate to Settings",
-      "Expand the Connections section"
+      "Click **Connections** in the sidebar (or navigate to `/connections`)"
     ],
-    "expected": "No invite form, sent list, or accepted connections list is rendered. The section shows an explanatory paragraph that Connections require the Team plan, with an \"Upgrade to Team\" button. Clicking the upgrade button opens the upgrade modal."
+    "expected": "No invite form, sent list, or accepted connections list is rendered. The page shows an empty state titled \"Connect with your team\" explaining that connections let you collaborate (delegate actions and share projects) and are available on the Team plan, with an \"Upgrade to Team\" button. Clicking the upgrade button opens the upgrade modal."
   },
   {
     "id": "TC-418",
@@ -9031,8 +9030,8 @@
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is on Team tier and has no pending invitations to the target email.",
     "steps": [
-      "Navigate to Settings → Connections",
-      "Type a valid email address of another user into the invite field",
+      "Click **Connections** in the sidebar",
+      "Type a valid email address of another user into the invite field (\"Invite someone by email\")",
       "Click Send"
     ],
     "expected": "A success toast (\"Invitation sent to …\") appears, the email field clears, and the invitation appears in the \"Pending invitations\" list with the current time."
@@ -9059,9 +9058,9 @@
     "area": "Connections",
     "smoke": false,
     "section": "30: Connections (Team Tier)",
-    "preconditions": "User is on **Team tier** and has a pending received invitation in Settings → Connections.",
+    "preconditions": "User is on **Team tier** and has a pending received invitation on the Connections page.",
     "steps": [
-      "Expand the Connections section",
+      "Open the Connections page (sidebar → Connections)",
       "Click Accept on the received invitation"
     ],
     "expected": "The invitation disappears from the \"Received invitations\" list. The other user appears in the \"Connections\" list. A success toast confirms the connection was accepted."
@@ -9073,13 +9072,13 @@
     "area": "Connections",
     "smoke": false,
     "section": "30: Connections (Team Tier)",
-    "preconditions": "User is on **Free or Pro tier** and has a pending received invitation in Settings → Connections.",
+    "preconditions": "User is on **Free or Pro tier** and has a pending received invitation on the Connections page.",
     "steps": [
-      "Expand the Connections section",
+      "Open the Connections page (sidebar → Connections)",
       "Observe the hint above the received invitations list",
       "Click Accept on the received invitation"
     ],
-    "expected": "1. The section renders the received invitation with both Accept and Decline buttons visible.\n2. A hint reads: \"Accepting a connection requires the Team plan. You can decline any invitation on your current plan.\"\n3. Clicking Accept opens the upgrade modal with a message about connections requiring the Team plan. No backend call is made; the invitation stays in the received list (Network tab shows no `/v1/connections/invite/*/accept` request)."
+    "expected": "1. The page renders the received invitation with both Accept and Decline buttons visible.\n2. A hint reads: \"You can accept these invitations by upgrading to the Team plan. Otherwise, you can decline them on your current plan.\" and an \"Upgrade to Team\" button is shown above the list.\n3. Clicking Accept opens the upgrade modal with a message about connections requiring the Team plan. No backend call is made; the invitation stays in the received list (Network tab shows no `/v1/connections/invite/*/accept` request)."
   },
   {
     "id": "TC-421",
@@ -9088,9 +9087,9 @@
     "area": "Connections",
     "smoke": false,
     "section": "30: Connections (Team Tier)",
-    "preconditions": "User has a pending received invitation in Settings → Connections. Run this test once on Team tier and once on Free/Pro tier.",
+    "preconditions": "User has a pending received invitation on the Connections page. Run this test once on Team tier and once on Free/Pro tier.",
     "steps": [
-      "Expand the Connections section",
+      "Open the Connections page (sidebar → Connections)",
       "Click Decline on the received invitation"
     ],
     "expected": "The invitation disappears from the \"Received invitations\" list and no new connection is created. Decline works on every tier (backend does not gate decline on tier)."
@@ -9104,9 +9103,9 @@
     "section": "30: Connections (Team Tier)",
     "preconditions": "User has an outstanding sent invitation.",
     "steps": [
-      "Expand Settings → Connections",
+      "Open the Connections page (sidebar → Connections)",
       "Click Cancel on the invitation in the \"Pending invitations\" list",
-      "Confirm in the confirm dialog"
+      "Confirm in the confirm dialog (\"Cancel the invitation to [email]?\")"
     ],
     "expected": "The invitation is removed from the pending list."
   },
@@ -9119,25 +9118,94 @@
     "section": "30: Connections (Team Tier)",
     "preconditions": "User has at least one accepted connection.",
     "steps": [
-      "Expand Settings → Connections",
+      "Open the Connections page (sidebar → Connections)",
       "Click Remove next to an accepted connection",
-      "Confirm in the confirm dialog"
+      "Confirm in the confirm dialog (\"Remove [email] from your connections? In-flight delegations stay open.\")"
     ],
     "expected": "The entry is removed from the Connections list. Any in-flight Waiting For items tied to that connection remain visible (removal does not cancel in-progress delegations)."
   },
   {
     "id": "TC-424",
-    "name": "Received-Invitation Badge on Connections Section",
-    "priority": "Low",
+    "name": "Sidebar Connections Badge (Network Count) and Red Dot (Received Invites)",
+    "priority": "Medium",
     "area": "Connections",
     "smoke": false,
     "section": "30: Connections (Team Tier)",
-    "preconditions": "User is on Team tier with at least one pending received invitation, Connections section collapsed.",
+    "preconditions": "User is on Team tier with at least one accepted connection AND at least one pending received invitation.",
     "steps": [
-      "Navigate to Settings without expanding Connections",
-      "Observe the Connections section header"
+      "Load any dashboard page",
+      "Observe the **Connections** entry in the sidebar — both the numeric badge to the right and the icon itself"
     ],
-    "expected": "A small numeric badge appears in the Connections header showing the count of pending received invitations. Expanding the section hides the badge."
+    "expected": "- A small numeric count badge appears on the sidebar \"Connections\" nav item showing the **network size** = accepted connections + invitations the user has sent that are still pending (`networkCount = connections.length + pendingSent.length`). Received pending invitations are NOT counted in this number.\n- A **red dot** appears on the Connections icon (same `--color-danger` indicator as the overdue dot on Today/Next/Calendar/Waiting) because there is ≥1 received pending invitation awaiting an accept/decline decision.\n- After the received invitation is accepted or declined, the red dot clears. On accept, the numeric badge increments by 1 (the new connection joins the network count)."
+  },
+  {
+    "id": "TC-424b",
+    "name": "Connection Invitation Email Delivered with Deep-Link (Existing WNA User)",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": true,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User A is on Team tier. User B is an existing, registered WhatsNextAction user (any tier). User A and B are not yet connected and have no pending invitation between them. Mailpit (or equivalent) is accessible on `http://localhost:8025`.",
+    "steps": [
+      "As User A, open the Connections page (sidebar → Connections)",
+      "Enter User B's registered email in the \"Invite someone by email\" field and click Send",
+      "Open Mailpit and locate the new outgoing email addressed to User B",
+      "Inspect the email's HTML button link, the visible fallback link, and the plain-text URL"
+    ],
+    "expected": "- A `connection_invite` email is delivered to User B's address.\n- The HTML button, the fallback link, and the plain-text URL all point to `{frontend.base_url}/connections` — i.e. the dedicated Connections page, NOT `/settings/connections`.\n- The URL contains **no invite token** and **no `?email=` query parameter** (the invitee is identified server-side; the connection is resolved from their pending list, not from the URL)."
+  },
+  {
+    "id": "TC-424c",
+    "name": "Invitee Follows Email Link and Accepts from Pending List",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": true,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User B received a connection-invitation email per TC-424b. User B is on **Team tier**. User B is logged out (no `auth_token`/`refresh_token` in localStorage).",
+    "steps": [
+      "In Mailpit, click the deep-link in the email (or paste `http://localhost:5173/connections` into the address bar while logged out)",
+      "Observe the redirect and the auth dialog",
+      "Log in as User B with valid credentials",
+      "Observe where the app lands and inspect the Connections page",
+      "Click Accept on User A's invitation in the \"Received invitations\" list",
+      "Inspect the Network tab for the accept request"
+    ],
+    "expected": "- Step 1–2: the protected route redirects to `/login?redirect=/connections` and the `AuthDialog` opens in login mode.\n- Step 3–4: after login the user lands on `/connections` (sidebar \"Connections\" entry active). User A's invitation is visible in \"Received invitations\" (loaded via `GET /v1/connections/pending`).\n- Step 5–6: Accept fires `POST /v1/connections/{id}/accept` where `{id}` is the connection UUID taken from the pending list (no token appears in the request path or the original URL). The invitation moves out of \"Received invitations\" and User A appears under \"Connections\"."
+  },
+  {
+    "id": "TC-424d",
+    "name": "Invitation Email to a Not-Yet-Registered Address Links to Registration",
+    "priority": "Medium",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User A is on Team tier. The target email address has **no** WhatsNextAction account. Mailpit is accessible.",
+    "steps": [
+      "As User A, open the Connections page and invite the unregistered email address",
+      "In Mailpit, open the email delivered to that address",
+      "Inspect the email's link",
+      "Click the link while logged out",
+      "Complete registration, verify the email, and upgrade the new account to Team tier",
+      "Open the Connections page as the new user"
+    ],
+    "expected": "- A `connection_invite_registration` email is delivered (distinct from the `connection_invite` variant in TC-424b).\n- Its link points to `{frontend.base_url}/register` (sign-up entry point), NOT `/connections` and NOT `/settings/connections`.\n- Step 4: the link opens the `AuthDialog` in register mode.\n- Step 6: once registered and on Team tier, User A's invitation appears in the new user's \"Received invitations\" list on the Connections page and can be accepted per TC-424c. (On Free/Pro tier, accepting triggers the upgrade modal per TC-420b.)"
+  },
+  {
+    "id": "TC-424e",
+    "name": "Sidebar Count vs Dot — Exact Split of Connections, Sent, and Received",
+    "priority": "Medium",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "A Team-tier user under test with a known connection state. Set up exactly: **N = 2** accepted connections, **M = 1** pending invitation they have *sent* (awaiting the other side), and **R = 1** pending invitation they have *received* (awaiting their decision). (Use second/third accounts to create each state.)",
+    "steps": [
+      "Log in as the user under test and load any dashboard page",
+      "Read the numeric badge on the sidebar **Connections** item",
+      "Check for the red dot on the Connections icon",
+      "Open `/connections`, **decline** the received invitation, return to the dashboard, and re-check the badge and dot",
+      "Back on `/connections`, have a fourth account send a new invitation that this user **accepts**; return to the dashboard and re-check the badge"
+    ],
+    "expected": "- Step 2: numeric badge reads **3** (`N + M` = 2 + 1). The received invitation (R) is excluded from the number.\n- Step 3: a red dot is present on the icon (R = 1 > 0).\n- Step 4: after declining, the red dot disappears (R = 0); the numeric badge is still **3** (decline does not change connections or sent count).\n- Step 5: after accepting the new invitation, the numeric badge becomes **4** (the accepted invite becomes a connection) and no red dot remains (no further received pendings)."
   },
   {
     "id": "TC-425",
@@ -9166,7 +9234,7 @@
       "Observe the dropdown content",
       "Click one of the unread notifications"
     ],
-    "expected": "1. The dropdown opens aligned to the right of the bell; notifications load and the panel shows a list with the unread item highlighted and a small dot.\n2. Clicking the notification marks it as read (dot and highlight disappear), decrements the unread badge by one, closes the dropdown, and navigates to the linked entity (stuff, action, project, or the Connections settings section depending on `entity_type`/`type`)."
+    "expected": "1. The dropdown opens aligned to the right of the bell; notifications load and the panel shows a list with the unread item highlighted and a small dot.\n2. Clicking the notification marks it as read (dot and highlight disappear), decrements the unread badge by one, closes the dropdown, and navigates to the linked entity (stuff, action, project, or the Connections page for connection events, depending on `entity_type`/`type`)."
   },
   {
     "id": "TC-427",
@@ -9649,7 +9717,7 @@
       "From a second account, send a connection invitation to the user under test",
       "Check the inbox of the user under test"
     ],
-    "expected": "- PUT body contains `connection_invite` in `disabled_events.email`.\n- After reload, the toggle is OFF.\n- The user does NOT receive the connection-invite email.\n- The user's notification bell DOES show the connection_invite as an in-app row (in-app cannot be disabled).\n- The user's \"Received invitations\" list in Settings → Connections still shows the new invitation."
+    "expected": "- PUT body contains `connection_invite` in `disabled_events.email`.\n- After reload, the toggle is OFF.\n- The user does NOT receive the connection-invite email.\n- The user's notification bell DOES show the connection_invite as an in-app row (in-app cannot be disabled).\n- The user's \"Received invitations\" list on the Connections page still shows the new invitation."
   },
   {
     "id": "TC-459",

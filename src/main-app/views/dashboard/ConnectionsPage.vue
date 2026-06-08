@@ -251,7 +251,7 @@ async function onAccept(inv) {
   actingId.value = inv.id
   actingType.value = 'accept'
   try {
-    await connections.accept(inv.token || inv.id)
+    await connections.accept(inv.id)
   } catch (err) {
     if (err?.status === 403) {
       upgrade.show({
@@ -270,7 +270,7 @@ async function onDecline(inv) {
   actingId.value = inv.id
   actingType.value = 'decline'
   try {
-    await connections.decline(inv.token || inv.id)
+    await connections.decline(inv.id)
   } catch (err) {
     toaster.push(err?.message || 'Could not decline invitation')
   } finally {
