@@ -10,11 +10,13 @@
     "steps": [
       "Navigate to `http://localhost:5173/` (the landing page).",
       "Locate and click the \"Start Here\" call-to-action button.",
-      "Verify the authentication dialog opens and the registration form is displayed (fields: email, password, confirm password).",
+      "Verify the authentication dialog opens with the heading \"Create Your Account\" and the registration form is displayed (fields: email with placeholder \"Enter your email address\", password with placeholder \"Enter your password\", confirm password with placeholder \"Confirm your password\", and a Terms of Service checkbox).",
       "Enter a valid, unused email address in the email field (e.g., `testuser_001@example.com`).",
       "Enter a valid password that meets all requirements: minimum 8 characters, at least 1 letter, at least 1 digit, and at least 1 symbol (e.g., `TestPass1!`).",
       "Enter the same password in the confirm password field.",
-      "Click the \"Register\" (or equivalent submit) button.",
+      "Check the Terms of Service checkbox (\"I agree to the Terms of Service and Privacy Policy\").",
+      "Verify the \"Register\" button is now enabled (it was disabled before the ToS checkbox was checked).",
+      "Click the \"Register\" button.",
       "Wait for the request to complete."
     ],
     "expected": "- The registration request succeeds (no error messages displayed).\n- The auth dialog transitions to a \"verify-sent\" screen showing a confirmation message that a verification email has been sent to the registered email address.\n- The user is **not** automatically logged in — `localStorage` does **not** contain `auth_token` or `refresh_token`.\n- A \"Resend Verification Email\" button is visible on the verify-sent screen.\n- Checking Mailpit (`http://localhost:8025`) shows a verification email was received with subject \"Verify your WNA account\" sent to the registered email address."
@@ -103,18 +105,22 @@
     "steps": [
       "Navigate to `http://localhost:5173/` (the landing page).",
       "Click \"Start Here\" to open the authentication dialog in registration mode.",
-      "Observe the submit button with all three fields (email, password, confirm password) empty.",
+      "Observe the submit button with all three fields (email, password, confirm password) empty and the ToS checkbox unchecked.",
       "Verify the submit button is visually disabled (greyed out, cursor not pointer) and cannot be clicked.",
-      "Enter only an email address in the email field. Leave password and confirm password empty.",
+      "Enter only an email address in the email field. Leave password and confirm password empty. Leave ToS unchecked.",
       "Verify the submit button remains disabled.",
       "Enter a password in the password field. Leave confirm password empty.",
       "Verify the submit button remains disabled.",
-      "Enter the matching password in the confirm password field.",
+      "Enter the matching password in the confirm password field. Leave ToS unchecked.",
+      "Verify the submit button remains disabled (ToS checkbox is still unchecked).",
+      "Check the ToS checkbox.",
       "Verify the submit button is now enabled (visually active, cursor is pointer).",
-      "Clear the email field, leaving password and confirm password filled.",
+      "Uncheck the ToS checkbox.",
+      "Verify the submit button returns to the disabled state.",
+      "Clear the email field, leaving password and confirm password filled and ToS checked.",
       "Verify the submit button returns to the disabled state."
     ],
-    "expected": "- The submit button is disabled whenever any of the three fields (email, password, confirm password) is empty.\n- The submit button becomes enabled only when all three fields have non-empty values.\n- Clicking a disabled button produces no action, no API call, and no error."
+    "expected": "- The submit button is disabled whenever any of the three fields (email, password, confirm password) is empty OR the Terms of Service checkbox is unchecked.\n- The submit button becomes enabled only when all three fields have non-empty values AND the ToS checkbox is checked.\n- Clicking a disabled button produces no action, no API call, and no error."
   },
   {
     "id": "TC-007",
@@ -129,10 +135,11 @@
       "Click \"Sign In\" in the top navigation to open the authentication dialog in login mode.",
       "Enter the registered email address in the email field: `testuser@example.com`.",
       "Enter the correct password in the password field: `TestPass1!`.",
-      "Click the \"Log In\" (or equivalent submit) button.",
+      "Verify the login form has heading \"Welcome Back\".",
+      "Click the \"Sign In\" submit button.",
       "Wait for the request to complete."
     ],
-    "expected": "- The login request succeeds with no error messages.\n- The user is redirected to `/engage` (the main dashboard).\n- The authentication dialog closes.\n- Opening browser developer tools and checking `localStorage` reveals both `auth_token` and `refresh_token` with valid JWT string values.\n- The `current_user` key in localStorage contains cached user data.\n- The dashboard UI loads correctly (sidebar, top nav with user context)."
+    "expected": "- The login form displays the heading \"Welcome Back\" and a \"Sign In\" button.\n- The login request succeeds with no error messages.\n- The user is redirected to `/engage` (the main dashboard).\n- The authentication dialog closes.\n- Opening browser developer tools and checking `localStorage` reveals both `auth_token` and `refresh_token` with valid JWT string values.\n- The `current_user` key in localStorage contains cached user data.\n- The dashboard UI loads correctly (sidebar, top nav with user context)."
   },
   {
     "id": "TC-008",
@@ -147,10 +154,10 @@
       "Click \"Sign In\" to open the authentication dialog in login mode.",
       "Enter the registered email address: `testuser@example.com`.",
       "Enter an incorrect password: `WrongPassword1!`.",
-      "Click the \"Log In\" submit button.",
+      "Click the \"Sign In\" submit button.",
       "Wait for the backend response."
     ],
-    "expected": "- The backend returns HTTP 401 (Unauthorized).\n- An error message is displayed to the user indicating invalid credentials (e.g., \"Invalid email or password\" or similar).\n- The user remains on the login form.\n- No tokens are stored in localStorage.\n- The password field is cleared or remains filled (note which behavior occurs)."
+    "expected": "- The backend returns HTTP 401 (Unauthorized).\n- An error message is displayed to the user indicating invalid credentials (e.g., \"Incorrect email and/or password. Please correct your credentials.\" or similar).\n- The user remains on the login form.\n- No tokens are stored in localStorage.\n- The password field is cleared or remains filled (note which behavior occurs)."
   },
   {
     "id": "TC-009",
@@ -165,7 +172,7 @@
       "Click \"Sign In\" to open the authentication dialog in login mode.",
       "Enter an invalid email format in the email field: `notanemail`.",
       "Enter any password in the password field: `TestPass1!`.",
-      "Click the \"Log In\" submit button.",
+      "Click the \"Sign In\" submit button.",
       "Wait for the response."
     ],
     "expected": "- Either a client-side validation error is shown preventing submission, or the request is sent and the backend returns HTTP 400 (Bad Request) with a message indicating invalid email format.\n- An appropriate error message is displayed to the user.\n- The user remains on the login form.\n- No tokens are stored in localStorage."
@@ -182,7 +189,7 @@
       "Navigate to `http://localhost:5173/` (the landing page).",
       "Click \"Sign In\" to open the authentication dialog in login mode.",
       "Leave both the email and password fields empty.",
-      "Observe the state of the \"Log In\" submit button.",
+      "Observe the state of the \"Sign In\" submit button.",
       "Attempt to click the submit button.",
       "Enter only an email address, leave the password empty. Observe the submit button state.",
       "Clear the email, enter only a password. Observe the submit button state.",
@@ -219,7 +226,7 @@
       "Click the \"Sign In\" button.",
       "Observe what happens."
     ],
-    "expected": "- An authentication modal/dialog opens overlaid on the landing page.\n- The dialog is in login mode (shows email and password fields, a \"Log In\" button).\n- The landing page content is visible behind the dialog (with a blur backdrop effect).\n- The dialog is centered on screen.\n- The form is functional and ready for input."
+    "expected": "- An authentication modal/dialog opens overlaid on the landing page.\n- The dialog is in login mode (shows email and password fields, a \"Sign In\" button).\n- The landing page content is visible behind the dialog (with a blur backdrop effect).\n- The dialog is centered on screen.\n- The form is functional and ready for input."
   },
   {
     "id": "TC-013",
@@ -233,8 +240,8 @@
       "Navigate to `http://localhost:5173/` (the landing page).",
       "Click \"Sign In\" to open the authentication dialog in login mode.",
       "Verify the login form is displayed with email and password fields.",
-      "Locate the \"Forgot your password?\" link on the login form.",
-      "Click the \"Forgot your password?\" link.",
+      "Locate the \"Forgot your password? Reset it\" link on the login form.",
+      "Click the \"Reset it\" link.",
       "Observe the transition."
     ],
     "expected": "- The dialog transitions from the login form to the forgot password form.\n- The forgot password form displays an email input field and a submit button.\n- The transition is smooth (animated, not an abrupt jump).\n- Any previously entered email in the login form may be carried over to the forgot password email field (note actual behavior).\n- A back link or way to return to the login form is available."
@@ -328,14 +335,14 @@
       "Verify the login form is displayed (email field, password field, submit button).",
       "Enter an email address in the email field: `testuser@example.com`.",
       "Enter a password in the password field: `SomePass1!`.",
-      "Locate and click the link/button to switch to registration mode (e.g., \"Don't have an account? Register\" or similar).",
+      "Locate and click the \"Create new account\" button to switch to registration mode.",
       "Verify the form transitions to registration mode.",
       "Check the email field: does it retain the previously entered email (`testuser@example.com`)?",
       "Check the password field: is it cleared?",
       "Check the confirm password field: is it empty?",
       "Check for any lingering error messages from the previous mode: they should be cleared.",
       "Now enter a password and confirm password in the registration form.",
-      "Click the link/button to switch back to login mode (e.g., \"Already have an account? Sign In\").",
+      "Click the \"Sign In\" link to switch back to login mode.",
       "Verify the form transitions back to login mode.",
       "Check the email field: does it still retain the email from step 4?",
       "Check the password field: is it cleared?",
@@ -359,7 +366,7 @@
       "Carefully observe the transition animation between login and register forms.",
       "Switch back to login mode.",
       "Observe the reverse transition animation.",
-      "Click \"Forgot your password?\" to navigate to the forgot password form.",
+      "Click \"Forgot your password? Reset it\" to navigate to the forgot password form.",
       "Observe the transition animation.",
       "Navigate back to the login form and observe the reverse animation."
     ],
@@ -476,10 +483,28 @@
       "In the browser address bar, navigate directly to `http://localhost:5173/engage`.",
       "Observe the application behavior.",
       "Check the URL in the address bar after the page loads.",
-      "Attempt to navigate to other protected routes: a. `http://localhost:5173/engage/inbox` b. `http://localhost:5173/engage/next` c. `http://localhost:5173/engage/projects` d. `http://localhost:5173/engage/calendar` e. `http://localhost:5173/engage/settings`",
+      "Attempt to navigate to other protected routes: a. `http://localhost:5173/inbox` b. `http://localhost:5173/next` c. `http://localhost:5173/projects` d. `http://localhost:5173/calendar` e. `http://localhost:5173/settings`",
       "For each, observe the redirect behavior and final URL."
     ],
-    "expected": "- For every protected route (`/engage` and all sub-routes), the Vue Router auth guard intercepts the navigation.\n- The user is redirected to the landing page (`/`) since they are not authenticated.\n- No flash of the dashboard UI is visible before the redirect (the guard should prevent the component from mounting).\n- The redirect happens consistently for all protected routes tested.\n- After redirect, the user can log in normally and then access `/engage`."
+    "expected": "- For every protected route (`/engage` and all sub-routes), the global `router.beforeEach` auth guard intercepts the navigation before any layout mounts.\n- The user is redirected to `/login?redirect=<original-fullPath>` and the `AuthDialog` is shown in login mode (overlay over the landing page).\n- No flash of the dashboard UI is visible before the redirect.\n- The redirect happens consistently for all protected routes tested.\n- After successful login, the user is navigated to the original `redirect` path (not the default `/engage`)."
+  },
+  {
+    "id": "TC-025b",
+    "name": "Deep-Link Login from Email Notifications",
+    "priority": "High",
+    "area": "JWT & Session Management",
+    "smoke": true,
+    "section": "1: Authentication & Account",
+    "preconditions": "User is NOT logged in. localStorage does not contain `auth_token` or `refresh_token`. A valid user account exists (e.g. a test user with at least one project and one action).",
+    "steps": [
+      "In the address bar, paste each of the following URLs in turn (these match the URLs used in notification emails: TASK_DUE_TODAY, DAILY_NEXT_ACTIONS, PROJECT_NEEDS_NEXT_ACTION, DELEGATED_TO_YOU, DELEGATION_COMPLETED, CONNECTION_INVITE): a. `http://localhost:5173/overdue` b. `http://localhost:5173/next` c. `http://localhost:5173/inbox` d. `http://localhost:5173/project/<real-project-id>` e. `http://localhost:5173/action/<real-action-id>` f. `http://localhost:5173/settings/connections`",
+      "After each navigation, verify: (a) the URL changes to `/login?redirect=<encoded original path>`, (b) the `AuthDialog` opens in login mode over the landing page, (c) no dashboard layout flicker is visible.",
+      "With the dialog open on case (a) (`/overdue`), enter valid credentials and submit.",
+      "Repeat case (f) (`/settings/connections`) and after login confirm the Connections section is expanded inside Settings.",
+      "Open `/register` while logged out — should open `AuthDialog` in register mode without a `redirect` query (CONNECTION_INVITE_REGISTRATION links to plain `/register`).",
+      "Test password-reset hop: open `/reset-password?token=<valid-token>&redirect=/overdue`, complete the reset, then log in — verify final navigation lands on `/overdue`."
+    ],
+    "expected": "- Steps 1–2: every protected URL redirects to `/login?redirect=...` with the popup visible.\n- Step 3: after login, the user lands on `/overdue` (the original requested page), not on `/engage`.\n- Step 4: `/settings/connections` resolves to `/settings?section=connections`; after login, Settings opens with the Connections section already expanded.\n- Step 5: `/register` opens the register dialog; after registration the user lands on `/engage` (no redirect query was set).\n- Step 6: `redirect` query is preserved through the password-reset → login transition; final destination is `/overdue`.\n- Open-redirect protection: pasting `/login?redirect=https://evil.example.com` or `/login?redirect=//evil.example.com` and logging in must NOT navigate off-origin — the user lands on `/engage` instead."
   },
   {
     "id": "TC-026",
@@ -603,7 +628,7 @@
       "Click \"Sign In\" to open the login form.",
       "Enter the unverified email address.",
       "Enter the correct password.",
-      "Click the \"Login\" submit button.",
+      "Click the \"Sign In\" submit button.",
       "Observe the auth dialog behavior."
     ],
     "expected": "- The login request returns HTTP 403 (Forbidden).\n- The auth dialog transitions to the \"unverified\" mode.\n- A message is displayed indicating that email verification is required before login.\n- A \"Resend Verification Email\" button is available with the same 60-second cooldown behavior.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`."
@@ -786,7 +811,7 @@
       "Navigate to `http://localhost:5173/`.",
       "Click \"Start Here\" to open the authentication dialog in registration mode.",
       "Observe the registration form.",
-      "Switch to the login form by clicking the \"Log in\" toggle.",
+      "Switch to the login form by clicking the \"Sign In\" link.",
       "Observe the login form."
     ],
     "expected": "- The registration form displays a \"Sign up with Google\" button with the Google icon.\n- An \"or\" divider separates the Google button from the email/password fields.\n- The login form displays a \"Sign in with Google\" button with the Google icon.\n- An \"or\" divider separates the Google button from the email/password fields.\n- Both Google buttons use the `ghost` button variant styling."
@@ -984,8 +1009,8 @@
     "steps": [
       "Log in with valid credentials on a desktop browser",
       "Observe the top navigation bar after login",
-      "Verify a \"Quick Add\" button is visible in the nav bar",
-      "Click the \"Quick Add\" button and verify it opens an input for adding stuff",
+      "Verify a \"+ Quick Add\" button is visible in the nav bar",
+      "Click the \"+ Quick Add\" button and verify it opens an input for adding stuff",
       "Verify the user avatar is displayed on the right side of the nav bar",
       "Click the user avatar to open the dropdown menu",
       "Verify the dropdown contains: \"Settings\" and \"Logout\" options (no \"My Dashboard\" since already on dashboard)",
@@ -994,7 +1019,7 @@
       "On a public page (e.g. landing page) while authenticated, click the avatar and verify \"My Dashboard\" appears in the dropdown",
       "Click \"My Dashboard\" and verify navigation to the dashboard view"
     ],
-    "expected": "The authenticated desktop nav bar shows a \"Quick Add\" button and a user avatar. The Quick Add button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with \"Settings\" and \"Logout\" (no \"My Dashboard\" when already on the dashboard). On public pages, the dropdown also includes \"My Dashboard\" at the top. Each option navigates to the correct destination. Logout clears the session and redirects to the landing page."
+    "expected": "The authenticated desktop nav bar shows a \"+ Quick Add\" button and a user avatar (with the user's initials). The \"+ Quick Add\" button opens an input for rapidly adding inbox items. Clicking the avatar reveals a dropdown with \"Settings\" and \"Logout\" (no \"My Dashboard\" when already on the dashboard). On public pages, the dropdown also includes \"My Dashboard\" at the top. Each option navigates to the correct destination. Logout clears the session and redirects to the landing page."
   },
   {
     "id": "TC-047",
@@ -1007,14 +1032,17 @@
     "steps": [
       "Log in with valid credentials on a mobile-width browser (or set DevTools viewport to 375px)",
       "Observe the top navigation bar after login",
-      "Verify a hamburger icon is displayed in the nav bar",
+      "Verify an animated hamburger icon (☰) is displayed in the nav bar (no user avatar visible)",
+      "Verify the Quick Add button is NOT visible in the top nav (it is replaced by the FAB)",
       "Tap the hamburger icon",
+      "Verify the hamburger animates to an X shape",
       "Verify that a sidebar drawer slides in from the left side of the screen",
       "Verify the drawer contains all sidebar navigation items (Dashboard, Inbox, Next Action, Projects, etc.)",
-      "Tap any navigation item and verify it routes correctly and the drawer closes",
-      "Re-open the drawer and verify it can be closed by tapping the overlay area outside the drawer"
+      "Tap the X icon and verify the drawer closes and the icon animates back to ☰",
+      "Re-open the drawer, tap any navigation item and verify it routes correctly and the drawer auto-closes",
+      "Re-open the drawer and verify it can also be closed by tapping the overlay area outside the drawer"
     ],
-    "expected": "On mobile authenticated view, the hamburger icon replaces the full sidebar. Tapping it opens a slide-in sidebar drawer from the left containing all navigation items. Selecting a nav item routes to the correct page and closes the drawer. The drawer can also be dismissed by tapping the overlay outside it."
+    "expected": "On mobile authenticated view, the hamburger icon (☰ with animated transition to X) replaces the avatar. Tapping it toggles a slide-in sidebar drawer. The drawer auto-closes on navigation. The user avatar and Quick Add button are hidden on mobile (Quick Add is available via the FAB at bottom-right)."
   },
   {
     "id": "TC-048",
@@ -1051,7 +1079,7 @@
       "Verify the count has incremented by 1",
       "Complete one stuff item by clicking its checkbox",
       "Wait at least 300ms and verify the Inbox count badge decrements by 1",
-      "Delete another stuff item via the trash icon",
+      "Delete another stuff item via the ✕ button",
       "Wait at least 300ms and verify the Inbox count badge decrements by 1 and the Trash count badge increments by 1",
       "Navigate to different pages and verify all badges reflect current item counts"
     ],
@@ -1120,11 +1148,11 @@
       "Log out and log in with an account that has no profile avatar image",
       "Observe the avatar area on desktop",
       "Verify a colored circle fallback is displayed at 36px",
-      "Verify the fallback shows the first 2 characters of the user's email address, uppercased",
+      "Verify the fallback shows the user's initials, uppercased",
       "Verify the text is legible against the background color",
       "Check on mobile that the fallback circle is 32px"
     ],
-    "expected": "The user avatar displays as a 36px circle on desktop and 32px on mobile. When an avatar image is set, it is shown cropped to the circle. When no image is set, a colored circle fallback is shown containing the first 2 characters of the user's email address in uppercase. The fallback text is legible against the background color."
+    "expected": "The user avatar displays as a 36px circle on desktop and 32px on mobile. When an avatar image is set, it is shown cropped to the circle. When no image is set, a colored circle fallback is shown containing the user's initials in uppercase. The fallback text is legible against the background color."
   },
   {
     "id": "TC-053",
@@ -1259,7 +1287,7 @@
       "Verify the badge updates to previous count + 3",
       "Complete one item by clicking its checkbox",
       "Verify the badge decrements by 1",
-      "Delete one item via the trash icon",
+      "Delete one item via the ✕ button",
       "Verify the badge decrements by 1 again",
       "Navigate away from the Inbox page and back, verify the badge still shows the correct count"
     ],
@@ -1324,20 +1352,19 @@
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item.",
     "steps": [
       "Navigate to the Inbox page on a desktop browser",
-      "Hover over an item in the list",
-      "Verify a trash icon appears on hover",
-      "Click the trash icon",
-      "Verify a confirmation dialog appears (ConfirmDialog) with title \"Delete\", a message asking \"Are you sure?\", and \"Delete\" and \"Cancel\" buttons",
+      "Locate the ✕ button on an item in the list",
+      "Click the ✕ button",
+      "Verify a \"Move to Trash\" confirmation dialog appears asking for confirmation, with \"Cancel\" and \"Move to Trash\" buttons",
       "Click \"Cancel\"",
       "Verify the dialog closes and the item remains in the list",
-      "Hover over the same item again and click the trash icon",
-      "Click \"Delete\" in the confirmation dialog",
+      "Click the ✕ button on the same item again",
+      "Click \"Move to Trash\" in the confirmation dialog",
       "Verify the item is removed from the inbox list",
       "Verify the Inbox sidebar badge decrements by 1",
       "Navigate to the Trash page and verify the deleted item appears there",
-      "Test on a touch device (or emulated touch): verify the trash icon is always visible (not only on hover)"
+      "Test on a touch device (or emulated touch): verify the ✕ button is always visible (not only on hover)"
     ],
-    "expected": "On desktop, the trash icon appears on hover. On touch devices, it is always visible. Clicking the trash icon opens a confirmation dialog. Cancelling the dialog preserves the item. Confirming deletion removes the item from the inbox, decrements the sidebar badge, and moves the item to Trash."
+    "expected": "Each item has a ✕ button. Clicking the ✕ button opens a \"Move to Trash\" confirmation dialog. Cancelling the dialog preserves the item. Confirming moves the item to Trash, removes it from the inbox, and decrements the sidebar badge."
   },
   {
     "id": "TC-062",
@@ -1391,17 +1418,13 @@
     "preconditions": "User is authenticated. Inbox contains more than 10 stuff items (add items until there are at least 15).",
     "steps": [
       "Navigate to the Inbox page",
-      "Verify only the first batch of items is loaded (e.g., 10 items visible)",
-      "Scroll to the bottom of the list",
-      "Verify a \"Load more\" button is visible (or infinite scroll triggers automatically)",
-      "Click \"Load more\" (or scroll to trigger infinite scroll)",
-      "Verify additional items are loaded and appended to the list",
-      "Verify previously loaded items are still visible above the newly loaded items",
-      "Continue loading until all items are displayed",
-      "Verify \"Load more\" is no longer visible when all items are loaded",
-      "Verify the total number of displayed items matches the expected count"
+      "Verify all items are loaded at once (no pagination)",
+      "Scroll through the list",
+      "Verify there is no \"Load more\" button",
+      "Verify the total number of displayed items matches the expected count",
+      "Verify all items are visible without needing to trigger additional loading"
     ],
-    "expected": "The inbox initially loads a limited batch of items. A \"Load more\" button or infinite scroll mechanism allows loading additional items. Items are appended without removing previously loaded ones. When all items are loaded, the load more mechanism is no longer shown."
+    "expected": "All inbox items load at once on page load. There is no \"Load more\" button or pagination mechanism. All items are visible in a single scrollable list."
   },
   {
     "id": "TC-065",
@@ -1433,9 +1456,9 @@
       "Ensure the inbox is completely empty (no items)",
       "Navigate to the Inbox page",
       "Verify an empty state illustration or icon is displayed (inbox icon)",
-      "Verify the text \"Your inbox is empty\" (or similar) is displayed",
-      "Verify instructional text is shown explaining what the inbox is for or how to add items",
-      "Verify no list items, no \"Load more\" button, and no loading spinner are visible",
+      "Verify the text \"Your inbox is empty\" is displayed",
+      "Verify instructional text is shown: \"Capture everything on your mind. Add new stuff above to get started.\"",
+      "Verify no list items and no loading spinner are visible",
       "Add a new item via the input field",
       "Verify the empty state disappears and the item list appears with the new item"
     ],
@@ -1459,9 +1482,10 @@
       "Verify the ClarifyPanel displays the first step of the clarify workflow for the highlighted item",
       "Verify the clarify panel shows the title of the currently selected item as context",
       "Click a different item in the shrunk list",
-      "Verify the blue highlight moves to the clicked item and the ClarifyPanel updates to show that item's clarify workflow"
+      "Verify the blue highlight moves to the clicked item and the ClarifyPanel updates to show that item's clarify workflow",
+      "Verify the browser did NOT navigate to the StuffDetailPage — the URL remains on the Inbox page"
     ],
-    "expected": "Clicking the \"Clarify\" button in the inbox header activates clarify mode. On desktop, the inbox list compresses to 320px on the left and the ClarifyPanel opens side-by-side on the right. The first item is highlighted in blue as the current target. Clicking a different item switches the clarify target."
+    "expected": "Clicking the \"Clarify\" button in the inbox header activates clarify mode. On desktop, the inbox list compresses to 320px on the left and the ClarifyPanel opens side-by-side on the right. The first item is highlighted in blue as the current target. Clicking a different item switches the clarify target instead of navigating to the detail page."
   },
   {
     "id": "TC-068",
@@ -1486,7 +1510,7 @@
   },
   {
     "id": "TC-069",
-    "name": "Clarify Mode Item Interactions (Disabled State)",
+    "name": "Clarify Mode Item Interactions",
     "priority": "High",
     "area": "Inbox / Stuff",
     "smoke": false,
@@ -1496,15 +1520,15 @@
       "Navigate to the Inbox page and activate clarify mode by clicking the \"Clarify\" button",
       "Verify the first item is highlighted in blue",
       "Attempt to click on the title of any item to trigger inline editing",
-      "Verify inline editing does NOT activate (items are disabled in clarify mode)",
-      "Hover over an item and verify action buttons (trash, etc.) are NOT visible or are disabled",
-      "Verify the checkbox on each item is disabled or hidden",
+      "Verify inline editing does NOT activate (items are not editable in clarify mode)",
+      "Hover over an item and verify action buttons (trash, etc.) are NOT visible",
+      "Verify the checkbox on each item is not interactive",
+      "Attempt to drag an item to reorder and verify drag-to-reorder is disabled",
       "Click on a different item in the list (not the currently highlighted one)",
-      "Verify the blue highlight moves to the clicked item",
-      "Verify the ClarifyPanel updates to reflect the newly selected item",
-      "Verify no other interactions (drag-to-reorder, navigation to detail page) are possible while in clarify mode"
+      "Verify the blue highlight moves to the clicked item and the ClarifyPanel updates to reflect the newly selected item",
+      "Verify the browser did NOT navigate to the StuffDetailPage — the URL remains on the Inbox page"
     ],
-    "expected": "In clarify mode, all item interactions are disabled except for selecting a different item as the clarify target. Inline editing, action buttons, checkboxes, drag-to-reorder, and navigation to detail pages are all suppressed. Clicking an item only changes the blue highlight and updates the ClarifyPanel target."
+    "expected": "In clarify mode, item interactions are disabled (no inline editing, no action buttons, no checkbox, no drag-to-reorder, no navigation to detail page). The only interaction that works is clicking an item to switch the clarify target: the blue highlight moves to the clicked item and the ClarifyPanel updates to show that item's clarify workflow."
   },
   {
     "id": "TC-070",
@@ -1578,7 +1602,7 @@
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item with a known title.",
     "steps": [
       "Navigate to the Inbox page and click an item to go to the Stuff Detail page (/stuff/:id)",
-      "Verify the page loads with the item's title displayed prominently",
+      "Verify the page loads with the item's title displayed as an h2 heading",
       "Click on the title text",
       "Verify it becomes an editable textarea (click-to-edit)",
       "Modify the title and click outside (blur) to save",
@@ -1629,15 +1653,16 @@
     "steps": [
       "Navigate to the Inbox page",
       "Activate clarify mode by clicking the \"Clarify\" button (or navigate to a stuff item's detail and click \"Clarify\")",
-      "Verify the ClarifyPanel opens and displays the first step of the workflow",
-      "Verify the question \"Is this actionable?\" (or equivalent) is prominently displayed",
+      "Verify the ClarifyPanel opens with \"Clarify\" as the h2 heading and displays the first step of the workflow",
+      "Verify the question \"Is it actionable?\" is prominently displayed",
       "Verify the item's title is shown as context (e.g., \"Processing: [item title]\")",
-      "Verify two options are presented: \"Yes\" and \"No\"",
+      "Verify two options are presented: \"Yes Y\" and \"No N\" (with keyboard shortcut hints)",
       "Verify no other workflow steps are visible (step 1 of the multi-step flow)",
-      "Verify a step counter is displayed (e.g., \"1/4\" or similar)",
+      "Verify a step counter is displayed (e.g., \"1/3\")",
+      "Verify a close (×) button is available in the panel header",
       "Verify a progress bar shows the current progress"
     ],
-    "expected": "The first step of the clarify workflow displays the question \"Is this actionable?\" with Yes and No options. The item being processed is identified by its title in the panel. A step counter and progress bar indicate the user is at step 1 of the workflow."
+    "expected": "The first step of the clarify workflow displays the heading \"Clarify\", the question \"Is it actionable?\" with \"Yes Y\" and \"No N\" buttons. The item being processed is identified by its title in the panel. A step counter (e.g., \"1/3\") and progress bar indicate the user is at step 1 of the workflow."
   },
   {
     "id": "TC-076",
@@ -1652,7 +1677,7 @@
       "Verify the panel advances to a sub-step presenting options for non-actionable items (e.g., Reference, Someday, Trash)",
       "Select \"Reference\"",
       "Verify the stuff item is converted to a text file in the reference system (API call to transform endpoint)",
-      "Verify a success indicator appears (e.g., green checkmark with \"Item processed successfully!\")",
+      "Verify the panel auto-advances to the next item or closes if no items remain",
       "Verify the item is removed from the inbox",
       "Navigate to the Reference page",
       "Verify the item appears in the Reference section as a reference entry",
@@ -1673,7 +1698,7 @@
       "Verify the panel advances to present non-actionable options",
       "Select \"Someday\"",
       "Verify the stuff item's state changes to SOMEDAY (API call)",
-      "Verify a success indicator appears",
+      "Verify the panel auto-advances to the next item or closes if no items remain",
       "Verify the item is removed from the inbox",
       "Navigate to the Someday/Maybe page",
       "Verify the item appears in the Someday list with its original title",
@@ -1694,7 +1719,7 @@
       "Verify the panel advances to present non-actionable options",
       "Select \"Trash\"",
       "Verify the stuff item is deleted (API call)",
-      "Verify a success indicator appears",
+      "Verify the panel auto-advances to the next item or closes if no items remain",
       "Verify the item is removed from the inbox",
       "Navigate to the Trash page",
       "Verify the deleted item appears in the Trash",
@@ -1757,11 +1782,11 @@
       "Verify a \"Complete\" or \"Done\" button is prominently displayed",
       "Click the \"Complete\" button",
       "Verify the stuff item is marked as completed (API call to /v1/stuff/{id}/complete)",
-      "Verify a success indicator appears (e.g., green checkmark + \"Item processed successfully!\")",
+      "Verify the panel auto-advances to the next item or closes if no items remain",
       "Verify the item is removed from the inbox",
       "Navigate to the Completed page and verify the item appears there"
     ],
-    "expected": "Choosing \"Yes\" for the two-minute rule displays a \"Do It Now\" encouragement screen. Clicking \"Complete\" marks the stuff as done, removes it from the inbox, and shows a success confirmation. The item appears in the Completed section."
+    "expected": "Choosing \"Yes\" for the two-minute rule displays a \"Do It Now\" encouragement screen. Clicking \"Complete\" marks the stuff as done, removes it from the inbox, and the panel auto-advances to the next item or closes. The item appears in the Completed section."
   },
   {
     "id": "TC-082",
@@ -1830,7 +1855,7 @@
       "Optionally fill in Description, Tags, and date fields",
       "Click the \"Confirm\" or \"Create Action\" button",
       "Verify an API call is made to /v1/stuff/{id}/transform to transform the stuff item into an action",
-      "Verify a success indicator appears (e.g., green checkmark + \"Item processed successfully!\")",
+      "Verify the panel auto-advances to the next item or closes if no items remain",
       "Verify the item is removed from the inbox",
       "Navigate to the Next Actions page",
       "Verify the newly created action appears in the list with the correct title",
@@ -1875,7 +1900,7 @@
       "Optionally fill in Description and Tags",
       "Click the \"Confirm\" or \"Create Project\" button",
       "Verify an API call is made to /v1/stuff/{id}/transform to transform the stuff item into a project",
-      "Verify a success indicator appears (e.g., green checkmark + \"Item processed successfully!\")",
+      "Verify the panel auto-advances to the next item or closes if no items remain",
       "Verify the item is removed from the inbox",
       "Navigate to the Projects page",
       "Verify the newly created project appears in the list with the correct title and outcome",
@@ -1894,20 +1919,21 @@
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. The ClarifyPanel is visible.",
     "steps": [
       "Observe the ClarifyPanel when it first opens at step 1",
-      "Verify a step counter is displayed (e.g., \"1/4\" or \"Step 1 of 4\")",
+      "Verify a \"Clarify\" h2 heading is displayed",
+      "Verify a step counter is displayed (e.g., \"1/3\")",
       "Verify a progress bar is displayed showing current progress through the workflow",
       "Verify a context label is present showing \"Processing: [item title]\" (or equivalent)",
-      "Verify a close button (X) is present in the top-right area of the panel",
+      "Verify a close button (×) is present in the panel header",
       "Advance to step 2 by selecting \"Yes\" (actionable)",
-      "Verify the step counter updates (e.g., \"2/4\")",
+      "Verify the step counter updates (e.g., \"2/3\")",
       "Verify the progress bar advances",
       "Verify a back button is present to return to the previous step",
       "Click the back button and verify the panel returns to step 1",
-      "Verify the step counter reverts to \"1/4\" and the progress bar adjusts",
-      "Click the close button (X)",
+      "Verify the step counter reverts to \"1/3\" and the progress bar adjusts",
+      "Click the close button (×)",
       "Verify the ClarifyPanel closes and clarify mode exits"
     ],
-    "expected": "The ClarifyPanel displays a step counter, progress bar, context label with the item title, back button (from step 2 onward), and close (X) button. The step counter and progress bar update as the user advances through steps. The back button returns to the previous step. The close button exits clarify mode."
+    "expected": "The ClarifyPanel displays a \"Clarify\" h2 heading, a step counter (e.g., \"1/3\"), progress bar, context label with the item title, back button (from step 2 onward), and close (×) button. The step counter and progress bar update as the user advances through steps. The back button returns to the previous step. The close button exits clarify mode."
   },
   {
     "id": "TC-088",
@@ -1916,17 +1942,16 @@
     "area": "Clarify Workflow",
     "smoke": false,
     "section": "4: Clarify Workflow",
-    "preconditions": "User is authenticated. Clarify mode is active on a stuff item.",
+    "preconditions": "User is authenticated. Clarify mode is active on a stuff item. Inbox contains at least 2 items.",
     "steps": [
       "Complete the clarify workflow for an item (choose any valid path, e.g., Not actionable -> Trash)",
       "After the final step is confirmed, observe the ClarifyPanel",
-      "Verify a green checkmark icon or animation is displayed",
-      "Verify the text \"Item processed successfully!\" (or equivalent success message) is shown",
-      "Verify the panel either auto-advances to the next item after a brief delay or provides a button to continue",
-      "If there are more items in the inbox, verify the panel transitions to the next item's step 1",
-      "If there are no more items, verify clarify mode exits (as tested in TC-071)"
+      "Verify the panel auto-advances to the next item without showing an explicit success message",
+      "Verify the panel transitions to the next item's step 1 (\"Is it actionable?\")",
+      "Complete the clarify workflow for the remaining item",
+      "If there are no more items, verify clarify mode exits automatically (as tested in TC-071)"
     ],
-    "expected": "After completing the clarify workflow for an item, the panel briefly displays a success state with a green checkmark and \"Item processed successfully!\" message. The panel then either auto-advances to the next inbox item or, if the inbox is empty, exits clarify mode."
+    "expected": "After completing the clarify workflow for an item, the panel auto-advances to the next inbox item without displaying a separate success message or \"Item processed successfully!\" screen. If the inbox is empty, clarify mode exits automatically."
   },
   {
     "id": "TC-089",
@@ -1999,9 +2024,9 @@
     "section": "5: Next Actions",
     "preconditions": "User is logged in and on the Next Actions page (/next)",
     "steps": [
-      "Observe the page header area for the add action form (collapsed by default)",
-      "Click the \"+\" button to expand the collapsible add form",
-      "Verify the form expands revealing a title input field and an \"Add\" button",
+      "Observe the page heading \"Next\" and the add action form area (form starts expanded by default)",
+      "Verify the form is visible with a title input (placeholder \"Add new action\") and an \"Add\" button",
+      "Verify the form can be toggled with +/− button (Unicode minus U+2212)",
       "Leave the title input empty and verify the \"Add\" button is disabled",
       "Type \"Buy groceries for dinner\" into the title input",
       "Verify the \"Add\" button becomes enabled",
@@ -2010,7 +2035,7 @@
       "Verify a success toast is shown confirming creation",
       "Verify the input field is cleared after successful creation",
       "Verify the form remains open for quick successive additions",
-      "Click the \"-\" button to collapse the form",
+      "Click the \"−\" button (Unicode minus U+2212) to collapse the form",
       "Verify the form collapses and only the \"+\" button is visible"
     ],
     "expected": "The collapsible form toggles open/closed with +/- button. New action is created with state NEXT and appears in the list. Input clears after creation. Add button is disabled when title is empty."
@@ -2075,22 +2100,21 @@
     "preconditions": "User is logged in and at least one action exists in the Next Actions list",
     "steps": [
       "Navigate to the Next Actions page (/next)",
-      "Hover over an action item in the list",
-      "Verify a trash icon becomes visible in the actions area (right side of the item)",
+      "Locate the ✕ button on an action item in the list",
       "Note the title of the action",
-      "Click the trash icon",
-      "Verify a confirmation dialog appears with title \"Delete\", a message asking for confirmation, and \"Delete\" and \"Cancel\" buttons",
+      "Click the ✕ button",
+      "Verify a \"Move to Trash\" confirmation dialog appears asking for confirmation, with \"Cancel\" and \"Move to Trash\" buttons",
       "Click \"Cancel\"",
       "Verify the dialog closes and the action remains in the list",
-      "Click the trash icon again",
+      "Click the ✕ button again",
       "Verify the confirmation dialog appears again",
-      "Click \"Delete\" (confirm)",
+      "Click \"Move to Trash\" (confirm)",
       "Verify the action is removed from the Next Actions list",
-      "Verify a success toast appears confirming deletion",
+      "Verify a success toast appears confirming the move to trash",
       "Navigate to the Trash page (/trash)",
       "Verify the deleted action appears in the trash"
     ],
-    "expected": "Trash icon appears on hover. Clicking it shows a confirmation dialog. Cancelling preserves the item. Confirming removes the item from the list, shows a success toast, and moves it to trash."
+    "expected": "Each action has a ✕ button. Clicking it shows a \"Move to Trash\" confirmation dialog. Cancelling preserves the item. Confirming removes the item from the list, shows a success toast, and moves it to trash."
   },
   {
     "id": "TC-096",
@@ -2127,7 +2151,7 @@
     "steps": [
       "Navigate to the Next Actions page (/next)",
       "Note the title and ID of the first action in the list",
-      "Click on the action item (not on the checkbox, trash icon, or title edit area — click the navigable area of the item)",
+      "Click on the action item (not on the checkbox, ✕ button, or title edit area — click the navigable area of the item)",
       "Verify the browser navigates to /action/:id where :id matches the action's ID",
       "Verify the action detail page loads displaying the correct action information",
       "Click the browser back button",
@@ -2142,21 +2166,16 @@
     "area": "Next Actions",
     "smoke": false,
     "section": "5: Next Actions",
-    "preconditions": "User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed one page)",
+    "preconditions": "User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed 10)",
     "steps": [
       "Navigate to the Next Actions page (/next)",
-      "Verify that the initial load shows the first batch of actions (up to 10 items)",
-      "Scroll to the bottom of the list",
-      "Verify a \"Load more\" button or infinite scroll trigger is present",
-      "Note the number of currently displayed actions",
-      "Click the \"Load more\" button (or scroll to trigger infinite scroll)",
-      "Verify additional actions are appended to the list below the existing ones",
-      "Verify the total number of displayed actions has increased",
-      "If more actions remain, repeat clicking \"Load more\"",
-      "Verify all actions eventually load",
+      "Verify all actions are loaded at once (no pagination)",
+      "Scroll through the list",
+      "Verify there is no \"Load more\" button",
+      "Verify the total number of displayed actions matches the expected count",
       "Verify no duplicate actions appear in the list"
     ],
-    "expected": "When more than one page of actions exists, a \"Load more\" mechanism is available. Clicking it loads additional actions appended to the list without duplicates. All actions can eventually be loaded."
+    "expected": "All next actions load at once on page load. There is no \"Load more\" button or pagination mechanism. All items are visible in a single scrollable list."
   },
   {
     "id": "TC-099",
@@ -2199,7 +2218,6 @@
       "Verify an empty state message is shown with text \"No next actions\" (or similar)",
       "Verify instructional/helper text is displayed below the main message explaining what next actions are or how to create them",
       "Verify the add action form (+) button is still accessible and functional",
-      "Verify no \"Load more\" button is shown",
       "Verify no tag filter chips are displayed"
     ],
     "expected": "When no next actions exist and no filter is active, the page shows a \"No next actions\" message with instructional text guiding the user. The add form remains accessible."
@@ -2233,25 +2251,31 @@
     "area": "Next Actions",
     "smoke": false,
     "section": "5: Next Actions",
-    "preconditions": "User is logged in and at least one action exists with the following attributes set: title, description, tags, deferred date, due date, association with a project, at least one attachment, and at least one comment",
+    "preconditions": "User is logged in. Two actions exist: (A) an action with title, description, tags, a start date, a due date, association with a project, at least one attachment, and at least one comment; (B) an action with a scheduled date (with time and duration). Both are in the Next Actions list.",
     "steps": [
       "Navigate to the Next Actions page (/next)",
-      "Click on the action item to navigate to /action/:id",
+      "Click on action A to navigate to /action/:id",
       "Verify the action detail page loads",
-      "Verify the action title is displayed prominently and is editable (click-to-edit)",
-      "Verify the description section is displayed with the current description text, editable on click",
-      "Verify the tags section shows the assigned tags as chips",
-      "Verify the deferred date (defer_until) is displayed in the dates section",
-      "Verify the due date (due_date) is displayed in the dates section",
-      "Verify a project link is shown indicating which project this action belongs to",
+      "Verify the action title is displayed prominently as an h2 and is editable (click-to-edit textarea; Enter saves, Escape cancels)",
+      "Verify action buttons are shown: \"Done\" (ghost), \"Move\" dropdown, \"Trash\" (danger)",
+      "Verify the project link is shown indicating which project this action belongs to",
       "Click the project link and verify it navigates to the project detail page",
       "Navigate back to the action detail page",
+      "Verify the description section is displayed with the current description text, editable on click",
+      "Verify the tags section shows the assigned tags as chips",
+      "Expand the dates section (collapsible) and verify three date rows: Scheduled, Start, Due",
+      "Verify the \"Scheduled\" row shows \"Not available (has start or due date)\" because action A has start/due dates set",
+      "Verify the \"Start\" row shows the start date value",
+      "Verify the \"Due\" row shows the due date value",
       "Verify the attachments section displays the uploaded attachment(s)",
-      "Verify the comments section displays the existing comment(s) with author and timestamp",
-      "Verify metadata is displayed (e.g., creation date, last modified date)",
-      "Verify navigation arrows (First/Previous/Next/Last) are present for position-based navigation"
+      "Verify the comments section displays the existing comment(s) with user avatar and relative timestamp",
+      "Verify metadata is displayed at the bottom (created date, updated date)",
+      "Verify navigation arrows (First/Previous/Next/Last) are present for position-based navigation",
+      "Navigate to action B (which has a scheduled date with time and duration)",
+      "Expand the dates section and verify the \"Scheduled\" row shows the date, time, and duration (e.g., \"Mar 25, 2026, 09:00 (30 min)\")",
+      "Verify the \"Start\" and \"Due\" rows both show \"Not available (has scheduled date)\""
     ],
-    "expected": "The action detail page displays all fields: title, description, tags, deferred date, due date, project link (navigable), attachments, comments, and metadata. All editable fields support click-to-edit."
+    "expected": "The action detail page displays all fields: title (click-to-edit), action buttons (Done, Move, Trash), project link (navigable), description (click-to-edit), tags (as chips), dates section (collapsible, with Scheduled/Start/Due rows respecting mutual exclusivity), attachments, comments (with avatar and relative timestamp), and metadata. Scheduled date is mutually exclusive with start/due dates — when one is set, the others show \"Not available\"."
   },
   {
     "id": "TC-103",
@@ -2363,7 +2387,7 @@
       "Navigate to the Today page (/today)",
       "**Complete:** Click the checkbox on the first action. Verify it is removed from the list and a success toast appears. Check the Completed page to confirm.",
       "**Inline Edit:** Click the title of the second action. Verify it becomes editable. Change the text and press Enter. Verify the new title is saved. Click the title again, change text, press Escape. Verify the edit is cancelled. Click the title, change text, click elsewhere (blur). Verify the change is saved.",
-      "**Trash:** Hover over an action and click the trash icon. Verify a confirmation dialog appears. Click \"Delete\". Verify the action is removed and a success toast appears. Check the Trash page to confirm.",
+      "**Trash:** Click the ✕ button on an action. Verify a \"Move to Trash\" confirmation dialog appears. Click \"Move to Trash\". Verify the action is removed and a success toast appears. Check the Trash page to confirm.",
       "**Drag Reorder:** Note the order of remaining actions. Drag an action to a different position. Verify the new order is reflected. Reload the page and verify the order persists.",
       "**Tag Filter:** Click the tag filter icon. Select a tag. Verify only matching actions are shown. Verify filter chips appear. Click X on a chip to remove it. Click \"Clear all\" to restore the full list."
     ],
@@ -2382,8 +2406,7 @@
       "Verify the page loads successfully with no action items displayed",
       "Verify an empty state message is shown with text \"No actions for today\" (or similar)",
       "Verify instructional text is displayed: \"Move actions here to focus on what matters most today.\" (or similar guidance)",
-      "Verify the add action form (+) button is still accessible",
-      "Verify no \"Load more\" button is shown"
+      "Verify the add action form (+) button is still accessible"
     ],
     "expected": "When no today actions exist, the page shows \"No actions for today\" with instructional text about moving actions to focus on what matters. The add form remains accessible."
   },
@@ -2823,7 +2846,7 @@
     "area": "Calendar",
     "smoke": true,
     "section": "7: Calendar",
-    "preconditions": "User is logged in, at least one scheduled action and one due-only action (has due_date but no scheduled_date or start_date) exist on the calendar, using Day or Week view",
+    "preconditions": "User is logged in, at least one scheduled action, one start_after action, and one due-only action exist on the calendar, using Day or Week view",
     "steps": [
       "Navigate to the Calendar page (/calendar) and switch to Day view",
       "Identify a scheduled action block (blue, e.g., at 10:00 AM)",
@@ -2836,19 +2859,16 @@
       "Identify a scheduled action on one day (e.g., Monday)",
       "Drag the action to a different day (e.g., Wednesday at the same time)",
       "Verify the action moves to the new day column automatically (no popover)",
+      "Identify a start_after action (green styling) on the calendar",
+      "Drag it to a different day",
+      "Verify the action moves to the new day automatically (no popover), retaining green styling",
       "Identify a due-only action (red styling) on the calendar",
       "Drag the due-only action to a different day",
-      "Verify a popover appears with two options: \"Scheduled for [date]\" and \"Start after [date]\"",
-      "Click \"Scheduled for [date]\"",
-      "Verify the action is rescheduled as a scheduled action (blue styling)",
-      "Verify the due_date is cleared (mutual exclusivity)",
-      "Reload the page and verify the new schedule persists",
-      "Create another due-only action and drag it, this time select \"Start after [date]\"",
-      "Verify the action is rescheduled as a start_after action (yellow styling)",
-      "Verify the due_date is preserved",
-      "Verify clicking outside the popover cancels the drag operation"
+      "Verify the action is automatically rescheduled as a scheduled action (blue styling) on the new date — no popover appears",
+      "Verify the due_date is cleared (mutual exclusivity with scheduled_date)",
+      "Reload the page and verify the new schedule persists"
     ],
-    "expected": "Dragging a scheduled or start_after action auto-reschedules without a popover. Dragging a due-only action shows a type-selection popover. \"Scheduled for\" clears due_date (mutual exclusivity). \"Start after\" preserves due_date. Changes persist across reloads."
+    "expected": "All drag reschedules happen automatically without a popover. The type is auto-detected from the item's existing dates: scheduled items stay scheduled, start_after items stay start_after, and due-only items default to scheduled (clearing the due_date due to mutual exclusivity). Changes persist across reloads."
   },
   {
     "id": "TC-130",
@@ -2963,7 +2983,7 @@
       "Locate the scheduled action",
       "Verify it displays with **blue** styling (blue background, blue left border, blue text)",
       "Locate the start_after action",
-      "Verify it displays with **yellow/amber** styling (amber background, amber left border, amber text)",
+      "Verify it displays with **green** styling (green background, green left border, green text)",
       "Locate the due-only action (due today)",
       "Verify it displays with **red** styling (red background, red left border, red text)",
       "Navigate to the date of the overdue due-only action",
@@ -2971,7 +2991,7 @@
       "Switch to Week view and verify the same four color states are visible",
       "Switch to Month view and verify the same four color states are visible in the day cells"
     ],
-    "expected": "Calendar items display in four distinct visual states: scheduled (blue), start_after (yellow/amber), due-only (red), and overdue (dark red). The color coding is consistent across Day, Week, and Month views."
+    "expected": "Calendar items display in four distinct visual states: scheduled (blue), start_after (green), due-only (red), and overdue (dark red). The color coding is consistent across Day, Week, and Month views."
   },
   {
     "id": "TC-135",
@@ -2984,25 +3004,25 @@
     "steps": [
       "Navigate to the Calendar page (/calendar) in Month view for March",
       "Locate March 15 in the calendar grid",
-      "Verify the action appears on March 15 with **yellow/amber** styling (start_after display)",
+      "Verify the action appears on March 15 with **green** styling (start_after display)",
       "Locate March 20 in the calendar grid",
       "Verify the **same action** also appears on March 20 with **red** styling (due display)",
       "Switch to Week view for the week containing March 15",
-      "Verify the action appears on March 15 with yellow/amber styling",
+      "Verify the action appears on March 15 with green styling",
       "Navigate to the week containing March 20",
       "Verify the action appears on March 20 with red styling",
       "Switch to Day view for March 15",
-      "Verify the action appears with yellow/amber styling",
+      "Verify the action appears with green styling",
       "Navigate to Day view for March 20",
       "Verify the action appears with red styling",
       "Click the action on March 20 to navigate to the action detail",
       "Verify the detail page shows both start_date (March 15) and due_date (March 20)"
     ],
-    "expected": "An action with both start_date and due_date appears on both dates in the calendar. On the start_date it shows yellow/amber styling. On the due_date it shows red styling. Both reference the same action."
+    "expected": "An action with both start_date and due_date appears on both dates in the calendar. On the start_date it shows green styling. On the due_date it shows red styling. Both reference the same action."
   },
   {
     "id": "TC-136",
-    "name": "Calendar Quick-Add - Type Selector",
+    "name": "Calendar Quick-Add - Scheduled Action",
     "priority": "Medium",
     "area": "Calendar",
     "smoke": false,
@@ -3011,23 +3031,20 @@
     "steps": [
       "Navigate to the Calendar page (/calendar) in Month view",
       "Click on an empty day cell to open the quick-add form",
-      "Verify the quick-add form appears with a title input field",
-      "Verify the form shows two radio buttons: \"Scheduled\" (default selected) and \"Start after\"",
+      "Verify the quick-add form appears with a title input field (placeholder: \"New action...\")",
       "Type a title (e.g., \"Team meeting\")",
-      "With \"Scheduled\" selected, verify NO due date input is shown",
       "Press Enter to submit",
       "Verify the action is created as a scheduled action (blue styling) on the selected date",
-      "Click another empty day cell",
-      "Select \"Start after\" radio button",
-      "Verify a due date input field appears",
-      "Type a title and optionally set a due date",
-      "Press Enter to submit",
-      "Verify the action is created as a start_after action (yellow/amber styling) on the selected date",
-      "If a due date was set, verify the action also appears on the due date with red styling",
-      "Switch to Day view and repeat the same flow by clicking an empty time slot",
-      "Verify the type selector and due date input work the same way in the Day view quick-add form"
+      "Verify the quick-add form closes after submission",
+      "Switch to Day view",
+      "Click on an empty time slot (e.g., 2:00 PM)",
+      "Verify the quick-add form appears in the clicked time slot",
+      "Type a title and press Enter",
+      "Verify the action is created as a scheduled action at the clicked time with default 30-minute duration",
+      "Press Escape on an open quick-add form without typing",
+      "Verify the form closes without creating an action"
     ],
-    "expected": "The calendar quick-add form includes a type selector (\"Scheduled\" / \"Start after\"). \"Scheduled\" creates a scheduled action. \"Start after\" creates a deferred action and optionally accepts a due date. The due date field only appears when \"Start after\" is selected."
+    "expected": "The calendar quick-add form is a simple title input. Submitting creates a scheduled action on the selected date (and time, if clicked on a time slot in Day/Week view). Empty submissions or Escape cancel the form. Actions created from time slots get a default 30-minute duration."
   },
   {
     "id": "TC-137",
@@ -3122,14 +3139,14 @@
       "Locate Action A (scheduled)",
       "Verify its MetadataRow chip shows \"Scheduled Mar 18\" with a **blue** calendar icon and blue text",
       "Locate Action B (start_after)",
-      "Verify its MetadataRow chip shows \"Starts Mar 15\" with a **yellow/amber** calendar icon and amber text",
+      "Verify its MetadataRow chip shows \"Starts Mar 15\" with a **green** calendar icon and green text",
       "Locate Action C (due in future)",
       "Verify its MetadataRow chip shows \"Due Mar 25\" with a **red** calendar icon and red text",
       "Locate Action D (overdue)",
       "Verify its MetadataRow chip shows \"Overdue Mar 1\" with a **dark red** calendar icon and dark red text",
       "Verify that Action D's chip uses darker red compared to Action C's red"
     ],
-    "expected": "MetadataRow date chips use color-coded styling: scheduled (blue), start_after (yellow/amber), due (red), overdue (dark red). The \"Scheduled\" label is fully spelled out (not \"Sched\"). Due chips show \"Due [date]\" and overdue chips show \"Overdue [date]\"."
+    "expected": "MetadataRow date chips use color-coded styling: scheduled (blue), start_after (green), due (red), overdue (dark red). The \"Scheduled\" label is fully spelled out (not \"Sched\"). Due chips show \"Due [date]\" and overdue chips show \"Overdue [date]\"."
   },
   {
     "id": "TC-141",
@@ -3165,7 +3182,7 @@
   },
   {
     "id": "TC-142",
-    "name": "Calendar Drag Popover for Due-Only Items",
+    "name": "Calendar Drag Reschedule for Due-Only Items",
     "priority": "Medium",
     "area": "Calendar",
     "smoke": false,
@@ -3175,21 +3192,16 @@
       "Navigate to the Calendar page (/calendar) in Month view",
       "Locate the due-only action (red styling)",
       "Drag the action to a different day cell",
-      "Verify a popover appears near the drop location with two buttons: - \"Scheduled for [target date]\" - \"Start after [target date]\"",
-      "Click \"Scheduled for [date]\"",
-      "Verify the action is rescheduled as a scheduled action on the target date (blue styling)",
-      "Verify the due_date is cleared (mutual exclusivity with scheduled)",
-      "Undo by navigating to the action detail and clearing the scheduled date",
-      "Set a due date again and drag the due-only action to another day",
-      "When the popover appears, click \"Start after [date]\"",
-      "Verify the action is rescheduled as a start_after action on the target date (yellow/amber styling)",
-      "Verify the due_date is **preserved**",
-      "Drag the due-only action again, but this time click outside the popover",
-      "Verify the popover closes and the action is NOT rescheduled (drag is cancelled)",
-      "Repeat in Week view (all-day and timed drops) to verify popover appears for due-only items",
-      "Repeat in Day view to verify popover appears for due-only items"
+      "Verify the action is automatically rescheduled as a scheduled action on the target date (blue styling) — no popover appears",
+      "Verify the due_date is cleared (mutual exclusivity with scheduled_date)",
+      "Verify the action now shows on the new date with blue styling",
+      "Reload the page and verify the reschedule persists",
+      "Switch to Week view and drag a due-only action to a different day",
+      "Verify the same auto-reschedule behavior (no popover, becomes scheduled)",
+      "Switch to Day view and drag a due-only action to a different time slot",
+      "Verify the action is rescheduled as scheduled at the new time"
     ],
-    "expected": "Dragging a due-only item on the calendar shows a type-selection popover. \"Scheduled for\" clears due_date. \"Start after\" preserves due_date. Clicking outside cancels. The popover works in Month, Week, and Day views."
+    "expected": "Dragging a due-only item on the calendar auto-reschedules it as a \"scheduled\" action on the target date (same behavior as dragging any other item — no type-selection popover). The due_date is cleared due to mutual exclusivity with scheduled_date. Changes persist across reloads."
   },
   {
     "id": "TC-143",
@@ -3198,20 +3210,20 @@
     "area": "Calendar",
     "smoke": false,
     "section": "7: Calendar",
-    "preconditions": "User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (yellow/amber).",
+    "preconditions": "User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (green).",
     "steps": [
       "Navigate to the Calendar page (/calendar) in Month view",
       "Locate the scheduled action (blue styling)",
       "Drag it to a different day cell",
-      "Verify NO popover appears — the action is automatically rescheduled as \"scheduled\" on the new date",
+      "Verify the action is automatically rescheduled as \"scheduled\" on the new date (no popover)",
       "Verify the action retains blue styling on the new date",
-      "Locate the start_after action (yellow/amber styling)",
+      "Locate the start_after action (green styling)",
       "Drag it to a different day cell",
-      "Verify NO popover appears — the action is automatically rescheduled as \"start\" on the new date",
-      "Verify the action retains yellow/amber styling on the new date",
+      "Verify the action is automatically rescheduled as \"start\" on the new date (no popover)",
+      "Verify the action retains green styling on the new date",
       "Reload the page and verify both actions are on their new dates"
     ],
-    "expected": "Dragging a scheduled action auto-reschedules as \"scheduled\" (no popover). Dragging a start_after action auto-reschedules as \"start\" (no popover). The popover only appears for due-only items that have no existing scheduled/start date to auto-detect from."
+    "expected": "Dragging a scheduled action auto-reschedules as \"scheduled\". Dragging a start_after action auto-reschedules as \"start\". All drag reschedules happen automatically without a popover — the type is auto-detected from the item's existing dates."
   },
   {
     "id": "TC-144",
@@ -3225,15 +3237,15 @@
       "Navigate to /settings and set the Theme dropdown to \"Dark\" in the Application section",
       "Navigate to the Calendar page (/calendar)",
       "Verify scheduled items (blue) are visible and readable against the dark background",
-      "Verify start_after items (yellow/amber) are visible and readable against the dark background",
+      "Verify start_after items (green) are visible and readable against the dark background",
       "Verify due-only items (red) are visible and readable against the dark background",
       "Verify overdue items (dark red) are visible and readable against the dark background",
       "Navigate to a list view (e.g., /next)",
-      "Verify MetadataRow date chips use appropriate dark theme colors: - Scheduled: blue text/icon - Start: amber/yellow text/icon - Due: light red text/icon - Overdue: light red text/icon (distinguishable from non-overdue due)",
+      "Verify MetadataRow date chips use appropriate dark theme colors: - Scheduled: blue text/icon - Start: amber/yellow text/icon (note: MetadataRow chips use amber in dark theme, distinct from green calendar items) - Due: light red text/icon - Overdue: light red text/icon (distinguishable from non-overdue due)",
       "Verify all four calendar item types have sufficient contrast in dark theme",
       "Navigate to /settings and switch Theme to \"Light\"; verify the light theme colors are correct"
     ],
-    "expected": "All four calendar item color states (scheduled, start, due, overdue) and MetadataRow chip colors render with appropriate dark theme overrides. Text and icons are readable against the dark background."
+    "expected": "All four calendar item color states (scheduled=blue, start=green, due=red, overdue=dark red) and MetadataRow chip colors render with appropriate dark theme overrides. Note: calendar start items use green while MetadataRow start chips use amber/yellow in dark theme. Text and icons are readable against the dark background."
   },
   {
     "id": "TC-144b",
@@ -3246,16 +3258,16 @@
     "steps": [
       "Navigate to the Calendar page (/calendar) and switch to Day view",
       "Navigate to the date matching the action's start_date",
-      "Verify a yellow dot appears on the left edge of the time grid at the 10:00 position",
-      "Verify a yellow horizontal line extends from the dot across the full width of the grid",
-      "Verify a yellow gradient fades downward from the line to transparent (~24px height)",
-      "Verify the action's title is displayed below the gradient in yellow/amber text",
+      "Verify a green dot appears on the left edge of the time grid at the 10:00 position",
+      "Verify a green horizontal line extends from the dot across the full width of the grid",
+      "Verify a green gradient fades downward from the line to transparent (~24px height)",
+      "Verify the action's title is displayed below the gradient in green text",
       "Click on the action title text and verify it navigates to the action detail page",
       "Switch to Week view",
-      "Verify the same yellow dot+line+gradient+title indicator appears in the correct day column at the correct time position",
+      "Verify the same green dot+line+gradient+title indicator appears in the correct day column at the correct time position",
       "Verify an action with start_date but no start_time appears in the all-day section (not as a timed indicator)"
     ],
-    "expected": "Actions with start_date and start_time display as yellow line indicators in the time grid (day and week views). The indicator has a dot, line, downward gradient, and title below. Actions without start_time appear in the all-day section. Clicking the title navigates to action detail."
+    "expected": "Actions with start_date and start_time display as green line indicators in the time grid (day and week views). The indicator has a dot, line, downward gradient, and title below. Actions without start_time appear in the all-day section. Clicking the title navigates to action detail."
   },
   {
     "id": "TC-144c",
@@ -3539,18 +3551,18 @@
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists with a title and outcome",
     "steps": [
-      "Navigate to the project detail page (/project/:id)",
-      "Locate the \"Complete\" button or action (e.g., in the header or actions area)",
+      "Navigate to the project detail page (/project/:id) for a project with actions",
       "Click \"Complete\"",
-      "Verify a confirmation may be shown (if applicable) and confirm",
-      "Verify a success toast appears (e.g., \"Project completed\")",
-      "Verify the user is redirected to the Projects list or the project is marked as completed",
-      "Navigate to the Projects page (/projects)",
-      "Verify the completed project is no longer in the active projects list",
-      "Navigate to the Completed page (/completed)",
-      "Verify the completed project appears in the completed items list"
+      "Verify a confirmation dialog warns \"This will also complete all active actions in this project. Are you sure?\"",
+      "Confirm the dialog",
+      "Verify a success toast appears (e.g., '\"Project\" completed')",
+      "Verify the user is redirected to the Projects list or next project",
+      "Navigate to the Projects page (/projects) and verify the project is no longer listed",
+      "Navigate to the Completed page (/completed) and verify the project appears",
+      "Verify that the project's actions also appear in the Completed list",
+      "Repeat with a project that has NO actions — verify no confirmation dialog is shown (completes immediately)"
     ],
-    "expected": "Completing a project from its detail page moves it from the active projects list to the completed items. A success toast confirms the action."
+    "expected": "Completing a project from its detail page moves it and all its active actions to completed. Confirmation only shown when project has actions."
   },
   {
     "id": "TC-156",
@@ -3579,22 +3591,19 @@
     "area": "Projects",
     "smoke": false,
     "section": "8: Projects",
-    "preconditions": "User is logged in and a project exists in the active Projects list",
+    "preconditions": "User is logged in and a project exists in the active Projects list with at least one action",
     "steps": [
       "Navigate to the Projects page (/projects) and note the project title (e.g., \"Launch new website\")",
       "Click on the project to navigate to its detail page (/project/:id)",
-      "Locate the Move dropdown/button",
-      "Click the Move dropdown to open it",
-      "Verify \"Someday\" is listed as a valid destination",
-      "Select \"Someday\"",
-      "Verify a success toast or visual confirmation is shown",
-      "Verify the user is redirected or the page updates to reflect the move",
-      "Navigate to the Projects page (/projects)",
-      "Verify \"Launch new website\" is no longer in the active projects list",
-      "Navigate to the Someday page (/someday)",
-      "Verify \"Launch new website\" appears in the Someday list"
+      "Note that the project has active actions (e.g., NEXT or CALENDAR actions)",
+      "Click the Move dropdown and select \"Someday\"",
+      "Verify a success toast shows: '\"Launch new website\" moved to Someday. Active actions shelved.'",
+      "Navigate to the Projects page (/projects) and verify the project is no longer listed",
+      "Navigate to the Someday page (/someday) and verify the project appears",
+      "Verify the project's actions are no longer in Next/Today/Waiting lists (they are shelved to BACKLOG)",
+      "Repeat with a project that has NO actions — verify toast says only \"moved to Someday\" (no \"shelved\" mention)"
     ],
-    "expected": "Moving a project to Someday from its detail page removes it from the active Projects list and places it in the Someday list."
+    "expected": "Moving a project to Someday shelves its active actions to backlog. Toast message reflects whether actions were shelved."
   },
   {
     "id": "TC-158",
@@ -3605,17 +3614,19 @@
     "section": "8: Projects",
     "preconditions": "User is logged in and viewing an active project detail page",
     "steps": [
-      "Navigate to a project detail page",
-      "Open the Move dropdown",
-      "Verify it shows: Next Actions, Reference, Someday",
-      "Select \"Next Actions\"",
-      "Verify the project is transformed into an action and appears in Next Actions",
-      "Create another project and navigate to its detail page",
+      "Navigate to a project detail page that has backlog actions",
+      "Open the Move dropdown and select \"Next Actions\"",
+      "Verify a confirmation dialog warns \"This will trash all backlog actions in this project. Continue?\"",
+      "Confirm and verify the project is transformed into an action in Next Actions",
+      "Verify backlog actions appear in Trash",
+      "Create another project with actions and navigate to its detail page",
       "Open the Move dropdown and select \"Reference\"",
-      "Verify the project is transformed to a file in Reference",
-      "Navigate to Reference page and verify the file exists"
+      "Verify a confirmation dialog warns \"This will convert the project and all its actions to a reference file. Continue?\"",
+      "Confirm and verify the project is transformed to a file in Reference",
+      "Create a project with NO backlog actions — verify \"Next Actions\" conversion proceeds without confirmation",
+      "Create a project with NO actions — verify \"Reference\" conversion proceeds without confirmation"
     ],
-    "expected": "Projects can be converted to actions or reference files via the Move dropdown using backend transform endpoints."
+    "expected": "Converting a project to action/reference shows confirmation only when the project has actions that will be affected."
   },
   {
     "id": "TC-159",
@@ -3635,9 +3646,12 @@
       "With another someday project, select \"Next Actions\" from Move dropdown",
       "Verify the project is transformed to an action in Next Actions",
       "With another someday project, click \"Activate\"",
-      "Verify the project moves back to active Projects"
+      "Verify the project moves back to active Projects",
+      "Verify the success toast says \"moved to Projects\"",
+      "Verify actions that were shelved to BACKLOG are restored to their previous states (NEXT, TODAY, etc.)",
+      "Verify the Next Action section is visible but the \"What's the next physical step?\" prompt is NOT shown while in Someday state (the section header and expand button are present, but no warning prompt about needing a next action)"
     ],
-    "expected": "Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash."
+    "expected": "Someday projects have full control: Activate, Complete, Move (to Action/Reference), and Trash. Activating restores shelved actions. The Next Action section is visible for Someday projects, but the \"next action required\" prompt is hidden — only active projects show the prompt when no next action exists."
   },
   {
     "id": "TC-160",
@@ -4459,7 +4473,7 @@
   },
   {
     "id": "TC-201",
-    "name": "View Mode Toggle - List and Grid",
+    "name": "View Mode Toggle",
     "priority": "Medium",
     "area": "Reference / File Manager",
     "smoke": false,
@@ -4771,9 +4785,12 @@
       "Verify the item disappears from the Trash list",
       "Verify a success toast appears with the message \"restored\" or similar indicating the restoration",
       "Navigate to the item's original bucket: - If it was Stuff (inbox icon), go to Inbox (/inbox) - If it was an Action (arrow icon), go to Next Actions (/next) - If it was a Project (projects icon), go to Projects (/projects)",
-      "Verify the restored item appears in the correct bucket"
+      "Verify the restored item appears in the correct bucket",
+      "For a trashed PROJECT: Click \"Restore\" and verify the toast says '\"Project\" and its actions restored'",
+      "Verify the project's cascade-trashed actions also disappear from the Trash list",
+      "Navigate to Projects and verify the project is there; check its actions are also restored"
     ],
-    "expected": "Clicking \"Restore\" on a trashed item removes it from the Trash and returns it to its original bucket. A success toast with \"restored\" confirms the action. The item is accessible again in its original location."
+    "expected": "Clicking \"Restore\" on a trashed item removes it from the Trash and returns it to its original bucket. A success toast with \"restored\" confirms the action. Restoring a project also restores its cascade-trashed actions."
   },
   {
     "id": "TC-217",
@@ -5865,6 +5882,31 @@
       "If an active instance existed for the template, verify the behavior of that instance (it may remain as a standalone action or be trashed as well, depending on design)"
     ],
     "expected": "Clicking Trash on a recurring template removes it from the Recurring list and moves it to the Trash. A confirmation dialog may appear before deletion. The template is recoverable from the Trash page."
+  },
+  {
+    "id": "TC-262b",
+    "name": "Reorder Recurring Action Templates via Drag-and-Drop",
+    "priority": "High",
+    "area": "Recurring Actions",
+    "smoke": false,
+    "section": "16: Recurring Actions",
+    "preconditions": "User is logged in. At least 3 recurring action templates exist in the Recurring list.",
+    "steps": [
+      "Navigate to `/calendar` and click the \"Recurring\" view toggle",
+      "Verify all 3 recurring templates are displayed in the list",
+      "Note the initial order of the templates (e.g., \"Template A\", \"Template B\", \"Template C\")",
+      "Long-press (touch) or click-and-hold (mouse, 150ms delay) on \"Template C\"",
+      "Verify the item becomes visually picked up (chosen state styling)",
+      "Drag \"Template C\" above \"Template A\" (to the top of the list)",
+      "Release the drag",
+      "Verify the list now shows: \"Template C\", \"Template A\", \"Template B\"",
+      "Navigate away from the Calendar page and return to the Recurring view",
+      "Verify the new order persists: \"Template C\", \"Template A\", \"Template B\"",
+      "Drag \"Template A\" between \"Template C\" and \"Template B\"",
+      "Verify the list now shows: \"Template C\", \"Template A\", \"Template B\" (no change since it was already there — try a different move)",
+      "If only 3 items exist, verify the drag hint animation (wiggle on first item) appears on first visit"
+    ],
+    "expected": "Recurring templates can be reordered via drag-and-drop with the same UX as other lists (Next, Inbox, Projects). The new order persists across navigation. Visual feedback (chosen/ghost states) is shown during drag."
   },
   {
     "id": "TC-263",
@@ -7398,24 +7440,26 @@
   },
   {
     "id": "TC-329",
-    "name": "Quick Add Mobile Layout",
+    "name": "Quick Add Mobile Layout (FAB)",
     "priority": "Medium",
     "area": "Quick Add",
     "smoke": false,
     "section": "21: Quick Add",
     "preconditions": "User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 375px).",
     "steps": [
-      "On a mobile viewport, locate the Quick Add \"+\" button in the top nav.",
-      "Tap the \"+\" button.",
-      "Verify the input field expands to fill the full width of the top navigation bar.",
-      "Verify the expanded input appears as a fixed-positioned overlay within the top nav area.",
+      "On a mobile viewport, verify the Quick Add button is NOT in the top nav bar.",
+      "Verify a circular \"+\" FAB (floating action button) is visible at the bottom-right corner.",
+      "Tap the \"+\" FAB.",
+      "Verify the FAB is replaced by a full-width pill-shaped input bar at the bottom of the screen.",
+      "Verify the input bar has a text input and an \"Add\" button.",
       "Verify the input is auto-focused and the keyboard opens (on a real device).",
-      "Type a title and press Enter (or the keyboard submit button).",
-      "Verify the item is added and the input clears.",
-      "Press Escape or tap outside to collapse.",
-      "Verify the Quick Add returns to its collapsed \"+\" icon state."
+      "Type a title and press Enter (or tap the \"Add\" button).",
+      "Verify the item is added to the inbox, a success toast appears, and the input clears but stays expanded for rapid multi-capture.",
+      "Press Escape to collapse.",
+      "Verify the FAB returns to its collapsed \"+\" icon state.",
+      "Open the sidebar drawer and verify the FAB is hidden behind the overlay."
     ],
-    "expected": "On mobile, the Quick Add input expands to fill the entire top navigation width as a fixed-positioned overlay. It functions correctly for adding items and collapses properly."
+    "expected": "On mobile, Quick Add is a floating action button (FAB) at the bottom-right instead of being in the top nav. Tapping it expands into a pill-shaped input bar. Items are added to the inbox. The input stays open for multi-capture. Escape collapses back to the FAB. The FAB hides behind the sidebar overlay when the drawer is open."
   },
   {
     "id": "TC-330",
@@ -8189,7 +8233,7 @@
       "Continue clicking \"Load more\" until all items are loaded.",
       "Verify the \"Load more\" button disappears when there are no more items to load."
     ],
-    "expected": "Lists with more than 10 items show a \"Load more\" button at the bottom. Clicking it loads the next page of items appended to the existing list. The button disappears when all items are loaded."
+    "expected": "Lists with more than 10 items show a \"Load more\" button at the bottom. Clicking it loads the next page of items appended to the existing list. The button disappears when all items are loaded. The \"Load more\" button must not flicker when completing or trashing items triggers a list reload."
   },
   {
     "id": "TC-367",
@@ -8459,9 +8503,10 @@
       "Scroll to the Notifications section.",
       "Verify the first toggle in the section is labelled \"Email notifications\".",
       "Verify the hint text reads \"Receive email notifications for tasks and reminders\".",
-      "Verify the three individual event toggles (Task due today, Daily next actions, Project needs next action) appear below the master toggle."
+      "Verify all six individual event toggles appear below the master toggle, in this order: \"Task due today\", \"Daily next actions\", \"Project needs next action\", \"Delegated to you\", \"Delegation completed\", \"Connection invitations\".",
+      "Verify the footer reads: \"In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled.\""
     ],
-    "expected": "The Notifications section displays a master \"Email notifications\" toggle at the top, followed by three individual event toggles. The master toggle has its own saving spinner area."
+    "expected": "The Notifications section displays a master \"Email notifications\" toggle at the top, followed by six individual event toggles (one per disableable email event). The master toggle has its own saving spinner area. The in-app/security clarification footer is rendered."
   },
   {
     "id": "TC-379",
@@ -8686,5 +8731,1010 @@
       "Verify the normal empty state is shown"
     ],
     "expected": "When the last inbox item is processed from the Stuff Detail Page (via Done, Move, Trash, or Clarify), the app navigates back to the Inbox page and triggers the Inbox Zero celebration animation."
+  },
+  {
+    "id": "TC-406",
+    "name": "Complete Project Without Actions - No Confirmation",
+    "priority": "High",
+    "area": "Projects",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User is logged in and a project exists with NO actions (no next action, no backlog)",
+    "steps": [
+      "Navigate to the project detail page",
+      "Verify the Next Action section shows \"What's the next physical step?\" prompt (no actions)",
+      "Click \"Complete\"",
+      "Verify NO confirmation dialog is shown — the project completes immediately",
+      "Verify a success toast appears",
+      "Navigate to Completed page and verify the project is there"
+    ],
+    "expected": "Completing a project with no actions proceeds without a confirmation dialog."
+  },
+  {
+    "id": "TC-407",
+    "name": "Trash Project With Actions - Cascade Confirmation",
+    "priority": "High",
+    "area": "Projects",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User is logged in and a project exists with at least one action (next action or backlog)",
+    "steps": [
+      "Navigate to the project detail page and verify it has actions",
+      "Click \"Trash\"",
+      "Verify a confirmation dialog appears with the message: \"This will also move all actions in this project to trash. Are you sure?\"",
+      "Click \"Cancel\" and verify nothing happens",
+      "Click \"Trash\" again and confirm",
+      "Verify a success toast appears",
+      "Navigate to the Trash page",
+      "Verify both the project AND its actions appear in the Trash list"
+    ],
+    "expected": "Trashing a project with actions shows a cascade warning. Both the project and its actions appear in Trash."
+  },
+  {
+    "id": "TC-408",
+    "name": "Trash Project Without Actions - Standard Confirmation",
+    "priority": "Medium",
+    "area": "Projects",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User is logged in and a project exists with NO actions",
+    "steps": [
+      "Navigate to the project detail page for a project with no actions",
+      "Click \"Trash\"",
+      "Verify the confirmation dialog shows the standard message (no mention of actions)",
+      "Confirm and verify the project is trashed"
+    ],
+    "expected": "Trashing a project without actions shows a standard confirmation without cascade warning."
+  },
+  {
+    "id": "TC-409",
+    "name": "Uncomplete Action Blocked by Completed Parent Project (409)",
+    "priority": "High",
+    "area": "Completed Items",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User has completed a project (which cascade-completed its actions). Both the project and an action appear in the Completed list.",
+    "steps": [
+      "Navigate to the Completed page (/completed)",
+      "Find a completed action that belongs to the completed project",
+      "Uncheck the action's checkbox to attempt to restore it",
+      "Verify an error toast appears: \"Cannot restore this action — its parent project is completed or trashed. Restore the project first.\"",
+      "Verify the action remains in the Completed list (checkbox re-checks)",
+      "Now uncheck the parent project first to restore it",
+      "Then attempt to uncheck the action again",
+      "Verify the action is now successfully restored"
+    ],
+    "expected": "Uncompleting an action whose parent project is completed or trashed fails with a 409 error and a helpful message guiding the user to restore the project first."
+  },
+  {
+    "id": "TC-410",
+    "name": "Restore Action Blocked by Trashed Parent Project (409)",
+    "priority": "High",
+    "area": "Trash",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User has trashed a project (which cascade-trashed its actions). Both the project and an action appear in the Trash list.",
+    "steps": [
+      "Navigate to the Trash page (/trash)",
+      "Find a trashed action that belongs to the trashed project",
+      "Click \"Restore\" on the action",
+      "Verify an error toast appears: \"Cannot restore this action — its parent project is completed or trashed. Restore the project first.\"",
+      "Verify the action remains in the Trash list",
+      "Now click \"Restore\" on the parent project",
+      "Verify the project AND its cascade-trashed actions are all restored",
+      "Verify the toast says '\"Project\" and its actions restored'"
+    ],
+    "expected": "Restoring a trashed action whose parent project is also trashed fails with a helpful 409 error. Restoring the project itself restores all cascade-trashed actions."
+  },
+  {
+    "id": "TC-411",
+    "name": "Someday Project Activate",
+    "priority": "Medium",
+    "area": "Someday",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User has a project in SOMEDAY state that previously had active actions (which were shelved to BACKLOG when the project was moved to Someday)",
+    "steps": [
+      "Navigate to the Someday page (/someday)",
+      "Find the project item (identified by project icon)",
+      "Click \"Activate\"",
+      "Verify the success toast says: '\"Project\" moved to Projects'",
+      "Navigate to the Projects page and verify the project is active",
+      "Open the project detail and verify actions are restored (e.g., previously NEXT actions are back in NEXT state)"
+    ],
+    "expected": "Activating a someday project restores its shelved actions to their previous states."
+  },
+  {
+    "id": "TC-412",
+    "name": "Uncomplete Project Toast",
+    "priority": "Medium",
+    "area": "Completed Items / Projects",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User has a completed project in the Completed list",
+    "steps": [
+      "Navigate to the Completed page",
+      "Uncheck the project's checkbox",
+      "Verify the success toast says: '\"Project\" restored'",
+      "Navigate to the Projects page and verify the project is active"
+    ],
+    "expected": "Uncompleting a project restores it to active state with a standard restored toast."
+  },
+  {
+    "id": "TC-413",
+    "name": "Convert Project to Action - Backlog Confirmation",
+    "priority": "Medium",
+    "area": "Projects",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User has a project with at least one backlog action (expand actions to verify)",
+    "steps": [
+      "Navigate to the project detail page",
+      "Expand the actions list and verify backlog actions exist",
+      "Open the Move dropdown and select \"Next Actions\"",
+      "Verify a confirmation dialog: \"This will trash all backlog actions in this project. Continue?\"",
+      "Cancel and verify nothing happens",
+      "Select \"Next Actions\" again and confirm",
+      "Verify the project is converted to an action in Next Actions",
+      "Verify backlog actions appear in Trash"
+    ],
+    "expected": "Converting a project with backlog actions to an action warns about the backlog being trashed."
+  },
+  {
+    "id": "TC-414",
+    "name": "Convert Project to Reference - Actions Confirmation",
+    "priority": "Medium",
+    "area": "Projects",
+    "smoke": false,
+    "section": "28: Project Cascade Operations",
+    "preconditions": "User has a project with actions (next action and/or backlog)",
+    "steps": [
+      "Navigate to the project detail page with actions",
+      "Open the Move dropdown and select \"Reference\"",
+      "Verify a confirmation dialog: \"This will convert the project and all its actions to a reference file. Continue?\"",
+      "Cancel and verify nothing happens",
+      "Select \"Reference\" again and confirm",
+      "Verify the project is converted to a reference file",
+      "Navigate to Reference page and verify the file exists"
+    ],
+    "expected": "Converting a project with actions to reference warns about all actions being included in the reference file."
+  },
+  {
+    "id": "TC-430",
+    "name": "Feedback Button Visible on Dashboard",
+    "priority": "High",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "User is logged in",
+    "steps": [
+      "Navigate to any dashboard page (e.g., Inbox, Next Actions, Projects)",
+      "Verify a small circular button with a speech bubble icon is visible in the bottom-right corner"
+    ],
+    "expected": "Feedback button is visible and does not overlap with any content or controls."
+  },
+  {
+    "id": "TC-431",
+    "name": "Feedback Button Visible on Public Pages",
+    "priority": "High",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "User is not logged in (or on a public page)",
+    "steps": [
+      "Navigate to the landing page",
+      "Verify the feedback button is visible in the bottom-right corner",
+      "Navigate to pricing, help, or legal pages and verify it remains visible"
+    ],
+    "expected": "Feedback button is present on all public pages."
+  },
+  {
+    "id": "TC-432",
+    "name": "Feedback Popover Opens and Closes",
+    "priority": "High",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "Feedback button is visible",
+    "steps": [
+      "Click the feedback button",
+      "Verify a popover appears above the button with two options: \"Contact Support\" and \"Report a Bug\"",
+      "Click outside the popover",
+      "Verify the popover closes"
+    ],
+    "expected": "Popover opens on click and closes when clicking outside."
+  },
+  {
+    "id": "TC-433",
+    "name": "Contact Support Opens Email",
+    "priority": "High",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "Feedback button is visible",
+    "steps": [
+      "Click the feedback button to open the popover",
+      "Click \"Contact Support\"",
+      "Verify the default email client opens with: - To: `support@whatsnextaction.com` - Subject: \"Support Request - WhatsNextAction\"",
+      "Verify the popover closes after clicking"
+    ],
+    "expected": "Email client opens with pre-filled recipient and subject for support."
+  },
+  {
+    "id": "TC-434",
+    "name": "Report a Bug Opens Email",
+    "priority": "High",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "Feedback button is visible",
+    "steps": [
+      "Click the feedback button to open the popover",
+      "Click \"Report a Bug\"",
+      "Verify the default email client opens with: - To: `bug@whatsnextaction.com` - Subject: \"Bug Report - WhatsNextAction\"",
+      "Verify the popover closes after clicking"
+    ],
+    "expected": "Email client opens with pre-filled recipient and subject for bug reports."
+  },
+  {
+    "id": "TC-435",
+    "name": "Feedback Button Mobile Positioning",
+    "priority": "Medium",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "User is logged in, viewport ≤ 768px",
+    "steps": [
+      "Open the app on a mobile viewport (or resize browser to ≤ 768px)",
+      "Verify the feedback button is positioned above the Quick Add FAB button",
+      "Verify both buttons are visible and do not overlap",
+      "Click the feedback button and verify the popover opens correctly"
+    ],
+    "expected": "Feedback button sits above the FAB on mobile with no overlap."
+  },
+  {
+    "id": "TC-436",
+    "name": "Feedback Button Dark Theme",
+    "priority": "Medium",
+    "area": "Feedback",
+    "smoke": false,
+    "section": "29: Feedback Button",
+    "preconditions": "User is logged in with dark theme enabled",
+    "steps": [
+      "Enable dark theme via Settings",
+      "Verify the feedback button adapts to dark theme colors (dark background, appropriate borders)",
+      "Click to open popover and verify it also uses dark theme colors",
+      "Hover over menu items and verify hover states are visible"
+    ],
+    "expected": "Feedback button and popover correctly adapt to dark theme."
+  },
+  {
+    "id": "TC-417",
+    "name": "Connections Section for Non-Team Users Without Pending Invites",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User is logged in on Free or Pro tier with no pending received invitations.",
+    "steps": [
+      "Navigate to Settings",
+      "Expand the Connections section"
+    ],
+    "expected": "No invite form, sent list, or accepted connections list is rendered. The section shows an explanatory paragraph that Connections require the Team plan, with an \"Upgrade to Team\" button. Clicking the upgrade button opens the upgrade modal."
+  },
+  {
+    "id": "TC-418",
+    "name": "Invite Connection by Email",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": true,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User is on Team tier and has no pending invitations to the target email.",
+    "steps": [
+      "Navigate to Settings → Connections",
+      "Type a valid email address of another user into the invite field",
+      "Click Send"
+    ],
+    "expected": "A success toast (\"Invitation sent to …\") appears, the email field clears, and the invitation appears in the \"Pending invitations\" list with the current time."
+  },
+  {
+    "id": "TC-419",
+    "name": "Invite Validates Email Format and Self-Invite",
+    "priority": "Medium",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User is on Team tier.",
+    "steps": [
+      "In the invite field, enter an invalid string (e.g., `not-an-email`) and click Send",
+      "Enter the current user's own email and click Send",
+      "Leave the field empty and click Send"
+    ],
+    "expected": "1. Inline error: \"Enter a valid email address\"\n2. Inline error: \"You can't invite yourself\"\n3. Inline error: \"Enter an email address\"\n\nNo backend request is made in any of the three cases."
+  },
+  {
+    "id": "TC-420",
+    "name": "Accept Received Invitation (Team Tier)",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User is on **Team tier** and has a pending received invitation in Settings → Connections.",
+    "steps": [
+      "Expand the Connections section",
+      "Click Accept on the received invitation"
+    ],
+    "expected": "The invitation disappears from the \"Received invitations\" list. The other user appears in the \"Connections\" list. A success toast confirms the connection was accepted."
+  },
+  {
+    "id": "TC-420b",
+    "name": "Accept Received Invitation on Free/Pro Tier Triggers Upgrade",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User is on **Free or Pro tier** and has a pending received invitation in Settings → Connections.",
+    "steps": [
+      "Expand the Connections section",
+      "Observe the hint above the received invitations list",
+      "Click Accept on the received invitation"
+    ],
+    "expected": "1. The section renders the received invitation with both Accept and Decline buttons visible.\n2. A hint reads: \"Accepting a connection requires the Team plan. You can decline any invitation on your current plan.\"\n3. Clicking Accept opens the upgrade modal with a message about connections requiring the Team plan. No backend call is made; the invitation stays in the received list (Network tab shows no `/v1/connections/invite/*/accept` request)."
+  },
+  {
+    "id": "TC-421",
+    "name": "Decline Received Invitation (All Tiers)",
+    "priority": "Medium",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User has a pending received invitation in Settings → Connections. Run this test once on Team tier and once on Free/Pro tier.",
+    "steps": [
+      "Expand the Connections section",
+      "Click Decline on the received invitation"
+    ],
+    "expected": "The invitation disappears from the \"Received invitations\" list and no new connection is created. Decline works on every tier (backend does not gate decline on tier)."
+  },
+  {
+    "id": "TC-422",
+    "name": "Cancel Sent Invitation",
+    "priority": "Medium",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User has an outstanding sent invitation.",
+    "steps": [
+      "Expand Settings → Connections",
+      "Click Cancel on the invitation in the \"Pending invitations\" list",
+      "Confirm in the confirm dialog"
+    ],
+    "expected": "The invitation is removed from the pending list."
+  },
+  {
+    "id": "TC-423",
+    "name": "Remove Accepted Connection",
+    "priority": "High",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User has at least one accepted connection.",
+    "steps": [
+      "Expand Settings → Connections",
+      "Click Remove next to an accepted connection",
+      "Confirm in the confirm dialog"
+    ],
+    "expected": "The entry is removed from the Connections list. Any in-flight Waiting For items tied to that connection remain visible (removal does not cancel in-progress delegations)."
+  },
+  {
+    "id": "TC-424",
+    "name": "Received-Invitation Badge on Connections Section",
+    "priority": "Low",
+    "area": "Connections",
+    "smoke": false,
+    "section": "30: Connections (Team Tier)",
+    "preconditions": "User is on Team tier with at least one pending received invitation, Connections section collapsed.",
+    "steps": [
+      "Navigate to Settings without expanding Connections",
+      "Observe the Connections section header"
+    ],
+    "expected": "A small numeric badge appears in the Connections header showing the count of pending received invitations. Expanding the section hides the badge."
+  },
+  {
+    "id": "TC-425",
+    "name": "Notification Bell Visible in Top Nav When Authenticated",
+    "priority": "High",
+    "area": "Notifications",
+    "smoke": true,
+    "section": "31: In-App Notifications",
+    "preconditions": "User is logged in.",
+    "steps": [
+      "Load any dashboard page",
+      "Inspect the top nav to the right of the Quick Add button"
+    ],
+    "expected": "A bell icon is visible. If the user has unread in-app notifications, a numeric badge overlays the bell (displays `99+` when over 99). Non-authenticated visitors do not see the bell."
+  },
+  {
+    "id": "TC-426",
+    "name": "Open Notification Dropdown and Mark as Read",
+    "priority": "High",
+    "area": "Notifications",
+    "smoke": false,
+    "section": "31: In-App Notifications",
+    "preconditions": "User has at least one unread in-app notification.",
+    "steps": [
+      "Click the bell in the top nav",
+      "Observe the dropdown content",
+      "Click one of the unread notifications"
+    ],
+    "expected": "1. The dropdown opens aligned to the right of the bell; notifications load and the panel shows a list with the unread item highlighted and a small dot.\n2. Clicking the notification marks it as read (dot and highlight disappear), decrements the unread badge by one, closes the dropdown, and navigates to the linked entity (stuff, action, project, or the Connections settings section depending on `entity_type`/`type`)."
+  },
+  {
+    "id": "TC-427",
+    "name": "Notification Empty State",
+    "priority": "Low",
+    "area": "Notifications",
+    "smoke": false,
+    "section": "31: In-App Notifications",
+    "preconditions": "User has no in-app notifications (or all already dismissed).",
+    "steps": [
+      "Click the notification bell in the top nav"
+    ],
+    "expected": "The dropdown shows \"You're all caught up.\" No badge is visible on the bell."
+  },
+  {
+    "id": "TC-428",
+    "name": "Unread Badge Polls Every 30 Seconds",
+    "priority": "Medium",
+    "area": "Notifications",
+    "smoke": false,
+    "section": "31: In-App Notifications",
+    "preconditions": "User is authenticated with the dashboard open. A second user/process can create a new notification event (e.g., a delegated item) for this user.",
+    "steps": [
+      "Note the current badge count on the bell",
+      "Trigger a new notification for the logged-in user from a second account",
+      "Wait up to 30 seconds without navigating or refreshing"
+    ],
+    "expected": "Within 30 seconds the unread badge increments to reflect the new notification. No full page reload is required."
+  },
+  {
+    "id": "TC-429",
+    "name": "Non-Team Users Still See In-App Notifications",
+    "priority": "Low",
+    "area": "Notifications",
+    "smoke": false,
+    "section": "31: In-App Notifications",
+    "preconditions": "User is logged in on Free or Pro tier with at least one personal notification available (e.g., a task due today digest in the log).",
+    "steps": [
+      "Load the dashboard",
+      "Observe the bell and the badge count",
+      "Open the dropdown"
+    ],
+    "expected": "The bell is visible for all tiers (in-app notifications are not Team-tier gated). Any personal notifications (task due today, daily next actions, project needs next action) appear in the dropdown; Team-only notifications (`delegated_to_you`, `delegation_completed`, `connection_invite`) never appear for non-Team users because those events never fire for them."
+  },
+  {
+    "id": "TC-430",
+    "name": "Delegate Action to Connection from Action Detail",
+    "priority": "High",
+    "area": "Delegation",
+    "smoke": true,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "Logged-in user (assigner) is on Team tier with at least one accepted connection (receiver). The assigner has at least one Action in NEXT state.",
+    "steps": [
+      "Open the action detail page for an action in NEXT state",
+      "Change state to WAITING (Move dropdown or detail form)",
+      "In the \"Who/what are you waiting on?\" combobox, type the receiver's email or name",
+      "Select the matching connection from the dropdown",
+      "Save / confirm"
+    ],
+    "expected": "A `POST /v1/action/{id}/delegate` request is sent with `{ user_id }` matching the receiver. The action moves to WAITING; `waiting_for` shows the receiver's display label and `waiting_for_user_id` is set. The action now appears on the assigner's Waiting For page with the receiver's name + relative \"since\" duration."
+  },
+  {
+    "id": "TC-431",
+    "name": "Delegated Stuff Appears in Receiver Inbox with \"From:\" Indicator",
+    "priority": "High",
+    "area": "Delegation",
+    "smoke": false,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "Receiver is logged in. Assigner (TC-430) has just delegated an action to receiver.",
+    "steps": [
+      "As receiver, navigate to the Inbox page",
+      "Locate the new Stuff item created by the delegation",
+      "Open the Stuff detail page"
+    ],
+    "expected": "The new Stuff item shows a small \"From: [assigner email or display name]\" indicator both in the inbox row and on the Stuff detail page (rendered by `MetadataRow`). The item is otherwise a normal Stuff entry — no special clarify path; it can be processed like any other inbox item."
+  },
+  {
+    "id": "TC-432",
+    "name": "Connection Picker Blocks Self-Delegation",
+    "priority": "Medium",
+    "area": "Delegation",
+    "smoke": false,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "Logged-in Team-tier user with at least one accepted connection.",
+    "steps": [
+      "Open any flow that uses the connection-aware \"Who/what are you waiting on?\" combobox (Action Detail state change, Clarify \"Delegate It\", Move modal, Waiting For add)",
+      "Type the current user's own email or display name into the combobox"
+    ],
+    "expected": "The current user is NOT shown as a selectable option in the dropdown. Other accepted connections matching the search ARE shown. If the user types their own full email and presses Enter, the value is treated as free text (legacy waiting), not delegated — `POST /v1/action/{id}/delegate` is not called with `user_id == self`."
+  },
+  {
+    "id": "TC-433",
+    "name": "Receiver Completion Auto-Resolves Assigner's Waiting For",
+    "priority": "High",
+    "area": "Delegation",
+    "smoke": true,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "A delegation exists per TC-430. Receiver has clarified the delegated Stuff into an Action (state = NEXT) on their side.",
+    "steps": [
+      "As receiver, complete the resulting Action (check the box on the action list, or complete from the action detail page)",
+      "As assigner, refresh the Waiting For page and the original action's detail page (or wait up to 30s for notification polling)"
+    ],
+    "expected": "- Assigner's original action moves out of WAITING. It promotes to NEXT (or to CALENDAR if `scheduled_date` is set on the action).\n- `waiting_for`, `waiting_for_user_id`, and `waiting_since` are cleared.\n- A new comment appears on the action with text starting with \"Done.\" (the receiver may have appended additional text).\n- Assigner's notification bell shows a `delegation_completed` in-app notification (within 30s polling window)."
+  },
+  {
+    "id": "TC-434",
+    "name": "Receiver Trash Also Auto-Resolves the Delegation",
+    "priority": "Medium",
+    "area": "Delegation",
+    "smoke": false,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "A delegation exists per TC-430. Receiver has clarified into an Action OR left it as Stuff in their inbox.",
+    "steps": [
+      "As receiver, trash the Stuff item OR trash the resulting Action",
+      "As assigner, refresh the Waiting For page"
+    ],
+    "expected": "Same outcome as TC-433 — assigner's action auto-promotes out of WAITING, fields are cleared, \"Done.\" comment is written, and a `delegation_completed` notification is fired. Trash is treated identically to completion as a receiver-side terminal event."
+  },
+  {
+    "id": "TC-435",
+    "name": "Free-Text Waiting Still Works for Non-Connection Recipients",
+    "priority": "Medium",
+    "area": "Delegation",
+    "smoke": false,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "Logged-in user (any tier — no connections required for free text).",
+    "steps": [
+      "Open the Waiting For page and add a new item",
+      "In the \"Who/what are you waiting on?\" combobox, type a name that does not match any connection (e.g., \"John from Vendor Co\")",
+      "Submit (Enter or Save)"
+    ],
+    "expected": "The action is created in WAITING state with `waiting_for` set to the typed string and `waiting_for_user_id` left null. The backend call is `POST /v1/action/{id}/wait` (legacy), NOT `/v1/action/{id}/delegate`. The item appears in Waiting For with the free-text label and a \"since\" duration."
+  },
+  {
+    "id": "TC-436",
+    "name": "Tier Downgrade Blocks New Delegations but Preserves In-Flight",
+    "priority": "High",
+    "area": "Delegation",
+    "smoke": false,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "A user previously on Team tier with an active in-flight delegation (per TC-430). The user has been downgraded to Free or Pro.",
+    "steps": [
+      "As the downgraded user, attempt to delegate a new action via the connection picker (try selecting any connection in the dropdown)",
+      "Observe the response",
+      "Locate the existing in-flight delegation in Waiting For — verify it still appears with `waiting_for_user_id` populated",
+      "Have the receiver complete the in-flight delegation",
+      "Refresh and check the assigner's Waiting For"
+    ],
+    "expected": "1. Picker may still show connections (read-only) but `POST /v1/action/{id}/delegate` returns 403 with a tier-related message; an upgrade modal or error toast surfaces. No new delegation row is created.\n2. The pre-existing in-flight delegation is unchanged — backend does not auto-resolve on downgrade.\n3. After the receiver completes, the resolution sync still fires normally (assigner's Waiting For unwaits, \"Done.\" comment lands, notification posts) even though the assigner is no longer on Team tier."
+  },
+  {
+    "id": "TC-437",
+    "name": "Share Personal Project with a Connection (Owner)",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": true,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is on Team tier, owns a personal project (active, not completed), and has at least one accepted connection.",
+    "steps": [
+      "Open Project Detail for the personal project",
+      "Click the **Share…** button in the action button row",
+      "In the share modal, search for and select one or more connections",
+      "Click **Share**"
+    ],
+    "expected": "A `POST /v1/project/{id}/share` request is sent with the selected `members` (default role `write`). On success the modal closes, a success toast appears (\"Project shared\"), the **Shared** badge appears beside the project title, and a \"Shared with\" section is rendered listing the new members + the owner. The project layout switches from the personal \"Next Action\" section to the shared \"Backlog\" section."
+  },
+  {
+    "id": "TC-438",
+    "name": "Tier Gate on Share Button",
+    "priority": "Medium",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user on Free or Pro tier owns a personal project.",
+    "steps": [
+      "Open Project Detail",
+      "Click the **Share…** button (visible because user owns a personal project)"
+    ],
+    "expected": "The share modal does NOT open. Instead the standard upgrade modal appears with a message indicating sharing is a Team plan feature. No backend request is made."
+  },
+  {
+    "id": "TC-439",
+    "name": "Owner Edits Project Title, Outcome, and Description",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project exists; logged-in user is the owner.",
+    "steps": [
+      "Click the project title — it becomes an editable textarea. Change the value and blur (or press Enter)",
+      "Click the outcome paragraph — it becomes editable. Change the value and click Save",
+      "Click the description paragraph — same flow",
+      "Observe the network tab on each save"
+    ],
+    "expected": "Each save fires `PUT /v1/project/{id}` with the full body `{ title, description, outcome }` (and `tags` on the tag save). The new value persists after page reload. No 403 is returned."
+  },
+  {
+    "id": "TC-440",
+    "name": "Write Member Sees Title/Outcome/Description as View-Only",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project exists; logged-in user is a **write** member (not the owner).",
+    "steps": [
+      "Open the shared project detail page",
+      "Hover over the title — observe the cursor and hover background",
+      "Click the title",
+      "Repeat for outcome and description"
+    ],
+    "expected": "- Title shows no pointer cursor on hover, no hover background highlight, and clicking does nothing (no inline edit textarea appears).\n- Outcome and description behave identically. Empty outcome shows \"—\" (not \"What does done look like?\"). Empty description shows \"—\" (not \"Add a description...\").\n- No `PUT /v1/project/{id}` request is fired."
+  },
+  {
+    "id": "TC-441",
+    "name": "Read-Only Member Sees Same Fields as View-Only",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project exists; logged-in user is a **read-only** member.",
+    "steps": [
+      "Open the shared project detail page",
+      "Attempt to click title, outcome, description (one by one)"
+    ],
+    "expected": "Identical to TC-440 — title/outcome/description are not editable, no inline editor opens, placeholders show \"—\", no `PUT` is fired. The user sees the same view-only experience as a write member for project metadata."
+  },
+  {
+    "id": "TC-442",
+    "name": "Tags Are Editable by All Roles (Private Per User)",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project exists with three test users — owner, write member, read-only member.",
+    "steps": [
+      "As owner, open the project detail and add a tag (e.g., `@home`)",
+      "Save and reload — observe own tags",
+      "Sign in as the write member, open the same project, observe the tags shown, then add a different tag (e.g., `@office`)",
+      "Sign in as the read-only member, open the same project, observe the tags shown, then add a third tag (e.g., `<5min`)",
+      "Inspect the network tab on each save"
+    ],
+    "expected": "- Each user sees only their own tags on the project — owner sees `@home`, write member sees `@office`, read-only sees `<5min`. Tags are private per user; other members' tags are not visible.\n- For the write and read-only members the save body is `PUT /v1/project/{id}` with body `{ tags: [...] }` only — NOT including title/description/outcome. Backend does not return 403.\n- For the owner the save body includes the full `{ title, description, outcome, tags }`."
+  },
+  {
+    "id": "TC-443",
+    "name": "Write Member Adds and Reorders Backlog Actions",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": true,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is a write member of a shared project that already has at least 2 unassigned backlog actions.",
+    "steps": [
+      "Open the project detail",
+      "In the Backlog section, type a new action title in the quick-add input and press Enter / click Add",
+      "Drag one of the existing backlog rows to reorder the list"
+    ],
+    "expected": "- New action is created in the project backlog (state = BACKLOG, no `assigned_to`) and appears at the top of the backlog list.\n- Drag-to-reorder triggers `onBacklogReorder` and persists the new order on the backend; reload preserves it."
+  },
+  {
+    "id": "TC-444",
+    "name": "Read-Only Member Cannot Add or Reorder Backlog",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is a read-only member of a shared project with existing backlog actions.",
+    "steps": [
+      "Open the project detail",
+      "Look at the Backlog section",
+      "Attempt to drag a backlog row to a new position"
+    ],
+    "expected": "The quick-add input above the backlog is NOT rendered. The empty-state link \"Add the first action\" is replaced by \"No actions yet.\" for an empty project. Dragging a row has no effect — the `VueDraggable` instance has `:disabled=\"!canWrite\"`. Item rows show no checkbox (per `canCompleteAction`) and no inline title editing."
+  },
+  {
+    "id": "TC-445",
+    "name": "Self-Assign One Backlog Action at a Time",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": true,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is a write member with no currently assigned action on a shared project that has multiple unassigned backlog items.",
+    "steps": [
+      "Open the project detail",
+      "Click the **Assign to me** (PersonAddIcon) button on an unassigned action row",
+      "After the assign succeeds, attempt to click **Assign to me** on a second unassigned action"
+    ],
+    "expected": "- First call fires `POST /v1/action/{id}/assign`. The row updates to show the green \"You\" badge and a PersonRemoveIcon (Unassign) button. The action also appears in the user's personal Next Actions list.\n- The \"Assign to me\" button on every other unassigned row in the same project is now hidden (the per-row `hasActionButtons` check requires `!myAssignedAction`). The user must complete, trash, or unassign before claiming another action."
+  },
+  {
+    "id": "TC-446",
+    "name": "Unassign Returns Action to Backlog",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user has one assigned action on a shared project (per TC-445).",
+    "steps": [
+      "Open the project detail",
+      "Click the **Unassign** (PersonRemoveIcon) button on the assigned action"
+    ],
+    "expected": "`POST /v1/action/{id}/unassign` fires. The \"You\" badge is removed and the row reverts to unassigned. The action no longer appears in the user's personal Next Actions. The user can now self-assign another backlog action (Assign to me buttons reappear on other rows)."
+  },
+  {
+    "id": "TC-447",
+    "name": "Trashing an Assigned Action Does NOT Return It to Backlog",
+    "priority": "Medium",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user has an assigned action on a shared project (per TC-445).",
+    "steps": [
+      "Open the project detail",
+      "Click the trash (×) button on your assigned action row, confirm the dialog"
+    ],
+    "expected": "The action is permanently trashed. It does NOT reappear in the project backlog (trash is final per spec). The user is now free to self-assign another backlog action."
+  },
+  {
+    "id": "TC-448",
+    "name": "Read-Only Member Cannot Self-Assign or See Assign Buttons",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is a read-only member of a shared project with unassigned backlog actions.",
+    "steps": [
+      "Open the project detail",
+      "Inspect the per-row buttons on unassigned and assigned actions"
+    ],
+    "expected": "No \"Assign to me\" icon button appears on any unassigned row (gated by `canWrite`). For actions assigned to other members, the assignee chip is shown but no controls. No checkbox is rendered on any row. No inline title edit is allowed. No quick-add input is shown."
+  },
+  {
+    "id": "TC-449",
+    "name": "Non-Owner Member Sees \"Leave\" Button Instead of \"Trash\"",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is a non-owner member (write or read-only) of a shared project. The project is not completed.",
+    "steps": [
+      "Open the project detail",
+      "Inspect the action button row at the top"
+    ],
+    "expected": "- \"Trash\" button is NOT visible.\n- \"Leave\" button (ghost-danger variant) is visible in its place.\n- \"Complete\" button is NOT visible (owner only).\n- \"Share…\" button is NOT visible (owner only)."
+  },
+  {
+    "id": "TC-450",
+    "name": "Leave Project Removes Membership and Routes to /projects",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": true,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is a non-owner member of a shared project (per TC-449). The user may or may not have an assigned action.",
+    "steps": [
+      "Open the project detail",
+      "Click **Leave**",
+      "In the confirm dialog, click **Leave**"
+    ],
+    "expected": "- Confirm dialog shows: \"You will lose access. Any actions assigned to you return to the backlog.\"\n- On confirm, `DELETE /v1/project/{id}/members/{my_user_id}` is called. The Leave button shows the loading spinner during the request.\n- On success, the user is routed to `/projects`. The project no longer appears in their projects list. If the user had an assigned action, it returns to the project's backlog (visible to remaining members)."
+  },
+  {
+    "id": "TC-451",
+    "name": "Owner Removes a Member; Their Assigned Action Returns to Backlog",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is the owner of a shared project. A non-owner member has an in-progress assigned action.",
+    "steps": [
+      "Open the project detail",
+      "In the \"Shared with\" section, click the remove (×) button next to the member with the assigned action",
+      "Confirm the dialog"
+    ],
+    "expected": "Confirm dialog shows the member's email and warns \"[email] will lose access. Their assigned actions return to the backlog.\" On confirm, `DELETE /v1/project/{id}/members/{uid}` fires. The member is removed from the list. The previously assigned action returns to the backlog (visible as unassigned, no \"You\" or assignee chip)."
+  },
+  {
+    "id": "TC-452",
+    "name": "Owner Changes a Member's Role",
+    "priority": "Medium",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is the owner of a shared project with at least one non-owner member.",
+    "steps": [
+      "Open the project detail",
+      "In the \"Shared with\" section, click the role dropdown next to a non-owner member",
+      "Select a different role (Write ↔ Read-only)"
+    ],
+    "expected": "`PATCH /v1/project/{id}/members/{uid}` fires with the new role. The dropdown updates to show the selected role. As the affected member (in another session), reloading the project should reflect the new permission set — e.g., a downgrade from write to read-only hides the quick-add input and self-assign buttons."
+  },
+  {
+    "id": "TC-453",
+    "name": "Attachments Are Read-Only for Read-Only Members",
+    "priority": "Medium",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project has at least one project-level attachment uploaded by the owner. Logged-in user is a read-only member.",
+    "steps": [
+      "Open the project detail and scroll to Attachments",
+      "Inspect the empty drop zone (if no attachments) or \"Attach another file...\" link",
+      "Inspect the per-attachment action buttons"
+    ],
+    "expected": "- The \"Attach a file...\" / \"Attach another file...\" drop zones are NOT rendered. Empty state shows \"—\" instead.\n- The per-attachment delete button is NOT rendered. Only the download button is visible.\n- The user can still click an attachment to open the preview modal and download it."
+  },
+  {
+    "id": "TC-454",
+    "name": "All Members (Including Read-Only) Can Comment",
+    "priority": "High",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project exists. Test once as write member and once as read-only member.",
+    "steps": [
+      "As each role, open the project detail",
+      "Scroll to the Comments section",
+      "Click \"Add a comment...\", type a message, click Save"
+    ],
+    "expected": "For BOTH the write and read-only members, the comment is created successfully (`POST` to the comments endpoint). The new comment appears in the list with the user's avatar and timestamp. Read-only members are NOT blocked from commenting — comments are the one edit capability granted to them per the P2 spec."
+  },
+  {
+    "id": "TC-455",
+    "name": "Completed Section Shows \"Completed By\" on Shared Projects",
+    "priority": "Medium",
+    "area": "Shared Projects",
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "A shared project has at least one action that has been completed by a non-owner member.",
+    "steps": [
+      "Open the project detail (as any member of the project)",
+      "Click the **Completed** chevron to expand the section",
+      "Inspect the network tab for the request fired on first expand"
+    ],
+    "expected": "- A single `GET /v1/project/{id}/completed?limit=100` request is fired (NOT a paginated walk over `/v1/completed`).\n- The list of completed actions appears. For shared projects, each row shows the action title plus a meta line of the form \"completed by [email] · [relative date]\". For personal projects (regression), only the relative date is shown — no \"completed by\" prefix.\n- Re-collapsing and re-expanding does NOT re-fetch (the result is cached in `completedLoaded`)."
+  },
+  {
+    "id": "TC-456",
+    "name": "Toggle \"Delegated to you\" Email Preference",
+    "priority": "Medium",
+    "area": "Settings, Notifications",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "Logged-in user with master \"Email notifications\" toggle ON.",
+    "steps": [
+      "Navigate to /settings → Notifications",
+      "Turn the **Delegated to you** toggle OFF",
+      "In DevTools Network tab, inspect the `PUT /v1/notification/settings` request body",
+      "Reload the page"
+    ],
+    "expected": "- Body contains `{\"disabled_events\": {\"email\": [..., \"delegated_to_you\"]}}` — `delegated_to_you` is included in the disabled list along with any other already-disabled events. Master `\"*\"` is NOT in the array.\n- Backend returns 200 with the updated `disabled_events`.\n- After reload, the **Delegated to you** toggle is OFF; all other toggles are unchanged."
+  },
+  {
+    "id": "TC-457",
+    "name": "Toggle \"Delegation completed\" Email Preference",
+    "priority": "Medium",
+    "area": "Settings, Notifications",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "Logged-in user with master \"Email notifications\" toggle ON.",
+    "steps": [
+      "Navigate to /settings → Notifications",
+      "Turn the **Delegation completed** toggle OFF",
+      "Inspect the PUT body",
+      "Reload"
+    ],
+    "expected": "PUT body contains `delegation_completed` in `disabled_events.email`. After reload, the toggle is OFF; the corresponding email event will not fire (assigner won't get the email when a delegated action is completed). The in-app notification still arrives in the bell dropdown — in-app delivery is not affected."
+  },
+  {
+    "id": "TC-458",
+    "name": "Toggle \"Connection invitations\" Email Preference",
+    "priority": "Medium",
+    "area": "Settings, Notifications",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "Logged-in user with master \"Email notifications\" toggle ON.",
+    "steps": [
+      "Navigate to /settings → Notifications",
+      "Turn the **Connection invitations** toggle OFF",
+      "Inspect the PUT body",
+      "Reload",
+      "From a second account, send a connection invitation to the user under test",
+      "Check the inbox of the user under test"
+    ],
+    "expected": "- PUT body contains `connection_invite` in `disabled_events.email`.\n- After reload, the toggle is OFF.\n- The user does NOT receive the connection-invite email.\n- The user's notification bell DOES show the connection_invite as an in-app row (in-app cannot be disabled).\n- The user's \"Received invitations\" list in Settings → Connections still shows the new invitation."
+  },
+  {
+    "id": "TC-459",
+    "name": "Master Toggle OFF Disables All Six Individual Toggles",
+    "priority": "Medium",
+    "area": "Settings, Notifications",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "Logged-in user; master \"Email notifications\" toggle ON; some individual toggles in mixed states.",
+    "steps": [
+      "Navigate to /settings → Notifications",
+      "Turn the master \"Email notifications\" toggle OFF",
+      "Observe the six individual toggles (Task due today, Daily next actions, Project needs next action, Delegated to you, Delegation completed, Connection invitations)",
+      "Inspect the PUT body",
+      "Reload",
+      "Turn the master toggle back ON"
+    ],
+    "expected": "- Step 2 sends `{\"disabled_events\": {\"email\": [\"*\"]}}` — wildcard disabling all email events.\n- All six individual toggles become visually disabled (greyed, no pointer events) but their in-memory state is preserved.\n- After reload, master is OFF and individuals are still disabled.\n- Step 6 sends the rebuilt individual disabled list (e.g., `{\"disabled_events\": {\"email\": [\"delegated_to_you\"]}}` if that one was OFF before the master). Individuals re-enable; previously OFF ones remain OFF."
+  },
+  {
+    "id": "TC-460",
+    "name": "In-App Channel Cannot Be Disabled",
+    "priority": "High",
+    "area": "Settings, Notifications",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "Logged-in user with at least one in-app notification visible in the bell dropdown.",
+    "steps": [
+      "Navigate to /settings → Notifications",
+      "Verify there is no toggle, control, or hint for an \"in-app\" channel anywhere in the section",
+      "Verify the footer note reads: \"In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled.\"",
+      "(Optional, manual API call) Send `PUT /v1/notification/settings` with body `{\"disabled_events\": {\"in_app\": [\"delegated_to_you\"]}}`",
+      "Trigger an in-app notification (e.g., have a connection delegate an action to you)",
+      "Open the notification bell"
+    ],
+    "expected": "- The Settings UI exposes ONLY email controls — no in-app channel toggles.\n- Step 4: backend returns 400 with an \"invalid channel key (only `email` is allowed)\" error message.\n- Step 6: the in-app notification appears in the bell regardless of any preference attempt; in-app delivery is always on."
+  },
+  {
+    "id": "TC-461",
+    "name": "Non-Team Member Sees Read-Only Notice on Shared Project",
+    "priority": "Medium",
+    "area": "Shared Projects, Tier Limits",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "A user who is a member (owner or non-owner) of a shared project but is NOT on the Team plan — e.g. a Team user who shared/joined a project and later downgraded to Free or Pro. The project is active (not completed).",
+    "steps": [
+      "Log in as the non-Team member and open the shared project's detail page",
+      "Observe the top of the Backlog section",
+      "Confirm the write controls are absent (no \"Add action\" input, no \"Assign to me\" buttons, backlog not reorderable)",
+      "Click the \"Upgrade to Team\" button in the notice",
+      "(Comparison) Log in as a Team-plan member of the same project and open it"
+    ],
+    "expected": "- Steps 1–2: a notice appears at the top of the Backlog reading: \"You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit.\" with an \"Upgrade to Team\" button.\n- Step 3: all write controls are hidden (gated by `canWrite`), consistent with read-only access; comments and attachment download remain available.\n- Step 4: the upgrade modal opens with a message about working on shared projects.\n- Step 5: the Team-plan member does NOT see the notice; their write controls render normally."
+  },
+  {
+    "id": "TC-462",
+    "name": "Backlog Row Hides Assignee Name When Action Is Waiting",
+    "priority": "Medium",
+    "area": "Shared Projects, Delegation",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "A shared project with at least three backlog actions: (a) one assigned to another member in an active state (e.g. NEXT/TODAY), (b) one assigned to another member who has delegated it onward so it is in WAITING state, and (c) one assigned to the current caller. Viewer is any member of the project.",
+    "steps": [
+      "Open the shared project's detail page",
+      "Inspect the assignee display on action (a) — assigned to another member, not waiting",
+      "Inspect the assignee display on action (b) — assigned to another member, WAITING state",
+      "Inspect the assignee display on action (c) — assigned to the caller"
+    ],
+    "expected": "- Action (a): shows the other member's email/display label.\n- Action (b): shows only \"Waiting\" — the assignee's name is NOT shown (the delegation detail lives in that member's own Waiting For, which is private to them).\n- Action (c): shows the green \"You\" badge."
+  },
+  {
+    "id": "TC-463",
+    "name": "Inbox Shows \"From: [name]\" Indicator on Delegated Items",
+    "priority": "Medium",
+    "area": "Inbox, Delegation",
+    "smoke": false,
+    "section": "34: P2 Notification Preferences",
+    "preconditions": "Two Team-tier users who are connected (User A and User B). User A delegates an action to User B (via Clarify delegate substep or Action Detail). User B also has at least one self-captured inbox item.",
+    "steps": [
+      "Log in as User B and open /inbox",
+      "Locate the item that arrived from User A's delegation",
+      "Inspect its row beneath the title",
+      "Inspect a self-captured inbox item's row",
+      "Open the delegated item into clarify and confirm it processes like any other stuff"
+    ],
+    "expected": "- Step 2–3: the delegated row shows a \"From: [name]\" chip where the name is User A's email (sourced from `delegated_from.name` in the `GET /v1/inbox` response).\n- Step 4: the self-captured item shows no \"From:\" chip (and no metadata row unless it has a description/attachment/comment).\n- Step 5: the delegated item goes through the standard clarify flow with no special handling."
   }
 ]

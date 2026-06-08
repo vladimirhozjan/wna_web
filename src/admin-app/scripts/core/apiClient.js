@@ -566,6 +566,71 @@ export async function forceResetAdmin(id) {
     }
 }
 
+// --- Collaboration oversight endpoints (connections + shared projects) ---
+
+export async function listConnections(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/connections', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getConnection(id) {
+    try {
+        const res = await httpApi.get(`/admin/connections/${id}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function removeConnection(id) {
+    try {
+        const res = await httpApi.delete(`/admin/connections/${id}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listSharedProjects(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/shared-projects', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getSharedProject(id) {
+    try {
+        const res = await httpApi.get(`/admin/shared-projects/${id}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function unshareSharedProject(id) {
+    try {
+        const res = await httpApi.post(`/admin/shared-projects/${id}/unshare`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function removeSharedProjectMember(id, userId) {
+    try {
+        const res = await httpApi.delete(`/admin/shared-projects/${id}/members/${userId}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -621,4 +686,11 @@ export default {
     deleteFeatureFlag,
     changePassword,
     resetOtp,
+    listConnections,
+    getConnection,
+    removeConnection,
+    listSharedProjects,
+    getSharedProject,
+    unshareSharedProject,
+    removeSharedProjectMember,
 }

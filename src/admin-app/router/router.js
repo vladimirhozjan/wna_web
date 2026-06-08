@@ -74,6 +74,30 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'support' }
             },
             {
+                path: 'connections',
+                name: 'connections',
+                component: () => import('../views/CollaborationConnectionsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
+                path: 'connections/:id',
+                name: 'connection-detail',
+                component: () => import('../views/CollaborationConnectionDetailPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
+                path: 'shared-projects',
+                name: 'shared-projects',
+                component: () => import('../views/CollaborationSharedProjectsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
+                path: 'shared-projects/:id',
+                name: 'shared-project-detail',
+                component: () => import('../views/CollaborationSharedProjectDetailPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
                 path: 'gdpr',
                 name: 'gdpr',
                 component: () => import('../views/GdprRequestsPage.vue'),

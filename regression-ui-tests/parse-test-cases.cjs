@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Parses wna_test_cases.md into structured test-cases.json
+ * Parses .claude/wna-test-cases.md into structured test-cases.json
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const inputFile = path.resolve(__dirname, '..', 'wna_test_cases.md');
+const inputFile = path.resolve(__dirname, '..', '.claude', 'wna-test-cases.md');
 const outputFile = path.resolve(__dirname, 'test-cases.json');
 
 const content = fs.readFileSync(inputFile, 'utf-8');

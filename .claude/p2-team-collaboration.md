@@ -330,7 +330,7 @@ GET    /v1/notifications/unread-count       # Badge count
 |---|-------|----------|
 | T-38 | As a user, I receive in-app notifications for meaningful per-item events: delegation sent/completed, connection invitations, project-needs-next-action, shared project changes (Phase 2) | Must |
 | T-39 | As a user, I see a notification badge in the top nav when I have unread notifications | Must |
-| T-40 | As a user, I can configure notification preferences (email, in-app, per event type) | Should |
+| T-40 | As a user, I can configure notification preferences per event type for the **email** and **push** channels. In-app is always on and has no setting. (Two notification types: normal — opt-out-able on email/push; urgent — always delivered on all channels.) | Should |
 
 **In-app channel scope (Phase 1):** `delegated_to_you`, `delegation_completed`, `connection_invite`, `project_needs_next_action`. Bulk digest events (`task_due_today`, `daily_next_actions`) are email-only — they contain rolled-up summaries that would be noise as per-item in-app notifications. Phase 2 will add shared-project events (`action_assigned`, `member_added`, etc.).
 
