@@ -12,6 +12,13 @@
             <span class="text-body-s fw-medium">{{ dashboard.healthData.value.overall_status }}</span>
           </div>
           <div class="health-services">
+            <div class="health-row">
+              <StatusDot color="green" />
+              <span class="text-body-s">web</span>
+              <span class="text-caption color-text-tertiary health-version">
+                {{ appVersion || '—' }}
+              </span>
+            </div>
             <div v-for="svc in dashboard.healthData.value.services" :key="svc.name" class="health-row">
               <StatusDot :color="svc.status === 'up' ? 'green' : 'red'" />
               <span class="text-body-s">{{ svc.name }}</span>
@@ -157,6 +164,9 @@ import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 
 const dashboard = dashboardModel()
 const auth = authModel()
+
+// App version from Vite define
+const appVersion = __APP_VERSION__
 
 const role = computed(() => auth.currentAdmin.value?.role)
 const canViewAudit = computed(() => hasMinRole(role.value, 'admin'))

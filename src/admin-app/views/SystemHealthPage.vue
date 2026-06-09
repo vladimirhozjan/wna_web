@@ -29,6 +29,20 @@
 
       <!-- Service cards -->
       <div class="services-grid">
+        <div class="service-card card">
+          <div class="service-header">
+            <StatusDot color="green" />
+            <span class="text-body-m fw-semibold">web</span>
+          </div>
+          <div class="service-details">
+            <div class="service-meta">
+              <div class="meta-row">
+                <span class="text-caption color-text-secondary">Version</span>
+                <span class="text-body-s">{{ appVersion || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div v-for="svc in healthData.services" :key="svc.name" class="service-card card">
           <div class="service-header">
             <StatusDot :color="svc.status === 'up' ? 'green' : 'red'" />
@@ -81,6 +95,9 @@ import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
+
+// App version from Vite define
+const appVersion = __APP_VERSION__
 
 const healthData = ref(null)
 const loading = ref(false)
