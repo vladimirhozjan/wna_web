@@ -38,18 +38,6 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="6" r="3"/><path d="M1 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="14" cy="5" r="2.5"/><path d="M19 16c0-2.5-2-4.5-4.5-4.5"/></svg>'
   },
   {
-    label: 'Connections',
-    route: '/connections',
-    minRole: 'support',
-    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="10" r="2.5"/><circle cx="15" cy="5" r="2.5"/><circle cx="15" cy="15" r="2.5"/><path d="M7.2 8.8l5.6-2.6M7.2 11.2l5.6 2.6"/></svg>'
-  },
-  {
-    label: 'Shared Projects',
-    route: '/shared-projects',
-    minRole: 'support',
-    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="4" width="15" height="12" rx="1.5"/><path d="M2.5 8h15"/><circle cx="6" cy="6" r="0.5" fill="currentColor"/></svg>'
-  },
-  {
     label: 'GDPR Requests',
     route: '/gdpr',
     minRole: 'admin',

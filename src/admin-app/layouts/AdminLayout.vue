@@ -46,6 +46,7 @@ const PAGE_TITLES = {
   admins: 'Admin Users',
   'admin-detail': 'Admin Detail',
   'content-browser': 'Content Browser',
+  'shared-project-detail': 'Shared Project',
   gdpr: 'GDPR Requests',
   health: 'System Health',
   analytics: 'Analytics',

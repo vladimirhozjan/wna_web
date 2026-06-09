@@ -353,8 +353,15 @@ GET    /v1/notifications/unread-count       # Badge count
 
 | # | Story | Priority |
 |---|-------|----------|
-| T-46 | As an admin, I can view all connections and shared projects for oversight and support | Should |
-| T-47 | As an admin, I can manage connections and shared projects if something goes wrong | Should |
+| T-46 | As an admin, I can view a user's connections, shared projects, and delegations for oversight and support | Should |
+| T-47 | As an admin, I can manage a user's connections and shared projects if something goes wrong | Should |
+
+**Implementation note (admin app):** Oversight is **user-scoped**, not global. The support flow is user-first — find the user in **Users**, open their **User Detail** page, and review their collaboration data in three sections rendered by `UserCollaboration.vue`:
+- **Connections** — `GET /admin/connections?user_id={id}` (shows the other party + status; admins can force-remove).
+- **Shared Projects** — `GET /admin/shared-projects?member_user_id={id}` (returns the user's per-project `role`; client-side title filter; row → shared-project detail with members, unshare, remove-member).
+- **Delegations** — `GET /admin/platform-users/{id}/delegations` (delegated-out + delegated-in, read-only).
+
+There are no global platform-wide "Connections" / "Shared Projects" nav pages — browsing every user's collaboration data with a UUID filter was the wrong model for support. UUID query filters return `400` (not `500`) on malformed input.
 
 ---
 

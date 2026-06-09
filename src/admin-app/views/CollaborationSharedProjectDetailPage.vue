@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="page-header">
-      <RouterLink to="/shared-projects" class="text-body-s back-link">&larr; Shared Projects</RouterLink>
+      <RouterLink :to="backTo" class="text-body-s back-link">&larr; Back</RouterLink>
     </div>
 
     <div v-if="loading" class="loading-state">
@@ -120,6 +120,7 @@ const actionLoading = ref(false)
 const memberActionId = ref(null)
 
 const role = computed(() => auth.currentAdmin.value?.role)
+const backTo = computed(() => route.query.from || '/users')
 
 const memberColumns = [
   { key: 'user_id', label: 'User ID', sortable: false },
@@ -160,7 +161,7 @@ async function handleUnshare() {
   try {
     await apiClient.unshareSharedProject(project.value.id)
     toaster.success('Project unshared')
-    router.push({ name: 'shared-projects' })
+    router.push(backTo.value)
   } catch (err) {
     toaster.push(err.message || 'Failed to unshare project')
   } finally {
@@ -182,7 +183,7 @@ async function handleRemoveMember(member) {
     const res = await apiClient.removeSharedProjectMember(project.value.id, member.user_id)
     if (res?.auto_unshared) {
       toaster.success('Member removed — project auto-unshared')
-      router.push({ name: 'shared-projects' })
+      router.push(backTo.value)
       return
     }
     toaster.success('Member removed')

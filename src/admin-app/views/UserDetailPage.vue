@@ -82,6 +82,9 @@
         </div>
       </div>
 
+      <!-- Collaboration (connections, shared projects, delegations) -->
+      <UserCollaboration v-if="hasMinRole(role, 'support')" :user-id="user.id" :user-email="user.email" />
+
       <!-- Actions -->
       <div v-if="hasMinRole(role, 'admin')" class="actions-card card">
         <h3 class="text-label color-text-secondary section-title">Actions</h3>
@@ -230,6 +233,7 @@ import Stat from '../components/Stat.vue'
 import StatusDot from '../components/StatusDot.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
+import UserCollaboration from '../components/UserCollaboration.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'

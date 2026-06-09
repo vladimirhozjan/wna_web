@@ -631,6 +631,15 @@ export async function removeSharedProjectMember(id, userId) {
     }
 }
 
+export async function listUserDelegations(userId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/delegations`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -693,4 +702,5 @@ export default {
     getSharedProject,
     unshareSharedProject,
     removeSharedProjectMember,
+    listUserDelegations,
 }

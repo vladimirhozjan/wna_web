@@ -9206,30 +9206,12 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-315: Sessions - End Others Bulk Action
-**Priority:** Medium | **Area:** Settings
+### TC-315: Sessions - End Others Bulk Action — REMOVED
 
-**Preconditions:** User is logged in with at least three active sessions. The settings page is open.
-
-**Steps:**
-1. Navigate to /settings.
-2. Locate the Sessions section.
-3. Count the number of sessions listed (e.g., 3 sessions).
-4. Verify an "End Others" button is visible (should appear when more than 1 session exists).
-5. Click the "End Others" button.
-6. Verify a confirmation dialog appears mentioning the count of sessions that will be ended (e.g., "End 2 other sessions?").
-7. Click "Confirm" or the equivalent confirmation button.
-8. Verify all sessions except the current one are removed from the list.
-9. Verify only the current session (with "Current" badge) remains.
-10. Verify the user is NOT logged out.
-
-**Expected Result:** The "End Others" button triggers a confirmation dialog showing the count of sessions to be revoked. Confirming removes all sessions except the current one. The user remains logged in.
-
-| Date | P/F | Comment |
-|------|-----|---------|
-|      |     |         |
-|      |     |         |
-|      |     |         |
+The bulk "End Others" session action is no longer part of the product. The
+Sessions section exposes only per-session "End" buttons (see TC-314); there is
+no bulk button to revoke all other sessions at once. This test case has been
+retired and the corresponding automated test removed.
 
 ---
 

@@ -1071,7 +1071,6 @@ Presets are customizable in Settings.
 **Actions:**
 - Current session: "End" button → confirmation dialog → logs out, redirects to `/login`
 - Other sessions: "End" button → confirmation dialog ("will be signed out within the next hour") → revokes session, removes from list
-- "End Others" button (when >1 session): Confirmation with device count → revokes all except current
 
 **Error state:** Error message + "Retry" button
 
