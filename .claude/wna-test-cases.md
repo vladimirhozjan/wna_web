@@ -7807,6 +7807,59 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-262c: Recurring Template Timing Mode - Scheduled vs Start
+**Priority:** High | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in (Pro tier). A recurring action template exists with default settings (scheduled mode, no time set).
+
+**Steps:**
+1. Navigate to the template's detail page at `/recurring/:id`
+2. Verify a "Timing" section shows a radio selector with two options: "Scheduled for" and "Start after"
+3. Verify "Scheduled for" is selected by default, and the hint below describes calendar behavior
+4. Verify the time section below is labeled "Scheduled time" and offers time + duration inputs
+5. Set a scheduled time of 14:00 and verify the duration defaults to 30 minutes
+6. Select the "Start after" radio option
+7. Verify the hint changes to describe tickler behavior (hidden until the date, then appears in Next)
+8. Verify the time section is now labeled "Start time" with a time input only (no duration)
+9. Verify the previously set scheduled time/duration were cleared
+10. Set a start time of 08:00
+11. Reload the page and verify "Start after" is still selected and the start time shows 08:00
+12. Switch back to "Scheduled for" and verify the start time is cleared and the section reverts to "Scheduled time" + duration
+
+**Expected Result:** The timing mode radio selector switches the template between scheduled mode (scheduled time + duration) and start/tickler mode (start time only). Switching saves immediately, clears the other mode's time fields, and the selection persists across reloads. Time fields are optional in both modes.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-262d: Start-Mode Recurring Template - List Display and Spawned Instance
+**Priority:** Medium | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in (Pro tier). Two recurring templates exist: one in scheduled mode (daily at 14:00, 30 min) and one in start mode (daily, start time 08:00).
+
+**Steps:**
+1. Navigate to the Calendar page and switch to the Recurring view
+2. Verify the scheduled-mode template's recurrence summary shows its time and duration (e.g., "Every day at 14:00 for 30m") and has no "Starts" chip
+3. Verify the start-mode template shows a "Starts" chip and its recurrence summary shows the start time without a duration (e.g., "Every day at 08:00")
+4. Open the start-mode template's detail page and click the "Active instance" badge
+5. Verify the spawned action has a start date (not a scheduled date) — it shows a "Starts" indicator with the occurrence date
+6. Verify the instance does not appear as a timed appointment on the calendar grid
+7. If the start date is today or in the past, verify the instance appears in the Next list; if in the future, verify it is not in Next yet
+
+**Expected Result:** Start-mode templates are distinguishable in the Recurring list via the "Starts" chip and show the start time in the recurrence summary. Their spawned instances carry start_date/start_time (tickler behavior: hidden until the date, then in Next) instead of appearing as calendar appointments.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 17: Context Tags & Filtering
 
 ---

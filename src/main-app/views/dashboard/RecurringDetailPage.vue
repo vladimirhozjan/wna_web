@@ -122,19 +122,55 @@
           </div>
         </div>
 
-        <!-- Scheduled time -->
+        <!-- Timing mode -->
         <div class="detail-section-area">
-          <label class="text-body-s fw-semibold detail-section-label">Scheduled time</label>
+          <label class="text-body-s fw-semibold detail-section-label">Timing</label>
+          <div class="detail-section-wrapper">
+            <div class="detail-date-type-selector">
+              <label class="text-body-m detail-radio">
+                <input
+                    type="radio"
+                    name="date-type"
+                    value="scheduled"
+                    :checked="dateType === 'scheduled'"
+                    :disabled="savingField === 'date_type' || savingField === 'time'"
+                    @change="onDateTypeChanged('scheduled')"
+                />
+                <span>Scheduled for</span>
+              </label>
+              <label class="text-body-m detail-radio">
+                <input
+                    type="radio"
+                    name="date-type"
+                    value="start"
+                    :checked="dateType === 'start'"
+                    :disabled="savingField === 'date_type' || savingField === 'time'"
+                    @change="onDateTypeChanged('start')"
+                />
+                <span>Start after</span>
+              </label>
+            </div>
+            <p class="text-footnote detail-date-type-hint">
+              {{ dateType === 'start'
+                ? 'Each instance stays hidden until its date, then appears in Next.'
+                : 'Each instance appears on the calendar at the scheduled time.' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Time of day -->
+        <div class="detail-section-area">
+          <label class="text-body-s fw-semibold detail-section-label">{{ dateType === 'start' ? 'Start time' : 'Scheduled time' }}</label>
           <div class="detail-section-wrapper">
             <DateTimeInput
                 :with-date="false"
-                :with-duration="true"
+                :with-duration="dateType === 'scheduled'"
                 :clearable="true"
-                :time="template.scheduled_time"
+                :time="dateType === 'start' ? template.start_time : template.scheduled_time"
                 @update:time="onTimeChanged"
-                :duration="template.scheduled_duration"
+                :duration="dateType === 'scheduled' ? template.scheduled_duration : null"
                 @update:duration="onDurationChanged"
-                :disabled="savingField === 'time'"
+                :disabled="savingField === 'time' || savingField === 'date_type'"
             />
           </div>
         </div>
@@ -186,7 +222,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
@@ -229,6 +265,8 @@ const actionLoading = ref(null)
 const editTags = ref([])
 const editTitle = ref('')
 const detailBodyRef = ref(null)
+
+const dateType = computed(() => template.value.date_type || 'scheduled')
 
 // Auto-hiding scrollbar
 const bodyScrolling = ref(false)
@@ -390,7 +428,53 @@ async function onRecurrenceChanged(newRule) {
   }
 }
 
+async function onDateTypeChanged(newType) {
+  if (newType === dateType.value || savingField.value) return
+
+  const old = {
+    date_type: template.value.date_type,
+    scheduled_time: template.value.scheduled_time,
+    scheduled_duration: template.value.scheduled_duration,
+    start_time: template.value.start_time,
+  }
+
+  template.value.date_type = newType
+  // Backend clears the other mode's time fields on switch
+  if (newType === 'start') {
+    template.value.scheduled_time = null
+    template.value.scheduled_duration = null
+  } else {
+    template.value.start_time = null
+  }
+  savingField.value = 'date_type'
+
+  try {
+    await updateRecurring(template.value.id, { date_type: newType })
+  } catch {
+    Object.assign(template.value, old)
+    toaster.push('Failed to save timing mode')
+  } finally {
+    savingField.value = null
+  }
+}
+
 async function onTimeChanged(time) {
+  if (dateType.value === 'start') {
+    const oldTime = template.value.start_time
+    template.value.start_time = time || null
+    savingField.value = 'time'
+
+    try {
+      await updateRecurring(template.value.id, { start_time: time || null })
+    } catch {
+      template.value.start_time = oldTime
+      toaster.push('Failed to save time')
+    } finally {
+      savingField.value = null
+    }
+    return
+  }
+
   const oldTime = template.value.scheduled_time
   const oldDuration = template.value.scheduled_duration
   template.value.scheduled_time = time || null
@@ -767,6 +851,30 @@ function formatDate(dateStr) {
   gap: 8px;
 }
 
+/* ── Timing mode selector ── */
+.detail-date-type-selector {
+  display: flex;
+  gap: 16px;
+}
+
+.detail-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.detail-radio input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.detail-date-type-hint {
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
 /* ── Tags section ── */
 .detail-tags-display {
   cursor: pointer;
@@ -851,6 +959,11 @@ function formatDate(dateStr) {
 
   .detail-metadata {
     padding: 12px 16px 16px 32px;
+  }
+
+  .detail-date-type-selector {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>

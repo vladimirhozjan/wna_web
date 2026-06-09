@@ -31,6 +31,12 @@
         <span class="chip__text chip__text--tertiary">{{ recurrenceDescription }}</span>
       </span>
 
+      <!-- Recurring template timing mode (start/tickler) -->
+      <span v-if="entityType === 'recurring' && item.date_type === 'start'" class="chip">
+        <CalendarIcon class="chip__icon chip__icon--start" />
+        <span class="chip__text chip__text--start">Starts</span>
+      </span>
+
       <!-- Waiting for -->
       <span v-if="entityType === 'action' && item.waiting_for" class="chip">
         <HourglassIcon class="chip__icon" />
@@ -137,13 +143,14 @@ const recurrenceDescription = computed(() => {
   let desc = describeRRule(props.item.recurrence_rule)
   if (!desc) return ''
 
-  const time = props.item.scheduled_time
+  const isStartMode = props.item.date_type === 'start'
+  const time = isStartMode ? props.item.start_time : props.item.scheduled_time
   if (time) {
     const [h, m] = time.split(':')
     desc += ` at ${h}:${m}`
   }
 
-  const dur = props.item.scheduled_duration
+  const dur = isStartMode ? null : props.item.scheduled_duration
   if (dur) {
     if (dur >= 60 && dur % 60 === 0) {
       desc += ` for ${dur / 60}h`

@@ -882,8 +882,8 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 
 ### 17.2 Creating a Recurring Action
 
-- **How:** On the Calendar Recurring view, click "+" to reveal the quick-add input, enter a title, and press Enter (or click "Add"). This creates a template with default `FREQ=WEEKLY` and navigates to the detail page (`/recurring/:id`) for full configuration.
-- **Fields (on detail page):** Title, Description, Recurrence rule, Scheduled time + Duration (uses `DateTimeInput` with `withDate=false` and `withDuration=true`; shows "Add time" when no time is set, clicking sets default 09:00 + 30 min duration), Tags
+- **How:** On the Calendar Recurring view, click "+" to reveal the quick-add input, enter a title, and press Enter (or click "Add"). This creates a template with default `FREQ=WEEKLY` (scheduled mode) and navigates to the detail page (`/recurring/:id`) for full configuration.
+- **Fields (on detail page):** Title, Description, Recurrence rule, Timing mode (see 17.5), Scheduled time + Duration or Start time depending on mode, Tags
 
 ### 17.3 Recurrence Rule Configuration
 
@@ -908,7 +908,24 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 - "Trash" button: deletes the recurring template
 - Description: click-to-edit
 - Recurrence rule: editable via `RecurrenceInput`
-- Scheduled time + Duration: uses `DateTimeInput` component (`withDate=false`, `withDuration=true`, `clearable=true`). When no time is set, shows "Add time..." placeholder (tertiary color, italic, matching detail page empty field pattern); clicking sets 09:00 + 30 min. "Clear" link removes time and duration (reverts to all-day event). Time and duration editable via `DurationInput` dropdown.
+- Timing mode: radio selector "Scheduled for" / "Start after" (see 17.5)
+- Scheduled time + Duration (scheduled mode): uses `DateTimeInput` component (`withDate=false`, `withDuration=true`, `clearable=true`). When no time is set, shows "Add time..." placeholder (tertiary color, italic, matching detail page empty field pattern); clicking sets 09:00 + 30 min. "Clear" link removes time and duration (reverts to all-day event). Time and duration editable via `DurationInput` dropdown.
+- Start time (start mode): same `DateTimeInput` but without duration
+
+### 17.5 Timing Mode (date_type)
+
+A template spawns instances in one of two modes, selected via the `date_type` field (`"scheduled"`, the default, or `"start"`):
+
+| Mode | Instance gets | Where it surfaces |
+|------|---------------|-------------------|
+| Scheduled for | `scheduled_date` + `scheduled_time` + `scheduled_duration` | Calendar + Today at that time |
+| Start after (tickler) | `start_date` + `start_time` | Hidden until the date, then NEXT list |
+
+- The recurrence rule supplies each instance's date; the template supplies the time. Time is optional in both modes (date-only recurrence is valid). Both modes spawn instances in CALENDAR state. Recurrence never drives `due_date`.
+- Detail page shows a "Timing" radio selector with a hint describing the selected mode's behavior; the time section below switches between "Scheduled time" (+ duration) and "Start time".
+- Switching modes saves immediately; the backend re-dates the active spawned instance into the matching date column and clears the other mode's time fields (mirrored locally).
+- Only the time field matching the mode is sent to the API (`scheduled_time`/`scheduled_duration` vs `start_time`).
+- Recurring view list: start-mode templates show a "Starts" chip; the recurrence summary shows the mode's time (duration only in scheduled mode).
 
 ---
 
