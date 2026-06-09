@@ -135,6 +135,14 @@
           </Btn>
         </div>
 
+        <!-- Delegated-from section (inbox item received from a delegation) -->
+        <div v-if="delegatedFromLabel" class="detail-section-area">
+          <label class="text-body-s fw-semibold detail-section-label">From</label>
+          <div class="detail-section-wrapper">
+            <p class="text-body-m detail-section-content">{{ delegatedFromLabel }}</p>
+          </div>
+        </div>
+
         <!-- Description area -->
         <div class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Description</label>
@@ -272,6 +280,14 @@ const {
 
 const item = ref(null)
 const notFound = ref(false)
+
+// Delegated-from label (mirrors MetadataRow.vue resolution order)
+const delegatedFromLabel = computed(() =>
+    item.value?.delegated_from?.name
+    || item.value?.delegated_from_user_email
+    || item.value?.delegated_from_user_name
+    || ''
+)
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')

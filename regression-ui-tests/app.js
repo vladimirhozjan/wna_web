@@ -66,7 +66,7 @@ function populateFilterOptions() {
     const nb = parseInt(b);
     return na - nb;
   });
-  const areas = [...new Set(testCases.map(t => t.area))].sort();
+  const areas = [...new Set(testCases.flatMap(t => t.areas))].sort();
 
   // Run filters
   populateSelect('filter-section', sections);
@@ -260,7 +260,7 @@ function getFilteredTestCases() {
     if (smokeFilter && !tc.smoke) return false;
     if (idFilter && !tc.id.toUpperCase().includes(idFilter) && !tc.name.toUpperCase().includes(idFilter)) return false;
     if (sectionFilter && tc.section !== sectionFilter) return false;
-    if (areaFilter && tc.area !== areaFilter) return false;
+    if (areaFilter && !tc.areas.includes(areaFilter)) return false;
     if (priorityFilter && tc.priority !== priorityFilter) return false;
     if (statusFilter && run) {
       const r = run.results[tc.id];
@@ -451,10 +451,10 @@ function renderRunSummary(run) {
   }
 
   // By area
-  const areas = [...new Set(testCases.map(t => t.area))].sort();
+  const areas = [...new Set(testCases.flatMap(t => t.areas))].sort();
   let areaRows = '';
   for (const area of areas) {
-    const tcsByArea = testCases.filter(t => t.area === area);
+    const tcsByArea = testCases.filter(t => t.areas.includes(area));
     const c = getStatusCounts(run, tcsByArea);
     areaRows += `<tr><td>${escapeHtml(area)}</td>
       <td>${c.P}</td><td>${c.F}</td><td>${c.S}</td><td>${c.B}</td></tr>`;
@@ -886,9 +886,9 @@ function generateSummaryMd() {
     md += '### By Area\n';
     md += '| Area | Passed | Failed | Skipped | Blocked |\n';
     md += '|------|--------|--------|---------|--------|\n';
-    const areas = [...new Set(testCases.map(t => t.area))].sort();
+    const areas = [...new Set(testCases.flatMap(t => t.areas))].sort();
     for (const area of areas) {
-      const tcsByArea = testCases.filter(t => t.area === area);
+      const tcsByArea = testCases.filter(t => t.areas.includes(area));
       const c = getStatusCounts(run, tcsByArea);
       md += `| ${area} | ${c.P} | ${c.F} | ${c.S} | ${c.B} |\n`;
     }

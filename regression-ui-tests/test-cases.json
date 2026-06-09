@@ -4,6 +4,9 @@
     "name": "Successful Registration",
     "priority": "High",
     "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. No account exists for the test email address. Browser localStorage is clear of `auth_token` and `refresh_token`. Mailpit (or email test server) is running on `localhost:8025` to capture outgoing emails.",
@@ -26,6 +29,9 @@
     "name": "Registration with Invalid Email Format",
     "priority": "High",
     "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The registration form is open.",
@@ -44,6 +50,9 @@
     "name": "Registration with Weak Password",
     "priority": "High",
     "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The registration form is open.",
@@ -62,6 +71,9 @@
     "name": "Registration Password Mismatch",
     "priority": "High",
     "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The registration form is open.",
@@ -80,6 +92,9 @@
     "name": "Registration with Existing Email",
     "priority": "High",
     "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "An account already exists with the email `existing@example.com` (or another known registered email). User is not logged in.",
@@ -99,6 +114,9 @@
     "name": "Registration Submit Button Disabled When Fields Empty",
     "priority": "Medium",
     "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The registration form is open.",
@@ -127,6 +145,9 @@
     "name": "Successful Login",
     "priority": "High",
     "area": "Login",
+    "areas": [
+      "Login"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "A valid user account exists (e.g., `testuser@example.com` with password `TestPass1!`). User is not logged in. localStorage is clear of auth tokens.",
@@ -146,6 +167,9 @@
     "name": "Login with Wrong Password",
     "priority": "High",
     "area": "Login",
+    "areas": [
+      "Login"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A valid user account exists (e.g., `testuser@example.com`). User is not logged in.",
@@ -164,6 +188,9 @@
     "name": "Login with Invalid Email Format",
     "priority": "Medium",
     "area": "Login",
+    "areas": [
+      "Login"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The login form is open.",
@@ -182,6 +209,9 @@
     "name": "Login with Empty Fields",
     "priority": "Medium",
     "area": "Login",
+    "areas": [
+      "Login"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The login form is open.",
@@ -202,6 +232,9 @@
     "name": "Login via /login URL",
     "priority": "Medium",
     "area": "Login",
+    "areas": [
+      "Login"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. No authentication dialog is currently open.",
@@ -217,6 +250,9 @@
     "name": "Login via \"Sign In\" Button on Landing Page",
     "priority": "High",
     "area": "Login",
+    "areas": [
+      "Login"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. User is on the landing page.",
@@ -233,6 +269,9 @@
     "name": "Navigate to Forgot Password",
     "priority": "High",
     "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The login form is open.",
@@ -251,6 +290,9 @@
     "name": "Submit Forgot Password",
     "priority": "High",
     "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. The forgot password form is displayed (navigate via TC-013 steps).",
@@ -267,6 +309,9 @@
     "name": "Reset Password with Valid New Password",
     "priority": "High",
     "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "The forgot password step has been completed (TC-014). The reset password form is displayed. A valid reset code/token is available (from email or test setup).",
@@ -285,6 +330,9 @@
     "name": "Reset Password Validation",
     "priority": "Medium",
     "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "The reset password form is displayed (reached via TC-013 and TC-014 steps).",
@@ -305,6 +353,9 @@
     "name": "Close Auth Dialog by Clicking Backdrop",
     "priority": "Medium",
     "area": "Auth Dialog Behaviors",
+    "areas": [
+      "Auth Dialog Behaviors"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. User is on the landing page.",
@@ -326,6 +377,9 @@
     "name": "Switch Between Auth Modes (Login/Register)",
     "priority": "Medium",
     "area": "Auth Dialog Behaviors",
+    "areas": [
+      "Auth Dialog Behaviors"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. User is on the landing page.",
@@ -355,6 +409,9 @@
     "name": "Animated Transitions Between Auth Modes",
     "priority": "Low",
     "area": "Auth Dialog Behaviors",
+    "areas": [
+      "Auth Dialog Behaviors"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. User is on the landing page.",
@@ -377,6 +434,9 @@
     "name": "Auth Dialog Styling and Layout",
     "priority": "Low",
     "area": "Auth Dialog Behaviors",
+    "areas": [
+      "Auth Dialog Behaviors"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in. User is on the landing page.",
@@ -396,6 +456,9 @@
     "name": "Token Storage After Login",
     "priority": "High",
     "area": "JWT & Session Management",
+    "areas": [
+      "JWT & Session Management"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A valid user account exists. User is not logged in. localStorage is clear (no `auth_token`, `refresh_token`, or `current_user` keys).",
@@ -418,6 +481,9 @@
     "name": "Proactive Token Refresh Before Expiry",
     "priority": "High",
     "area": "JWT & Session Management",
+    "areas": [
+      "JWT & Session Management"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is logged in. Both `auth_token` and `refresh_token` are present in localStorage. The httpApi interceptor is configured to refresh tokens when the auth_token expires within 60 seconds.",
@@ -436,6 +502,9 @@
     "name": "Cross-Tab Logout",
     "priority": "Medium",
     "area": "JWT & Session Management",
+    "areas": [
+      "JWT & Session Management"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is logged in.",
@@ -457,6 +526,9 @@
     "name": "Logout Flow",
     "priority": "High",
     "area": "JWT & Session Management",
+    "areas": [
+      "JWT & Session Management"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "User is logged in and on the dashboard (`/engage`).",
@@ -475,6 +547,9 @@
     "name": "Route Protection for Authenticated Routes",
     "priority": "High",
     "area": "JWT & Session Management",
+    "areas": [
+      "JWT & Session Management"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is NOT logged in. localStorage does not contain `auth_token` or `refresh_token`.",
@@ -493,6 +568,9 @@
     "name": "Deep-Link Login from Email Notifications",
     "priority": "High",
     "area": "JWT & Session Management",
+    "areas": [
+      "JWT & Session Management"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "User is NOT logged in. localStorage does not contain `auth_token` or `refresh_token`. A valid user account exists (e.g. a test user with at least one project and one action).",
@@ -511,6 +589,9 @@
     "name": "Email Verification - Successful Verification",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "A new user account has been registered but not yet verified. The verification email has been received in Mailpit (`http://localhost:8025`). The user is not logged in.",
@@ -530,6 +611,9 @@
     "name": "Email Verification - Invalid Token",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in.",
@@ -544,6 +628,9 @@
     "name": "Email Verification - Missing Token Parameter",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in.",
@@ -558,6 +645,9 @@
     "name": "Email Verification - Expired Token",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A verification token has been created more than 24 hours ago (expired). This may require manually manipulating the database or waiting 24 hours.",
@@ -572,6 +662,9 @@
     "name": "Email Verification - Double Verification Prevented",
     "priority": "Medium",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A user has already successfully verified their email. The original verification link/token is still available.",
@@ -587,6 +680,9 @@
     "name": "Resend Verification Email - From Verify-Sent Screen",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A new user has just registered and the auth dialog is showing the \"verify-sent\" screen. Mailpit is accessible at `http://localhost:8025`.",
@@ -605,6 +701,9 @@
     "name": "Resend Verification Email - Cooldown Enforced",
     "priority": "Medium",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A new user has just registered and the auth dialog is showing the \"verify-sent\" screen.",
@@ -620,6 +719,9 @@
     "name": "Login Blocked for Unverified Email",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A user account exists with the email NOT yet verified (registered but verification link not clicked). The user knows the correct email and password.",
@@ -638,6 +740,9 @@
     "name": "Resend Verification Email - From Unverified Login Screen",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A user has attempted to log in with an unverified email and the auth dialog is showing the \"unverified\" mode with a resend button.",
@@ -653,6 +758,9 @@
     "name": "Resend Verification - Anti-Enumeration (Non-Existent Email)",
     "priority": "Medium",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "No account exists for the email `nonexistent_user@example.com`. Access to browser developer tools Network tab.",
@@ -668,6 +776,9 @@
     "name": "Full Registration-to-Login Flow with Email Verification",
     "priority": "High",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "No account exists for the test email. Mailpit is running. Backend services are running.",
@@ -689,6 +800,9 @@
     "name": "Verification Email Content",
     "priority": "Medium",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A new user has just registered. Mailpit is accessible at `http://localhost:8025`.",
@@ -707,6 +821,9 @@
     "name": "Welcome Email After Verification",
     "priority": "Medium",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A new user has registered and has a pending verification email. Mailpit is accessible.",
@@ -722,6 +839,9 @@
     "name": "Forgot Password Email",
     "priority": "High",
     "area": "Password Reset Email",
+    "areas": [
+      "Password Reset Email"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A verified user account exists. Mailpit is accessible. The user is not logged in.",
@@ -740,6 +860,9 @@
     "name": "Forgot Password - Anti-Enumeration",
     "priority": "Medium",
     "area": "Password Reset Email",
+    "areas": [
+      "Password Reset Email"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "No account exists for the email `nonexistent_user@example.com`. Access to browser developer tools.",
@@ -757,6 +880,9 @@
     "name": "Password Changed Confirmation Email",
     "priority": "Medium",
     "area": "Password Reset Email",
+    "areas": [
+      "Password Reset Email"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A verified user account exists. Mailpit is accessible. The user has received a password reset email.",
@@ -774,6 +900,9 @@
     "name": "Login Alert Email",
     "priority": "Medium",
     "area": "Email Notifications",
+    "areas": [
+      "Email Notifications"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "A verified user account exists with notification settings enabled for login alerts. Mailpit is accessible.",
@@ -789,6 +918,9 @@
     "name": "Verify Email Page - Network Error",
     "priority": "Medium",
     "area": "Email Verification",
+    "areas": [
+      "Email Verification"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User has a valid verification token. The backend server is stopped or unreachable.",
@@ -804,6 +936,9 @@
     "name": "Google SSO - Button Visibility",
     "priority": "Medium",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured (the runtime config includes a valid `google_client_id`). User is not logged in. Browser is at the landing page.",
@@ -821,6 +956,9 @@
     "name": "Google SSO - Redirect to Google Consent",
     "priority": "High",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. User is not logged in. Browser is at the landing page.",
@@ -837,6 +975,9 @@
     "name": "Google SSO - Successful Login (New User)",
     "priority": "High",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": true,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. No WNA account exists for the Google email being used. The Google OAuth flow has been completed and Google has redirected back with a valid authorization code.",
@@ -853,6 +994,9 @@
     "name": "Google SSO - Successful Login (Existing User)",
     "priority": "High",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. A WNA account already exists for the Google email being used (previously registered via Google SSO or email). The Google OAuth flow has been completed with a valid authorization code.",
@@ -869,6 +1013,9 @@
     "name": "Google SSO - Token Storage After Login",
     "priority": "High",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. The Google OAuth flow has been completed with a valid authorization code.",
@@ -886,6 +1033,9 @@
     "name": "Google SSO - User Cancels Google Consent",
     "priority": "Medium",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. User is not logged in. The authentication dialog is open.",
@@ -903,6 +1053,9 @@
     "name": "Google SSO - Invalid Authorization Code",
     "priority": "High",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. User is not logged in.",
@@ -918,6 +1071,9 @@
     "name": "Google SSO - Loading State on Redirect Page",
     "priority": "Medium",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. User is not logged in. Network throttling is enabled in browser DevTools (e.g., \"Slow 3G\") to make the loading state visible.",
@@ -933,6 +1089,9 @@
     "name": "Google SSO - Direct Navigation Without Code",
     "priority": "Medium",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "User is not logged in.",
@@ -947,6 +1106,9 @@
     "name": "Google SSO - Button Hidden When Not Configured",
     "priority": "Low",
     "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
     "smoke": false,
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is not configured (the runtime config does not include a `google_client_id`, or it is set to an empty string). User is not logged in.",
@@ -965,6 +1127,9 @@
     "name": "Top Nav - Guest View Desktop",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is not authenticated. Browser viewport is desktop width (>768px). Application is loaded at the landing page.",
@@ -982,6 +1147,9 @@
     "name": "Top Nav - Guest View Mobile",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is not authenticated. Browser viewport is mobile width (<=768px). Application is loaded at the landing page.",
@@ -1003,6 +1171,9 @@
     "name": "Top Nav - Authenticated Desktop",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": true,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated with a valid session. Browser viewport is desktop width (>768px). User is on any dashboard page.",
@@ -1026,6 +1197,9 @@
     "name": "Top Nav - Authenticated Mobile",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated with a valid session. Browser viewport is mobile width (<=768px). User is on any dashboard page.",
@@ -1049,6 +1223,9 @@
     "name": "Sidebar Desktop - Full Navigation Panel",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": true,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated. Browser viewport is desktop width (>768px). User is on the dashboard.",
@@ -1068,6 +1245,9 @@
     "name": "Sidebar Count Badges Update",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated on desktop. Sidebar is visible with count badges displayed. The inbox has at least one item.",
@@ -1090,6 +1270,9 @@
     "name": "Sidebar Review Conditional Display",
     "priority": "Medium",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated on desktop. User has access to Settings where Weekly Review can be enabled or disabled.",
@@ -1113,6 +1296,9 @@
     "name": "Mobile Sidebar Drawer",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": true,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated. Browser viewport is mobile width (<=768px).",
@@ -1136,6 +1322,9 @@
     "name": "User Avatar Display",
     "priority": "Medium",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated. Test with two accounts: one with a profile avatar image uploaded, and one without.",
@@ -1159,6 +1348,9 @@
     "name": "User Avatar Color Consistency",
     "priority": "Low",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated with an account that has no profile avatar image (uses fallback). Multiple sessions or browsers available for testing.",
@@ -1181,6 +1373,9 @@
     "name": "Sidebar Drag-Drop Targets",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated on desktop. Inbox contains at least 2 stuff items. Next Actions list contains at least 1 action item.",
@@ -1207,6 +1402,9 @@
     "name": "Complex Sidebar Drops with Modal Prompts",
     "priority": "High",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated on desktop. Inbox contains at least 3 stuff items.",
@@ -1232,6 +1430,9 @@
     "name": "Catch-All Route Redirect",
     "priority": "Medium",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "Application is running. Test both as an authenticated and unauthenticated user.",
@@ -1253,6 +1454,9 @@
     "name": "Add Stuff Item to Inbox",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": true,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated and on the Inbox page.",
@@ -1275,6 +1479,9 @@
     "name": "Inbox Item Count Badge",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox is empty or has a known number of items. Sidebar is visible (desktop viewport).",
@@ -1298,6 +1505,9 @@
     "name": "Complete Stuff from List",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": true,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 2 stuff items.",
@@ -1320,6 +1530,9 @@
     "name": "Inline Title Edit",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item with a known title.",
@@ -1347,6 +1560,9 @@
     "name": "Trash Stuff from List",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item.",
@@ -1371,6 +1587,9 @@
     "name": "Drag to Reorder Inbox",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 3 stuff items with known titles in a known order (e.g., Item A, Item B, Item C from top to bottom).",
@@ -1394,6 +1613,9 @@
     "name": "Click to Stuff Detail Page",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": true,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item with a known ID.",
@@ -1413,6 +1635,9 @@
     "name": "Inbox Pagination / Load More",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains more than 10 stuff items (add items until there are at least 15).",
@@ -1431,6 +1656,9 @@
     "name": "Stuff Detail Someday - Trash Button",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User has a stuff item in SOMEDAY state",
@@ -1449,6 +1677,9 @@
     "name": "Inbox Empty State",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains zero stuff items (complete or delete all existing items).",
@@ -1469,6 +1700,9 @@
     "name": "Clarify Mode Activation from Inbox Header (Desktop)",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated on a desktop browser. Inbox contains at least 2 stuff items.",
@@ -1492,6 +1726,9 @@
     "name": "Clarify Mode Mobile (Full-Screen Overlay)",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated on a mobile viewport (<=768px). Inbox contains at least 2 stuff items.",
@@ -1513,6 +1750,9 @@
     "name": "Clarify Mode Item Interactions",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated on desktop. Inbox contains at least 3 stuff items. Clarify mode is activated from the inbox header.",
@@ -1535,6 +1775,9 @@
     "name": "Clarify Auto-Start via URL Parameter",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item.",
@@ -1556,6 +1799,9 @@
     "name": "Clarify Completion (Auto-Exit When List Empty)",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains exactly 2 stuff items. Clarify mode is activated.",
@@ -1578,6 +1824,9 @@
     "name": "Input Hidden in Clarify Mode",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item.",
@@ -1597,6 +1846,9 @@
     "name": "Stuff Detail Page",
     "priority": "High",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": true,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item with a known title.",
@@ -1622,6 +1874,9 @@
     "name": "Stuff Detail Page Navigation (Position-Based Browsing)",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "3: Inbox (Stuff)",
     "preconditions": "User is authenticated. Inbox contains at least 4 stuff items (e.g., Item 1, Item 2, Item 3, Item 4 in order).",
@@ -1647,6 +1902,9 @@
     "name": "Clarify Step 1 - Is It Actionable?",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": true,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Inbox contains at least 1 stuff item. Clarify mode is not yet active.",
@@ -1669,6 +1927,9 @@
     "name": "Non-Actionable Path - Reference",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 (\"Is this actionable?\").",
@@ -1690,6 +1951,9 @@
     "name": "Non-Actionable Path - Someday",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 (\"Is this actionable?\").",
@@ -1711,6 +1975,9 @@
     "name": "Non-Actionable Path - Trash",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 (\"Is this actionable?\").",
@@ -1732,6 +1999,9 @@
     "name": "Clarify Step 2 - Single or Multiple Steps?",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": true,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. Currently at step 1 (\"Is this actionable?\").",
@@ -1753,6 +2023,9 @@
     "name": "Single Action - Two-Minute Rule",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently at step 2 after choosing \"Yes\" (actionable).",
@@ -1772,6 +2045,9 @@
     "name": "Two-Minute Yes - Do It Now",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently at step 3 (two-minute rule question).",
@@ -1793,6 +2069,9 @@
     "name": "Two-Minute No - Create Action Form",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": true,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently at step 3 (two-minute rule question). The stuff item has the title \"Research vacation destinations\".",
@@ -1813,6 +2092,9 @@
     "name": "Create Action Form - Dates Section",
     "priority": "Medium",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently viewing the Create Action form (step after two-minute \"No\").",
@@ -1847,6 +2129,9 @@
     "name": "Create Action Confirm",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently on the Create Action form with Title filled.",
@@ -1869,6 +2154,9 @@
     "name": "Multiple Steps - Create Project Form",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently at step 2 after choosing \"Yes\" (actionable). The stuff item has the title \"Plan office renovation\".",
@@ -1891,6 +2179,9 @@
     "name": "Create Project Confirm",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": true,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active. Currently on the Create Project form with Title and Outcome filled.",
@@ -1914,6 +2205,9 @@
     "name": "Clarify Panel UI Elements",
     "priority": "Medium",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. The ClarifyPanel is visible.",
@@ -1940,6 +2234,9 @@
     "name": "Clarify Done State",
     "priority": "Medium",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Clarify mode is active on a stuff item. Inbox contains at least 2 items.",
@@ -1958,6 +2255,9 @@
     "name": "Clarify Keyboard Shortcuts",
     "priority": "Medium",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated on desktop. Clarify mode is active on a stuff item. Currently at step 2 or later (so the back button is available). Focus is not in any input field.",
@@ -1982,6 +2282,9 @@
     "name": "Clarify from Detail Page",
     "priority": "High",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Inbox contains at least 2 stuff items. User is on a Stuff Detail page (/stuff/:id).",
@@ -2005,6 +2308,9 @@
     "name": "Clarify Panel Modes",
     "priority": "Medium",
     "area": "Clarify Workflow",
+    "areas": [
+      "Clarify Workflow"
+    ],
     "smoke": false,
     "section": "4: Clarify Workflow",
     "preconditions": "User is authenticated. Inbox contains at least 2 stuff items. Desktop and mobile viewports available for testing.",
@@ -2020,6 +2326,9 @@
     "name": "Add Next Action via Collapsible Form",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": true,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and on the Next Actions page (/next)",
@@ -2045,6 +2354,9 @@
     "name": "Complete Action from Next Actions List",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": true,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and at least one action exists in the Next Actions list",
@@ -2066,6 +2378,9 @@
     "name": "Inline Edit Action Title",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and at least one action exists in the Next Actions list",
@@ -2095,6 +2410,9 @@
     "name": "Trash Action from Next Actions List",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and at least one action exists in the Next Actions list",
@@ -2121,6 +2439,9 @@
     "name": "Drag Reorder Actions in Next Actions List",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and at least three actions exist in the Next Actions list",
@@ -2145,6 +2466,9 @@
     "name": "Click to Navigate to Action Detail",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": true,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and at least one action exists in the Next Actions list",
@@ -2164,6 +2488,9 @@
     "name": "Next Actions Pagination (Load More)",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and more than 10 actions exist in the Next Actions list (create enough actions to exceed 10)",
@@ -2182,6 +2509,9 @@
     "name": "Tag Filtering on Next Actions",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and multiple actions exist with various tags assigned (e.g., some tagged \"home\", some tagged \"work\", some tagged \"errands\")",
@@ -2209,6 +2539,9 @@
     "name": "Empty State Without Filter on Next Actions",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and has no actions in the Next Actions list (all actions are completed, trashed, or moved elsewhere)",
@@ -2227,6 +2560,9 @@
     "name": "Empty State With Active Tag Filter on Next Actions",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in, some actions exist in Next Actions but none are tagged with the tag \"urgent\"",
@@ -2249,6 +2585,9 @@
     "name": "Action Detail Page Full Content",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in. Two actions exist: (A) an action with title, description, tags, a start date, a due date, association with a project, at least one attachment, and at least one comment; (B) an action with a scheduled date (with time and duration). Both are in the Next Actions list.",
@@ -2282,6 +2621,9 @@
     "name": "Action Detail Move Dropdown",
     "priority": "High",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and viewing an action detail page (/action/:id) for an action currently in the Next Actions list",
@@ -2317,6 +2659,9 @@
     "name": "Action Detail Move Dropdown Includes Reference",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User is logged in and viewing an action detail page",
@@ -2335,6 +2680,9 @@
     "name": "Someday Action Detail - Full Move Dropdown",
     "priority": "Medium",
     "area": "Next Actions",
+    "areas": [
+      "Next Actions"
+    ],
     "smoke": false,
     "section": "5: Next Actions",
     "preconditions": "User has an action in SOMEDAY state",
@@ -2357,6 +2705,9 @@
     "name": "Add Today Action",
     "priority": "High",
     "area": "Today",
+    "areas": [
+      "Today"
+    ],
     "smoke": true,
     "section": "6: Today",
     "preconditions": "User is logged in and on the Today page (/today)",
@@ -2380,6 +2731,9 @@
     "name": "Today Page Operations (Complete, Inline Edit, Trash, Drag Reorder, Tag Filter)",
     "priority": "High",
     "area": "Today",
+    "areas": [
+      "Today"
+    ],
     "smoke": true,
     "section": "6: Today",
     "preconditions": "User is logged in, at least three actions exist on the Today page with various tags assigned",
@@ -2398,6 +2752,9 @@
     "name": "Today Page Empty State",
     "priority": "Medium",
     "area": "Today",
+    "areas": [
+      "Today"
+    ],
     "smoke": false,
     "section": "6: Today",
     "preconditions": "User is logged in and has no actions on the Today page",
@@ -2415,6 +2772,9 @@
     "name": "Today Items in Engage Dashboard",
     "priority": "Medium",
     "area": "Today",
+    "areas": [
+      "Today"
+    ],
     "smoke": false,
     "section": "6: Today",
     "preconditions": "User is logged in and has at least 6 actions on the Today page",
@@ -2436,6 +2796,9 @@
     "name": "Move Action to Today from Next Actions",
     "priority": "High",
     "area": "Today",
+    "areas": [
+      "Today"
+    ],
     "smoke": false,
     "section": "6: Today",
     "preconditions": "User is logged in, at least one action exists in the Next Actions list",
@@ -2460,6 +2823,9 @@
     "name": "Today Page URL Direct Navigation",
     "priority": "Low",
     "area": "Today",
+    "areas": [
+      "Today"
+    ],
     "smoke": false,
     "section": "6: Today",
     "preconditions": "User is logged in",
@@ -2481,6 +2847,9 @@
     "name": "Calendar Default View is Month",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": true,
     "section": "7: Calendar",
     "preconditions": "User is logged in, localStorage has no saved calendar view preference (clear localStorage or use incognito)",
@@ -2500,6 +2869,9 @@
     "name": "Calendar View Mode Persistence",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and on the Calendar page",
@@ -2524,6 +2896,9 @@
     "name": "Calendar Day View Layout",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": true,
     "section": "7: Calendar",
     "preconditions": "User is logged in, calendar business hours are configured (e.g., 9 AM to 5 PM)",
@@ -2545,6 +2920,9 @@
     "name": "Calendar Day View - Scheduled Actions Rendered as Time Blocks",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in, at least one action exists with a specific date and time (e.g., today at 10:00 AM with 1-hour duration) and one all-day action",
@@ -2565,6 +2943,9 @@
     "name": "Calendar Day View - Click Empty Time Slot to Quick-Add",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and viewing the Day view of the Calendar",
@@ -2587,6 +2968,9 @@
     "name": "Calendar Day View - Click Action to Navigate to Detail",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and at least one action is scheduled on the day being viewed",
@@ -2608,6 +2992,9 @@
     "name": "Calendar Week View Layout",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in",
@@ -2630,6 +3017,9 @@
     "name": "Calendar Week View - Week Start Configuration",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and has access to calendar settings",
@@ -2654,6 +3044,9 @@
     "name": "Calendar Month View Layout",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": true,
     "section": "7: Calendar",
     "preconditions": "User is logged in and some actions are scheduled on various dates in the current month",
@@ -2676,6 +3069,9 @@
     "name": "Calendar Month View - Click Day Cell",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and viewing Month view with actions scheduled on at least one day",
@@ -2695,6 +3091,9 @@
     "name": "Calendar Month View - Click Action Item",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and viewing Month view with at least one action visible in a day cell",
@@ -2714,6 +3113,9 @@
     "name": "Calendar Year View with Density Heat Map",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and has actions scheduled across multiple days throughout the year with varying density (some days have many actions, some have few, some have none)",
@@ -2736,6 +3138,9 @@
     "name": "Calendar Year View - Click Day to Navigate to Day View",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and viewing the Year view",
@@ -2756,6 +3161,9 @@
     "name": "Calendar Year View - Click Month to Navigate to Month View",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and viewing the Year view",
@@ -2777,6 +3185,9 @@
     "name": "Calendar Navigation Buttons (Previous/Next)",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and on the Calendar page",
@@ -2795,6 +3206,9 @@
     "name": "Calendar Today Button",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and on the Calendar page, currently navigated away from today's date",
@@ -2822,6 +3236,9 @@
     "name": "Calendar View Mode Toggle Buttons",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and on the Calendar page",
@@ -2844,6 +3261,9 @@
     "name": "Calendar Drag Reschedule",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": true,
     "section": "7: Calendar",
     "preconditions": "User is logged in, at least one scheduled action, one start_after action, and one due-only action exist on the calendar, using Day or Week view",
@@ -2875,6 +3295,9 @@
     "name": "Calendar Recurring View",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and at least two recurring action templates have been created",
@@ -2895,6 +3318,9 @@
     "name": "Calendar Settings - Time Format (12h / 24h)",
     "priority": "Low",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in and has actions scheduled at various times",
@@ -2925,6 +3351,9 @@
     "name": "Calendar Settings - Business Hours",
     "priority": "Low",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in",
@@ -2949,6 +3378,9 @@
     "name": "Calendar Settings - Business Days",
     "priority": "Low",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in",
@@ -2975,6 +3407,9 @@
     "name": "Calendar Item Visual Variants - Four Color States",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": true,
     "section": "7: Calendar",
     "preconditions": "User is logged in. The following actions exist on the calendar:\n- A scheduled action (has scheduled_date, e.g., today at 10:00 AM)\n- A start_after action (has start_date, e.g., today, no scheduled_date)\n- A due-only action (has due_date = today, no scheduled_date, no start_date, with start_date in the past so it appears on calendar)\n- An overdue due-only action (has due_date in the past)",
@@ -2998,6 +3433,9 @@
     "name": "Calendar Multi-Date Display",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. An action exists in CALENDAR state with `start_date = March 15` and `due_date = March 20` (no scheduled_date).",
@@ -3025,6 +3463,9 @@
     "name": "Calendar Quick-Add - Scheduled Action",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in, viewing the Calendar page in Month or Day view",
@@ -3051,6 +3492,9 @@
     "name": "Mutual Exclusivity - Scheduled Date Clears Due Date (Action Detail)",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. An action exists with a `due_date` set (e.g., March 20) and NO scheduled_date or start_date.",
@@ -3079,6 +3523,9 @@
     "name": "Mutual Exclusivity - Due Date Clears Scheduled Date (Action Detail)",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. An action exists in CALENDAR state with a `scheduled_date` set (e.g., March 18 at 10:00 AM) and NO due_date.",
@@ -3106,6 +3553,9 @@
     "name": "Mutual Exclusivity - Start Date and Due Date Coexist",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. An action exists with `start_date` (e.g., March 15) and `due_date` (e.g., March 20).",
@@ -3131,6 +3581,9 @@
     "name": "MetadataRow Date Badge Color Coding",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. The following actions exist:\n- Action A: has `scheduled_date` set (e.g., March 18)\n- Action B: has `start_date` set (e.g., March 15)\n- Action C: has `due_date` set in the future (e.g., March 25)\n- Action D: has `due_date` set in the past (e.g., March 1) — overdue",
@@ -3153,6 +3606,9 @@
     "name": "Move From Calendar Clears Dates",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. An action exists in CALENDAR state with `scheduled_date = March 18` and `due_date = March 20`.",
@@ -3185,6 +3641,9 @@
     "name": "Calendar Drag Reschedule for Due-Only Items",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. A due-only action exists on the calendar (has due_date, has start_date in the past so it was loaded, but the item currently shows on its due_date with red styling).",
@@ -3208,6 +3667,9 @@
     "name": "Calendar Drag Auto-Detects Type for Scheduled and Start Items",
     "priority": "Medium",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. Two actions exist on the calendar: one with scheduled_date (blue) and one with start_date (green).",
@@ -3230,6 +3692,9 @@
     "name": "Dark Theme Calendar Color Tokens",
     "priority": "Low",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in. Actions with various date types exist on the calendar.",
@@ -3252,6 +3717,9 @@
     "name": "Calendar Day/Week View - Start Date Indicators",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in, at least one action exists with `start_date` and `start_time` set (e.g., start_date = today, start_time = 10:00)",
@@ -3274,6 +3742,9 @@
     "name": "Calendar Day/Week View - Due Date Indicators",
     "priority": "High",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in, at least one action exists with `due_date` and `due_time` set (no scheduled_date), e.g., due_date = today, due_time = 14:00",
@@ -3296,6 +3767,9 @@
     "name": "Calendar Current Time Indicator Uses Accent Color",
     "priority": "Low",
     "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
     "smoke": false,
     "section": "7: Calendar",
     "preconditions": "User is logged in, viewing today's date in Day or Week view",
@@ -3313,6 +3787,9 @@
     "name": "Add Project via Collapsible Form",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": true,
     "section": "8: Projects",
     "preconditions": "User is logged in and on the Projects page (/projects)",
@@ -3341,6 +3818,9 @@
     "name": "Project List Has No Checkbox",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and at least one project exists in the Projects list",
@@ -3358,6 +3838,9 @@
     "name": "Project List Operations (Tag Filter, Drag Reorder, Inline Title Edit, Trash)",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in, at least three projects exist with various tags assigned",
@@ -3375,6 +3858,9 @@
     "name": "Click to Navigate to Project Detail",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": true,
     "section": "8: Projects",
     "preconditions": "User is logged in and at least one project exists in the Projects list",
@@ -3394,6 +3880,9 @@
     "name": "Project Detail - Title and Outcome Editing",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists with title \"Launch new website\" and outcome \"Have a professional online presence\"",
@@ -3423,6 +3912,9 @@
     "name": "Project Detail - Next Action Section",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and has two projects: one with a next action assigned, and one with no actions at all",
@@ -3447,6 +3939,9 @@
     "name": "Project Detail - Backlog Expand/Collapse",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists with one next action and at least 3 backlog actions",
@@ -3471,6 +3966,9 @@
     "name": "Project Detail - Add Action to Project",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": true,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists (with or without existing actions)",
@@ -3495,6 +3993,9 @@
     "name": "Project Detail - Complete Next Action Triggers Auto-Promotion",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": true,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists with one next action (\"Draft wireframes\") and at least two backlog actions (\"Set up hosting\" at position 1, \"Write content\" at position 2)",
@@ -3522,6 +4023,9 @@
     "name": "Project Detail - Reorder Backlog via Drag",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists with a next action and at least 3 backlog items (e.g., \"Item A\", \"Item B\", \"Item C\" in that order)",
@@ -3547,6 +4051,9 @@
     "name": "Complete Project from Project Detail",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists with a title and outcome",
@@ -3569,6 +4076,9 @@
     "name": "Project Cannot Be Completed from List View",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and at least one project exists in the Projects list",
@@ -3589,6 +4099,9 @@
     "name": "Move Project to Someday",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists in the active Projects list with at least one action",
@@ -3610,6 +4123,9 @@
     "name": "Project Detail Move Dropdown - Action and Reference",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and viewing an active project detail page",
@@ -3633,6 +4149,9 @@
     "name": "Someday Project Detail - Full Controls",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User has a project in SOMEDAY state",
@@ -3658,6 +4177,9 @@
     "name": "Project Detail - Tags Editing",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists, some tag presets exist in the system",
@@ -3686,6 +4208,9 @@
     "name": "Project Detail - Description, Attachments, and Comments",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and a project exists",
@@ -3702,6 +4227,9 @@
     "name": "Project Detail - Navigation Arrows (Position-Based)",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "8: Projects",
     "preconditions": "User is logged in and at least 4 projects exist in the Projects list (Project A at position 1, Project B at position 2, Project C at position 3, Project D at position 4)",
@@ -3732,6 +4260,9 @@
     "name": "Add Waiting For Item",
     "priority": "High",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": true,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and on the Waiting For page (/waiting)",
@@ -3755,6 +4286,9 @@
     "name": "Waiting For List - Checkbox Completion",
     "priority": "High",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and on the Waiting For page with at least one waiting item visible",
@@ -3771,6 +4305,9 @@
     "name": "Waiting For List Operations - Tag Filter, Inline Edit, Trash, Drag Reorder",
     "priority": "High",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and on the Waiting For page with at least three waiting items, some having tags assigned",
@@ -3787,6 +4324,9 @@
     "name": "Click to Action Detail from Waiting For",
     "priority": "High",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and on the Waiting For page with at least one waiting item",
@@ -3803,6 +4343,9 @@
     "name": "Action Detail - Got It Button",
     "priority": "High",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": true,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and viewing the detail page of an action with WAITING state (navigated from the Waiting For list)",
@@ -3821,6 +4364,9 @@
     "name": "Action Detail - Waiting For Display",
     "priority": "Medium",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and has created multiple waiting items at different times: one created today, one created 3 days ago, one created approximately 2 weeks ago, one created approximately 1 month ago",
@@ -3844,6 +4390,9 @@
     "name": "Waiting For - Done Button",
     "priority": "High",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and viewing the detail page of an action with WAITING state",
@@ -3862,6 +4411,9 @@
     "name": "Waiting For - Move Dropdown",
     "priority": "Medium",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and viewing the detail page of an action with WAITING state",
@@ -3883,6 +4435,9 @@
     "name": "Waiting For Empty State",
     "priority": "Low",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and has no items in the Waiting For state (complete, trash, or move all waiting items first)",
@@ -3898,6 +4453,9 @@
     "name": "Waiting For Pagination",
     "priority": "Medium",
     "area": "Waiting For",
+    "areas": [
+      "Waiting For"
+    ],
     "smoke": false,
     "section": "9: Waiting For",
     "preconditions": "User is logged in and on the Waiting For page",
@@ -3918,6 +4476,9 @@
     "name": "Add Someday Item",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": true,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and on the Someday/Maybe page (/someday)",
@@ -3934,6 +4495,9 @@
     "name": "Someday Mixed Types - Type Icon Prefix",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Stuff item (added directly), one Action (moved from Next via Move dropdown or clarified as someday), and one Project (moved to Someday)",
@@ -3952,6 +4516,9 @@
     "name": "Someday - No Checkbox",
     "priority": "Medium",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and on the Someday/Maybe page with at least one item visible",
@@ -3968,6 +4535,9 @@
     "name": "Someday - Activate Stuff Item",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": true,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Stuff item",
@@ -3988,6 +4558,9 @@
     "name": "Someday - Activate Action",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Action item",
@@ -4008,6 +4581,9 @@
     "name": "Someday - Activate Project",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Project item",
@@ -4028,6 +4604,9 @@
     "name": "Someday - Trash with Confirmation",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and on the Someday/Maybe page with at least one item visible",
@@ -4052,6 +4631,9 @@
     "name": "Someday - Correct Detail Navigation by Type",
     "priority": "High",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least one Stuff item, one Action item, and one Project item",
@@ -4076,6 +4658,9 @@
     "name": "Someday - Tag Filtering",
     "priority": "Medium",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains: at least one Stuff item (no tags possible), at least one Action with a tag (e.g., \"@work\"), at least one Action with a different tag (e.g., \"@personal\"), and at least one Project with a tag",
@@ -4098,6 +4683,9 @@
     "name": "Someday - Drag Reorder",
     "priority": "Medium",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and the Someday/Maybe list contains at least three items",
@@ -4118,6 +4706,9 @@
     "name": "Someday - Inline Title Edit",
     "priority": "Medium",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and on the Someday/Maybe page with at least one item",
@@ -4141,6 +4732,9 @@
     "name": "Someday Empty State",
     "priority": "Low",
     "area": "Someday / Maybe",
+    "areas": [
+      "Someday / Maybe"
+    ],
     "smoke": false,
     "section": "10: Someday / Maybe",
     "preconditions": "User is logged in and has no items in the Someday/Maybe state (activate, trash, or move all someday items first)",
@@ -4156,6 +4750,9 @@
     "name": "Reference Page Loads",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": true,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in",
@@ -4173,6 +4770,9 @@
     "name": "Create Folder",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": true,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page (/reference) at the root level",
@@ -4193,6 +4793,9 @@
     "name": "Navigate Into Folder",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one folder created (e.g., \"Project Documents\")",
@@ -4212,6 +4815,9 @@
     "name": "Breadcrumb Navigation",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and has a nested folder structure: Root > \"Project Documents\" > \"Q1 Reports\"",
@@ -4236,6 +4842,9 @@
     "name": "Rename Folder",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one folder (e.g., \"Project Documents\")",
@@ -4257,6 +4866,9 @@
     "name": "Delete Folder",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with a folder that contains at least one file or subfolder",
@@ -4278,6 +4890,9 @@
     "name": "Upload File via Button",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": true,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with a small test file ready (e.g., a 1 MB image)",
@@ -4298,6 +4913,9 @@
     "name": "Upload File via Drag and Drop",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page (desktop browser) with a file ready to drag from the OS file manager",
@@ -4320,6 +4938,9 @@
     "name": "Upload File Greater Than 50MB - Client-Side Rejection",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with a test file larger than 50 MB available",
@@ -4337,6 +4958,9 @@
     "name": "File Preview - Image",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one uploaded image file (PNG, JPG, GIF, etc.)",
@@ -4355,6 +4979,9 @@
     "name": "File Preview - PDF",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one uploaded PDF file",
@@ -4373,6 +5000,9 @@
     "name": "File Preview - Text and JSON",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one uploaded text file (.txt) and one JSON file (.json)",
@@ -4395,6 +5025,9 @@
     "name": "Download File",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": true,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one uploaded file",
@@ -4412,6 +5045,9 @@
     "name": "Rename File",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one uploaded file (e.g., \"report.pdf\")",
@@ -4432,6 +5068,9 @@
     "name": "Trash File",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least one uploaded file",
@@ -4454,6 +5093,9 @@
     "name": "Search Files",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with multiple files and folders across nested directories (e.g., Root: \"readme.txt\", \"Project Documents\" folder containing \"notes.txt\" and \"budget.xlsx\")",
@@ -4476,6 +5118,9 @@
     "name": "View Mode Toggle",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page with at least a few files and folders",
@@ -4498,6 +5143,9 @@
     "name": "Storage Quota Display",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page",
@@ -4519,6 +5167,9 @@
     "name": "Reference Pagination",
     "priority": "Medium",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in and on the Reference page in a folder that contains more than 20 files",
@@ -4540,6 +5191,9 @@
     "name": "Reference Trash Tab",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in, on the Reference page, and has at least one trashed file",
@@ -4559,6 +5213,9 @@
     "name": "Reference Trash - Restore File",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in, on the Reference page Trash tab, with at least one trashed file that was originally in a known folder",
@@ -4579,6 +5236,9 @@
     "name": "Reference Trash - Permanent Delete and Empty Trash",
     "priority": "High",
     "area": "Reference / File Manager",
+    "areas": [
+      "Reference / File Manager"
+    ],
     "smoke": false,
     "section": "11: Reference (File Manager)",
     "preconditions": "User is logged in, on the Reference page Trash tab, with at least two trashed files",
@@ -4594,6 +5254,9 @@
     "name": "Completed Page Loads",
     "priority": "High",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": true,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and has at least one completed item (stuff, action, or project completed from their respective views)",
@@ -4612,6 +5275,9 @@
     "name": "Uncheck to Restore Completed Item",
     "priority": "High",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": true,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and on the Completed page with at least one completed Stuff item, one completed Action, and one completed Project",
@@ -4642,6 +5308,9 @@
     "name": "Completed Items Not Editable",
     "priority": "Medium",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": false,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and on the Completed page with at least one completed item",
@@ -4661,6 +5330,9 @@
     "name": "Completed Item Click - Navigate to Detail",
     "priority": "Medium",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": false,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and on the Completed page with at least one completed item",
@@ -4679,6 +5351,9 @@
     "name": "Completed Pagination",
     "priority": "Medium",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": false,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and has many completed items (complete at least 15-20 items to exceed one page)",
@@ -4699,6 +5374,9 @@
     "name": "Completed Empty State",
     "priority": "Low",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": false,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and has no completed items (restore all completed items first, or use a fresh account)",
@@ -4716,6 +5394,9 @@
     "name": "Completed Mixed Types Display",
     "priority": "Medium",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": false,
     "section": "12: Completed Items",
     "preconditions": "User is logged in and has completed at least one Stuff item, one Action, and one Project",
@@ -4735,6 +5416,9 @@
     "name": "Trash Page Loads",
     "priority": "High",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": true,
     "section": "13: Trash",
     "preconditions": "User is logged in and has at least one trashed item (trash an item from Inbox, Next Actions, or Projects)",
@@ -4755,6 +5439,9 @@
     "name": "Trash Items Not Clickable",
     "priority": "Medium",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in and on the Trash page with at least one trashed item",
@@ -4774,6 +5461,9 @@
     "name": "Restore from Trash",
     "priority": "High",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": true,
     "section": "13: Trash",
     "preconditions": "User is logged in and on the Trash page with at least one trashed item whose original bucket is known",
@@ -4797,6 +5487,9 @@
     "name": "Empty Trash Button - Enabled/Disabled State",
     "priority": "Medium",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in",
@@ -4818,6 +5511,9 @@
     "name": "Empty Trash Confirmation and Permanent Deletion",
     "priority": "High",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in and on the Trash page with at least two trashed items",
@@ -4842,6 +5538,9 @@
     "name": "Trash Pagination",
     "priority": "Medium",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in and has many trashed items (trash at least 15-20 items to exceed one page)",
@@ -4862,6 +5561,9 @@
     "name": "Trash Empty State",
     "priority": "Low",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in and has no items in trash (restore or permanently delete all trashed items)",
@@ -4880,6 +5582,9 @@
     "name": "Trash Item from Inbox - Verify Round Trip",
     "priority": "High",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in and has at least one Stuff item in the Inbox",
@@ -4906,6 +5611,9 @@
     "name": "Trash Item from Next Actions - Verify Round Trip",
     "priority": "High",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "13: Trash",
     "preconditions": "User is logged in and has at least one Action in the Next Actions list",
@@ -4932,6 +5640,9 @@
     "name": "Engage Page Loads as Default Landing Page",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": true,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User has a verified account and is logged in. At least one action exists in any bucket.",
@@ -4950,6 +5661,9 @@
     "name": "Overdue Alert Displays with Count and View Button",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 3 actions exist with due dates set to past dates (e.g., yesterday, two days ago, one week ago).",
@@ -4971,6 +5685,9 @@
     "name": "Overdue Count Aggregates Items from Multiple Buckets",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. The following overdue items exist: 2 actions in Next with past due dates, 1 action in Today with a past due date, 1 action in Calendar with a past due date, 1 action in Waiting For with a past due date. Total overdue = 5.",
@@ -4993,6 +5710,9 @@
     "name": "Today Section Displays Header with Count, View All Link, and Up to 5 Items",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 7 actions exist with today's date as the due date.",
@@ -5016,6 +5736,9 @@
     "name": "Today Section - Complete Item Inline",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 2 actions exist with today's date as the due date and are visible in the Engage dashboard Today section.",
@@ -5041,6 +5764,9 @@
     "name": "Next Actions Section Displays Header with Count, View All Link, and Up to 5 Items",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 8 actions exist that qualify as Next Actions (no due date, not delegated, not deferred, not someday).",
@@ -5063,6 +5789,9 @@
     "name": "Waiting For Section Displays Header with Count, View All Link, and Up to 5 Items",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 6 actions exist with the `waiting_for` field set (delegated actions).",
@@ -5085,6 +5814,9 @@
     "name": "Inbox Nudge Displays with Count and Link to Clarify",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 4 stuff items exist in the Inbox that have not been clarified.",
@@ -5108,6 +5840,9 @@
     "name": "Stuck Projects Nudge Displays When Projects Lack Next Action",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. 3 projects exist, and 2 of them have no next action assigned (stuck projects).",
@@ -5133,6 +5868,9 @@
     "name": "Review Nudge Displays Last Reviewed Information",
     "priority": "Medium",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. Weekly Review feature is enabled in settings. User has items in various buckets. User has either never performed a review or last reviewed several days ago.",
@@ -5157,6 +5895,9 @@
     "name": "Context Filter on Dashboard Filters All Sections Simultaneously",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. Multiple actions exist across Today, Next Actions, and Waiting For sections. Some actions have the tag `@office`, others have `@home`, and some have no tags.",
@@ -5181,6 +5922,9 @@
     "name": "Dashboard Empty State with Context Filter Active",
     "priority": "Medium",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. Actions exist in various buckets but none are tagged with `@calls`.",
@@ -5203,6 +5947,9 @@
     "name": "Dashboard Fully Empty State for New Account",
     "priority": "Medium",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "A brand new user account with no stuff, actions, projects, or any other items.",
@@ -5226,6 +5973,9 @@
     "name": "Dashboard Drag Reorder Within Today and Next Sections",
     "priority": "Medium",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 3 items exist in the Today section and at least 3 items exist in the Next Actions section on the Engage dashboard.",
@@ -5253,6 +6003,9 @@
     "name": "Dashboard Item Click Navigates to Correct Detail Page",
     "priority": "High",
     "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
     "smoke": true,
     "section": "14: Engage (Dashboard Overview)",
     "preconditions": "User is logged in. At least 1 action exists in each section: Today (an action with due date today), Next Actions (a standalone action), Waiting For (a delegated action). At least 1 action belongs to a project.",
@@ -5278,6 +6031,9 @@
     "name": "Review Page Accessible When Weekly Review Is Enabled",
     "priority": "High",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": true,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review feature is enabled in user settings.",
@@ -5300,6 +6056,9 @@
     "name": "Review Page Hidden When Weekly Review Is Disabled",
     "priority": "High",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review feature is currently enabled.",
@@ -5322,6 +6081,9 @@
     "name": "Review Page Header Displays Title and Last Review Date",
     "priority": "Medium",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled in settings.",
@@ -5346,6 +6108,9 @@
     "name": "Setup Tip on First Visit Suggests Recurring Weekly Reminder",
     "priority": "Medium",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. User has never visited the Review page before.",
@@ -5368,6 +6133,9 @@
     "name": "Setup Tip Is Dismissible and Stays Dismissed Across Sessions",
     "priority": "Low",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. User has never visited the Review page before (setup tip is visible).",
@@ -5394,6 +6162,9 @@
     "name": "Review Page Displays All 6 Steps with Correct Details",
     "priority": "High",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. Items exist in Inbox (3 items), Next Actions (5 items), Waiting For (2 items), Projects (4 projects), Someday/Maybe (6 items), and Calendar (8 items).",
@@ -5413,6 +6184,9 @@
     "name": "Review Step Go Links Navigate to Correct Pages",
     "priority": "High",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. Items exist in all 6 buckets.",
@@ -5443,6 +6217,9 @@
     "name": "Start Review Enables Checkboxes",
     "priority": "High",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. User has not started a review session.",
@@ -5464,6 +6241,9 @@
     "name": "Review Progress Counter Updates as Steps Are Checked",
     "priority": "Medium",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. User has clicked \"Start Review\" and checkboxes are enabled.",
@@ -5494,6 +6274,9 @@
     "name": "Complete Review Saves Review Date After All Steps Checked",
     "priority": "High",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": true,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. User has clicked \"Start Review\" and all 6 checkboxes are checked.",
@@ -5518,6 +6301,9 @@
     "name": "Complete Review Button Disabled Until All 6 Steps Are Checked",
     "priority": "Medium",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. User has clicked \"Start Review.\"",
@@ -5543,6 +6329,9 @@
     "name": "Review Page Mobile Layout Hides Hint Text",
     "priority": "Low",
     "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
     "smoke": false,
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. Device is a mobile phone or browser is resized to mobile viewport width (< 768px).",
@@ -5567,6 +6356,9 @@
     "name": "Access Recurring Actions from Calendar View",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. At least 3 recurring action templates exist.",
@@ -5586,6 +6378,9 @@
     "name": "Create New Recurring Action with All Required Fields",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": true,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User is on the Calendar page with the Recurring tab active.",
@@ -5613,6 +6408,9 @@
     "name": "Recurrence Rule - Daily Frequency with Interval",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
@@ -5641,6 +6439,9 @@
     "name": "Recurrence Rule - Weekly Frequency with Multiple Day Selection",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
@@ -5669,6 +6470,9 @@
     "name": "Recurrence Rule - Monthly Frequency with Day of Month",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
@@ -5693,6 +6497,9 @@
     "name": "Recurrence Rule - Yearly Frequency with Month and Day",
     "priority": "Medium",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page (or has just created one via the Calendar Recurring quick-add).",
@@ -5718,6 +6525,9 @@
     "name": "End Condition - Never (No End Date)",
     "priority": "Medium",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.",
@@ -5738,6 +6548,9 @@
     "name": "End Condition - After N Occurrences",
     "priority": "Medium",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.",
@@ -5764,6 +6577,9 @@
     "name": "End Condition - Until Specific Date",
     "priority": "Medium",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. User has an existing recurring template open on its detail page with a recurrence rule configured.",
@@ -5788,6 +6604,9 @@
     "name": "Edit Recurring Action Template",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": true,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. A recurring action template exists with title \"Daily standup\", recurrence \"Every day\", time 9:00 AM, duration 15 minutes.",
@@ -5816,6 +6635,9 @@
     "name": "Active Instance Badge on Recurring Detail Page",
     "priority": "Medium",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. A recurring action template exists and has spawned an active action instance (a concrete action that exists in Next Actions, Today, or Calendar).",
@@ -5839,6 +6661,9 @@
     "name": "Spawn Next Action Instance Manually",
     "priority": "Medium",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. A recurring action template exists. No active instance currently exists for this template (or the current instance has been completed).",
@@ -5863,6 +6688,9 @@
     "name": "Trash Recurring Action Template",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. A recurring action template named \"Old recurring task\" exists.",
@@ -5888,6 +6716,9 @@
     "name": "Reorder Recurring Action Templates via Drag-and-Drop",
     "priority": "High",
     "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
     "smoke": false,
     "section": "16: Recurring Actions",
     "preconditions": "User is logged in. At least 3 recurring action templates exist in the Recurring list.",
@@ -5913,6 +6744,9 @@
     "name": "Tag Input - Add Tag by Pressing Enter or Comma",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": true,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. An action detail page is open (e.g., `/action/:id`).",
@@ -5942,6 +6776,9 @@
     "name": "Tag Input - Autocomplete Suggests Previously Used Tags",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Tags `@office`, `@home`, `@calls`, `energy:high`, and `project-alpha` have been used on other actions. User is on an action detail page with the tag input field.",
@@ -5972,6 +6809,9 @@
     "name": "Tag Input - Remove Tag via Backspace and via X Button",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. An action detail page is open with 3 tags already added: `@office`, `@home`, `urgent`.",
@@ -6000,6 +6840,9 @@
     "name": "Tag Input - Keyboard Navigation of Suggestion Dropdown",
     "priority": "Medium",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Multiple previously used tags exist: `@office`, `@home`, `@calls`, `@anywhere`. User is on an action detail page.",
@@ -6031,6 +6874,9 @@
     "name": "Tag Input - Preset Chips Displayed and Clickable",
     "priority": "Medium",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. User is on an action detail page with the tag input visible.",
@@ -6057,6 +6903,9 @@
     "name": "Tags Cannot Be Added to Stuff Items",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. At least one stuff item exists in the Inbox. At least one action exists (for comparison).",
@@ -6080,6 +6929,9 @@
     "name": "Per-Page Tag Filter on List Pages",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Multiple actions exist with various tags: some with `@office`, some with `@home`, some with `energy:high`, some with no tags. Actions span Next, Today, Waiting For, Projects, and Someday views.",
@@ -6108,6 +6960,9 @@
     "name": "Context Filter Located in Sidebar Below Dashboard Link",
     "priority": "Medium",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. The sidebar is visible (desktop layout or mobile sidebar opened).",
@@ -6128,6 +6983,9 @@
     "name": "Context Filter Single-Select Toggle Behavior",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Tags `@office`, `@home`, and `@calls` have been used on various actions.",
@@ -6155,6 +7013,9 @@
     "name": "Context Filter Active Chip Displayed in Sidebar",
     "priority": "Medium",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Tags have been used on actions. The sidebar is visible.",
@@ -6179,6 +7040,9 @@
     "name": "Context Filter Applies Globally Across Multiple Pages",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": true,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Actions exist in Next, Today, Waiting For, Projects, and Someday views with various tags. At least some items in each view have the tag `@office` and some do not.",
@@ -6208,6 +7072,9 @@
     "name": "Context Filter Interaction with Per-Page Tag Filter",
     "priority": "High",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Actions on the Next page have tags: some `@office`, some `@office` + `energy:high`, some `@home` + `energy:high`, some with only `energy:low`.",
@@ -6237,6 +7104,9 @@
     "name": "Custom Tag Presets Modified via Settings",
     "priority": "Low",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. Default presets exist: `@computer`, `@office`, `@home`, `@calls`, `@anywhere`, `energy:high`, `energy:low`, `min:5`, `min:30`.",
@@ -6264,6 +7134,9 @@
     "name": "Tags Are Lowercased and Trimmed on Input",
     "priority": "Medium",
     "area": "Context Tags & Filtering",
+    "areas": [
+      "Context Tags & Filtering"
+    ],
     "smoke": false,
     "section": "17: Context Tags & Filtering",
     "preconditions": "User is logged in. User is on an action detail page with the tag input visible.",
@@ -6293,6 +7166,9 @@
     "name": "Upload Attachment via Button",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": true,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An action, project, or stuff item exists. User is on the detail page of that item.",
@@ -6311,6 +7187,9 @@
     "name": "Upload Attachment via Drag-Drop",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An action, project, or stuff item exists. User is on the detail page of that item. A file is accessible on the desktop or file manager.",
@@ -6331,6 +7210,9 @@
     "name": "Attachment Display",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with at least three attachments of different types: an image (PNG), a document (PDF), and a large file (e.g., 2.5 MB ZIP).",
@@ -6351,6 +7233,9 @@
     "name": "Attachment Preview - Image",
     "priority": "Medium",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with an image attachment (e.g., PNG, JPG, or GIF).",
@@ -6368,6 +7253,9 @@
     "name": "Attachment Preview - PDF",
     "priority": "Medium",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with a PDF attachment.",
@@ -6384,6 +7272,9 @@
     "name": "Attachment Preview - Text/JSON",
     "priority": "Medium",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with a plain text file (.txt) and a JSON file (.json) as attachments.",
@@ -6402,6 +7293,9 @@
     "name": "Download Attachment",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": true,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with at least one attachment.",
@@ -6420,6 +7314,9 @@
     "name": "Delete Attachment",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with at least one attachment.",
@@ -6441,6 +7338,9 @@
     "name": "Upload File Exceeding 50MB Limit",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item detail page is open. A file larger than 50 MB is available on the local machine.",
@@ -6457,6 +7357,9 @@
     "name": "Attachment Limit of 10",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with exactly 9 attachments already uploaded.",
@@ -6478,6 +7381,9 @@
     "name": "Attachment Count Display",
     "priority": "Medium",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item exists with varying numbers of attachments.",
@@ -6498,6 +7404,9 @@
     "name": "Attachment HTTP 409 Error",
     "priority": "Medium",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item has reached the attachment limit of 10 on the server side, but the client UI has not yet refreshed to reflect this (e.g., another session added the 10th file).",
@@ -6514,6 +7423,9 @@
     "name": "Attachment HTTP 413 Error",
     "priority": "Medium",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. An item detail page is open. A file that passes client-side validation but exceeds server-side limits is available (e.g., exactly at the boundary or the user's storage quota is nearly full).",
@@ -6530,6 +7442,9 @@
     "name": "Attachments on All Detail Types",
     "priority": "High",
     "area": "Attachments",
+    "areas": [
+      "Attachments"
+    ],
     "smoke": false,
     "section": "18: Attachments",
     "preconditions": "User is logged in. At least one stuff item, one action, and one project exist.",
@@ -6551,6 +7466,9 @@
     "name": "Add Comment - Focus and Expand Behavior",
     "priority": "High",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page (action, project, or stuff) is open.",
@@ -6570,6 +7488,9 @@
     "name": "Save Comment",
     "priority": "High",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": true,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page is open. The comment textarea is focused and expanded.",
@@ -6591,6 +7512,9 @@
     "name": "Cancel Comment",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page is open.",
@@ -6613,6 +7537,9 @@
     "name": "Comment Character Counter",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page is open.",
@@ -6636,6 +7563,9 @@
     "name": "Comment Display Order",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page is open with no existing comments.",
@@ -6657,6 +7587,9 @@
     "name": "Comment Timestamp Display",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item has comments with varying ages: one just posted, one posted a few minutes ago, one posted yesterday, one posted 5 days ago, and one posted more than a week ago (this may require pre-seeding data or waiting between comment creation).",
@@ -6675,6 +7608,9 @@
     "name": "Comment Avatar",
     "priority": "Low",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item has at least one comment.",
@@ -6692,6 +7628,9 @@
     "name": "Comments Not Editable or Deletable",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item has at least one comment posted by the current user.",
@@ -6712,6 +7651,9 @@
     "name": "Comment Limit of 50",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item exists with exactly 49 comments (may require pre-seeding via API or repeated manual entry).",
@@ -6731,6 +7673,9 @@
     "name": "Comments on All Detail Types",
     "priority": "High",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. At least one stuff item, one action, and one project exist.",
@@ -6752,6 +7697,9 @@
     "name": "Comment with Maximum Length",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page is open.",
@@ -6775,6 +7723,9 @@
     "name": "Comment Empty Save Prevention",
     "priority": "Medium",
     "area": "Comments",
+    "areas": [
+      "Comments"
+    ],
     "smoke": false,
     "section": "19: Comments",
     "preconditions": "User is logged in. An item detail page is open.",
@@ -6797,6 +7748,9 @@
     "name": "Settings Page Loads",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": true,
     "section": "20: Settings",
     "preconditions": "User is logged in.",
@@ -6819,6 +7773,9 @@
     "name": "Settings Auto-Save",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -6840,6 +7797,9 @@
     "name": "Settings Offline Fallback",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The user has previously visited /settings so localStorage contains cached settings.",
@@ -6860,6 +7820,9 @@
     "name": "Account - Email Display",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in with a known email address (e.g., testuser@example.com).",
@@ -6878,6 +7841,9 @@
     "name": "Change Password - Open Modal",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -6898,6 +7864,9 @@
     "name": "Change Password - Success",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": true,
     "section": "20: Settings",
     "preconditions": "User is logged in. The change password modal is open. The user knows their current password.",
@@ -6919,6 +7888,9 @@
     "name": "Change Password - Wrong Current Password",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The change password modal is open.",
@@ -6940,6 +7912,9 @@
     "name": "Change Password - Weak New Password",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The change password modal is open.",
@@ -6960,6 +7935,9 @@
     "name": "Sessions - List Display",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in with at least two active sessions (e.g., logged in from both a desktop browser and a mobile device).",
@@ -6977,6 +7955,9 @@
     "name": "Sessions - Current Session Badge",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open with the Sessions section visible.",
@@ -6994,6 +7975,9 @@
     "name": "Sessions - End Current Session",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open with the Sessions section visible.",
@@ -7013,6 +7997,9 @@
     "name": "Sessions - End Other Session",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in with at least two active sessions. The settings page is open.",
@@ -7033,6 +8020,9 @@
     "name": "Sessions - End Others Bulk Action",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in with at least three active sessions. The settings page is open.",
@@ -7055,6 +8045,9 @@
     "name": "Sessions - Error State",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The sessions API endpoint is temporarily unavailable or returns an error.",
@@ -7075,6 +8068,9 @@
     "name": "Theme Setting - System Default",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. No `wna_theme` value exists in localStorage (or it has been cleared).",
@@ -7097,6 +8093,9 @@
     "name": "Theme Setting - Light Override",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. OS is set to dark mode.",
@@ -7117,6 +8116,9 @@
     "name": "Theme Setting - Dark Override",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. OS is set to light mode.",
@@ -7137,6 +8139,9 @@
     "name": "Theme Setting - Backwards Compatibility",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in.",
@@ -7159,6 +8164,9 @@
     "name": "Theme Toggle Removed from Sidebar",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in on desktop.",
@@ -7177,6 +8185,9 @@
     "name": "Application - New Items Position",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -7202,6 +8213,9 @@
     "name": "Tags - Quick-Add Presets",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -7225,6 +8239,9 @@
     "name": "Calendar - Week Starts On",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open. The user has access to the calendar view.",
@@ -7248,6 +8265,9 @@
     "name": "Calendar - Time Format",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open. The user has actions with specific times on the calendar.",
@@ -7271,6 +8291,9 @@
     "name": "Calendar - Business Hours",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -7294,6 +8317,9 @@
     "name": "Calendar - Business Days",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -7316,6 +8342,9 @@
     "name": "Review Toggle",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -7339,6 +8368,9 @@
     "name": "About - Version and Debug Mode",
     "priority": "Low",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "20: Settings",
     "preconditions": "User is logged in. The settings page is open.",
@@ -7361,6 +8393,9 @@
     "name": "Quick Add Collapsed State",
     "priority": "High",
     "area": "Quick Add",
+    "areas": [
+      "Quick Add"
+    ],
     "smoke": false,
     "section": "21: Quick Add",
     "preconditions": "User is logged in. The application is in its default state (Quick Add is not expanded).",
@@ -7379,6 +8414,9 @@
     "name": "Quick Add Expand",
     "priority": "High",
     "area": "Quick Add",
+    "areas": [
+      "Quick Add"
+    ],
     "smoke": false,
     "section": "21: Quick Add",
     "preconditions": "User is logged in. Quick Add is in collapsed state.",
@@ -7396,6 +8434,9 @@
     "name": "Quick Add Submit",
     "priority": "High",
     "area": "Quick Add",
+    "areas": [
+      "Quick Add"
+    ],
     "smoke": true,
     "section": "21: Quick Add",
     "preconditions": "User is logged in. Quick Add is expanded and the input field is focused.",
@@ -7420,6 +8461,9 @@
     "name": "Quick Add Collapse",
     "priority": "Medium",
     "area": "Quick Add",
+    "areas": [
+      "Quick Add"
+    ],
     "smoke": false,
     "section": "21: Quick Add",
     "preconditions": "User is logged in. Quick Add is expanded and the input field is focused.",
@@ -7443,6 +8487,9 @@
     "name": "Quick Add Mobile Layout (FAB)",
     "priority": "Medium",
     "area": "Quick Add",
+    "areas": [
+      "Quick Add"
+    ],
     "smoke": false,
     "section": "21: Quick Add",
     "preconditions": "User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 375px).",
@@ -7466,6 +8513,9 @@
     "name": "Quick Add from Any Page",
     "priority": "High",
     "area": "Quick Add",
+    "areas": [
+      "Quick Add"
+    ],
     "smoke": false,
     "section": "21: Quick Add",
     "preconditions": "User is logged in.",
@@ -7490,6 +8540,9 @@
     "name": "Within-List Reorder - Desktop",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": true,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on a desktop browser. A list (e.g., inbox) contains at least 3 items.",
@@ -7512,6 +8565,9 @@
     "name": "Within-List Reorder - Touch",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on a touch device (or using touch emulation). A list contains at least 3 items.",
@@ -7533,6 +8589,9 @@
     "name": "Cross-Component Drag to Sidebar Destinations",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": true,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. A list (e.g., inbox) contains at least one item.",
@@ -7556,6 +8615,9 @@
     "name": "Cross-Component Drag to Calendar Sidebar",
     "priority": "Medium",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. A list contains at least one item.",
@@ -7578,6 +8640,9 @@
     "name": "Cross-Component Drag to Waiting For Sidebar",
     "priority": "Medium",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. A list contains at least one item.",
@@ -7599,6 +8664,9 @@
     "name": "Cross-Component Drag to Projects Sidebar",
     "priority": "Medium",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. A list contains at least one item.",
@@ -7621,6 +8689,9 @@
     "name": "Cross-Component Drag to Reference Sidebar",
     "priority": "Medium",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. The inbox contains at least one stuff item, the next list contains at least one action, and the projects list contains at least one project.",
@@ -7652,6 +8723,9 @@
     "name": "Drag Project to Sidebar Destinations",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. The projects list contains at least one active project.",
@@ -7675,6 +8749,9 @@
     "name": "Drag Someday Items to Sidebar",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. The Someday page contains at least one stuff, one action, and one project.",
@@ -7698,6 +8775,9 @@
     "name": "Drag Completed Items to Sidebar",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. The Completed page contains at least one completed stuff, one completed action, and one completed project.",
@@ -7717,6 +8797,9 @@
     "name": "Drag Reference File to Sidebar",
     "priority": "Medium",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in on desktop. The sidebar is visible. The Reference page contains at least one transformed file (a file with source_type indicating it was originally a stuff, action, or project).",
@@ -7738,6 +8821,9 @@
     "name": "Reference Preview Modal - Restore Button",
     "priority": "Medium",
     "area": "Reference",
+    "areas": [
+      "Reference"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in. The Reference page contains at least one transformed file (a file created by transforming a stuff, action, or project to file).",
@@ -7764,6 +8850,9 @@
     "name": "Drag Hint on First Visit",
     "priority": "Low",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in. The user has never visited the inbox (or the specific list page) before (fresh account or cleared localStorage).",
@@ -7782,6 +8871,9 @@
     "name": "Drag Hint Dismissed After First Drag",
     "priority": "Low",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in. The drag hint overlay is visible on a list page.",
@@ -7804,6 +8896,9 @@
     "name": "Overdue Item Highlighting",
     "priority": "High",
     "area": "Drag & Drop",
+    "areas": [
+      "Drag & Drop"
+    ],
     "smoke": false,
     "section": "22: Drag & Drop",
     "preconditions": "User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday). Another action has a due_date set to tomorrow.",
@@ -7831,6 +8926,9 @@
     "name": "Landing Page - Hero Section",
     "priority": "High",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": true,
     "section": "23: Public Pages",
     "preconditions": "User is not logged in (or logged out). Browser is open.",
@@ -7852,6 +8950,9 @@
     "name": "Landing Page - How It Works Section",
     "priority": "Medium",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
@@ -7870,6 +8971,9 @@
     "name": "Landing Page - Features Section",
     "priority": "Medium",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
@@ -7888,6 +8992,9 @@
     "name": "Landing Page - Why Us Section",
     "priority": "Medium",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
@@ -7903,6 +9010,9 @@
     "name": "Landing Page - Testimonial Section",
     "priority": "Low",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
@@ -7918,6 +9028,9 @@
     "name": "Landing Page - Book Section",
     "priority": "Low",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
@@ -7935,6 +9048,9 @@
     "name": "Landing Page - CTA Banner",
     "priority": "Medium",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
@@ -7953,6 +9069,9 @@
     "name": "Pricing Page - Monthly/Yearly Toggle",
     "priority": "High",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is not logged in (or logged out). Browser is open.",
@@ -7976,6 +9095,9 @@
     "name": "Pricing Page - Three Tiers",
     "priority": "High",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the pricing page /pricing.",
@@ -7994,6 +9116,9 @@
     "name": "Pricing Page - Feature Comparison Table",
     "priority": "Medium",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "User is on the pricing page /pricing.",
@@ -8013,6 +9138,9 @@
     "name": "Help Page",
     "priority": "Low",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "Browser is open.",
@@ -8030,6 +9158,9 @@
     "name": "Legal Pages",
     "priority": "Medium",
     "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
     "smoke": false,
     "section": "23: Public Pages",
     "preconditions": "Browser is open.",
@@ -8051,6 +9182,9 @@
     "name": "Error Toast",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": true,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in.",
@@ -8071,6 +9205,9 @@
     "name": "Success Toast",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. At least one action item exists.",
@@ -8089,6 +9226,9 @@
     "name": "Toast Maximum of 5",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. A way to trigger multiple errors rapidly exists (e.g., multiple failed API calls).",
@@ -8106,6 +9246,9 @@
     "name": "Toast Deduplication",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. A way to trigger the same error twice exists.",
@@ -8124,6 +9267,9 @@
     "name": "Toast Positioning and Animation",
     "priority": "Low",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in.",
@@ -8144,6 +9290,9 @@
     "name": "Confirmation Dialog",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": true,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. An item exists that can be deleted.",
@@ -8167,6 +9316,9 @@
     "name": "GTD Tips Display and Dismissal",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. The user has not previously dismissed the GTD tip for the inbox page (fresh account or cleared localStorage).",
@@ -8189,6 +9341,9 @@
     "name": "Inline Title Editing",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. A list page with at least one item is open.",
@@ -8217,6 +9372,9 @@
     "name": "Cursor Pagination (Load More)",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. A list (e.g., inbox) contains more than 10 items.",
@@ -8240,6 +9398,9 @@
     "name": "Per-Item Loading Spinner",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. A list page with at least one item is open.",
@@ -8259,6 +9420,9 @@
     "name": "Empty States",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. Various lists are empty (no items in inbox, next, today, projects, etc.).",
@@ -8287,6 +9451,9 @@
     "name": "Overdue Highlighting in All List Views",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. An action exists with a due_date set in the past.",
@@ -8315,6 +9482,9 @@
     "name": "Detail Page Navigation Arrows",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in. A list contains at least 4 items (e.g., inbox with items A, B, C, D in order).",
@@ -8342,6 +9512,9 @@
     "name": "Mobile Sidebar Drawer",
     "priority": "High",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in on a mobile device or using browser device emulation with a mobile viewport.",
@@ -8364,6 +9537,9 @@
     "name": "Mobile Bottom Sheets",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in on a mobile device or using browser device emulation.",
@@ -8386,6 +9562,9 @@
     "name": "Mobile Action Buttons Always Visible",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in on a touch device or using browser device emulation with touch enabled.",
@@ -8403,6 +9582,9 @@
     "name": "Keyboard Shortcuts",
     "priority": "Medium",
     "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
     "smoke": false,
     "section": "24: Shared UI Behaviors",
     "preconditions": "User is logged in on a desktop browser. Various pages and modals are accessible.",
@@ -8430,6 +9612,9 @@
     "name": "Footer Content",
     "priority": "Medium",
     "area": "Public Footer",
+    "areas": [
+      "Public Footer"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is on any public page (landing, pricing, help, or legal pages).",
@@ -8448,6 +9633,9 @@
     "name": "Footer Links",
     "priority": "Medium",
     "area": "Public Footer",
+    "areas": [
+      "Public Footer"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is on a public page with the footer visible.",
@@ -8475,6 +9663,9 @@
     "name": "Footer Responsive Layout",
     "priority": "Medium",
     "area": "Public Footer",
+    "areas": [
+      "Public Footer"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is on a public page with the footer visible. Browser DevTools is available for viewport resizing.",
@@ -8495,6 +9686,9 @@
     "name": "Master Email Toggle - Displayed",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in.",
@@ -8513,6 +9707,9 @@
     "name": "Master Email Toggle - Turn Off",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in. All email notifications are currently enabled (master toggle is ON).",
@@ -8532,6 +9729,9 @@
     "name": "Master Email Toggle - Turn On",
     "priority": "High",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in. Master email toggle is currently OFF (all email notifications disabled).",
@@ -8551,6 +9751,9 @@
     "name": "Master Email Toggle - Individual Toggles Disabled When Off",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in. Master email toggle is OFF.",
@@ -8568,6 +9771,9 @@
     "name": "Master Email Toggle - State Persists on Reload",
     "priority": "Medium",
     "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in.",
@@ -8591,6 +9797,9 @@
     "name": "User Avatar - Gravatar Loaded",
     "priority": "Medium",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in with an email address that has a Gravatar account (e.g., a known Gravatar-enabled email).",
@@ -8609,6 +9818,9 @@
     "name": "User Avatar - Gravatar Fallback (No Account)",
     "priority": "Medium",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in with an email address that does NOT have a Gravatar account.",
@@ -8626,6 +9838,9 @@
     "name": "User Avatar - Gravatar Network Error Fallback",
     "priority": "Low",
     "area": "Dashboard Layout & Navigation",
+    "areas": [
+      "Dashboard Layout & Navigation"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is logged in. Browser DevTools is available.",
@@ -8645,6 +9860,9 @@
     "name": "Inbox Zero Celebration - Triggered by Completing Last Item",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
@@ -8665,6 +9883,9 @@
     "name": "Inbox Zero Celebration - Not Triggered on Empty Load",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is authenticated. Inbox is already empty (no items).",
@@ -8681,6 +9902,9 @@
     "name": "Inbox Zero Celebration - Click to Dismiss Early",
     "priority": "Low",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
@@ -8699,6 +9923,9 @@
     "name": "Inbox Zero Celebration - Triggered by Drag to Sidebar",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is authenticated on desktop. Inbox contains exactly 1 stuff item.",
@@ -8718,6 +9945,9 @@
     "name": "Inbox Zero Celebration - Triggered from Detail Page",
     "priority": "Medium",
     "area": "Inbox / Stuff",
+    "areas": [
+      "Inbox / Stuff"
+    ],
     "smoke": false,
     "section": "25: Public Footer",
     "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
@@ -8737,6 +9967,9 @@
     "name": "Complete Project Without Actions - No Confirmation",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User is logged in and a project exists with NO actions (no next action, no backlog)",
@@ -8755,6 +9988,9 @@
     "name": "Trash Project With Actions - Cascade Confirmation",
     "priority": "High",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User is logged in and a project exists with at least one action (next action or backlog)",
@@ -8775,6 +10011,9 @@
     "name": "Trash Project Without Actions - Standard Confirmation",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User is logged in and a project exists with NO actions",
@@ -8791,6 +10030,9 @@
     "name": "Uncomplete Action Blocked by Completed Parent Project (409)",
     "priority": "High",
     "area": "Completed Items",
+    "areas": [
+      "Completed Items"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User has completed a project (which cascade-completed its actions). Both the project and an action appear in the Completed list.",
@@ -8811,6 +10053,9 @@
     "name": "Restore Action Blocked by Trashed Parent Project (409)",
     "priority": "High",
     "area": "Trash",
+    "areas": [
+      "Trash"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User has trashed a project (which cascade-trashed its actions). Both the project and an action appear in the Trash list.",
@@ -8831,6 +10076,9 @@
     "name": "Someday Project Activate",
     "priority": "Medium",
     "area": "Someday",
+    "areas": [
+      "Someday"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User has a project in SOMEDAY state that previously had active actions (which were shelved to BACKLOG when the project was moved to Someday)",
@@ -8849,6 +10097,9 @@
     "name": "Uncomplete Project Toast",
     "priority": "Medium",
     "area": "Completed Items / Projects",
+    "areas": [
+      "Completed Items / Projects"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User has a completed project in the Completed list",
@@ -8865,6 +10116,9 @@
     "name": "Convert Project to Action - Backlog Confirmation",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User has a project with at least one backlog action (expand actions to verify)",
@@ -8885,6 +10139,9 @@
     "name": "Convert Project to Reference - Actions Confirmation",
     "priority": "Medium",
     "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
     "smoke": false,
     "section": "28: Project Cascade Operations",
     "preconditions": "User has a project with actions (next action and/or backlog)",
@@ -8904,6 +10161,9 @@
     "name": "Feedback Button Visible on Dashboard",
     "priority": "High",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "User is logged in",
@@ -8918,6 +10178,9 @@
     "name": "Feedback Button Visible on Public Pages",
     "priority": "High",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "User is not logged in (or on a public page)",
@@ -8933,6 +10196,9 @@
     "name": "Feedback Popover Opens and Closes",
     "priority": "High",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "Feedback button is visible",
@@ -8949,6 +10215,9 @@
     "name": "Contact Support Opens Email",
     "priority": "High",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "Feedback button is visible",
@@ -8965,6 +10234,9 @@
     "name": "Report a Bug Opens Email",
     "priority": "High",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "Feedback button is visible",
@@ -8981,6 +10253,9 @@
     "name": "Feedback Button Mobile Positioning",
     "priority": "Medium",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "User is logged in, viewport ≤ 768px",
@@ -8997,6 +10272,9 @@
     "name": "Feedback Button Dark Theme",
     "priority": "Medium",
     "area": "Feedback",
+    "areas": [
+      "Feedback"
+    ],
     "smoke": false,
     "section": "29: Feedback Button",
     "preconditions": "User is logged in with dark theme enabled",
@@ -9013,6 +10291,9 @@
     "name": "Connections Page for Non-Team Users Without Pending Invites",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is logged in on Free or Pro tier with no pending received invitations.",
@@ -9026,6 +10307,9 @@
     "name": "Invite Connection by Email",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": true,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is on Team tier and has no pending invitations to the target email.",
@@ -9041,6 +10325,9 @@
     "name": "Invite Validates Email Format and Self-Invite",
     "priority": "Medium",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is on Team tier.",
@@ -9056,6 +10343,9 @@
     "name": "Accept Received Invitation (Team Tier)",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is on **Team tier** and has a pending received invitation on the Connections page.",
@@ -9070,6 +10360,9 @@
     "name": "Accept Received Invitation on Free/Pro Tier Triggers Upgrade",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is on **Free or Pro tier** and has a pending received invitation on the Connections page.",
@@ -9085,6 +10378,9 @@
     "name": "Decline Received Invitation (All Tiers)",
     "priority": "Medium",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User has a pending received invitation on the Connections page. Run this test once on Team tier and once on Free/Pro tier.",
@@ -9099,6 +10395,9 @@
     "name": "Cancel Sent Invitation",
     "priority": "Medium",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User has an outstanding sent invitation.",
@@ -9114,6 +10413,9 @@
     "name": "Remove Accepted Connection",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User has at least one accepted connection.",
@@ -9129,6 +10431,9 @@
     "name": "Sidebar Connections Badge (Network Count) and Red Dot (Received Invites)",
     "priority": "Medium",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User is on Team tier with at least one accepted connection AND at least one pending received invitation.",
@@ -9143,6 +10448,9 @@
     "name": "Connection Invitation Email Delivered with Deep-Link (Existing WNA User)",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": true,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User A is on Team tier. User B is an existing, registered WhatsNextAction user (any tier). User A and B are not yet connected and have no pending invitation between them. Mailpit (or equivalent) is accessible on `http://localhost:8025`.",
@@ -9159,6 +10467,9 @@
     "name": "Invitee Follows Email Link and Accepts from Pending List",
     "priority": "High",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": true,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User B received a connection-invitation email per TC-424b. User B is on **Team tier**. User B is logged out (no `auth_token`/`refresh_token` in localStorage).",
@@ -9177,6 +10488,9 @@
     "name": "Invitation Email to a Not-Yet-Registered Address Links to Registration",
     "priority": "Medium",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "User A is on Team tier. The target email address has **no** WhatsNextAction account. Mailpit is accessible.",
@@ -9195,6 +10509,9 @@
     "name": "Sidebar Count vs Dot — Exact Split of Connections, Sent, and Received",
     "priority": "Medium",
     "area": "Connections",
+    "areas": [
+      "Connections"
+    ],
     "smoke": false,
     "section": "30: Connections (Team Tier)",
     "preconditions": "A Team-tier user under test with a known connection state. Set up exactly: **N = 2** accepted connections, **M = 1** pending invitation they have *sent* (awaiting the other side), and **R = 1** pending invitation they have *received* (awaiting their decision). (Use second/third accounts to create each state.)",
@@ -9212,6 +10529,9 @@
     "name": "Notification Bell Visible in Top Nav When Authenticated",
     "priority": "High",
     "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
     "smoke": true,
     "section": "31: In-App Notifications",
     "preconditions": "User is logged in.",
@@ -9226,6 +10546,9 @@
     "name": "Open Notification Dropdown and Mark as Read",
     "priority": "High",
     "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
     "smoke": false,
     "section": "31: In-App Notifications",
     "preconditions": "User has at least one unread in-app notification.",
@@ -9241,6 +10564,9 @@
     "name": "Notification Empty State",
     "priority": "Low",
     "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
     "smoke": false,
     "section": "31: In-App Notifications",
     "preconditions": "User has no in-app notifications (or all already dismissed).",
@@ -9254,6 +10580,9 @@
     "name": "Unread Badge Polls Every 30 Seconds",
     "priority": "Medium",
     "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
     "smoke": false,
     "section": "31: In-App Notifications",
     "preconditions": "User is authenticated with the dashboard open. A second user/process can create a new notification event (e.g., a delegated item) for this user.",
@@ -9269,6 +10598,9 @@
     "name": "Non-Team Users Still See In-App Notifications",
     "priority": "Low",
     "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
     "smoke": false,
     "section": "31: In-App Notifications",
     "preconditions": "User is logged in on Free or Pro tier with at least one personal notification available (e.g., a task due today digest in the log).",
@@ -9280,10 +10612,13 @@
     "expected": "The bell is visible for all tiers (in-app notifications are not Team-tier gated). Any personal notifications (task due today, daily next actions, project needs next action) appear in the dropdown; Team-only notifications (`delegated_to_you`, `delegation_completed`, `connection_invite`) never appear for non-Team users because those events never fire for them."
   },
   {
-    "id": "TC-430",
+    "id": "TC-464",
     "name": "Delegate Action to Connection from Action Detail",
     "priority": "High",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": true,
     "section": "32: Delegation (Team Tier)",
     "preconditions": "Logged-in user (assigner) is on Team tier with at least one accepted connection (receiver). The assigner has at least one Action in NEXT state.",
@@ -9297,25 +10632,49 @@
     "expected": "A `POST /v1/action/{id}/delegate` request is sent with `{ user_id }` matching the receiver. The action moves to WAITING; `waiting_for` shows the receiver's display label and `waiting_for_user_id` is set. The action now appears on the assigner's Waiting For page with the receiver's name + relative \"since\" duration."
   },
   {
-    "id": "TC-431",
+    "id": "TC-465",
     "name": "Delegated Stuff Appears in Receiver Inbox with \"From:\" Indicator",
     "priority": "High",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": false,
     "section": "32: Delegation (Team Tier)",
-    "preconditions": "Receiver is logged in. Assigner (TC-430) has just delegated an action to receiver.",
+    "preconditions": "Receiver is logged in. Assigner (TC-464) has just delegated an action to receiver.",
     "steps": [
       "As receiver, navigate to the Inbox page",
       "Locate the new Stuff item created by the delegation",
       "Open the Stuff detail page"
     ],
-    "expected": "The new Stuff item shows a small \"From: [assigner email or display name]\" indicator both in the inbox row and on the Stuff detail page (rendered by `MetadataRow`). The item is otherwise a normal Stuff entry — no special clarify path; it can be processed like any other inbox item."
+    "expected": "The new Stuff item shows a small \"From: [assigner email or display name]\" chip in the inbox row (rendered by `MetadataRow`). Opening its Stuff detail page shows the same origin as a read-only \"From\" section (labelled \"From\", styled like the \"Description\" section). The item is otherwise a normal Stuff entry — no special clarify path; it can be processed like any other inbox item."
   },
   {
-    "id": "TC-432",
+    "id": "TC-465a",
+    "name": "Delegated-from Origin Persists on Action Detail After Clarify",
+    "priority": "Medium",
+    "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
+    "smoke": false,
+    "section": "32: Delegation (Team Tier)",
+    "preconditions": "Receiver is logged in and has a delegated Stuff item in the Inbox (from TC-465).",
+    "steps": [
+      "As receiver, clarify the delegated Stuff item into an Action (Next Action)",
+      "Open that action's detail page",
+      "Separately, open the detail page of a normal (non-delegated) action"
+    ],
+    "expected": "The clarified action's list row shows the \"From: [assigner name]\" chip (via `MetadataRow`), and its Action detail page shows a read-only \"From\" section with the delegator's name (styled like the \"Waiting on\" / \"Project\" sections). The normal non-delegated action shows no \"From\" section on its detail page."
+  },
+  {
+    "id": "TC-466",
     "name": "Connection Picker Blocks Self-Delegation",
     "priority": "Medium",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": false,
     "section": "32: Delegation (Team Tier)",
     "preconditions": "Logged-in Team-tier user with at least one accepted connection.",
@@ -9326,13 +10685,16 @@
     "expected": "The current user is NOT shown as a selectable option in the dropdown. Other accepted connections matching the search ARE shown. If the user types their own full email and presses Enter, the value is treated as free text (legacy waiting), not delegated — `POST /v1/action/{id}/delegate` is not called with `user_id == self`."
   },
   {
-    "id": "TC-433",
+    "id": "TC-467",
     "name": "Receiver Completion Auto-Resolves Assigner's Waiting For",
     "priority": "High",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": true,
     "section": "32: Delegation (Team Tier)",
-    "preconditions": "A delegation exists per TC-430. Receiver has clarified the delegated Stuff into an Action (state = NEXT) on their side.",
+    "preconditions": "A delegation exists per TC-464. Receiver has clarified the delegated Stuff into an Action (state = NEXT) on their side.",
     "steps": [
       "As receiver, complete the resulting Action (check the box on the action list, or complete from the action detail page)",
       "As assigner, refresh the Waiting For page and the original action's detail page (or wait up to 30s for notification polling)"
@@ -9340,24 +10702,30 @@
     "expected": "- Assigner's original action moves out of WAITING. It promotes to NEXT (or to CALENDAR if `scheduled_date` is set on the action).\n- `waiting_for`, `waiting_for_user_id`, and `waiting_since` are cleared.\n- A new comment appears on the action with text starting with \"Done.\" (the receiver may have appended additional text).\n- Assigner's notification bell shows a `delegation_completed` in-app notification (within 30s polling window)."
   },
   {
-    "id": "TC-434",
+    "id": "TC-468",
     "name": "Receiver Trash Also Auto-Resolves the Delegation",
     "priority": "Medium",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": false,
     "section": "32: Delegation (Team Tier)",
-    "preconditions": "A delegation exists per TC-430. Receiver has clarified into an Action OR left it as Stuff in their inbox.",
+    "preconditions": "A delegation exists per TC-464. Receiver has clarified into an Action OR left it as Stuff in their inbox.",
     "steps": [
       "As receiver, trash the Stuff item OR trash the resulting Action",
       "As assigner, refresh the Waiting For page"
     ],
-    "expected": "Same outcome as TC-433 — assigner's action auto-promotes out of WAITING, fields are cleared, \"Done.\" comment is written, and a `delegation_completed` notification is fired. Trash is treated identically to completion as a receiver-side terminal event."
+    "expected": "Same outcome as TC-467 — assigner's action auto-promotes out of WAITING, fields are cleared, \"Done.\" comment is written, and a `delegation_completed` notification is fired. Trash is treated identically to completion as a receiver-side terminal event."
   },
   {
-    "id": "TC-435",
+    "id": "TC-469",
     "name": "Free-Text Waiting Still Works for Non-Connection Recipients",
     "priority": "Medium",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": false,
     "section": "32: Delegation (Team Tier)",
     "preconditions": "Logged-in user (any tier — no connections required for free text).",
@@ -9369,13 +10737,16 @@
     "expected": "The action is created in WAITING state with `waiting_for` set to the typed string and `waiting_for_user_id` left null. The backend call is `POST /v1/action/{id}/wait` (legacy), NOT `/v1/action/{id}/delegate`. The item appears in Waiting For with the free-text label and a \"since\" duration."
   },
   {
-    "id": "TC-436",
+    "id": "TC-470",
     "name": "Tier Downgrade Blocks New Delegations but Preserves In-Flight",
     "priority": "High",
     "area": "Delegation",
+    "areas": [
+      "Delegation"
+    ],
     "smoke": false,
     "section": "32: Delegation (Team Tier)",
-    "preconditions": "A user previously on Team tier with an active in-flight delegation (per TC-430). The user has been downgraded to Free or Pro.",
+    "preconditions": "A user previously on Team tier with an active in-flight delegation (per TC-464). The user has been downgraded to Free or Pro.",
     "steps": [
       "As the downgraded user, attempt to delegate a new action via the connection picker (try selecting any connection in the dropdown)",
       "Observe the response",
@@ -9390,6 +10761,9 @@
     "name": "Share Personal Project with a Connection (Owner)",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": true,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is on Team tier, owns a personal project (active, not completed), and has at least one accepted connection.",
@@ -9406,6 +10780,9 @@
     "name": "Tier Gate on Share Button",
     "priority": "Medium",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user on Free or Pro tier owns a personal project.",
@@ -9420,6 +10797,9 @@
     "name": "Owner Edits Project Title, Outcome, and Description",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project exists; logged-in user is the owner.",
@@ -9436,6 +10816,9 @@
     "name": "Write Member Sees Title/Outcome/Description as View-Only",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project exists; logged-in user is a **write** member (not the owner).",
@@ -9452,6 +10835,9 @@
     "name": "Read-Only Member Sees Same Fields as View-Only",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project exists; logged-in user is a **read-only** member.",
@@ -9466,6 +10852,9 @@
     "name": "Tags Are Editable by All Roles (Private Per User)",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project exists with three test users — owner, write member, read-only member.",
@@ -9483,6 +10872,9 @@
     "name": "Write Member Adds and Reorders Backlog Actions",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": true,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is a write member of a shared project that already has at least 2 unassigned backlog actions.",
@@ -9498,6 +10890,9 @@
     "name": "Read-Only Member Cannot Add or Reorder Backlog",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is a read-only member of a shared project with existing backlog actions.",
@@ -9513,6 +10908,9 @@
     "name": "Self-Assign One Backlog Action at a Time",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": true,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is a write member with no currently assigned action on a shared project that has multiple unassigned backlog items.",
@@ -9528,6 +10926,9 @@
     "name": "Unassign Returns Action to Backlog",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user has one assigned action on a shared project (per TC-445).",
@@ -9542,6 +10943,9 @@
     "name": "Trashing an Assigned Action Does NOT Return It to Backlog",
     "priority": "Medium",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user has an assigned action on a shared project (per TC-445).",
@@ -9556,6 +10960,9 @@
     "name": "Read-Only Member Cannot Self-Assign or See Assign Buttons",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is a read-only member of a shared project with unassigned backlog actions.",
@@ -9570,6 +10977,9 @@
     "name": "Non-Owner Member Sees \"Leave\" Button Instead of \"Trash\"",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is a non-owner member (write or read-only) of a shared project. The project is not completed.",
@@ -9584,6 +10994,9 @@
     "name": "Leave Project Removes Membership and Routes to /projects",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": true,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is a non-owner member of a shared project (per TC-449). The user may or may not have an assigned action.",
@@ -9599,6 +11012,9 @@
     "name": "Owner Removes a Member; Their Assigned Action Returns to Backlog",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is the owner of a shared project. A non-owner member has an in-progress assigned action.",
@@ -9610,10 +11026,33 @@
     "expected": "Confirm dialog shows the member's email and warns \"[email] will lose access. Their assigned actions return to the backlog.\" On confirm, `DELETE /v1/project/{id}/members/{uid}` fires. The member is removed from the list. The previously assigned action returns to the backlog (visible as unassigned, no \"You\" or assignee chip)."
   },
   {
+    "id": "TC-451a",
+    "name": "Removing the Last Non-Owner Member Reverts Project to Personal (No Members Re-Probe)",
+    "priority": "High",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "33: Shared Projects (Team Tier)",
+    "preconditions": "Logged-in user is the owner of a shared project that has exactly **one** non-owner member (so removing them leaves only the owner).",
+    "steps": [
+      "Open the project detail (it shows the shared layout: \"Shared\" badge, \"Shared with\" list, backlog/My-Action split)",
+      "Open DevTools → Network",
+      "In the \"Shared with\" section, remove the only non-owner member and confirm",
+      "Observe the network requests after the `DELETE .../members/{uid}` call",
+      "Reload the page (F5) and again watch the Network tab"
+    ],
+    "expected": "The `DELETE` response includes `auto_unshared: true`. The project immediately reverts to a normal personal project: the \"Shared\" badge and \"Shared with\" section disappear, the backlog/My-Action split is replaced by the personal Next-Action layout, and a success toast reads \"Last member left — project is personal again\". **No** `GET /v1/project/{id}/members` request is fired after the removal. After the reload, the `GET /v1/project/{id}` response has no `shared: true` field, the page renders as a personal project, and **still no** `GET /members` request fires. (Both previously 403'd with `{\"detail\":\"Not a project member\"}`.)"
+  },
+  {
     "id": "TC-452",
     "name": "Owner Changes a Member's Role",
     "priority": "Medium",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "Logged-in user is the owner of a shared project with at least one non-owner member.",
@@ -9629,6 +11068,9 @@
     "name": "Attachments Are Read-Only for Read-Only Members",
     "priority": "Medium",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project has at least one project-level attachment uploaded by the owner. Logged-in user is a read-only member.",
@@ -9644,6 +11086,9 @@
     "name": "All Members (Including Read-Only) Can Comment",
     "priority": "High",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project exists. Test once as write member and once as read-only member.",
@@ -9659,6 +11104,9 @@
     "name": "Completed Section Shows \"Completed By\" on Shared Projects",
     "priority": "Medium",
     "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
     "smoke": false,
     "section": "33: Shared Projects (Team Tier)",
     "preconditions": "A shared project has at least one action that has been completed by a non-owner member.",
@@ -9674,6 +11122,10 @@
     "name": "Toggle \"Delegated to you\" Email Preference",
     "priority": "Medium",
     "area": "Settings, Notifications",
+    "areas": [
+      "Settings",
+      "Notifications"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "Logged-in user with master \"Email notifications\" toggle ON.",
@@ -9690,6 +11142,10 @@
     "name": "Toggle \"Delegation completed\" Email Preference",
     "priority": "Medium",
     "area": "Settings, Notifications",
+    "areas": [
+      "Settings",
+      "Notifications"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "Logged-in user with master \"Email notifications\" toggle ON.",
@@ -9706,6 +11162,10 @@
     "name": "Toggle \"Connection invitations\" Email Preference",
     "priority": "Medium",
     "area": "Settings, Notifications",
+    "areas": [
+      "Settings",
+      "Notifications"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "Logged-in user with master \"Email notifications\" toggle ON.",
@@ -9724,6 +11184,10 @@
     "name": "Master Toggle OFF Disables All Six Individual Toggles",
     "priority": "Medium",
     "area": "Settings, Notifications",
+    "areas": [
+      "Settings",
+      "Notifications"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "Logged-in user; master \"Email notifications\" toggle ON; some individual toggles in mixed states.",
@@ -9742,6 +11206,10 @@
     "name": "In-App Channel Cannot Be Disabled",
     "priority": "High",
     "area": "Settings, Notifications",
+    "areas": [
+      "Settings",
+      "Notifications"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "Logged-in user with at least one in-app notification visible in the bell dropdown.",
@@ -9760,6 +11228,10 @@
     "name": "Non-Team Member Sees Read-Only Notice on Shared Project",
     "priority": "Medium",
     "area": "Shared Projects, Tier Limits",
+    "areas": [
+      "Shared Projects",
+      "Tier Limits"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "A user who is a member (owner or non-owner) of a shared project but is NOT on the Team plan — e.g. a Team user who shared/joined a project and later downgraded to Free or Pro. The project is active (not completed).",
@@ -9777,6 +11249,10 @@
     "name": "Backlog Row Hides Assignee Name When Action Is Waiting",
     "priority": "Medium",
     "area": "Shared Projects, Delegation",
+    "areas": [
+      "Shared Projects",
+      "Delegation"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "A shared project with at least three backlog actions: (a) one assigned to another member in an active state (e.g. NEXT/TODAY), (b) one assigned to another member who has delegated it onward so it is in WAITING state, and (c) one assigned to the current caller. Viewer is any member of the project.",
@@ -9793,6 +11269,10 @@
     "name": "Inbox Shows \"From: [name]\" Indicator on Delegated Items",
     "priority": "Medium",
     "area": "Inbox, Delegation",
+    "areas": [
+      "Inbox",
+      "Delegation"
+    ],
     "smoke": false,
     "section": "34: P2 Notification Preferences",
     "preconditions": "Two Team-tier users who are connected (User A and User B). User A delegates an action to User B (via Clarify delegate substep or Action Detail). User B also has at least one self-captured inbox item.",

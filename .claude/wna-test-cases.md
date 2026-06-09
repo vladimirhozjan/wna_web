@@ -12046,7 +12046,7 @@ No backend request is made in any of the three cases.
 
 ## Section 32: Delegation (Team Tier)
 
-### TC-430: Delegate Action to Connection from Action Detail
+### TC-464: Delegate Action to Connection from Action Detail
 **Priority:** High | **Area:** Delegation | **Smoke Test**
 
 **Preconditions:** Logged-in user (assigner) is on Team tier with at least one accepted connection (receiver). The assigner has at least one Action in NEXT state.
@@ -12066,17 +12066,17 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-431: Delegated Stuff Appears in Receiver Inbox with "From:" Indicator
+### TC-465: Delegated Stuff Appears in Receiver Inbox with "From:" Indicator
 **Priority:** High | **Area:** Delegation
 
-**Preconditions:** Receiver is logged in. Assigner (TC-430) has just delegated an action to receiver.
+**Preconditions:** Receiver is logged in. Assigner (TC-464) has just delegated an action to receiver.
 
 **Steps:**
 1. As receiver, navigate to the Inbox page
 2. Locate the new Stuff item created by the delegation
 3. Open the Stuff detail page
 
-**Expected Result:** The new Stuff item shows a small "From: [assigner email or display name]" indicator both in the inbox row and on the Stuff detail page (rendered by `MetadataRow`). The item is otherwise a normal Stuff entry — no special clarify path; it can be processed like any other inbox item.
+**Expected Result:** The new Stuff item shows a small "From: [assigner email or display name]" chip in the inbox row (rendered by `MetadataRow`). Opening its Stuff detail page shows the same origin as a read-only "From" section (labelled "From", styled like the "Description" section). The item is otherwise a normal Stuff entry — no special clarify path; it can be processed like any other inbox item.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -12084,7 +12084,25 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-432: Connection Picker Blocks Self-Delegation
+### TC-465a: Delegated-from Origin Persists on Action Detail After Clarify
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Receiver is logged in and has a delegated Stuff item in the Inbox (from TC-465).
+
+**Steps:**
+1. As receiver, clarify the delegated Stuff item into an Action (Next Action)
+2. Open that action's detail page
+3. Separately, open the detail page of a normal (non-delegated) action
+
+**Expected Result:** The clarified action's list row shows the "From: [assigner name]" chip (via `MetadataRow`), and its Action detail page shows a read-only "From" section with the delegator's name (styled like the "Waiting on" / "Project" sections). The normal non-delegated action shows no "From" section on its detail page.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-466: Connection Picker Blocks Self-Delegation
 **Priority:** Medium | **Area:** Delegation
 
 **Preconditions:** Logged-in Team-tier user with at least one accepted connection.
@@ -12101,10 +12119,10 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-433: Receiver Completion Auto-Resolves Assigner's Waiting For
+### TC-467: Receiver Completion Auto-Resolves Assigner's Waiting For
 **Priority:** High | **Area:** Delegation | **Smoke Test**
 
-**Preconditions:** A delegation exists per TC-430. Receiver has clarified the delegated Stuff into an Action (state = NEXT) on their side.
+**Preconditions:** A delegation exists per TC-464. Receiver has clarified the delegated Stuff into an Action (state = NEXT) on their side.
 
 **Steps:**
 1. As receiver, complete the resulting Action (check the box on the action list, or complete from the action detail page)
@@ -12122,16 +12140,16 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-434: Receiver Trash Also Auto-Resolves the Delegation
+### TC-468: Receiver Trash Also Auto-Resolves the Delegation
 **Priority:** Medium | **Area:** Delegation
 
-**Preconditions:** A delegation exists per TC-430. Receiver has clarified into an Action OR left it as Stuff in their inbox.
+**Preconditions:** A delegation exists per TC-464. Receiver has clarified into an Action OR left it as Stuff in their inbox.
 
 **Steps:**
 1. As receiver, trash the Stuff item OR trash the resulting Action
 2. As assigner, refresh the Waiting For page
 
-**Expected Result:** Same outcome as TC-433 — assigner's action auto-promotes out of WAITING, fields are cleared, "Done." comment is written, and a `delegation_completed` notification is fired. Trash is treated identically to completion as a receiver-side terminal event.
+**Expected Result:** Same outcome as TC-467 — assigner's action auto-promotes out of WAITING, fields are cleared, "Done." comment is written, and a `delegation_completed` notification is fired. Trash is treated identically to completion as a receiver-side terminal event.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -12139,7 +12157,7 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-435: Free-Text Waiting Still Works for Non-Connection Recipients
+### TC-469: Free-Text Waiting Still Works for Non-Connection Recipients
 **Priority:** Medium | **Area:** Delegation
 
 **Preconditions:** Logged-in user (any tier — no connections required for free text).
@@ -12157,10 +12175,10 @@ No backend request is made in any of the three cases.
 
 ---
 
-### TC-436: Tier Downgrade Blocks New Delegations but Preserves In-Flight
+### TC-470: Tier Downgrade Blocks New Delegations but Preserves In-Flight
 **Priority:** High | **Area:** Delegation
 
-**Preconditions:** A user previously on Team tier with an active in-flight delegation (per TC-430). The user has been downgraded to Free or Pro.
+**Preconditions:** A user previously on Team tier with an active in-flight delegation (per TC-464). The user has been downgraded to Free or Pro.
 
 **Steps:**
 1. As the downgraded user, attempt to delegate a new action via the connection picker (try selecting any connection in the dropdown)
@@ -12461,6 +12479,26 @@ No backend request is made in any of the three cases.
 3. Confirm the dialog
 
 **Expected Result:** Confirm dialog shows the member's email and warns "[email] will lose access. Their assigned actions return to the backlog." On confirm, `DELETE /v1/project/{id}/members/{uid}` fires. The member is removed from the list. The previously assigned action returns to the backlog (visible as unassigned, no "You" or assignee chip).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-451a: Removing the Last Non-Owner Member Reverts Project to Personal (No Members Re-Probe)
+**Priority:** High | **Area:** Shared Projects
+
+**Preconditions:** Logged-in user is the owner of a shared project that has exactly **one** non-owner member (so removing them leaves only the owner).
+
+**Steps:**
+1. Open the project detail (it shows the shared layout: "Shared" badge, "Shared with" list, backlog/My-Action split)
+2. Open DevTools → Network
+3. In the "Shared with" section, remove the only non-owner member and confirm
+4. Observe the network requests after the `DELETE .../members/{uid}` call
+5. Reload the page (F5) and again watch the Network tab
+
+**Expected Result:** The `DELETE` response includes `auto_unshared: true`. The project immediately reverts to a normal personal project: the "Shared" badge and "Shared with" section disappear, the backlog/My-Action split is replaced by the personal Next-Action layout, and a success toast reads "Last member left — project is personal again". **No** `GET /v1/project/{id}/members` request is fired after the removal. After the reload, the `GET /v1/project/{id}` response has no `shared: true` field, the page renders as a personal project, and **still no** `GET /members` request fires. (Both previously 403'd with `{"detail":"Not a project member"}`.)
 
 | Date | P/F | Comment |
 |------|-----|---------|

@@ -204,6 +204,14 @@
           </div>
         </div>
 
+        <!-- Delegated-from section (action clarified from a delegation) -->
+        <div v-if="delegatedFromLabel" class="detail-section-area">
+          <label class="text-body-s fw-semibold detail-section-label">From</label>
+          <div class="detail-section-wrapper">
+            <p class="text-body-m detail-section-content">{{ delegatedFromLabel }}</p>
+          </div>
+        </div>
+
         <!-- Description area -->
         <div class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Description</label>
@@ -578,6 +586,14 @@ const NO_POSITION_SOURCES = ['calendar', 'engage', 'overdue', 'project', 'recurr
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
 const isSomeday = computed(() => action.value?.state === 'SOMEDAY')
 const isWaiting = computed(() => action.value?.state === 'WAITING')
+
+// Delegated-from label (mirrors MetadataRow.vue resolution order)
+const delegatedFromLabel = computed(() =>
+    action.value?.delegated_from?.name
+    || action.value?.delegated_from_user_email
+    || action.value?.delegated_from_user_name
+    || ''
+)
 
 // Shared-project flags. We treat the action as belonging to a shared project when
 // the BE includes assignment metadata. This stays inert until the BE adds

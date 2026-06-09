@@ -271,8 +271,8 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Total item count shown in sidebar badge
 
 **Delegated-item indicator (T-9):**
-- When an item arrived in the inbox because a connection delegated an action to you, the row shows a "From: [name]" chip (via `MetadataRow`, `entity-type="stuff"`), where the name is the delegator's email
-- Backend supplies this in the inbox/stuff response as `delegated_from { user_id, name, action_id }`; non-delegated items have no chip
+- When an item arrived in the inbox because a connection delegated an action to you, the row shows a "From: [name]" chip (via `MetadataRow`, `entity-type="stuff"`), where the name is the delegator's email. The Stuff Detail page also shows the same origin as a read-only "From" section
+- Backend supplies this in the inbox/stuff response as `delegated_from { user_id, name, action_id }`; non-delegated items have no chip or section
 - Other than this indicator, the item behaves like any other stuff and goes through the normal clarify flow
 
 **Per-item operations:**
@@ -1594,9 +1594,9 @@ Typing filters accepted connections (`GET /v1/connections`) by display label and
 ### 32.3 Receiver Side
 
 - New Stuff item lands in the receiver's Inbox with title + description copied from the assigner's action.
-- The Inbox row and the Stuff Detail page both show a small "From: [assigner name/email]" indicator (rendered by `MetadataRow`).
+- The Inbox row shows a small "From: [assigner name/email]" chip (rendered by `MetadataRow`), and the Stuff Detail page shows the same origin as a read-only "From" section.
 - Receiver clarifies normally — Action / Project / Someday / Reference / Trash. No special flow.
-- Hidden meta (`delegated_from_user_id`, `delegated_from_action_id`) carries forward when Stuff transforms into Action or Project.
+- Hidden meta (`delegated_from_user_id`, `delegated_from_action_id`) carries forward when Stuff transforms into Action or Project. After clarifying into an action, the "From" origin remains visible both in action list rows (`MetadataRow`) and on the Action Detail page (read-only "From" section).
 
 ### 32.4 Resolution Sync
 
@@ -1703,6 +1703,8 @@ Field gating is enforced both in the UI and in the save handlers. Per the P2 spe
 
 ### 33.5 Members ("Shared with") Section
 
+> **Shared detection.** The project response (`GET /v1/project/{id}`) carries `shared: true` only when the project is actually shared; a personal project omits the field. The detail page treats this as the source of truth and calls `GET /v1/project/{id}/members` **only** when `shared` is true — a personal project has no members endpoint and would 403 with `Not a project member`. This holds on first load and after a refresh once a project has auto-reverted to personal (see §33.8).
+
 - Lists all project members with avatar + display label, ordered: owner first, then current user, then by joined date.
 - Owner badge or per-role label next to each name.
 - **Owner-only controls**:
@@ -1733,7 +1735,7 @@ Collapsible "Completed" section is rendered for **all projects** (personal and s
 - Owner clicks the per-member remove button in "Shared with".
 - Confirm dialog: *"[email] will lose access. Their assigned actions return to the backlog."*
 - On confirm: `DELETE /v1/project/{id}/members/{uid}`. The member's in-progress assigned action returns to backlog; completed actions stay.
-- If the removed member was the last non-owner, the project auto-reverts to personal.
+- If the removed member was the last non-owner, the backend returns `auto_unshared: true` and the project auto-reverts to personal. The frontend immediately drops the shared layout (badge, "Shared with" list, backlog/My-Action split) by clearing the local `shared` flag, then reloads the project's actions. Because members are loaded only when `shared` is true (§33.5), no `GET /members` request fires — neither right after removal nor on a later refresh (where the project response no longer carries `shared: true`). Previously both 403'd with `Not a project member`.
 
 ### 33.9 What's NOT Yet Implemented
 

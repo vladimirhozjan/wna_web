@@ -36,6 +36,7 @@ while (i < lines.length) {
       name: tcMatch[2],
       priority: '',
       area: '',
+      areas: [],
       smoke: false,
       section: currentSection,
       preconditions: '',
@@ -59,6 +60,9 @@ while (i < lines.length) {
         } else {
           tc.area = areaRaw;
         }
+        // Split comma-separated areas into distinct areas so a test case
+        // belongs to each area individually (e.g. "Inbox, Delegation" → ["Inbox", "Delegation"]).
+        tc.areas = tc.area.split(',').map(a => a.trim()).filter(Boolean);
         i++;
       }
     }

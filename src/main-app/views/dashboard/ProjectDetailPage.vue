@@ -1534,26 +1534,31 @@ function goToActionList(state) {
 async function loadProjectActions() {
   if (!project.value?.id) return
 
-  // Probe membership first — discovers shared status while BE response is missing
-  // `shared`/`owner_id` fields. If members come back, we mark the project as shared
-  // so the shared layout (badge, members list, backlog, My Action) renders.
-  try {
-    const members = await loadMembers(project.value.id)
-    if (members && members.length > 0) {
-      const ownerMember = members.find(m => m.role === 'owner')
-      const meMember = members.find(m => m.user_id === myUserId.value)
-      project.value = {
-        ...project.value,
-        shared: true,
-        owner_id: project.value.owner_id || ownerMember?.user_id || null,
-        my_role: project.value.my_role || meMember?.role || null,
+  // Only shared projects expose a members endpoint. The backend includes
+  // `shared: true` on the project response when (and only when) it's shared — a
+  // personal project omits it. So we load members only for shared projects, both
+  // to render the shared layout (badge, members list, backlog, My Action) and to
+  // backfill owner_id / my_role. For a personal project we must NOT call
+  // `GET /members`, which 403s with "Not a project member".
+  if (project.value.shared) {
+    try {
+      const members = await loadMembers(project.value.id)
+      if (members && members.length > 0) {
+        const ownerMember = members.find(m => m.role === 'owner')
+        const meMember = members.find(m => m.user_id === myUserId.value)
+        project.value = {
+          ...project.value,
+          shared: true,
+          owner_id: project.value.owner_id || ownerMember?.user_id || null,
+          my_role: project.value.my_role || meMember?.role || null,
+        }
+      } else {
+        project.value = { ...project.value, shared: false }
       }
-    } else {
+    } catch {
+      // 403/404 → not a shared project (or no membership). Leave personal.
       project.value = { ...project.value, shared: false }
     }
-  } catch {
-    // 403/404 → not a shared project (or no membership). Leave personal.
-    project.value = { ...project.value, shared: false }
   }
 
   actionsLoading.value = true
@@ -1576,7 +1581,9 @@ async function loadProjectActions() {
 // ── Sharing ──
 
 function onAutoUnshared() {
-  project.value = { ...project.value, shared: false }
+  // Last non-owner member was removed → backend made the project personal again.
+  // Clearing `shared` makes loadProjectActions skip the members probe (it would 403).
+  project.value = { ...project.value, shared: false, owner_id: null, my_role: null }
   loadProjectActions()
 }
 

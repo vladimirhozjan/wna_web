@@ -40,6 +40,20 @@ echo "Source:  $(basename "$MD_FILE")"
 echo "Found:   $CURRENT_COUNT test cases in markdown"
 echo ""
 
+# Detect duplicate test-case IDs before parsing
+DUPLICATES=$(grep -oE '^### (TC-[0-9]+[a-z]?):' "$MD_FILE" \
+  | sed -E 's/^### (TC-[0-9]+[a-z]?):/\1/' \
+  | sort | uniq -d || true)
+if [ -n "$DUPLICATES" ]; then
+  echo "ERROR: Duplicate test-case IDs found in $(basename "$MD_FILE"):"
+  while IFS= read -r dup; do
+    echo "  $dup used on lines: $(grep -nE "^### ${dup}:" "$MD_FILE" | cut -d: -f1 | paste -sd ', ' -)"
+  done <<< "$DUPLICATES"
+  echo ""
+  echo "       Each TC ID must be unique. Renumber the duplicates and re-run."
+  exit 1
+fi
+
 # Run the parser
 echo "Parsing..."
 node "$PARSER"
