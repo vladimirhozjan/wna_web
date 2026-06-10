@@ -240,7 +240,7 @@ function onCheck(checked) {
 
 .item__content {
   min-width: 0;
-  flex: 1;
+  flex: 0 1 auto;
   overflow: hidden;
 }
 
@@ -261,6 +261,7 @@ function onCheck(checked) {
 }
 
 .item__title {
+  display: block;
   font-family: var(--font-family-default);
   font-size: 14px;
   font-weight: 400;
