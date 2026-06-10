@@ -57,7 +57,7 @@ export const gettingStarted = [
   {
     title: 'Attaching Files and Adding Comments',
     description:
-      'Every action, project, and stuff item has an Attachments section and a Comments section on its detail page. Attach files by clicking the upload area or dragging files onto it (up to 10 files, 50 MB each). Images and PDFs can be previewed in the app. Use comments to add notes, record progress, or leave context for yourself — each item supports up to 50 comments.',
+      'Every action, project, and stuff item has an Attachments section and a Comments section on its detail page. Attach files by clicking the upload area or dragging files onto it (up to 10 files; max file size 5 MB on Free, 20 MB on Pro, 50 MB on Team). Images and PDFs can be previewed in the app. Use comments to add notes, record progress, or leave context for yourself — each item supports up to 50 comments.',
   },
   {
     title: 'Customizing Your Settings',

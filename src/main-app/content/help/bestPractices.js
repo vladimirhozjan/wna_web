@@ -72,7 +72,7 @@ export const bestPractices = [
   {
     title: 'Automate With Recurring Actions',
     description:
-      'Use recurring action templates for tasks that repeat on a schedule — weekly reviews, monthly reports, daily standups. Set the frequency, pick the days, and optionally add a time and duration. The app automatically spawns a new action instance each cycle so you never have to remember to create it yourself. Access recurring templates from the Calendar\'s Recurring view (Pro and Business plans).',
+      'Use recurring action templates for tasks that repeat on a schedule — weekly reviews, monthly reports, daily standups. Set the frequency, pick the days, and optionally add a time and duration. The app automatically spawns a new action instance each cycle so you never have to remember to create it yourself. Access recurring templates from the Calendar\'s Recurring view (Pro and Team plans).',
   },
   {
     title: 'Trust Your System',

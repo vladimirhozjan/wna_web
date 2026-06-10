@@ -5,7 +5,7 @@
 This document contains manual test cases for the WNA GTD productivity application. Each test case is a self-contained scenario that validates a specific feature or behavior.
 
 **Before you begin:**
-- Ensure the frontend dev server is running (`npm run dev` on `http://localhost:5173`)
+- Ensure the frontend dev server is running (`npm run dev:main` on `http://localhost:6222`)
 - Ensure the backend is running on `http://localhost:8000`
 - Use a modern browser (Chrome, Firefox, Safari, Edge)
 - Clear localStorage and cookies before starting a fresh test run
@@ -59,7 +59,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. No account exists for the test email address. Browser localStorage is clear of `auth_token` and `refresh_token`. Mailpit (or email test server) is running on `localhost:8025` to capture outgoing emails.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Locate and click the "Start Here" call-to-action button.
 3. Verify the authentication dialog opens with the heading "Create Your Account" and the registration form is displayed (fields: email with placeholder "Enter your email address", password with placeholder "Enter your password", confirm password with placeholder "Confirm your password", and a Terms of Service checkbox).
 4. Enter a valid, unused email address in the email field (e.g., `testuser_001@example.com`).
@@ -68,14 +68,14 @@ Use the table below to log each full or partial test run.
 7. Check the Terms of Service checkbox ("I agree to the Terms of Service and Privacy Policy").
 8. Verify the "Register" button is now enabled (it was disabled before the ToS checkbox was checked).
 9. Click the "Register" button.
-8. Wait for the request to complete.
+10. Wait for the request to complete.
 
 **Expected Result:**
 - The registration request succeeds (no error messages displayed).
 - The auth dialog transitions to a "verify-sent" screen showing a confirmation message that a verification email has been sent to the registered email address.
 - The user is **not** automatically logged in — `localStorage` does **not** contain `auth_token` or `refresh_token`.
 - A "Resend Verification Email" button is visible on the verify-sent screen.
-- Checking Mailpit (`http://localhost:8025`) shows a verification email was received with subject "Verify your WNA account" sent to the registered email address.
+- Checking Mailpit (`http://localhost:8025`) shows a verification email was received with subject "Verify your WhatsNextAction account" sent to the registered email address.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -91,7 +91,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The registration form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. In the email field, type `notanemail` (a string that is not a valid email format).
 4. Enter a valid password in the password field (e.g., `TestPass1!`).
@@ -117,7 +117,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The registration form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. Enter a valid email address in the email field (e.g., `testuser_003@example.com`).
 4. In the password field, enter `12345678` (8 characters but only digits -- no letter and no symbol).
@@ -143,7 +143,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The registration form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. Enter a valid email address in the email field (e.g., `testuser_004@example.com`).
 4. In the password field, enter a valid password: `TestPass1!`.
@@ -169,7 +169,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** An account already exists with the email `existing@example.com` (or another known registered email). User is not logged in.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. Enter the already-registered email address in the email field (e.g., `existing@example.com`).
 4. Enter a valid password: `TestPass1!`.
@@ -197,7 +197,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The registration form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. Observe the submit button with all three fields (email, password, confirm password) empty and the ToS checkbox unchecked.
 4. Verify the submit button is visually disabled (greyed out, cursor not pointer) and cannot be clicked.
@@ -233,7 +233,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** A valid user account exists (e.g., `testuser@example.com` with password `TestPass1!`). User is not logged in. localStorage is clear of auth tokens.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" in the top navigation to open the authentication dialog in login mode.
 3. Enter the registered email address in the email field: `testuser@example.com`.
 4. Enter the correct password in the password field: `TestPass1!`.
@@ -264,7 +264,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** A valid user account exists (e.g., `testuser@example.com`). User is not logged in.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Enter the registered email address: `testuser@example.com`.
 4. Enter an incorrect password: `WrongPassword1!`.
@@ -292,7 +292,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The login form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Enter an invalid email format in the email field: `notanemail`.
 4. Enter any password in the password field: `TestPass1!`.
@@ -319,7 +319,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The login form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Leave both the email and password fields empty.
 4. Observe the state of the "Sign In" submit button.
@@ -348,7 +348,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Open a new browser tab.
-2. Navigate directly to `http://localhost:5173/login` by typing or pasting the URL into the address bar.
+2. Navigate directly to `http://localhost:6222/login` by typing or pasting the URL into the address bar.
 3. Wait for the page to load.
 
 **Expected Result:**
@@ -371,7 +371,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. User is on the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Locate the "Sign In" button in the top navigation bar.
 3. Click the "Sign In" button.
 4. Observe what happens.
@@ -397,7 +397,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. The login form is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Verify the login form is displayed with email and password fields.
 4. Locate the "Forgot your password? Reset it" link on the login form.
@@ -427,13 +427,13 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Open the forgot password form (follow steps 1-5 from TC-013).
 2. Enter a valid registered email address in the email field (e.g., `testuser@example.com`).
-3. Click the submit button (e.g., "Send Reset Code" or "Submit").
+3. Click the "Send reset link" button.
 4. Wait for the backend response.
 
 **Expected Result:**
 - The request is sent to the backend (`POST /v1/user/forgot`).
-- Upon success, the dialog transitions to the password reset form, which includes fields for new password and confirm new password (and possibly a reset code/token field).
-- A success message or instruction may be displayed (e.g., "Check your email for a reset code").
+- A password reset email containing a reset link is sent to the address; the reset token is carried in that link's URL (there is no code-entry field anywhere in the flow).
+- Upon success, the dialog transitions to the "Set a new password" form, which contains only a new password field and a confirm password field.
 - The user remains in the authentication dialog flow.
 
 | Date | P/F | Comment |
@@ -447,15 +447,14 @@ Use the table below to log each full or partial test run.
 ### TC-015: Reset Password with Valid New Password
 **Priority:** High | **Area:** Forgot/Reset Password
 
-**Preconditions:** The forgot password step has been completed (TC-014). The reset password form is displayed. A valid reset code/token is available (from email or test setup).
+**Preconditions:** The forgot password step has been completed (TC-014). The "Set a new password" form is displayed. A valid reset link has been received by email; the reset token comes from that link's URL (there is no code field on the form).
 
 **Steps:**
-1. Complete the forgot password flow (TC-014) to reach the reset password form.
-2. If a reset code/token field is present, enter the valid reset code.
-3. In the new password field, enter a password meeting all requirements: `NewTestPass1!` (min 8 chars, 1 letter, 1 digit, 1 symbol).
-4. In the confirm new password field, enter the same password: `NewTestPass1!`.
-5. Click the submit button (e.g., "Reset Password").
-6. Wait for the backend response.
+1. Complete the forgot password flow (TC-014), then open the reset link from the email to reach the "Set a new password" form (the token is read from the link URL).
+2. In the new password field, enter a password meeting all requirements: `NewTestPass1!` (min 8 chars, 1 letter, 1 digit, 1 symbol).
+3. In the confirm password field, enter the same password: `NewTestPass1!`.
+4. Click the "Update password" button.
+5. Wait for the backend response.
 
 **Expected Result:**
 - The request is sent to the backend (`POST /v1/user/reset`).
@@ -507,7 +506,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. User is on the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog.
 3. Verify the dialog is open and visible, overlaid on the landing page with a backdrop behind it.
 4. Click on the backdrop area (the darkened/blurred area outside the dialog card).
@@ -538,7 +537,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. User is on the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog in login mode.
 3. Verify the login form is displayed (email field, password field, submit button).
 4. Enter an email address in the email field: `testuser@example.com`.
@@ -577,7 +576,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. User is on the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog.
 3. Observe the dialog opening animation.
 4. Click the link to switch to registration mode.
@@ -609,7 +608,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in. User is on the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the authentication dialog.
 3. Inspect the backdrop: does it have a blur effect applied to the background content?
 4. Inspect the dialog card positioning: is it centered both horizontally and vertically on the screen?
@@ -640,9 +639,9 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Open browser developer tools and navigate to the Application tab (Chrome) or Storage tab (Firefox).
-2. Expand localStorage for `http://localhost:5173`.
+2. Expand localStorage for `http://localhost:6222`.
 3. Verify no `auth_token`, `refresh_token`, or `current_user` keys exist.
-4. Navigate to `http://localhost:5173/`.
+4. Navigate to `http://localhost:6222/`.
 5. Click "Sign In" and log in with valid credentials.
 6. After successful login and redirect to `/engage`, return to the developer tools.
 7. Inspect localStorage.
@@ -651,7 +650,7 @@ Use the table below to log each full or partial test run.
 10. Click on the `current_user` value and examine its contents.
 
 **Expected Result:**
-- After login, localStorage contains three keys: `auth_token`, `refresh_token`, and `current_user`.
+- After login, localStorage contains the keys `auth_token`, `refresh_token`, and `current_user` — plus `refresh_token_hash` if the backend returns it in the login response.
 - `auth_token` is a non-empty string in JWT format (three base64-encoded segments separated by dots: `xxxxx.yyyyy.zzzzz`).
 - `refresh_token` is a non-empty string in JWT format.
 - `current_user` contains a JSON-serialized object with user data (at minimum, an email or user ID).
@@ -700,9 +699,9 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in.
 
 **Steps:**
-1. Log in to the application in Tab A at `http://localhost:5173/engage`.
+1. Log in to the application in Tab A at `http://localhost:6222/engage`.
 2. Verify the dashboard loads correctly in Tab A.
-3. Open a new browser tab (Tab B) and navigate to `http://localhost:5173/engage`.
+3. Open a new browser tab (Tab B) and navigate to `http://localhost:6222/engage`.
 4. Verify the dashboard loads correctly in Tab B (the user is still authenticated).
 5. In Tab A, perform a logout action: click the logout option (from the TopNav user menu, Settings page, or Sidebar -- wherever it is available).
 6. If a confirmation dialog appears, confirm the logout.
@@ -771,15 +770,15 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Open browser developer tools and verify localStorage has no `auth_token` or `refresh_token`.
-2. In the browser address bar, navigate directly to `http://localhost:5173/engage`.
+2. In the browser address bar, navigate directly to `http://localhost:6222/engage`.
 3. Observe the application behavior.
 4. Check the URL in the address bar after the page loads.
 5. Attempt to navigate to other protected routes:
-   a. `http://localhost:5173/inbox`
-   b. `http://localhost:5173/next`
-   c. `http://localhost:5173/projects`
-   d. `http://localhost:5173/calendar`
-   e. `http://localhost:5173/settings`
+   a. `http://localhost:6222/inbox`
+   b. `http://localhost:6222/next`
+   c. `http://localhost:6222/projects`
+   d. `http://localhost:6222/calendar`
+   e. `http://localhost:6222/settings`
 6. For each, observe the redirect behavior and final URL.
 
 **Expected Result:**
@@ -804,12 +803,12 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. In the address bar, paste each of the following URLs in turn (these match the URLs used in notification emails: TASK_DUE_TODAY, DAILY_NEXT_ACTIONS, PROJECT_NEEDS_NEXT_ACTION, DELEGATED_TO_YOU, DELEGATION_COMPLETED, CONNECTION_INVITE):
-   a. `http://localhost:5173/overdue`
-   b. `http://localhost:5173/next`
-   c. `http://localhost:5173/inbox`
-   d. `http://localhost:5173/project/<real-project-id>`
-   e. `http://localhost:5173/action/<real-action-id>`
-   f. `http://localhost:5173/connections`
+   a. `http://localhost:6222/overdue`
+   b. `http://localhost:6222/next`
+   c. `http://localhost:6222/inbox`
+   d. `http://localhost:6222/project/<real-project-id>`
+   e. `http://localhost:6222/action/<real-action-id>`
+   f. `http://localhost:6222/connections`
 2. After each navigation, verify: (a) the URL changes to `/login?redirect=<encoded original path>`, (b) the `AuthDialog` opens in login mode over the landing page, (c) no dashboard layout flicker is visible.
 3. With the dialog open on case (a) (`/overdue`), enter valid credentials and submit.
 4. Repeat case (f) (`/connections`) and after login confirm the Connections page is shown.
@@ -839,9 +838,9 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Open Mailpit at `http://localhost:8025`.
-2. Locate the verification email sent to the registered email address (subject: "Verify your WNA account").
+2. Locate the verification email sent to the registered email address (subject: "Verify your WhatsNextAction account").
 3. Open the email and locate the verification link.
-4. Copy the verification URL (should be in the format `http://localhost:5173/verify?token=<64-char-token>`).
+4. Copy the verification URL (should be in the format `http://localhost:6222/verify?token=<64-char-token>`).
 5. Open the verification URL in the browser.
 6. Observe the Verify Email page behavior.
 7. Wait for the verification to complete.
@@ -849,7 +848,7 @@ Use the table below to log each full or partial test run.
 **Expected Result:**
 - The Verify Email page shows a loading state while the verification request is in progress.
 - On success, a confirmation message is displayed indicating the email has been verified.
-- The user is automatically authenticated — `localStorage` now contains `auth_token`, `refresh_token`, and `refresh_token_hash`.
+- The user is automatically authenticated — `localStorage` now contains `auth_token`, `refresh_token`, and `current_user` — plus `refresh_token_hash` if the backend returns it.
 - A countdown (3 seconds) is shown before auto-redirect to `/engage`.
 - After the countdown, the user is redirected to `/engage` (the dashboard).
 - The dashboard loads normally with the authenticated user.
@@ -868,7 +867,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/verify?token=invalidtoken123`.
+1. Navigate to `http://localhost:6222/verify?token=invalidtoken123`.
 2. Observe the Verify Email page behavior.
 
 **Expected Result:**
@@ -891,7 +890,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/verify` (no `?token=` parameter).
+1. Navigate to `http://localhost:6222/verify` (no `?token=` parameter).
 2. Observe the Verify Email page behavior.
 
 **Expected Result:**
@@ -913,7 +912,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** A verification token has been created more than 24 hours ago (expired). This may require manually manipulating the database or waiting 24 hours.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/verify?token=<expired_token>`.
+1. Navigate to `http://localhost:6222/verify?token=<expired_token>`.
 2. Observe the Verify Email page behavior.
 
 **Expected Result:**
@@ -967,7 +966,7 @@ Use the table below to log each full or partial test run.
 6. Verify the button becomes clickable again after 60 seconds.
 
 **Expected Result:**
-- Clicking the resend button sends a new verification email (visible in Mailpit with subject "Verify your WNA account").
+- Clicking the resend button sends a new verification email (visible in Mailpit with subject "Verify your WhatsNextAction account").
 - The button enters a disabled state with a 60-second countdown timer visible.
 - The button cannot be clicked again until the countdown expires.
 - After 60 seconds, the button becomes enabled again and can be clicked to resend.
@@ -1010,7 +1009,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** A user account exists with the email NOT yet verified (registered but verification link not clicked). The user knows the correct email and password.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` (the landing page).
+1. Navigate to `http://localhost:6222/` (the landing page).
 2. Click "Sign In" to open the login form.
 3. Enter the unverified email address.
 4. Enter the correct password.
@@ -1084,7 +1083,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** No account exists for the test email. Mailpit is running. Backend services are running.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` and click "Start Here".
+1. Navigate to `http://localhost:6222/` and click "Start Here".
 2. Register with a new email and valid password.
 3. Verify the "verify-sent" screen appears (user is NOT logged in).
 4. Open Mailpit and locate the verification email.
@@ -1123,10 +1122,10 @@ Use the table below to log each full or partial test run.
 
 **Expected Result:**
 - **From:** `noreply@whatsnextaction.com` (or "WhatsNextAction" display name)
-- **Subject:** "Verify your WNA account"
+- **Subject:** "Verify your WhatsNextAction account"
 - **To:** The registered email address
 - Both HTML and plaintext versions are present (multipart MIME).
-- The email contains a verification link in the format `https://<app-domain>/verify?token=<64-char-token>`.
+- The email contains a verification link in the format `https://<app-domain>/verify?token=<64-char-token>`, with a "Verify My Email" button.
 - The token in the URL is exactly 64 characters long.
 - The email mentions a 24-hour expiry for the verification link.
 
@@ -1150,9 +1149,9 @@ Use the table below to log each full or partial test run.
 
 **Expected Result:**
 - A welcome email is sent after successful verification.
-- **Subject:** "Welcome to WNA!"
+- **Subject:** "Welcome to WhatsNextAction!"
 - **From:** `noreply@whatsnextaction.com`
-- The email contains a welcome message and a link to the application.
+- The email contains a welcome message and a "Get Started" button linking to `/inbox`.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1168,7 +1167,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** A verified user account exists. Mailpit is accessible. The user is not logged in.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/` and click "Sign In".
+1. Navigate to `http://localhost:6222/` and click "Sign In".
 2. Click "Forgot your password? Reset it" link.
 3. Enter the registered email address.
 4. Submit the forgot password form.
@@ -1177,9 +1176,9 @@ Use the table below to log each full or partial test run.
 
 **Expected Result:**
 - A password reset email is sent to the user's email address.
-- **Subject:** "Reset your WNA password"
+- **Subject:** "Reset your WhatsNextAction password"
 - **From:** `noreply@whatsnextaction.com`
-- The email contains a reset link with a token (valid for 1 hour).
+- The email contains a reset link with a token (valid for 24 hours), with a "Reset Password" button.
 - Both HTML and plaintext versions are present.
 
 | Date | P/F | Comment |
@@ -1229,9 +1228,9 @@ Use the table below to log each full or partial test run.
 
 **Expected Result:**
 - A password changed confirmation email is sent after successful reset.
-- **Subject:** "Your WNA password was changed"
+- **Subject:** "Your WhatsNextAction password was changed"
 - **From:** `noreply@whatsnextaction.com`
-- The email confirms the password was changed and includes the timestamp.
+- The email confirms the password was changed and includes the time of the change.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1244,7 +1243,7 @@ Use the table below to log each full or partial test run.
 ### TC-042: Login Alert Email
 **Priority:** Medium | **Area:** Email Notifications
 
-**Preconditions:** A verified user account exists with notification settings enabled for login alerts. Mailpit is accessible.
+**Preconditions:** A verified user account exists. Mailpit is accessible. (Login alerts are security emails that are always delivered — there is no notification settings toggle for them.)
 
 **Steps:**
 1. Log in with the verified user account.
@@ -1252,10 +1251,10 @@ Use the table below to log each full or partial test run.
 3. Inspect the login alert email.
 
 **Expected Result:**
-- A login alert email is sent after successful login.
-- **Subject:** "New login to your WNA account"
+- A login alert email is sent after successful login (regardless of notification preferences — no toggle exists for login alerts).
+- **Subject:** "New sign-in to your WhatsNextAction account"
 - **From:** `noreply@whatsnextaction.com`
-- The email includes the device name, IP address, and login time.
+- The email includes a device table with rows: Device, IP Address, Time.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1272,7 +1271,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Stop the backend server or block network requests to the API in browser DevTools.
-2. Navigate to `http://localhost:5173/verify?token=<valid_token>`.
+2. Navigate to `http://localhost:6222/verify?token=<valid_token>`.
 3. Observe the Verify Email page behavior.
 
 **Expected Result:**
@@ -1295,7 +1294,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** Google SSO is configured (the runtime config includes a valid `google_client_id`). User is not logged in. Browser is at the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/`.
+1. Navigate to `http://localhost:6222/`.
 2. Click "Start Here" to open the authentication dialog in registration mode.
 3. Observe the registration form.
 4. Switch to the login form by clicking the "Sign In" link.
@@ -1322,7 +1321,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** Google SSO is configured. User is not logged in. Browser is at the landing page.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/`.
+1. Navigate to `http://localhost:6222/`.
 2. Click "Start Here" to open the authentication dialog.
 3. Click the "Sign up with Google" button (or switch to login and click "Sign in with Google").
 4. Observe the browser navigation.
@@ -1330,7 +1329,7 @@ Use the table below to log each full or partial test run.
 **Expected Result:**
 - The browser redirects to `https://accounts.google.com/o/oauth2/v2/auth` with the following query parameters:
   - `client_id` matching the configured Google client ID.
-  - `redirect_uri` set to `http://localhost:5173/google/sso`.
+  - `redirect_uri` set to `http://localhost:6222/google/sso`.
   - `response_type` set to `code`.
   - `scope` set to `openid email profile`.
   - `access_type` set to `offline`.
@@ -1351,7 +1350,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** Google SSO is configured. No WNA account exists for the Google email being used. The Google OAuth flow has been completed and Google has redirected back with a valid authorization code.
 
 **Steps:**
-1. Complete the Google consent flow (or simulate by navigating to `http://localhost:5173/google/sso?code=<valid_auth_code>`).
+1. Complete the Google consent flow (or simulate by navigating to `http://localhost:6222/google/sso?code=<valid_auth_code>`).
 2. Observe the Google SSO page behavior.
 3. Wait for the redirect to complete.
 4. Inspect `localStorage` in the browser DevTools.
@@ -1363,6 +1362,7 @@ Use the table below to log each full or partial test run.
 - `localStorage` contains `auth_token` and `refresh_token` values.
 - `localStorage` contains `current_user` with the user's details (email matching the Google account).
 - A new WNA account is created for the Google user.
+- A welcome email (Google-SSO signup variant) is sent to the Google email address with **Subject:** "Welcome to WhatsNextAction!".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1378,7 +1378,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** Google SSO is configured. A WNA account already exists for the Google email being used (previously registered via Google SSO or email). The Google OAuth flow has been completed with a valid authorization code.
 
 **Steps:**
-1. Complete the Google consent flow (or simulate by navigating to `http://localhost:5173/google/sso?code=<valid_auth_code>`).
+1. Complete the Google consent flow (or simulate by navigating to `http://localhost:6222/google/sso?code=<valid_auth_code>`).
 2. Observe the Google SSO page behavior.
 3. Wait for the redirect to complete.
 4. Inspect `localStorage` in the browser DevTools.
@@ -1390,6 +1390,7 @@ Use the table below to log each full or partial test run.
 - `localStorage` contains `auth_token` and `refresh_token` values.
 - `localStorage` contains `current_user` with the existing user's details.
 - No duplicate account is created — the existing account is used.
+- If this is the first Google sign-in on an account previously registered via email (Google gets linked to the existing account), an email with **Subject:** "Google account linked to WhatsNextAction" is sent, including a device table (Device / IP Address / Time).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1406,7 +1407,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Clear `localStorage` in browser DevTools (remove `auth_token`, `refresh_token`, `refresh_token_hash`, `current_user`).
-2. Navigate to `http://localhost:5173/google/sso?code=<valid_auth_code>`.
+2. Navigate to `http://localhost:6222/google/sso?code=<valid_auth_code>`.
 3. Wait for the login to complete and the redirect to `/engage`.
 4. Open browser DevTools → Application → Local Storage.
 5. Inspect the stored values.
@@ -1432,7 +1433,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** Google SSO is configured. User is not logged in. The authentication dialog is open.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/`.
+1. Navigate to `http://localhost:6222/`.
 2. Click "Start Here" to open the authentication dialog.
 3. Click the "Sign up with Google" button.
 4. On the Google consent screen, click "Cancel" or close the Google window / navigate back.
@@ -1458,7 +1459,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** Google SSO is configured. User is not logged in.
 
 **Steps:**
-1. Navigate to `http://localhost:5173/google/sso?code=invalid_fake_code_12345`.
+1. Navigate to `http://localhost:6222/google/sso?code=invalid_fake_code_12345`.
 2. Observe the Google SSO page behavior.
 3. Wait for the API response.
 
@@ -1487,7 +1488,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Open browser DevTools → Network tab → enable "Slow 3G" throttling.
-2. Navigate to `http://localhost:5173/google/sso?code=<valid_auth_code>`.
+2. Navigate to `http://localhost:6222/google/sso?code=<valid_auth_code>`.
 3. Observe the Google SSO page immediately after navigation.
 
 **Expected Result:**
@@ -1511,7 +1512,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is not logged in.
 
 **Steps:**
-1. Navigate directly to `http://localhost:5173/google/sso` (without any `code` query parameter).
+1. Navigate directly to `http://localhost:6222/google/sso` (without any `code` query parameter).
 2. Observe the Google SSO page behavior.
 
 **Expected Result:**
@@ -1538,7 +1539,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Ensure the runtime configuration has no `google_client_id` set (or set it to an empty string).
-2. Navigate to `http://localhost:5173/`.
+2. Navigate to `http://localhost:6222/`.
 3. Click "Start Here" to open the authentication dialog in registration mode.
 4. Observe the registration form.
 5. Switch to the login form.
@@ -1558,6 +1559,167 @@ Use the table below to log each full or partial test run.
 
 ---
 
+
+### TC-471: Email Verification Auto-Detect - Same Browser Tab
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A new account has just been registered and the auth dialog is open on the verify-sent screen (account unverified). Mailpit is available to retrieve the verification email.
+
+**Steps:**
+1. Register a new account and leave the auth dialog open on the verify-sent screen.
+2. Copy the verification link from the verification email.
+3. Open the verification link in a **second tab of the same browser** and wait for it to confirm the verification.
+4. Switch back to the original tab without interacting with it.
+
+**Expected Result:**
+- The original tab detects the verification instantly (via the localStorage `storage` event — no need to wait for the next poll cycle).
+- The original tab automatically logs in using the credentials held from registration.
+- The auth dialog closes and the user is redirected to `/engage`.
+- `localStorage` contains `auth_token` and `refresh_token`.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-472: Email Verification Auto-Detect - Cross-Device Polling
+**Priority:** High | **Area:** Email Verification
+
+**Preconditions:** A new account has just been registered and the auth dialog is open on the verify-sent screen (account unverified).
+
+**Steps:**
+1. With the dialog open on the verify-sent screen, open the browser devtools Network tab.
+2. Verify a `GET /v1/user/{user_id}/verified` request is issued approximately every 3 seconds.
+3. Open the verification link on a **different device or browser** and complete the verification there.
+4. Observe the original dialog.
+5. In a separate run, close the auth dialog before verifying and watch the Network tab.
+
+**Expected Result:**
+- Within roughly 3 seconds of the verification completing on the other device, the original dialog detects it (next poll returns verified), auto-logs in with the held credentials, and redirects to `/engage`.
+- After the dialog is closed (step 5), no further `GET /v1/user/{user_id}/verified` polling requests are issued.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-473: Session Refresh Failure Logs Out
+**Priority:** High | **Area:** JWT & Session Management
+
+**Preconditions:** User is logged in on a dashboard page.
+
+**Steps:**
+1. In devtools (Application → Local Storage), replace the `refresh_token` value with a corrupted/expired string.
+2. Trigger a token refresh: wait for the proactive refresh (fires ~60s before the access token expires), or force an API request to return 401 (e.g., also corrupt `auth_token` and perform any action).
+3. Observe the application.
+
+**Expected Result:**
+- The refresh attempt fails and the user is logged out.
+- `localStorage` is cleared of `auth_token`, `refresh_token`, and `current_user`.
+- The user is redirected to the landing page.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-474: Password Reset With Expired or Invalid Token
+**Priority:** Medium | **Area:** Forgot/Reset Password
+
+**Preconditions:** A password-reset email has been requested for an existing account.
+
+**Steps:**
+1. Open the password-reset link from the email, but tamper with the token in the URL (change a few characters). Alternatively, use a genuine reset link that is older than 24 hours.
+2. Enter a valid new password (and confirmation) in the reset form.
+3. Submit the form.
+
+**Expected Result:**
+- The server rejects the request and an error message is displayed.
+- The user is **not** logged in (`localStorage` contains no `auth_token`/`refresh_token`).
+- The account password is unchanged — logging in with the old password still works.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-475: Settings Deep-Link URL Rewrite
+**Priority:** Low | **Area:** Settings
+
+**Preconditions:** User is logged in.
+
+**Steps:**
+1. Navigate directly to `http://localhost:6222/settings/notifications` (type the URL in the address bar).
+2. Observe the resulting URL and the Settings page state.
+
+**Expected Result:**
+- The URL is rewritten to `/settings?section=notifications`.
+- The Settings page loads with the Notifications section expanded.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-476: Logout With Server Unreachable
+**Priority:** Medium | **Area:** JWT & Session Management
+
+**Preconditions:** User is logged in on a dashboard page.
+
+**Steps:**
+1. Stop the backend (or set the devtools Network tab to "Offline").
+2. Click Logout in the user menu.
+3. Observe the application and `localStorage`.
+
+**Expected Result:**
+- The server-side logout failure is silently ignored — no blocking error.
+- `localStorage` is cleared of auth keys.
+- The user lands on the landing page.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-477: Multi-Tab Logout Propagation
+**Priority:** Medium | **Area:** JWT & Session Management
+
+**Preconditions:** User is logged in. The dashboard is open in two tabs (A and B) of the same browser.
+
+**Steps:**
+1. In tab A, click Logout.
+2. In devtools, verify a `logout` key is written to `localStorage`.
+3. Switch to tab B without interacting with it.
+
+**Expected Result:**
+- Tab A logs out and lands on the landing page.
+- Tab B detects the `logout` localStorage key via the `storage` event and logs out automatically (auth state cleared, redirected to the landing page).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
 
 ## Section 2: Dashboard Layout & Navigation
 
@@ -1790,22 +1952,21 @@ Use the table below to log each full or partial test run.
 ### TC-052: User Avatar Display
 **Priority:** Medium | **Area:** Dashboard Layout & Navigation
 
-**Preconditions:** User is authenticated. Test with two accounts: one with a profile avatar image uploaded, and one without.
+**Preconditions:** User is authenticated. Avatars are Gravatar-based — there is no in-app avatar upload feature. Test with two accounts: one whose email address has a Gravatar image registered, and one whose email has no Gravatar.
 
 **Steps:**
-1. Log in with an account that has a profile avatar image
-2. Observe the user avatar in the top navigation bar on desktop
-3. Verify the avatar displays as a 36px circle showing the uploaded image
-4. Resize the viewport to mobile width (<=768px)
-5. Verify the avatar displays as a 32px circle on mobile
-6. Log out and log in with an account that has no profile avatar image
-7. Observe the avatar area on desktop
-8. Verify a colored circle fallback is displayed at 36px
-9. Verify the fallback shows the user's initials, uppercased
+1. Log in with the account whose email has a Gravatar image
+2. Observe the user avatar in the dashboard Sidebar (the dashboard avatar lives in the sidebar, not the top nav)
+3. Verify the sidebar avatar displays as a 32px circle showing the Gravatar image
+4. Navigate to a public page (e.g., the landing page) while logged in and observe the TopNav avatar — it appears only on public pages
+5. Verify the TopNav avatar is a 36px circle on desktop, and 32px when the viewport is narrower than 600px
+6. Resize the viewport to mobile width (<=768px) on a dashboard page and verify the mobile dashboard top nav shows a hamburger button and no avatar
+7. Log out and log in with the account whose email has no Gravatar
+8. Observe the sidebar avatar area
+9. Verify a colored circle fallback is displayed containing the user's initials, uppercased
 10. Verify the text is legible against the background color
-11. Check on mobile that the fallback circle is 32px
 
-**Expected Result:** The user avatar displays as a 36px circle on desktop and 32px on mobile. When an avatar image is set, it is shown cropped to the circle. When no image is set, a colored circle fallback is shown containing the user's initials in uppercase. The fallback text is legible against the background color.
+**Expected Result:** The dashboard avatar is rendered in the Sidebar as a 32px circle. The TopNav avatar appears only on public pages, at 36px on desktop and 32px below a 600px viewport. The mobile dashboard top nav has a hamburger button and no avatar. When the account email has a Gravatar, the Gravatar image is shown cropped to the circle. When it does not, a colored circle fallback is shown containing the user's initials in uppercase, legible against the background color.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1859,11 +2020,11 @@ Use the table below to log each full or partial test run.
 9. Drag an item and drop on "Completed" sidebar item, verify acceptance
 10. Drag an item and drop on "Trash" sidebar item, verify acceptance
 11. Drag an item and drop on "Projects" sidebar item, verify acceptance (stuff/actions allowed)
-12. Drag a stuff item and drop on "Reference" sidebar item, verify acceptance (stuff only)
-13. Navigate to Next Actions, drag an action item and drop on "Reference" sidebar item, verify it is rejected (actions not allowed on Reference)
+12. Drag a stuff item and drop on "Reference" sidebar item, verify acceptance
+13. Navigate to Next Actions, drag an action item and drop on "Reference" sidebar item, verify the drop succeeds and the action is transformed into a reference file (consistent with TC-337/TC-338)
 14. Verify that sidebar items that do not accept the dragged item type do not show a drop indicator
 
-**Expected Result:** The following sidebar items accept stuff and actions via drag-drop: Next, Today, Calendar, Waiting For, Someday, Completed, Trash, and Projects. The Reference sidebar item accepts stuff only, not actions. Non-accepting sidebar items do not show a drop indicator. Successfully dropped items are moved to the target bucket.
+**Expected Result:** The following sidebar items accept stuff and actions via drag-drop: Next, Today, Calendar, Waiting For, Someday, Completed, Trash, and Projects. The Reference sidebar item accepts stuff, actions, and projects — dropping any of them transforms the item into a reference file. Non-accepting sidebar items do not show a drop indicator. Successfully dropped items are moved to the target bucket.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -1920,6 +2081,26 @@ Use the table below to log each full or partial test run.
 9. Verify all unknown routes redirect to /
 
 **Expected Result:** Any URL path that does not match a defined route in the application redirects the user to the root path (/). This applies to both authenticated and unauthenticated users. No 404 error page is shown; the user is seamlessly redirected.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-478: Sidebar Accessibility Role
+**Priority:** Low | **Area:** Dashboard Layout & Navigation
+
+**Preconditions:** User is logged in on a desktop viewport.
+
+**Steps:**
+1. Load any dashboard page.
+2. Open devtools and inspect the sidebar element (Elements panel or Accessibility panel).
+
+**Expected Result:**
+- The sidebar element exposes the ARIA role `complementary` (either via an explicit `role="complementary"` attribute or an `<aside>` landmark element).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2159,13 +2340,14 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Inbox page
-2. Verify all items are loaded at once (no pagination)
-3. Scroll through the list
-4. Verify there is no "Load more" button
-5. Verify the total number of displayed items matches the expected count
-6. Verify all items are visible without needing to trigger additional loading
+2. Verify only the first 10 items are loaded initially (cursor-based pagination, page size 10)
+3. Scroll to the bottom of the list
+4. Verify a "Load more" button is displayed below the list (because more items exist)
+5. Click "Load more"
+6. Verify the next page of up to 10 items is appended to the list
+7. Repeat until all items are loaded and verify the "Load more" button disappears
 
-**Expected Result:** All inbox items load at once on page load. There is no "Load more" button or pagination mechanism. All items are visible in a single scrollable list.
+**Expected Result:** The inbox paginates cursor-based with a page size of 10. A "Load more" button appears when more items exist; clicking it loads and appends the next page. The button disappears once all items are loaded.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2260,12 +2442,11 @@ Use the table below to log each full or partial test run.
 3. Tap the "Clarify" button
 4. Verify the ClarifyPanel opens as a full-screen overlay covering the entire viewport
 5. Verify the first inbox item is the target of the clarify workflow (its title shown in the panel)
-6. Verify navigation controls are available to go to the next/previous item
-7. Verify a close (X) button is available to exit clarify mode
-8. Tap the close button
-9. Verify the full-screen overlay closes and the inbox list is visible again
+6. Verify a back (<) button and a close (×) button are available (these are the only navigation controls — there are no next/previous item controls)
+7. Tap the close button
+8. Verify the full-screen overlay closes and the inbox list is visible again
 
-**Expected Result:** On mobile viewports, activating clarify mode opens the ClarifyPanel as a full-screen overlay rather than a side-by-side layout. The panel displays the clarify workflow for the current item. The user can navigate between items and close the overlay to return to the inbox list.
+**Expected Result:** On mobile viewports, activating clarify mode opens the ClarifyPanel as a full-screen overlay rather than a side-by-side layout. The panel displays the clarify workflow for the current item. The only overlay controls are a back (<) button to step back within the workflow and a close (×) button to exit clarify mode and return to the inbox list.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2443,6 +2624,98 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-479: Clarify Button Visibility and Header Exit
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is logged in. The inbox is empty.
+
+**Steps:**
+1. Open the Inbox page with zero stuff items and look for the Clarify button.
+2. Add two stuff items to the inbox.
+3. Click the Clarify button to enter clarify mode.
+4. Click the "Exit" control in the clarify header.
+
+**Expected Result:**
+- With an empty inbox, the Clarify button is not rendered.
+- With items present, the Clarify button appears and starts the clarify flow.
+- Clicking "Exit" leaves clarify mode immediately; the remaining unclarified items stay in the inbox unchanged.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-480: Completed Stuff Detail Shows Undo Only
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is logged in and has at least one completed stuff item (mark a stuff item Done from the inbox).
+
+**Steps:**
+1. Navigate to the Completed page.
+2. Open the detail page of the completed stuff item.
+3. Inspect the title and the available action buttons.
+
+**Expected Result:**
+- The title is displayed with strikethrough styling.
+- The **only** action offered is Undo — no Clarify, Done, Move, or Trash controls are shown.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-481: Stuff Detail Move Destinations
+**Priority:** High | **Area:** Inbox / Stuff
+
+**Preconditions:** User is logged in with at least three stuff items in the inbox.
+
+**Steps:**
+1. Open a stuff item's detail page and open the Move dropdown; verify the destinations offered: Next Actions, Today, Calendar, Waiting For, Projects, Someday, Reference.
+2. Choose Calendar; a date/time modal opens — pick a date/time and confirm.
+3. Open a second stuff item's detail; choose Move → Waiting For; the waiting-for modal opens — fill in who/what you are waiting on and confirm.
+4. Open a third stuff item's detail; choose Move → Projects; the outcome modal opens — enter an outcome and confirm.
+5. Check the Calendar, Waiting For, and Projects pages.
+
+**Expected Result:**
+- The Move dropdown lists all seven destinations.
+- Each move transforms the stuff item accordingly: a calendar action on the chosen date, a waiting-for action with the entered value, and a project with the entered outcome.
+- Each item leaves the inbox after the move.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-482: Stuff Detail Context-Aware Back
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is logged in with a stuff item in the inbox, a completed stuff item, and a stuff item in Someday.
+
+**Steps:**
+1. From the Inbox page, open a stuff item's detail, then click the in-app back control.
+2. From the Completed page, open the completed stuff item's detail, then click back.
+3. From the Someday page, open the someday stuff item's detail, then click back.
+
+**Expected Result:**
+- The in-app back control returns to the originating list each time: `/inbox`, `/completed`, and `/someday` respectively.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 4: Clarify Workflow
 
 ---
@@ -2562,7 +2835,7 @@ Use the table below to log each full or partial test run.
 2. Verify the panel advances to step 2
 3. Verify the question asks about single step vs. multiple steps (e.g., "Is this a single action or does it require multiple steps?")
 4. Verify two options are presented: "Single Action" and "Project" (multiple steps)
-5. Verify the step counter updates (e.g., "2/4")
+5. Verify the step counter updates (e.g., "2/3")
 6. Verify the progress bar advances
 7. Verify a back button is available to return to step 1
 8. Click the back button
@@ -2635,7 +2908,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. At step 3, select "No" (cannot be done in less than 2 minutes)
-2. Verify the panel advances to the Create Action form
+2. Verify the panel advances to the Create Action form (heading "Create Action")
 3. Verify the form displays the following fields:
    - Title: pre-filled with the original stuff item's title ("Research vacation destinations")
    - Description: empty text area
@@ -2644,9 +2917,11 @@ Use the table below to log each full or partial test run.
 5. Modify the title if desired
 6. Add a description
 7. Add one or more tags
-8. Verify a "Confirm" or "Create Action" button is available
+8. Verify a sub-step chooser is displayed below the fields with three options: "Create Next Action" (add to next actions list), "Delegate It" (waiting on someone else), and "Defer It" (schedule for later)
+9. Verify the chooser options are disabled while the Title field is empty
+10. Verify "Delegate It" and "Defer It" each open a sub-step with a "Back" button and a submit button labeled "Create Action"
 
-**Expected Result:** Choosing "No" for the two-minute rule displays the Create Action form. The Title field is pre-filled with the stuff item's original title. Description and Tags fields are available. All fields are editable.
+**Expected Result:** Choosing "No" for the two-minute rule displays the Create Action form. The Title field is pre-filled with the stuff item's original title. Description and Tags fields are available and editable. The form ends in a sub-step chooser (Create Next Action / Delegate It / Defer It): "Create Next Action" submits immediately, while "Delegate It" and "Defer It" open sub-steps whose submit button is labeled "Create Action".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2662,8 +2937,8 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is authenticated. Clarify mode is active. Currently viewing the Create Action form (step after two-minute "No").
 
 **Steps:**
-1. On the Create Action form, locate the dates section (may be collapsed/expandable)
-2. Expand the dates section if it is collapsed
+1. On the Create Action form, click the "Defer It" option in the sub-step chooser (the dates form belongs to the Defer sub-step)
+2. Verify the Defer sub-step opens, with a "Back" button and a submit button labeled "Create Action"
 3. Verify the following date options are present:
    - Deferred: with sub-options "Scheduled for" and "Start after" (each using the DateTimeInput component)
    - Due Date: DateTimeInput component (date picker + optional time)
@@ -2687,7 +2962,7 @@ Use the table below to log each full or partial test run.
 21. Switch back to "Scheduled for" and verify the Due Date section hides again
 22. Verify that when switching from "Start after" (with time set) to "Scheduled for", duration auto-appears with default 30
 
-**Expected Result:** All date/time fields use the reusable DateTimeInput component with clearable time. "Add time..." placeholder is styled like other empty fields (tertiary color, italic). Duration automatically appears with a default of 30 minutes when time is added for "Scheduled for". Duration uses the DurationInput component: an editable number input with a dropdown of preset options (15, 30, 45, 60, 90, 120, 180, 240 minutes) and accepts any typed value > 0. "Clear" link (tertiary color, red on hover) removes time/duration. "Start after" and "Due" times do NOT show duration. When "Scheduled for" is selected, the Due Date section is hidden (mutual exclusivity). When "Start after" is selected, the Due Date section is visible.
+**Expected Result:** The dates form is part of the "Defer It" sub-step, which has a "Back" button and a "Create Action" submit button. All date/time fields use the reusable DateTimeInput component with clearable time. "Add time..." placeholder is styled like other empty fields (tertiary color, italic). Duration automatically appears with a default of 30 minutes when time is added for "Scheduled for". Duration uses the DurationInput component: an editable number input with a dropdown of preset options (15, 30, 45, 60, 90, 120, 180, 240 minutes) and accepts any typed value > 0. "Clear" link (tertiary color, red on hover) removes time/duration. "Start after" and "Due" times do NOT show duration. When "Scheduled for" is selected, the Due Date section is hidden (mutual exclusivity). When "Start after" is selected, the Due Date section is visible.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2704,8 +2979,8 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. On the Create Action form, verify the Title field contains the item's title (pre-filled or manually entered)
-2. Optionally fill in Description, Tags, and date fields
-3. Click the "Confirm" or "Create Action" button
+2. Optionally fill in Description and Tags
+3. Submit the form: either click "Create Next Action" in the sub-step chooser, or open the "Defer It" sub-step (optionally set dates) and click its "Create Action" button
 4. Verify an API call is made to /v1/stuff/{id}/transform to transform the stuff item into an action
 5. Verify the panel auto-advances to the next item or closes if no items remain
 6. Verify the item is removed from the inbox
@@ -2714,7 +2989,7 @@ Use the table below to log each full or partial test run.
 9. If tags or dates were set, verify they are reflected on the action
 10. Verify the Inbox sidebar badge decremented and the Next Action badge incremented
 
-**Expected Result:** Clicking Confirm on the Create Action form transforms the stuff item into an action via the API. The item is removed from the inbox and appears in Next Actions with all specified metadata (title, description, tags, dates). Sidebar badges update accordingly.
+**Expected Result:** Submitting the Create Action form (via "Create Next Action" or a sub-step's "Create Action" button) transforms the stuff item into an action via the API. The item is removed from the inbox and appears in Next Actions with all specified metadata (title, description, tags, dates). Sidebar badges update accordingly.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -2934,6 +3209,79 @@ Use the table below to log each full or partial test run.
 |      |     |         |
 
 
+---
+
+### TC-483: Clarify Keyboard Shortcuts Y/N
+**Priority:** Medium | **Area:** Clarify Workflow
+
+**Preconditions:** User is logged in with at least three stuff items in the inbox.
+
+**Steps:**
+1. Start clarify and, on step 1 ("Is it actionable?"), press the **Y** key.
+2. Verify the flow advances exactly as if "Yes" had been clicked.
+3. Exit and start clarify on another item; press **N** on step 1 and verify the not-actionable path is taken.
+4. On a third item, advance to the two-minute step and press **Y**, then in another run press **N**.
+
+**Expected Result:**
+- On step 1 and on the two-minute step, the Y and N keys make the same selections and advance the flow exactly like clicking the corresponding buttons.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-484: Clarify Delegate It End-to-End
+**Priority:** High | **Area:** Clarify Workflow
+
+**Preconditions:** User is logged in on Team tier with at least one accepted connection. At least one stuff item is in the inbox.
+
+**Steps:**
+1. Start clarify on the stuff item.
+2. Answer "Is it actionable?" → Yes.
+3. Choose the single-action path (not a project).
+4. Answer the two-minute question → No, reaching the sub-step choice "Create Next Action" / "Delegate It" / "Defer It".
+5. Choose "Delegate It", pick a connection, and confirm.
+6. Check the Waiting For page, then log in as the receiver and check their inbox.
+
+**Expected Result:**
+- A Waiting For action is created for the assigner, linked to the selected connection.
+- The receiver receives the delegated Stuff item in their inbox.
+- The clarified item leaves the assigner's inbox.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-485: Escape Disabled During Do It Now and Loading
+**Priority:** Medium | **Area:** Clarify Workflow
+
+**Preconditions:** User is logged in with at least three stuff items in the inbox.
+
+**Steps:**
+1. Start clarify in modal mode and press **Escape** on a normal step (e.g., step 1).
+2. Start clarify again, answer the two-minute question with Yes to reach the Do It Now screen, and press **Escape**.
+3. Start clarify again, throttle the network in devtools, submit the final step (e.g., "Create Action"), and press **Escape** while the transform request is in flight.
+
+**Expected Result:**
+- Escape closes the clarify panel on normal steps.
+- Escape does **nothing** on the Do It Now screen.
+- Escape does **nothing** while a request is loading; the panel only closes/advances when the request completes.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 5: Next Actions
 
 ---
@@ -2944,9 +3292,9 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in and on the Next Actions page (/next)
 
 **Steps:**
-1. Observe the page heading "Next" and the add action form area (form starts expanded by default)
-2. Verify the form is visible with a title input (placeholder "Add new action") and an "Add" button
-3. Verify the form can be toggled with +/− button (Unicode minus U+2212)
+1. Observe the page heading "Next" and the add action form area (form starts collapsed by default — only the "+" button is visible)
+2. Click the "+" button to expand the form
+3. Verify the expanded form shows a title input (placeholder "Add new action") and an "Add" button, and can be toggled with the +/− button (Unicode minus U+2212)
 4. Leave the title input empty and verify the "Add" button is disabled
 5. Type "Buy groceries for dinner" into the title input
 6. Verify the "Add" button becomes enabled
@@ -2958,7 +3306,7 @@ Use the table below to log each full or partial test run.
 12. Click the "−" button (Unicode minus U+2212) to collapse the form
 13. Verify the form collapses and only the "+" button is visible
 
-**Expected Result:** The collapsible form toggles open/closed with +/- button. New action is created with state NEXT and appears in the list. Input clears after creation. Add button is disabled when title is empty.
+**Expected Result:** The form starts collapsed and toggles open/closed with the +/− button. New action is created with state NEXT and appears in the list. Input clears after creation. Add button is disabled when title is empty.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3119,13 +3467,14 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Next Actions page (/next)
-2. Verify all actions are loaded at once (no pagination)
-3. Scroll through the list
-4. Verify there is no "Load more" button
-5. Verify the total number of displayed actions matches the expected count
-6. Verify no duplicate actions appear in the list
+2. Verify only the first 10 actions are loaded initially (cursor-based pagination, page size 10)
+3. Scroll to the bottom of the list
+4. Verify a "Load more" button is displayed below the list (because more items exist)
+5. Click "Load more"
+6. Verify the next page of up to 10 actions is appended to the list, with no duplicates
+7. Repeat until all actions are loaded and verify the "Load more" button disappears
 
-**Expected Result:** All next actions load at once on page load. There is no "Load more" button or pagination mechanism. All items are visible in a single scrollable list.
+**Expected Result:** The Next Actions list paginates cursor-based with a page size of 10. A "Load more" button appears when more items exist; clicking it loads and appends the next page without duplicates. The button disappears once all items are loaded.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3240,7 +3589,7 @@ Use the table below to log each full or partial test run.
 15. Verify the attachments section displays the uploaded attachment(s)
 16. Verify the comments section displays the existing comment(s) with user avatar and relative timestamp
 17. Verify metadata is displayed at the bottom (created date, updated date)
-18. Verify navigation arrows (First/Previous/Next/Last) are present for position-based navigation
+18. Verify navigation arrows (First/Previous/Next/Last) are present for position-based navigation (arrows are shown here because the page was opened from the Next Actions list; they are hidden when arriving with `from=calendar/engage/overdue/project/recurring/reference/review`)
 19. Navigate to action B (which has a scheduled date with time and duration)
 20. Expand the dates section and verify the "Scheduled" row shows the date, time, and duration (e.g., "Mar 25, 2026, 09:00 (30 min)")
 21. Verify the "Start" and "Due" rows both show "Not available (has scheduled date)"
@@ -3264,8 +3613,8 @@ Use the table below to log each full or partial test run.
 1. Navigate to the action detail page for a Next Actions item
 2. Locate the Move dropdown/button
 3. Click the Move dropdown to open it
-4. Verify the dropdown displays valid destination options: Today, Calendar, Waiting For, Someday
-5. Verify the current location (Next) is NOT shown as a destination option
+4. Verify the dropdown displays the valid destination options: Today, Calendar, Waiting For, Someday, Projects, and Reference (Trash is never offered)
+5. Verify the current location (Next Actions) is NOT shown as a destination option
 6. Select "Today" from the dropdown
 7. Verify the action is moved to the Today list
 8. Verify the page updates to reflect the new state or navigates appropriately
@@ -3285,7 +3634,7 @@ Use the table below to log each full or partial test run.
 22. Verify the action is moved to Someday without additional dialogs
 23. Navigate to the Someday page and verify the action appears there
 
-**Expected Result:** The Move dropdown shows all valid destinations except the current one. Moving to Today and Someday happens directly. Moving to Calendar triggers a schedule dialog with DateTimeInput (date + optional time; when time is added, DurationInput auto-appears with default 30 min). Moving to Waiting For triggers a dialog for specifying the waiting-for contact. The action appears in the correct destination after each move.
+**Expected Result:** The Move dropdown shows all valid destinations (Next Actions, Today, Calendar, Waiting For, Someday, Projects, Reference) minus the current state, and never Trash. Moving to Today and Someday happens directly. Moving to Calendar triggers a schedule dialog with DateTimeInput (date + optional time; when time is added, DurationInput auto-appears with default 30 min). Moving to Waiting For triggers a dialog for specifying the waiting-for contact. The action appears in the correct destination after each move.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -3337,6 +3686,95 @@ Use the table below to log each full or partial test run.
 
 | Date | P/F | Comment |
 |------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-486: Detail Arrows Hidden by Source Context
+**Priority:** Medium | **Area:** Next Actions
+
+**Preconditions:** User is logged in with actions in Next Actions, a scheduled action on the Calendar, and a project containing an action.
+
+**Steps:**
+1. From `/next`, open an action detail and look for the prev/next position arrows.
+2. From the Calendar, click a calendar item to open its detail (`from=calendar`).
+3. From a project detail, open one of its actions (`from=project`).
+4. Optionally repeat from Engage (`from=engage`) or a recurring instance (`from=recurring`).
+
+**Expected Result:**
+- Opened from `/next`, the prev/next position arrows are visible.
+- Opened with `from` = calendar, engage, overdue, project, recurring, reference, or review, the position arrows are hidden.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-487: Recurring and Weekly Review Badges on Detail
+**Priority:** Medium | **Area:** Next Actions
+
+**Preconditions:** User is logged in on a tier with recurring templates (Pro/Team). A normal recurring template exists with an active instance. Weekly review is enabled and its review action has been spawned from the review template.
+
+**Steps:**
+1. Open the detail page of the action spawned from the normal recurring template.
+2. Inspect the badges near the title.
+3. Open the detail page of the action spawned from the review template and inspect its badge.
+
+**Expected Result:**
+- The instance of a normal template shows a "Recurring" badge.
+- The action spawned from the review template shows a "Start Weekly Review" badge instead.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-488: Move Action to Projects via Dropdown
+**Priority:** High | **Area:** Next Actions
+
+**Preconditions:** User is logged in with at least one action in Next Actions and is under the project tier limit.
+
+**Steps:**
+1. Open the action's detail page (or its list row actions) and choose Move → Projects.
+2. Verify the outcome dialog opens; enter an outcome and confirm.
+3. Check the Next Actions list and the Projects page.
+
+**Expected Result:**
+- The transform endpoint converts the action into a project (single transform request, observable in the Network tab).
+- The action leaves the Next Actions list.
+- The new project appears on the Projects page with the entered outcome.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-489: Action Detail Context-Aware Back
+**Priority:** Medium | **Area:** Next Actions
+
+**Preconditions:** User is logged in with an action in Next Actions, a scheduled action on the Calendar, and a project containing an action.
+
+**Steps:**
+1. From `/next`, open an action detail and click the in-app back control.
+2. From the Calendar, open a calendar action's detail and click back.
+3. From a project's detail, open one of its actions and click back.
+
+**Expected Result:**
+- Back returns to the correct source each time: the Next Actions list, the Calendar, and the originating project's detail page respectively.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
 |      |     |         |
 
 ---
@@ -3419,28 +3857,8 @@ Use the table below to log each full or partial test run.
 ---
 
 ### TC-109: Today Items in Engage Dashboard
-**Priority:** Medium | **Area:** Today
 
-**Preconditions:** User is logged in and has at least 6 actions on the Today page
-
-**Steps:**
-1. Navigate to the Today page (/today) and confirm at least 6 actions are listed
-2. Note the titles and order of the first 5 actions
-3. Navigate to the Engage dashboard (/engage)
-4. Locate the "Today" section on the engage page
-5. Verify the Today section displays up to 5 today items
-6. Verify the items shown match the first 5 from the Today page in the correct order
-7. Verify there is a link or button to navigate to the full Today page (e.g., "View all" or section header is clickable)
-8. Click the link to the full Today page
-9. Verify navigation to /today with all items visible
-
-**Expected Result:** The Engage dashboard shows a Today section with up to 5 today items matching the Today page. A link to the full Today page is available.
-
-| Date | P/F | Comment |
-|------|-----|---------|
-|      |     |         |
-|      |     |         |
-|      |     |         |
+**REMOVED** — duplicate of TC-226 (Engage Today section).
 
 ---
 
@@ -4113,7 +4531,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in. The following actions exist on the calendar:
 - A scheduled action (has scheduled_date, e.g., today at 10:00 AM)
 - A start_after action (has start_date, e.g., today, no scheduled_date)
-- A due-only action (has due_date = today, no scheduled_date, no start_date, with start_date in the past so it appears on calendar)
+- A due-only action (has only due_date set, = today; no scheduled_date, no start_date)
 - An overdue due-only action (has due_date in the past)
 
 **Steps:**
@@ -4209,23 +4627,24 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the action detail page (/action/:id)
-2. Expand the Dates section
+2. Expand the Dates section and verify it shows three rows: Scheduled, Start, and Due
 3. Verify the Due row shows the due date (e.g., "Sat, Mar 20, 2026")
-4. Verify the Deferred row shows "Not set"
-5. Click on the Deferred row to edit
-6. Select "Scheduled for" radio option
-7. Pick a date (e.g., March 18) and optionally a time
-8. Click Save
-9. Verify the Deferred row now shows "Scheduled for March 18"
-10. Verify the Due row now shows **"N/A (has scheduled date)"** — it is non-editable
-11. Verify clicking on the Due row does NOT open an editor
-12. Reload the page
-13. Verify the due_date is cleared (the backend should have also cleared it)
-14. Verify the Due row still shows "N/A (has scheduled date)"
-15. Clear the deferred date (click Clear button on Deferred row)
-16. Verify the Due row becomes editable again (shows "Not set" and is clickable)
+4. Verify the Scheduled row shows **"Not available (has start or due date)"** — non-editable while a due date is set
+5. Clear the due date (click Clear on the Due row)
+6. Verify the Scheduled row becomes editable (shows "Not set")
+7. Click on the Scheduled row to edit
+8. Pick a date (e.g., March 18) and optionally a time
+9. Click Save
+10. Verify the Scheduled row now shows the scheduled date (March 18)
+11. Verify the Due row now shows **"Not available (has scheduled date)"** — it is non-editable
+12. Verify the Start row also shows **"Not available (has scheduled date)"**
+13. Verify clicking on the Due row does NOT open an editor
+14. Reload the page
+15. Verify the Due row still shows "Not available (has scheduled date)" and due_date remains unset
+16. Clear the scheduled date (click Clear button on the Scheduled row)
+17. Verify the Due and Start rows become editable again (show "Not set" and are clickable)
 
-**Expected Result:** Setting a "Scheduled for" date on an action clears the due_date (mutual exclusivity). The Due row shows "N/A (has scheduled date)" and is non-editable while a scheduled_date is set. Clearing the scheduled date restores editability of the Due row. The change persists on reload.
+**Expected Result:** The Dates section has three rows: Scheduled, Start, and Due. While a due (or start) date is set, the Scheduled row shows "Not available (has start or due date)" and is non-editable. While a scheduled date is set, the Start and Due rows show "Not available (has scheduled date)" and are non-editable (mutual exclusivity). Clearing the blocking date restores editability. The state persists on reload.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4242,22 +4661,23 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the action detail page (/action/:id)
-2. Expand the Dates section
-3. Verify the Deferred row shows "Scheduled for March 18 at 10:00 AM"
-4. Verify the Due row shows "N/A (has scheduled date)"
-5. Clear the deferred date (click Clear on Deferred row)
-6. Verify the action moves to NEXT state
-7. Verify the Due row is now editable (shows "Not set")
-8. Click on the Due row to edit
-9. Set a due date (e.g., March 25)
-10. Click Save
-11. Verify the Due row shows the new due date
-12. Verify the Deferred row shows "Not set" (no scheduled_date)
-13. Reload the page
-14. Verify the scheduled_date/time/duration remain cleared
-15. Verify the due_date persists
+2. Expand the Dates section (three rows: Scheduled, Start, Due)
+3. Verify the Scheduled row shows the scheduled date/time ("March 18 at 10:00 AM")
+4. Verify the Due row shows "Not available (has scheduled date)"
+5. Verify the Start row also shows "Not available (has scheduled date)"
+6. Clear the scheduled date (click Clear on the Scheduled row)
+7. Verify the action moves to NEXT state
+8. Verify the Due row is now editable (shows "Not set")
+9. Click on the Due row to edit
+10. Set a due date (e.g., March 25)
+11. Click Save
+12. Verify the Due row shows the new due date
+13. Verify the Scheduled row now shows "Not available (has start or due date)"
+14. Reload the page
+15. Verify the scheduled_date/time/duration remain cleared
+16. Verify the due_date persists
 
-**Expected Result:** Setting a due_date when a scheduled_date exists first requires clearing the scheduled_date (since the Due row is non-editable while scheduled). The scheduled_date is properly cleared on the backend via undefer. The due_date is then set independently.
+**Expected Result:** Setting a due_date when a scheduled_date exists first requires clearing the scheduled_date (since the Due row is non-editable while scheduled, showing "Not available (has scheduled date)"). The scheduled_date is properly cleared on the backend via undefer. The due_date is then set independently, after which the Scheduled row shows "Not available (has start or due date)".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4274,20 +4694,21 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the action detail page (/action/:id)
-2. Expand the Dates section
-3. Verify the Deferred row shows "Start after March 15"
-4. Verify the Due row shows the due date (e.g., "March 20") — it is **editable** (not "N/A")
-5. Click on the Due row to edit
-6. Change the due date to March 22
-7. Click Save
-8. Verify the Due row updates to March 22
-9. Verify the Deferred row still shows "Start after March 15" (start_date is NOT cleared)
-10. Reload the page and verify both dates persist
-11. Edit the Deferred row and change start_date to March 17
-12. Save
-13. Verify the Due row still shows March 22 (due_date is NOT cleared when changing start_date)
+2. Expand the Dates section (three rows: Scheduled, Start, Due)
+3. Verify the Start row shows the start date (March 15)
+4. Verify the Due row shows the due date (e.g., "March 20") — it is **editable** (not "Not available")
+5. Verify the Scheduled row shows "Not available (has start or due date)"
+6. Click on the Due row to edit
+7. Change the due date to March 22
+8. Click Save
+9. Verify the Due row updates to March 22
+10. Verify the Start row still shows March 15 (start_date is NOT cleared)
+11. Reload the page and verify both dates persist
+12. Edit the Start row and change start_date to March 17
+13. Save
+14. Verify the Due row still shows March 22 (due_date is NOT cleared when changing start_date)
 
-**Expected Result:** start_date and due_date can coexist on the same action. Editing either one does not affect the other. Only scheduled_date and due_date are mutually exclusive.
+**Expected Result:** start_date and due_date can coexist on the same action; the Start and Due rows are independently editable while the Scheduled row shows "Not available (has start or due date)". Editing either one does not affect the other. Only scheduled_date is mutually exclusive with start/due dates.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -4368,7 +4789,7 @@ Use the table below to log each full or partial test run.
 ### TC-142: Calendar Drag Reschedule for Due-Only Items
 **Priority:** Medium | **Area:** Calendar
 
-**Preconditions:** User is logged in. A due-only action exists on the calendar (has due_date, has start_date in the past so it was loaded, but the item currently shows on its due_date with red styling).
+**Preconditions:** User is logged in. A due-only action exists on the calendar (has only due_date set, = today; no scheduled_date, no start_date; the item shows on its due_date with red styling).
 
 **Steps:**
 1. Navigate to the Calendar page (/calendar) in Month view
@@ -4518,6 +4939,28 @@ Use the table below to log each full or partial test run.
 5. Navigate to a different date (not today) and verify no current time indicator is shown
 
 **Expected Result:** The current time indicator uses the accent color (--color-action) in both day and week views, distinguishing it from the red due date indicators.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-490: Calendar Item Opens Detail With from=calendar
+**Priority:** Medium | **Area:** Calendar
+
+**Preconditions:** User is logged in with at least one action scheduled on the Calendar.
+
+**Steps:**
+1. Navigate to the Calendar page showing the scheduled action.
+2. Click the calendar item.
+3. Inspect the resulting URL and the detail page header.
+
+**Expected Result:**
+- The app navigates to the action detail page with `from=calendar` in the URL.
+- The prev/next position arrows are hidden on this detail page.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -5059,6 +5502,54 @@ Use the table below to log each full or partial test run.
 |      |     |         |
 
 
+---
+
+### TC-491: Completed Project Detail State
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User is logged in and has at least one completed project.
+
+**Steps:**
+1. Navigate to the Completed page and open the completed project's detail.
+2. Inspect the available action buttons.
+3. Look for the Next Action section.
+4. Check the created/updated metadata.
+
+**Expected Result:**
+- The only action offered is **Undo** — no Complete, Someday, or Trash controls.
+- The Next Action section is hidden.
+- The created/updated metadata is still displayed.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-492: Personal Project Completed Section
+**Priority:** Medium | **Area:** Projects
+
+**Preconditions:** User is logged in with two personal projects: one containing several actions, one with no completed actions.
+
+**Steps:**
+1. In the first project, complete two of its actions.
+2. Open the project's detail page and locate the Completed section.
+3. Open the second project (no completed actions) and view its Completed section.
+
+**Expected Result:**
+- The first project's Completed section lists the completed actions with their completion dates.
+- The second project's Completed section shows the empty state "No completed tasks yet."
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 9: Waiting For
 
 ---
@@ -5066,7 +5557,7 @@ Use the table below to log each full or partial test run.
 ### TC-163: Add Waiting For Item
 **Priority:** High | **Area:** Waiting For | **Smoke Test**
 
-**Preconditions:** User is logged in and on the Waiting For page (/waiting)
+**Preconditions:** User is logged in and on the Waiting For page (/waiting-for)
 
 **Steps:**
 1. Locate the collapsible "Add" form at the top of the Waiting For page
@@ -5238,8 +5729,8 @@ Use the table below to log each full or partial test run.
 2. Locate the "Move" dropdown control on the detail page
 3. Click to open the Move dropdown
 4. Observe the available destination options
-5. Verify valid destinations are listed (e.g., Next Actions, Someday/Maybe, Trash)
-6. Select a destination such as "Someday/Maybe"
+5. Verify the valid destinations are listed: Next Actions, Today, Calendar, Someday, Projects, Reference (Waiting For is hidden as the current state; Trash is never offered)
+6. Select a destination such as "Someday"
 7. Observe the system response
 8. Navigate to the Someday/Maybe page and verify the item appears there
 9. Repeat the test: create another waiting item, open its detail, use Move to send it to another valid destination
@@ -5260,7 +5751,7 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in and has no items in the Waiting For state (complete, trash, or move all waiting items first)
 
 **Steps:**
-1. Navigate to the Waiting For page (/waiting)
+1. Navigate to the Waiting For page (/waiting-for)
 2. Verify no items are displayed in the list area
 3. Observe the empty state UI
 
@@ -5290,6 +5781,28 @@ Use the table below to log each full or partial test run.
 8. Verify the total count of visible items matches the number created
 
 **Expected Result:** The Waiting For list paginates correctly. The initial load shows the first batch of items. Clicking "Load more" fetches and appends additional items. All created items are eventually visible after loading all pages.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-493: Empty Connection Picker for Free/Pro
+**Priority:** Medium | **Area:** Waiting For
+
+**Preconditions:** User is logged in on Free or Pro tier (connections are Team-only) and has at least one action.
+
+**Steps:**
+1. Move an action to Waiting For (or edit the waiting-for field on an existing waiting action).
+2. Type a name into the "who/what are you waiting on" field and look for connection suggestions.
+3. Save the free-text value.
+
+**Expected Result:**
+- The picker offers no connection options (the server returns none/403 for non-Team tiers).
+- The free-text waiting-for value still saves and is displayed on the Waiting For page.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -5646,9 +6159,9 @@ Use the table below to log each full or partial test run.
 5. Click "Confirm" or press Enter to submit
 6. Verify the modal closes
 7. Verify the new folder "Project Documents" appears in the file listing with a folder icon
-8. Try creating another folder with the same name to check for duplicate handling
+8. Try creating another folder with the same name "Project Documents" and verify the request is rejected with HTTP 409 and an error toast "A folder with this name already exists"
 
-**Expected Result:** Clicking "New Folder" opens a modal with an empty name field. Entering a name and confirming creates the folder, which immediately appears in the listing. The modal closes after successful creation.
+**Expected Result:** Clicking "New Folder" opens a modal with an empty name field. Entering a name and confirming creates the folder, which immediately appears in the listing. The modal closes after successful creation. Creating a second folder with the same name in the same location fails with HTTP 409 and shows the toast "A folder with this name already exists".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -5751,9 +6264,9 @@ Use the table below to log each full or partial test run.
 6. Click "Cancel" and verify the folder remains
 7. Access the delete option again and click "Confirm"
 8. Verify the folder disappears from the file listing
-9. Verify the folder and its contents are permanently deleted (not in trash, or moved to reference trash depending on implementation)
+9. Verify the folder and its contents are permanently deleted — the folder does NOT appear in the reference Trash tab (there is no trash for folders)
 
-**Expected Result:** Deleting a folder shows a confirmation dialog that warns about the folder's contents. Cancelling preserves the folder. Confirming permanently removes the folder and all of its nested contents.
+**Expected Result:** Deleting a folder shows a confirmation dialog that warns about the folder's contents. Cancelling preserves the folder. Confirming permanently removes the folder and all of its nested contents; deleted folders are not recoverable from any trash.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6003,9 +6516,9 @@ Use the table below to log each full or partial test run.
 7. Verify the view returns to the normal folder listing
 8. Type a search term that matches no files (e.g., "zzzznonexistent")
 9. Wait for the debounce
-10. Verify an appropriate "no results" message is shown
+10. Verify the empty state message "No results found" is shown
 
-**Expected Result:** The search input has a 300 ms debounce. Results show matching files globally across all folders. Folders are hidden during search. Clearing the search restores the normal folder view. Non-matching queries show an empty/no-results state.
+**Expected Result:** The search input has a 300 ms debounce. Results show matching files globally across all folders. Folders are hidden during search. Clearing the search restores the normal folder view. Non-matching queries show the empty state message "No results found".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6021,9 +6534,9 @@ Use the table below to log each full or partial test run.
 **Preconditions:** User is logged in and on the Reference page with at least a few files and folders
 
 **Steps:**
-1. Observe the current view mode (default may be List or Grid)
+1. Observe the current view mode (default is List)
 2. Locate the view toggle control in the toolbar
-3. Click to switch to Grid view (if currently in List view)
+3. Click to switch to Grid view
 4. Verify the files and folders render in a grid/card layout
 5. Click to switch to List view
 6. Verify the files and folders render in a tabular/list layout
@@ -6032,7 +6545,7 @@ Use the table below to log each full or partial test run.
 9. Verify the view mode persists (matches the last selection from step 5 or 3)
 10. Open browser DevTools and check localStorage for the persisted view mode value
 
-**Expected Result:** The view toggle switches between List and Grid display modes. Files and folders re-render in the chosen layout. The selected view mode is persisted to localStorage and restored on subsequent visits.
+**Expected Result:** The default view mode is List. The view toggle switches between List and Grid display modes. Files and folders re-render in the chosen layout. The selected view mode is persisted to localStorage and restored on subsequent visits.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6071,11 +6584,11 @@ Use the table below to log each full or partial test run.
 ### TC-203: Reference Pagination
 **Priority:** Medium | **Area:** Reference / File Manager
 
-**Preconditions:** User is logged in and on the Reference page in a folder that contains more than 20 files
+**Preconditions:** User is logged in and on the Reference page in a folder that contains more than 10 files
 
 **Steps:**
-1. Navigate to the folder with >20 files
-2. Verify the initial load displays up to 20 items
+1. Navigate to the folder with >10 files
+2. Verify the initial load displays up to 10 items
 3. Scroll to the bottom of the file listing
 4. Locate the "Load more" button
 5. Click "Load more"
@@ -6084,7 +6597,7 @@ Use the table below to log each full or partial test run.
 8. Verify the total number of visible files matches the expected count
 9. Verify the "Load more" button disappears or becomes disabled when all items are loaded
 
-**Expected Result:** The Reference file listing uses offset-based pagination with 20 items per page. A "Load more" button appears when there are additional items. Clicking it fetches and appends the next batch. The button disappears when all items are loaded.
+**Expected Result:** The Reference file listing uses offset-based pagination with 10 items per page. A "Load more" button appears when there are additional items. Clicking it fetches and appends the next batch. The button disappears when all items are loaded.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6101,14 +6614,14 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Reference page (/reference)
-2. Locate the tab bar (Files tab and Trash tab)
+2. Locate the tab bar with its three tabs: Files, Attachments, and Trash
 3. Click the "Trash" tab
 4. Verify the view switches to show the Reference Trash contents
 5. Verify the trash listing is displayed as a tabular list
 6. Verify each row shows at minimum: file name, file size, and action buttons (Restore, Permanent Delete)
 7. Verify the trashed files correspond to files previously trashed from the Files tab
 
-**Expected Result:** The Trash tab shows a tabular list of trashed reference files. Each entry displays the file name, size, and available actions (restore and permanent delete). The list accurately reflects all files that were trashed.
+**Expected Result:** The Reference page tab bar has three tabs: Files, Attachments, and Trash. The Trash tab shows a tabular list of trashed reference files. Each entry displays the file name, size, and available actions (restore and permanent delete). The list accurately reflects all files that were trashed.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6173,6 +6686,119 @@ Use the table below to log each full or partial test run.
    c. Verify the file size column is hidden on mobile to save space
 
 **Expected Result:** Permanent delete on a single file shows a confirmation (irreversible), then removes the file permanently. Empty Trash shows a confirmation with "This cannot be undone", then removes all trashed files permanently. On mobile viewports, the size column is hidden in the Trash tab.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-494: Attachments Tab
+**Priority:** Medium | **Area:** Reference / File Manager
+
+**Preconditions:** User is logged in on a tier with reference writes and has more than 10 attachments spread across various items.
+
+**Steps:**
+1. Navigate to the Reference page and open the Attachments tab.
+2. Verify the listed attachments show their parent-item context.
+3. Preview one attachment and download another.
+4. Scroll to the bottom and click "Load more".
+
+**Expected Result:**
+- The tab lists attachments from items, each with its parent-item context.
+- Preview and download both work.
+- The list paginates 10 per page; "Load more" appends the next page.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-495: Upload Error State in Progress Panel
+**Priority:** Medium | **Area:** Reference / File Manager
+
+**Preconditions:** User is logged in on a tier with reference writes. One test file is prepared that will fail server-side (e.g., an oversized file that passes the client check, or a forced server error).
+
+**Steps:**
+1. Select multiple files for upload, including the failing file.
+2. Start the upload and observe the upload progress panel.
+3. Wait for all files to finish.
+
+**Expected Result:**
+- The progress panel shows a per-file status (uploading → done) with the 4 px progress bar.
+- The failing file is marked with an error status/message in the panel.
+- The other files complete successfully and appear in the file list.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-496: Upload Exceeding Remaining Storage Quota
+**Priority:** Medium | **Area:** Reference / File Manager
+
+**Preconditions:** User is logged in on a tier with reference writes and the account is near its storage quota (e.g., Pro account with most of the 250 MB used).
+
+**Steps:**
+1. Note the current quota display on the Reference page.
+2. Upload a file that is within the per-file cap but larger than the remaining quota.
+3. Observe the result and the quota display.
+
+**Expected Result:**
+- The server rejects the upload with 413.
+- A quota-exceeded error toast appears.
+- The quota display is unchanged and the file is not added.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-497: Free Tier Cannot Write Reference Files
+**Priority:** High | **Area:** Reference / File Manager
+
+**Preconditions:** User is logged in on Free tier (no reference-file writes). Some reference content may already exist from a prior tier.
+
+**Steps:**
+1. Open the Reference page and browse existing folders/files.
+2. Attempt to upload a file.
+3. Attempt to create a folder.
+
+**Expected Result:**
+- Browsing/reading existing reference content works normally.
+- The upload and folder-creation requests are rejected (server enforces the reference-write gate); no file or folder is created, and the rejection is surfaced in the UI.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-498: Preview of Unsupported File Types
+**Priority:** Low | **Area:** Reference / File Manager
+
+**Preconditions:** User is logged in on a tier with reference writes and has a `.zip` (or similar non-previewable) file in Reference.
+
+**Steps:**
+1. Open the Reference page and click the `.zip` file to preview it.
+2. Observe the browser behavior.
+
+**Expected Result:**
+- The preview falls back to browser-native blob handling (the file is downloaded or opened by the browser).
+- No broken or empty preview modal is shown.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6254,14 +6880,14 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Completed page (/completed)
-2. Attempt to click on the title text of a completed item
-3. Verify the title does NOT enter inline edit mode (no editable input appears)
-4. Hover over the item
+2. Click on the title text of a completed item
+3. Verify the title does NOT enter inline edit mode — instead, clicking the title navigates to the item's detail page
+4. Navigate back, then hover over the item
 5. Verify no trash/delete button appears on hover
-6. Verify no drag handle is present for reordering
-7. Verify the only interactive element is the checkbox (for restoring)
+6. Verify no drag handle is present for within-list reordering
+7. Verify the remaining supported interactions: the checkbox (for restoring), title click (navigates to detail), and dragging the item to a sidebar drop target
 
-**Expected Result:** Completed items are read-only in the list view. There is no inline title editing, no trash button, and no drag handle. The only interactive element is the checkbox for unchecking (restoring) the item.
+**Expected Result:** Completed items cannot be edited in the list view: there is no inline title editing, no trash button, and no within-list reorder handle. They still support three interactions — the checkbox to uncheck (restore) the item, clicking the title to navigate to the detail page, and dragging to sidebar drop targets.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6304,15 +6930,15 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Completed page (/completed)
-2. Verify the initial load shows the first batch of completed items
+2. Verify the initial load shows the first 10 completed items (page size 10)
 3. Scroll to the bottom of the list
-4. Locate the "Load more" button or observe if cursor-based pagination loads automatically
-5. Click "Load more" (or trigger the next page load)
-6. Verify additional completed items are appended to the list
-7. Continue loading pages until all items are shown
+4. Verify a "Load more" button is displayed below the list
+5. Click "Load more"
+6. Verify the next page of up to 10 completed items is appended to the list
+7. Continue clicking "Load more" until all items are shown and the button disappears
 8. Verify the pagination uses cursor-based logic (not offset-based) -- check network requests in DevTools for cursor parameters
 
-**Expected Result:** The Completed page uses cursor-based pagination. Additional items load correctly when "Load more" is triggered. Items are appended to the existing list. All completed items are eventually accessible through pagination.
+**Expected Result:** The Completed page uses cursor-based pagination with a page size of 10 and a "Load more" button. Clicking the button loads and appends the next page. The button disappears once all completed items are loaded.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6518,15 +7144,15 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to the Trash page (/trash)
-2. Verify the initial load shows the first batch of trashed items
+2. Verify the initial load shows the first 10 trashed items (page size 10)
 3. Scroll to the bottom of the list
-4. Locate the "Load more" button
+4. Verify a "Load more" button is displayed below the list
 5. Click "Load more"
-6. Verify additional trashed items are appended to the list
-7. Continue loading pages until all items are shown
+6. Verify the next page of up to 10 trashed items is appended to the list
+7. Continue clicking "Load more" until all items are shown and the button disappears
 8. Verify cursor-based pagination is used (check network requests in DevTools for cursor parameters rather than offset/page numbers)
 
-**Expected Result:** The Trash page uses cursor-based pagination. Additional items load correctly when "Load more" is clicked. Items are appended to the existing list without duplicates. All trashed items are accessible through pagination.
+**Expected Result:** The Trash page uses cursor-based pagination with a page size of 10 and a "Load more" button. Clicking the button loads and appends the next page without duplicates. The button disappears once all trashed items are loaded.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6703,7 +7329,7 @@ Use the table below to log each full or partial test run.
 ### TC-226: Today Section Displays Header with Count, View All Link, and Up to 5 Items
 **Priority:** High | **Area:** Engage Dashboard
 
-**Preconditions:** User is logged in. At least 7 actions exist with today's date as the due date.
+**Preconditions:** User is logged in. At least 7 actions exist in the TODAY bucket (moved to Today).
 
 **Steps:**
 1. Navigate to `/engage`
@@ -6713,12 +7339,12 @@ Use the table below to log each full or partial test run.
 5. Verify a "View all" link is displayed adjacent to the header
 6. Count the items displayed in the Today section
 7. Verify no more than 5 items are shown in this section
-8. Verify the items shown are the most relevant (e.g., earliest due time first, or highest priority)
+8. Verify the items shown are the first 5 items of the Today list in list order
 9. Click the "View all" link
 10. Verify the browser navigates to `/today`
 11. On `/today`, verify all 7 items are visible
 
-**Expected Result:** The Today section displays "TODAY" as its header with a count of total items and a "View all" link pointing to `/today`. The section shows a maximum of 5 items. Clicking "View all" navigates to the full Today page where all items are listed.
+**Expected Result:** The Today section displays "TODAY" as its header with a count of total items and a "View all" link pointing to `/today`. The section shows a maximum of 5 items — the first 5 of the Today list in list order. Clicking "View all" navigates to the full Today page where all items are listed.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -6731,7 +7357,7 @@ Use the table below to log each full or partial test run.
 ### TC-227: Today Section - Complete Item Inline
 **Priority:** High | **Area:** Engage Dashboard
 
-**Preconditions:** User is logged in. At least 2 actions exist with today's date as the due date and are visible in the Engage dashboard Today section.
+**Preconditions:** User is logged in. At least 2 actions exist in the TODAY bucket (moved to Today) and are visible in the Engage dashboard Today section.
 
 **Steps:**
 1. Navigate to `/engage`
@@ -6884,7 +7510,7 @@ Use the table below to log each full or partial test run.
 6. Verify the browser navigates to `/review`
 7. Complete a full weekly review (check all 6 steps and click "Complete Review")
 8. Navigate back to `/engage`
-9. Verify the review nudge now shows "Last reviewed today" or "Last reviewed 0 days ago"
+9. Verify the review nudge now shows "Last reviewed today"
 10. Wait 3 days (or simulate the passage of time)
 11. Navigate to `/engage`
 12. Verify the review nudge shows "Last reviewed 3 days ago"
@@ -7018,7 +7644,7 @@ Use the table below to log each full or partial test run.
 ### TC-237: Dashboard Item Click Navigates to Correct Detail Page
 **Priority:** High | **Area:** Engage Dashboard | **Smoke Test**
 
-**Preconditions:** User is logged in. At least 1 action exists in each section: Today (an action with due date today), Next Actions (a standalone action), Waiting For (a delegated action). At least 1 action belongs to a project.
+**Preconditions:** User is logged in. At least 1 action exists in each section: Today (an action in the Today bucket), Next Actions (a standalone action), Waiting For (a delegated action). At least 1 action belongs to a project.
 
 **Steps:**
 1. Navigate to `/engage`
@@ -7036,6 +7662,26 @@ Use the table below to log each full or partial test run.
 13. Verify it navigates to the action detail page (not the project page)
 
 **Expected Result:** Clicking on any item's title in any dashboard section navigates to the correct detail page for that action. The detail page displays the full information for the clicked item.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-499: Review Nudge Hidden When Nothing to Review
+**Priority:** Low | **Area:** Engage Dashboard
+
+**Preconditions:** User is logged in. Weekly review is enabled in Settings, but there are zero items qualifying for review.
+
+**Steps:**
+1. Navigate to `/engage`.
+2. Look for the weekly review nudge.
+
+**Expected Result:**
+- With nothing to review, the review nudge is not displayed, even though weekly review is enabled.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7114,7 +7760,7 @@ Use the table below to log each full or partial test run.
 3. Verify a last review date indicator is displayed showing "Never reviewed"
 4. Complete a full weekly review (all 6 steps checked, click "Complete Review")
 5. Navigate away from `/review` and then return to `/review`
-6. Verify the last review date indicator now shows "Last reviewed: today" or "Last reviewed: 0 days ago"
+6. Verify the last review date indicator now shows "Last reviewed: today"
 7. Wait 1 day (or simulate the passage of time if possible)
 8. Navigate to `/review`
 9. Verify the indicator shows "Last reviewed: 1 day ago"
@@ -7198,7 +7844,7 @@ Use the table below to log each full or partial test run.
 **Steps:**
 1. Navigate to `/review`
 2. Verify 6 review steps are displayed in order:
-   - Step 1: "Empty Inbox"
+   - Step 1: "Empty your Inbox"
    - Step 2: "Review Next Actions"
    - Step 3: "Review Waiting For"
    - Step 4: "Review Projects"
@@ -7231,7 +7877,7 @@ Use the table below to log each full or partial test run.
 
 **Steps:**
 1. Navigate to `/review`
-2. Click the "Go" link on the "Empty Inbox" step
+2. Click the "Go" link on the "Empty your Inbox" step
 3. Verify the browser navigates to `/inbox`
 4. Navigate back to `/review`
 5. Click the "Go" link on the "Review Next Actions" step
@@ -7271,7 +7917,7 @@ Use the table below to log each full or partial test run.
 4. Locate the "Start Review" button
 5. Click "Start Review"
 6. Verify the checkboxes next to each step become enabled and interactive
-7. Click the checkbox for "Empty Inbox"
+7. Click the checkbox for "Empty your Inbox"
 8. Verify the checkbox is checked and a visual indicator (e.g., checkmark, strikethrough, or highlight) confirms the step is marked as done
 9. Verify the other 5 checkboxes remain unchecked but are still enabled
 
@@ -7294,7 +7940,7 @@ Use the table below to log each full or partial test run.
 1. Navigate to `/review`
 2. Click "Start Review"
 3. Verify the progress counter displays "0 of 6 complete"
-4. Check the "Empty Inbox" checkbox
+4. Check the "Empty your Inbox" checkbox
 5. Verify the progress counter updates to "1 of 6 complete"
 6. Check the "Review Next Actions" checkbox
 7. Verify the progress counter updates to "2 of 6 complete"
@@ -7331,15 +7977,14 @@ Use the table below to log each full or partial test run.
 3. Check all 6 step checkboxes
 4. Verify the "Complete Review" button is now enabled
 5. Click "Complete Review"
-6. Verify a success message or toast is displayed confirming the review is complete (e.g., "Weekly review completed")
-7. Verify the review date is saved (the last reviewed indicator updates to show today's date)
-8. Verify the page resets to its initial state (checkboxes unchecked and disabled, "Start Review" button visible again)
-9. Navigate away from `/review` to `/engage`
-10. Verify the review nudge on the Engage dashboard reflects the updated review date (e.g., "Last reviewed: today")
-11. Navigate back to `/review`
-12. Verify the header shows the updated last review date
+6. Verify a success toast is displayed with the exact text "Weekly review completed!"
+7. Verify the app redirects to the Calendar page (`/calendar`) after completion
+8. Navigate to `/engage`
+9. Verify the review nudge on the Engage dashboard shows "Last reviewed today"
+10. Navigate to `/review`
+11. Verify the header shows "Last reviewed: today" and the page is back in its initial state (checkboxes unchecked and disabled, "Start Review" button visible)
 
-**Expected Result:** After checking all 6 steps and clicking "Complete Review," the review date is saved and persisted. A success confirmation is shown. The page resets for the next review session. The last reviewed date updates across the application.
+**Expected Result:** After checking all 6 steps and clicking "Complete Review," the review date is saved and persisted, the toast "Weekly review completed!" is shown, and the app redirects to the Calendar page. The Engage nudge shows "Last reviewed today" and the Review page header shows "Last reviewed: today".
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7492,11 +8137,11 @@ Use the table below to log each full or partial test run.
 11. Verify validation prevents 0 (minimum is 1)
 12. Try entering 100 in the interval field
 13. Verify validation prevents values above 99 (maximum is 99)
-14. Set the interval to 3
-15. Fill in the remaining required fields (title, time, duration) and save
-16. Verify the saved template shows "Every 3 days" as its recurrence rule
+14. Set the interval to 3 (changes save automatically — the recurring detail page auto-saves, there is no explicit save button)
+15. Navigate away and return to the template detail page
+16. Verify the template shows "Every 3 days" as its recurrence rule
 
-**Expected Result:** The Daily frequency option allows setting an interval between 1 and 99 days. The human-readable summary dynamically updates to reflect the selected interval (e.g., "Every day", "Every 2 days"). Values outside the 1-99 range are rejected by validation.
+**Expected Result:** The Daily frequency option allows setting an interval between 1 and 99 days. The human-readable summary dynamically updates to reflect the selected interval (e.g., "Every day", "Every 2 days"). Values outside the 1-99 range are rejected by validation. Changes save automatically (no explicit save button).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7522,14 +8167,14 @@ Use the table below to log each full or partial test run.
 8. Verify the summary updates to "Every week on Mon, Wed, Fri"
 9. Change the interval to 2
 10. Verify the summary updates to "Every 2 weeks on Mon, Wed, Fri"
-11. Deselect all days
-12. Verify validation requires at least one day to be selected (e.g., a warning or the save button is disabled)
+11. Try to deselect all days
+12. Verify the form automatically keeps at least one weekday selected — deselecting the last selected day is not possible (it re-adds today's weekday)
 13. Select only Sunday
 14. Verify the summary reads "Every 2 weeks on Sun"
-15. Fill in the remaining required fields and save
-16. Verify the saved template shows the correct weekly recurrence rule
+15. Verify the changes save automatically (the recurring detail page auto-saves — there is no save button)
+16. Navigate away, return, and verify the template shows the correct weekly recurrence rule
 
-**Expected Result:** The Weekly frequency allows selecting one or more days of the week and an interval in weeks. The human-readable summary dynamically reflects the chosen days and interval. At least one day must be selected for a valid rule.
+**Expected Result:** The Weekly frequency allows selecting one or more days of the week and an interval in weeks. The human-readable summary dynamically reflects the chosen days and interval. The form auto-keeps at least one weekday selected (the last day cannot be deselected). Changes save automatically.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7549,16 +8194,15 @@ Use the table below to log each full or partial test run.
 2. Select frequency "Monthly".
 3. Verify a day-of-month selector appears allowing values 1 through 31
 4. Set the day of month to 1
-5. Verify the human-readable summary reads "Every month on the 1st"
+5. Verify the human-readable summary reads "Every month on day 1"
 6. Change the day to 15
-7. Verify the summary updates to "Every month on the 15th"
+7. Verify the summary updates to "Every month on day 15"
 8. Change the day to 31
-9. Verify the summary updates to "Every month on the 31st"
-10. Verify a note or tooltip indicates that months with fewer days will use the last day of the month (e.g., February 28/29 for day 31)
-11. Fill in the remaining required fields and save
-12. Verify the saved template shows the correct monthly recurrence rule
+9. Verify the summary updates to "Every month on day 31"
+10. Verify the changes save automatically (auto-save — no explicit save button)
+11. Navigate away, return, and verify the template shows the correct monthly recurrence rule
 
-**Expected Result:** The Monthly frequency allows selecting a day of month between 1 and 31. The human-readable summary uses ordinal formatting (1st, 2nd, 3rd, etc.). Months shorter than the selected day gracefully handle by using the last available day.
+**Expected Result:** The Monthly frequency allows selecting a day of month between 1 and 31. The human-readable summary uses the format "Every month on day N". Changes save automatically.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7585,8 +8229,8 @@ Use the table below to log each full or partial test run.
 9. Verify the summary updates to "Every year on Dec 25"
 10. Select month "February" and day 29
 11. Verify the summary reads "Every year on Feb 29" and note that leap year handling applies
-12. Fill in the remaining required fields and save
-13. Verify the saved template shows the correct yearly recurrence rule
+12. Verify the changes save automatically (auto-save — no explicit save button)
+13. Navigate away, return, and verify the template shows the correct yearly recurrence rule
 
 **Expected Result:** The Yearly frequency allows selecting a month and day of month. The human-readable summary displays in "Every year on Mon DD" format. The form accepts February 29 with the understanding that it applies on leap years.
 
@@ -7609,8 +8253,8 @@ Use the table below to log each full or partial test run.
 3. Select "Never" as the end condition.
 4. Verify no end date field or occurrence count field is displayed.
 5. Verify the summary does not include any end information (or explicitly states "No end date").
-6. Fill in the remaining required fields and save.
-7. Open the saved recurring template.
+6. Verify the changes save automatically (auto-save — no explicit save button).
+7. Navigate away and re-open the recurring template.
 8. Verify the end condition is set to "Never" and no end date is stored.
 
 **Expected Result:** Selecting "Never" as the end condition hides any end date or occurrence count inputs. The recurring action is set to repeat indefinitely with no termination.
@@ -7639,10 +8283,9 @@ Use the table below to log each full or partial test run.
 8. Verify validation rejects 0 (minimum is 1).
 9. Try entering 1000.
 10. Verify validation rejects values above 999 (maximum is 999).
-11. Set the value to 5.
-12. Fill in the remaining required fields and save.
-13. Open the saved recurring template.
-14. Verify the end condition shows "After 5 occurrences".
+11. Set the value to 5 (changes save automatically — no explicit save button).
+12. Navigate away and re-open the recurring template.
+13. Verify the end condition shows "After 5 occurrences".
 
 **Expected Result:** The "After N occurrences" end condition allows setting a count between 1 and 999. Validation enforces the range. The saved template correctly reflects the occurrence limit.
 
@@ -7666,14 +8309,11 @@ Use the table below to log each full or partial test run.
 4. Verify a date picker or date input field appears.
 5. Select a date 6 months from today.
 6. Verify the summary includes the end date (e.g., "until Aug 27, 2026").
-7. Try selecting a date in the past.
-8. Verify validation rejects past dates (the end date must be in the future).
-9. Select a valid future date (e.g., December 31, 2026).
-10. Fill in the remaining required fields and save.
-11. Open the saved recurring template.
-12. Verify the end condition shows "Until Dec 31, 2026".
+7. Select a different future date (e.g., December 31, 2026) — changes save automatically (no explicit save button).
+8. Navigate away and re-open the recurring template.
+9. Verify the end condition shows "Until Dec 31, 2026".
 
-**Expected Result:** The "Until" end condition allows selecting a future date via a date picker. Past dates are rejected by validation. The saved template correctly displays the end date.
+**Expected Result:** The "Until" end condition allows selecting an end date via a date picker (there is no validation against past dates). The summary and the saved template correctly display the end date. Changes save automatically.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7730,11 +8370,12 @@ Use the table below to log each full or partial test run.
 6. Verify the browser navigates to the detail page of the currently spawned action instance (e.g., `/action/:actionId`)
 7. Verify the action detail page shows the correct action with its title matching the recurring template
 8. Navigate back to the recurring template detail page
-9. Complete the active action instance
-10. Return to the recurring template detail page
-11. Verify the "Active instance" badge updates or disappears (depending on whether a new instance was auto-spawned)
+9. Verify the "Spawn next" button is hidden while the active instance exists
+10. Complete the active action instance
+11. Return to the recurring template detail page
+12. Verify the "Active instance" badge disappears and the "Spawn next" button becomes visible again
 
-**Expected Result:** The recurring template detail page displays an "Active instance" badge that links to the currently spawned action. Clicking it navigates to the action's detail page. The badge reflects the current state of spawned instances.
+**Expected Result:** The recurring template detail page displays an "Active instance" badge that links to the currently spawned action. Clicking it navigates to the action's detail page. While an active instance exists, the "Spawn next" button is hidden; once the instance is completed, the badge disappears and "Spawn next" reappears.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7758,12 +8399,11 @@ Use the table below to log each full or partial test run.
 6. Verify the "Active instance" badge appears (or updates) on the detail page, linking to the new action
 7. Click the "Active instance" link
 8. Verify a new action has been created with the recurring template's title, scheduled time, and duration
-9. Verify the action's due date corresponds to the next occurrence per the recurrence rule
+9. Verify the action's scheduled date (or start date if the template is in start mode) corresponds to the next occurrence per the recurrence rule — the recurrence never sets a due_date
 10. Navigate back to the recurring template detail page
-11. Try clicking "Spawn next" again while an active instance already exists
-12. Verify appropriate behavior (either prevented with a message like "Active instance already exists", or a second instance is created at the following occurrence)
+11. Verify the "Spawn next" button is now hidden, because an active instance exists
 
-**Expected Result:** Clicking "Spawn next" manually creates the next action instance based on the recurrence rule. The new action appears with the correct title, time, duration, and due date. The "Active instance" badge updates to link to the new action.
+**Expected Result:** Clicking "Spawn next" manually creates the next action instance based on the recurrence rule. The new action appears with the correct title, time, duration, and scheduled date (or start date in start mode) — recurrence drives the scheduled/start date and never the due_date. The "Active instance" badge updates to link to the new action, and the "Spawn next" button is hidden while that active instance exists.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7773,7 +8413,7 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-262: Trash Recurring Action Template
+### TC-262: Delete Recurring Action Template (Permanent)
 **Priority:** High | **Area:** Recurring Actions
 
 **Preconditions:** User is logged in. A recurring action template named "Old recurring task" exists.
@@ -7782,18 +8422,17 @@ Use the table below to log each full or partial test run.
 1. Navigate to the Recurring list
 2. Verify "Old recurring task" is listed
 3. Click on "Old recurring task" to open its detail page
-4. Locate the Trash or Delete button
-5. Click the Trash button
-6. If a confirmation dialog appears, verify it warns about deleting the template
+4. Locate the Delete button
+5. Click the Delete button
+6. Verify a confirmation dialog appears warning that the template will be permanently deleted (deletion is a hard delete — there is no trash for recurring templates)
 7. Confirm the deletion
 8. Verify a success confirmation is displayed (e.g., "Recurring action deleted")
 9. Verify the browser navigates back to the Recurring list (or the list updates)
 10. Verify "Old recurring task" is no longer in the Recurring list
-11. Navigate to `/trash`
-12. Verify the recurring template appears in the Trash
-13. If an active instance existed for the template, verify the behavior of that instance (it may remain as a standalone action or be trashed as well, depending on design)
+11. Navigate to `/trash` and verify the template does NOT appear there (it is permanently gone)
+12. If an active instance existed for the template, verify the behavior of that instance (it may remain as a standalone action or be trashed as well, depending on design)
 
-**Expected Result:** Clicking Trash on a recurring template removes it from the Recurring list and moves it to the Trash. A confirmation dialog may appear before deletion. The template is recoverable from the Trash page.
+**Expected Result:** Deleting a recurring template is permanent (hard delete). The confirmation dialog warns accordingly. After confirming, the template is removed from the Recurring list and does not appear in `/trash` — it is not recoverable.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -7877,6 +8516,117 @@ Use the table below to log each full or partial test run.
 7. If the start date is today or in the past, verify the instance appears in the Next list; if in the future, verify it is not in Next yet
 
 **Expected Result:** Start-mode templates are distinguishable in the Recurring list via the "Starts" chip and show the start time in the recurrence summary. Their spawned instances carry start_date/start_time (tickler behavior: hidden until the date, then in Next) instead of appearing as calendar appointments.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-500: Automatic Instance Spawning
+**Priority:** High | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in on a tier with recurring templates (Pro/Team). A recurring template exists whose rule has a next occurrence, with an active instance.
+
+**Steps:**
+1. Open the template detail and note the active instance.
+2. Complete the active instance.
+3. Inspect the template detail and the relevant list (Calendar or Today/Next, depending on mode).
+
+**Expected Result:**
+- A new instance spawns automatically for the next occurrence date.
+- The recurrence drives the scheduled date (scheduled mode) or start date (start mode) — never `due_date`.
+- The template's active-instance link updates to the new instance, and the "Spawn next" button stays hidden while the active instance exists.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-501: End Condition Exhaustion
+**Priority:** Medium | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in on a tier with recurring templates (Pro/Team).
+
+**Steps:**
+1. Create a recurring template with the end condition "After 2 occurrences".
+2. Complete the first instance and verify a second instance spawns.
+3. Complete the second instance and inspect the template.
+4. Repeat the scenario with a template whose until-date is in the past.
+
+**Expected Result:**
+- After the 2nd instance completes, no further instance spawns and the template reflects the exhausted state.
+- A template with an until-date in the past likewise spawns no new instance.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-502: Free Tier Recurring Gate
+**Priority:** High | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in on Free tier (no recurring templates).
+
+**Steps:**
+1. Attempt to create a recurring template (set a recurrence on an action via the available UI path).
+2. Observe the result.
+
+**Expected Result:**
+- The creation is blocked: the server rejects the request and the upgrade modal "Upgrade Your Plan" is shown.
+- No recurring template is created.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-503: Mode Switch Re-Dates Active Instance
+**Priority:** Medium | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in on a tier with recurring templates (Pro/Team). A scheduled-mode template exists with an active instance carrying a `scheduled_date`.
+
+**Steps:**
+1. Open the template and switch it from scheduled mode to start mode.
+2. Save the template.
+3. Open the active instance's detail and inspect its date fields.
+
+**Expected Result:**
+- The active instance's date moves from `scheduled_date` to `start_date`.
+- The time fields of the other (scheduled) mode are cleared on the instance.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-504: Spawned Instance State Is Calendar
+**Priority:** Medium | **Area:** Recurring Actions
+
+**Preconditions:** User is logged in on a tier with recurring templates (Pro/Team). One scheduled-mode and one start-mode recurring template exist.
+
+**Steps:**
+1. Trigger a spawn on the scheduled-mode template (complete its active instance).
+2. Open the Calendar at the next occurrence date and locate the new instance.
+3. Repeat for the start-mode template.
+
+**Expected Result:**
+- A freshly spawned instance is in CALENDAR state.
+- In both modes, the new instance appears on the Calendar on its occurrence date.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -8096,7 +8846,7 @@ Use the table below to log each full or partial test run.
 1. Navigate to `/next`
 2. Locate the filter icon (e.g., funnel icon) at the top of the page
 3. Click the filter icon
-4. Verify a dropdown appears with a list of checkable tags (showing all tags used on items in this view)
+4. Verify a dropdown appears with a list of checkable tags showing ALL known tags (not just the tags used on items in the current view)
 5. Check the `@office` tag
 6. Verify the list filters to show only actions tagged with `@office`
 7. Verify the selected tag appears as a chip with an X button (to remove the filter)
@@ -8110,7 +8860,7 @@ Use the table below to log each full or partial test run.
 15. Repeat steps 2-14 on `/today`, `/waiting-for`, `/projects`, and `/someday` pages
 16. Verify the tag filter works consistently across all five pages
 
-**Expected Result:** Each list page (Next, Today, Waiting For, Projects, Someday) has a filter icon that opens a dropdown with checkable tags. Multiple tags can be selected. Selected tags appear as removable chips. A "Clear all" option removes all filters. The item list updates to show only matching items.
+**Expected Result:** Each list page (Next, Today, Waiting For, Projects, Someday) has a filter icon that opens a dropdown listing all known tags as checkable entries. Multiple tags can be selected. Selected tags appear as removable chips. A "Clear all" option removes all filters. The item list updates to show only matching items.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -8339,6 +9089,52 @@ Use the table below to log each full or partial test run.
 |      |     |         |
 
 
+---
+
+### TC-505: Free Tier Tag Limit
+**Priority:** Medium | **Area:** Context Tags & Filtering
+
+**Preconditions:** User is logged in on Free tier and already has 10 distinct tags across their items.
+
+**Steps:**
+1. Open an item's detail and add an 11th distinct tag.
+2. Save and observe the Network tab.
+
+**Expected Result:**
+- The request is actually sent (no frontend pre-check exists) and the server rejects it.
+- An error or upgrade prompt is shown.
+- The 11th tag is not persisted (reload confirms).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-506: Context Filter Not Persisted Across Reload
+**Priority:** Medium | **Area:** Context Tags & Filtering
+
+**Preconditions:** User is logged in with tagged items and at least one context tag available.
+
+**Steps:**
+1. Activate a context tag filter.
+2. Navigate between several dashboard pages without reloading; verify the filter stays active.
+3. Reload the page (F5).
+
+**Expected Result:**
+- While navigating without a reload, the active context filter is preserved.
+- After a reload, the filter is cleared (it is in-memory only) and all items are shown unfiltered.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 18: Attachments
 
 ---
@@ -8531,18 +9327,20 @@ Use the table below to log each full or partial test run.
 
 ---
 
-### TC-285: Upload File Exceeding 50MB Limit
+### TC-285: Upload File Exceeding Size Limit
 **Priority:** High | **Area:** Attachments
 
-**Preconditions:** User is logged in. An item detail page is open. A file larger than 50 MB is available on the local machine.
+**Preconditions:** User is logged in. An item detail page is open. A file larger than 50 MB is available on the local machine, plus a file larger than the account tier's per-file cap (Free 5 MB, Pro 20 MB, Team 50 MB).
 
 **Steps:**
 1. Navigate to the detail page of an existing action.
 2. Click the "Attach a file..." button.
 3. Select a file that is larger than 50 MB (e.g., a 60 MB video file).
-4. Observe the application behavior immediately after selection.
+4. Observe that the upload is rejected on the client side before any network request is made (the client pre-checks against 50 MB).
+5. Select a file under 50 MB but over the account tier's per-file cap (e.g., a 10 MB file on a Free account, cap 5 MB).
+6. Observe that the upload request is sent and the server rejects it with HTTP 413.
 
-**Expected Result:** The upload is rejected on the client side before any network request is made. An error toast or inline error message is displayed indicating the file exceeds the maximum allowed size (e.g., "File too large. Maximum size is 50 MB."). No upload progress bar appears. The attachment list remains unchanged.
+**Expected Result:** Files over the tier's per-file cap are rejected. The client pre-check rejects anything over 50 MB before any network request, with an error toast indicating the file exceeds the maximum allowed size. Files within 50 MB but above the tier cap (Free 5 MB, Pro 20 MB, Team 50 MB) are rejected server-side with HTTP 413 and an error toast. In both cases the attachment list remains unchanged.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -8761,16 +9559,15 @@ Use the table below to log each full or partial test run.
 1. Click on the "Add a comment..." placeholder to expand the textarea.
 2. Type a short text (e.g., 10 characters: "Hello test").
 3. Verify a character counter is displayed showing "10 / 2000".
-4. Verify the counter text is in the default (secondary) color.
-5. Type additional text until the count reaches 1800 characters.
-6. Verify the counter color changes to a secondary/warning color at or above 1800.
-7. Continue typing until the count reaches 2000 characters.
-8. Verify the counter color changes to red at or above 2000.
-9. Type one more character to reach 2001.
-10. Verify the counter displays "2001 / 2000" in red.
-11. Verify the "Save" button is disabled.
+4. Verify the counter text is in the default (tertiary) color.
+5. Type additional text until the count reaches exactly 1800 characters and verify the counter still uses the default color.
+6. Type one more character (1801) and verify the counter color changes to the warning color (warning applies above 1800, i.e. 1801+).
+7. Continue typing until the count reaches exactly 2000 characters and verify the counter is still in the warning color (not yet red).
+8. Type one more character to reach 2001.
+9. Verify the counter displays "2001 / 2000" in red.
+10. Verify the "Save" button is disabled.
 
-**Expected Result:** The character counter displays "N / 2000" and updates in real time. Below 1800 characters, the counter uses the default secondary color. At 1800 and above, it changes to a warning/secondary color. At 2000 and above, it turns red. The Save button is disabled when the count exceeds 2000.
+**Expected Result:** The character counter displays "N / 2000" and updates in real time. At 1800 characters and below, the counter uses the default tertiary color. Above 1800 (1801+), it changes to the warning color. Above 2000 (2001+), it turns red and the Save button is disabled.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -8935,7 +9732,7 @@ Use the table below to log each full or partial test run.
 1. Click on the "Add a comment..." placeholder to expand the textarea.
 2. Paste or type exactly 2000 characters of text.
 3. Verify the character counter displays "2000 / 2000".
-4. Verify the counter is displayed in red (at the threshold).
+4. Verify the counter is NOT yet red at exactly 2000 (it shows the warning color; red applies only above 2000).
 5. Verify the "Save" button is still enabled.
 6. Click "Save".
 7. Verify the comment is saved successfully and appears in the list.
@@ -8944,7 +9741,7 @@ Use the table below to log each full or partial test run.
 10. Verify the character counter displays "2001 / 2000" in red.
 11. Verify the "Save" button is disabled.
 
-**Expected Result:** A comment with exactly 2000 characters can be saved successfully. At 2001 characters, the Save button is disabled. The boundary is strictly enforced at 2000 characters.
+**Expected Result:** A comment with exactly 2000 characters can be saved successfully — at 2000 the counter is not yet red and Save is enabled. At 2001 characters, the counter turns red and the Save button is disabled. The boundary is strictly enforced at 2000 characters.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -8972,6 +9769,52 @@ Use the table below to log each full or partial test run.
 10. Verify the "Save" button becomes enabled.
 
 **Expected Result:** The Save button is disabled when the textarea is empty or contains only whitespace. No empty or whitespace-only comments can be submitted. The Save button enables only when at least one non-whitespace character is present.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-507: Comment Author Resolution
+**Priority:** Medium | **Area:** Comments
+
+**Preconditions:** Team-tier setup: a shared project where you, another member, and a since-removed user have each posted a comment.
+
+**Steps:**
+1. Open the shared project's comments.
+2. Inspect the author label on your own comment.
+3. Inspect the author label on the other member's comment.
+4. Inspect the author label on the comment from the removed/unknown user.
+
+**Expected Result:**
+- Your own comment shows your email.
+- The member's comment shows their email.
+- The removed/unknown user's comment shows the fallback "Unconnected member".
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-508: Read-Only Member Comments on Action in Shared Project
+**Priority:** Medium | **Area:** Comments
+
+**Preconditions:** A shared project exists where the logged-in user is a `read_only` member. The project contains at least one action.
+
+**Steps:**
+1. As the read_only member, open the shared project.
+2. Open an action inside the project.
+3. Post a comment on the action.
+
+**Expected Result:**
+- The comment posts successfully on the action (commenting is not limited to the project level).
+- The comment is visible to other project members.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9644,27 +10487,25 @@ retired and the corresponding automated test removed.
 ---
 
 ### TC-324: About - Version and Debug Mode
-**Priority:** Low | **Area:** Settings
 
-**Preconditions:** User is logged in. The settings page is open.
+**REMOVED** — Debug Mode no longer exists in the app.
+
+---
+
+### TC-509: Settings Defaults on Fresh Account
+**Priority:** Medium | **Area:** Settings
+
+**Preconditions:** A brand-new account has just been registered and verified; no settings have been changed.
 
 **Steps:**
-1. Navigate to /settings.
-2. Locate the About section.
-3. Verify a version number is displayed (e.g., "v1.0.0" or similar).
-4. Locate the "Debug Mode" toggle.
-5. Verify Debug Mode is off by default.
-6. Toggle Debug Mode on.
-7. Verify a debug overlay appears on the screen showing:
-   a. Application version.
-   b. Base URL (API domain).
-   c. Auth state (logged in/out, token info).
-   d. Window dimensions (width x height).
-8. Resize the browser window and verify the window dimensions update in real time.
-9. Toggle Debug Mode off.
-10. Verify the debug overlay disappears.
+1. Log in with the fresh account.
+2. Navigate to `/settings` and inspect the defaults.
 
-**Expected Result:** The About section displays the application version. Enabling Debug Mode shows a persistent overlay with version, base URL, auth state, and window dimensions. The overlay updates dynamically. Disabling Debug Mode removes the overlay.
+**Expected Result:**
+- New items position: **End**.
+- Week start: **Monday**.
+- Time format: **24-hour**.
+- Weekly review: **enabled**.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9711,9 +10552,9 @@ retired and the corresponding automated test removed.
 2. Click the Quick Add button.
 3. Verify an input field appears (expanding from or replacing the button).
 4. Verify the input field receives focus automatically (cursor is blinking inside the input).
-5. Verify a placeholder text is shown in the input (e.g., "What's on your mind?" or similar).
+5. Verify the placeholder text is exactly "Add new stuff".
 
-**Expected Result:** Clicking the Quick Add button reveals a text input field that is auto-focused. The input has placeholder text and is ready for the user to type immediately.
+**Expected Result:** Clicking the Quick Add button reveals a text input field that is auto-focused. The input shows the placeholder "Add new stuff" and is ready for the user to type immediately.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -9786,19 +10627,19 @@ retired and the corresponding automated test removed.
 **Preconditions:** User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 375px).
 
 **Steps:**
-1. On a mobile viewport, verify the Quick Add button is NOT in the top nav bar.
-2. Verify a circular "+" FAB (floating action button) is visible at the bottom-right corner.
+1. On a mobile viewport, verify the Quick Add button REMAINS in the top nav bar as an icon-only button (its label is hidden).
+2. Verify a circular "+" FAB (floating action button) is additionally visible at the bottom-right corner.
 3. Tap the "+" FAB.
 4. Verify the FAB is replaced by a full-width pill-shaped input bar at the bottom of the screen.
 5. Verify the input bar has a text input and an "Add" button.
 6. Verify the input is auto-focused and the keyboard opens (on a real device).
-7. Type a title and press Enter (or tap the "Add" button).
-8. Verify the item is added to the inbox, a success toast appears, and the input clears but stays expanded for rapid multi-capture.
+7. Type a title (e.g., "Buy milk") and press Enter (or tap the "Add" button).
+8. Verify the item is added to the inbox, a success toast appears with the exact text `"Buy milk" added to Inbox`, and the input clears but stays expanded for rapid multi-capture.
 9. Press Escape to collapse.
 10. Verify the FAB returns to its collapsed "+" icon state.
 11. Open the sidebar drawer and verify the FAB is hidden behind the overlay.
 
-**Expected Result:** On mobile, Quick Add is a floating action button (FAB) at the bottom-right instead of being in the top nav. Tapping it expands into a pill-shaped input bar. Items are added to the inbox. The input stays open for multi-capture. Escape collapses back to the FAB. The FAB hides behind the sidebar overlay when the drawer is open.
+**Expected Result:** On mobile, the Quick Add button stays in the top nav as an icon-only button, and a floating action button (FAB) is additionally shown at the bottom-right. Tapping the FAB expands it into a pill-shaped input bar. Items are added to the inbox with the success toast `"{title}" added to Inbox`. The input stays open for multi-capture. Escape collapses back to the FAB. The FAB hides behind the sidebar overlay when the drawer is open.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10226,28 +11067,91 @@ retired and the corresponding automated test removed.
 ---
 
 ### TC-345: Overdue Item Highlighting
-**Priority:** High | **Area:** Drag & Drop
 
-**Preconditions:** User is logged in. An action exists with a due_date set to a date in the past (e.g., yesterday). Another action has a due_date set to tomorrow.
+**REMOVED** — duplicate of TC-369 (overdue highlighting), was also misfiled under Drag & Drop.
+
+---
+
+### TC-510: Project Drag to Today/Calendar/Waiting For
+**Priority:** Medium | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in with at least three projects.
 
 **Steps:**
-1. Navigate to /next (or any list view where the overdue action appears).
-2. Locate the overdue action item.
-3. Verify the item has a red left border (visually distinct from non-overdue items).
-4. Verify the item has a light red background.
-5. Verify the MetadataRow chip shows "Overdue [date]" in dark red text with a dark red calendar icon.
-6. Navigate to /today.
-7. Verify the same overdue item displays with the red left border and light red background.
-8. Navigate to /calendar.
-9. Verify the overdue item is displayed with dark red styling (dark red background, dark red border).
-10. Locate the action with a future due_date on the calendar.
-11. Verify this future-dated action has red (not dark red) styling on the calendar.
-12. Verify the future-dated action's MetadataRow chip shows "Due [date]" in red text (not dark red).
-13. Create a new action with a due_date set to tomorrow.
-14. Verify this future-dated action does NOT have the red left border or light red background in list views.
-15. Verify its MetadataRow chip shows "Due [date]" in red, not "Overdue".
+1. From the Projects page, drag a project onto the **Today** sidebar target.
+2. Drag a second project onto the **Calendar** target and complete the date/time modal.
+3. Drag a third project onto the **Waiting For** target and complete the waiting-for modal.
+4. Check the Today, Calendar, and Waiting For pages.
 
-**Expected Result:** Actions with a due_date in the past are visually highlighted with a red left border, light red background in list views, and dark red styling on the calendar. MetadataRow shows "Overdue [date]" in dark red. Future-due actions show "Due [date]" in red (lighter). Actions with no due date have no date-related highlighting.
+**Expected Result:**
+- Each drop transforms the project into an action with a single API call (observable in the Network tab).
+- Calendar and Waiting For open their respective modals before completing the transform.
+- Each project leaves the Projects list and the resulting action appears in the target list.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-511: Remaining Someday/Completed Drag Targets
+**Priority:** Medium | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in with several someday items and several completed items.
+
+**Steps:**
+1. Drag a someday item onto **Calendar** (complete the modal), another onto **Waiting For** (complete the modal), another onto **Completed**, and another onto **Trash**.
+2. Drag a completed item onto **Today**, another onto **Calendar**, another onto **Waiting For**, another onto **Someday**, and another onto **Trash**.
+3. Check the target lists after each drop.
+
+**Expected Result:**
+- Each drop behaves per the drag matrix: the item's state changes accordingly, a toast confirms the operation, and the item leaves its source list and appears in the target list.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-512: Reorder Failure Reloads List
+**Priority:** Medium | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in with several items in Next Actions.
+
+**Steps:**
+1. Open the Next Actions list.
+2. Start dragging an item to a new position, then disable the network (devtools Offline) just before dropping.
+3. Drop the item and observe the list.
+
+**Expected Result:**
+- The reorder API call fails.
+- The full list reloads to the server's order — no phantom positions or stale local ordering remain.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-513: Inline Edit Rollback on API Error
+**Priority:** Medium | **Area:** Drag & Drop
+
+**Preconditions:** User is logged in with at least one item in a list. The backend can be stopped.
+
+**Steps:**
+1. Stop the backend (or set devtools network to Offline).
+2. Click an item's title in a list to start inline editing.
+3. Change the title and press Enter.
+
+**Expected Result:**
+- The optimistic title value reverts to the original.
+- An error toast appears.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10431,15 +11335,14 @@ retired and the corresponding automated test removed.
 2. Verify the pricing page loads.
 3. Verify a Monthly/Yearly toggle is present at the top of the pricing section.
 4. Verify the default selection is "Yearly".
-5. Verify a "Save 20%" badge is displayed near the Yearly option.
-6. Note the prices displayed for each tier (they should reflect yearly pricing).
+5. Verify a "3 months free" badge is displayed on the Yearly option.
+6. Verify the yearly prices (in $) are: Free $0, Pro $8/mo (billed yearly, $96/yr), Team $13/user/mo (billed yearly, $156/yr).
 7. Toggle to "Monthly".
-8. Verify the prices update to reflect monthly pricing (higher per-month cost).
-9. Verify the "Save 20%" badge remains visible (indicating the savings on yearly).
-10. Toggle back to "Yearly".
-11. Verify the prices revert to yearly pricing.
+8. Verify the prices update to monthly pricing: Free $0, Pro $11/mo, Team $18/user/mo.
+9. Toggle back to "Yearly".
+10. Verify the prices revert to yearly pricing.
 
-**Expected Result:** The pricing page defaults to Yearly billing with a "Save 20%" badge. Toggling between Monthly and Yearly updates the displayed prices accordingly. The toggle is smooth and prices update immediately.
+**Expected Result:** The pricing page defaults to Yearly billing with a "3 months free" badge on the Yearly toggle. Toggling between Monthly and Yearly updates the displayed $ prices accordingly (Pro $11/mo monthly or $8/mo billed yearly at $96/yr; Team $18/user/mo monthly or $13/user/mo billed yearly at $156/yr). The toggle is smooth and prices update immediately.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10456,23 +11359,24 @@ retired and the corresponding automated test removed.
 
 **Steps:**
 1. Navigate to /pricing.
-2. Verify 3 pricing tiers are displayed: Free, Pro, and Business.
+2. Verify 3 pricing tiers are displayed: Free, Pro, and Team.
 3. For the Free tier:
-   a. Verify the price is displayed as $0 or "Free".
+   a. Verify the price is displayed as $0.
    b. Verify a list of included features is shown.
-   c. Verify a CTA button is present (e.g., "Get Started").
+   c. Verify the CTA button is labeled "Start for Free".
 4. For the Pro tier:
-   a. Verify the price is displayed with the correct monthly or yearly amount.
+   a. Verify the price is $11/mo (monthly) or $8/mo billed yearly ($96/yr).
    b. Verify it is marked as "Most Popular" with a visual badge or highlight.
    c. Verify a list of included features is shown (more than Free).
-   d. Verify a CTA button is present (e.g., "Start Free Trial" or "Subscribe").
-5. For the Business tier:
-   a. Verify the price is displayed with the correct monthly or yearly amount.
+   d. Verify the CTA button is labeled "Contact Us".
+5. For the Team tier:
+   a. Verify the price is $18/user/mo (monthly) or $13/user/mo billed yearly ($156/yr).
    b. Verify a list of included features is shown (more than Pro).
-   c. Verify a CTA button is present (e.g., "Contact Sales" or "Subscribe").
-6. Click each CTA button and verify it navigates to the appropriate page (signup, checkout, or contact).
+   c. Verify the CTA button is labeled "Contact Us".
+6. Click the Free tier's "Start for Free" CTA and verify it opens the registration dialog.
+7. Click the Pro and Team "Contact Us" CTAs and verify each opens a mailto link to support@whatsnextaction.com (there is no checkout or subscribe flow).
 
-**Expected Result:** Three pricing tiers (Free, Pro, Business) are displayed with correct prices, feature lists, and CTA buttons. The Pro tier is marked as "Most Popular".
+**Expected Result:** Three pricing tiers (Free, Pro, Team) are displayed with correct $ prices and feature lists. The Pro tier is marked as "Most Popular". The Free CTA "Start for Free" opens registration; the Pro and Team CTA "Contact Us" opens mailto:support@whatsnextaction.com. There is no in-app checkout.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10490,13 +11394,13 @@ retired and the corresponding automated test removed.
 **Steps:**
 1. Navigate to /pricing and scroll down to the feature comparison section.
 2. Verify a comparison table is displayed.
-3. Verify the table has 16 rows of features.
-4. Verify each row shows the feature name and availability across Free, Pro, and Business tiers (e.g., checkmarks, dashes, or specific values).
+3. Verify the table has 8 feature rows grouped under Core, Storage, and Support.
+4. Verify each row shows the feature name and availability across Free, Pro, and Team tiers (e.g., checkmarks, dashes, or specific values).
 5. On desktop, verify the comparison is displayed as a full table with columns for each tier.
 6. On mobile (or narrow viewport), verify the comparison is displayed as cards (one card per feature showing availability across tiers).
-7. Verify all 16 feature rows are visible (scrolling if necessary).
+7. Verify all 8 feature rows are visible (scrolling if necessary).
 
-**Expected Result:** A 16-row feature comparison is displayed. On desktop, it renders as a full table. On mobile, it renders as per-feature cards. All features and their tier availability are clearly indicated.
+**Expected Result:** A feature comparison with 8 feature rows in three groups (Core, Storage, Support) is displayed for the Free, Pro, and Team tiers. On desktop, it renders as a full table. On mobile, it renders as per-feature cards. All features and their tier availability are clearly indicated.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10513,12 +11417,14 @@ retired and the corresponding automated test removed.
 
 **Steps:**
 1. Navigate to /help.
-2. Verify the page loads.
-3. Verify a heading "Help & Resources" (or similar) is displayed.
-4. Verify a placeholder message "Coming soon." is displayed.
-5. Verify no broken layout or error states.
+2. Verify the page loads as a help hub with real content (no placeholder message).
+3. Verify the hub links to three sub-pages: Getting Started, FAQ, and Best Practices.
+4. Click the Getting Started link and verify it navigates to /help/getting-started, which renders real guide content.
+5. Navigate back and click the FAQ link; verify it navigates to /help/faq, which renders real FAQ content.
+6. Navigate back and click the Best Practices link; verify it navigates to /help/best-practices, which renders real content.
+7. Verify no broken layout or error states on any of the four pages.
 
-**Expected Result:** The help page displays a "Help & Resources" heading and a "Coming soon." placeholder message. The page is properly styled with no layout issues.
+**Expected Result:** The /help page is a real help hub linking to the Getting Started (/help/getting-started), FAQ (/help/faq), and Best Practices (/help/best-practices) pages. Each sub-page renders real content — there are no placeholder pages anywhere.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10545,6 +11451,27 @@ retired and the corresponding automated test removed.
 9. Verify the URL in the address bar reads /legal/terms after redirect.
 
 **Expected Result:** /legal/terms and /legal/privacy load with placeholder content and proper headings. Navigating to /legal redirects to /legal/terms.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-514: Landing Anchor Deep Links
+**Priority:** Low | **Area:** Public Pages
+
+**Preconditions:** User is not logged in.
+
+**Steps:**
+1. Navigate directly to `http://localhost:6222/#features` in the address bar.
+2. Observe the scroll position.
+3. Navigate directly to `http://localhost:6222/#how-it-works`.
+
+**Expected Result:**
+- The landing page scrolls to the Features section for `/#features` and to the How It Works section for `/#how-it-works`.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10707,21 +11634,21 @@ retired and the corresponding automated test removed.
 ### TC-364: GTD Tips Display and Dismissal
 **Priority:** Medium | **Area:** Shared UI Behaviors
 
-**Preconditions:** User is logged in. The user has not previously dismissed the GTD tip for the inbox page (fresh account or cleared localStorage).
+**Preconditions:** User is logged in. The user has not previously dismissed the GTD tip for the inbox page (fresh account).
 
 **Steps:**
-1. Clear any localStorage entries related to GTD tip dismissals (or use a fresh account).
+1. Use an account that has not dismissed the inbox GTD tip.
 2. Navigate to /inbox.
 3. Verify a GTD tip banner is displayed with a blue or grey left border.
 4. Verify the tip contains instructional text relevant to the inbox (e.g., explaining GTD inbox processing).
 5. Locate the dismiss button (X icon) on the tip.
 6. Click the X button to dismiss the tip.
 7. Verify the tip disappears.
-8. Navigate away from /inbox and then return.
-9. Verify the tip does not reappear (dismissal is persisted).
-10. Open browser DevTools and check localStorage for a key indicating the tip was dismissed.
+8. Reload the page and verify the tip does not reappear (dismissal is persisted).
+9. Log in with the same account in a different browser (or a fresh session/incognito window) and navigate to /inbox.
+10. Verify the tip does not appear there either — the dismissal is stored in the backend user settings, not in localStorage.
 
-**Expected Result:** GTD tips appear as a banner with a colored left border and instructional text. Clicking the X dismisses the tip permanently. The dismissal is persisted to localStorage so the tip does not reappear.
+**Expected Result:** GTD tips appear as a banner with a colored left border and instructional text. Clicking the X dismisses the tip permanently. The dismissal is persisted to the backend settings, so the tip stays dismissed across reloads and across different browsers/sessions for the same account.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11022,6 +11949,115 @@ retired and the corresponding automated test removed.
 
 ---
 
+### TC-515: Active Item Highlight and Mobile Metadata
+**Priority:** Low | **Area:** Shared UI Behaviors
+
+**Preconditions:** User is logged in with several items in a list (e.g., Next Actions), some carrying multiple tags.
+
+**Steps:**
+1. From the list, open an item's detail page, then observe that item's row in the list.
+2. Resize the viewport to mobile width (≤768px).
+3. Inspect the list rows' metadata.
+
+**Expected Result:**
+- The item currently open in detail shows a blue left border in the list.
+- On mobile, list rows show reduced metadata: fewer tags are displayed and hint text is hidden.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-516: Free Tier Project Limit
+**Priority:** High | **Area:** Shared UI Behaviors
+
+**Preconditions:** User is logged in on Free tier and already has 7 projects (the Free limit).
+
+**Steps:**
+1. Attempt to create an 8th project (via new project, clarify-to-project, or Move → Projects).
+2. Observe the result.
+
+**Expected Result:**
+- The creation is blocked and the upgrade modal appears with the title "Upgrade Your Plan" and the message "You have reached a limit on your current plan."
+- No 8th project is created.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-517: Per-Tier Attachment File Cap
+**Priority:** Medium | **Area:** Shared UI Behaviors
+
+**Preconditions:** Test accounts on Free, Pro, and Team tiers. Test files of sizes just above 5 MB, 20 MB, and 50 MB are prepared.
+
+**Steps:**
+1. As the Free user, attach a file larger than 5 MB to an item.
+2. As the Pro user, attach a file larger than 20 MB.
+3. As the Team user, attach a file larger than 50 MB.
+
+**Expected Result:**
+- The client pre-check only rejects files over 50 MB; below that, the request is sent and the server enforces the per-tier cap with a 413 response.
+- Free rejects >5 MB, Pro rejects >20 MB, Team rejects >50 MB; in each case an error is surfaced and no attachment is added.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-518: Rate Limit Toast
+**Priority:** Low | **Area:** Shared UI Behaviors
+
+**Preconditions:** A fresh registration is on the verify-sent screen (or another rate-limited auth endpoint is available).
+
+**Steps:**
+1. Click "Resend Verification Email" rapidly and repeatedly (or repeat another auth request many times in a short period).
+2. Observe the toasts and the Network tab.
+
+**Expected Result:**
+- The server eventually responds with 429.
+- The toast "Too many requests. Please try again later." is displayed.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-519: Server and Network Error Toasts
+**Priority:** Medium | **Area:** Shared UI Behaviors
+
+**Preconditions:** User is logged in. The backend (or a proxy) can be made to return specific error codes.
+
+**Steps:**
+1. Force an API request to return 500 (e.g., via the backend or a local proxy) and perform an action that triggers it.
+2. Force a 503 and repeat.
+3. Take the network fully offline and perform any mutation.
+
+**Expected Result:**
+- 500 shows the toast "Internal server error. Please try again later."
+- 503 shows "Service unavailable. Please try again later."
+- With the network down, the toast "No response from server. Check your connection." appears.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ## Section 25: Public Footer
 
 ---
@@ -11038,12 +12074,12 @@ retired and the corresponding automated test removed.
    a. **Brand**: Displays the application logo and name.
    b. **Product**: Contains links for "Features" and "Pricing".
    c. **Support**: Contains a link for "Help & FAQ".
-   d. **Legal**: Contains links for "Terms" and "Privacy".
+   d. **Legal**: Contains links labeled "Terms of Service" and "Privacy Policy".
 4. Verify all text is legible and properly styled.
 5. Navigate to /pricing and verify the same footer appears.
 6. Navigate to /help and verify the same footer appears.
 
-**Expected Result:** The footer is present on all public pages and contains four sections: Brand (logo + name), Product (Features, Pricing), Support (Help & FAQ), and Legal (Terms, Privacy).
+**Expected Result:** The footer is present on all public pages and contains four sections: Brand (logo + name), Product (Features, Pricing), Support (Help & FAQ), and Legal ("Terms of Service", "Privacy Policy").
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11061,7 +12097,7 @@ retired and the corresponding automated test removed.
 **Steps:**
 1. Navigate to / and scroll to the footer.
 2. Click the "Features" link in the Product column.
-3. Verify it navigates to the features section or page (e.g., scrolls to features on the landing page or navigates to a /features route).
+3. Verify it navigates to /#features (the features anchor on the landing page) and scrolls to the features section.
 4. Navigate back to the footer.
 5. Click the "Pricing" link.
 6. Verify it navigates to /pricing.
@@ -11069,13 +12105,13 @@ retired and the corresponding automated test removed.
 8. Click the "Help & FAQ" link in the Support column.
 9. Verify it navigates to /help.
 10. Navigate back to the footer.
-11. Click the "Terms" link in the Legal column.
+11. Click the "Terms of Service" link in the Legal column.
 12. Verify it navigates to /legal/terms.
 13. Navigate back to the footer.
-14. Click the "Privacy" link in the Legal column.
+14. Click the "Privacy Policy" link in the Legal column.
 15. Verify it navigates to /legal/privacy.
 
-**Expected Result:** Each footer link navigates to the correct page: Features goes to the features section/page, Pricing to /pricing, Help & FAQ to /help, Terms to /legal/terms, and Privacy to /legal/privacy.
+**Expected Result:** Each footer link navigates to the correct page: "Features" goes to /#features (landing page anchor), "Pricing" to /pricing, "Help & FAQ" to /help, "Terms of Service" to /legal/terms, and "Privacy Policy" to /legal/privacy.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11107,6 +12143,10 @@ retired and the corresponding automated test removed.
 |      |     |         |
 |      |     |         |
 |      |     |         |
+
+---
+
+## Section 26: Email Notification Settings
 
 ---
 
@@ -11145,7 +12185,7 @@ retired and the corresponding automated test removed.
 4. Observe the saving spinner on the master toggle.
 5. In DevTools Network tab, inspect the PUT request to /v1/notification/settings.
 6. Verify the request body contains `{"disabled_events": {"email": ["*"]}}`.
-7. After save completes, verify the three individual toggles are visually disabled (greyed out, not interactive).
+7. After save completes, verify all six individual toggles (Task due today, Daily next actions, Project needs next action, Delegated to you, Delegation completed, Connection invitations) are visually disabled (greyed out, not interactive).
 
 **Expected Result:** Turning the master toggle OFF sends `["*"]` as the email disabled list. The individual toggles become disabled with reduced opacity and no pointer events. The master toggle shows a saving spinner during the API call.
 
@@ -11169,7 +12209,7 @@ retired and the corresponding automated test removed.
 4. Observe the saving spinner on the master toggle.
 5. In DevTools Network tab, inspect the PUT request to /v1/notification/settings.
 6. Verify the request body contains the individual disabled list (e.g., `{"disabled_events": {"email": []}}` if all were enabled, or a list of individually disabled events).
-7. After save completes, verify the three individual toggles are re-enabled (interactive, full opacity).
+7. After save completes, verify all six individual toggles (Task due today, Daily next actions, Project needs next action, Delegated to you, Delegation completed, Connection invitations) are re-enabled (interactive, full opacity).
 
 **Expected Result:** Turning the master toggle ON restores the individual disabled list (not `["*"]`). Individual toggles become interactive again. Previous individual toggle states are preserved.
 
@@ -11189,7 +12229,7 @@ retired and the corresponding automated test removed.
 **Steps:**
 1. Navigate to /settings.
 2. Verify the master "Email notifications" toggle is OFF.
-3. Attempt to click each individual toggle (Task due today, Daily next actions, Project needs next action).
+3. Attempt to click each of the six individual toggles (Task due today, Daily next actions, Project needs next action, Delegated to you, Delegation completed, Connection invitations).
 4. Verify none of them respond to clicks or change state.
 5. Verify the toggle sliders have reduced opacity (visually greyed out).
 
@@ -11228,6 +12268,82 @@ retired and the corresponding automated test removed.
 |      |     |         |
 |      |     |         |
 |      |     |         |
+
+---
+
+### TC-520: Daily Digest Email - Due Today Section
+**Priority:** Medium | **Area:** Email Notifications
+
+**Preconditions:** User is logged in with the master email toggle ON. Mailpit is available. At least one action is due today.
+
+**Steps:**
+1. In Settings → Notifications, enable the "Task due today" toggle.
+2. Trigger or wait for the daily digest send window, then check Mailpit.
+3. Disable the "Task due today" toggle and repeat with an action due the following day.
+
+**Expected Result:**
+- A single daily digest email arrives with **Subject:** "Your daily digest".
+- With the "Task due today" toggle on and actions due today, the digest contains a "Due today" section listing those actions.
+- The digest is one email with two independently populated sections ("Due today" and "Next actions") — there is no separate "Tasks due today" email.
+- With the "Task due today" toggle off, the "Due today" section is not included in the digest.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-521: Daily Digest Email - Next Actions Section and Suppression
+**Priority:** Medium | **Area:** Email Notifications
+
+**Preconditions:** User is logged in with the master email toggle ON. Mailpit is available. The user has actions in the Next Actions list.
+
+**Steps:**
+1. In Settings → Notifications, enable the "Daily next actions" toggle.
+2. Trigger or wait for the daily digest send window, then check Mailpit.
+3. Disable both the "Daily next actions" and "Task due today" toggles and repeat the next day.
+
+**Expected Result:**
+- With the "Daily next actions" toggle on, the daily digest email arrives with **Subject:** "Your daily digest" and contains a "Next actions" section listing the user's next actions (there is no separate email with subject "Your next actions for today").
+- The digest is sent only when at least one of its two sections ("Due today" / "Next actions") is non-empty.
+- With both toggles off — or with both sections empty — no digest email is sent at all.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+### TC-522: Project Needs Next Action Email
+**Priority:** Medium | **Area:** Email Notifications
+
+**Preconditions:** User is logged in with the master email toggle ON. Mailpit is available. A project exists with exactly one next action.
+
+**Steps:**
+1. In Settings → Notifications, enable the "Project needs next action" toggle.
+2. Complete (or trash) the project's last next action so the project is left without one.
+3. Check Mailpit.
+4. Disable the toggle and repeat with another project.
+
+**Expected Result:**
+- With the toggle on, the project-needs-next-action email is triggered when the project loses its next action.
+- **Subject:** "A project needs your attention"
+- The email contains an "Add Next Action" button linking to the project page.
+- With the toggle off, no such email is sent.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
+## Section 27: Avatar & Inbox Zero
 
 ---
 
@@ -11557,10 +12673,12 @@ retired and the corresponding automated test removed.
 **Steps:**
 1. Navigate to the Completed page
 2. Uncheck the project's checkbox
-3. Verify the success toast says: '"Project" restored'
+3. Verify the success toast says exactly: `"{title}" restored`
 4. Navigate to the Projects page and verify the project is active
+5. Complete the project again, then open its project detail page and use the Undo control there
+6. Verify the toast from the project detail page says exactly: `"{title}" restored to projects`
 
-**Expected Result:** Uncompleting a project restores it to active state with a standard restored toast.
+**Expected Result:** Uncompleting a project from the Completed page shows the toast `"{title}" restored`; undoing the completion from the project detail page shows the toast `"{title}" restored to projects`. In both cases the project returns to the active Projects list.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11838,7 +12956,7 @@ No backend request is made in any of the three cases.
 **Expected Result:**
 1. The page renders the received invitation with both Accept and Decline buttons visible.
 2. A hint reads: "You can accept these invitations by upgrading to the Team plan. Otherwise, you can decline them on your current plan." and an "Upgrade to Team" button is shown above the list.
-3. Clicking Accept opens the upgrade modal with a message about connections requiring the Team plan. No backend call is made; the invitation stays in the received list (Network tab shows no `/v1/connections/invite/*/accept` request).
+3. Clicking Accept opens the upgrade modal with a message about connections requiring the Team plan. No backend call is made; the invitation stays in the received list (Network tab shows no `POST /v1/connections/{id}/accept` request — accept/decline endpoints are id-based).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -11931,7 +13049,7 @@ No backend request is made in any of the three cases.
 4. Inspect the email's HTML button link, the visible fallback link, and the plain-text URL
 
 **Expected Result:**
-- A `connection_invite` email is delivered to User B's address.
+- A `connection_invite` email is delivered to User B's address with **Subject:** "{inviter_name} wants to connect with you on WhatsNextAction".
 - The HTML button, the fallback link, and the plain-text URL all point to `{frontend.base_url}/connections` — i.e. the dedicated Connections page, NOT `/settings/connections`.
 - The URL contains **no invite token** and **no `?email=` query parameter** (the invitee is identified server-side; the connection is resolved from their pending list, not from the URL).
 
@@ -11947,7 +13065,7 @@ No backend request is made in any of the three cases.
 **Preconditions:** User B received a connection-invitation email per TC-424b. User B is on **Team tier**. User B is logged out (no `auth_token`/`refresh_token` in localStorage).
 
 **Steps:**
-1. In Mailpit, click the deep-link in the email (or paste `http://localhost:5173/connections` into the address bar while logged out)
+1. In Mailpit, click the deep-link in the email (or paste `http://localhost:6222/connections` into the address bar while logged out)
 2. Observe the redirect and the auth dialog
 3. Log in as User B with valid credentials
 4. Observe where the app lands and inspect the Connections page
@@ -11979,9 +13097,10 @@ No backend request is made in any of the three cases.
 6. Open the Connections page as the new user
 
 **Expected Result:**
-- A `connection_invite_registration` email is delivered (distinct from the `connection_invite` variant in TC-424b).
-- Its link points to `{frontend.base_url}/register` (sign-up entry point), NOT `/connections` and NOT `/settings/connections`.
-- Step 4: the link opens the `AuthDialog` in register mode.
+- A `connection_invite_registration` email is delivered (distinct from the `connection_invite` variant in TC-424b) with **Subject:** "{inviter_name} invited you to WhatsNextAction".
+- Its "Create Account" button links to `{frontend.base_url}/register?email={invitee_email}` (sign-up entry point), NOT `/connections` and NOT `/settings/connections`.
+- Step 4: the link opens the `AuthDialog` in register mode with the email field pre-filled with the invitee's address.
+- Step 5: after registering with that email and verifying it, the pending invitation auto-links to the new account.
 - Step 6: once registered and on Team tier, User A's invitation appears in the new user's "Received invitations" list on the Connections page and can be accepted per TC-424c. (On Free/Pro tier, accepting triggers the upgrade modal per TC-420b.)
 
 | Date | P/F | Comment |
@@ -12007,6 +13126,41 @@ No backend request is made in any of the three cases.
 - Step 3: a red dot is present on the icon (R = 1 > 0).
 - Step 4: after declining, the red dot disappears (R = 0); the numeric badge is still **3** (decline does not change connections or sent count).
 - Step 5: after accepting the new invitation, the numeric badge becomes **4** (the accepted invite becomes a connection) and no red dot remains (no further received pendings).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-527: Downgrade Auto-Removes Connections
+**Priority:** Medium | **Area:** Connections
+
+**Preconditions:** Two Team-tier users (A and B) with an accepted connection between them.
+
+**Steps:**
+1. Downgrade user A from Team to Free.
+2. As user A, navigate to `/connections`.
+3. As user B, navigate to `/connections` and look for user A.
+
+**Expected Result:** User A's connections list is empty (the backend auto-removed the connections on downgrade), and user B no longer lists user A among their connections.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-528: Accept 403 Fallback Shows Upgrade Modal
+**Priority:** Medium | **Area:** Connections
+
+**Preconditions:** User is logged in with a pending received connection invitation. The user's tier is changed to a non-Team tier mid-session (e.g., downgraded via another tab or admin) without reloading.
+
+**Steps:**
+1. On `/connections`, click Accept on the pending invitation (`POST /v1/connections/{id}/accept`).
+2. Observe the response in the Network tab and the UI.
+
+**Expected Result:** The server responds with 403 and the upgrade modal appears instead of an error toast. The invitation is not accepted.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -12098,6 +13252,77 @@ No backend request is made in any of the three cases.
 3. Open the dropdown
 
 **Expected Result:** The bell is visible for all tiers (in-app notifications are not Team-tier gated). Any personal notifications (task due today, daily next actions, project needs next action) appear in the dropdown; Team-only notifications (`delegated_to_you`, `delegation_completed`, `connection_invite`) never appear for non-Team users because those events never fire for them.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-523: Notification Dropdown 20-Item Cap
+**Priority:** Low | **Area:** Notifications
+
+**Preconditions:** User has more than 20 in-app notifications (e.g., generated via repeated delegations/invitations).
+
+**Steps:**
+1. Click the bell in the top nav to open the notification dropdown.
+2. Scroll through and count the listed notifications.
+
+**Expected Result:** The dropdown lists at most 20 notifications — the most recent ones.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-524: Mark-Read Rollback on Error
+**Priority:** Medium | **Area:** Notifications
+
+**Preconditions:** User is logged in with at least one unread in-app notification. The notification dropdown has already loaded its content.
+
+**Steps:**
+1. Stop the backend (or set devtools network to Offline).
+2. Open the notification dropdown and click the unread notification to mark it as read.
+3. Observe the notification's read state and the unread badge.
+
+**Expected Result:** The mark-as-read request fails; the notification's read state reverts to unread and the unread count on the bell badge is restored.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-525: Polling Stops on Logout
+**Priority:** Low | **Area:** Notifications
+
+**Preconditions:** User is logged in.
+
+**Steps:**
+1. Open the devtools Network tab and confirm notification polling requests are issued every 30 seconds.
+2. Log out.
+3. Keep watching the Network tab for at least 30–60 seconds.
+
+**Expected Result:** After logout, no further notification polling requests are issued.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-526: Delegated-To-You Notification Delivery
+**Priority:** Medium | **Area:** Notifications
+
+**Preconditions:** Two Team-tier users (assigner and receiver) with an accepted connection. The receiver's "Delegated to you" email toggle is ON. Mailpit is available.
+
+**Steps:**
+1. As the assigner, delegate an action to the receiver.
+2. As the receiver, check the notification bell.
+3. Check Mailpit for the receiver's email.
+
+**Expected Result:** The receiver's bell shows the `delegated_to_you` notification (unread badge increments), and the corresponding email with **Subject:** "{delegator_name} delegated a task to you" is delivered while the toggle is on (with an "Open Inbox" button linking to `/inbox`).
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -12249,9 +13474,107 @@ No backend request is made in any of the three cases.
 5. Refresh and check the assigner's Waiting For
 
 **Expected Result:**
-1. Picker may still show connections (read-only) but `POST /v1/action/{id}/delegate` returns 403 with a tier-related message; an upgrade modal or error toast surfaces. No new delegation row is created.
+1. After the downgrade the backend auto-removes the user's connections, so the connection picker shows an empty connection list — there are no connections to select. As a backstop, any direct `POST /v1/action/{id}/delegate` request (e.g., crafted manually) still returns 403. No new delegation row is created.
 2. The pre-existing in-flight delegation is unchanged — backend does not auto-resolve on downgrade.
 3. After the receiver completes, the resolution sync still fires normally (assigner's Waiting For unwaits, "Done." comment lands, notification posts) even though the assigner is no longer on Team tier.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-463: Inbox Shows "From: [name]" Indicator on Delegated Items
+**Priority:** Medium | **Area:** Inbox, Delegation
+
+**Preconditions:** Two Team-tier users who are connected (User A and User B). User A delegates an action to User B (via Clarify delegate substep or Action Detail). User B also has at least one self-captured inbox item.
+
+**Steps:**
+1. Log in as User B and open /inbox
+2. Locate the item that arrived from User A's delegation
+3. Inspect its row beneath the title
+4. Inspect a self-captured inbox item's row
+5. Open the delegated item into clarify and confirm it processes like any other stuff
+
+**Expected Result:**
+- Step 2–3: the delegated row shows a "From: [name]" chip where the name is User A's email (sourced from `delegated_from.name` in the `GET /v1/inbox` response).
+- Step 4: the self-captured item shows no "From:" chip (and no metadata row unless it has a description/attachment/comment).
+- Step 5: the delegated item goes through the standard clarify flow with no special handling.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-529: Non-Terminal Receiver Events Don't Sync
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Team-tier users A (assigner) and B (receiver) are connected. A has delegated two separate items to B (two waiting actions on A's side, two delegated Stuff items in B's inbox).
+
+**Steps:**
+1. As B, move the first delegated Stuff item to Someday.
+2. As A, check the corresponding Waiting For action.
+3. As B, move the second delegated Stuff item to Reference.
+4. As A, check the second Waiting For action.
+
+**Expected Result:** Moving to Someday leaves A's Waiting For unchanged. Moving to Reference loses the delegation link, and A's Waiting For action stays open (it will never auto-close).
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-530: Delegation Chain Independence
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Three Team-tier users: A connected to B, and B connected to C.
+
+**Steps:**
+1. A delegates an item to B (A gets a waiting action; B gets delegated Stuff).
+2. B clarifies the Stuff and delegates the resulting action to C (B gets a waiting action; C gets delegated Stuff).
+3. C completes the delegated work.
+4. As B, verify B's waiting action closed; as A, verify A's waiting action is still open.
+5. B completes their side of the work; as A, verify A's waiting action now closes.
+
+**Expected Result:** Each delegation link is independent: C's completion notifies B and closes only B's waiting action; A's waiting action closes only when B completes.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-531: Receiver Terminal Event Variants
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Team-tier users A (assigner) and B (receiver) are connected. A has delegated three separate items to B.
+
+**Steps:**
+1. As B, complete the first delegated Stuff item directly from the inbox; as A, check the matching Waiting For action.
+2. As B, clarify the second item and choose "Do it now" (two-minute path); as A, check the matching waiting action.
+3. As B, clarify the third item into a Project, then later complete the project; as A, check the matching waiting action.
+
+**Expected Result:** Each terminal event on the receiver's side — direct Stuff completion, "Do it now" in clarify, and completing the Project created from the delegated item — closes the assigner's corresponding Waiting For action.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-532: No Recall of Delegation
+**Priority:** Low | **Area:** Delegation
+
+**Preconditions:** Team-tier users A (assigner) and B (receiver) are connected. A has delegated an item to B.
+
+**Steps:**
+1. As A, open the Waiting For page and the waiting action's detail.
+2. Inspect the available controls for a revoke/recall option.
+3. As A, trash the waiting action; as B, check the delegated Stuff item.
+
+**Expected Result:** There is no UI to revoke a sent delegation — A can only complete or trash the waiting action. Trashing A's waiting action leaves B's copy of the delegated item intact.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -12308,7 +13631,7 @@ No backend request is made in any of the three cases.
 3. Click the description paragraph — same flow
 4. Observe the network tab on each save
 
-**Expected Result:** Each save fires `PUT /v1/project/{id}` with the full body `{ title, description, outcome }` (and `tags` on the tag save). The new value persists after page reload. No 403 is returned.
+**Expected Result:** Each save fires `PUT /v1/project/{id}` with the full body `{ title, description, outcome, tags }` — the owner always sends all four fields, including `tags`, on every save. The new value persists after page reload. No 403 is returned.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -12389,7 +13712,7 @@ No backend request is made in any of the three cases.
 3. Drag one of the existing backlog rows to reorder the list
 
 **Expected Result:**
-- New action is created in the project backlog (state = BACKLOG, no `assigned_to`) and appears at the top of the backlog list.
+- New action is created in the project backlog (state = BACKLOG, no `assigned_to`) and is appended at the BOTTOM of the backlog list (the view scrolls to it).
 - Drag-to-reorder triggers `onBacklogReorder` and persists the new order on the backend; reload preserves it.
 
 | Date | P/F | Comment |
@@ -12645,6 +13968,123 @@ No backend request is made in any of the three cases.
 
 ---
 
+### TC-461: Non-Team Member Sees Read-Only Notice on Shared Project
+**Priority:** Medium | **Area:** Shared Projects, Tier Limits
+
+**Preconditions:** A user who is a member (owner or non-owner) of a shared project but is NOT on the Team plan — e.g. a Team user who shared/joined a project and later downgraded to Free or Pro. The project is active (not completed).
+
+**Steps:**
+1. Log in as the non-Team member and open the shared project's detail page
+2. Observe the top of the Backlog section
+3. Confirm the write controls are absent (no "Add action" input, no "Assign to me" buttons, backlog not reorderable)
+4. Click the "Upgrade to Team" button in the notice
+5. (Comparison) Log in as a Team-plan member of the same project and open it
+
+**Expected Result:**
+- Steps 1–2: a notice appears at the top of the Backlog reading: "You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit." with an "Upgrade to Team" button.
+- Step 3: all write controls are hidden (gated by `canWrite`), consistent with read-only access; comments and attachment download remain available.
+- Step 4: the upgrade modal opens with a message about working on shared projects.
+- Step 5: the Team-plan member does NOT see the notice; their write controls render normally.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-462: Backlog Row Hides Assignee Name When Action Is Waiting
+**Priority:** Medium | **Area:** Shared Projects, Delegation
+
+**Preconditions:** A shared project with at least three backlog actions: (a) one assigned to another member in an active state (e.g. NEXT/TODAY), (b) one assigned to another member who has delegated it onward so it is in WAITING state, and (c) one assigned to the current caller. Viewer is any member of the project.
+
+**Steps:**
+1. Open the shared project's detail page
+2. Inspect the assignee display on action (a) — assigned to another member, not waiting
+3. Inspect the assignee display on action (b) — assigned to another member, WAITING state
+4. Inspect the assignee display on action (c) — assigned to the caller
+
+**Expected Result:**
+- Action (a): shows the other member's email/display label.
+- Action (b): shows only "Waiting" — the assignee's name is NOT shown (the delegation detail lives in that member's own Waiting For, which is private to them).
+- Action (c): shows the green "You" badge.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-533: Add Member to Already-Shared Project
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** Owner is on Team tier with a shared project that has at least one member, plus another accepted connection not yet on the project.
+
+**Steps:**
+1. As the owner, open the shared project's detail page.
+2. Click "Add another member…" in the Shared with section.
+3. Select the additional connection and confirm.
+4. As the new member, check their Projects page.
+
+**Expected Result:** A `POST /v1/project/{id}/members` request is sent. The new member appears in the members list, and the project shows up in the new member's Projects list.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-534: Member List Ordering
+**Priority:** Low | **Area:** Shared Projects
+
+**Preconditions:** A shared project with an owner and at least two non-owner members who joined at different times.
+
+**Steps:**
+1. As one of the non-owner members, open the project detail and inspect the "Shared with" list order.
+2. Compare against the members' join order.
+
+**Expected Result:** Members are listed owner first, then the current user, then the remaining members ordered by joined date.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-535: Non-Owner Full-Body Save Rejected
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** A shared project where the logged-in user is a non-owner member with `write` role.
+
+**Steps:**
+1. As the write member, send a `PUT` for the project that includes `title`/`outcome`/`description` in the body (e.g., replay the request via devtools with those fields added).
+2. Observe the response.
+3. Via the UI, perform a tags-only save on the project.
+
+**Expected Result:** The PUT containing title/outcome/description is rejected with 403. The tags-only save succeeds.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-536: Last Non-Owner Leaving Reverts Project
+**Priority:** Medium | **Area:** Shared Projects
+
+**Preconditions:** A shared project with the owner and exactly one non-owner member.
+
+**Steps:**
+1. As the non-owner member, open the project detail and click **Leave** (not removal by the owner).
+2. As the owner, open the project detail.
+
+**Expected Result:** The project automatically becomes personal on the owner's side: the Shared badge/flag is off, the members list is gone, and the personal layout (Next Action section) is restored.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
 ## Section 34: P2 Notification Preferences
 
 ### TC-456: Toggle "Delegated to you" Email Preference
@@ -12762,70 +14202,3 @@ No backend request is made in any of the three cases.
 |      |     |         |
 
 ---
-
-### TC-461: Non-Team Member Sees Read-Only Notice on Shared Project
-**Priority:** Medium | **Area:** Shared Projects, Tier Limits
-
-**Preconditions:** A user who is a member (owner or non-owner) of a shared project but is NOT on the Team plan — e.g. a Team user who shared/joined a project and later downgraded to Free or Pro. The project is active (not completed).
-
-**Steps:**
-1. Log in as the non-Team member and open the shared project's detail page
-2. Observe the top of the Backlog section
-3. Confirm the write controls are absent (no "Add action" input, no "Assign to me" buttons, backlog not reorderable)
-4. Click the "Upgrade to Team" button in the notice
-5. (Comparison) Log in as a Team-plan member of the same project and open it
-
-**Expected Result:**
-- Steps 1–2: a notice appears at the top of the Backlog reading: "You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit." with an "Upgrade to Team" button.
-- Step 3: all write controls are hidden (gated by `canWrite`), consistent with read-only access; comments and attachment download remain available.
-- Step 4: the upgrade modal opens with a message about working on shared projects.
-- Step 5: the Team-plan member does NOT see the notice; their write controls render normally.
-
-| Date | P/F | Comment |
-|------|-----|---------|
-|      |     |         |
-
----
-
-### TC-462: Backlog Row Hides Assignee Name When Action Is Waiting
-**Priority:** Medium | **Area:** Shared Projects, Delegation
-
-**Preconditions:** A shared project with at least three backlog actions: (a) one assigned to another member in an active state (e.g. NEXT/TODAY), (b) one assigned to another member who has delegated it onward so it is in WAITING state, and (c) one assigned to the current caller. Viewer is any member of the project.
-
-**Steps:**
-1. Open the shared project's detail page
-2. Inspect the assignee display on action (a) — assigned to another member, not waiting
-3. Inspect the assignee display on action (b) — assigned to another member, WAITING state
-4. Inspect the assignee display on action (c) — assigned to the caller
-
-**Expected Result:**
-- Action (a): shows the other member's email/display label.
-- Action (b): shows only "Waiting" — the assignee's name is NOT shown (the delegation detail lives in that member's own Waiting For, which is private to them).
-- Action (c): shows the green "You" badge.
-
-| Date | P/F | Comment |
-|------|-----|---------|
-|      |     |         |
-
----
-
-### TC-463: Inbox Shows "From: [name]" Indicator on Delegated Items
-**Priority:** Medium | **Area:** Inbox, Delegation
-
-**Preconditions:** Two Team-tier users who are connected (User A and User B). User A delegates an action to User B (via Clarify delegate substep or Action Detail). User B also has at least one self-captured inbox item.
-
-**Steps:**
-1. Log in as User B and open /inbox
-2. Locate the item that arrived from User A's delegation
-3. Inspect its row beneath the title
-4. Inspect a self-captured inbox item's row
-5. Open the delegated item into clarify and confirm it processes like any other stuff
-
-**Expected Result:**
-- Step 2–3: the delegated row shows a "From: [name]" chip where the name is User A's email (sourced from `delegated_from.name` in the `GET /v1/inbox` response).
-- Step 4: the self-captured item shows no "From:" chip (and no metadata row unless it has a description/attachment/comment).
-- Step 5: the delegated item goes through the standard clarify flow with no special handling.
-
-| Date | P/F | Comment |
-|------|-----|---------|
-|      |     |         |

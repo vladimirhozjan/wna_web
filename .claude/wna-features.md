@@ -2,7 +2,7 @@
 
 > **Purpose:** This document describes every user-facing feature currently implemented in the WNA frontend. It is intended as a reference for creating UI test cases, Terms of Service, Help/FAQ content, and QA documentation.
 >
-> **Last updated:** 2026-03-16
+> **Last updated:** 2026-06-10
 
 ---
 
@@ -57,7 +57,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 | Bucket | Purpose |
 |---|---|
 | Inbox | Capture zone for raw items |
-| Next Actions | Ready-to-do actions |
+| Next Action | Ready-to-do actions |
 | Today | Actions focused on for today |
 | Calendar | Time-specific actions and commitments |
 | Waiting For | Delegated actions |
@@ -95,8 +95,8 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 - **Trigger:** Automatically sent when a new user registers
 - **From address:** `noreply@whatsnextaction.com` ("WhatsNextAction")
-- **Subject:** "Verify your WNA account"
-- **Content:** HTML + plaintext email containing a verification link with a unique token
+- **Subject:** "Verify your WhatsNextAction account"
+- **Content:** HTML + plaintext email containing a verification link with a unique token; CTA button "Verify My Email"; link valid 24 hours
 - **Token:** 64-character cryptographically secure random string
 - **Expiry:** 24 hours from creation
 - **Delivery:** Sent via SMTP through the notification service's message queue (RabbitMQ, urgent priority)
@@ -155,17 +155,18 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 - **Entry point:** "Forgot your password? Reset it" link on login form
 - **Fields:** Email only
-- **Behavior:** Submits email to backend; backend sends a password reset email with a reset link (token valid for 1 hour). The dialog transitions to the Reset Password form.
-- **Backend email:** Subject "Reset your WNA password", contains reset URL with token, expires in 1 hour
+- **Behavior:** Submits email to backend; backend sends a password reset email with a reset link (token valid for 24 hours). The dialog transitions to the Reset Password form.
+- **Backend email:** Subject "Reset your WhatsNextAction password", contains reset URL with token, expires in 24 hours
 - **Security:** Always returns HTTP 200 regardless of whether the email exists (prevents email enumeration)
 
 ### 2.5 Reset Password
 
 - **Entry points:** Reset link in password reset email (`/reset-password?token=<reset_token>`), or via Forgot Password flow in Auth dialog
+- **Token:** Comes only from the URL query (link-token flow); there is no reset-code entry field
 - **Fields:** New Password, Confirm New Password
 - **Validation:** Same password strength rules as registration; confirm must match
 - **On success:** Password updated, transitions to login form
-- **Backend:** After password reset, a "Your WNA password was changed" confirmation email is sent
+- **Backend:** After password reset, a "Your WhatsNextAction password was changed" confirmation email is sent (includes the change time)
 
 ### 2.6 Auth Dialog Shared Behaviors
 
@@ -174,15 +175,15 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Animated transitions between auth modes (fade + slide up)
 - **7 dialog modes:** login, register, forgot, reset, verify-sent, unverified, closed
 - **Mode switching links:** Registration→Login via "Sign In" link; Login→Registration via "Create new account" button
-- Switching modes clears errors; email is preserved when navigating to login; passwords are always cleared
+- Switching modes clears errors; email is preserved when switching between login and register (both directions); passwords are always cleared
 - All form state is component-local (not persisted to localStorage)
 
 ### 2.7 JWT Token Management
 
-- Access token and refresh token stored in `localStorage` (`auth_token`, `refresh_token`)
+- Access token and refresh token stored in `localStorage` (`auth_token`, `refresh_token`); a `refresh_token_hash` is also stored when the backend returns it
 - **Proactive refresh:** Before every API call, the token expiry is checked; if it expires within 60 seconds, the token is refreshed automatically before the request proceeds
 - **Refresh failure:** If the refresh token is invalid or expired (HTTP 401/404), the user is logged out and redirected to the landing page
-- **Cross-tab logout:** Logging out in one browser tab instantly logs out all other open tabs (via `localStorage` `storage` event)
+- **Cross-tab logout:** Logging out in one browser tab instantly logs out all other open tabs (via the `localStorage` `logout` key, listened via the `storage` event)
 
 ### 2.8 Logout
 
@@ -198,6 +199,16 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - If authentication state changes mid-session (e.g., cross-tab logout), the dashboard reactively redirects to landing
 - `/settings/:section` is rewritten to `/settings?section=:section` so email links like `/settings/notifications` resolve to the corresponding expanded section in `SettingsPage`
 - A catch-all route (`/:pathMatch(.*)*`) redirects unknown URLs to `/`
+
+### 2.10 Google SSO
+
+- **"Continue with Google" button** on the auth dialog; hidden when no `google_client_id` is configured in the runtime config
+- **OAuth request:** scope `openid email profile`, `prompt=select_account`
+- **Callback page:** `/google/sso`
+  - **Success:** stores tokens (including `refresh_token_hash`) and redirects to `/engage`
+  - **OAuth error:** shows heading "Sign-in failed" with a "Back to login" button
+  - **Missing authorization code:** shows "Invalid sign-in link" / "This link is missing an authorization code. Please try signing in again."
+- **Emails:** When a new account is created via Google SSO, the backend sends the `sso_welcome` email ("Welcome to WhatsNextAction!", CTA → `/inbox`) instead of the regular `welcome` email. When a Google account is linked to an existing account, the `google_linked` security email is sent ("Google account linked to WhatsNextAction"), including the device table (Device / IP Address / Time)
 
 ---
 
@@ -216,9 +227,9 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Mobile: Hamburger menu with the same links and buttons
 
 **Right side (authenticated):**
-- "+ Quick Add" button (captures new inbox items from any page; hidden on mobile — replaced by FAB)
-- Mobile: Animated hamburger icon (☰ → X) to toggle sidebar drawer
-- Desktop: User avatar with dropdown menu containing "Settings", "Logout" (plus "My Dashboard" on public pages only)
+- "+ Quick Add" button (captures new inbox items from any page; icon-only on mobile, where the FAB is also available)
+- Mobile: Animated hamburger icon (☰ → X) to toggle sidebar drawer (no avatar in the mobile dashboard top nav)
+- Public pages only: User avatar with dropdown menu containing "My Dashboard", "Settings", "Logout". In the dashboard the avatar lives in the Sidebar, not the TopNav
 
 ### 3.2 Sidebar (Desktop)
 
@@ -244,7 +255,8 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 
 ### 3.4 User Avatar
 
-- 36px circle (32px on mobile)
+- **Dashboard:** the avatar lives in the Sidebar (32px circle). The dashboard TopNav shows no avatar; on mobile the dashboard top nav shows only the hamburger
+- **Public pages:** the TopNav shows the avatar for authenticated users — 36px circle (32px below 600px viewport) — with a dropdown menu
 - **Gravatar integration:** Automatically fetches the user's avatar from [Gravatar](https://gravatar.com) using a SHA-256 hash of the lowercase/trimmed email
   - Request URL: `https://gravatar.com/avatar/{sha256hash}?s=72&d=404`
   - `d=404` tells Gravatar to return HTTP 404 if no account exists, triggering the fallback
@@ -267,7 +279,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
 - Input hidden when in clarify mode
 
 **Item list:**
-- All items load at once (no pagination)
+- Cursor-based pagination, 10 items per page, with a "Load more" button
 - Total item count shown in sidebar badge
 
 **Delegated-item indicator (T-9):**
@@ -354,19 +366,25 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 ### 5.4 Step 3: Two-Minute Rule
 
-- **Question:** "Can you do this in less than 2 minutes?"
+- **Question:** "Can you do this in less than 2 minutes?" with "Yes Y" / "No N" options (keyboard shortcuts Y and N, same as Step 1)
 - **Yes** → "Do It Now" screen. Shows a countdown-style encouragement. Completing marks the original stuff item as done immediately.
-- **No** → proceeds to Create Action form
+- **No** → proceeds to Create Action step
 
-### 5.5 Create Action Form
+### 5.5 Create Action Step
 
-- **Fields:** Title (required, pre-filled from stuff item), Description (optional), Tags (multi-select with autocomplete and presets)
-- **Dates section (collapsed by default):**
+A sub-step chooser with three options:
+
+- **Create Next Action** — creates a ready-to-do action (state NEXT)
+- **Delegate It** — the action is waiting on someone else; shows the connection-aware "Who/what are you waiting on?" input (see §10.2) and creates the action in WAITING state
+- **Defer It** — schedule it for later; shows the dates section:
   - Uses `DateTimeInput` component for all date/time fields (date always shown, "Add time..." placeholder reveals time + duration for scheduled, "Clear" link to remove time)
-  - Deferred: Radio between "Scheduled for" (date + optional time with duration, default 30 min) and "Start after" (tickler date + optional time, no duration)
+  - Radio between "Scheduled for" (date + optional time with duration, default 30 min) and "Start after" (tickler date + optional time, no duration)
   - Due Date: Date input + optional time (no duration) — **hidden when "Scheduled for" is selected** (mutual exclusivity)
   - Duration (scheduled only): Automatically appears when time is added. Default 30 min. Uses `DurationInput` component: dropdown with preset options (15, 30, 45, 60, 90, 120, 180, 240 minutes) + editable number input for any value > 0.
-- **Confirm** button transforms the stuff item into an action via the API
+
+**Shared fields (all sub-steps):** Title (required, pre-filled from stuff item), Description (optional), Tags (multi-select with autocomplete and presets)
+
+- **"Create Action"** button transforms the stuff item into an action via the API
 
 ### 5.6 Create Project Form
 
@@ -381,7 +399,7 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - **Progress bar:** Animated width showing progress percentage
 - **Context label:** "Processing: [item title]"
 - **Done state:** Panel auto-advances to the next item or closes when all items are processed (no explicit success message shown)
-- **Keyboard shortcuts:** Escape to cancel, Backspace to go back (when not in an input field)
+- **Keyboard shortcuts:** Escape to cancel the panel (disabled during the Do It Now screen and while loading), Backspace to go back (when not in an input field)
 
 ---
 
@@ -391,14 +409,15 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 - **URL:** `/next`
 - **Page heading:** "Next"
+- **Sidebar label:** "Next Action"
 - **Purpose:** List of all actionable, ready-to-do actions
 
 **Adding items:**
-- Collapsible add form (toggle with +/− button in header, using Unicode minus U+2212), starts expanded
+- Collapsible add form (toggle with +/− button in header, using Unicode minus U+2212), starts collapsed (expand via the + button)
 - Title input (placeholder "Add new action") + "Add" button; creates action with state NEXT
 
 **Item list:**
-- All items load at once (no pagination)
+- Cursor-based pagination, 10 items per page, with a "Load more" button
 - Tag filtering via TagFilter component + global context tag
 
 **Per-item operations:**
@@ -411,34 +430,34 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 ### 6.2 Action Detail Page
 
 - **URL:** `/action/:id`
-- **Navigation:** Position-based arrows (hidden when viewing from calendar, project, recurring, or engage contexts)
+- **Navigation:** Position-based arrows (hidden when viewing from calendar, engage, overdue, project, recurring, reference, or review contexts)
 
-**Recurring indicator:** Badge shown when the action was spawned from a recurring template. Special "Weekly Review" badge when it belongs to the review template.
+**Recurring indicator:** "Recurring" badge shown when the action was spawned from a recurring template. "Start Weekly Review" badge when it belongs to the review template.
 
 **Action buttons (state-dependent):**
 - NEXT / TODAY / CALENDAR: "Done", "Move" dropdown, "Trash"
 - COMPLETED: "Undo" only
-- SOMEDAY: "Activate", "Move" dropdown (Today, Calendar, Waiting For, Project, Reference), "Trash"
+- SOMEDAY: "Activate", "Move" dropdown (Next Actions, Today, Calendar, Waiting For, Projects, Reference), "Trash"
 - WAITING: "Got it" (unwait → moves to NEXT), "Done", "Move" dropdown
 
-**"Move" dropdown:** Shows all valid destination states except the current one. Includes: Next Actions, Today (schedule dialog), Calendar (schedule dialog), Waiting For (waiting-for dialog), Someday, Projects (outcome dialog, uses backend transform endpoint), Reference (transforms action to file).
+**"Move" dropdown** (shown on every non-completed state): entries are Next Actions, Today (schedule dialog), Calendar (schedule dialog), Waiting For (waiting-for dialog), Someday, Projects (outcome dialog, uses backend transform endpoint), Reference (transforms action to file) — each entry is hidden when it equals the current state. Trash is never in the dropdown (it is a separate button).
 
 **Sections:**
 - Project link (clickable, navigates to project detail) - only if action belongs to a project
 - Description (click-to-edit)
 - Tags (click to show TagInput; displays as chips)
 - Waiting For (only for WAITING state): shows who/what is being waited on + duration since waiting began
-- Dates (collapsible):
-  - Deferred: "Scheduled for" or "Start after" — uses `DateTimeInput` component. Duration auto-appears with default 30 min when time is added (scheduled only).
-  - Due Date: date + optional time. Shows **"N/A (has scheduled date)"** and is non-editable when a scheduled_date is set (mutual exclusivity). Editable when start_date is set (start_date + due_date can coexist).
-  - **Mutual exclusivity:** Setting scheduled_date clears due_date (on backend). Setting due_date clears scheduled_date (on backend). start_date and due_date can coexist.
-  - Each has Save, Cancel, Clear buttons
+- Dates (collapsible) — three rows: **Scheduled**, **Start**, **Due** — each uses `DateTimeInput`. Duration auto-appears with default 30 min when time is added (Scheduled row only).
+  - **Mutual exclusivity:** Setting scheduled_date clears due_date (on backend) and vice versa; scheduled_date and start_date are also mutually exclusive. start_date and due_date can coexist.
+  - Disabled rows show a placeholder: Scheduled row → "Not available (has start or due date)"; Start and Due rows → "Not available (has scheduled date)"
+  - Each row has Save, Cancel, Clear buttons
+  - Clearing the scheduled or start date moves the action to NEXT state
 - **Move from Calendar:** Moving an action from CALENDAR to another state (Next, Today, Someday) clears scheduled_date/start_date via undefer. due_date is preserved.
 - Attachments (max 10)
 - Comments
 - Metadata (created/updated timestamps)
 
-**Back navigation:** Context-aware based on source (Dashboard, Recurring, Project, Calendar, Completed, Someday, Waiting For, Today, Next)
+**Back navigation:** Context-aware based on source: inbox, next, today, calendar, waiting-for, completed, someday, projects, engage, overdue, reference, review — plus project detail and recurring detail via query ids
 
 ---
 
@@ -474,7 +493,7 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - 24-hour time grid with configurable business hours highlighting
 - Scheduled actions rendered as time blocks positioned by start time and sized by duration
 - All-day / dateless actions shown in a section above the time grid (including start/due items without time)
-- **Start date indicators:** Items with `start_date` + `start_time` shown as a yellow dot+line at the exact time, with a yellow gradient fading downward and the task title below the line
+- **Start date indicators:** Items with `start_date` + `start_time` shown as a green dot+line at the exact time, with a green gradient fading downward and the task title below the line (green in light theme; only chips use amber in dark theme)
 - **Due date indicators:** Items with `due_date` + `due_time` shown as a red dot+line at the exact time, with a red gradient fading upward and the task title above the line
 - **Current time indicator:** Accent-colored dot+line showing the current time (updates every minute, visible only when viewing today)
 - Click on an empty time slot opens a quick-add form for creating an action at that time
@@ -487,11 +506,12 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 - Scheduled actions shown as positioned blocks
 - Start date and due date indicators shown per column (same visual style as day view)
 - All-day section at the top (includes start/due items without time)
+- **Current time indicator** shown in today's column; the current day column is highlighted
 
 ### 8.5 Month View
 
 - Calendar grid with day cells
-- Each cell shows action titles (truncated)
+- Each cell shows action titles (truncated), up to 5 items per day with a "+N more" overflow indicator
 - Click on a day cell to view that day's actions
 - Click on an item to navigate to detail
 
@@ -509,15 +529,15 @@ The clarify workflow is a multi-step guided wizard for processing inbox items ac
 
 ### 8.8 Calendar Item Interactions
 
-- **Create:** Click empty day/time slot to open quick-add form. Form includes type selector ("Scheduled" / "Start after") and optional due date field (when "Start after" selected).
-- **Reschedule:** Drag an item to a new date/time slot. Scheduled items auto-reschedule as scheduled. Start_after items auto-reschedule as start. Due-only items show a type-selection popover ("Scheduled for [date]" / "Start after [date]").
+- **Create:** Click empty day/time slot to open quick-add form — a simple title input (placeholder "New action..."), no type selector, no due-date field. Actions created from a time slot get a default 30-minute duration.
+- **Reschedule:** Drag an item to a new date/time slot. Scheduled items auto-reschedule as scheduled. Start_after items auto-reschedule as start. Due-only items reschedule automatically like any other drag.
 - **View detail:** Click an item to navigate to action detail with `from=calendar`
 
 ### 8.8b Calendar Item Visual States
 
 Four color-coded states for calendar items:
 - **Scheduled** (blue): Items with `scheduled_date` — time-specific commitments
-- **Start after** (yellow/amber): Items with `start_date` and no `scheduled_date` — tickler/deferred items
+- **Start after** (green in light theme; chips use amber in dark theme): Items with `start_date` and no `scheduled_date` — tickler/deferred items
 - **Due only** (red): Items appearing on their `due_date` with no `scheduled_date`
 - **Overdue** (dark red): Due-only items where `due_date` is in the past
 
@@ -525,7 +545,7 @@ Four color-coded states for calendar items:
 
 An item can appear on multiple dates in the calendar:
 - On its `scheduled_date` (blue styling)
-- On its `start_date` (yellow/amber styling)
+- On its `start_date` (green styling in light theme; amber for chips in dark theme)
 - On its `due_date` (red styling) — only when `scheduled_date` is not set
 
 Priority: if an item's `scheduled_date`, `start_date`, and `due_date` all fall on the same day, it shows once with scheduled taking precedence, then start, then due.
@@ -542,7 +562,7 @@ Configurable in Settings page:
 - Week starts on: Monday or Sunday
 - Time format: 12-hour (AM/PM) or 24-hour — respected by all time inputs via `TimeInput` component (hour/minute/period selects) and calendar hour labels
 - Business hours: Start and end hour
-- Business days: Selectable days of the week
+- Business days: Selectable days of the week (default Monday–Friday)
 
 ---
 
@@ -560,6 +580,7 @@ Configurable in Settings page:
 **Item list:**
 - No checkbox (projects cannot be completed from the list view)
 - Tag filtering, drag to reorder, inline title edit, trash with confirmation
+- A "needs next action" warning chip (via `MetadataRow`) is shown on active, non-shared projects that have no next action
 - Click to navigate to project detail
 
 ### 9.2 Project Detail Page
@@ -579,7 +600,7 @@ Configurable in Settings page:
 - **Trash project:** If the project has unfinished actions, the confirmation warns "This will also move all actions in this project to trash." Standard confirmation if there are no actions.
 - **Move to Someday:** Shelves active actions (NEXT, TODAY, CALENDAR, WAITING) to BACKLOG. Toast informs: "Active actions shelved."
 - **Activate (from Someday):** Restores shelved actions from BACKLOG to their previous states. Toast: "moved to Projects"
-- **Undo (from Completed):** Restores project to active. Toast: "restored to projects"
+- **Undo (from Completed):** Restores project to active. Toast on the project detail page: `"{title}" restored to projects` (unchecking from the Completed page shows `"{title}" restored` instead, see §13.1)
 - **Convert to Action:** If backlog actions exist, confirmation warns "This will trash all backlog actions in this project."
 - **Convert to Reference:** If any actions exist, confirmation warns "This will convert the project and all its actions to a reference file."
 - **Restore (from Trash):** Also restores cascade-trashed actions. Toast: "Project and its actions restored."
@@ -618,7 +639,7 @@ Configurable in Settings page:
 - **Per-row controls**:
   - Unassigned + caller is write/owner + has no current assigned action → "Assign to me" icon button
   - Action assigned to caller → "You" badge + "Unassign" icon button
-  - Action assigned to someone else → assignee email/name, plus "· waiting" suffix when in WAITING state
+  - Action assigned to someone else → assignee email/name; when the action is in WAITING state the row shows just "Waiting" (the assignee name is hidden)
   - Trash button on a row only when caller can delete it (unassigned + write/owner, OR assigned to caller)
 - **Field-level permissions** are described in §33.4 below. In short: owner edits title/outcome/description; all members edit their own private tags; write+owner manage attachments; everyone comments.
 - **"Leave" button** replaces "Trash" for non-owner members in the action button row. Click → confirm dialog; on confirm, the user is removed from the project and routed back to Projects.
@@ -639,6 +660,7 @@ Configurable in Settings page:
 - Creates action with state WAITING and `waiting_for` text
 
 **Item list:**
+- Cursor-based pagination, 10 items per page, with a "Load more" button
 - Checkbox visible (can complete from list)
 - Tag filtering, inline title edit, trash with confirmation, drag to reorder
 - Click to navigate to action detail
@@ -654,7 +676,7 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - Typing filters the user's accepted connections (`GET /v1/connections`) by display label and email.
 - Selecting a connection delegates the action via `POST /v1/action/{id}/delegate` (Team tier only). Backend sets `waiting_for_user_id` on the assigner's action and creates a Stuff in the receiver's inbox; on receiver completion, the assigner's action auto-unwaits to NEXT and gains a "Done." comment.
 - Free text (no connection match) keeps the legacy behavior: `POST /v1/action/{id}/wait` with the typed string.
-- Free / Pro tier users see no connection options (their list is empty) and continue to use plain free-text waiting.
+- The picker requests the connection list regardless of tier (no frontend gating). For Free / Pro tier users the server returns no connections (or 403), so the list is empty and they continue to use plain free-text waiting.
 
 ---
 
@@ -690,6 +712,7 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - **URL:** `/reference`
 - **Purpose:** Non-actionable file storage (the GTD "Reference" bucket)
 - **Tabs:** Files | Attachments | Trash
+- **Tier gate:** Free tier cannot write reference files at all (uploads, folder creation, and other write operations are tier-gated server-side; see §28). Viewing is available on all tiers.
 
 ### 12.2 Files Tab
 
@@ -698,7 +721,7 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - Search input (300ms debounce, searches globally across all folders)
 - "New Folder" button
 - "Upload" button
-- View mode toggle: List / Grid (persisted to localStorage)
+- View mode toggle: List / Grid (default: List; persisted to localStorage)
 - Storage quota display (used / total)
 
 **Folder operations:**
@@ -706,29 +729,42 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - **Create folder:** Opens rename modal with empty name
 - **Rename folder:** Opens rename modal
 - **Delete folder:** Confirmation dialog (warns about contents); permanent deletion (no trash for folders)
+- **Duplicate folder name:** Server returns 409; toast "A folder with this name already exists"
 
 **File operations:**
 - **Upload:** Via file picker button or drag-and-drop
-  - Max 50 MB per file (client-side check)
-  - Upload progress shown as a 3px progress bar per file
+  - Client-side pre-check at 50 MB per file; the server enforces the per-tier max file size (5/20/50 MB, see §28) via HTTP 413
+  - Upload progress shown as a 4px progress bar per file, with a per-file error state showing the error message
   - Progress panel in bottom-right corner shows status per file (uploading / done / error)
   - Auto-clears completed uploads after 3 seconds
 - **Preview:** Click file to open preview modal
   - Images and PDFs rendered in browser
   - Text and JSON files shown as plain text
   - Other types via browser's native blob handling
-  - For transformed files (items converted from stuff/action/project to reference), the preview modal shows a "Restore" button to transform the item back to its original type
+  - For transformed files (items converted from stuff/action/project to reference), the preview modal shows a context-specific restore button by `source_type`: "Restore to Inbox" / "Restore to Next Actions" / "Restore to Projects"
 - **Download:** Downloads file via browser download mechanism
 - **Rename file:** Opens rename modal
+- **Duplicate file name:** Server returns 409; toast "A file with this name already exists"
 - **Trash file:** Confirmation dialog; moves to reference trash
 
-**Pagination:** Offset-based (20 files per page), "Load more" button
+**Pagination:** Offset-based, 10 files per page, "Load more" button
 
-**Search:** When searching, folders are hidden; search is global across all folders
+**Search:** When searching, folders are hidden; search is global across all folders. Empty state text: "No results found"
 
 **Quota:** Displayed in toolbar; refreshed after upload, trash, and restore operations
 
-### 12.3 Trash Tab
+### 12.3 Attachments Tab
+
+A read-only aggregate view of all file attachments across the user's items (Stuff, Actions, Projects), accessed via `?tab=attachments`.
+
+- **Toolbar:** Search input + List/Grid view toggle + attachment quota display (attachment bytes used / total quota). No breadcrumbs, no upload/new-folder actions.
+- **Each row/card shows:** file name, file type icon, size, date, and the parent item's title as a clickable subtitle — clicking the subtitle navigates to the owning item's detail page (stuff/action/project, with `from=reference`)
+- **Per-file actions:** Preview (same preview modal as Files tab; content downloaded from the owning entity's attachment endpoint), Download, Delete (confirmation dialog "Are you sure you want to delete \"[name]\"? This cannot be undone."; success toast "Attachment deleted")
+- **Search:** Client-side filter by file name over loaded items
+- **Pagination:** Offset-based, 10 items per page, "Load more" button
+- **Empty state:** "No attachments" + "Attachments added to your items will appear here."
+
+### 12.4 Trash Tab
 
 - Tabular list showing file name, size, and actions
 - **Restore:** Moves file back to its original folder
@@ -754,9 +790,10 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - Cursor-based pagination
 - Items are draggable to sidebar targets for quick restore to original bucket
 
+**Restore toast:** Unchecking any item on the Completed page shows the toast `"{title}" restored`. (The `"{title}" restored to projects` toast appears only when using the Undo button on a completed project's detail page, see §9.2.)
+
 **Uncomplete project behavior:**
 - Restores the project to active state
-- Toast: "restored to projects"
 
 **Uncomplete action conflict (409):**
 - If a completed action's parent project is also completed or trashed, uncompleting the action is blocked
@@ -813,7 +850,7 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 
 **2. Today section:**
 - Header "TODAY" with count + "View all" link to `/today`
-- Shows up to 5 items from the Today list
+- Shows the first 5 items of the Today list in list order (no relevance ranking)
 - Can complete items inline (checkbox)
 - Can drag to reorder
 - Click item to navigate to detail
@@ -830,7 +867,7 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - Low-priority prompts shown when conditions are met:
   - **Inbox nudge:** "N items in inbox to clarify" → links to `/inbox?clarify=1`
   - **Stuck projects nudge:** "N projects need a next action" → links to `/projects`
-  - **Review nudge:** "Last reviewed N days ago" or "Never reviewed" → links to `/review` (only when review is enabled and there are items to review)
+  - **Review nudge:** "Last reviewed N days ago", "Last reviewed today" (same-day), or "Never reviewed" → links to `/review` (only when review is enabled and there are items to review)
 
 **Context filtering:** The global context tag filters all dashboard sections simultaneously
 
@@ -848,12 +885,12 @@ Wherever an action lands in the WAITING state — clarify "Delegate It", `MoveMo
 - **Purpose:** Guided GTD weekly review checklist
 - **Conditional:** Only accessible when "Weekly Review" is enabled in settings
 
-**Header:** "Weekly Review" + last review date ("Last reviewed: N days ago" or "Never reviewed")
+**Header:** "Weekly Review" + last review date ("Last reviewed: N days ago", "Last reviewed: today" for same-day, or "Never reviewed")
 
 **Setup tip (first visit):**
 - Suggests creating a recurring weekly reminder
 - "Create reminder" button creates a recurring action (weekly on Fridays, 9:00 AM, 60 min)
-- Dismissible; persisted across sessions
+- Dismissible; dismissal persisted to backend settings (`dismissed_tips` via `/v1/user/settings`)
 
 **6 review steps:**
 1. Empty your Inbox → link to `/inbox`
@@ -868,7 +905,7 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 **Workflow:**
 - "Start Review" button enables the checkboxes
 - Progress counter: "N of 6 complete"
-- "Complete Review" button (only enabled when all 6 checked) saves the review date
+- "Complete Review" button (only enabled when all 6 checked) saves the review date, shows the toast "Weekly review completed!", and redirects to the Calendar page
 - Mobile: Hint text hidden
 
 ---
@@ -879,6 +916,7 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 
 - **Accessible from:** Calendar page → Recurring view
 - **Purpose:** Automatically spawn action instances on a schedule
+- **Tier gate:** Free tier cannot create recurring templates (backend tier flag; see §28)
 
 ### 17.2 Creating a Recurring Action
 
@@ -889,23 +927,23 @@ Each step shows: title, hint text, item count badge from stats, "Go" link to the
 
 - **Frequency:** Daily, Weekly, Monthly, Yearly
 - **Interval:** Every N days/weeks/months/years (1-99)
-- **Day picker (weekly):** Multi-select days of the week (Mon-Sun)
+- **Day picker (weekly):** Multi-select days of the week (Mon-Sun). At least one day always stays selected — deselecting the last day auto-adds today's weekday (no validation error shown)
 - **Day of month (monthly/yearly):** 1-31
 - **Month (yearly):** January-December
 - **End condition:**
   - Never (no end)
   - After N occurrences (1-999)
-  - Until specific date
+  - Until specific date (the field does not validate past dates)
 
-**Human-readable summary** shown below the form (e.g., "Every 2 weeks on Mon, Wed, until Jun 15, 2025")
+**Human-readable summary** shown below the form. Formats: "Every 2 days", "Every 2 weeks on Mon, Wed", "Every month on day 15" (note: "on day 15", not "on the 15th"), "Every year on Mar 15" — plus the end condition (e.g., "until Jun 15, 2025"). There is no month-clamping tooltip.
 
 ### 17.4 Editing a Recurring Action
 
 - **URL:** `/recurring/:id`
 - Title: click-to-edit
 - Shows "Active instance" badge linking to the currently spawned action (if any)
-- "Spawn next" button: manually creates the next action instance from the template
-- "Trash" button: deletes the recurring template
+- "Spawn next" button: manually creates the next action instance from the template. Hidden while an active instance exists (this defines the spawn semantics: only one active instance at a time)
+- "Trash" button: **hard-deletes** the recurring template (`DELETE /v1/recurring/{id}`) — the template does NOT go to Trash and cannot be restored
 - Description: click-to-edit
 - Recurrence rule: editable via `RecurrenceInput`
 - Timing mode: radio selector "Scheduled for" / "Start after" (see 17.5)
@@ -919,9 +957,9 @@ A template spawns instances in one of two modes, selected via the `date_type` fi
 | Mode | Instance gets | Where it surfaces |
 |------|---------------|-------------------|
 | Scheduled for | `scheduled_date` + `scheduled_time` + `scheduled_duration` | Calendar + Today at that time |
-| Start after (tickler) | `start_date` + `start_time` | Hidden until the date, then NEXT list |
+| Start after (tickler) | `start_date` + `start_time` | Hidden until the start date, then also surfaces in the Next list (state remains CALENDAR) |
 
-- The recurrence rule supplies each instance's date; the template supplies the time. Time is optional in both modes (date-only recurrence is valid). Both modes spawn instances in CALENDAR state. Recurrence never drives `due_date`.
+- The recurrence rule supplies each instance's date; the template supplies the time. Time is optional in both modes (date-only recurrence is valid). Instances always spawn in CALENDAR state — start-mode instances are hidden until their start date and then additionally surface in the Next list without changing state. Recurrence never drives `due_date`.
 - Detail page shows a "Timing" radio selector with a hint describing the selected mode's behavior; the time section below switches between "Scheduled time" (+ duration) and "Start time".
 - Switching modes saves immediately; the backend re-dates the active spawned instance into the matching date column and clears the other mode's time fields (mirrored locally).
 - Only the time field matching the mode is sent to the API (`scheduled_time`/`scheduled_duration` vs `start_time`).
@@ -936,6 +974,7 @@ A template spawns instances in one of two modes, selected via the `date_type` fi
 - Tags are free-form text strings (lowercased, trimmed)
 - All tags ever used by the user are cached and available for autocomplete
 - Tags can be added to Actions and Projects (not to Stuff)
+- **Free tier limit:** 10 tags (see §28). The limit is server-enforced; there is no frontend tag-limit check
 
 ### 18.2 Tag Input
 
@@ -970,6 +1009,7 @@ Presets are customizable in Settings.
 - Active context tag is shown as a chip in the sidebar
 - The active context filters all list views simultaneously: Next, Today, Waiting For, Projects, Someday, and the Engage dashboard
 - When a page also has a per-page TagFilter, the context tag appears as a pre-applied, non-removable filter chip
+- The active context filter is held in memory only — it is NOT persisted across page reloads
 
 ---
 
@@ -979,7 +1019,7 @@ Presets are customizable in Settings.
 
 - Available on: Action detail, Project detail, Stuff detail
 - **Maximum:** 10 attachments per item
-- **Maximum file size:** 50 MB per file
+- **Maximum file size:** client-side pre-check at 50 MB; the server enforces the per-tier cap (Free 5 MB / Pro 20 MB / Team 50 MB, see §28) via HTTP 413
 
 **File list:** Each attachment shows:
 - File type icon (based on MIME type)
@@ -1034,16 +1074,16 @@ Presets are customizable in Settings.
 - Cancel and Save buttons appear below when focused
 - Escape cancels without saving
 - Character counter: shows "N / 2000"
-  - Turns secondary color above 1800 characters
-  - Turns red above 2000 characters
-  - Save button disabled above 2000
+  - Turns warning color above 1800 characters (at 1801+)
+  - Turns red above 2000 characters (at 2001+)
+  - Save button disabled when the comment is empty/whitespace-only or over 2000 characters
 
 **Comment display:**
 - Newest first
 - Each comment shows:
   - Author's user avatar (initial-based, 28px) — resolved from `comment.user_id`
   - Author's email (above timestamp) — resolved from `comment.user_id` via: self check → project members (passed as `:members` prop) → connection list → fallback `Unconnected member`
-  - Relative timestamp ("Just now", "3 minutes ago", "Yesterday", "5 days ago", formatted date for older)
+  - Relative timestamp ("Just now", "3 minutes ago", "Yesterday", "5 days ago"); switches to a formatted date at 7 days
   - Comment text in a rounded bubble
 - Backend payload returns `user_id` (UUID) per comment (`GET /v1/{entity}/{id}/comments`); the frontend resolves the email/avatar locally — backend does not return `user_email`.
 
@@ -1071,8 +1111,9 @@ Presets are customizable in Settings.
   - Fields: Current Password, New Password, Confirm New Password
   - Validation: Same password rules as registration
   - Error mapping: HTTP 400 → "New password does not meet requirements"; HTTP 401 → "Current password is incorrect"
-  - On success: Shows count of other sessions revoked; refreshes session list
+  - On success: Toast "Password changed. N other session(s) signed out." and the sessions list refreshes
   - Mobile: Full-screen modal; Desktop: centered overlay (max 400px)
+- **Account deletion is not currently available in the UI** (the API function exists but is never called)
 
 ### 21.3 Sessions Section
 
@@ -1125,7 +1166,6 @@ Presets are customizable in Settings.
 ### 21.8 About Section
 
 - **Version:** Displays the app version number
-- **Debug Mode toggle:** Enables a debug window overlay showing version, base URL, auth state, and window dimensions
 
 ---
 
@@ -1134,6 +1174,8 @@ Presets are customizable in Settings.
 ### 22.1 QuickAddBtn
 
 - Provides rapid inbox capture from any page
+- Input placeholder: "Add new stuff"
+- Successful capture shows the toast `"{title}" added to Inbox`
 
 **Desktop (TopNav inline):**
 - Button with "+ Quick Add" label in TopNav
@@ -1142,7 +1184,7 @@ Presets are customizable in Settings.
 - Escape or blur collapses and clears
 
 **Mobile (FAB — floating action button):**
-- QuickAdd is hidden from TopNav on mobile
+- The TopNav quick-add button remains on mobile but is icon-only (label hidden); the FAB exists in addition
 - 52px circular "+" FAB fixed at bottom-right (20px inset)
 - Tap FAB → expands into a full-width pill-shaped input bar at the bottom with "Add" button
 - Enter or "Add" button submits to inbox, clears input, keeps focus for multi-capture
@@ -1167,10 +1209,10 @@ Presets are customizable in Settings.
 - Items can be dragged from list views to sidebar menu items
 - Native HTML5 drag-and-drop API used for cross-component communication
 - Draggable source pages: Inbox, Next Actions, Today, Waiting For, Projects, Someday, Completed, Reference (transformed files only)
-- Compatible sidebar targets accept specific types:
+- Compatible sidebar targets accept specific types (reference files carry a numeric `source_type`: 1 = stuff, 2 = action, 3 = project):
   - Next, Today, Calendar, Waiting For accept stuff, actions, projects, someday items, completed items, and reference files
-  - Inbox accepts someday items, completed items, and reference files (source_type=stuff)
-  - Projects accept stuff, actions, someday items, completed items, and reference files (source_type=project)
+  - Inbox accepts someday items, completed items, and reference files (`source_type` 1, stuff)
+  - Projects accept stuff, actions, someday items, completed items, and reference files (`source_type` 3, project)
   - Someday accepts stuff, actions, projects, and completed items
   - Completed accepts stuff, actions, projects, and someday items
   - Trash accepts stuff, actions, projects, someday items, and completed items
@@ -1189,7 +1231,7 @@ Presets are customizable in Settings.
 
 - Items with past due dates get a red left border and light red background in list views
 - Applied automatically in all list views via the `isOverdue()` utility
-- **MetadataRow badges:** Due chips show "Due [date]" in red; overdue chips show "Overdue [date]" in dark red
+- **MetadataRow badges:** Due chips show "Due [date]" in red; overdue chips show "Overdue [date]" in dark red. There are also "Scheduled [date]" chips and "Starts [date]" chips — start chips are green in light theme and amber in dark theme
 - **Calendar items:** Due-only items show red styling; overdue due-only items show dark red styling
 - **Color coding across views:** Consistent use of red (due, future) and dark red (overdue, past) in MetadataRow chips and calendar items
 
@@ -1237,50 +1279,60 @@ Presets are customizable in Settings.
 ### 24.2 Pricing Page
 
 - **URL:** `/pricing`
+- **Currency:** US dollars ($)
+- There is no checkout/Stripe integration — paid tiers are sold via email contact
 
-**Billing toggle:** Monthly / Yearly (default yearly). "Save 20%" badge on yearly option.
+**Billing toggle:** Monthly / Yearly (default yearly). "3 months free" badge on the yearly option.
 
 **3 tiers:**
 
-| | Free | Pro | Business |
+| | Free | Pro | Team |
 |---|---|---|---|
-| Monthly | €0 | €25/mo | €60/mo |
-| Yearly | €0 | €20/mo (€240/yr) | €48/mo (€576/yr) |
-| Description | "Get started with the basics of GTD." | "For individuals serious about productivity." | "For teams and power users who need it all." |
-| Featured | No | Yes ("Most Popular") | No |
-| CTA | "Start for Free" (opens register) | "Contact Us" (email) | "Contact Us" (email) |
-| Storage | 10 MB | 250 MB | 1 GB |
-| Projects | 10 | 100 | Unlimited |
-| Actions | 50 | 500 | Unlimited |
-| Stuff items | 10 | 100 | Unlimited |
-| Context tags | 5 | 25 | Unlimited |
-| Recurring | No | Yes | Yes |
-| Support | Email | Priority | Dedicated |
+| Monthly | $0 | $11/mo | $18/user/mo |
+| Yearly | $0 | $8/mo ($96/yr) | $13/user/mo ($156/user/yr) |
+| Description | "Get started with GTD for free." | "For the individual power user." | "For teams that delegate work together." |
+| Featured | No | Yes | No |
+| CTA | "Start for Free" (opens register) | "Contact Us" (mailto:support@whatsnextaction.com) | "Contact Us" (mailto:support@whatsnextaction.com) |
 
-**Feature comparison table:**
-- Desktop: Full table with columns (Feature / Free / Pro / Business)
-- Mobile: Card per feature with 3-column grid
-- 16 comparison rows covering all major features
+**Feature comparison table** (Feature / Free / Pro / Team), grouped Core / Storage / Support:
+
+| Feature | Free | Pro | Team |
+|---|---|---|---|
+| Stuff & Actions | Unlimited | Unlimited | Unlimited |
+| Projects | 7 | Unlimited | Unlimited |
+| Tags | 10 | Unlimited | Unlimited |
+| Recurring actions | No | Yes | Yes |
+| Reference files | View only | Full | Full |
+| WNA hosted storage | 50 MB | 250 MB | 1 GB/user |
+| Max attachment size | 5 MB | 20 MB | 50 MB |
+| Support | Community | Priority | Dedicated |
+
+- Desktop: full table; Mobile: card per feature with 3-column grid
+- When the `beta` feature flag is on, all tier CTAs show "Coming soon" and are disabled
 
 ### 24.3 Help Page
 
 - **URL:** `/help`
-- **Status:** Placeholder - shows "Help & Resources" heading + "Coming soon."
+- A real help hub page ("Help & Resources" heading) with search, linking to three content pages:
+  - `/help/getting-started` — Getting Started guide
+  - `/help/faq` — FAQ
+  - `/help/best-practices` — Best Practices
+- The hub shows a preview of each section with "Show more" links to the full content pages
 
 ### 24.4 Legal Pages
 
 - **URLs:** `/legal/terms`, `/legal/privacy`
-- **Status:** Placeholders - show "Terms of Service" / "Privacy Policy" headings + "Coming soon."
+- Render full legal content (Terms of Service / Privacy Policy) from bundled markdown, with a sidebar for navigation between documents
 - `/legal` redirects to `/legal/terms`
 
 ### 24.5 Public Footer
 
 - Appears on all public pages
-- **Columns:**
+- **Columns and exact links:**
   - Brand: Logo + "WhatsNextAction"
-  - Product: Features, Pricing links
-  - Support: Help & FAQ link
-  - Legal: Terms of Service, Privacy Policy links
+  - Product: Features (→ `/#features` anchor), Pricing (→ `/pricing`)
+  - Support: Help & FAQ (→ `/help`)
+  - Legal: Terms of Service (→ `/legal/terms`), Privacy Policy (→ `/legal/privacy`)
 - Responsive: 1 column (mobile), 2 columns (tablet), 4 columns (desktop)
 
 ---
@@ -1320,7 +1372,7 @@ Presets are customizable in Settings.
 
 ### 25.5 Item List Common Features
 
-- All items load at once (no pagination for Inbox, Next Actions, Today; cursor-based pagination with "Load more" used for Completed, Trash, and Reference files)
+- Every dashboard list — Inbox, Next Actions, Today, Projects, Someday, Waiting For, Completed, and Trash — uses cursor-based pagination with a "Load more" button, 10 items per page. Reference files use offset-based pagination, also 10 per page with "Load more"
 - Per-item loading spinners (spinning ring replaces action buttons)
 - Empty state with icon + message + instructional text
 - Overdue items highlighted with red left border
@@ -1341,8 +1393,8 @@ Presets are customizable in Settings.
 
 - Sidebar hidden; replaced with slide-in drawer triggered by animated hamburger (☰ → X) in TopNav
 - Sidebar auto-closes on route change
-- User avatar hidden on mobile dashboard (profile accessible via Settings)
-- Quick Add moved from TopNav to a floating action button (FAB) at bottom-right
+- The dashboard avatar lives in the Sidebar (32px); the mobile dashboard top nav shows only the hamburger, no avatar. The TopNav avatar appears only on public pages (36px; 32px below 600px viewport)
+- TopNav Quick Add becomes icon-only on mobile; a floating action button (FAB) at bottom-right is also available
 - Dropdowns render as bottom action sheets (sliding up from bottom)
 - Select components render as full-width bottom sheets with headers
 - Modals may render full-screen instead of centered overlay
@@ -1373,34 +1425,41 @@ The backend notification service handles all outbound email delivery via SMTP wi
 
 ### 26.2 Email Templates
 
-The backend defines 8 email templates with variable substitution (`{{variable}}`):
+The backend defines 15 email templates (`email_templates.hpp`) with variable substitution (`{{variable}}`):
 
-| Template | Subject | Priority | Trigger |
-|----------|---------|----------|---------|
-| Email Verification | "Verify your WNA account" | Urgent | User registration |
-| Welcome | "Welcome to WNA!" | Urgent | Email verified successfully |
-| Login Alert | "New login to your WNA account" | Normal | Successful login (device, IP, time) |
-| Password Reset | "Reset your WNA password" | Urgent | Forgot password request |
-| Password Changed | "Your WNA password was changed" | Urgent | Password changed or reset |
-| Tasks Due Today | "Tasks due today" | Normal | Daily digest (if tasks are due) |
-| Daily Next Actions | "Your next actions for today" | Normal | Daily digest (next actions summary) |
-| Project Needs Next Action | "Project needs a next action" | Normal | Project has no next action assigned |
+| Event key | Subject | Priority / Class | Trigger / Notes |
+|-----------|---------|------------------|-----------------|
+| `email_verification` | "Verify your WhatsNextAction account" | Urgent | User registration; verification link valid 24 hours; CTA "Verify My Email" |
+| `welcome` | "Welcome to WhatsNextAction!" | Urgent | Email verified successfully; CTA "Get Started" → `{app}/inbox` |
+| `login_alert` | "New sign-in to your WhatsNextAction account" | Urgent / security (always delivered, cannot be disabled) | Successful login; includes a device table (Device / IP Address / Time) |
+| `sso_welcome` | "Welcome to WhatsNextAction!" | Urgent | Sent instead of `welcome` when the account is created via Google SSO; CTA → `/inbox` |
+| `google_linked` | "Google account linked to WhatsNextAction" | Urgent / security | Sent when a Google account is linked to an existing account; includes the device table |
+| `password_reset` | "Reset your WhatsNextAction password" | Urgent | Forgot password request; reset link valid 24 hours |
+| `password_changed` | "Your WhatsNextAction password was changed" | Urgent | Password changed or reset; includes the change time |
+| `admin_password_reset` | "Set your WNA Admin password" | Admin-panel onboarding | 24-hour link; not sent by the main app |
+| `user_invited` | "You've been invited to WhatsNextAction!" | Invitation | CTA "Get Started" → invite URL; 24-hour link |
+| `daily_next_actions` | "Your daily digest" | Normal (opt-out via §27 toggles) | Single combined daily digest with two sections — "Due today" and "Next actions" — independently populated; sent only when at least one section is non-empty. There is **no** separate "Tasks due today" email |
+| `project_needs_next_action` | "A project needs your attention" | Normal (opt-out via §27 toggle) | Project has no next action assigned; CTA "Add Next Action" → `{app}/project/{id}` |
+| `delegated_to_you` | "{delegator_name} delegated a task to you" | Normal (opt-out via §27 toggle) | A connection delegates an action to you; CTA "Open Inbox" → `/inbox` |
+| `delegation_completed` | "{completer_name} completed your delegated task" | Normal (opt-out via §27 toggle) | An action you delegated is completed; notes the task has left the Waiting For list; CTA "View Task" → `/action/{id}` |
+| `connection_invite` | "{inviter_name} wants to connect with you on WhatsNextAction" | Normal (opt-out via §27 toggle) | Connection invitation to an existing user; CTA → `/connections` |
+| `connection_invite_registration` | "{inviter_name} invited you to WhatsNextAction" | Normal | Connection invitation to a non-registered email; CTA "Create Account" → `/register?email={invitee_email}` (email pre-filled); after registration + email verification, pending invites auto-link by email match |
 
 ### 26.3 Message Queue & Delivery
 
 - **Message broker:** RabbitMQ with exchange `notifications`
 - **Priority queues:**
-  - `q.notification.urgent` — Email verification, password reset, password changed, welcome (always delivered, cannot be disabled by user)
-  - `q.notification.normal` — Login alerts, task reminders (respects user notification preferences)
-  - `q.notification.marketing` — Promotional emails
-  - `q.notification.update` — Feature update emails
+  - `q.notification.urgent` — Email verification, welcome (incl. SSO welcome), login alerts, Google-linked alerts, password reset, password changed (always delivered, cannot be disabled by user)
+  - `q.notification.normal` — Task reminders, delegation and connection emails (respects user notification preferences, §27)
+  - `q.notification.marketing` — Promotional emails (reserved; no marketing emails are currently sent and there is no opt-out toggle)
+  - `q.notification.update` — Feature update emails (reserved; no update emails are currently sent and there is no opt-out toggle)
 - **Delivery logging:** All email sends are logged to `notification_log` table with status (sent/failed/skipped), recipient, subject, and error detail
 
 ### 26.4 Security
 
 - **Token generation:** 64-character cryptographically secure random tokens for email verification and password reset
 - **Email verification tokens:** Expire after 24 hours, single-use (deleted after verification)
-- **Password reset tokens:** Expire after 1 hour, single-use (deleted after reset)
+- **Password reset tokens:** Expire after 24 hours, single-use (deleted after reset)
 - **Anti-enumeration:** Forgot password and resend verification endpoints always return HTTP 200 regardless of whether the email exists
 - **Rate limiting:**
   - Register: 5.0 req/s
@@ -1424,32 +1483,39 @@ The backend defines 8 email templates with variable substitution (`{{variable}}`
   - Individual event toggles appear below the master toggle and are disabled (greyed out) when the master is OFF
   - Individual event states are preserved in memory; turning the master back ON restores previous individual settings
 - **Individual event toggles** (each maps 1:1 to a backend event name in `disabled_events.email`):
-  - **Task due today** (`task_due_today`) — daily reminder for tasks due today
-  - **Daily next actions** (`daily_next_actions`) — summary of next actions for the day
+  - **Task due today** (`task_due_today`) — controls the "Due today" section of the combined daily digest email ("Your daily digest", see §26.2)
+  - **Daily next actions** (`daily_next_actions`) — controls the "Next actions" section of the same combined daily digest (there is no separate "tasks due today" email — both toggles feed the single digest)
   - **Project needs next action** (`project_needs_next_action`) — alert when a project has no next action
   - **Delegated to you** (`delegated_to_you`) — email when a connection delegates an action to you
   - **Delegation completed** (`delegation_completed`) — email when an action you delegated is completed
   - **Connection invitations** (`connection_invite`) — email when someone invites you to connect
 - **In-app notifications cannot be disabled.** The backend only accepts the `email` channel in `disabled_events`. In-app notifications are intentionally low-volume per-item events and are always delivered. The notification bell in the top nav (§31) always shows them.
-- **Urgent notifications** (email verification, welcome, password reset, password changed, login alert) are always delivered and cannot be disabled.
+- **Urgent notifications** (email verification, welcome / SSO welcome, password reset, password changed, login alert, Google account linked) are always delivered and cannot be disabled.
 - The footer note in the Notifications section reads: *"In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled."*
 
 ---
 
 ## 28. Limits & Quotas
 
-| Resource | Free | Pro | Business |
+Tier limits are defined in the backend (`core_service` `tier_limits.hpp`) and are authoritative; the frontend does not enforce them (except the 50 MB upload pre-check noted below).
+
+| Resource | Free | Pro | Team |
 |---|---|---|---|
-| Storage | 10 MB | 250 MB | 1 GB |
-| Projects | 10 | 100 | Unlimited |
-| Actions | 50 | 500 | Unlimited |
-| Stuff items | 10 | 100 | Unlimited |
-| Context tags | 5 | 25 | Unlimited |
+| Storage | 50 MB | 250 MB | 1 GB |
+| Projects | 7 | Unlimited | Unlimited |
+| Tags | 10 | Unlimited | Unlimited |
+| Max attachment file size | 5 MB | 20 MB | 50 MB |
 | Recurring templates | No | Yes | Yes |
+| Reference file writes | No | Yes | Yes |
 | Attachments per item | 10 | 10 | 10 |
-| Max attachment file size | 50 MB | 50 MB | 50 MB |
 | Comments per item | 50 | 50 | 50 |
 | Comment max length | 2000 chars | 2000 chars | 2000 chars |
+
+Notes:
+- There are **no per-tier limits on actions or stuff items** (unlimited on all tiers)
+- The tag limit is server-enforced only; no frontend tag-limit check exists
+- File uploads: the client pre-checks at an absolute 50 MB; the server enforces the per-tier max file size via HTTP 413
+- Free tier cannot create recurring templates and cannot write reference files (view-only Reference)
 
 ---
 
@@ -1495,7 +1561,7 @@ Connections are a **Team tier** feature, but received invitations are visible to
 | See accepted connections list | No | No | Yes |
 | See sent invitations list | No | No | Yes |
 
-Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{token}/accept` return `403 Not Team tier` for Free/Pro. `GET /v1/connections/pending` is open to all tiers so received invitations can be shown. If a user downgrades from Team, the backend auto-removes all their connections.
+Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/{id}/accept` return `403 Not Team tier` for Free/Pro. `GET /v1/connections/pending` is open to all tiers so received invitations can be shown. If a user downgrades from Team, the backend auto-removes all their connections.
 
 ### 30.2 UI Location
 
@@ -1508,7 +1574,7 @@ Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{to
 - Email input with a **Send** button — rendered only for Team tier users.
 - Frontend validates the address is a valid email and not the current user's own address before sending.
 - On success: a toast confirms the invitation was sent, and the invitation appears in the "Pending invitations" list.
-- If the invitee already has a WNA account, they receive an in-app notification + email. If they do not yet have an account, the backend email includes a registration link; the invitation stays pending until they register and upgrade to Team.
+- If the invitee already has a WNA account, they receive an in-app notification + the `connection_invite` email (subject "{inviter_name} wants to connect with you on WhatsNextAction", CTA → `/connections`). If they do not yet have an account, the `connection_invite_registration` email is sent (subject "{inviter_name} invited you to WhatsNextAction", CTA "Create Account" → `/register?email={invitee_email}` with the email pre-filled); after the invitee registers and verifies their email, pending invitations auto-link by email match. The invitation stays pending until they upgrade to Team and accept.
 
 ### 30.4 Received Invitations (all tiers)
 
@@ -1517,6 +1583,7 @@ Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{to
 - **Team tier:** Accept calls the backend; on success the invitation disappears from the received list and the contact appears in the accepted list. Decline removes the invitation from the received list.
 - **Free / Pro tier:** clicking Accept opens the standard upgrade modal with a tier-specific message ("Accepting connections is available on the Team plan…") — no backend call is made. A hint above the list reminds the user: *"Accepting a connection requires the Team plan. You can decline any invitation on your current plan."* Decline still works normally.
 - If the backend returns `403` on Accept (e.g. tier changed mid-session), the upgrade modal is shown as a fallback.
+- **Free / Pro empty state** (no received invitations): title "Connect with your team", text explaining that delegating and sharing projects are available on the Team plan, and an "Upgrade to Team" button (opens the upgrade modal).
 
 ### 30.5 Sent Invitations
 
@@ -1531,8 +1598,8 @@ Backend gate: `POST /v1/connections/invite` and `POST /v1/connections/invite/{to
 ### 30.7 API endpoints
 
 - `POST /v1/connections/invite` — Invite by email
-- `POST /v1/connections/invite/{token}/accept` — Accept invitation
-- `POST /v1/connections/invite/{token}/decline` — Decline invitation
+- `POST /v1/connections/{id}/accept` — Accept invitation (id-based)
+- `POST /v1/connections/{id}/decline` — Decline invitation (id-based)
 - `GET /v1/connections` — List accepted connections
 - `GET /v1/connections/pending` — List pending invitations (sent + received)
 - `DELETE /v1/connections/{id}` — Remove connection
@@ -1563,7 +1630,7 @@ In-app notifications surface meaningful events (delegated items, completed deleg
   - `entity_type = stuff` → stuff detail
   - `entity_type = action` → action detail
   - `entity_type = project` → project detail
-  - `type = connection_invite` → settings (Connections section)
+  - `type = connection_invite` → Connections page (`/connections`)
 - Empty state: "You're all caught up."
 
 ### 31.3 Polling
@@ -1609,7 +1676,7 @@ Typing filters accepted connections (`GET /v1/connections`) by display label and
 
 ### 32.3 Receiver Side
 
-- New Stuff item lands in the receiver's Inbox with title + description copied from the assigner's action.
+- New Stuff item lands in the receiver's Inbox with title + description copied from the assigner's action. The receiver also gets a `delegated_to_you` in-app + email notification (subject "{delegator_name} delegated a task to you", CTA "Open Inbox" → `/inbox`).
 - The Inbox row shows a small "From: [assigner name/email]" chip (rendered by `MetadataRow`), and the Stuff Detail page shows the same origin as a read-only "From" section.
 - Receiver clarifies normally — Action / Project / Someday / Reference / Trash. No special flow.
 - Hidden meta (`delegated_from_user_id`, `delegated_from_action_id`) carries forward when Stuff transforms into Action or Project. After clarifying into an action, the "From" origin remains visible both in action list rows (`MetadataRow`) and on the Action Detail page (read-only "From" section).
@@ -1625,7 +1692,7 @@ When triggered:
 - A "Done." comment is written on the assigner's original action (the receiver may extend the message)
 - Assigner's action auto-promotes from WAITING → NEXT (or → CALENDAR if `scheduled_date` is set)
 - `waiting_for`, `waiting_since`, `waiting_for_user_id` are cleared
-- Assigner receives a `delegation_completed` in-app + email notification
+- Assigner receives a `delegation_completed` in-app + email notification (subject "{completer_name} completed your delegated task", noting the task has left their Waiting For list; CTA "View Task" → `/action/{id}`)
 
 **Non-terminal**: Sending the item to Someday or Reference does NOT trigger sync.
 
@@ -1686,7 +1753,9 @@ Set per-project. Owner can change any non-owner member's role at any time via a 
 
 For shared projects the personal "Next Action" section is replaced by a **Backlog** section: a single flat list of all project actions (assigned + unassigned) with assignee chips per row.
 
-- **Add action** (write members): quick-add input above the list. Hidden for read-only members.
+- **Add action** (write members): quick-add input above the list. Hidden for read-only members. New backlog actions are appended at the bottom of the list (the view scrolls to them).
+- **Complete project** button in the action row is **owner-only** on shared projects (non-owner members do not see it).
+- An action you assign to yourself also appears in your personal Next Actions list, and leaves it when unassigned.
 - **Reorder** (write members): drag-and-drop. The draggable is `:disabled="!canWrite"` so read-only members cannot reorder.
 - **Per-row assignee display**:
   - Unassigned: no chip
@@ -1781,8 +1850,8 @@ Collapsible "Completed" section is rendered for **all projects** (personal and s
 3. **Projects must have a next action:** Project detail shows a warning when no next action is assigned.
 4. **Backlog auto-promotion:** When a project's next action is completed, the next item in the backlog automatically becomes the new next action (FIFO order).
 5. **Projects cannot be completed from list view:** Only from the detail page.
-6. **Clarify is the required path from Stuff:** Stuff items must be clarified to become actionable.
-7. **Tickler system:** Actions with a `defer_until` / `start_date` are hidden until that date, then appear in Next.
+6. **Clarify is the primary path from Stuff:** Stuff is normally clarified to become actionable, but it can also be moved directly to a destination via the Move dropdown or drag (see §4.2 / §23.2).
+7. **Tickler system:** Actions with a `start_date` are hidden until that date, then appear in Next.
 8. **Hard landscape:** Calendar is reserved for time-specific commitments only.
 
 ## Appendix B: Data Persistence
@@ -1790,7 +1859,8 @@ Collapsible "Completed" section is rendered for **all projects** (personal and s
 - **JWT tokens:** `localStorage` (`auth_token`, `refresh_token`, `refresh_token_hash`)
 - **User data cache:** `localStorage` (`current_user`)
 - **Settings cache:** `localStorage` (fallback when API unavailable)
-- **View preferences:** `localStorage` (calendar view mode, reference view mode, new items position, drag hints, debug mode, dismissed tips)
+- **View preferences:** `localStorage` (calendar view mode, reference view mode, drag hints, theme)
+- **Backend-persisted settings:** dismissed tips (`dismissed_tips`) and new-items position are saved via `/v1/user/settings`, not localStorage
 - **Cross-tab logout signal:** `localStorage` (`logout` key, listened via `storage` event)
 
 ## Appendix C: Error Handling Summary

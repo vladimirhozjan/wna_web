@@ -117,7 +117,7 @@ export const faq = [
   {
     question: 'What are recurring actions?',
     answer:
-      'Recurring actions let you create templates that automatically spawn action instances on a schedule. You can set the frequency (daily, weekly, monthly, or yearly), choose specific days, set a time and duration, and define an end condition (never, after N occurrences, or until a date). Access recurring templates from the Calendar page\'s Recurring view. This feature is available on the Pro and Business plans.',
+      'Recurring actions let you create templates that automatically spawn action instances on a schedule. You can set the frequency (daily, weekly, monthly, or yearly), choose specific days, set a time and duration, and define an end condition (never, after N occurrences, or until a date). Access recurring templates from the Calendar page\'s Recurring view. This feature is available on the Pro and Team plans.',
   },
 
   // --- Tags & Filtering ---
@@ -146,14 +146,14 @@ export const faq = [
   {
     question: 'Can I attach files to items?',
     answer:
-      'Yes. Actions, projects, and stuff items each support up to 10 file attachments (50 MB max per file). On the detail page, click the upload area or drag and drop files onto it. Upload progress is shown in real time. Attached images and PDFs can be previewed directly in the app. You can also download or delete any attachment.',
+      'Yes. Actions, projects, and stuff items each support up to 10 file attachments. The maximum file size depends on your plan: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. On the detail page, click the upload area or drag and drop files onto it. Upload progress is shown in real time. Attached images and PDFs can be previewed directly in the app. You can also download or delete any attachment.',
   },
 
   // --- Reference & Files ---
   {
     question: 'How does the Reference file manager work?',
     answer:
-      'Reference is your non-actionable file storage — the Reference bucket. It works like a file manager with folders, file uploads (up to 50 MB per file), global search, and a separate trash. You can create folders, upload files by clicking or dragging, rename and move items, and preview images, PDFs, and text files in the browser. Your storage quota is shown in the toolbar. Stuff items clarified as "Reference" are automatically saved here as text notes.',
+      'Reference is your non-actionable file storage — the Reference bucket. It works like a file manager with folders, file uploads (up to 20 MB per file on Pro and 50 MB on Team), global search, and a separate trash. Uploading and organizing files requires a Pro or Team plan — Free accounts have view-only access. You can create folders, upload files by clicking or dragging, rename and move items, and preview images, PDFs, and text files in the browser. Your storage quota is shown in the toolbar. Stuff items clarified as "Reference" are automatically saved here as text notes.',
   },
 
   // --- Trash & Recovery ---
@@ -174,12 +174,12 @@ export const faq = [
   {
     question: 'What plans are available?',
     answer:
-      'WhatsNextAction offers three plans. The Free plan lets you get started with up to 10 projects, 50 actions, 10 stuff items, 5 context tags, and 10 MB of file storage. The Pro plan is for serious users — up to 100 projects, 500 actions, recurring actions, 25 tags, and 250 MB of storage. The Business plan provides unlimited projects, actions, stuff, tags, 1 GB of storage, and dedicated support. Visit the Pricing page for full details and yearly discounts.',
+      'WhatsNextAction offers three plans. The Free plan lets you get started with up to 7 projects, 10 context tags, and 50 MB of file storage (reference files are view-only). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, and 250 MB of storage. The Team plan adds collaboration: shared projects, connections, and delegation between team members, plus 1 GB of storage per user. Visit the Pricing page for full details and yearly discounts.',
   },
   {
     question: 'What are the limits on attachments and comments?',
     answer:
-      'Each item (action, project, or stuff) supports up to 10 file attachments with a maximum of 50 MB per file. Comments are limited to 50 per item, with each comment up to 2000 characters. These limits apply across all plans.',
+      'Each item (action, project, or stuff) supports up to 10 file attachments; the maximum file size is 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Comments are limited to 50 per item, with each comment up to 2000 characters. The attachment and comment counts apply across all plans.',
   },
 
   // --- Appearance & Notifications ---
