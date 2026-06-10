@@ -1950,6 +1950,8 @@ async function onAddAction() {
   border: 1px solid transparent;
   border-radius: 6px;
   line-height: var(--lh-normal);
+  /* Preserve whitespace like the edit textarea does, so wrapping is identical in both modes */
+  white-space: pre-wrap;
   word-break: break-word;
   cursor: pointer;
 }
@@ -1968,8 +1970,6 @@ async function onAddAction() {
 
 .detail-title--hidden {
   visibility: hidden;
-  /* Mirrors the edit value so the wrapper height tracks the textarea; must wrap like the textarea */
-  white-space: pre-wrap;
 }
 
 .detail-title--completed {
