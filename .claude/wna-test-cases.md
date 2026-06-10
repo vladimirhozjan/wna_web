@@ -2047,6 +2047,30 @@ Use the table below to log each full or partial test run.
 
 ---
 
+### TC-060b: Long Title Truncation in Lists
+**Priority:** Medium | **Area:** Inbox / Stuff
+
+**Preconditions:** User is authenticated. Inbox contains at least 1 stuff item with a very long title (longer than the list row width) and 1 item with a short title.
+
+**Steps:**
+1. Navigate to the Inbox page
+2. Locate the item with the very long title
+3. Verify the title fills the available row width (up to the actions area) and ends with a trailing ellipsis ("…")
+4. Verify the title stays on a single line and does not wrap or overflow the row
+5. Locate the item with the short title and verify it displays in full with no ellipsis
+6. Resize the browser window narrower and verify the truncation point adjusts so the title always uses the available space
+7. Repeat the check on another list page (e.g., Next Actions) to verify consistent behavior
+
+**Expected Result:** Long titles take up all available horizontal space in the list row and are truncated with a trailing ellipsis. Short titles display in full. Truncation adapts to the viewport width and behaves the same across all list pages.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+|      |     |         |
+|      |     |         |
+
+---
+
 ### TC-061: Trash Stuff from List
 **Priority:** High | **Area:** Inbox / Stuff
 
