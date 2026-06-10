@@ -241,7 +241,7 @@ WhatsNextAction (WNA) is a web-based productivity platform implementing the Gett
   - Reference (shows storage quota badge instead of count)
   - Review (conditional: only shown when review is enabled in settings; shows days-since-last-review badge with color coding: orange at 7+ days, red at 14+ days)
   - Completed, Trash
-- **Footer:** Accent color picker + Settings link + Logout button
+- **Footer:** User avatar + email display, Settings link, Logout button
 - **Drag-drop targets:** Most sidebar items accept dragged items (stuff/actions) from list views. Complex drops (Calendar, Waiting For, Projects) open modals for additional input.
 - **Count badges** update after every create/complete/delete/move operation (debounced 300ms)
 

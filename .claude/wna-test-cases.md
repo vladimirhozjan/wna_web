@@ -1852,11 +1852,11 @@ Use the table below to log each full or partial test run.
    - Review (conditional, may or may not be visible)
    - Completed
    - Trash
-5. Verify the footer area of the sidebar contains an accent color picker, "Settings" link, and "Logout" option
+5. Verify the footer area of the sidebar contains the user's avatar and email, a "Settings" link, and a "Logout" option
 6. Click each navigation item and verify it routes to the correct page
 7. Verify the active/current page is visually highlighted in the sidebar
 
-**Expected Result:** The sidebar is a 260px fixed-width panel on the left side of the dashboard. It displays all listed navigation items, each accompanied by an icon and a count badge showing the number of items in that category. The Reference item includes a storage quota indicator. The sidebar footer contains an accent color picker, Settings, and Logout links. Clicking any item navigates to the corresponding page, and the active page is visually highlighted.
+**Expected Result:** The sidebar is a 260px fixed-width panel on the left side of the dashboard. It displays all listed navigation items, each accompanied by an icon and a count badge showing the number of items in that category. The Reference item includes a storage quota indicator. The sidebar footer contains the user's avatar and email, Settings, and Logout links. Clicking any item navigates to the corresponding page, and the active page is visually highlighted.
 
 | Date | P/F | Comment |
 |------|-----|---------|
@@ -10274,7 +10274,7 @@ retired and the corresponding automated test removed.
 **Steps:**
 1. Navigate to any dashboard page.
 2. Observe the sidebar footer area.
-3. Verify the sidebar footer contains: accent color picker, Settings link, and Logout button.
+3. Verify the sidebar footer contains: the user's avatar and email, Settings link, and Logout button.
 4. Verify there is NO dark theme toggle in the sidebar footer.
 5. Navigate to /settings.
 6. Verify the Theme setting is available in the Application section as a dropdown with three options: System Default, Light, Dark.
