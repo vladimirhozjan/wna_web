@@ -4646,6 +4646,7 @@ Use the table below to log each full or partial test run.
 6. Click outside the textarea (blur) or press Enter/Tab
 7. Verify the title saves as "Redesign company website"
 8. Verify the textarea auto-resizes to fit the content (expands for longer text, shrinks for shorter)
+8b. While editing, type enough text to change the number of wrapped lines (e.g., from 1 line to 3 lines, then delete back to 1 line). Verify the content below the title (action buttons, sections) moves down/up in sync with the textarea height — no overlap and no leftover gap. This applies to all detail pages (stuff, action, project, recurring)
 9. Locate the outcome section
 10. Verify the outcome text "Have a professional online presence" is displayed
 11. Click on the outcome text
@@ -4656,7 +4657,7 @@ Use the table below to log each full or partial test run.
 16. Verify the outcome updates
 17. Reload the page and verify both the updated title and outcome persist
 
-**Expected Result:** Title and outcome are both click-to-edit fields. The title uses an auto-resize textarea. The outcome field shows a placeholder "What does done look like?" when empty. Changes persist across reloads.
+**Expected Result:** Title and outcome are both click-to-edit fields. The title uses an auto-resize textarea, and the page content below reflows with the textarea height as the line count changes while typing (no overlap, no leftover gap) — on all detail pages. The outcome field shows a placeholder "What does done look like?" when empty. Changes persist across reloads.
 
 | Date | P/F | Comment |
 |------|-----|---------|

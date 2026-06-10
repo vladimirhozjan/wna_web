@@ -52,7 +52,7 @@
                 class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title', 'detail-title--completed': isCompleted }"
                 @click="startEdit('title', item.title)"
-            >{{ item.title }}</h2>
+            >{{ editingField === 'title' ? (editValue || ' ') : item.title }}</h2>
             <textarea
                 v-if="editingField === 'title'"
                 ref="titleInput"
@@ -1026,6 +1026,8 @@ async function onActivate() {
 
 .detail-title--hidden {
   visibility: hidden;
+  /* Mirrors the edit value so the wrapper height tracks the textarea; must wrap like the textarea */
+  white-space: pre-wrap;
 }
 
 .detail-title--completed {

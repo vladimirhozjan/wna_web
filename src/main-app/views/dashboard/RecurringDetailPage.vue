@@ -40,7 +40,7 @@
                 class="text-h2 detail-title"
                 :class="{ 'detail-title--hidden': editingField === 'title' }"
                 @click="startEdit('title', template.title)"
-            >{{ template.title }}</h2>
+            >{{ editingField === 'title' ? (editTitle || ' ') : template.title }}</h2>
             <textarea
                 v-if="editingField === 'title'"
                 ref="titleInput"
@@ -717,6 +717,8 @@ function formatDate(dateStr) {
 
 .detail-title--hidden {
   visibility: hidden;
+  /* Mirrors the edit value so the wrapper height tracks the textarea; must wrap like the textarea */
+  white-space: pre-wrap;
 }
 
 .detail-title-input {
