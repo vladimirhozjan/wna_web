@@ -97,7 +97,9 @@ watch(() => props.modelValue, (v) => {
     if (v.kind === 'text') return v.value || ''
     return ''
   })()
-  if (next !== query.value) query.value = next
+  // Compare trimmed: emitted text is trimmed, so a trailing space the user
+  // just typed must not be clobbered by the value echoing back
+  if (next !== query.value.trim()) query.value = next
 })
 
 const isLoading = computed(() => conn.loading.value && !conn.loaded.value)

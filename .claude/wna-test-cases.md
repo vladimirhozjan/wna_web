@@ -13187,6 +13187,23 @@ No backend request is made in any of the three cases.
 
 ---
 
+### TC-425b: No Bell for Unauthenticated Users
+**Priority:** Low | **Area:** Notifications
+
+**Preconditions:** No user is logged in.
+
+**Steps:**
+1. Navigate to the landing page (`/`) as a guest
+2. Inspect the top nav for a notification bell icon
+
+**Expected Result:** No notification bell is rendered anywhere in the top nav for unauthenticated visitors. The bell (and its unread badge) only appears after login.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
 ### TC-426: Open Notification Dropdown and Mark as Read
 **Priority:** High | **Area:** Notifications
 
@@ -13454,6 +13471,24 @@ No backend request is made in any of the three cases.
 3. Submit (Enter or Save)
 
 **Expected Result:** The action is created in WAITING state with `waiting_for` set to the typed string and `waiting_for_user_id` left null. The backend call is `POST /v1/action/{id}/wait` (legacy), NOT `/v1/action/{id}/delegate`. The item appears in Waiting For with the free-text label and a "since" duration.
+
+| Date | P/F | Comment |
+|------|-----|---------|
+|      |     |         |
+
+---
+
+### TC-469b: Connection Picker Accepts Spaces in Free Text
+**Priority:** Medium | **Area:** Delegation
+
+**Preconditions:** Logged-in user with at least one action in Next Actions.
+
+**Steps:**
+1. Open an action's detail page and use Move → Waiting For (the "Who/what are you waiting on?" modal appears)
+2. Type a multi-word value, e.g., `my friend`, including the space between words
+3. Confirm with Save
+
+**Expected Result:** Every keystroke, including the space character, appears in the input as typed — the trailing space is not stripped while typing (regression: the value echoed back from the parent is trimmed and used to clobber the input after each keystroke, making spaces vanish). The saved `waiting_for` value is the trimmed text "my friend". Same behavior applies in all other flows that use the connection combobox (Clarify "Delegate It", Waiting For add, Action Detail state change).
 
 | Date | P/F | Comment |
 |------|-----|---------|
