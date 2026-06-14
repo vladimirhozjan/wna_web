@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Re-parses .claude/wna-test-cases.md and updates the regression dashboard data files.
-# Run this after adding or editing test cases in .claude/wna-test-cases.md.
+# Re-parses the canonical test-case spec and updates the regression dashboard data files.
+# Source moved to wna_orchestration/specs/tests/wna-test-cases.md.
+# Run this after adding or editing test cases there.
 #
 # Usage:  ./update-tests.sh
 #
@@ -21,7 +22,7 @@ if ! command -v node &>/dev/null; then
 fi
 
 # Check that the source markdown exists
-MD_FILE="$SCRIPT_DIR/../.claude/wna-test-cases.md"
+MD_FILE="$SCRIPT_DIR/../../../wna_orchestration/specs/tests/wna-test-cases.md"
 if [ ! -f "$MD_FILE" ]; then
   echo "ERROR: wna-test-cases.md not found at $MD_FILE"
   exit 1

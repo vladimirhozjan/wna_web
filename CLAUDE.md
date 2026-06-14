@@ -15,7 +15,7 @@ surface, GTD domain model) live in `wna_orchestration` — see its FACT INDEX in
 ## GTD Domain Model
 
 GTD domain model (entities, rules, clarify workflow) is a shared fact — see
-wna_orchestration/contracts/external.md → wna_backend `.claude/wna-specification.md` (canonical).
+`wna_orchestration/specs/domain/wna-specification.md` (canonical).
 
 ## Build & Development Commands
 
@@ -164,7 +164,7 @@ View → Model → apiClient → httpApi (Axios)
 Backend runs on `http://localhost:8000` (router_service gateway). Key endpoints:
 
 The public API surface and naming convention are the code-synced spec — see
-wna_orchestration/contracts/external.md → wna_backend `.claude/api.md` (canonical).
+`wna_orchestration/specs/api/api.md` (canonical).
 
 JWT tokens in localStorage: `auth_token`, `refresh_token`, `current_user`.
 
@@ -181,11 +181,12 @@ Terser minification (console/debugger stripped). Code obfuscation via `rollup-pl
 - **Before creating any new `.vue` component, model, CSS variable, or utility function** — ask the user for approval. Explain what you need and why an existing one can't be used
 
 ### Keep Documentation in Sync
-When adding features, fixing bugs, or changing behavior, update the relevant docs:
-- `.claude/wna-features.md` — update if a user-facing feature is added, changed, or removed
-- `.claude/wna-test-cases.md` — add/update test cases for new or changed functionality
-- `.claude/ci.md` — update if build config, Docker, K8s manifests, or deployment changes
-- `README.md` — update if dev setup, build commands, project structure, or tooling changes
+When adding features, fixing bugs, or changing behavior, update the relevant specs **in `wna_orchestration`**
+(this repo's `.claude/*.md` are pointers):
+- `wna_orchestration/specs/features/wna-features.md` — if a user-facing feature is added, changed, or removed
+- `wna_orchestration/specs/tests/wna-test-cases.md` — add/update test cases for new or changed functionality
+- `wna_orchestration/specs/ci/frontend-ci.md` — if build config, Docker, K8s manifests, or deployment changes
+- `README.md` — update if dev setup, build commands, project structure, or tooling changes (stays local)
 
 ## Code Conventions
 
@@ -238,9 +239,10 @@ When adding features, fixing bugs, or changing behavior, update the relevant doc
 
 ## Related Docs
 
-- `README.md` — Dev setup, build commands, Docker, deployment
-- `.claude/wna-specification.md` — Full GTD domain specification
-- `.claude/ci.md` — CI/CD, Docker, Kubernetes manifests
-- `.claude/roadmap.md` — Remaining work (features, gaps, polish)
-- `.claude/wna-features.md` — Complete user-facing feature documentation
-- `.claude/wna-test-cases.md` — QA manual test cases
+All specs are centralized in `wna_orchestration` (this repo's `.claude/*.md` are pointers):
+- `README.md` — Dev setup, build commands, Docker, deployment (stays local)
+- `wna_orchestration/specs/domain/wna-specification.md` — Full GTD domain specification
+- `wna_orchestration/specs/ci/frontend-ci.md` — CI/CD, Docker, Kubernetes manifests
+- `wna_orchestration/roadmap.md` — Roadmap
+- `wna_orchestration/specs/features/wna-features.md` — Complete user-facing feature documentation
+- `wna_orchestration/specs/tests/wna-test-cases.md` — QA manual test cases
