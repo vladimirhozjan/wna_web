@@ -6,15 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **WNA** is a GTD (Getting Things Done) productivity platform implementing David Allen's methodology. This repo is the Vue.js frontend; the backend is a separate C++20 microservices repo (`../wna_backend/`).
 
-**Version roadmap**: V1 (basics: login, tasks, projects, calendar) → V2 (full functionality, monetization, integrations) → V3 (user-requested features, mobile apps)
+**Version roadmap**: see wna_orchestration/roadmap.md (canonical).
+
+**Shared cross-project facts** (tier quotas, rate limits, token lifetimes, roadmap, decisions, API
+surface, GTD domain model) live in `wna_orchestration` — see its FACT INDEX in
+`wna_orchestration/CLAUDE.md`. Keep only frontend-local conventions in this file.
 
 ## GTD Domain Model
 
-Full domain specification (entities, rules, user flows, clarify workflow): `.claude/wna-specification.md`
-
-**Key entities**: Stuff (raw inbox), Action (concrete step), Project (multi-action outcome)
-
-**Key rules**: Stuff has no metadata. Projects must have a Next Action. Two-minute rule during clarify. Tickler via `defer_until`.
+GTD domain model (entities, rules, clarify workflow) is a shared fact — see
+wna_orchestration/contracts/external.md → wna_backend `.claude/wna-specification.md` (canonical).
 
 ## Build & Development Commands
 
@@ -162,14 +163,8 @@ View → Model → apiClient → httpApi (Axios)
 
 Backend runs on `http://localhost:8000` (router_service gateway). Key endpoints:
 
-- `/v1/user/*` — Auth: register, login, refresh, forgot, reset, get, delete
-- `/v1/stuff` — Stuff CRUD, `/v1/inbox` — list stuff
-- `/v1/stuff/{id}/transform` — Clarify stuff into action or project
-- `/v1/action` — Action CRUD, `/v1/nextActions` — list actions
-- `/v1/project` — Project CRUD, `/v1/projects` — list projects
-- `/v1/{entity}/{id}/complete` — Mark as completed
-
-**Naming convention**: CRUD uses singular (`/v1/stuff/{id}`), lists use plural/named (`/v1/inbox`, `/v1/nextActions`, `/v1/projects`). Position queries: `/v1/{list}/pos/{n}`.
+The public API surface and naming convention are the code-synced spec — see
+wna_orchestration/contracts/external.md → wna_backend `.claude/api.md` (canonical).
 
 JWT tokens in localStorage: `auth_token`, `refresh_token`, `current_user`.
 

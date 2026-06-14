@@ -199,10 +199,7 @@ server {
 
 Full Kubernetes manifests (Deployments, Services, Ingress, ConfigMaps, ManagedCertificates) for both apps are documented in `.claude/ci.md`.
 
-| App       | Domain (dev)                  | Domain (prod)               |
-|-----------|-------------------------------|------------------------------|
-| main-app  | `dev.whatsnextaction.com`      | `whatsnextaction.com`         |
-| admin-app | `admin-dev.whatsnextaction.com`| `admin.whatsnextaction.com`   |
+Environment domains are a shared fact — see wna_orchestration/contracts/external.md → wna_deploy (canonical).
 
 ---
 
