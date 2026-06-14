@@ -8,13 +8,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Version roadmap**: see wna_orchestration/roadmap.md (canonical).
 
+**Shared cross-project facts** (tier quotas, rate limits, token lifetimes, roadmap, decisions, API
+surface, GTD domain model) live in `wna_orchestration` — see its FACT INDEX in
+`wna_orchestration/CLAUDE.md`. Keep only frontend-local conventions in this file.
+
 ## GTD Domain Model
 
-Full domain specification (entities, rules, user flows, clarify workflow): `.claude/wna-specification.md`
-
-**Key entities**: Stuff (raw inbox), Action (concrete step), Project (multi-action outcome)
-
-**Key rules**: Stuff has no metadata. Projects must have a Next Action. Two-minute rule during clarify. Tickler via `defer_until`.
+GTD domain model (entities, rules, clarify workflow) is a shared fact — see
+`wna_orchestration/specs/domain/wna-specification.md` (canonical).
 
 ## Build & Development Commands
 
@@ -162,14 +163,8 @@ View → Model → apiClient → httpApi (Axios)
 
 Backend runs on `http://localhost:8000` (router_service gateway). Key endpoints:
 
-- `/v1/user/*` — Auth: register, login, refresh, forgot, reset, get, delete
-- `/v1/stuff` — Stuff CRUD, `/v1/inbox` — list stuff
-- `/v1/stuff/{id}/transform` — Clarify stuff into action or project
-- `/v1/action` — Action CRUD, `/v1/nextActions` — list actions
-- `/v1/project` — Project CRUD, `/v1/projects` — list projects
-- `/v1/{entity}/{id}/complete` — Mark as completed
-
-**Naming convention**: CRUD uses singular (`/v1/stuff/{id}`), lists use plural/named (`/v1/inbox`, `/v1/nextActions`, `/v1/projects`). Position queries: `/v1/{list}/pos/{n}`.
+The public API surface and naming convention are the code-synced spec — see
+`wna_orchestration/specs/api/api.md` (canonical).
 
 JWT tokens in localStorage: `auth_token`, `refresh_token`, `current_user`.
 
@@ -186,11 +181,12 @@ Terser minification (console/debugger stripped). Code obfuscation via `rollup-pl
 - **Before creating any new `.vue` component, model, CSS variable, or utility function** — ask the user for approval. Explain what you need and why an existing one can't be used
 
 ### Keep Documentation in Sync
-When adding features, fixing bugs, or changing behavior, update the relevant docs:
-- `.claude/wna-features.md` — update if a user-facing feature is added, changed, or removed
-- `.claude/wna-test-cases.md` — add/update test cases for new or changed functionality
-- `.claude/ci.md` — update if build config, Docker, K8s manifests, or deployment changes
-- `README.md` — update if dev setup, build commands, project structure, or tooling changes
+When adding features, fixing bugs, or changing behavior, update the relevant specs **in `wna_orchestration`**
+(this repo's `.claude/*.md` are pointers):
+- `wna_orchestration/specs/features/wna-features.md` — if a user-facing feature is added, changed, or removed
+- `wna_orchestration/specs/tests/wna-test-cases.md` — add/update test cases for new or changed functionality
+- `wna_orchestration/specs/ci/frontend-ci.md` — if build config, Docker, K8s manifests, or deployment changes
+- `README.md` — update if dev setup, build commands, project structure, or tooling changes (stays local)
 
 ## Code Conventions
 
@@ -243,9 +239,10 @@ When adding features, fixing bugs, or changing behavior, update the relevant doc
 
 ## Related Docs
 
-- `README.md` — Dev setup, build commands, Docker, deployment
-- `.claude/wna-specification.md` — Full GTD domain specification
-- `.claude/ci.md` — CI/CD, Docker, Kubernetes manifests
-- Roadmap — centralized in wna_orchestration/roadmap.md
-- `.claude/wna-features.md` — Complete user-facing feature documentation
-- `.claude/wna-test-cases.md` — QA manual test cases
+All specs are centralized in `wna_orchestration` (this repo's `.claude/*.md` are pointers):
+- `README.md` — Dev setup, build commands, Docker, deployment (stays local)
+- `wna_orchestration/specs/domain/wna-specification.md` — Full GTD domain specification
+- `wna_orchestration/specs/ci/frontend-ci.md` — CI/CD, Docker, Kubernetes manifests
+- `wna_orchestration/roadmap.md` — Roadmap
+- `wna_orchestration/specs/features/wna-features.md` — Complete user-facing feature documentation
+- `wna_orchestration/specs/tests/wna-test-cases.md` — QA manual test cases
