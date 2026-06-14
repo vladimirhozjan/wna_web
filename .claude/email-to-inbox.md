@@ -4,7 +4,7 @@
 
 **Email to Inbox** is a P1 Pro feature from the backend roadmap (E1-E3). Users get a unique email address; forwarding emails to it creates Stuff items in their GTD Inbox. This spec covers all three repos (wna_backend, wna_web, wna_deploy).
 
-**Existing design notes** from `wna_backend/.claude/roadmap.md`: Zoho catch-all on `inbox.whatsnextaction.com`, IMAP poller, `stuff-{hash}@` addressing, 50 emails/day rate limit.
+**Existing design notes** (see wna_orchestration/features/FEAT-001-email-to-inbox.md): Zoho catch-all on `inbox.whatsnextaction.com`, IMAP poller, `stuff-{hash}@` addressing, 50 emails/day rate limit.
 
 ---
 

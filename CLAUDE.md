@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **WNA** is a GTD (Getting Things Done) productivity platform implementing David Allen's methodology. This repo is the Vue.js frontend; the backend is a separate C++20 microservices repo (`../wna_backend/`).
 
-**Version roadmap**: V1 (basics: login, tasks, projects, calendar) → V2 (full functionality, monetization, integrations) → V3 (user-requested features, mobile apps)
+**Version roadmap**: see wna_orchestration/roadmap.md (canonical).
 
 ## GTD Domain Model
 
@@ -246,6 +246,6 @@ When adding features, fixing bugs, or changing behavior, update the relevant doc
 - `README.md` — Dev setup, build commands, Docker, deployment
 - `.claude/wna-specification.md` — Full GTD domain specification
 - `.claude/ci.md` — CI/CD, Docker, Kubernetes manifests
-- `.claude/roadmap.md` — Remaining work (features, gaps, polish)
+- Roadmap — centralized in wna_orchestration/roadmap.md
 - `.claude/wna-features.md` — Complete user-facing feature documentation
 - `.claude/wna-test-cases.md` — QA manual test cases
