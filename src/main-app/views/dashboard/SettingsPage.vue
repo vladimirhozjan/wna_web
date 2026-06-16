@@ -314,27 +314,13 @@
 
             <div class="settings-row">
               <div>
-                <span class="settings-label">Task due today</span>
-                <p class="text-body-s settings-hint">Daily reminder for tasks due today</p>
+                <span class="settings-label">Daily digest</span>
+                <p class="text-body-s settings-hint">Daily email summarizing your today, next actions, and items due</p>
               </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.taskDueToday }">
-                <span v-if="notifications.state.saving.taskDueToday" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyDigest }">
+                <span v-if="notifications.state.saving.dailyDigest" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
-                  <input type="checkbox" v-model="taskDueToday" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Daily next actions</span>
-                <p class="text-body-s settings-hint">Summary of your next actions for the day</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyNextActions }">
-                <span v-if="notifications.state.saving.dailyNextActions" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="dailyNextActions" :disabled="!notifications.state.emailEnabled" />
+                  <input type="checkbox" v-model="dailyDigest" :disabled="!notifications.state.emailEnabled" />
                   <span class="settings-toggle-slider"></span>
                 </label>
               </div>
@@ -535,7 +521,7 @@ const SECTION_KEYWORDS = {
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
   review: 'review weekly sidebar',
-  notifications: 'notifications email reminder due today next actions project',
+  notifications: 'notifications email reminder daily digest next actions project',
   about: 'about version',
 }
 
@@ -661,14 +647,9 @@ const emailEnabled = computed({
   set: (val) => notifications.setEmailEnabled(val).catch(() => toaster.push('Failed to save notification setting'))
 })
 
-const taskDueToday = computed({
-  get: () => notifications.state.taskDueToday,
-  set: (val) => notifications.setTaskDueToday(val).catch(() => toaster.push('Failed to save notification setting'))
-})
-
-const dailyNextActions = computed({
-  get: () => notifications.state.dailyNextActions,
-  set: (val) => notifications.setDailyNextActions(val).catch(() => toaster.push('Failed to save notification setting'))
+const dailyDigest = computed({
+  get: () => notifications.state.dailyDigest,
+  set: (val) => notifications.setDailyDigest(val).catch(() => toaster.push('Failed to save notification setting'))
 })
 
 const projectNeedsNextAction = computed({

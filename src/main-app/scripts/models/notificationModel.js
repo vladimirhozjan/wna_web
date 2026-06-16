@@ -12,8 +12,7 @@ export function notificationModel() {
     const state = reactive({
         // UI state: true = enabled (not disabled)
         emailEnabled: true,       // master toggle: false when "*" in disabled_events.email
-        taskDueToday: true,
-        dailyNextActions: true,
+        dailyDigest: true,
         projectNeedsNextAction: true,
         delegatedToYou: true,
         delegationCompleted: true,
@@ -23,8 +22,7 @@ export function notificationModel() {
         loaded: false,
         saving: {
             emailEnabled: false,
-            taskDueToday: false,
-            dailyNextActions: false,
+            dailyDigest: false,
             projectNeedsNextAction: false,
             delegatedToYou: false,
             delegationCompleted: false,
@@ -43,8 +41,7 @@ export function notificationModel() {
     function applyToState() {
         const email = disabledEvents.email || []
         state.emailEnabled = !email.includes('*')
-        state.taskDueToday = !isDisabled('task_due_today')
-        state.dailyNextActions = !isDisabled('daily_next_actions')
+        state.dailyDigest = !isDisabled('daily_digest')
         state.projectNeedsNextAction = !isDisabled('project_needs_next_action')
         state.delegatedToYou = !isDisabled('delegated_to_you')
         state.delegationCompleted = !isDisabled('delegation_completed')
@@ -54,8 +51,7 @@ export function notificationModel() {
     function buildDisabledEmail() {
         // Build the email disabled array from current UI state
         const disabled = []
-        if (!state.taskDueToday) disabled.push('task_due_today')
-        if (!state.dailyNextActions) disabled.push('daily_next_actions')
+        if (!state.dailyDigest) disabled.push('daily_digest')
         if (!state.projectNeedsNextAction) disabled.push('project_needs_next_action')
         if (!state.delegatedToYou) disabled.push('delegated_to_you')
         if (!state.delegationCompleted) disabled.push('delegation_completed')
@@ -119,12 +115,8 @@ export function notificationModel() {
         }
     }
 
-    async function setTaskDueToday(value) {
-        return toggleEvent('taskDueToday', 'task_due_today', value)
-    }
-
-    async function setDailyNextActions(value) {
-        return toggleEvent('dailyNextActions', 'daily_next_actions', value)
+    async function setDailyDigest(value) {
+        return toggleEvent('dailyDigest', 'daily_digest', value)
     }
 
     async function setProjectNeedsNextAction(value) {
@@ -147,8 +139,7 @@ export function notificationModel() {
         state,
         load,
         setEmailEnabled,
-        setTaskDueToday,
-        setDailyNextActions,
+        setDailyDigest,
         setProjectNeedsNextAction,
         setDelegatedToYou,
         setDelegationCompleted,
