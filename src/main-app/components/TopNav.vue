@@ -256,10 +256,8 @@ function routeForNotification(n) {
     router.push({ name: "projects" });
   } else if (CONNECTION_EVENT_TYPES.has(n.type)) {
     router.push({ name: "connections" });
-  } else if (n.type === "daily_next_actions") {
-    router.push({ name: "next" });
-  } else if (n.type === "task_due_today") {
-    router.push({ name: "today" });
+  } else if (n.type === "daily_digest") {
+    router.push({ name: "engage" });
   }
 }
 
