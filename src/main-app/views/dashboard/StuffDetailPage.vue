@@ -126,6 +126,7 @@
             <button class="dropdown-item" @click="onMoveTo('reference')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
           </Dropdown>
           <Btn
+              v-if="!isCompleted"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
