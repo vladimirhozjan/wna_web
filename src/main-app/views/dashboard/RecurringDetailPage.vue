@@ -196,10 +196,10 @@
         </div>
 
         <!-- Next occurrence (edit mode only) -->
-        <div v-if="template.next_occurrence" class="detail-section-area">
+        <div v-if="template.next_occurrence_date" class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">Next occurrence</label>
           <div class="detail-section-wrapper">
-            <p class="text-body-m detail-section-content detail-section-content--readonly">{{ formatDate(template.next_occurrence) }}</p>
+            <p class="text-body-m detail-section-content detail-section-content--readonly">{{ formatShortDate(template.next_occurrence_date) }}</p>
           </div>
         </div>
 
@@ -236,6 +236,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
+import { formatShortDate } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
 

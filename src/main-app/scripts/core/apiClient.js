@@ -107,7 +107,7 @@ function addToTop() {
 // Required `tz` query param on day-scoped endpoints so the backend windows "today" in the
 // user's local zone (DST-aware). See api.md "Timezone & Day Windowing (FEAT-016)".
 function liveTz() {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 }
 
 export async function registerUser({email, password}) {
