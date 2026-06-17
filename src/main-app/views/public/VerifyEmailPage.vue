@@ -148,8 +148,8 @@ async function doResend() {
         cooldownTimer = null
       }
     }, 1000)
-  } catch {
-    toaster.push('Failed to resend verification email.')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to resend verification email.')
   } finally {
     resending.value = false
   }

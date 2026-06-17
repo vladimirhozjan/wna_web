@@ -365,7 +365,7 @@ async function doResend() {
     error.success('If this email is registered, a new verification link has been sent.')
     startCooldown()
   } catch (err) {
-    error.push('Failed to resend verification email.')
+    error.push(err.message || 'Failed to resend verification email.')
   } finally {
     resending.value = false
   }
