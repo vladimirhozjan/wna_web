@@ -197,7 +197,7 @@ server {
 
 ## GKE Deployment
 
-Full Kubernetes manifests (Deployments, Services, Ingress, ConfigMaps, ManagedCertificates) for both apps are documented in `.claude/ci.md`.
+Full Kubernetes manifests (Deployments, Services, Ingress, ConfigMaps, ManagedCertificates) for both apps are a shared fact — see `wna_orchestration/specs/ci/frontend-ci.md` (canonical).
 
 Environment domains are a shared fact — see wna_orchestration/contracts/external.md → wna_deploy (canonical).
 
