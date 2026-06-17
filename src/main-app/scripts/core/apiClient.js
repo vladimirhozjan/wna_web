@@ -103,6 +103,13 @@ function addToTop() {
     return localStorage.getItem('pref-add-position') === 'beginning'
 }
 
+// Caller's IANA timezone, read live per request — never persisted (no localStorage/profile).
+// Required `tz` query param on day-scoped endpoints so the backend windows "today" in the
+// user's local zone (DST-aware). See api.md "Timezone & Day Windowing (FEAT-016)".
+function liveTz() {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
 export async function registerUser({email, password}) {
     try {
         const res = await httpApi.post('/v1/user/register', {email, password})
@@ -624,7 +631,7 @@ export async function getAction(actionId) {
 
 export async function listActions({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
-        const params = {}
+        const params = {tz: liveTz()}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
         if (tags) params.tags = tags
@@ -656,7 +663,7 @@ export async function trashAction(actionId) {
 
 export async function moveAction(actionId, destination) {
     try {
-        const res = await httpApi.post(`/v1/action/${actionId}/move`, {destination}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/action/${actionId}/move`, {destination}, {params: {tz: liveTz()}, headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -717,7 +724,7 @@ export async function clearDueDate(actionId) {
 
 export async function listTodayActions({limit = PAGE_SIZE, cursor = null, tags = null} = {}) {
     try {
-        const params = {}
+        const params = {tz: liveTz()}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
         if (tags) params.tags = tags
@@ -740,7 +747,7 @@ export async function todayAction(actionId) {
 
 export async function moveTodayAction(actionId, position) {
     try {
-        const res = await httpApi.post(`/v1/today/${actionId}/move`, {position}, {headers: authHeaders()})
+        const res = await httpApi.post(`/v1/today/${actionId}/move`, {position}, {params: {tz: liveTz()}, headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
@@ -749,7 +756,7 @@ export async function moveTodayAction(actionId, position) {
 
 export async function getTodayActionByPosition(position) {
     try {
-        const res = await httpApi.get(`/v1/today/pos/${position}`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/today/pos/${position}`, {params: {tz: liveTz()}, headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -758,7 +765,7 @@ export async function getTodayActionByPosition(position) {
 
 export async function getActionByPosition(position) {
     try {
-        const res = await httpApi.get(`/v1/nextActions/pos/${position}`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/nextActions/pos/${position}`, {params: {tz: liveTz()}, headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1579,7 +1586,7 @@ export async function moveRecurring(id, destination) {
 
 export async function getStats() {
     try {
-        const res = await httpApi.get('/v1/stats/count', {headers: authHeaders()})
+        const res = await httpApi.get('/v1/stats/count', {params: {tz: liveTz()}, headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1590,7 +1597,7 @@ export async function getStats() {
 
 export async function listOverdue({limit = PAGE_SIZE, cursor = null} = {}) {
     try {
-        const params = {}
+        const params = {tz: liveTz()}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
 
@@ -1647,7 +1654,7 @@ export async function googleSso(code) {
 
 export async function getEngage({tags = null} = {}) {
     try {
-        const params = {}
+        const params = {tz: liveTz()}
         if (tags) params.tags = tags
 
         const res = await httpApi.get('/v1/engage', {params, headers: authHeaders()})
