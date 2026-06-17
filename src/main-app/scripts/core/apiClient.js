@@ -76,6 +76,10 @@ function normalizeError(error) {
                 return {status, message: "Unprocessable entity (422). Invalid input."}
             case 429:
                 return {status, message: "Too many requests. Please try again later."}
+            case 500:
+                return {status, message: "Internal server error. Please try again later."}
+            case 503:
+                return {status, message: "Service unavailable. Please try again later."}
             default:
                 return {status, message: `Server error (${status}).`}
         }
