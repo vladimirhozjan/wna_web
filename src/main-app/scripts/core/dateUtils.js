@@ -185,6 +185,27 @@ export function isOverdue(dateStr) {
     return new Date() > endOfDueDay
 }
 
+// FEAT-013: mirror of the backend 3-way overdue rule for SCHEDULED actions.
+// A scheduled action is TIME-GRANULAR overdue ONLY when it has a time AND a positive
+// duration: its slot end (scheduled_date 'T' scheduled_time + duration minutes) has
+// strictly passed (strict `>`, matching the backend's strict `<`). The date string is
+// parsed BROWSER-LOCAL — NO 'Z'/offset suffix — so the comparison happens in the same
+// wall-clock zone as the `tz` the client already sends to the backend
+// (apiClient.js liveTz()); keeping the parse suffix-free is load-bearing.
+// A no-time OR 0/absent-duration scheduled item is DAY-GRANULAR: overdue the next day
+// (scheduled_date < today), the same daily-task split as the backend.
+export function isScheduledOverdue(scheduledDate, scheduledTime, scheduledDuration) {
+    if (!scheduledDate) return false
+    const duration = Number(scheduledDuration) || 0
+    if (scheduledTime && duration > 0) {
+        const end = new Date(scheduledDate + 'T' + scheduledTime)  // local parse, no Z/offset
+        if (isNaN(end.getTime())) return false
+        end.setMinutes(end.getMinutes() + duration)
+        return new Date() > end
+    }
+    return isOverdue(scheduledDate)  // day-granular: overdue the next day
+}
+
 export function formatShortDate(dateStr) {
     if (!dateStr) return ''
     return format(parseISO(dateStr), 'MMM d')

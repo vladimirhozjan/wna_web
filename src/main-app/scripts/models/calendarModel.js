@@ -4,6 +4,7 @@ import {
     navigateDate,
     getDateRange,
     isOverdue,
+    isScheduledOverdue,
 } from '../core/dateUtils.js'
 import { listCalendar, getCalendarDensity, addAction, deferAction } from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
@@ -161,7 +162,18 @@ export function calendarModel() {
     }
 
     function isItemOverdue(item) {
-        return !!item.due_date && isOverdue(item.due_date)
+        // Flag overdue per the row's display reason so a start/due action's `start`
+        // occurrence isn't reddened by its deadline (scheduled XOR start/due invariant
+        // means the scheduled and deadline branches never collide on one item).
+        const reason = item._displayReason || getItemDisplayType(item)
+        if (reason === 'due') {
+            return !!item.due_date && isOverdue(item.due_date)
+        }
+        if (reason === 'scheduled') {
+            // calendar items carry duration under `duration` (transformItem renames scheduled_duration)
+            return isScheduledOverdue(item.scheduled_date, item.scheduled_time, item.duration)
+        }
+        return false
     }
 
     function hasTime(item) {

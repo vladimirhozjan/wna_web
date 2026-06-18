@@ -103,7 +103,7 @@ import Item from './Item.vue'
 import Btn from './Btn.vue'
 import ActionBtn from './ActionBtn.vue'
 import { dragModel } from '../scripts/models/dragModel.js'
-import { isOverdue } from '../scripts/core/dateUtils.js'
+import { isOverdue, isScheduledOverdue } from '../scripts/core/dateUtils.js'
 import Spinner from './Spinner.vue'
 
 const props = defineProps({
@@ -146,7 +146,10 @@ function dismissHint() {
 }
 
 function itemIsOverdue(item) {
-  return isOverdue(item.due_date)
+  // due deadline OR overscheduled timed slot (FEAT-013); scheduled XOR start/due means
+  // an item carries at most one of due_date / scheduled_date, so the OR can't double-fire.
+  if (isOverdue(item.due_date)) return true
+  return isScheduledOverdue(item.scheduled_date, item.scheduled_time, item.scheduled_duration)
 }
 
 // Drag state

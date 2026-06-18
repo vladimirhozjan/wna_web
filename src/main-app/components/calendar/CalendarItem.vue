@@ -52,7 +52,9 @@ const displayType = computed(() => calendar.getItemDisplayType(props.item))
 const isOverdueItem = computed(() => calendar.isItemOverdue(props.item))
 
 const displayClass = computed(() => {
-  if (displayType.value === 'due' && isOverdueItem.value) return 'overdue'
+  // Overdue first: displayType is 'scheduled' (never 'due') for timed scheduled slots,
+  // so the old `displayType === 'due'` guard could never redden them (FEAT-013).
+  if (isOverdueItem.value) return 'overdue'
   if (displayType.value === 'due') return 'due'
   if (displayType.value === 'start') return 'start'
   return 'scheduled'

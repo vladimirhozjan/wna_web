@@ -49,10 +49,10 @@
         <span class="chip__text" :class="isItemOverdue ? 'chip__text--overdue' : 'chip__text--due'">{{ isItemOverdue ? 'Overdue' : 'Due' }} {{ formattedDueDate }}</span>
       </span>
 
-      <!-- Scheduled date -->
-      <span v-if="entityType === 'action' && item.scheduled_date" class="chip">
-        <CalendarIcon class="chip__icon chip__icon--scheduled" />
-        <span class="chip__text chip__text--scheduled">Scheduled {{ formattedScheduledDate }}</span>
+      <!-- Scheduled date (overscheduled → overdue styling, same as the due chip) -->
+      <span v-if="entityType === 'action' && item.scheduled_date" class="chip" :class="{ 'chip--overdue': isScheduledOverdueItem }">
+        <CalendarIcon class="chip__icon" :class="isScheduledOverdueItem ? 'chip__icon--overdue' : 'chip__icon--scheduled'" />
+        <span class="chip__text" :class="isScheduledOverdueItem ? 'chip__text--overdue' : 'chip__text--scheduled'">{{ isScheduledOverdueItem ? 'Overdue' : 'Scheduled' }} {{ formattedScheduledDate }}</span>
       </span>
 
       <!-- Start date -->
@@ -103,7 +103,7 @@ import RecurringIcon from '../assets/RecurringIcon.vue'
 import WarningIcon from '../assets/WarningIcon.vue'
 import DescriptionIcon from '../assets/DescriptionIcon.vue'
 import SharedIcon from '../assets/SharedIcon.vue'
-import { isOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
+import { isOverdue, isScheduledOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
 import { describeRRule } from '../scripts/core/rruleUtils.js'
 import { authModel } from '../scripts/core/authModel.js'
 
@@ -114,6 +114,13 @@ const props = defineProps({
 
 const isItemOverdue = computed(() =>
     props.entityType === 'action' && isOverdue(props.item.due_date)
+)
+
+// FEAT-013: overscheduled = timed scheduled slot whose end has passed (or daily
+// scheduled item past its day). Drives the scheduled chip's overdue (dark-red) state.
+const isScheduledOverdueItem = computed(() =>
+    props.entityType === 'action'
+    && isScheduledOverdue(props.item.scheduled_date, props.item.scheduled_time, props.item.scheduled_duration)
 )
 
 const missingNextAction = computed(() =>

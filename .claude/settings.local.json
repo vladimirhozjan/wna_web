@@ -57,7 +57,9 @@
       "Bash(sed -n '5041,5047p' /Users/vladimirhozjan/Documents/wna_backend/.claude/api.md)",
       "Read(//Users/vladimirhozjan/Documents/wna_backend/**)",
       "Read(//Users/vladimirhozjan/Documents/wna_backend/.claude/**)",
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "Read(//Users/vladimirhozjan/Documents/wna_orchestration/features/**)",
+      "Read(//Users/vladimirhozjan/Documents/**)"
     ]
   }
 }
