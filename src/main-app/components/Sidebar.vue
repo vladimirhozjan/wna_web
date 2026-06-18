@@ -127,7 +127,6 @@
       <SidebarMenuItem
           label="Completed"
           :to="{ name: 'completed' }"
-          :count="stats?.completed?.count"
           :accept-drop="['stuff', 'action', 'project', 'someday']"
           @drop="onDropToCompleted"
       >

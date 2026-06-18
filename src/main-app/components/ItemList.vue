@@ -27,6 +27,7 @@
         :chosen-class="'item-wrapper-chosen'"
         :ghost-class="'item-wrapper-ghost'"
         :disabled="disabled"
+        :sort="reorderable"
         :class="{ 'item-list--dragging': isDragging, 'item-list--has-more': hasMore }"
         @start="onDragStart"
         @end="onDragEnd"
@@ -111,6 +112,9 @@ const props = defineProps({
   hasMore: { type: Boolean, default: false },
   loadingIds: { type: Array, default: () => [] },
   disabled: { type: Boolean, default: false },
+  // When false, in-list drag-reordering is off (SortableJS sort:false) but items stay
+  // draggable OUT (native HTML5 drag to sidebar targets). Default true = unchanged behavior.
+  reorderable: { type: Boolean, default: true },
   activeId: { type: [String, Number], default: null },
   editable: { type: Boolean, default: true },
   noCheckbox: { type: Boolean, default: false },

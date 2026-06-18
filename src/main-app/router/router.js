@@ -14,7 +14,6 @@ import SomedayPage from '../views/dashboard/SomedayPage.vue'
 import StuffDetailPage from '../views/dashboard/StuffDetailPage.vue'
 import ActionDetailPage from '../views/dashboard/ActionDetailPage.vue'
 import ProjectDetailPage from '../views/dashboard/ProjectDetailPage.vue'
-import CompletedPage from '../views/dashboard/CompletedPage.vue'
 import TrashPage from '../views/dashboard/TrashPage.vue'
 import WaitingForPage from '../views/dashboard/WaitingForPage.vue'
 import RecurringDetailPage from '../views/dashboard/RecurringDetailPage.vue'
@@ -45,7 +44,8 @@ const routes = [
     {path: '/connections', name: 'connections', component: ConnectionsPage},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},
-    {path: '/completed', name: 'completed', component: CompletedPage},
+    // Lazy-loaded so chart.js (used only here) is code-split out of the main chunk.
+    {path: '/completed', name: 'completed', component: () => import('../views/dashboard/CompletedPage.vue')},
     {path: '/trash', name: 'trash', component: TrashPage},
     {path: '/waiting-for', name: 'waiting-for', component: WaitingForPage},
     {path: '/review', name: 'review', component: ReviewPage},

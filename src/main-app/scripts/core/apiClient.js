@@ -996,11 +996,22 @@ export async function activateProject(projectId) {
 
 export async function listCompleted({limit = PAGE_SIZE, cursor = null} = {}) {
     try {
-        const params = {}
+        const params = {tz: liveTz()}
         if (limit) params.limit = limit
         if (cursor) params.cursor = cursor
 
         const res = await httpApi.get('/v1/completed', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// FEAT-015: aggregated completion time-series (daily 90d + monthly full history + total),
+// bucketed in the caller's local tz. `tz` is required (backend 400s without it).
+export async function getCompletedStats() {
+    try {
+        const res = await httpApi.get('/v1/completed/stats', {params: {tz: liveTz()}, headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1908,6 +1919,7 @@ const apiClient = {
     restoreAction,
     restoreProject,
     listCompleted,
+    getCompletedStats,
     listProjectCompleted,
     getCompletedByPosition,
     uncompleteStuff,
