@@ -31,8 +31,13 @@ this slice never enforces entitlement, it only **reflects** it.
     `confirmModel`) → `regenerateInboxEmail()` + a **state-reflecting** capture toggle reading
     **"Capture is on"** / **"Capture is paused"** that flips `enabled` → `setInboxEmailEnabled()`.
   - **Team owner vs member** — n/a: identical UI; tier (`team`) alone drives the card, no team-role branch.
-- **Admin** — **n/a.** Admin inbox-email surfaces (parent E-31/E-32) live in **admin-app**, which the
-  parent's wna_web table does **not** list. This slice is **main-app Settings only**; no admin UI here.
+- **Admin** — **scope added 2026-06-20 at user request** ("email should be visible for user in admin at
+  least"). The parent's wna_web table omits admin-app, but admin-app *is* part of this repo, and design
+  **E-31** ("Admin views a user's inbox address + usage") is a `Should` story with a defined endpoint
+  (design §9 `GET /admin/inbox-email/users/{id}`). Implemented **read-only E-31** in admin-app's User
+  Detail page (see the "admin-app" checklist section below). **E-32** (global stats) added 2026-06-20 on
+  the follow-up "implement everything" — a `support`-gated Email-to-Inbox stats section on the admin
+  Analytics page (reuse-first: a card on the existing page, not a new page/route/nav).
 - **Not-entitled / blocked (downgrade-to-Free)** — the card must **reactively revert** to the Free locked
   state when `subscription_tier` becomes `free` (story **E-6b**). The kept-but-deactivated address is
   **not** shown to a downgraded user — the lockout view replaces the address controls entirely.
@@ -142,6 +147,58 @@ Verified in this worktree (`/Users/vladimirhozjan/Documents/wna_web/develop-a`):
   New rules reuse `var(--lh-normal)` / `var(--font-family-mono)` and existing `.settings-*` classes
   **`:1379-1396`**.
 
+### admin-app — User Detail "Email to Inbox" card (E-31, added 2026-06-20 at user request)
+- [x] Add `getPlatformUserInboxEmail(id)` to admin `apiClient.js` — `GET /admin/inbox-email/users/{id}`
+  (design §9; admin_service → email_service via HMAC) with `normalizeError`, mirroring the existing
+  `getPlatformUser` pattern. **`src/admin-app/scripts/core/apiClient.js:310-318`**; exported at
+  **`:687`**.
+- [x] Add a read-only **Email to Inbox** card to the admin User Detail page (route `users/:id`,
+  `UserDetailPage.vue`) showing Address (monospace), Capture status dot ("Capture is on"/"Capture is
+  paused"), "Used Today: N of {cap}", and Created date. Reuses the existing `.info-card`/`.info-row`/
+  `.section-title` markup and the in-page `StatusDot`/`Spinner` components — no new component. Card
+  **`src/admin-app/views/UserDetailPage.vue:68-101`**.
+- [x] Load via `loadInboxEmail()` on mount, in parallel with the user fetch so it never blocks the page;
+  404 (no address) / 403 (Free, not entitled) → silent empty state ("No inbox address generated."),
+  other errors surfaced via `toaster`. Loader **`UserDetailPage.vue:312-326`**; `onMounted`
+  **`:446-449`**; empty state **`:98-100`**.
+- [x] Styles reuse existing tokens only — `.inbox-address` uses `var(--font-family-mono)` (already used
+  by `.delete-email`); no hardcoded colors/sizes. **`UserDetailPage.vue:634-650`**.
+- [~] **Verify (live render) — DEFERRED TO USER (same backend dependency as main-app).** `npm run
+  build:admin` compiles & obfuscates clean (17 files). The live render needs the **admin_service**
+  endpoint `GET /admin/inbox-email/users/{id}` (parent admin_service slice — **not in this repo**) plus a
+  logged-in admin (support+). To verify: run admin_service (or stub the endpoint) → log in to admin-app →
+  open a Pro/Team user's detail page → "Email to Inbox" card shows address + usage; open a Free user →
+  "No inbox address generated."
+
+### admin-app — Analytics "Email to Inbox" stats (E-32, added 2026-06-20 on "implement everything")
+- [x] Add `getInboxEmailStats()` to admin `apiClient.js` — `GET /admin/inbox-email/stats` (design §9 /
+  admin-api.md §13.6; `support` min role; proxied to email_service over HMAC; 503 if unreachable) with
+  `normalizeError`. **`src/admin-app/scripts/core/apiClient.js:323-331`**; exported **`:701`**.
+- [x] Add an **Email to Inbox** stats section to the admin Analytics page, reusing the existing
+  `.section card` / `.section-title` / `.stats-grid` markup + `Stat`/`Spinner` components — no new
+  component, no charts (data is scalar counts). Four count tiles: Active Addresses / Processed Today /
+  Failed Today / Rejected Today, each defaulting to 0 for any key the backend omits. Loading + empty
+  ("No inbox email stats available.") states mirror the page's other stat sections. Markup
+  **`src/admin-app/views/AnalyticsPage.vue:80-91`**.
+- [x] **Authorization** — the endpoint is `support`-gated, so the card is shown only to `support`+
+  (`v-if="hasMinRole(role, 'support')"` **`:81`**) and the loader is skipped for viewers to avoid a 403
+  (`onMounted` guard **`:297`**). `role` computed **`:110`**; `authModel`/`hasMinRole` import **`:107`**.
+- [x] Loader `loadInboxEmailStats()` follows the page's `featureUsage`/`platformHealth` convention —
+  silent `null` on error (shows the empty state), no noisy toast for the not-yet-built backend.
+  **`AnalyticsPage.vue:270-279`**.
+- [~] **Stats response shape is an undocumented gap (flagged to user).** admin-api.md §13.6 explicitly
+  defers the stats body to `email_service`; api.md pins only the four user-facing endpoints. The frontend
+  assumes `active_addresses / processed_today / failed_today / rejected_today` (integers, default 0),
+  derived from design §9's "active addresses, processed/failed/rejected today" + story E-32. **OWNED BY
+  email_service / wna_backend — confirm the keys at ship**; if they differ, only the four `:value`
+  bindings at `AnalyticsPage.vue:85-88` change. Documented in the apiClient comment (`:319-322`) and the
+  parent web breakdown.
+- [~] **Verify (live render) — DEFERRED TO USER (same backend dependency).** `npm run build:admin`
+  compiles & obfuscates clean (17 files; AnalyticsPage chunk grew). Live render needs the admin_service
+  `GET /admin/inbox-email/stats` endpoint (parent admin_service slice — **not in this repo**) + a
+  logged-in `support`+ admin. To verify: stub/run admin_service → Analytics page → "Email to Inbox"
+  section shows the four counts; as a `viewer` the section is hidden and no 403 fires.
+
 ### Reuse gates — ASK USER before creating (no existing component found)
 - [x] **ASKED & RESOLVED BY REUSE** — user chose "Reuse `.settings-toggle`". The capture toggle reuses
   the existing in-file `.settings-toggle` checkbox-slider pattern already used by the Review/Notifications
@@ -167,6 +224,15 @@ Verified in this worktree (`/Users/vladimirhozjan/Documents/wna_web/develop-a`):
 - [x] Update `specs/features/wna-features.md` — added the Settings "Email to Inbox" user-facing feature
   (Pro/Team card + Free locked state) as **§21.9**. Citation:
   **`wna_orchestration/specs/features/wna-features.md:1148`**.
+- [x] Update `specs/features/wna-features.md` §21.9 — added the **Admin view (admin-app, E-31)**
+  subsection (read-only address + capture status + Used Today + Created on the admin User Detail page).
+  Citation: **`wna_orchestration/specs/features/wna-features.md:1174-1180`**.
+- [x] Update `specs/features/wna-features.md` §21.9 — added the **Admin global stats (admin-app, E-32)**
+  subsection (support-gated Active/Processed/Failed/Rejected tiles on the Analytics page; notes the
+  unpinned stats body). Citation: **`wna_orchestration/specs/features/wna-features.md:1182-1190`**.
+- [x] Update parent `features/FEAT-001-email-to-inbox.md` web breakdown — added admin-app E-31 + E-32
+  rows (user-authorized via "implement everything"). Citation:
+  **`wna_orchestration/features/FEAT-001-email-to-inbox.md:58-68`**.
 
 ---
 

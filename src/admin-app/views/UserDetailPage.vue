@@ -65,6 +65,41 @@
         </div>
       </div>
 
+      <!-- Email to Inbox (FEAT-001 E-31) -->
+      <div class="info-card card">
+        <h3 class="text-label color-text-secondary section-title">Email to Inbox</h3>
+
+        <div v-if="inboxEmailLoading" class="inbox-loading">
+          <Spinner />
+        </div>
+
+        <template v-else-if="inboxEmail && inboxEmail.email">
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Address</span>
+            <span class="text-body-s inbox-address">{{ inboxEmail.email }}</span>
+          </div>
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Capture</span>
+            <StatusDot
+                :color="inboxEmail.enabled ? 'green' : 'gray'"
+                :title="inboxEmail.enabled ? 'Capture is on' : 'Capture is paused'"
+            />
+          </div>
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Used Today</span>
+            <span class="text-body-s">{{ inboxEmail.emails_today ?? 0 }} of {{ inboxEmail.daily_limit ?? '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Created</span>
+            <span class="text-body-s">{{ formatDate(inboxEmail.created_at) }}</span>
+          </div>
+        </template>
+
+        <div v-else class="info-row inbox-empty">
+          <span class="text-body-s color-text-tertiary">No inbox address generated.</span>
+        </div>
+      </div>
+
       <!-- Login History -->
       <div v-if="user.login_history && user.login_history.length" class="info-card card">
         <h3 class="text-label color-text-secondary section-title">Login History</h3>
@@ -248,6 +283,10 @@ const user = ref(null)
 const loading = ref(true)
 const actionLoading = ref(false)
 
+// Inbox address + usage (FEAT-001 E-31)
+const inboxEmail = ref(null)
+const inboxEmailLoading = ref(true)
+
 const role = computed(() => auth.currentAdmin.value?.role)
 const selectedTier = ref('free')
 
@@ -266,6 +305,22 @@ async function load() {
     user.value = null
   } finally {
     loading.value = false
+  }
+}
+
+// Address + usage; 404 (none generated) / 403 (Free, not entitled) → empty state, no toast.
+async function loadInboxEmail() {
+  inboxEmailLoading.value = true
+  try {
+    inboxEmail.value = await apiClient.getPlatformUserInboxEmail(route.params.id)
+  } catch (err) {
+    if (err.status === 404 || err.status === 403) {
+      inboxEmail.value = null
+    } else {
+      toaster.push(err.message || 'Failed to load inbox email')
+    }
+  } finally {
+    inboxEmailLoading.value = false
   }
 }
 
@@ -388,7 +443,10 @@ async function confirmDelete() {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  loadInboxEmail()
+})
 </script>
 
 <style scoped>
@@ -571,6 +629,23 @@ onMounted(load)
   flex-direction: column;
   gap: 2px;
   flex: 1;
+}
+
+/* Email to Inbox */
+.inbox-address {
+  font-family: var(--font-family-mono);
+  word-break: break-all;
+  text-align: right;
+}
+
+.inbox-loading {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.inbox-empty {
+  border-bottom: none;
 }
 
 /* Delete modal */

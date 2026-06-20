@@ -76,6 +76,19 @@
       </div>
       <p v-else class="text-caption color-text-tertiary">No platform health data available.</p>
     </div>
+
+    <!-- Email to Inbox (FEAT-001 E-32) — support+ only (endpoint is support-gated) -->
+    <div v-if="hasMinRole(role, 'support')" class="section card">
+      <h3 class="text-label color-text-secondary section-title">Email to Inbox</h3>
+      <div v-if="inboxStatsLoading" class="loading-state"><Spinner size="sm" /></div>
+      <div v-else-if="inboxStats" class="stats-grid">
+        <Stat label="Active Addresses" :value="inboxStats.active_addresses ?? 0" />
+        <Stat label="Processed Today" :value="inboxStats.processed_today ?? 0" />
+        <Stat label="Failed Today" :value="inboxStats.failed_today ?? 0" />
+        <Stat label="Rejected Today" :value="inboxStats.rejected_today ?? 0" />
+      </div>
+      <p v-else class="text-caption color-text-tertiary">No inbox email stats available.</p>
+    </div>
   </div>
 </template>
 
@@ -91,6 +104,7 @@ import { Bar, Line } from 'vue-chartjs'
 import Spinner from '../components/Spinner.vue'
 import Stat from '../components/Stat.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 ChartJS.register(
@@ -99,6 +113,8 @@ ChartJS.register(
 )
 
 const toaster = errorModel()
+const auth = authModel()
+const role = computed(() => auth.currentAdmin.value?.role)
 
 // Chart theme colors (read from CSS vars at runtime)
 function getCssVar(name) {
@@ -245,6 +261,23 @@ async function loadPlatformHealth() {
   }
 }
 
+// --- Email to Inbox stats (FEAT-001 E-32) ---
+// Assumed counts (active_addresses / processed_today / failed_today / rejected_today) — the stats
+// body is owned by email_service and not yet pinned in api.md; missing keys render as 0.
+const inboxStats = ref(null)
+const inboxStatsLoading = ref(false)
+
+async function loadInboxEmailStats() {
+  inboxStatsLoading.value = true
+  try {
+    inboxStats.value = await apiClient.getInboxEmailStats()
+  } catch {
+    inboxStats.value = null
+  } finally {
+    inboxStatsLoading.value = false
+  }
+}
+
 // --- Helpers ---
 function formatKey(key) {
   return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
@@ -260,6 +293,8 @@ onMounted(() => {
   loadActiveUsers()
   loadFeatureUsage()
   loadPlatformHealth()
+  // Endpoint is support-gated; skip the call for viewers so they don't get a 403.
+  if (hasMinRole(role.value, 'support')) loadInboxEmailStats()
 })
 </script>
 
