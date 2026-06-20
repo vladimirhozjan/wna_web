@@ -172,6 +172,45 @@ export async function updateNotificationSettings(settings) {
     }
 }
 
+// Email to Inbox (FEAT-001) — Pro/Team only; endpoints return 403 for Free.
+// Shapes link api.md "Email to Inbox" / email-to-inbox.md §9.
+export async function getInboxEmail() {
+    try {
+        const res = await httpApi.get('/v1/email/inbox', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function generateInboxEmail() {
+    try {
+        const res = await httpApi.post('/v1/email/inbox/generate', {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// UI label is "Reset address"; endpoint name stays `regenerate`.
+export async function regenerateInboxEmail() {
+    try {
+        const res = await httpApi.post('/v1/email/inbox/regenerate', {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function setInboxEmailEnabled(enabled) {
+    try {
+        const res = await httpApi.put('/v1/email/inbox', {enabled}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function loginUser({email, password}) {
     try {
         const res = await httpApi.post('/v1/user/login', {email, password})

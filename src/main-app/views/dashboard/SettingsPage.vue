@@ -72,6 +72,73 @@
           </div>
         </div>
 
+        <!-- Email to Inbox Section -->
+        <div v-if="tier && sectionVisible('emailInbox')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('emailInbox')">
+            <h2 class="settings-section-title">Email to Inbox</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('emailInbox') }">&#8250;</span>
+          </div>
+          <div v-if="isExpanded('emailInbox')" class="settings-section-body">
+
+            <!-- Free: locked -->
+            <div v-if="!isProOrTeam" class="settings-row settings-row--column">
+              <span class="settings-value email-locked">🔒 Email to Inbox is available on Pro and Team plans.</span>
+              <Btn variant="primary" size="sm" @click="onUpgradeEmail">Upgrade</Btn>
+            </div>
+
+            <!-- Pro/Team -->
+            <template v-else>
+              <!-- Loading -->
+              <div v-if="inbox.loading && !inbox.loaded" class="settings-loading">
+                <Spinner :size="16" />
+                <span>Loading...</span>
+              </div>
+
+              <!-- Empty state: no address yet -->
+              <div v-else-if="!inbox.address" class="settings-row settings-row--column">
+                <span class="text-body-s settings-hint email-valueprop">Get a private email address. Forward anything to capture it instantly.</span>
+                <Btn variant="primary" size="sm" :loading="inbox.acting" :disabled="inbox.acting" @click="onGenerateAddress">Generate Address</Btn>
+              </div>
+
+              <!-- Address present -->
+              <template v-else>
+                <div class="settings-row settings-row--column">
+                  <span class="settings-label">Your inbox address</span>
+                  <div class="email-address-row">
+                    <span class="settings-value email-address">{{ inbox.address }}</span>
+                    <Btn variant="secondary" size="sm" @click="onCopyAddress">{{ copied ? 'Copied!' : 'Copy' }}</Btn>
+                  </div>
+                  <span class="text-body-s settings-hint">Forward any email to this address to capture it as a new item.</span>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Usage</span>
+                  <span class="settings-value">Used today: {{ inbox.emailsToday }} of {{ inbox.dailyLimit }}</span>
+                </div>
+
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Capture</span>
+                    <p class="text-body-s settings-hint">{{ inbox.enabled ? 'Capture is on' : 'Capture is paused' }}</p>
+                  </div>
+                  <div class="settings-control" :class="{ 'settings-control--saving': inbox.savingCapture }">
+                    <span v-if="inbox.savingCapture" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                    <label class="settings-toggle">
+                      <input type="checkbox" v-model="captureEnabled" />
+                      <span class="settings-toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Reset address</span>
+                  <Btn variant="ghost" size="sm" :loading="inbox.acting" :disabled="inbox.acting" @click="onResetAddress">Reset address</Btn>
+                </div>
+              </template>
+            </template>
+          </div>
+        </div>
+
         <!-- Sessions Section -->
         <div v-if="sectionVisible('sessions')" class="card">
           <div class="card-header card-header--toggle" @click="toggleSection('sessions')">
@@ -466,7 +533,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import SearchIcon from '../../assets/SearchIcon.vue'
@@ -482,7 +549,9 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
-import { changePassword, listSessions, revokeSession, revokeAllSessions } from '../../scripts/core/apiClient.js'
+import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled } from '../../scripts/core/apiClient.js'
+import { upgradeModel } from '../../scripts/core/upgradeModel.js'
+import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
@@ -516,6 +585,7 @@ function toggleSearch() {
 const SECTION_KEYWORDS = {
   account: 'account email password login',
   plan: 'plan tier subscription free pro team projects tags storage limits upgrade',
+  emailInbox: 'email inbox capture address forward generate reset pause',
   sessions: 'sessions devices logout active current',
   application: 'application theme dark light position new items',
   tags: 'tags presets quick add',
@@ -576,6 +646,121 @@ function formatBytes(bytes) {
   let size = bytes
   while (size >= 1024 && i < units.length - 1) { size /= 1024; i++ }
   return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
+}
+
+// Email to Inbox (FEAT-001) — Pro/Team only; reactive on tier so a downgrade reverts to locked (E-6b)
+const isProOrTeam = computed(() => tier.value === 'pro' || tier.value === 'team')
+
+const inbox = reactive({
+  address: null,
+  enabled: true,
+  emailsToday: 0,
+  dailyLimit: 0,
+  loading: false,
+  loaded: false,
+  acting: false,         // generate / reset in flight
+  savingCapture: false,  // capture toggle in flight
+})
+
+const copied = ref(false)
+let copiedTimer = null
+
+function applyInbox(data) {
+  inbox.address = data.email || null
+  inbox.enabled = data.enabled !== false
+  inbox.emailsToday = data.emails_today ?? 0
+  inbox.dailyLimit = data.daily_limit ?? 0
+}
+
+async function loadInboxEmail() {
+  if (!isProOrTeam.value) return
+  inbox.loading = true
+  try {
+    const data = await getInboxEmail()
+    applyInbox(data)
+  } catch (err) {
+    if (err.status === 404) {
+      inbox.address = null   // no address yet → empty state
+    } else {
+      toaster.push(err.message || 'Failed to load inbox email address')
+    }
+  } finally {
+    inbox.loading = false
+    inbox.loaded = true
+  }
+}
+
+async function onGenerateAddress() {
+  if (inbox.acting) return
+  inbox.acting = true
+  try {
+    const data = await generateInboxEmail()
+    inbox.address = data.email || null
+    await loadInboxEmail()   // refresh usage / cap / enabled from GET
+  } catch (err) {
+    toaster.push(err.message || 'Failed to generate address')
+  } finally {
+    inbox.acting = false
+  }
+}
+
+async function onCopyAddress() {
+  if (!inbox.address) return
+  const ok = await copyText(inbox.address)
+  if (!ok) {
+    toaster.push('Could not copy to clipboard')
+    return
+  }
+  copied.value = true
+  if (copiedTimer) clearTimeout(copiedTimer)
+  copiedTimer = setTimeout(() => { copied.value = false }, 2000)
+}
+
+async function onResetAddress() {
+  if (inbox.acting) return
+  const confirmed = await confirm.show({
+    title: 'Reset address',
+    message: 'Reset inbox address? Your current address stops working immediately and you will need to update any forwarding rules.',
+    confirmText: 'Reset address',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  inbox.acting = true
+  try {
+    const data = await regenerateInboxEmail()
+    inbox.address = data.email || null
+    await loadInboxEmail()   // refresh usage / cap / enabled
+  } catch (err) {
+    toaster.push(err.message || 'Failed to reset address')
+  } finally {
+    inbox.acting = false
+  }
+}
+
+const captureEnabled = computed({
+  get: () => inbox.enabled,
+  set: (val) => onToggleCapture(val),
+})
+
+async function onToggleCapture(val) {
+  if (inbox.savingCapture) return
+  inbox.savingCapture = true
+  try {
+    const data = await setInboxEmailEnabled(val)
+    inbox.enabled = data.enabled !== false
+  } catch (err) {
+    toaster.push(err.message || 'Failed to update capture')
+    // leave inbox.enabled unchanged — the toggle reverts to the prior state
+  } finally {
+    inbox.savingCapture = false
+  }
+}
+
+function onUpgradeEmail() {
+  upgradeModel().show({
+    message: 'Email to Inbox is available on Pro and Team plans. Upgrade to get a private address and forward anything straight into your inbox.',
+  })
 }
 
 // App version from Vite define
@@ -773,7 +958,20 @@ onMounted(() => {
     // Notification settings will fall back to defaults
   })
 
+  loadInboxEmail()
+
   applySectionQuery()
+})
+
+// Re-fetch (or clear) the inbox address when the tier changes — keeps the card
+// reactive to upgrade/downgrade (E-6b): Free reverts to the locked block.
+watch(tier, (t) => {
+  if (t === 'pro' || t === 'team') {
+    if (!inbox.loaded) loadInboxEmail()
+  } else {
+    inbox.address = null
+    inbox.loaded = false
+  }
 })
 
 watch(() => route.query.section, applySectionQuery)
@@ -787,6 +985,7 @@ function applySectionQuery() {
 
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
+  if (copiedTimer) clearTimeout(copiedTimer)
 })
 
 function checkMobile() {
@@ -1175,6 +1374,27 @@ async function onLogout() {
 .settings-info-note {
   margin-top: 8px;
   font-style: italic;
+}
+
+/* Email to Inbox */
+.email-locked,
+.email-valueprop {
+  line-height: var(--lh-normal);
+}
+
+.email-address-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.email-address {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-family-mono);
+  word-break: break-all;
 }
 
 .settings-saving-spinner {
