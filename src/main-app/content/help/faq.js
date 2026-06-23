@@ -3,12 +3,17 @@ export const faq = [
   {
     question: 'How do I create an account?',
     answer:
-      'Tap "Start Free" on the landing page. Enter your email address, choose a password (at least 8 characters with at least one letter, one digit, and one symbol), and confirm it. A verification email will be sent to your address — click the link to verify your account. Once verified, you are automatically logged in and taken to your Dashboard.',
+      'Tap "Start Free" on the landing page. Enter your email address, choose a password (at least 8 characters with at least one letter, one digit, and one symbol), and confirm it. A verification email will be sent to your address — click the link to verify your account. Once verified, you are automatically logged in and taken to your Dashboard. You can also sign up with Google using the "Sign up with Google" button.',
   },
   {
     question: 'How do I log in?',
     answer:
-      'Tap "Sign In" on the landing page and enter your email and password. On success you are redirected to your Dashboard. If you have forgotten your password, use the "Forgot your password?" link to reset it.',
+      'Tap "Sign In" on the landing page and enter your email and password. On success you are redirected to your Dashboard. You can also use the "Sign in with Google" button to sign in with your Google account. If you have forgotten your password, use the "Forgot your password?" link to reset it.',
+  },
+  {
+    question: 'Can I sign in with Google?',
+    answer:
+      'Yes. The Sign Up dialog has a "Sign up with Google" button and the Sign In dialog has a "Sign in with Google" button. Choose your Google account, and if it is your first time you are signed up automatically — no separate password needed. If you already have an account with the same email, signing in with Google links to it. You can still use email and password at any time. (If Google sign-in is not configured for your deployment, the button is hidden and you sign in with email and password.)',
   },
   {
     question: 'How do I reset my password?',
@@ -28,7 +33,7 @@ export const faq = [
   {
     question: 'What are sessions and how do I manage them?',
     answer:
-      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely or use "End Others" to revoke all sessions except the one you are currently using.',
+      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using.',
   },
 
   {
@@ -74,6 +79,11 @@ export const faq = [
     question: 'What happens during Clarify?',
     answer:
       'Clarify is a guided, step-by-step wizard that helps you process each Inbox item according to proven productivity principles. First you decide whether the item is actionable. If not, you can file it as Reference, park it in Someday/Maybe, or Trash it. If it is actionable, you decide whether it is a single action or a multi-step project. Single actions that take less than two minutes should be done immediately (the two-minute rule). Otherwise, you create an action with optional tags, dates, and a description, or create a project with an outcome definition.',
+  },
+  {
+    question: 'Can I send items to my Inbox by email?',
+    answer:
+      'Yes, on the Pro and Team plans. Go to Settings and find the "Email to Inbox" section, then generate your unique inbox address. Tap Copy to copy it, then email or forward anything to that address — the subject becomes the item title and the body becomes its description, and it lands in your Inbox as new stuff. You can pause capture with the toggle, or reset the address (the old one stops working immediately). Daily limits apply: 50 emails per day on Pro and 100 per day on Team. This feature is not available on the Free plan.',
   },
 
   // --- Moving & Organizing ---
@@ -163,6 +173,28 @@ export const faq = [
       'When you delete an item, it moves to the Trash instead of being permanently removed. Visit the Trash page to restore individual items back to their original list. If you want to permanently remove everything, use the "Empty Trash" button — be careful, this action cannot be undone. The Reference file manager has its own separate trash with the same restore and permanent delete options.',
   },
 
+  // --- Team & Collaboration ---
+  {
+    question: 'What is the Team plan and how does collaboration work?',
+    answer:
+      'The Team plan unlocks collaboration with other people. It is built on three things: connections (peer relationships with other WhatsNextAction users), delegation (handing an action to a connection), and shared projects (working a project together with assigned roles). Connecting, delegating, and sharing all require the Team plan, but anyone — including Free and Pro users — can receive and accept a connection invitation, and free-text "Waiting for…" delegation works on every plan.',
+  },
+  {
+    question: 'How do connections work?',
+    answer:
+      'Connections are peer relationships between WhatsNextAction users. Open the Connections page from the sidebar and invite someone by email (Team plan). They receive an invitation they can accept or decline — receiving and declining invitations is available on every plan. Once connected, you can delegate actions to each other and share projects. Either side can remove the connection at any time, and downgrading from Team automatically removes your connections.',
+  },
+  {
+    question: 'How do I delegate an action to someone?',
+    answer:
+      'On the Team plan, you can hand an action to one of your connections — from the Clarify wizard ("Delegate It"), from an action\'s detail page by moving it to Waiting For, from the Move dropdown, or when adding a Waiting For item using the connection picker. The action moves to your Waiting For list, and a copy lands in your connection\'s Inbox with a "From:" chip. When they complete it, a "Done." comment is posted back to your action and it automatically returns to your Next Actions (or Calendar if it was scheduled). On any plan you can still track free-text "Waiting for…" items without a connection.',
+  },
+  {
+    question: 'What are shared projects?',
+    answer:
+      'On the Team plan, a project owner can tap "Share…" to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project.',
+  },
+
   // --- Account & Security ---
   {
     question: 'Is my data secure?',
@@ -174,12 +206,17 @@ export const faq = [
   {
     question: 'What plans are available?',
     answer:
-      'WhatsNextAction offers three plans. The Free plan lets you get started with up to 7 projects, 10 context tags, and 50 MB of file storage (reference files are view-only). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, and 250 MB of storage. The Team plan adds collaboration: shared projects, connections, and delegation between team members, plus 1 GB of storage per user. Visit the Pricing page for full details and yearly discounts.',
+      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Visit the Pricing page for current prices (in USD) and yearly discounts.',
+  },
+  {
+    question: 'What are the limits on each plan?',
+    answer:
+      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Actions and inbox items are unlimited on every plan, including Free.',
   },
   {
     question: 'What are the limits on attachments and comments?',
     answer:
-      'Each item (action, project, or stuff) supports up to 10 file attachments; the maximum file size is 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Comments are limited to 50 per item, with each comment up to 2000 characters. The attachment and comment counts apply across all plans.',
+      'Each item (action, project, or stuff) supports up to 10 file attachments; the maximum file size is 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Comments are limited to 50 per item, with each comment up to 2000 characters. The attachment count, comment count, and comment length apply across all plans.',
   },
 
   // --- Appearance & Notifications ---
@@ -196,26 +233,38 @@ export const faq = [
   {
     question: 'How do I manage email notifications?',
     answer:
-      'Go to Settings and find the Notifications section. A master toggle turns all email notifications on or off. Below it, individual toggles let you control specific emails: tasks due today, daily next-action summaries, and project-needs-next-action alerts. Urgent emails like password resets and login alerts are always delivered and cannot be disabled.',
+      'Go to Settings and find the Notifications section. A master toggle turns all email notifications on or off. Below it, individual toggles let you control specific emails: daily digest, project-needs-next-action alerts, delegated-to-you, delegation-completed, and connection invitations. Urgent emails like verification, password resets, and login alerts are always delivered and cannot be disabled. In-app notifications (the bell in the top bar) cannot be turned off.',
+  },
+  {
+    question: 'What are in-app notifications?',
+    answer:
+      'In-app notifications appear under the bell icon in the top navigation bar, with a badge showing your unread count. Open it to see your most recent notifications — project-needs-next-action alerts, delegation updates (delegated to you and delegation completed), shared-project activity, and connection invitations. Click a notification to mark it as read and jump straight to the related item. In-app notifications are available to every signed-in user and cannot be disabled.',
   },
   {
     question: 'What does "overdue" mean and how are overdue items shown?',
     answer:
-      'An item is overdue when its due date is in the past. Overdue items are highlighted with a red left border and light red background in all list views. On the Dashboard, a red alert banner appears at the top showing how many items are overdue. In the Calendar, overdue items appear in dark red.',
+      'An item is overdue when its due date has passed, or when a timed scheduled action\'s time slot has already ended. Overdue items are highlighted with a red left border and light red background in all list views. On the Dashboard, a red alert banner appears at the top showing how many items are overdue. In the Calendar, overdue items appear in dark red. A "Start after" tickler date never makes an item overdue.',
+  },
+
+  // --- Help & Support ---
+  {
+    question: 'How do I send feedback or contact support?',
+    answer:
+      'Use the feedback button — the small round button (with a question-mark icon) pinned to the right edge of every page. It opens a menu with two options: "Contact Support" emails support@whatsnextaction.com, and "Report a Bug" emails bug@whatsnextaction.com. Both open your email app with the subject pre-filled, so you just describe what you need and send.',
   },
 
   // --- Account Management ---
   {
     question: 'How do I delete my account?',
     answer:
-      'You can delete your account from the Settings page. Upon deletion, all your content is permanently removed within 30 days, including backup copies. If you have an active paid subscription, it will be cancelled and the standard cancellation terms apply. This action cannot be undone.',
+      'You can delete your account from the Settings page. Upon deletion, your content is permanently removed within 30 days, including backup copies. If you have an active paid subscription, it will be cancelled. This action cannot be undone. If you have any questions before deleting, contact support@whatsnextaction.com.',
   },
 
   // --- Device & Accessibility ---
   {
     question: 'Can I use WhatsNextAction on my phone?',
     answer:
-      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls with tap targets of at least 44 pixels. Action buttons are always visible on touch devices without needing to hover.',
+      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover.',
   },
   {
     question: 'Are there keyboard shortcuts?',

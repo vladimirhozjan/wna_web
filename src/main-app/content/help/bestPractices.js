@@ -15,6 +15,11 @@ export const bestPractices = [
       'Your Inbox is a capture tool, not a storage bin. Process it regularly — ideally daily — by running the Clarify workflow. Every item should leave the Inbox and land in the right bucket: Next Actions, a Project, Calendar, Waiting For, Someday/Maybe, Reference, or Trash. An empty Inbox means everything in your system has been consciously decided on.',
   },
   {
+    title: 'Capture by Email',
+    description:
+      'When something lands in your email that belongs in your system, forward it straight to your Inbox. Generate a personal capture address in Settings (Pro and Team plans), then email or forward anything to it — the subject becomes the title and the body becomes the description, attachments included. It turns email into just another capture channel so you can keep your Inbox at zero without copying things by hand. You can pause capture or reset the address any time.',
+  },
+  {
     title: 'Do a Weekly Review',
     description:
       'The Weekly Review is what makes your system work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. Enable it in Settings and create a recurring reminder so you never skip it.',
@@ -48,6 +53,16 @@ export const bestPractices = [
     title: 'Every Project Needs a Next Action',
     description:
       'A project without a next action is a stuck project. WhatsNextAction warns you when a project is missing one and nudges you from the Dashboard. After completing a project\'s next action, the app auto-promotes the next item in the backlog, but check regularly that the promoted action is still the right next step. During your Weekly Review, scan every project to confirm it has a clear, doable next action.',
+  },
+  {
+    title: 'Delegate, Then Wait For It',
+    description:
+      'When an action belongs to someone else, hand it off instead of carrying it yourself. On Team plans you can connect with other WhatsNextAction users and delegate an action directly to a connection — it lands in their Inbox with a "From:" note, and your copy moves to Waiting For automatically. When they complete or trash it, you get a "Done." note and the action promotes back to Next Actions (or your Calendar, if it was scheduled) on its own. On any plan you can still delegate by typing who you are waiting on as free text. Either way, the work leaves your head and stays tracked.',
+  },
+  {
+    title: 'Let Notifications Close the Loop',
+    description:
+      'The bell in the top nav surfaces what needs your attention — a delegated action coming back done, a connection invite, or a nudge from your system. Glance at it instead of re-checking lists constantly, and click an item to jump straight to it. Tune which events also reach you by email under Settings → Notifications; in-app alerts always stay on so nothing slips past you.',
   },
   {
     title: 'Use Comments as a Log',

@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** February 27, 2026
+**Last updated:** June 22, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -11,7 +11,7 @@ By creating an account or using the Service, you agree to be bound by these Term
 - **Service** - The WhatsNextAction web application, including all features, content, and functionality accessible at whatsnextaction.com and associated domains.
 - **User** / **You** - Any individual who creates an account and uses the Service.
 - **Content** - Any data, text, files, comments, or other materials you create, upload, or store through the Service, including but not limited to inbox items (stuff), actions, projects, tags, descriptions, attachments, and comments.
-- **Subscription** - A paid plan (Pro or Business) providing access to additional features and higher usage limits.
+- **Subscription** - A paid plan (Pro or Team) providing access to additional features and higher usage limits.
 - **GTD** - Getting Things Done, a personal productivity methodology created by David Allen. "Getting Things Done" and "GTD" are registered trademarks of the David Allen Company. WhatsNextAction is not affiliated with, endorsed by, or sponsored by the David Allen Company.
 
 ## 2. Service Description
@@ -31,11 +31,16 @@ The Service includes the following functionality:
 - **Waiting For** - Delegated or pending items
 - **Someday / Maybe** - Items for future consideration
 - **Reference** - File storage for non-actionable materials
+- **Completed** - Record of completed actions and projects with productivity insights
 - **Weekly Review** - Guided checklist for maintaining your system
 - **Recurring Actions** - Automated repeating action templates
 - **Context Tags** - Tag-based filtering for context-specific work
 - **Quick Add** - Rapid inbox capture from any page
+- **Email to Inbox** - A unique inbound email address that turns forwarded or sent emails into inbox items (available on Pro and Team plans)
+- **Team Collaboration** - Connect with other users to delegate actions and share projects (available on the Team plan)
+- **In-App Notifications** - In-app alerts within the Service for delegations, connection invites, and other events
 - **Email Notifications** - Optional task reminders, daily summaries, and project nudges delivered by email
+- **Google Sign-In** - Optional sign-in and registration using your Google account
 
 Feature availability depends on your subscription plan (see Section 5).
 
@@ -47,7 +52,7 @@ You must be at least **15 years old** to use the Service. By registering, you re
 
 ### 3.2 Account Creation
 
-To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol). You must verify your email address before you can access the Service.
+To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol), or sign in with your Google account. You must verify your email address before you can access the Service.
 
 ### 3.3 Account Security
 
@@ -85,16 +90,16 @@ You are solely responsible for the Content you store in the Service. You represe
 
 Usage limits apply based on your subscription plan:
 
-| Resource | Free | Pro | Business |
+| Resource | Free | Pro | Team |
 |---|---|---|---|
-| Storage | 10 MB | 250 MB | 1 GB |
-| Projects | 10 | 100 | Unlimited |
-| Actions | 50 | 500 | Unlimited |
-| Stuff items | 10 | 100 | Unlimited |
-| Context tags | 5 | 25 | Unlimited |
+| Storage | 50 MB | 250 MB | 1 GB per user |
+| Projects | 7 | Unlimited | Unlimited |
+| Actions | Unlimited | Unlimited | Unlimited |
+| Inbox items | Unlimited | Unlimited | Unlimited |
+| Context tags | 10 | Unlimited | Unlimited |
 | Recurring templates | No | Yes | Yes |
 | Attachments per item | 10 | 10 | 10 |
-| Max file size | 50 MB | 50 MB | 50 MB |
+| Max file size | 5 MB | 20 MB | 50 MB |
 | Comments per item | 50 | 50 | 50 |
 | Comment max length | 2000 chars | 2000 chars | 2000 chars |
 
@@ -106,12 +111,12 @@ We reserve the right to modify these limits with reasonable notice.
 
 The Free plan provides access to the core Service with limited usage quotas at no cost. We reserve the right to modify Free plan features and limits at any time.
 
-### 5.2 Paid Subscriptions (Pro and Business)
+### 5.2 Paid Subscriptions (Pro and Team)
 
 Paid subscriptions provide access to additional features and higher usage limits as described on our Pricing page.
 
 - **Billing cycles:** Monthly or yearly. Yearly subscriptions include a discount as displayed at the time of purchase.
-- **Pricing:** Current prices are displayed on the Pricing page. All prices include applicable VAT where required.
+- **Pricing:** Current prices are displayed on the Pricing page. All prices are in USD and exclude applicable VAT, which is handled by our payment provider where required.
 - **Payment processing:** Payments are processed by our third-party payment provider. By subscribing, you also agree to the payment provider's terms of service.
 - **Automatic renewal:** Subscriptions renew automatically at the end of each billing cycle unless cancelled before the renewal date.
 

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** February 27, 2026
+**Last updated:** June 22, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -22,6 +22,7 @@ When you register for the Service, we collect:
 
 - **Email address** - used as your account identifier and for account-related communications (password resets, security notifications)
 - **Password** - stored only in hashed form; we never have access to your plain-text password
+- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier and your email address from Google to create or link your account. We do not receive your Google password, and we do not request access to your Gmail, Google Calendar, Google Drive, or other Google services.
 
 ### 2.2 User-Generated Content
 
@@ -35,7 +36,27 @@ When you use the Service, you create and store content including:
 
 You control what content you create. We process this content solely to provide the Service to you.
 
-### 2.3 Technical and Session Data
+### 2.3 Inbound Email Content (Email-to-Inbox)
+
+If you use the **Email-to-Inbox** feature (available on the Pro and Team plans), you can generate a unique email address that forwards messages into your inbox as items. When you or others send mail to that address, we process the message content to create an item in your inbox, including:
+
+- The sender's email address
+- The subject line and message body
+- Any attachments included with the message
+
+This may include personal data about third parties (the people who send mail to your address). We process it solely to create the corresponding item in your inbox. You can pause capture or reset (invalidate) your inbox address at any time from your settings.
+
+### 2.4 Collaboration Data (Team plan)
+
+If you use collaboration features on the Team plan, certain data becomes visible to the other WhatsNextAction users you choose to work with:
+
+- **Connections** - when you invite another person to connect, we store the invitee's email address and send them an invitation. Invitations may be sent to people who do not yet have a WhatsNextAction account.
+- **Delegation** - when you delegate an action to a connection, the action's title, description, and related details are shared with that person as an item in their inbox, and completion updates are shared back with you.
+- **Shared projects** - when you share a project, the members you choose can see the project's actions (titles, descriptions, attachments), assignments, completion status, and comments. Your personal tags remain private to you and are never shown to other members.
+
+We share this data only with the specific users you choose, and only to provide the collaboration features you have enabled.
+
+### 2.5 Technical and Session Data
 
 We automatically collect certain technical data when you use the Service:
 
@@ -44,7 +65,7 @@ We automatically collect certain technical data when you use the Service:
 - **Session timestamps** - login time and last activity time per session
 - **Authentication tokens** - stored in your browser's localStorage for session management
 
-### 2.4 Preference Data
+### 2.6 Preference Data
 
 Your application settings are stored to provide a personalized experience:
 
@@ -54,7 +75,7 @@ Your application settings are stored to provide a personalized experience:
 - Notification preferences (email notification toggles)
 - Dismissed tips and hints
 
-### 2.5 Data We Do Not Collect
+### 2.7 Data We Do Not Collect
 
 - We do not use analytics or tracking tools
 - We do not use advertising cookies or pixels
@@ -69,6 +90,8 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 |---|---|---|
 | Account data (email, password) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
 | User-generated content | Contract performance (Art. 6(1)(b)) | Necessary to deliver the core functionality of the Service |
+| Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
+| Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
 | Technical/session data | Legitimate interest (Art. 6(1)(f)) | Security, fraud prevention, and service reliability |
 | Preference data | Contract performance (Art. 6(1)(b)) | Necessary to provide personalized service features |
@@ -83,6 +106,7 @@ We use your personal data exclusively for the following purposes:
 - **Authentication and security** - verifying your identity, managing login sessions, detecting unauthorized access
 - **Account communications** - sending password reset emails, email verification, login alerts, security notifications, and essential service updates
 - **Task notifications** - sending optional email reminders such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
+- **Collaboration** - enabling delegation and shared projects with the connections you choose (Team plan)
 - **Subscription management** - processing payments, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
 - **Legal compliance** - fulfilling our legal obligations under applicable law
@@ -101,22 +125,30 @@ We share your personal data only with the following categories of recipients, st
 
 - **Google Workspace** - delivers transactional emails (password resets, account notifications)
 
-### 5.3 Payment Processing
+### 5.3 Sign-In with Google
+
+- **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier and your email address to create or link your account. This is governed by Google's own privacy policy. We do not request access to any of your Google data beyond basic sign-in information.
+
+### 5.4 Payment Processing
 
 - **Payment service provider** - processes subscription payments. Your payment details (card number, billing address) are handled directly by the payment processor and are never stored on our servers. The payment processor acts as an independent data controller for payment data.
 
-### 5.4 Avatar Service
+### 5.5 Avatar Service
 
 - **Gravatar (Automattic, Inc.)** — We send a one-way SHA-256 hash of your lowercase email address to gravatar.com to retrieve your profile avatar image. No other personal data is shared with Gravatar. If no Gravatar account exists for your email, no image is returned and a local fallback (your initials) is displayed instead.
 
-### 5.5 What We Do Not Do
+### 5.6 Other WhatsNextAction Users (Team plan)
+
+- If you use collaboration features, content you choose to delegate or share becomes visible to the specific connections you select, as described in Section 2.4. This sharing happens only at your direction and only with the users you choose.
+
+### 5.7 What We Do Not Do
 
 - We do **not** sell your personal data to any third party
 - We do **not** share your data with advertisers or data brokers
 - We do **not** use your content to train machine learning models
-- We do **not** provide any third party with access to your content
+- We do **not** provide any third party with access to your content beyond what is described above
 
-### 5.6 Legal Obligations
+### 5.8 Legal Obligations
 
 We may disclose your data if required to do so by law, court order, or a binding request from a competent authority.
 
