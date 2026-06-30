@@ -1,10 +1,11 @@
 import { reactive } from 'vue'
-import { getSettings, updateSettings } from '../core/apiClient.js'
+import { getSettings, updateSettings, liveTz } from '../core/apiClient.js'
 
 // Default settings matching backend defaults
 const DEFAULTS = {
     application: {
         new_items_position: 'end',
+        timezone: 'UTC',
     },
     calendar: {
         time_format: '24-hour',
@@ -35,6 +36,7 @@ export function settingsModel() {
     const state = reactive({
         // Application settings
         newItemsPosition: 'end',
+        timezone: liveTz(), // displayed default seeded from the browser; becomes a stored override only when the user picks one
 
         // Calendar settings
         timeFormat: '24-hour',
@@ -60,6 +62,7 @@ export function settingsModel() {
         // Saving state per setting (for showing spinners)
         saving: {
             newItemsPosition: false,
+            timezone: false,
             timeFormat: false,
             businessHoursStart: false,
             businessHoursEnd: false,
@@ -96,6 +99,8 @@ export function settingsModel() {
     function applySettings(settings) {
         if (settings.application) {
             state.newItemsPosition = settings.application.new_items_position || DEFAULTS.application.new_items_position
+            // Stored override wins; with no override, show the live browser tz for display only (server-side auto-capture owns the real default)
+            state.timezone = settings.application.timezone || liveTz()
         }
         if (settings.calendar) {
             state.timeFormat = settings.calendar.time_format || DEFAULTS.calendar.time_format
@@ -186,6 +191,20 @@ export function settingsModel() {
             throw err
         } finally {
             state.saving.newItemsPosition = false
+        }
+    }
+
+    async function setTimezone(value) {
+        const oldValue = state.timezone
+        state.timezone = value
+        state.saving.timezone = true
+        try {
+            await save('application', { timezone: value })
+        } catch (err) {
+            state.timezone = oldValue
+            throw err
+        } finally {
+            state.saving.timezone = false
         }
     }
 
@@ -366,6 +385,7 @@ export function settingsModel() {
         load,
         save,
         setNewItemsPosition,
+        setTimezone,
         setTimeFormat,
         setBusinessHoursStart,
         setBusinessHoursEnd,

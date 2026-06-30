@@ -68,22 +68,56 @@ parent Design §2. Feature catalog home: `wna_orchestration/specs/features/wna-f
 
 ## Work breakdown (this repo)
 
-- [ ] Add `application.timezone` (IANA, default `'UTC'`) to `settingsModel.js` DEFAULTS, reactive state +
+- [x] Add `application.timezone` (IANA, default `'UTC'`) to `settingsModel.js` DEFAULTS, reactive state +
   saving flag, parse in `applySettings()`, and a setter following `setWeekStart()` (optimistic set →
   `await save('application', { timezone })` → rollback on error); export it on the instance.
-- [ ] On first load, if no stored override exists, seed the **displayed** default from `liveTz()` for UX
+  — DEFAULTS `settingsModel.js:8`; reactive state `settingsModel.js:39`; saving flag `:65`; parse `:103`;
+  `setTimezone` setter (optimistic+rollback) `:197`; exported on instance `:388`. `liveTz` reused via
+  export from `apiClient.js:107` (imported `settingsModel.js:2`).
+- [x] On first load, if no stored override exists, seed the **displayed** default from `liveTz()` for UX
   only — do **not** auto-save it as an override (server-side auto-capture owns the default).
-- [ ] Add a `Select`-backed timezone row in `SettingsPage.vue` (computed get/set bridge like `weekStart`
+  — `settingsModel.js:103` `state.timezone = settings.application.timezone || liveTz()` (no `save()` in the
+  no-override path); reactive state also seeds `liveTz()` before API load `settingsModel.js:39`.
+- [x] Add a `Select`-backed timezone row in `SettingsPage.vue` (computed get/set bridge like `weekStart`
   + an options array), in the Application or Calendar section; **reuse `Select.vue`**. Optional hint near
   the Daily-digest toggle that the digest uses this timezone.
-- [ ] Update `wna_orchestration/specs/features/wna-features.md` — **Settings timezone selector** entry
+  — Row in Application section `SettingsPage.vue:226-238` (reuses `Select.vue`); `timezone` get/set bridge
+  `:800`; `timezoneOptions` (full IANA list, current value always present) `:806`; daily-digest hint
+  `:399`. No new component/CSS added.
+- [x] Update `wna_orchestration/specs/features/wna-features.md` — **Settings timezone selector** entry
   (per-user IANA override that feeds the daily digest). Cite the `file:line` you edit.
+  — `wna_orchestration/specs/features/wna-features.md:1139` (Timezone bullet in §21.5 Application Section;
+  backend-owned Daily Digest entry untouched).
+
+### Registration timezone send (2026-06-30 — ADDED requirement; implemented)
+> New user-mandated requirement: send the browser timezone **at registration** so the backend seeds
+> `user_prefs` at the auto level immediately. Parent: `BUG-009 → ## Design §2 (Registration seed)` +
+> `### web` work breakdown. Implementation-invisible to the user (no UI), so **no `wna-features.md`
+> change** — the request shape is documented by the backend slice in `specs/api/api.md`.
+- [x] Include `tz: liveTz()` in the `registerUser` payload (`apiClient.js:111` → `POST /v1/user/register`,
+  currently `{ email, password }`) and in the `googleSso` payload (`apiClient.js:1678` →
+  `POST /v1/user/google-sso`, currently `{ code }`). `liveTz()` (`apiClient.js:107`) is in-file — no new
+  import, no `AuthDialog.vue` / `GoogleSsoPage.vue` / `authModel.js` change. Main-app only (admin-app has
+  no registration). Verify the network request body carries `tz` on both signup paths.
+  — `apiClient.js:113` `post('/v1/user/register', { email, password, timezone: liveTz() })`; `apiClient.js:1680`
+  `post('/v1/user/google-sso', { code, tz: liveTz() })`. **Field names per contract (api.md): register =
+  `timezone`, google-sso = `tz`.** `liveTz()` in-file `apiClient.js:107`; no new import, no
+  `AuthDialog.vue` / `GoogleSsoPage.vue` / `authModel.js` change.
 
 ---
 
 ## Acceptance / gates (this repo's portion)
-- [ ] Selecting a timezone in Settings issues `PUT /v1/user/settings` with `application.timezone` and
+- [x] Selecting a timezone in Settings issues `PUT /v1/user/settings` with `application.timezone` and
   updates optimistically, rolling back on error.
-- [ ] With no stored override, the displayed value defaults to the live browser tz **without** writing
+  — `timezone` setter `SettingsPage.vue:800` → `settingsModel.setTimezone` `settingsModel.js:197`
+  (optimistic set `:199`, rollback `:204`) → `save('application', { timezone })` `:202` →
+  `updateSettings` `apiClient.js:1554` issues `httpApi.put('/v1/user/settings', { application: { timezone } })`.
+- [x] With no stored override, the displayed value defaults to the live browser tz **without** writing
   an override.
-- [ ] Settings feature entry synced in `wna_orchestration/specs/features/wna-features.md` (cited `file:line`).
+  — `settingsModel.js:103` (`|| liveTz()`, no `save()` on the no-override path) and reactive seed `:39`.
+- [x] Settings feature entry synced in `wna_orchestration/specs/features/wna-features.md` (cited `file:line`).
+  — `wna_orchestration/specs/features/wna-features.md:1139`.
+- [x] **(2026-06-30) Registration send:** the `POST /v1/user/register` and `POST /v1/user/google-sso`
+  request bodies carry `tz` = the browser IANA tz (observe the actual network request on signup).
+  — `apiClient.js:113` (`timezone: liveTz()`) and `apiClient.js:1680` (`tz: liveTz()`) — field names per
+  api.md; build green.

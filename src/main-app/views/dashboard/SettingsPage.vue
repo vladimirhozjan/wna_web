@@ -222,6 +222,20 @@
                 />
               </div>
             </div>
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Timezone</span>
+                <p class="text-body-s settings-hint">Used for day-scoped views and your daily digest email</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timezone }">
+                <span v-if="settings.state.saving.timezone" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                <Select
+                    v-model="timezone"
+                    :options="timezoneOptions"
+                    title="Timezone"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -382,7 +396,7 @@
             <div class="settings-row">
               <div>
                 <span class="settings-label">Daily digest</span>
-                <p class="text-body-s settings-hint">Daily email summarizing your today, next actions, and items due</p>
+                <p class="text-body-s settings-hint">Daily email summarizing your today, next actions, and items due, sent in your selected timezone</p>
               </div>
               <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyDigest }">
                 <span v-if="notifications.state.saving.dailyDigest" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
@@ -587,7 +601,7 @@ const SECTION_KEYWORDS = {
   plan: 'plan tier subscription free pro team projects tags storage limits upgrade',
   emailInbox: 'email inbox capture address forward generate reset pause',
   sessions: 'sessions devices logout active current',
-  application: 'application theme dark light position new items',
+  application: 'application theme dark light position new items timezone time zone',
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
   review: 'review weekly sidebar',
@@ -781,6 +795,25 @@ const themeModeOptions = [
 const addPosition = computed({
   get: () => settings.state.newItemsPosition,
   set: (val) => settings.setNewItemsPosition(val).catch(() => toaster.push('Failed to save setting'))
+})
+
+const timezone = computed({
+  get: () => settings.state.timezone,
+  set: (val) => settings.setTimezone(val).catch(() => toaster.push('Failed to save setting'))
+})
+
+// Full IANA zone list when the browser supports it; always include UTC and the current value so the Select can label it
+const timezoneOptions = computed(() => {
+  let zones
+  try {
+    zones = Intl.supportedValuesOf('timeZone')
+  } catch {
+    zones = ['UTC']
+  }
+  if (!zones.includes('UTC')) zones = ['UTC', ...zones]
+  const current = settings.state.timezone
+  if (current && !zones.includes(current)) zones = [current, ...zones]
+  return zones.map(z => ({ value: z, label: z.replace(/_/g, ' ') }))
 })
 
 const editingTagPresets = ref(false)

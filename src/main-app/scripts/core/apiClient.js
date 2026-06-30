@@ -104,13 +104,13 @@ function addToTop() {
 }
 
 // Caller's live IANA tz; required on day-scoped endpoints so the backend windows "today" in the user's local zone (DST-aware).
-function liveTz() {
+export function liveTz() {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 }
 
 export async function registerUser({email, password}) {
     try {
-        const res = await httpApi.post('/v1/user/register', {email, password})
+        const res = await httpApi.post('/v1/user/register', {email, password, timezone: liveTz()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1677,7 +1677,7 @@ export async function googleAuth(idToken) {
 
 export async function googleSso(code) {
     try {
-        const res = await httpApi.post('/v1/user/google-sso', {code})
+        const res = await httpApi.post('/v1/user/google-sso', {code, tz: liveTz()})
         const data = res.data
 
         if (!data.access_token || !data.refresh_token) {
