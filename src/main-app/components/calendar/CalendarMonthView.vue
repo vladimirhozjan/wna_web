@@ -155,7 +155,6 @@ function checkMobile() {
 function scrollToToday() {
   nextTick(() => {
     if (isMobile.value && listRef.value) {
-      // Find today's element in the list
       const todayEl = listRef.value.querySelector('.month-view__list-day--today')
       if (todayEl) {
         todayEl.scrollIntoView({ block: 'start', behavior: 'instant' })
@@ -174,7 +173,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
-// Scroll to today when currentDate changes
 watch(() => props.currentDate, () => {
   scrollToToday()
 })

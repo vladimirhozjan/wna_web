@@ -6,7 +6,6 @@
       <div class="text-body-l fw-semibold clarify-summary-action">{{ summary.action }}</div>
       <p class="text-body-m clarify-summary-description">{{ summary.description }}</p>
 
-      <!-- Show details for action/project -->
       <div v-if="summary.details" class="clarify-summary-details">
         <div v-if="summary.details.dueDate" class="clarify-detail-item">
           <span class="text-body-s clarify-detail-label">Due date:</span>

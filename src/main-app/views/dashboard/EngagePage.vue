@@ -252,7 +252,6 @@ const hasMoreToday = computed(() => todayCount.value > 5)
 const hasMoreNext = computed(() => nextCount.value > 5)
 const hasMoreWaiting = computed(() => waitingCount.value > 5)
 
-// Display at most 5 items per section
 const displayToday = computed(() => topToday.value.slice(0, 5))
 const displayActions = computed(() => topActions.value.slice(0, 5))
 const displayWaiting = computed(() => topWaiting.value.slice(0, 5))

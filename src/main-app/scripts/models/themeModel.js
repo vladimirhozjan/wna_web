@@ -45,7 +45,6 @@ export function themeModel() {
         apply()
     })
 
-    // Apply immediately on creation
     apply()
 
     instance = {

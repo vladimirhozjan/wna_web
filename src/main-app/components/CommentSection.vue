@@ -91,8 +91,7 @@ import Spinner from './Spinner.vue'
 const props = defineProps({
   entityType: { type: String, required: true },
   itemId: { type: String, required: true },
-  // Optional list of project members `[{ user_id, email }, ...]`. Passed by shared-project
-  // pages so author resolution can find members who aren't in the caller's connections.
+  // Passed by shared-project pages so author resolution can find members who aren't in the caller's connections.
   members: { type: Array, default: () => [] },
 })
 

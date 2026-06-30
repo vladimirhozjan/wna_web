@@ -48,7 +48,6 @@ onMounted(() => {
     const rect = popoverRef.value.getBoundingClientRect()
     const vw = window.innerWidth
     const vh = window.innerHeight
-    // Adjust if overflowing right or bottom
     if (rect.right > vw) {
       popoverRef.value.style.left = `${vw - rect.width - 8}px`
     }

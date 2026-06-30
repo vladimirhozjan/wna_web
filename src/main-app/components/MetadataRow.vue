@@ -116,8 +116,7 @@ const isItemOverdue = computed(() =>
     props.entityType === 'action' && isOverdue(props.item.due_date)
 )
 
-// FEAT-013: overscheduled = timed scheduled slot whose end has passed (or daily
-// scheduled item past its day). Drives the scheduled chip's overdue (dark-red) state.
+// overscheduled = timed scheduled slot whose end has passed, or daily item past its day
 const isScheduledOverdueItem = computed(() =>
     props.entityType === 'action'
     && isScheduledOverdue(props.item.scheduled_date, props.item.scheduled_time, props.item.scheduled_duration)

@@ -47,7 +47,6 @@ const emit = defineEmits(['update:date', 'update:time', 'update:duration'])
 const dateInputRef = ref(null)
 const hasTime = computed(() => !!props.time)
 
-// Auto-set duration when withDuration becomes true and time is set
 watch([() => props.withDuration, () => props.time], ([wd, t]) => {
   if (wd && t && !props.duration) {
     emit('update:duration', 30)

@@ -164,7 +164,6 @@ export function stuffModel() {
         error.value = null
 
         // VueDraggable already moved the item in the array
-        // We just need to sync with the API
         try {
             await apiClient.moveStuff(stuffId, toIndex)
         } catch (err) {

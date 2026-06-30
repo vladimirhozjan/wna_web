@@ -97,8 +97,7 @@ watch(() => props.modelValue, (v) => {
     if (v.kind === 'text') return v.value || ''
     return ''
   })()
-  // Compare trimmed: emitted text is trimmed, so a trailing space the user
-  // just typed must not be clobbered by the value echoing back
+  // Compare trimmed so a trailing space the user just typed isn't clobbered by the echoed value
   if (next !== query.value.trim()) query.value = next
 })
 

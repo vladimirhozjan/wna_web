@@ -32,7 +32,6 @@ export function notificationModel() {
     })
 
     function isDisabled(event) {
-        // Check general first, then email channel
         const general = disabledEvents.general || []
         const email = disabledEvents.email || []
         return general.includes(event) || email.includes(event)
@@ -49,7 +48,6 @@ export function notificationModel() {
     }
 
     function buildDisabledEmail() {
-        // Build the email disabled array from current UI state
         const disabled = []
         if (!state.dailyDigest) disabled.push('daily_digest')
         if (!state.projectNeedsNextAction) disabled.push('project_needs_next_action')

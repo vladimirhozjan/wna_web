@@ -163,8 +163,7 @@ function formatDate(val) {
 }
 
 function otherParty(row) {
-  // The "other side" relative to THIS user — never the user's own email.
-  // (Backend `connected_user_email` is always the invitee, so it's wrong when this user is the invitee.)
+  // The "other side" relative to this user — backend `connected_user_email` is always the invitee, so it's wrong when this user is the invitee.
   return row.inviter_id === props.userId ? row.invitee_email : row.inviter_email
 }
 

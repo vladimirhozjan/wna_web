@@ -174,7 +174,6 @@ const positionedItems = computed(() => {
         const [hours, minutes] = time.split(':').map(Number)
         const top = (hours * props.hourHeight) + (minutes / 60) * props.hourHeight
 
-        // Calculate duration in minutes
         const duration = item.duration || defaultDuration
         const durationHeight = (duration / 60) * props.hourHeight
         const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing

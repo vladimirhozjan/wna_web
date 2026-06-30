@@ -252,7 +252,6 @@ function getPositionedItemsForDate(date) {
         const [hours, minutes] = time.split(':').map(Number)
         const top = (hours * hourHeight) + (minutes / 60) * hourHeight
 
-        // Calculate duration in minutes
         const duration = item.duration || defaultDuration
         const durationHeight = (duration / 60) * hourHeight
         const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing

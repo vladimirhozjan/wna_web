@@ -2,12 +2,6 @@ import { reactive } from 'vue'
 
 let instance = null
 
-/**
- * Singleton model for move operations that require additional input.
- * Used for:
- * - Schedule (move to Calendar) - requires date, optional time/duration
- * - Waiting For - requires waiting_for text
- */
 export function moveModel() {
     if (instance) return instance
 
@@ -29,11 +23,6 @@ export function moveModel() {
         onCancel: null,
     })
 
-    /**
-     * Show schedule input modal (for moving to Calendar)
-     * @param {Object} options - Initial values
-     * @returns {Promise<{date: string, time?: string, duration?: number} | null>}
-     */
     function showSchedule(options = {}) {
         return new Promise((resolve) => {
             state.type = 'schedule'
@@ -60,13 +49,6 @@ export function moveModel() {
         })
     }
 
-    /**
-     * Show waiting for input modal.
-     * Resolves to one of:
-     *   { kind: 'connection', userId, email, label }
-     *   { kind: 'text', value }
-     *   null (cancelled)
-     */
     function showWaiting(options = {}) {
         return new Promise((resolve) => {
             state.type = 'waiting'
@@ -91,11 +73,6 @@ export function moveModel() {
         })
     }
 
-    /**
-     * Show outcome input modal (for converting to project)
-     * @param {Object} options - Initial values
-     * @returns {Promise<string | null>} - The outcome value or null if cancelled
-     */
     function showOutcome(options = {}) {
         return new Promise((resolve) => {
             state.type = 'outcome'

@@ -615,8 +615,7 @@ async function navigateToNextOrPrev() {
     return
   }
 
-  // Try same position (next item slides into this position)
-  // If we were at the last item, go to previous
+  // Try same position (next item slides into this one), or previous if we were at the last
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {

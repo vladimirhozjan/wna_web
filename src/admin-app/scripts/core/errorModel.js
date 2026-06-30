@@ -16,13 +16,11 @@ export function errorModel() {
             console.error('[Toast]', message)
         }
 
-        // Remove duplicates
         const existing = state.errors.find(e => e.message === message)
         if (existing) return
 
         const id = nextId++
 
-        // Keep max 5
         if (state.errors.length >= 5) {
             state.errors.splice(0, 1)
         }

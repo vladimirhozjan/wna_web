@@ -76,7 +76,6 @@ const allViews = [
   { value: 'recurring', label: 'Recurring' },
 ]
 
-// Filter out week view on mobile
 const views = computed(() => {
   if (isMobile.value) {
     return allViews.filter(v => v.value !== 'week')

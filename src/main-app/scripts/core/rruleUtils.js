@@ -10,11 +10,6 @@ export const WEEKDAYS = [
     { value: 'SU', label: 'Sun' },
 ]
 
-/**
- * Parse an RRULE string into a parts object.
- * E.g. "FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,FR" →
- *   { freq: 'WEEKLY', interval: 2, byday: ['MO','FR'], bymonthday: null, count: null, until: null }
- */
 export function parseRRule(str) {
     const result = {
         freq: 'WEEKLY',
@@ -61,9 +56,6 @@ export function parseRRule(str) {
     return result
 }
 
-/**
- * Build an RRULE string from a parts object.
- */
 export function buildRRule(parts) {
     const segments = []
 
@@ -94,10 +86,6 @@ export function buildRRule(parts) {
     return segments.join(';')
 }
 
-/**
- * Produce a human-readable description of an RRULE string.
- * E.g. "Every 2 weeks on Mon, Fri"
- */
 export function describeRRule(str) {
     if (!str) return ''
 

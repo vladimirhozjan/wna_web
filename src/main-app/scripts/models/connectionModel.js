@@ -23,8 +23,7 @@ export function connectionModel() {
         loading.value = true
         error.value = null
         try {
-            // Use allSettled so a 403 on one endpoint (e.g. non-Team tier seeing /v1/connections)
-            // doesn't block loading the other (e.g. received invitations).
+            // allSettled: a 403 on one endpoint (non-Team tier) must not block loading the other
             const [listRes, pendingRes] = await Promise.allSettled([
                 apiClient.listConnections(),
                 apiClient.listPendingConnections(),

@@ -1,6 +1,4 @@
-// Copy text to the clipboard. Prefers the async Clipboard API (secure contexts),
-// falling back to a hidden textarea + execCommand for older / insecure contexts.
-// Returns true on success, false otherwise.
+// Legacy textarea + execCommand fallback because the Clipboard API only works in secure contexts.
 export async function copyText(text) {
     if (text == null) return false
     const value = String(text)

@@ -444,7 +444,6 @@ async function onDropToSomeday(data) {
     } else if (data.sourceType === 'project') {
       await apiClient.somedayProject(data.id);
     } else if (data.sourceType === 'completed') {
-      // Uncomplete then someday
       if (data.type === 'STUFF') {
         await apiClient.uncompleteStuff(data.id);
         await apiClient.clarifyToSomeday(data.id);

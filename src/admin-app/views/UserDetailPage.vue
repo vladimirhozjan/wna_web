@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <!-- Email to Inbox (FEAT-001 E-31) -->
+      <!-- Email to Inbox -->
       <div class="info-card card">
         <h3 class="text-label color-text-secondary section-title">Email to Inbox</h3>
 
@@ -283,7 +283,7 @@ const user = ref(null)
 const loading = ref(true)
 const actionLoading = ref(false)
 
-// Inbox address + usage (FEAT-001 E-31)
+// Inbox address + usage
 const inboxEmail = ref(null)
 const inboxEmailLoading = ref(true)
 

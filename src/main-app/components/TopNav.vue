@@ -198,7 +198,7 @@ function onAvatarClick() {
 const { addStuff } = stuffModel();
 const toaster = errorModel();
 
-// Notifications (P2)
+// Notifications
 const notifModel = notificationInAppModel();
 const notifList = notifModel.notifications;
 const notifUnread = computed(() => notifModel.unreadCount.value);

@@ -5,8 +5,7 @@
         <h1 class="page-title">Completed</h1>
       </div>
 
-      <!-- Charts row — FIXED above the list (does not scroll). Independent of the list:
-           hidden when stats failed or there are no completions; a skeleton shows while stats load. -->
+      <!-- Charts row — fixed above the list (does not scroll). -->
       <div v-if="showCharts" class="card completed-charts">
         <p v-if="lowActivity" class="text-body-s completed-charts__hint">
           Great start — every completed item counts. Keep the momentum going!
@@ -46,8 +45,7 @@
 
       <!-- Scrollable list area — only this scrolls; the charts stay fixed above. -->
       <div class="completed-scroll">
-        <!-- Recency-grouped list. .card overflow relaxed so sticky section headers anchor
-             to .completed-scroll (the scroll container). -->
+        <!-- Recency-grouped list. .card overflow relaxed so sticky headers anchor to .completed-scroll. -->
         <div class="card completed-list">
           <div v-if="loading && items.length === 0" class="completed-loading">
             <Spinner :size="32" />

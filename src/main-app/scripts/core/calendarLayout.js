@@ -1,9 +1,4 @@
-/**
- * Lays out overlapping calendar items side by side.
- *
- * Takes items with { id, top, height } and returns them with added
- * { column, totalColumns } so the caller can compute left/width.
- */
+// Adds { column, totalColumns } so the caller can compute left/width.
 export function layoutOverlappingItems(items) {
   if (items.length === 0) return []
 

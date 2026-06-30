@@ -339,7 +339,6 @@ function formatDate(dateStr) {
   padding: 16px;
 }
 
-/* Hide size and modified columns on mobile */
 @media (max-width: 600px) {
   .col-size,
   .col-modified {

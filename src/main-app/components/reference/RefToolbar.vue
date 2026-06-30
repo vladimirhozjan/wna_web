@@ -221,7 +221,6 @@ function formatBytes(bytes) {
   transition: width 0.3s ease;
 }
 
-/* Stack toolbar vertically on narrow screens */
 @media (max-width: 600px) {
   .toolbar {
     flex-direction: column;

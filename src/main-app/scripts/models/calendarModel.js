@@ -55,9 +55,7 @@ const error = ref(null)
 
 let instance = null
 
-// Transform API item to calendar item format
 function transformItem(apiItem) {
-    // Convert time from HH:MM:SS to HH:MM
     const formatTime = (time) => {
         if (!time) return null
         return time.substring(0, 5)  // "09:00:00" -> "09:00"
@@ -162,9 +160,7 @@ export function calendarModel() {
     }
 
     function isItemOverdue(item) {
-        // Flag overdue per the row's display reason so a start/due action's `start`
-        // occurrence isn't reddened by its deadline (scheduled XOR start/due invariant
-        // means the scheduled and deadline branches never collide on one item).
+        // Flag overdue per the row's display reason so a start occurrence isn't reddened by its deadline.
         const reason = item._displayReason || getItemDisplayType(item)
         if (reason === 'due') {
             return !!item.due_date && isOverdue(item.due_date)

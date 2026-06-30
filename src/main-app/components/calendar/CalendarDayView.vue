@@ -61,7 +61,6 @@ onMounted(() => {
   scrollToBusinessHours()
 })
 
-// Scroll to business hours when date changes
 watch(() => props.currentDate, () => {
   scrollToBusinessHours()
 })

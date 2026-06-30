@@ -86,7 +86,6 @@ async function loadData() {
       // For year view, load density data for efficient rendering
       await calendar.loadDensity(start, end)
     } else {
-      // For other views, load full items
       await calendar.loadCalendarItems(start, end)
     }
   } catch (err) {

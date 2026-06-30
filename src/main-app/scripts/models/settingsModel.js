@@ -24,7 +24,6 @@ const DEFAULTS = {
     },
 }
 
-// Map day names to numbers and vice versa
 const DAY_NAME_TO_NUM = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }
 const DAY_NUM_TO_NAME = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
 
@@ -74,31 +73,26 @@ export function settingsModel() {
         },
     })
 
-    // Parse HH:MM to hour number
     function parseHour(timeStr) {
         if (!timeStr) return 9
         const [hours] = timeStr.split(':')
         return parseInt(hours, 10)
     }
 
-    // Format hour number to HH:MM
     function formatHour(hour) {
         return `${String(hour).padStart(2, '0')}:00`
     }
 
-    // Convert day names array to numbers array
     function dayNamesToNumbers(names) {
         if (!Array.isArray(names)) return [1, 2, 3, 4, 5]
         return names.map(name => DAY_NAME_TO_NUM[name]).filter(n => n !== undefined).sort((a, b) => a - b)
     }
 
-    // Convert day numbers array to names array
     function dayNumbersToNames(numbers) {
         if (!Array.isArray(numbers)) return ['mon', 'tue', 'wed', 'thu', 'fri']
         return numbers.map(n => DAY_NUM_TO_NAME[n]).filter(Boolean)
     }
 
-    // Apply settings from API response to state
     function applySettings(settings) {
         if (settings.application) {
             state.newItemsPosition = settings.application.new_items_position || DEFAULTS.application.new_items_position
@@ -149,7 +143,6 @@ export function settingsModel() {
         localStorage.setItem('tag_presets', JSON.stringify(state.tagPresets))
     }
 
-    // Load settings from API
     async function load() {
         if (state.loading) return
 
@@ -163,14 +156,12 @@ export function settingsModel() {
             state.loaded = true
         } catch (err) {
             state.error = err
-            // Fall back to localStorage on error
             loadFromLocalStorage()
         } finally {
             state.loading = false
         }
     }
 
-    // Save a specific setting section to API
     async function save(section, data) {
         try {
             await updateSettings({ [section]: data })

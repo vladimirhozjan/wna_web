@@ -20,7 +20,7 @@
       <div class="clarify-progress-bar" :style="{ width: `${progress}%` }"></div>
     </div>
 
-    <!-- Context - show item being processed -->
+    <!-- Context -->
     <div class="clarify-context" v-if="stuffItem">
       <span class="text-body-s clarify-context-label">Processing:</span>
       <span class="text-h3 clarify-context-title">{{ stuffItem.title }}</span>
@@ -102,7 +102,6 @@ const clarify = clarifyModel()
 const state = clarify.state
 const toaster = errorModel()
 
-// Show errors as toast
 watch(() => state.error, (err) => {
   if (!err) return
   toaster.push(err)

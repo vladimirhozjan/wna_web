@@ -77,7 +77,7 @@
       <p v-else class="text-caption color-text-tertiary">No platform health data available.</p>
     </div>
 
-    <!-- Email to Inbox (FEAT-001 E-32) — support+ only (endpoint is support-gated) -->
+    <!-- Email to Inbox — support+ only (endpoint is support-gated) -->
     <div v-if="hasMinRole(role, 'support')" class="section card">
       <h3 class="text-label color-text-secondary section-title">Email to Inbox</h3>
       <div v-if="inboxStatsLoading" class="loading-state"><Spinner size="sm" /></div>
@@ -261,9 +261,8 @@ async function loadPlatformHealth() {
   }
 }
 
-// --- Email to Inbox stats (FEAT-001 E-32) ---
-// Assumed counts (active_addresses / processed_today / failed_today / rejected_today) — the stats
-// body is owned by email_service and not yet pinned in api.md; missing keys render as 0.
+// --- Email to Inbox stats ---
+// Stats body is owned by email_service and not yet finalized; missing keys render as 0.
 const inboxStats = ref(null)
 const inboxStatsLoading = ref(false)
 

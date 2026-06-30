@@ -112,8 +112,7 @@ const props = defineProps({
   hasMore: { type: Boolean, default: false },
   loadingIds: { type: Array, default: () => [] },
   disabled: { type: Boolean, default: false },
-  // When false, in-list drag-reordering is off (SortableJS sort:false) but items stay
-  // draggable OUT (native HTML5 drag to sidebar targets). Default true = unchanged behavior.
+  // false disables in-list reorder but keeps items draggable OUT (native HTML5 to sidebar targets)
   reorderable: { type: Boolean, default: true },
   activeId: { type: [String, Number], default: null },
   editable: { type: Boolean, default: true },
@@ -150,8 +149,7 @@ function dismissHint() {
 }
 
 function itemIsOverdue(item) {
-  // due deadline OR overscheduled timed slot (FEAT-013); scheduled XOR start/due means
-  // an item carries at most one of due_date / scheduled_date, so the OR can't double-fire.
+  // an item carries at most one of due_date / scheduled_date, so the OR can't double-fire
   if (isOverdue(item.due_date)) return true
   return isScheduledOverdue(item.scheduled_date, item.scheduled_time, item.scheduled_duration)
 }
@@ -199,7 +197,6 @@ function onDragEnd(evt) {
   draggedItemId = null
   originalIndex = null
 
-  // Clear native drag state
   if (nativeDraggingId.value) {
     nativeDraggingId.value = null
     drag.endDrag()

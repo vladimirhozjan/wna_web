@@ -595,9 +595,7 @@ const delegatedFromLabel = computed(() =>
     || ''
 )
 
-// Shared-project flags. We treat the action as belonging to a shared project when
-// the BE includes assignment metadata. This stays inert until the BE adds
-// `assigned_to`/`assigned_to_email`/`project_shared` fields to action responses.
+// Shared-project flags — detected via BE assignment metadata; inert until those fields exist
 const myUserId = computed(() => auth.currentUser.value?.id || null)
 const myTier = computed(() => auth.currentUser.value?.subscription_tier || 'free')
 const isSharedAction = computed(() => {

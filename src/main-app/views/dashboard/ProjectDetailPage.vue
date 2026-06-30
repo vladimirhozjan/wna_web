@@ -833,8 +833,7 @@ function isAssignedToMe(action) {
   return !!(action?.assigned_to && action.assigned_to === myUserId.value)
 }
 
-// Unassigned actions and actions assigned to me can be completed/deleted by any project member.
-// Actions assigned to someone else can only be acted on by that assignee.
+// Unassigned actions: any writer can act; assigned actions: only the assignee.
 function canCompleteAction(action) {
   if (!action) return false
   if (!action.assigned_to) return canWrite.value
@@ -1074,7 +1073,6 @@ onMounted(async () => {
     currentPosition.value = Number(route.query.position) || 0
     totalItems.value = Number(route.query.total) || 1
 
-    // Load project actions
     await loadProjectActions()
 
   } catch (err) {
@@ -1264,7 +1262,6 @@ async function navigateToPosition(position) {
       params: { id: data.id },
       query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
-    // Reload actions for new project
     await loadProjectActions()
   } catch {
     toaster.push('Failed to load project')
@@ -1362,7 +1359,6 @@ async function navigateToNextOrPrev() {
       params: { id: data.id },
       query: { position: data.position, total: totalItems.value, from: fromSource.value || undefined }
     })
-    // Reload actions for new project
     await loadProjectActions()
   } catch {
     router.push({ name: backRoute })
@@ -1534,12 +1530,7 @@ function goToActionList(state) {
 async function loadProjectActions() {
   if (!project.value?.id) return
 
-  // Only shared projects expose a members endpoint. The backend includes
-  // `shared: true` on the project response when (and only when) it's shared — a
-  // personal project omits it. So we load members only for shared projects, both
-  // to render the shared layout (badge, members list, backlog, My Action) and to
-  // backfill owner_id / my_role. For a personal project we must NOT call
-  // `GET /members`, which 403s with "Not a project member".
+  // Only shared projects expose GET /members; calling it on a personal project 403s.
   if (project.value.shared) {
     try {
       const members = await loadMembers(project.value.id)
@@ -1581,8 +1572,7 @@ async function loadProjectActions() {
 // ── Sharing ──
 
 function onAutoUnshared() {
-  // Last non-owner member was removed → backend made the project personal again.
-  // Clearing `shared` makes loadProjectActions skip the members probe (it would 403).
+  // Backend auto-unshared (last member removed); clear shared so loadProjectActions skips the members probe (403s).
   project.value = { ...project.value, shared: false, owner_id: null, my_role: null }
   loadProjectActions()
 }
@@ -2666,8 +2656,7 @@ async function onAddAction() {
   margin-top: 2px;
 }
 
-/* Assignee email on the right edge of the cell — for actions assigned to someone else.
-   Pushed right via margin-left:auto so it aligns with where the X button sits on other rows. */
+/* margin-left:auto aligns it with where the X button sits on other rows. */
 .action-assignee-right {
   color: var(--color-text-tertiary);
   white-space: nowrap;
@@ -2722,8 +2711,7 @@ async function onAddAction() {
   }
 }
 
-/* Keep the assignee inline always visible; only Assign/Unassign buttons hide on non-hover.
-   Reserve a fixed height matching the buttons so the row doesn't jump on hover. */
+/* Reserve a fixed height matching the buttons so the row doesn't jump on hover. */
 .shared-action-wrapper :deep(.item__actions) {
   opacity: 1;
   align-items: center;

@@ -26,10 +26,7 @@ import {
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
 
-// FEAT-015: first main-app chart. Modelled on admin-app/views/AnalyticsPage.vue
-// (ChartJS.register, getCssVar() runtime theming, .chart-container height wrapper,
-// responsive:true / maintainAspectRatio:false). No new CSS variables — colours read
-// from existing tokens at runtime so they track the active light/dark theme.
+// Colours read from existing tokens at runtime so they track the active light/dark theme.
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip)
 
 const props = defineProps({

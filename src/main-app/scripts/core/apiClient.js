@@ -103,9 +103,7 @@ function addToTop() {
     return localStorage.getItem('pref-add-position') === 'beginning'
 }
 
-// Caller's IANA timezone, read live per request — never persisted (no localStorage/profile).
-// Required `tz` query param on day-scoped endpoints so the backend windows "today" in the
-// user's local zone (DST-aware). See api.md "Timezone & Day Windowing (FEAT-016)".
+// Caller's live IANA tz; required on day-scoped endpoints so the backend windows "today" in the user's local zone (DST-aware).
 function liveTz() {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 }
@@ -172,8 +170,7 @@ export async function updateNotificationSettings(settings) {
     }
 }
 
-// Email to Inbox (FEAT-001) — Pro/Team only; endpoints return 403 for Free.
-// Shapes link api.md "Email to Inbox" / email-to-inbox.md §9.
+// Email to Inbox — Pro/Team only; endpoints return 403 for Free.
 export async function getInboxEmail() {
     try {
         const res = await httpApi.get('/v1/email/inbox', {headers: authHeaders()})
@@ -254,7 +251,6 @@ export async function refreshToken() {
             throw new Error('Unexpected response from server')
         }
 
-        // Shranimo nove
         localStorage.setItem('auth_token', data.access_token)
         localStorage.setItem('refresh_token', data.refresh_token)
         if (data.refresh_token_hash) localStorage.setItem('refresh_token_hash', data.refresh_token_hash)
@@ -1046,8 +1042,7 @@ export async function listCompleted({limit = PAGE_SIZE, cursor = null} = {}) {
     }
 }
 
-// FEAT-015: aggregated completion time-series (daily 90d + monthly full history + total),
-// bucketed in the caller's local tz. `tz` is required (backend 400s without it).
+// Aggregated completion time-series bucketed in caller's local tz; tz required (backend 400s without it).
 export async function getCompletedStats() {
     try {
         const res = await httpApi.get('/v1/completed/stats', {params: {tz: liveTz()}, headers: authHeaders()})
@@ -1714,7 +1709,7 @@ export async function getEngage({tags = null} = {}) {
     }
 }
 
-// ── Connections (P2 — Team Tier Only) ──
+// ── Connections (Team Tier Only) ──
 
 export async function inviteConnection(email) {
     try {
@@ -1770,7 +1765,7 @@ export async function removeConnection(id) {
     }
 }
 
-// ── Shared Projects (P2 — Team Tier Only) ──
+// ── Shared Projects (Team Tier Only) ──
 
 export async function shareProject(projectId, members) {
     try {
@@ -1844,7 +1839,7 @@ export async function unassignAction(actionId) {
     }
 }
 
-// ── In-App Notifications (P2) ──
+// ── In-App Notifications ──
 
 export async function listNotifications({limit = 20, cursor = null} = {}) {
     try {
@@ -2030,14 +2025,14 @@ const apiClient = {
     // Google Auth API
     googleAuth,
     googleSso,
-    // Connections API (P2)
+    // Connections API
     inviteConnection,
     acceptConnectionInvite,
     declineConnectionInvite,
     listConnections,
     listPendingConnections,
     removeConnection,
-    // Shared Projects API (P2)
+    // Shared Projects API
     shareProject,
     unshareProject,
     listProjectMembers,
@@ -2046,7 +2041,7 @@ const apiClient = {
     removeProjectMember,
     assignAction,
     unassignAction,
-    // In-App Notifications API (P2)
+    // In-App Notifications API
     listNotifications,
     markNotificationRead,
     getUnreadNotificationCount,

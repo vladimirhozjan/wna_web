@@ -24,8 +24,7 @@ const hasMore = ref(true)
 const totalItems = ref(0)
 
 // ── Stats state (raw {daily, monthly, total} from /v1/completed/stats) ──
-// FEAT-015: store the RAW series; chart datasets and per-section counts are computed()
-// derivations (the statsModel/EngagePage idiom — no pre-bucketed map is stored).
+// Store the raw series; charts/counts are computed() derivations — no pre-bucketed map is stored.
 const stats = ref(null)
 const statsLoading = ref(false)
 const statsError = ref(null)
@@ -33,8 +32,7 @@ const statsError = ref(null)
 const settings = settingsModel()
 const weekStartsOn = computed(() => settings.getCalendarSettings().weekStartsOn)
 
-// Re-evaluated whenever the raw series or the week-start setting changes; `now` is captured
-// per evaluation (refreshes on reconcile, good enough for a page session).
+// `now` is captured per evaluation (refreshes on reconcile, good enough for a page session).
 const sectionCounts = computed(() =>
     stats.value ? buildSectionCounts(stats.value, new Date(), weekStartsOn.value) : null
 )
@@ -97,8 +95,7 @@ async function loadCompleted({ reset = false } = {}) {
     }
 }
 
-// FEAT-015: the page's stats fetch is INDEPENDENT of the list fetch — a failure here
-// hides the charts and degrades counts but must never block the list.
+// The stats fetch is INDEPENDENT of the list fetch — a failure here hides charts/degrades counts but must never block the list.
 async function loadStats() {
     statsLoading.value = true
     statsError.value = null
@@ -112,8 +109,7 @@ async function loadStats() {
     }
 }
 
-// Optimistically drop the restored item's contribution from the raw series so the
-// affected section count (and charts) update in the same tick as the row removal.
+// Optimistically drop the restored item's contribution so counts/charts update in the same tick as the row removal.
 function applyOptimisticRemoval(item) {
     if (!stats.value || !item?.completed_at) return
     const d = parseISO(item.completed_at)
@@ -134,11 +130,7 @@ function applyOptimisticRemoval(item) {
     stats.value = next
 }
 
-// Coalesced, debounced reconcile of BOTH stats and the list (fetched together, applied
-// atomically) — reuses the statsModel.refreshStats 300ms-debounce idiom. The list is
-// reloaded to its current depth so loaded groups don't collapse to page one. Triggered by
-// every restore path: the page's uncheck handler AND the sidebar drag-to-restore (which
-// shrinks `items` directly) — the items watcher below funnels both here, coalesced.
+// Debounced, coalesced reconcile of stats + list; the list reloads to its current depth so loaded groups don't collapse to page one.
 function reconcile() {
     clearTimeout(reconcileTimer)
     reconcileTimer = setTimeout(async () => {
@@ -162,11 +154,7 @@ function reconcile() {
     }, 300)
 }
 
-// Any shrink of the loaded set (uncheck removal here, or a sidebar drag-restore that
-// splices `items` in place) triggers one coalesced reconcile so charts + section counts
-// never drift. Watching the length getter catches in-place splices but ignores per-row
-// changes like a `checked` toggle; a re-fetch returning the same length doesn't re-fire,
-// so this can't loop.
+// Watch the length getter: catches in-place splices but ignores per-row toggles, and a same-length re-fetch won't re-fire, so this can't loop.
 watch(() => items.value.length, (len, prevLen) => {
     if (len < prevLen) reconcile()
 })

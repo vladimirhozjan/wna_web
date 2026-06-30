@@ -114,7 +114,6 @@ function onConfirm() {
   if (move.state.onConfirm) move.state.onConfirm()
 }
 
-// Auto-focus inputs when modal opens
 watch(() => move.state.visible, (visible) => {
   if (visible) {
     nextTick(() => {

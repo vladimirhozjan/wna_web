@@ -93,7 +93,6 @@ onBeforeUnmount(() => {
   background: var(--color-border-light);
 }
 
-/* odprt drawer */
 .drawer.open {
   transform: translateX(0);
 }

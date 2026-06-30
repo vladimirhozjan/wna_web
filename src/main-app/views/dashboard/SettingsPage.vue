@@ -648,7 +648,7 @@ function formatBytes(bytes) {
   return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
 }
 
-// Email to Inbox (FEAT-001) — Pro/Team only; reactive on tier so a downgrade reverts to locked (E-6b)
+// Email to Inbox — Pro/Team only; reactive on tier so a downgrade reverts to locked
 const isProOrTeam = computed(() => tier.value === 'pro' || tier.value === 'team')
 
 const inbox = reactive({
@@ -951,7 +951,6 @@ onMounted(() => {
   window.addEventListener('resize', checkMobile)
   loadStats() // deep-linked /settings may mount before the sidebar populates stats
   loadSessions()
-  // Load settings from API
   settings.load().catch(() => {
     // Settings will fall back to localStorage, no need to show error
   })
@@ -964,8 +963,7 @@ onMounted(() => {
   applySectionQuery()
 })
 
-// Re-fetch (or clear) the inbox address when the tier changes — keeps the card
-// reactive to upgrade/downgrade (E-6b): Free reverts to the locked block.
+// Re-fetch (or clear) the inbox address when the tier changes — keeps the card reactive to upgrade/downgrade; Free reverts to the locked block
 watch(tier, (t) => {
   if (t === 'pro' || t === 'team') {
     if (!inbox.loaded) loadInboxEmail()
@@ -1108,7 +1106,6 @@ function closePasswordModal() {
 }
 
 async function onChangePassword() {
-  // Clear errors
   currentPasswordError.value = ''
   newPasswordError.value = ''
   confirmPasswordError.value = ''

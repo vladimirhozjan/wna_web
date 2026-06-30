@@ -305,8 +305,7 @@ export async function changePlatformUserTier(id, tier) {
     }
 }
 
-// Inbox address + usage for a user (FEAT-001 E-31). 404 = no address generated.
-// Design §9: GET /admin/inbox-email/users/{id} (admin_service → email_service via HMAC).
+// 404 = no address generated
 export async function getPlatformUserInboxEmail(id) {
     try {
         const res = await httpApi.get(`/admin/inbox-email/users/${id}`)
@@ -316,10 +315,7 @@ export async function getPlatformUserInboxEmail(id) {
     }
 }
 
-// Global inbox-email stats (FEAT-001 E-32). Design §9 / admin-api.md §13.6: min role support;
-// admin_service proxies → email_service over HMAC; 503 if email_service is unreachable.
-// Response body is owned by email_service and NOT yet pinned in api.md — assumed counts:
-// { active_addresses, processed_today, failed_today, rejected_today } (integers).
+// Response shape assumed, not yet pinned: { active_addresses, processed_today, failed_today, rejected_today }
 export async function getInboxEmailStats() {
     try {
         const res = await httpApi.get('/admin/inbox-email/stats')

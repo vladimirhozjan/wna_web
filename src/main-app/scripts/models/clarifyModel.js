@@ -70,8 +70,7 @@ export function clarifyModel() {
             if (state.step === ClarifyState.ACTIONABLE_DECISION) return 50
             return 100
         }
-        // Actionable single action: 4 steps (actionable → count → two-minute → create/do-it-now)
-        // Actionable project: 3 steps
+        // Actionable single action: 4 steps; project: 3 steps
         if (state.step === ClarifyState.ACTIONABLE_DECISION) return 25
         if (state.step === ClarifyState.ACTION_COUNT_DECISION) return 50
         if (state.step === ClarifyState.TWO_MINUTE_DECISION) return 75
@@ -114,7 +113,6 @@ export function clarifyModel() {
         state.mode = mode
         state.step = ClarifyState.ACTIONABLE_DECISION
 
-        // Pre-fill form data from stuff item
         state.actionData.title = stuffItem.title || ''
         state.actionData.description = stuffItem.description || ''
         state.projectData.title = stuffItem.title || ''

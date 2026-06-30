@@ -1,19 +1,4 @@
-// FEAT-015: client-side derivations for the Completed page redesign.
-//
-// The backend's /v1/completed/stats endpoint is week-start-agnostic — it returns only
-// `daily` (last 90 local days, zero-filled) and `monthly` (full history) grains, already
-// bucketed in the caller's local tz. ALL weekly bucketing, per-section counts, and chart
-// datasets are derived here, honoring the user's `settings.weekStartsOn`.
-//
-// completed_at arrives as UTC; the browser's local tz equals the `tz` the client sends to
-// the backend (apiClient.liveTz()), so date-fns local parsing/formatting reproduces the
-// same local-day buckets the endpoint used — no separate tz library needed.
-//
-// The single source of truth for "which bucket does a local day fall in" is bucketForDate().
-// Both the list grouping AND the per-section counts route every date through it, so each
-// date maps to exactly one bucket — the Σ(section counts) == total invariant holds with no
-// week/month-boundary double-count (a date claimed by `last-week`/`wd-*` is never also
-// claimed by `last-month`, because today→yesterday→wd→last-week are checked first).
+// Weekly bucketing, per-section counts, and chart datasets are derived client-side: the stats endpoint returns only daily+monthly grains (already in local tz), and local date-fns parsing reproduces the same local-day buckets.
 
 import {
     format,
@@ -39,10 +24,7 @@ export function buildContext(now, weekStartsOn) {
     return { today, yesterday, weekStart, lastWeekStart, firstOfMonth, firstOfPrevMonth, weekStartsOn }
 }
 
-// Classify one local day into its recency bucket. Order is load-bearing: today/yesterday
-// are matched before the week/month ranges so a week or month boundary never double-claims.
-// Returns { key, label }. Fine buckets: today, yesterday, wd-<date>, last-week, earlier-month,
-// last-month. Coarse bucket: m-YYYY-MM (label "May 2026").
+// Order is load-bearing: today/yesterday are matched before the week/month ranges so a boundary never double-claims.
 export function bucketForDate(date, ctx) {
     const day = startOfDay(date)
     const t = day.getTime()
@@ -72,11 +54,7 @@ function dailyMap(stats) {
     return m
 }
 
-// Per-section counts. Fine buckets are summed from `daily` (so a week straddling two
-// calendar months is counted once, in its fine bucket); only the coarse "Older → month"
-// sections come from `monthly`. The current + previous calendar months are fully inside
-// the 90-day daily window, so every fine bucket is exact, and `monthly` is used only for
-// months strictly older than the previous month — no overlap, no double-count.
+// Fine buckets come from `daily` and coarse older months from `monthly`; current+prev months sit inside the 90-day daily window, so the two sources never overlap or double-count.
 export function buildSectionCounts(stats, now, weekStartsOn) {
     if (!stats) return null
     const ctx = buildContext(now, weekStartsOn)
@@ -99,11 +77,7 @@ export function buildSectionCounts(stats, now, weekStartsOn) {
     return counts
 }
 
-// Group already-ordered (completed_at DESC) rows into recency sections via a single
-// sequential pass: a new group starts whenever the bucket key changes. Append-only and
-// order-stable, so load-more simply extends the last open group or starts a new one — a
-// header is never duplicated. The count annotation comes from the stats-derived
-// sectionCounts (not loaded rows); null when stats are unavailable.
+// Rows must arrive pre-ordered (completed_at DESC): a new group starts when the bucket key changes, so load-more extends the last group without duplicating headers. Counts come from stats, not loaded rows.
 export function buildGroups(rows, sectionCounts, now, weekStartsOn) {
     const ctx = buildContext(now, weekStartsOn)
     const groups = []

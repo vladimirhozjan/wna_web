@@ -12,7 +12,6 @@ export function errorModel() {
     let nextId = 1;
 
     function push(message, type = 'error') {
-        // Log errors to console
         if (type === 'error') {
             console.error('[Toast]', message);
         }
