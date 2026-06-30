@@ -63,7 +63,7 @@
             </div>
             <div v-if="tierLimits && tierLimits.max_storage_bytes !== -1" class="settings-row">
               <span class="settings-label">Storage</span>
-              <span class="settings-value">{{ formatBytes(stats?.storage?.used ?? 0) }} / {{ formatBytes(tierLimits.max_storage_bytes) }}</span>
+              <span class="settings-value">{{ formatBytes(stats?.reference?.used_bytes ?? 0) }} / {{ formatBytes(tierLimits.max_storage_bytes) }}</span>
             </div>
             <div v-if="tierLimits && tierLimits.max_projects === -1" class="settings-row">
               <span class="settings-label">Limits</span>
@@ -566,7 +566,7 @@ const settings = settingsModel()
 const notifications = notificationModel()
 const theme = themeModel()
 
-const { stats } = statsModel()
+const { stats, loadStats } = statsModel()
 
 // Search
 const searchVisible = ref(false)
@@ -949,6 +949,7 @@ const canChangePassword = computed(() => {
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
+  loadStats() // deep-linked /settings may mount before the sidebar populates stats
   loadSessions()
   // Load settings from API
   settings.load().catch(() => {
