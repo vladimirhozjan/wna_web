@@ -415,6 +415,9 @@ async function saveTags() {
 }
 
 async function onRecurrenceChanged(newRule) {
+  // Skip no-op saves (e.g. choosing "Until date" before a date is set re-emits the same rule)
+  if (newRule === (template.value.recurrence_rule || '')) return
+
   const oldRule = template.value.recurrence_rule
   template.value.recurrence_rule = newRule
   savingField.value = 'recurrence'
