@@ -224,8 +224,8 @@
                 >Add</Btn>
               </div>
 
-              <!-- Warning when no actions -->
-              <div v-if="orderedActions.length === 0 && !isSomeday && !addInputVisible" class="next-action-prompt" @click="focusAddInput">
+              <!-- Warning when the project has no Next Action (may still have scheduled/waiting actions) -->
+              <div v-if="!hasNextAction && !isSomeday && !addInputVisible" class="next-action-prompt" @click="focusAddInput">
                 <WarningIcon class="next-action-prompt__icon" />
                 <div class="next-action-prompt__text">
                   <strong class="text-body-m fw-bold">What's the next physical step?</strong>
@@ -775,6 +775,8 @@ const FROM_LABELS = {
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
+// Mirrors next_action_id (the NEXT-state action) so this warning agrees with the sidebar dot and Engage nudge.
+const hasNextAction = computed(() => orderedActions.value.some(a => a.state === 'NEXT'))
 
 // Shared-project state
 const ROLE_OPTIONS = [

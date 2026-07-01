@@ -64,7 +64,7 @@
           :accept-drop="['stuff', 'action', 'someday', 'completed', 'reference']"
           @drop="onDropToProjects"
       >
-        <template #icon><ProjectsIcon/></template>
+        <template #icon><ProjectsIcon :stalled="stats?.projects?.empty > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem
