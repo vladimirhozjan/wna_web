@@ -40,7 +40,8 @@ const routes = [
     {path: '/projects', name: 'projects', component: ProjectsPage},
     {path: '/reference', name: 'reference', component: ReferencePage},
     {path: '/settings', name: 'settings', component: SettingsPage},
-    {path: '/settings/:section', redirect: to => ({path: '/settings', query: {section: to.params.section}})},
+    // Preserve extra query params — the Paywiser checkout returns to /settings/billing?status=…
+    {path: '/settings/:section', redirect: to => ({path: '/settings', query: {...to.query, section: to.params.section}})},
     {path: '/connections', name: 'connections', component: ConnectionsPage},
     {path: '/today', name: 'today', component: TodayPage},
     {path: '/someday', name: 'someday', component: SomedayPage},

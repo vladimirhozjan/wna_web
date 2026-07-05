@@ -120,6 +120,91 @@
       <!-- Collaboration (connections, shared projects, delegations) -->
       <UserCollaboration v-if="hasMinRole(role, 'support')" :user-id="user.id" :user-email="user.email" />
 
+      <!-- Payments & Billing (FEAT-006) -->
+      <div v-if="hasMinRole(role, 'admin')" class="info-card card">
+        <h3 class="text-label color-text-secondary section-title">Payments &amp; Billing</h3>
+
+        <div v-if="paymentsLoading" class="inbox-loading">
+          <Spinner />
+        </div>
+
+        <template v-else>
+          <!-- Subscription expiration -->
+          <div class="info-row expiration-row">
+            <div class="action-info">
+              <span class="text-body-s fw-medium">Subscription Expiration</span>
+              <span class="text-caption color-text-tertiary">
+                {{ expirationDisplay ? `Set to ${expirationDisplay}` : 'Manually set or clear the tier expiration' }}
+              </span>
+            </div>
+            <div class="action-control">
+              <input
+                  v-model="expirationInput"
+                  type="datetime-local"
+                  class="text-body-s select-input"
+                  :disabled="expirationSaving"
+              />
+              <Btn
+                  variant="secondary" size="sm"
+                  :loading="expirationSaving"
+                  :disabled="expirationSaving || !expirationInput"
+                  @click="handleSetExpiration"
+              >
+                Set
+              </Btn>
+              <Btn variant="ghost-danger" size="sm" :disabled="expirationSaving" @click="handleClearExpiration">
+                Clear
+              </Btn>
+            </div>
+          </div>
+
+          <!-- Payment requests -->
+          <h4 class="text-label color-text-secondary subsection-title">Payments</h4>
+          <div v-if="!payments.length" class="info-row inbox-empty">
+            <span class="text-body-s color-text-tertiary">No payments.</span>
+          </div>
+          <div v-else class="login-history">
+            <div v-for="p in payments" :key="p.id" class="history-row">
+              <div class="history-main">
+                <span class="text-body-s fw-medium payment-kind">{{ p.kind }} · {{ formatEur(p.amount_minor) }}</span>
+                <span class="text-caption color-text-tertiary">
+                  {{ formatDate(p.created_at) }} · {{ p.billing_country || '—' }}<template v-if="p.vat_amount_minor != null"> · VAT {{ formatEur(p.vat_amount_minor) }}</template>
+                </span>
+              </div>
+              <div class="payment-side">
+                <Badge type="status" :value="p.status" />
+                <Btn
+                    v-if="p.kind !== 'refund' && p.status === 'paid'"
+                    variant="ghost-danger" size="sm"
+                    :loading="refundingId === p.id"
+                    :disabled="refundingId !== null"
+                    @click="handleRefund(p)"
+                >
+                  Refund
+                </Btn>
+              </div>
+            </div>
+          </div>
+
+          <!-- Issued invoices (immutable; PDF download is client-side once the invoice-HTML endpoint exists) -->
+          <h4 class="text-label color-text-secondary subsection-title">Invoices</h4>
+          <div v-if="!invoices.length" class="info-row inbox-empty">
+            <span class="text-body-s color-text-tertiary">No invoices issued.</span>
+          </div>
+          <div v-else class="login-history">
+            <div v-for="inv in invoices" :key="inv.id" class="history-row">
+              <div class="history-main">
+                <span class="text-body-s fw-medium">{{ inv.invoice_number }}</span>
+                <span class="text-caption color-text-tertiary">
+                  Issued {{ formatDate(inv.issued_at) }} · {{ formatEur(inv.amount_minor) }}
+                  <template v-if="inv.credit_notes?.length"> · {{ inv.credit_notes.length }} credit note{{ inv.credit_notes.length !== 1 ? 's' : '' }}</template>
+                </span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
       <!-- Actions -->
       <div v-if="hasMinRole(role, 'admin')" class="actions-card card">
         <h3 class="text-label color-text-secondary section-title">Actions</h3>
@@ -290,6 +375,19 @@ const inboxEmailLoading = ref(true)
 const role = computed(() => auth.currentAdmin.value?.role)
 const selectedTier = ref('free')
 
+// Payments & billing (FEAT-006)
+const paymentsLoading = ref(true)
+const payments = ref([])
+const refundingId = ref(null)
+const expirationInput = ref('')
+const expirationSaving = ref(false)
+const expirationDisplay = ref('')
+
+// The issued-invoice list; amount comes from the backing payment
+const invoices = computed(() => payments.value
+    .filter(p => p.invoice)
+    .map(p => ({ ...p.invoice, amount_minor: p.amount_minor })))
+
 // Delete modal state
 const showDeleteModal = ref(false)
 const deleteEmailInput = ref('')
@@ -327,6 +425,98 @@ async function loadInboxEmail() {
 function formatDate(val) {
   if (!val) return '—'
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
+}
+
+function formatEur(minor) {
+  if (minor == null) return '—'
+  return `€${(minor / 100).toFixed(2)}`
+}
+
+// Payments oversight requires role admin — the endpoints reject below that
+async function loadPayments() {
+  if (!hasMinRole(role.value, 'admin')) {
+    paymentsLoading.value = false
+    return
+  }
+  paymentsLoading.value = true
+  try {
+    const data = await apiClient.getPlatformUserPayments(route.params.id)
+    payments.value = data.payments || []
+  } catch (err) {
+    toaster.push(err.message || 'Failed to load payments')
+  } finally {
+    paymentsLoading.value = false
+  }
+}
+
+async function handleRefund(p) {
+  const confirmed = await confirm.show({
+    title: 'Refund Payment',
+    message: `Refund ${formatEur(p.amount_minor)} to ${user.value.email}? This returns the money only — the tier and expiration are not changed.`,
+    confirmText: 'Refund',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  refundingId.value = p.id
+  try {
+    await apiClient.refundPlatformUserPayment(user.value.id, p.id)
+    toaster.success('Payment refunded')
+    await loadPayments()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to refund payment')
+  } finally {
+    refundingId.value = null
+  }
+}
+
+async function handleSetExpiration() {
+  const expiresAt = new Date(expirationInput.value)
+  if (isNaN(expiresAt.getTime())) {
+    toaster.push('Enter a valid date and time')
+    return
+  }
+
+  const confirmed = await confirm.show({
+    title: 'Set Subscription Expiration',
+    message: `Set ${user.value.email}'s subscription expiration to ${formatDate(expiresAt.toISOString())}?`,
+    confirmText: 'Set Expiration',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  expirationSaving.value = true
+  try {
+    const data = await apiClient.setSubscriptionExpiration(user.value.id, expiresAt.toISOString())
+    expirationDisplay.value = formatDate(data.expires_at)
+    toaster.success('Subscription expiration updated')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to set expiration')
+  } finally {
+    expirationSaving.value = false
+  }
+}
+
+async function handleClearExpiration() {
+  const confirmed = await confirm.show({
+    title: 'Clear Subscription Expiration',
+    message: `Clear ${user.value.email}'s subscription expiration? The tier will no longer expire automatically.`,
+    confirmText: 'Clear',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  expirationSaving.value = true
+  try {
+    await apiClient.setSubscriptionExpiration(user.value.id, '')
+    expirationDisplay.value = ''
+    expirationInput.value = ''
+    toaster.success('Subscription expiration cleared')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to clear expiration')
+  } finally {
+    expirationSaving.value = false
+  }
 }
 
 async function handleChangeTier() {
@@ -446,6 +636,7 @@ async function confirmDelete() {
 onMounted(() => {
   load()
   loadInboxEmail()
+  loadPayments()
 })
 </script>
 
@@ -629,6 +820,28 @@ onMounted(() => {
   flex-direction: column;
   gap: 2px;
   flex: 1;
+}
+
+/* Payments & Billing */
+.subsection-title {
+  margin: 16px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.expiration-row {
+  gap: 16px;
+}
+
+.payment-kind {
+  text-transform: capitalize;
+}
+
+.payment-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 /* Email to Inbox */

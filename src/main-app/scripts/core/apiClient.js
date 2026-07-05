@@ -1872,6 +1872,52 @@ export async function getUnreadNotificationCount() {
     }
 }
 
+// ── Payments API (FEAT-006) ──
+
+export async function subscribePayment({plan, billingPeriod, billingCountry, billingState = ''}) {
+    try {
+        const res = await httpApi.post('/v1/payments/subscribe', {
+            plan,
+            billing_period: billingPeriod,
+            billing_country: billingCountry,
+            billing_state: billingState,
+        }, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPaymentStatus() {
+    try {
+        const res = await httpApi.get('/v1/payments/status', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function cancelSubscription() {
+    try {
+        const res = await httpApi.post('/v1/payments/cancel', {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function changeSubscriptionPlan({plan, billingPeriod}) {
+    try {
+        const res = await httpApi.post('/v1/payments/change-plan', {
+            plan,
+            billing_period: billingPeriod,
+        }, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,

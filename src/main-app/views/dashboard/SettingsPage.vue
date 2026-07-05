@@ -69,6 +69,69 @@
               <span class="settings-label">Limits</span>
               <span class="settings-value">Unlimited</span>
             </div>
+
+            <!-- Payment & billing (FEAT-006) — only with the beta_mode + payments flags -->
+            <template v-if="paymentsEnabled">
+              <div v-if="payment.state.loading && !payment.state.loaded" class="settings-loading">
+                <Spinner :size="16" />
+                <span>Loading subscription...</span>
+              </div>
+
+              <template v-else-if="payment.state.loaded">
+                <!-- Active subscriber -->
+                <template v-if="hasActiveSubscription">
+                  <div class="settings-row">
+                    <span class="settings-label">{{ payment.state.cancelAtPeriodEnd ? 'Access until' : 'Renews on' }}</span>
+                    <span class="settings-value">{{ formatBillingDate(payment.state.expiresAt) }}</span>
+                  </div>
+
+                  <div v-if="payment.state.queuedPlan" class="settings-row">
+                    <span class="settings-label">Plan change</span>
+                    <span class="settings-value">Switches to {{ queuedPlanLabel }} at renewal</span>
+                  </div>
+
+                  <template v-if="!payment.state.cancelAtPeriodEnd">
+                    <div class="settings-row">
+                      <div>
+                        <span class="settings-label">Change plan</span>
+                        <p class="text-body-s settings-hint">Takes effect at renewal — no mid-cycle charge</p>
+                      </div>
+                      <div class="settings-control billing-change-control" :class="{ 'settings-control--saving': payment.state.acting }">
+                        <Select v-model="changePlanTarget" :options="changePlanOptions" title="Change plan" />
+                        <Btn
+                            variant="secondary" size="sm"
+                            :disabled="changePlanTarget === currentPlanKey || payment.state.acting"
+                            @click="onChangePlan"
+                        >Apply</Btn>
+                      </div>
+                    </div>
+
+                    <div class="settings-row">
+                      <div>
+                        <span class="settings-label">Cancel subscription</span>
+                        <p class="text-body-s settings-hint">Stops auto-renew — you keep access until the expiration date</p>
+                      </div>
+                      <Btn variant="ghost-danger" size="sm" :disabled="payment.state.acting" @click="onCancelSubscription">Cancel</Btn>
+                    </div>
+                  </template>
+                </template>
+
+                <!-- Free / lapsed — upgrade options -->
+                <div v-else class="settings-row settings-row--column">
+                  <span class="settings-label">Update plan</span>
+                  <div class="billing-plans">
+                    <div v-for="opt in PLAN_OPTIONS" :key="opt.plan + opt.billingPeriod" class="billing-plan-option">
+                      <div class="billing-plan-info">
+                        <span class="settings-value fw-semibold billing-plan-name">{{ opt.label }}</span>
+                        <span class="text-body-s settings-hint">{{ opt.price }}, billed {{ opt.periodLabel }}</span>
+                      </div>
+                      <Btn variant="primary" size="sm" :disabled="payment.state.acting" @click="openUpgrade(opt)">Upgrade</Btn>
+                    </div>
+                  </div>
+                  <span class="text-body-s settings-hint">Prices include VAT. You will be redirected to our payment provider to complete the purchase.</span>
+                </div>
+              </template>
+            </template>
           </div>
         </div>
 
@@ -542,6 +605,53 @@
         </div>
       </Teleport>
 
+      <!-- Billing Address Modal (upgrade → Paywiser checkout) -->
+      <Teleport to="body" v-if="showAddressModal">
+        <div class="password-modal-overlay" :class="{ 'password-modal-overlay--fullscreen': isMobile }">
+          <div class="password-modal" :class="{ 'password-modal--fullscreen': isMobile }">
+            <div class="password-modal-header">
+              <h2 class="text-h3 password-modal-title">Billing Address</h2>
+              <button class="password-modal-close" @click="closeAddressModal">&times;</button>
+            </div>
+
+            <div class="password-modal-body">
+              <p class="text-body-s settings-hint billing-address-intro">
+                Upgrading to <strong>{{ upgradeOption?.label }}</strong> — {{ upgradeOption?.price }}, billed {{ upgradeOption?.periodLabel }}.
+                Your country determines the VAT shown on your invoice.
+              </p>
+
+              <div class="billing-address-field">
+                <span class="settings-label">Country</span>
+                <Select v-model="billingCountry" :options="countryOptions" title="Country" searchable />
+                <p v-if="billingCountryError" class="text-body-s color-text-danger billing-address-error">{{ billingCountryError }}</p>
+              </div>
+
+              <Inpt
+                  v-model="billingState"
+                  type="text"
+                  title="State / Region (optional)"
+                  placeholder="Enter state or region"
+              />
+            </div>
+
+            <div class="password-modal-footer">
+              <Btn variant="secondary" size="md" @click="closeAddressModal" :disabled="payment.state.acting">
+                Cancel
+              </Btn>
+              <Btn
+                  variant="primary"
+                  size="md"
+                  :loading="payment.state.acting"
+                  :disabled="payment.state.acting"
+                  @click="onConfirmUpgrade"
+              >
+                Continue to Payment
+              </Btn>
+            </div>
+          </div>
+        </div>
+      </Teleport>
+
     </div>
   </DashboardLayout>
 </template>
@@ -569,6 +679,10 @@ import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
+import { flagsModel } from '../../scripts/core/flagsModel.js'
+import { paymentModel, PLAN_OPTIONS } from '../../scripts/models/paymentModel.js'
+import { COUNTRIES } from '../../scripts/data/countries.js'
+import { format, parseISO } from 'date-fns'
 import Spinner from '../../components/Spinner.vue'
 
 const router = useRouter()
@@ -581,6 +695,8 @@ const notifications = notificationModel()
 const theme = themeModel()
 
 const { stats, loadStats } = statsModel()
+const { paymentsEnabled } = flagsModel()
+const payment = paymentModel()
 
 // Search
 const searchVisible = ref(false)
@@ -598,7 +714,7 @@ function toggleSearch() {
 
 const SECTION_KEYWORDS = {
   account: 'account email password login',
-  plan: 'plan tier subscription free pro team projects tags storage limits upgrade',
+  plan: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice',
   emailInbox: 'email inbox capture address forward generate reset pause',
   sessions: 'sessions devices logout active current',
   application: 'application theme dark light position new items timezone time zone',
@@ -660,6 +776,147 @@ function formatBytes(bytes) {
   let size = bytes
   while (size >= 1024 && i < units.length - 1) { size /= 1024; i++ }
   return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
+}
+
+// Payment & billing (FEAT-006)
+const hasActiveSubscription = computed(() =>
+    payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))
+
+const planKey = (plan, period) => `${plan}:${period}`
+
+function planLabel(plan, period) {
+  const opt = PLAN_OPTIONS.find(o => o.plan === plan && o.billingPeriod === period)
+  return opt ? `${opt.label} — ${opt.price}` : `${plan} (${period})`
+}
+
+const currentPlanKey = computed(() => planKey(payment.state.tier, payment.state.billingPeriod))
+const changePlanTarget = ref('')
+
+const changePlanOptions = computed(() => PLAN_OPTIONS.map(o => {
+  const key = planKey(o.plan, o.billingPeriod)
+  return { value: key, label: planLabel(o.plan, o.billingPeriod) + (key === currentPlanKey.value ? ' (current)' : '') }
+}))
+
+const queuedPlanLabel = computed(() => {
+  const q = payment.state.queuedPlan
+  return q ? planLabel(q.tier, q.billing_period) : ''
+})
+
+// expires_at arrives as UTC "YYYY-MM-DD HH:MM:SS"
+function formatBillingDate(val) {
+  if (!val) return '—'
+  try { return format(parseISO(val.replace(' ', 'T') + 'Z'), 'MMM d, yyyy') } catch { return val }
+}
+
+async function loadPaymentStatus() {
+  if (!paymentsEnabled.value || payment.state.loading) return
+  try {
+    await payment.loadStatus()
+    changePlanTarget.value = currentPlanKey.value
+  } catch (err) {
+    toaster.push(err.message || 'Failed to load subscription')
+  }
+}
+
+// Upgrade → billing address capture → Paywiser checkout redirect
+const showAddressModal = ref(false)
+const upgradeOption = ref(null)
+const billingCountry = ref('')
+const billingState = ref('')
+const billingCountryError = ref('')
+const countryOptions = [{ value: '', label: 'Select country…' }, ...COUNTRIES]
+
+function openUpgrade(opt) {
+  upgradeOption.value = opt
+  billingCountry.value = ''
+  billingState.value = ''
+  billingCountryError.value = ''
+  showAddressModal.value = true
+}
+
+function closeAddressModal() {
+  if (payment.state.acting) return
+  showAddressModal.value = false
+}
+
+async function onConfirmUpgrade() {
+  billingCountryError.value = ''
+  if (!billingCountry.value) {
+    billingCountryError.value = 'Country is required'
+    return
+  }
+  try {
+    const data = await payment.subscribe({
+      plan: upgradeOption.value.plan,
+      billingPeriod: upgradeOption.value.billingPeriod,
+      billingCountry: billingCountry.value,
+      billingState: billingState.value.trim(),
+    })
+    if (data.checkout_url) {
+      window.location.assign(data.checkout_url)
+    } else {
+      toaster.push('The payment provider did not return a checkout link')
+    }
+  } catch (err) {
+    toaster.push(err.message || 'Failed to start checkout')
+  }
+}
+
+async function onChangePlan() {
+  const [plan, billingPeriod] = changePlanTarget.value.split(':')
+  const confirmed = await confirm.show({
+    title: 'Change plan',
+    message: `Switch to ${planLabel(plan, billingPeriod)}? The change takes effect at your next renewal — no mid-cycle charge.`,
+    confirmText: 'Change plan',
+    cancelText: 'Keep current plan',
+  })
+  if (!confirmed) return
+
+  try {
+    await payment.changePlan({plan, billingPeriod})
+    toaster.success('Plan change scheduled for your next renewal')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to change plan')
+  }
+}
+
+async function onCancelSubscription() {
+  const confirmed = await confirm.show({
+    title: 'Cancel subscription',
+    message: `Cancel your subscription? Auto-renew stops and you keep access until ${formatBillingDate(payment.state.expiresAt)}.`,
+    confirmText: 'Cancel subscription',
+    cancelText: 'Keep subscription',
+  })
+  if (!confirmed) return
+
+  try {
+    await payment.cancel()
+    toaster.success('Subscription cancelled — access continues until expiration')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to cancel subscription')
+  }
+}
+
+// Checkout return (Paywiser redirects to /settings/billing?status=…) — forced refresh so the new tier shows without re-login
+async function applyCheckoutReturn() {
+  const status = route.query.status
+  if (!status) return
+  const query = {...route.query}
+  delete query.status
+  router.replace({query})
+
+  if (status === 'success') {
+    toaster.success('Payment successful — welcome to your new plan!')
+    try {
+      await auth.refreshToken()
+      await auth.loadUser()
+    } catch { /* stale tier until the next scheduled refresh is acceptable */ }
+    loadPaymentStatus()
+  } else if (status === 'failure') {
+    toaster.push('Payment failed — you have not been charged. Please try again.')
+  } else if (status === 'cancel') {
+    toaster.push('Checkout cancelled — your plan is unchanged.')
+  }
 }
 
 // Email to Inbox — Pro/Team only; reactive on tier so a downgrade reverts to locked
@@ -992,8 +1249,15 @@ onMounted(() => {
   })
 
   loadInboxEmail()
+  loadPaymentStatus()
 
   applySectionQuery()
+  applyCheckoutReturn()
+})
+
+// Flags may arrive with a later user refresh — load the subscription once they do
+watch(paymentsEnabled, (on) => {
+  if (on && !payment.state.loaded) loadPaymentStatus()
 })
 
 // Re-fetch (or clear) the inbox address when the tier changes — keeps the card reactive to upgrade/downgrade; Free reverts to the locked block
@@ -1009,7 +1273,8 @@ watch(tier, (t) => {
 watch(() => route.query.section, applySectionQuery)
 
 function applySectionQuery() {
-  const target = route.query.section
+  let target = route.query.section
+  if (target === 'billing') target = 'plan'   // Paywiser checkout returns to /settings/billing
   if (typeof target === 'string' && SECTION_KEYWORDS[target]) {
     expandedSections.value.add(target)
   }
@@ -1609,6 +1874,54 @@ async function onLogout() {
 
 .settings-day-checkbox input {
   display: none;
+}
+
+/* Payment & billing */
+.billing-plans {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.billing-plan-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.billing-plan-option:last-child {
+  border-bottom: none;
+}
+
+.billing-plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.billing-plan-name {
+  color: var(--color-text-primary);
+}
+
+.billing-change-control {
+  gap: 8px;
+}
+
+.billing-address-intro {
+  margin: 0;
+}
+
+.billing-address-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.billing-address-error {
+  margin: 0;
 }
 
 /* Password Modal */

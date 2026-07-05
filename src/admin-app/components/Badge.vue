@@ -31,6 +31,11 @@ const STATUS_LABELS = {
   pending_otp_setup: 'Pending OTP',
   pending_reset: 'Pending Reset',
   disabled: 'Disabled',
+  paid: 'Paid',
+  sent: 'Sent',
+  pending: 'Pending',
+  refunded: 'Refunded',
+  error: 'Error',
 }
 
 const GENERIC_TYPES = ['primary', 'active', 'pending', 'failed', 'draft']
@@ -49,8 +54,8 @@ const badgeClass = computed(() => {
   if (isGeneric.value) return `badge--generic-${props.type}`
   if (props.type === 'role') return `badge--role-${props.value}`
   if (props.type === 'status') {
-    if (props.value === 'active') return 'badge--status-active'
-    if (props.value === 'disabled') return 'badge--status-disabled'
+    if (props.value === 'active' || props.value === 'paid') return 'badge--status-active'
+    if (props.value === 'disabled' || props.value === 'refunded') return 'badge--status-disabled'
     return 'badge--status-pending'
   }
   return ''

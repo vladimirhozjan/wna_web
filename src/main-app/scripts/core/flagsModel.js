@@ -31,12 +31,15 @@ export function flagsModel() {
 
     const isBeta = computed(() => activeFlags.value.includes('beta'))
 
+    // Payment UI gate (FEAT-006): the backend enforces both flags on every payment endpoint
+    const paymentsEnabled = computed(() => activeFlags.value.includes('beta_mode') && activeFlags.value.includes('payments'))
+
     function hasFlag(name) {
         return activeFlags.value.includes(name)
     }
 
     loadPublicFlags()
 
-    instance = { activeFlags, publicFlags, loaded, isBeta, hasFlag, loadPublicFlags }
+    instance = { activeFlags, publicFlags, loaded, isBeta, paymentsEnabled, hasFlag, loadPublicFlags }
     return instance
 }

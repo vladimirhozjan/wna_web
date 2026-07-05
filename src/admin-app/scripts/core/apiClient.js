@@ -660,6 +660,75 @@ export async function listUserDelegations(userId) {
     }
 }
 
+// --- Payments oversight endpoints (FEAT-006) ---
+
+export async function getPaymentsReport({ year, month = 0 }) {
+    try {
+        const params = { year }
+        if (month) params.month = month
+        const res = await httpApi.get('/admin/payments/report', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUserPayments(userId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/payments`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function refundPlatformUserPayment(userId, paymentId) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${userId}/payments/${paymentId}/refund`, {})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function setSubscriptionExpiration(userId, expiresAt) {
+    try {
+        const res = await httpApi.put(`/admin/platform-users/${userId}/subscription-expiration`, { expires_at: expiresAt })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// --- Billing templates endpoints (FEAT-006, decision 27) ---
+
+export async function listBillingTemplates() {
+    try {
+        const res = await httpApi.get('/admin/billing-templates')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createBillingTemplate(data) {
+    try {
+        const res = await httpApi.post('/admin/billing-templates', data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateBillingTemplate(tier, period, data) {
+    try {
+        const res = await httpApi.put(`/admin/billing-templates/${tier}/${period}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -725,4 +794,11 @@ export default {
     unshareSharedProject,
     removeSharedProjectMember,
     listUserDelegations,
+    getPaymentsReport,
+    getPlatformUserPayments,
+    refundPlatformUserPayment,
+    setSubscriptionExpiration,
+    listBillingTemplates,
+    createBillingTemplate,
+    updateBillingTemplate,
 }

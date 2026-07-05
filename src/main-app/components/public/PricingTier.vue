@@ -9,14 +9,14 @@
         <span class="text-display">Free</span>
       </template>
       <template v-else>
-        <span class="text-h2 tier__currency">$</span>
+        <span class="text-h2 tier__currency">€</span>
         <span class="text-display">{{ price }}</span>
         <span class="text-body-m tier__period">/{{ perUser ? 'user/' : '' }}{{ period === 'year' ? 'mo' : 'month' }}</span>
       </template>
     </div>
 
     <p class="text-footnote tier__footnote" :style="{ visibility: period === 'year' && price > 0 ? 'visible' : 'hidden' }">
-      Billed annually at ${{ yearlyTotal || Math.round(price * 12) }}{{ perUser ? '/user' : '' }}
+      Billed annually at €{{ yearlyTotal || Math.round(price * 12) }}{{ perUser ? '/user' : '' }}
     </p>
 
     <p class="text-body-s tier__description">{{ description }}</p>

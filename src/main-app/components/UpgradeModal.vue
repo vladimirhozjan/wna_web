@@ -9,12 +9,17 @@
           </div>
           <div class="dialog-body">
             <p class="text-body-m message">{{ upgrade.state.message }}</p>
-            <p class="text-body-s color-text-secondary hint">
+            <p v-if="paymentsEnabled" class="text-body-s color-text-secondary hint">
+              You can upgrade your plan anytime from Settings.
+            </p>
+            <p v-else class="text-body-s color-text-secondary hint">
               WhatsNextAction is currently in beta and self-service upgrades aren't available yet. To enable Team features on your account, please contact <a class="hint-link" href="mailto:support@whatsnextaction.com?subject=Team%20plan%20access">support@whatsnextaction.com</a>.
             </p>
           </div>
           <div class="dialog-actions">
-            <button type="button" class="btn-close text-body-s" @click="upgrade.close()">Got it</button>
+            <button v-if="paymentsEnabled" type="button" class="btn-ghost text-body-s" @click="upgrade.close()">Not now</button>
+            <button v-if="paymentsEnabled" type="button" class="btn-close text-body-s" @click="goToPlans">View plans</button>
+            <button v-else type="button" class="btn-close text-body-s" @click="upgrade.close()">Got it</button>
           </div>
         </div>
       </div>
@@ -23,9 +28,18 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import { upgradeModel } from '../scripts/core/upgradeModel.js'
+import { flagsModel } from '../scripts/core/flagsModel.js'
 
 const upgrade = upgradeModel()
+const { paymentsEnabled } = flagsModel()
+const router = useRouter()
+
+function goToPlans() {
+  upgrade.close()
+  router.push({ path: '/settings', query: { section: 'plan' } })
+}
 </script>
 
 <style scoped>
@@ -102,7 +116,24 @@ const upgrade = upgradeModel()
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   padding: 8px 24px 24px;
+}
+
+.btn-ghost {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-light);
+  background: none;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-ghost:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
 }
 
 .btn-close {

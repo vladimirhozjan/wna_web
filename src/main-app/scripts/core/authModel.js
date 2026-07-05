@@ -217,7 +217,7 @@ export function authModel() {
         error.value = null
 
         try {
-            return await apiClient.refreshTokens()
+            return await apiClient.refreshToken()
         } catch (err) {
             error.value = err
             throw err

@@ -80,6 +80,18 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'support' }
             },
             {
+                path: 'payments',
+                name: 'payments',
+                component: () => import('../views/PaymentsReportPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
+                path: 'billing-templates',
+                name: 'billing-templates',
+                component: () => import('../views/BillingTemplatesPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
                 path: 'gdpr',
                 name: 'gdpr',
                 component: () => import('../views/GdprRequestsPage.vue'),

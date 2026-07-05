@@ -35,11 +35,11 @@
               :description="tier.description"
               :features="tier.features"
               :featured="tier.featured"
-              :cta-text="isBeta ? 'Coming soon' : tier.ctaText"
+              :cta-text="tierCta(tier).text"
               :per-user="tier.perUser || false"
               :yearly-total="tier.yearlyTotal || 0"
-              :disabled="isBeta"
-              @cta-click="tier.action"
+              :disabled="tierCta(tier).disabled"
+              @cta-click="tierCta(tier).action"
           />
         </div>
       </div>
@@ -114,6 +114,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
+import { authModel } from '../../scripts/core/authModel.js'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import PricingTier from '../../components/public/PricingTier.vue'
@@ -121,9 +122,11 @@ import CtaBanner from '../../components/public/CtaBanner.vue'
 import CheckIcon from '../../assets/CheckIcon.vue'
 
 const router = useRouter()
-const { isBeta } = flagsModel()
+const { isBeta, paymentsEnabled } = flagsModel()
+const auth = authModel()
 const authMode = ref(null)
 const yearly = ref(true)
+let pendingUpgrade = false
 
 function openAuth(mode) {
   authMode.value = mode
@@ -135,7 +138,29 @@ function closeAuth() {
 
 function onSuccess() {
   closeAuth()
+  if (pendingUpgrade && paymentsEnabled.value) {
+    pendingUpgrade = false
+    router.push({ path: '/settings', query: { section: 'plan' } })
+    return
+  }
   router.push({ name: 'engage' })
+}
+
+// Paid CTAs enter the in-app upgrade flow when the beta_mode + payments flags are on (FEAT-006)
+function tierCta(tier) {
+  if (tier.name !== 'Free' && paymentsEnabled.value) {
+    return { text: 'Upgrade', disabled: false, action: goToUpgrade }
+  }
+  return { text: isBeta.value ? 'Coming soon' : tier.ctaText, disabled: isBeta.value, action: tier.action }
+}
+
+function goToUpgrade() {
+  if (auth.isAuthenticated.value) {
+    router.push({ path: '/settings', query: { section: 'plan' } })
+  } else {
+    pendingUpgrade = true
+    openAuth('register')
+  }
 }
 
 function onSuccessPasswordReset() {
