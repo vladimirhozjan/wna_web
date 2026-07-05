@@ -78,13 +78,14 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
 
 ## Work breakdown (this repo)
 ### main-app (Settings + checkout)
-- [x] `flagsModel` gate: payment UI visible only when the caller has BOTH entitlement flags —
-  **implemented as `beta_mode` && `payments`** (`src/main-app/scripts/core/flagsModel.js:35`,
-  `paymentsEnabled`), matching the server gate (`payment_service_impl.cpp` `BETA_FLAG="beta_mode"`;
-  api.md "Payments"). **NOTE — naming conflict surfaced:** this slice said `beta`, and the deployed
-  flag row is named `beta` (frontend `isBeta` also checks `beta`), but the backend payment endpoints
-  hard-code `beta_mode`. UI now matches the server; the operator must create/enable `beta_mode` (+
-  `payments`) for payments to light up, or backend renames its constant — owner to decide.
+- [x] `flagsModel` gate — **owner decision 2026-07-05 (supersedes the parent's both-flags gate):
+  `payments` ALONE controls all upgrade UI**; `beta` controls only the BETA badge + registration
+  (`src/main-app/scripts/core/flagsModel.js:35`, `paymentsEnabled`). With `payments` off: pricing
+  Pro/Team CTAs, the Settings "Update plan" row, and the locked-feature buttons all fall back to
+  **"Contact Us"** (mailto). Backend still enforces the old two-flag gate with the obsolete flag name —
+  **handed to the backend slice** (prompt updated 2026-07-05: rename the registration flag to `beta`
+  AND make `/v1/payments/*` require only `payments`). Parent decision 22 needs the owner's
+  orchestration update to match.
 - [x] Settings "Update plan": Upgrade per plan/period (`SettingsPage.vue:119-133` + `PLAN_OPTIONS`),
   address capture — country required via searchable `Select` over the new static list
   (`src/main-app/scripts/data/countries.js`; modal `SettingsPage.vue:608-655`), state optional `Inpt`;
@@ -102,10 +103,14 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
   (`apiClient.refreshTokens()` → `refreshToken()`, `authModel.js:220`) the return flow depends on.
 - [x] **Forced refresh** on success return — JWT refresh + `authModel.loadUser()`
   (`SettingsPage.vue:909-913`); verified live: tier flipped Free→Pro without re-login.
-- [x] `PricingPage` CTAs wired to the in-app flow when flags on (`PricingPage.vue:150-166` `tierCta`/
-  `goToUpgrade`; "Coming soon"/"Contact Us" kept otherwise). Also: prices now render **€** per the
-  all-EUR contract (`PricingTier.vue:12,19`), and `UpgradeModal` offers "View plans" → Settings when
-  flags on (`UpgradeModal.vue`).
+- [x] `PricingPage` CTAs wired to the in-app flow when `payments` on (`PricingPage.vue` `tierCta`/
+  `goToUpgrade`); `payments` off → Pro/Team = "Contact Us" (mailto) regardless of `beta`; Free stays
+  `beta`-governed ("Coming soon" while beta on). Also: prices render **€** per the all-EUR contract
+  (`PricingTier.vue:12,19`); `UpgradeModal` offers "View plans" → Settings when `payments` on, keeps
+  the contact-support text otherwise (`UpgradeModal.vue`); Settings shows an "Update plan — Contact
+  Us" row when `payments` off (`SettingsPage.vue`); locked-feature buttons (Email to Inbox,
+  Connections ×3, shared project) relabel to "Contact Us" → direct mailto when `payments` off
+  (`SettingsPage.vue`, `ConnectionsPage.vue`, `ProjectDetailPage.vue`).
 ### admin-app (oversight)
 - [x] **Payments/VAT report** page (year/month filter, per-country VAT + totals + payments table) —
   mirrors `AuditLogPage`/`DataTable` + `Pagination` (`src/admin-app/views/PaymentsReportPage.vue`);
@@ -152,13 +157,15 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
 ---
 
 ## Acceptance / gates (this repo's portion)
-- [x] With both entitlement flags (`beta_mode`+`payments` — see the flag-naming note above): Settings
-  shows Upgrade → address (country/state) → Paywiser checkout — **verified end-to-end in the running
-  app** against the local mock Paywiser (dev server + real backend + flags enabled in the local DB:
-  Upgrade Pro-monthly → Billing Address modal → Slovenia/Štajerska → redirected to
-  `localhost:10001/checkout/test_pur_4`). Without either flag no payment UI renders — verified live by
-  disabling `payments` (with `beta_mode` still on) and reloading Settings: only the plain plan/limits
-  rows rendered (gate `flagsModel.js:35`).
+- [x] With the `payments` flag (owner 2026-07-05: sole upgrade gate — see the gate box above):
+  Settings shows Upgrade → address (country/state) → Paywiser checkout — **verified end-to-end in the
+  running app** against the local mock Paywiser (dev server + real backend + entitlement flags enabled
+  in the local DB: Upgrade Pro-monthly → Billing Address modal → Slovenia/Štajerska → redirected to
+  `localhost:10001/checkout/test_pur_4`; the E2E ran under the earlier two-flag gate — the computed is
+  unchanged, only its flag condition narrowed, build-verified). Without `payments` no payment UI
+  renders (Contact Us fallbacks instead) — the payments-off state was verified live under the earlier
+  gate: reloading Settings rendered only the plain plan/limits rows (gate `flagsModel.js:35`; the
+  Contact Us fallback rows are build-verified).
 - [x] After checkout success, forced refresh updates the visible tier without re-login — verified:
   emitted the mock `purchase.paid` webhook, returned to `/settings/billing?status=success`, page showed
   success toast + Current plan **Pro** + Pro limits (250 MB) immediately.

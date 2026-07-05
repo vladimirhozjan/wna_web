@@ -146,12 +146,14 @@ function onSuccess() {
   router.push({ name: 'engage' })
 }
 
-// Paid CTAs enter the in-app upgrade flow when the beta_mode + payments flags are on (FEAT-006)
 function tierCta(tier) {
-  if (tier.name !== 'Free' && paymentsEnabled.value) {
+  if (tier.name === 'Free') {
+    return { text: isBeta.value ? 'Coming soon' : tier.ctaText, disabled: isBeta.value, action: tier.action }
+  }
+  if (paymentsEnabled.value) {
     return { text: 'Upgrade', disabled: false, action: goToUpgrade }
   }
-  return { text: isBeta.value ? 'Coming soon' : tier.ctaText, disabled: isBeta.value, action: tier.action }
+  return { text: tier.ctaText, disabled: false, action: tier.action }
 }
 
 function goToUpgrade() {

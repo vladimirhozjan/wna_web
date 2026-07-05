@@ -278,7 +278,7 @@
             <p class="text-body-s shared-readonly-text">
               You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit.
             </p>
-            <Btn variant="primary" size="sm" @click="openSharedUpgrade">Upgrade to Team</Btn>
+            <Btn variant="primary" size="sm" @click="openSharedUpgrade">{{ upgradeLabel }}</Btn>
           </div>
           <label class="text-body-s fw-semibold detail-section-label">Backlog</label>
           <div class="next-action-wrapper">
@@ -640,6 +640,7 @@ import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
+import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
@@ -924,7 +925,14 @@ const shareModalChoices = computed(() => {
   return base.filter(c => (c.email || '').toLowerCase().includes(q))
 })
 
+const { paymentsEnabled } = flagsModel()
+const upgradeLabel = computed(() => paymentsEnabled.value ? 'Upgrade to Team' : 'Contact Us')
+
 function openSharedUpgrade() {
+  if (!paymentsEnabled.value) {
+    window.location.href = 'mailto:support@whatsnextaction.com'
+    return
+  }
   upgradeModel().show({
     message: 'Working on shared projects — assigning actions, creating backlog items, and editing — is available on the Team plan.',
   })

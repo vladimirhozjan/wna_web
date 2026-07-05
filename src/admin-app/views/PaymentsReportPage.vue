@@ -22,7 +22,7 @@
       <Stat label="VAT (EUR)" :value="formatEur(report.totals?.vat_amount_minor)" />
     </div>
 
-    <!-- VAT by country (OSS reporting) -->
+    <!-- VAT by country -->
     <h2 class="text-label color-text-secondary table-title">VAT by Country</h2>
     <DataTable
         :columns="vatColumns"

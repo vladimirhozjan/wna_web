@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev:main": "APP=main-app vite --port 6111",
-    "dev:admin": "APP=admin-app vite --port 7222",
+    "dev:admin": "APP=admin-app vite --port 7111",
     "build:main": "APP=main-app vite build",
     "build:admin": "APP=admin-app vite build",
     "clean": "rimraf dist"

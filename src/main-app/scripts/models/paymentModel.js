@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import { subscribePayment, getPaymentStatus, cancelSubscription, changeSubscriptionPlan } from '../core/apiClient.js'
 
-// The 4 sellable options (Pro/Team × monthly/yearly). Prices mirror contracts/subscription-tiers.md (EUR, VAT-inclusive).
+// Prices mirror contracts/subscription-tiers.md (EUR, VAT-inclusive)
 export const PLAN_OPTIONS = [
     {plan: 'pro', billingPeriod: 'monthly', label: 'Pro', periodLabel: 'monthly', price: '€11/month'},
     {plan: 'pro', billingPeriod: 'yearly', label: 'Pro', periodLabel: 'yearly', price: '€96/year'},
@@ -17,13 +17,13 @@ export function paymentModel() {
     const state = reactive({
         loading: false,
         loaded: false,
-        acting: false,        // subscribe / cancel / change-plan in flight
+        acting: false,
         tier: 'free',
         billingPeriod: '',
         status: 'none',
         expiresAt: '',
         cancelAtPeriodEnd: false,
-        queuedPlan: null,     // {tier, billing_period} when a change is queued
+        queuedPlan: null,
     })
 
     function applyStatus(data) {

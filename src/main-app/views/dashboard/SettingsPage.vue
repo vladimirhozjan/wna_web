@@ -70,7 +70,7 @@
               <span class="settings-value">Unlimited</span>
             </div>
 
-            <!-- Payment & billing (FEAT-006) — only with the beta_mode + payments flags -->
+            <!-- Payment & billing -->
             <template v-if="paymentsEnabled">
               <div v-if="payment.state.loading && !payment.state.loaded" class="settings-loading">
                 <Spinner :size="16" />
@@ -132,6 +132,10 @@
                 </div>
               </template>
             </template>
+            <div v-else class="settings-row">
+              <span class="settings-label">Update plan</span>
+              <Btn variant="primary" size="sm" @click="onContactSupport">Contact Us</Btn>
+            </div>
           </div>
         </div>
 
@@ -146,7 +150,7 @@
             <!-- Free: locked -->
             <div v-if="!isProOrTeam" class="settings-row settings-row--column">
               <span class="settings-value email-locked">🔒 Email to Inbox is available on Pro and Team plans.</span>
-              <Btn variant="primary" size="sm" @click="onUpgradeEmail">Upgrade</Btn>
+              <Btn variant="primary" size="sm" @click="paymentsEnabled ? onUpgradeEmail() : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
             </div>
 
             <!-- Pro/Team -->
@@ -605,7 +609,7 @@
         </div>
       </Teleport>
 
-      <!-- Billing Address Modal (upgrade → Paywiser checkout) -->
+      <!-- Billing Address Modal -->
       <Teleport to="body" v-if="showAddressModal">
         <div class="password-modal-overlay" :class="{ 'password-modal-overlay--fullscreen': isMobile }">
           <div class="password-modal" :class="{ 'password-modal--fullscreen': isMobile }">
@@ -778,7 +782,7 @@ function formatBytes(bytes) {
   return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
 }
 
-// Payment & billing (FEAT-006)
+// Payment & billing
 const hasActiveSubscription = computed(() =>
     payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))
 
@@ -818,7 +822,7 @@ async function loadPaymentStatus() {
   }
 }
 
-// Upgrade → billing address capture → Paywiser checkout redirect
+// Billing address modal
 const showAddressModal = ref(false)
 const upgradeOption = ref(null)
 const billingCountry = ref('')
@@ -897,7 +901,7 @@ async function onCancelSubscription() {
   }
 }
 
-// Checkout return (Paywiser redirects to /settings/billing?status=…) — forced refresh so the new tier shows without re-login
+// Paywiser checkout returns to /settings/billing?status=…
 async function applyCheckoutReturn() {
   const status = route.query.status
   if (!status) return
@@ -1026,6 +1030,10 @@ async function onToggleCapture(val) {
   } finally {
     inbox.savingCapture = false
   }
+}
+
+function onContactSupport() {
+  window.location.href = 'mailto:support@whatsnextaction.com'
 }
 
 function onUpgradeEmail() {
@@ -1255,7 +1263,6 @@ onMounted(() => {
   applyCheckoutReturn()
 })
 
-// Flags may arrive with a later user refresh — load the subscription once they do
 watch(paymentsEnabled, (on) => {
   if (on && !payment.state.loaded) loadPaymentStatus()
 })

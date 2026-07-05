@@ -120,7 +120,7 @@
       <!-- Collaboration (connections, shared projects, delegations) -->
       <UserCollaboration v-if="hasMinRole(role, 'support')" :user-id="user.id" :user-email="user.email" />
 
-      <!-- Payments & Billing (FEAT-006) -->
+      <!-- Payments & Billing -->
       <div v-if="hasMinRole(role, 'admin')" class="info-card card">
         <h3 class="text-label color-text-secondary section-title">Payments &amp; Billing</h3>
 
@@ -186,7 +186,7 @@
             </div>
           </div>
 
-          <!-- Issued invoices (immutable; PDF download is client-side once the invoice-HTML endpoint exists) -->
+          <!-- Issued invoices -->
           <h4 class="text-label color-text-secondary subsection-title">Invoices</h4>
           <div v-if="!invoices.length" class="info-row inbox-empty">
             <span class="text-body-s color-text-tertiary">No invoices issued.</span>
@@ -375,7 +375,7 @@ const inboxEmailLoading = ref(true)
 const role = computed(() => auth.currentAdmin.value?.role)
 const selectedTier = ref('free')
 
-// Payments & billing (FEAT-006)
+// Payments & billing
 const paymentsLoading = ref(true)
 const payments = ref([])
 const refundingId = ref(null)
@@ -383,7 +383,7 @@ const expirationInput = ref('')
 const expirationSaving = ref(false)
 const expirationDisplay = ref('')
 
-// The issued-invoice list; amount comes from the backing payment
+// invoice rows carry no amount — taken from the backing payment
 const invoices = computed(() => payments.value
     .filter(p => p.invoice)
     .map(p => ({ ...p.invoice, amount_minor: p.amount_minor })))
@@ -432,7 +432,6 @@ function formatEur(minor) {
   return `€${(minor / 100).toFixed(2)}`
 }
 
-// Payments oversight requires role admin — the endpoints reject below that
 async function loadPayments() {
   if (!hasMinRole(role.value, 'admin')) {
     paymentsLoading.value = false

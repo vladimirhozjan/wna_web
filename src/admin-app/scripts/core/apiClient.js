@@ -660,7 +660,7 @@ export async function listUserDelegations(userId) {
     }
 }
 
-// --- Payments oversight endpoints (FEAT-006) ---
+// --- Payments oversight endpoints ---
 
 export async function getPaymentsReport({ year, month = 0 }) {
     try {
@@ -700,7 +700,7 @@ export async function setSubscriptionExpiration(userId, expiresAt) {
     }
 }
 
-// --- Billing templates endpoints (FEAT-006, decision 27) ---
+// --- Billing templates endpoints ---
 
 export async function listBillingTemplates() {
     try {

@@ -1872,7 +1872,7 @@ export async function getUnreadNotificationCount() {
     }
 }
 
-// ── Payments API (FEAT-006) ──
+// ── Payments API ──
 
 export async function subscribePayment({plan, billingPeriod, billingCountry, billingState = ''}) {
     try {

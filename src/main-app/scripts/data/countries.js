@@ -1,5 +1,4 @@
-// ISO 3166-1 alpha-2 country list for billing-address capture (FEAT-006).
-// The code is sent as `billing_country` and drives VAT — keep codes ISO-exact.
+// Sent as billing_country and drives VAT — keep codes ISO 3166-1 alpha-2 exact.
 export const COUNTRIES = [
     {value: 'AF', label: 'Afghanistan'},
     {value: 'AX', label: 'Åland Islands'},

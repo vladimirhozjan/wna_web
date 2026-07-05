@@ -89,7 +89,6 @@ import apiClient from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
 
-// Fixed 2×2 catalog — (tier, billing_period) is the backend PK; create fills a missing combo
 const COMBOS = [
   { tier: 'pro', billing_period: 'monthly', planLabel: 'Pro' },
   { tier: 'pro', billing_period: 'yearly', planLabel: 'Pro' },

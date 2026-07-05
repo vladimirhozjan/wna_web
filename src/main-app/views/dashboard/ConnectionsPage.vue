@@ -48,7 +48,7 @@
                     :icon="ConnectionsIcon"
                     title="Connect with your team"
                     text="Connections let you collaborate with other WhatsNextAction users — delegate actions and share projects. Available on the Team plan."
-                    buttonText="Upgrade to Team"
+                    :buttonText="upgradeLabel"
                     @action="openUpgrade"
                 />
               </div>
@@ -69,7 +69,7 @@
                   <p class="text-body-s settings-hint">
                     You're not on the Team plan. You can keep or remove existing connections, but inviting and accepting new connections requires Team.
                   </p>
-                  <Btn variant="primary" size="sm" @click="openUpgrade">Upgrade to Team</Btn>
+                  <Btn variant="primary" size="sm" @click="openUpgrade">{{ upgradeLabel }}</Btn>
                 </div>
 
                 <!-- Received invitations (all tiers) -->
@@ -79,7 +79,7 @@
                     <p class="text-body-s settings-hint">
                       You can accept these invitations by upgrading to the Team plan. Otherwise, you can decline them on your current plan.
                     </p>
-                    <Btn variant="primary" size="sm" @click="openUpgrade">Upgrade to Team</Btn>
+                    <Btn variant="primary" size="sm" @click="openUpgrade">{{ upgradeLabel }}</Btn>
                   </template>
                   <div class="connections-list">
                     <div v-for="inv in connections.pendingReceived.value" :key="inv.id" class="connection-item">
@@ -173,6 +173,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
+import { flagsModel } from '../../scripts/core/flagsModel.js'
 
 const auth = authModel()
 const toaster = errorModel()
@@ -204,7 +205,14 @@ const showDowngradeBanner = computed(() =>
     (connections.connections.value.length > 0 || connections.pendingSent.value.length > 0)
 )
 
+const { paymentsEnabled } = flagsModel()
+const upgradeLabel = computed(() => paymentsEnabled.value ? 'Upgrade to Team' : 'Contact Us')
+
 function openUpgrade() {
+  if (!paymentsEnabled.value) {
+    window.location.href = 'mailto:support@whatsnextaction.com'
+    return
+  }
   upgrade.show({
     message: 'Connections and team collaboration are available on the Team plan. Upgrade to invite teammates, delegate actions, and share projects.'
   })
