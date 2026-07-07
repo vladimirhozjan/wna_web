@@ -23,10 +23,9 @@ export function flagsModel() {
     }
 
     const activeFlags = computed(() => {
-        if (auth.isAuthenticated.value && auth.currentUser.value?.active_flags) {
-            return auth.currentUser.value.active_flags
-        }
-        return publicFlags.value
+        // Public flags are platform-wide and always apply — the cached user snapshot can be stale
+        const userFlags = (auth.isAuthenticated.value && auth.currentUser.value?.active_flags) || []
+        return [...new Set([...publicFlags.value, ...userFlags])]
     })
 
     const isBeta = computed(() => activeFlags.value.includes('beta'))

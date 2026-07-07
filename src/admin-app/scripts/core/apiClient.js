@@ -296,15 +296,6 @@ export async function invitePlatformUser(email, tier) {
     }
 }
 
-export async function changePlatformUserTier(id, tier) {
-    try {
-        const res = await httpApi.put(`/admin/platform-users/${id}/tier`, { tier })
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
 // 404 = no address generated
 export async function getPlatformUserInboxEmail(id) {
     try {
@@ -700,6 +691,44 @@ export async function setSubscriptionExpiration(userId, expiresAt) {
     }
 }
 
+export async function grantSubscription(userId, {plan, billingPeriod, expiresAt = ''}) {
+    try {
+        const body = { plan, billing_period: billingPeriod }
+        if (expiresAt) body.expires_at = expiresAt
+        const res = await httpApi.post(`/admin/platform-users/${userId}/grant-subscription`, body)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function revokeSubscription(userId) {
+    try {
+        const res = await httpApi.delete(`/admin/platform-users/${userId}/grant-subscription`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUserInvoiceHtml(userId, invoiceId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/invoices/${invoiceId}/html`, { responseType: 'text' })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUserCreditNoteHtml(userId, creditNoteId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/credit-notes/${creditNoteId}/html`, { responseType: 'text' })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // --- Billing templates endpoints ---
 
 export async function listBillingTemplates() {
@@ -723,6 +752,15 @@ export async function createBillingTemplate(data) {
 export async function updateBillingTemplate(tier, period, data) {
     try {
         const res = await httpApi.put(`/admin/billing-templates/${tier}/${period}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteBillingTemplate(tier, period) {
+    try {
+        const res = await httpApi.delete(`/admin/billing-templates/${tier}/${period}`)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -761,7 +799,6 @@ export default {
     forceLogoutPlatformUser,
     resetPlatformUserPassword,
     invitePlatformUser,
-    changePlatformUserTier,
     getPlatformUserInboxEmail,
     getInboxEmailStats,
     getUserItems,
@@ -798,7 +835,12 @@ export default {
     getPlatformUserPayments,
     refundPlatformUserPayment,
     setSubscriptionExpiration,
+    grantSubscription,
+    revokeSubscription,
+    getPlatformUserInvoiceHtml,
+    getPlatformUserCreditNoteHtml,
     listBillingTemplates,
     createBillingTemplate,
     updateBillingTemplate,
+    deleteBillingTemplate,
 }

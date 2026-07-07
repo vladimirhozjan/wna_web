@@ -1874,13 +1874,28 @@ export async function getUnreadNotificationCount() {
 
 // ── Payments API ──
 
-export async function subscribePayment({plan, billingPeriod, billingCountry, billingState = ''}) {
+// Public plan catalog — no auth, not gated by the payments flag
+export async function getPublicPlans() {
+    try {
+        const res = await httpApi.get('/v1/payments/plans')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function subscribePayment({plan, billingPeriod, billingCountry, billingState = '', billingName = '', billingAddress1 = '', billingAddress2 = '', billingZip = '', billingCity = ''}) {
     try {
         const res = await httpApi.post('/v1/payments/subscribe', {
             plan,
             billing_period: billingPeriod,
             billing_country: billingCountry,
             billing_state: billingState,
+            billing_name: billingName,
+            billing_address1: billingAddress1,
+            billing_address2: billingAddress2,
+            billing_zip: billingZip,
+            billing_city: billingCity,
         }, {headers: authHeaders()})
         return res.data
     } catch (err) {
@@ -1906,12 +1921,27 @@ export async function cancelSubscription() {
     }
 }
 
-export async function changeSubscriptionPlan({plan, billingPeriod}) {
+export async function getPaymentHistory() {
     try {
-        const res = await httpApi.post('/v1/payments/change-plan', {
-            plan,
-            billing_period: billingPeriod,
-        }, {headers: authHeaders()})
+        const res = await httpApi.get('/v1/payments/history', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getInvoiceHtml(id) {
+    try {
+        const res = await httpApi.get(`/v1/payments/invoices/${id}/html`, {headers: authHeaders(), responseType: 'text'})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getCreditNoteHtml(id) {
+    try {
+        const res = await httpApi.get(`/v1/payments/credit-notes/${id}/html`, {headers: authHeaders(), responseType: 'text'})
         return res.data
     } catch (err) {
         throw normalizeError(err)

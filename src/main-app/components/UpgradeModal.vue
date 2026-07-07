@@ -38,7 +38,7 @@ const router = useRouter()
 
 function goToPlans() {
   upgrade.close()
-  router.push({ path: '/settings', query: { section: 'plan' } })
+  router.push({ name: 'upgrade' })
 }
 </script>
 

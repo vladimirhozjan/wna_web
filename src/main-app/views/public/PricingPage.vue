@@ -111,10 +111,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
+import { PLAN_OPTIONS, loadPlanCatalog } from '../../scripts/models/paymentModel.js'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import PricingTier from '../../components/public/PricingTier.vue'
@@ -140,7 +141,7 @@ function onSuccess() {
   closeAuth()
   if (pendingUpgrade && paymentsEnabled.value) {
     pendingUpgrade = false
-    router.push({ path: '/settings', query: { section: 'plan' } })
+    router.push({ name: 'upgrade' })
     return
   }
   router.push({ name: 'engage' })
@@ -158,7 +159,7 @@ function tierCta(tier) {
 
 function goToUpgrade() {
   if (auth.isAuthenticated.value) {
-    router.push({ path: '/settings', query: { section: 'plan' } })
+    router.push({ name: 'upgrade' })
   } else {
     pendingUpgrade = true
     openAuth('register')
@@ -170,7 +171,11 @@ function onSuccessPasswordReset() {
   router.push({ name: 'login' })
 }
 
-const tiers = [
+loadPlanCatalog()
+
+const planOpt = (plan, period) => PLAN_OPTIONS.find(o => o.plan === plan && o.billingPeriod === period)
+
+const tiers = computed(() => [
   {
     name: 'Free',
     monthlyPrice: 0,
@@ -184,15 +189,14 @@ const tiers = [
       'Up to 10 tags',
       'View-only reference files',
       '50 MB storage',
-      'Community support',
     ],
     action: () => openAuth('register'),
   },
   {
     name: 'Pro',
-    monthlyPrice: 11,
-    yearlyPrice: 8,
-    yearlyTotal: 96,
+    monthlyPrice: planOpt('pro', 'monthly').amount,
+    yearlyPrice: planOpt('pro', 'yearly').perMonth,
+    yearlyTotal: planOpt('pro', 'yearly').amount,
     description: 'For the individual power user.',
     featured: true,
     ctaText: 'Contact Us',
@@ -202,15 +206,14 @@ const tiers = [
       'Recurring actions',
       'Full reference files',
       '250 MB storage',
-      'Priority support',
     ],
     action: () => { window.location.href = 'mailto:support@whatsnextaction.com' },
   },
   {
     name: 'Team',
-    monthlyPrice: 18,
-    yearlyPrice: 13,
-    yearlyTotal: 156,
+    monthlyPrice: planOpt('team', 'monthly').amount,
+    yearlyPrice: planOpt('team', 'yearly').perMonth,
+    yearlyTotal: planOpt('team', 'yearly').amount,
     perUser: true,
     description: 'For teams that delegate work together.',
     featured: false,
@@ -221,11 +224,10 @@ const tiers = [
       'Recurring actions',
       'Full reference files',
       '1 GB/user storage',
-      'Dedicated support',
     ],
     action: () => { window.location.href = 'mailto:support@whatsnextaction.com' },
   },
-]
+])
 
 const comparisonRows = [
   { group: 'Core' },
@@ -237,8 +239,6 @@ const comparisonRows = [
   { group: 'Storage' },
   { feature: 'WNA hosted storage',  free: '50 MB',       pro: '250 MB',     team: '1 GB/user' },
   { feature: 'Max attachment size', free: '5 MB',        pro: '20 MB',      team: '50 MB' },
-  { group: 'Support' },
-{ feature: 'Support',             free: 'Community',   pro: 'Priority',   team: 'Dedicated' },
 ]
 </script>
 

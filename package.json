@@ -17,6 +17,8 @@
     "axios": "^1.13.2",
     "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "marked": "^17.0.3",
     "qrcode": "^1.5.4",
     "vue": "^3.5.24",
@@ -26,11 +28,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.2",
-    "rimraf": "^6.1.2",
     "javascript-obfuscator": "^4.1.1",
+    "rimraf": "^6.1.2",
     "terser": "^5.44.1",
     "vite": "^7.2.4",
     "vite-plugin-vue-devtools": "^8.0.5"
   }
 }
-

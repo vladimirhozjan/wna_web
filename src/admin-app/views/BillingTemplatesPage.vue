@@ -33,9 +33,19 @@
         <span class="text-caption template-id">{{ value || '—' }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <Btn variant="secondary" size="sm" @click="openForm(row)">
-          {{ row.configured ? 'Edit' : 'Create' }}
-        </Btn>
+        <div class="row-actions">
+          <Btn variant="secondary" size="sm" @click="openForm(row)">
+            {{ row.configured ? 'Edit' : 'Create' }}
+          </Btn>
+          <Btn
+              v-if="row.configured"
+              variant="ghost-danger"
+              size="sm"
+              :loading="deletingId === row.id"
+              :disabled="deletingId !== null"
+              @click="onDelete(row)"
+          >Delete</Btn>
+        </div>
       </template>
     </DataTable>
 
@@ -46,6 +56,10 @@
         @close="closeForm"
     >
       <div class="form-body">
+        <div v-if="editing?.configured" class="form-readonly">
+          <span class="text-body-s color-text-secondary">Paywiser template</span>
+          <span class="text-caption template-id">{{ editing?.paywiser_billing_template_id || '—' }}</span>
+        </div>
         <Inpt
             v-model="priceInput"
             type="text"
@@ -85,9 +99,11 @@ import Btn from '../components/Btn.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
+const confirm = confirmModel()
 
 const COMBOS = [
   { tier: 'pro', billing_period: 'monthly', planLabel: 'Pro' },
@@ -102,7 +118,7 @@ const columns = [
   { key: 'price_minor', label: 'Price', width: '120px' },
   { key: 'active', label: 'Status', width: '140px' },
   { key: 'paywiser_billing_template_id', label: 'Paywiser Template' },
-  { key: 'actions', label: '', width: '100px' },
+  { key: 'actions', label: '', width: '170px' },
 ]
 
 const plans = ref([])
@@ -144,7 +160,7 @@ const formError = ref('')
 function openForm(row) {
   editing.value = row
   priceInput.value = row.configured ? (row.price_minor / 100).toFixed(2) : ''
-  titleInput.value = ''
+  titleInput.value = row.title || ''
   activeInput.value = row.configured ? row.active !== false : true
   formError.value = ''
   showForm.value = true
@@ -192,6 +208,30 @@ async function saveForm() {
   }
 }
 
+// Delete
+const deletingId = ref(null)
+
+async function onDelete(row) {
+  const confirmed = await confirm.show({
+    title: 'Delete billing plan',
+    message: `Delete ${row.planLabel} (${row.billing_period})? The Paywiser template is removed and the plan can no longer be sold until it is re-created. Consider marking it inactive instead if it only needs to be hidden.`,
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  deletingId.value = row.id
+  try {
+    await apiClient.deleteBillingTemplate(row.tier, row.billing_period)
+    toaster.success('Billing plan deleted')
+    await load()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to delete billing plan')
+  } finally {
+    deletingId.value = null
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -221,10 +261,21 @@ onMounted(load)
   word-break: break-all;
 }
 
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .form-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.form-readonly {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .active-check {

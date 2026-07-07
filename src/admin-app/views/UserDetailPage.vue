@@ -129,34 +129,134 @@
         </div>
 
         <template v-else>
-          <!-- Subscription expiration -->
-          <div class="info-row expiration-row">
+          <!-- Subscription — grant (free) / edit granted / read-only Paywiser -->
+          <div v-if="!user.subscription" class="info-row expiration-row">
             <div class="action-info">
-              <span class="text-body-s fw-medium">Subscription Expiration</span>
-              <span class="text-caption color-text-tertiary">
-                {{ expirationDisplay ? `Set to ${expirationDisplay}` : 'Manually set or clear the tier expiration' }}
-              </span>
+              <span class="text-body-s fw-medium">Subscription</span>
+              <span class="text-caption color-text-tertiary">Free — grant an admin subscription (no payment gateway; the expiry sweep ends it)</span>
             </div>
             <div class="action-control">
+              <select v-model="grantPlan" class="text-body-s select-input" :disabled="grantSaving">
+                <option value="pro">Pro</option>
+                <option value="team">Team</option>
+              </select>
+              <select v-model="grantPeriod" class="text-body-s select-input" :disabled="grantSaving">
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
               <input
-                  v-model="expirationInput"
+                  v-model="grantExpiryInput"
                   type="datetime-local"
                   class="text-body-s select-input"
-                  :disabled="expirationSaving"
+                  title="Expiration (optional — defaults to one period)"
+                  :disabled="grantSaving"
               />
               <Btn
                   variant="secondary" size="sm"
-                  :loading="expirationSaving"
-                  :disabled="expirationSaving || !expirationInput"
-                  @click="handleSetExpiration"
+                  :loading="grantSaving"
+                  :disabled="grantSaving"
+                  @click="handleGrantSubscription"
               >
-                Set
-              </Btn>
-              <Btn variant="ghost-danger" size="sm" :disabled="expirationSaving" @click="handleClearExpiration">
-                Clear
+                Grant
               </Btn>
             </div>
           </div>
+
+          <template v-else-if="user.subscription.source === 'granted'">
+            <div class="info-row expiration-row">
+              <div class="action-info">
+                <span class="text-body-s fw-medium">Subscription <Badge type="status" :value="user.subscription.status" /></span>
+                <span class="text-caption color-text-tertiary">Admin-granted — never auto-renews; the expiry sweep ends it</span>
+              </div>
+              <div class="action-control">
+                <select v-model="grantPlan" class="text-body-s select-input" :disabled="grantSaving">
+                  <option value="pro">Pro</option>
+                  <option value="team">Team</option>
+                </select>
+                <select v-model="grantPeriod" class="text-body-s select-input" :disabled="grantSaving">
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+                <input
+                    v-model="grantExpiryInput"
+                    type="datetime-local"
+                    class="text-body-s select-input"
+                    :disabled="grantSaving"
+                />
+                <Btn
+                    variant="secondary" size="sm"
+                    :loading="grantSaving"
+                    :disabled="grantSaving"
+                    @click="handleSaveSubscription"
+                >
+                  Save
+                </Btn>
+              </div>
+            </div>
+            <div class="info-row expiration-row">
+              <div class="action-info">
+                <span class="text-caption color-text-tertiary">Extend by one billing period, or revoke to Free immediately</span>
+              </div>
+              <div class="action-control">
+                <Btn
+                    variant="secondary" size="sm"
+                    :loading="grantSaving"
+                    :disabled="grantSaving"
+                    @click="handleRenewSubscription"
+                >
+                  Renew +1 {{ grantPeriod === 'yearly' ? 'year' : 'month' }}
+                </Btn>
+                <Btn
+                    variant="ghost-danger" size="sm"
+                    :disabled="grantSaving"
+                    @click="handleRevokeSubscription"
+                >
+                  Revoke
+                </Btn>
+              </div>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="info-row expiration-row">
+              <div class="action-info">
+                <span class="text-body-s fw-medium">Subscription <Badge type="primary" value="Paywiser" /></span>
+                <span class="text-caption color-text-tertiary">
+                  {{ user.subscription_tier }} · {{ user.subscription.billing_period }} · {{ user.subscription.status }} ·
+                  {{ user.subscription.status === 'active' ? 'renews' : 'expires' }} {{ expirationDisplay || '—' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Expiration override — Paywiser-backed only; granted subs edit expiry in the form above -->
+            <div class="info-row expiration-row">
+              <div class="action-info">
+                <span class="text-body-s fw-medium">Subscription Expiration</span>
+                <span class="text-caption color-text-tertiary">
+                  {{ expirationDisplay ? `Current: ${expirationDisplay}` : 'No expiration set' }}
+                </span>
+              </div>
+              <div class="action-control">
+                <input
+                    v-model="expirationInput"
+                    type="datetime-local"
+                    class="text-body-s select-input"
+                    :disabled="expirationSaving"
+                />
+                <Btn
+                    variant="secondary" size="sm"
+                    :loading="expirationSaving"
+                    :disabled="expirationSaving || !expirationInput"
+                    @click="handleSetExpiration"
+                >
+                  Set
+                </Btn>
+                <Btn variant="ghost-danger" size="sm" :disabled="expirationSaving" @click="handleClearExpiration">
+                  Clear
+                </Btn>
+              </div>
+            </div>
+          </template>
 
           <!-- Payment requests -->
           <h4 class="text-label color-text-secondary subsection-title">Payments</h4>
@@ -192,15 +292,40 @@
             <span class="text-body-s color-text-tertiary">No invoices issued.</span>
           </div>
           <div v-else class="login-history">
-            <div v-for="inv in invoices" :key="inv.id" class="history-row">
-              <div class="history-main">
-                <span class="text-body-s fw-medium">{{ inv.invoice_number }}</span>
-                <span class="text-caption color-text-tertiary">
-                  Issued {{ formatDate(inv.issued_at) }} · {{ formatEur(inv.amount_minor) }}
-                  <template v-if="inv.credit_notes?.length"> · {{ inv.credit_notes.length }} credit note{{ inv.credit_notes.length !== 1 ? 's' : '' }}</template>
-                </span>
+            <template v-for="inv in invoices" :key="inv.id">
+              <div class="history-row">
+                <div class="history-main">
+                  <span class="text-body-s fw-medium">{{ inv.invoice_number }}</span>
+                  <span class="text-caption color-text-tertiary">
+                    Issued {{ formatDate(inv.issued_at) }} · {{ formatEur(inv.amount_minor) }}
+                  </span>
+                </div>
+                <Btn
+                    variant="secondary" size="sm"
+                    :loading="downloadingId === inv.id"
+                    :disabled="downloadingId !== null"
+                    @click="downloadInvoice(inv)"
+                >
+                  Download
+                </Btn>
               </div>
-            </div>
+              <div v-for="cn in inv.credit_notes || []" :key="cn.id" class="history-row credit-note-row">
+                <div class="history-main">
+                  <span class="text-body-s fw-medium">{{ cn.credit_note_number }}</span>
+                  <span class="text-caption color-text-tertiary">
+                    Issued {{ formatDate(cn.issued_at) }} · −{{ formatEur(cn.amount_minor) }}
+                  </span>
+                </div>
+                <Btn
+                    variant="secondary" size="sm"
+                    :loading="downloadingId === cn.id"
+                    :disabled="downloadingId !== null"
+                    @click="downloadCreditNote(cn)"
+                >
+                  Download
+                </Btn>
+              </div>
+            </template>
           </div>
         </template>
       </div>
@@ -258,29 +383,6 @@
           >
             Force Logout
           </Btn>
-        </div>
-
-        <!-- Change Tier (admin+) -->
-        <div v-if="hasMinRole(role, 'admin')" class="action-row">
-          <div class="action-info">
-            <span class="text-body-s fw-medium">Change Tier</span>
-            <span class="text-caption color-text-tertiary">Update subscription tier</span>
-          </div>
-          <div class="action-control">
-            <select v-model="selectedTier" class="text-body-s select-input" :disabled="actionLoading">
-              <option value="free">Free</option>
-              <option value="pro">Pro</option>
-              <option value="team">Team</option>
-            </select>
-            <Btn
-                variant="secondary" size="sm"
-                :disabled="selectedTier === (user.subscription_tier || 'free') || actionLoading"
-                :loading="actionLoading"
-                @click="handleChangeTier"
-            >
-              Apply
-            </Btn>
-          </div>
         </div>
 
         <!-- Delete Account (admin+) -->
@@ -358,6 +460,7 @@ import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
+import { downloadDocumentPdf } from '../scripts/core/invoicePdf.js'
 
 const route = useRoute()
 const auth = authModel()
@@ -373,15 +476,19 @@ const inboxEmail = ref(null)
 const inboxEmailLoading = ref(true)
 
 const role = computed(() => auth.currentAdmin.value?.role)
-const selectedTier = ref('free')
 
 // Payments & billing
 const paymentsLoading = ref(true)
 const payments = ref([])
 const refundingId = ref(null)
+const downloadingId = ref(null)
 const expirationInput = ref('')
 const expirationSaving = ref(false)
 const expirationDisplay = ref('')
+const grantPlan = ref('pro')
+const grantPeriod = ref('monthly')
+const grantExpiryInput = ref('')
+const grantSaving = ref(false)
 
 // invoice rows carry no amount — taken from the backing payment
 const invoices = computed(() => payments.value
@@ -397,7 +504,14 @@ async function load() {
   loading.value = true
   try {
     user.value = await apiClient.getPlatformUser(route.params.id)
-    if (user.value) selectedTier.value = user.value.subscription_tier || 'free'
+    if (user.value) {
+      expirationDisplay.value = user.value.subscription_expires_at ? formatDate(user.value.subscription_expires_at) : ''
+      grantPlan.value = user.value.subscription_tier === 'team' ? 'team' : 'pro'
+      grantPeriod.value = user.value.subscription?.billing_period || 'monthly'
+      grantExpiryInput.value = user.value.subscription?.source === 'granted' && user.value.subscription_expires_at
+          ? format(parseISO(user.value.subscription_expires_at), "yyyy-MM-dd'T'HH:mm")
+          : ''
+    }
   } catch (err) {
     toaster.push(err.message || 'Failed to load user')
     user.value = null
@@ -469,6 +583,116 @@ async function handleRefund(p) {
   }
 }
 
+async function downloadInvoice(inv) {
+  if (downloadingId.value) return
+  downloadingId.value = inv.id
+  try {
+    const html = await apiClient.getPlatformUserInvoiceHtml(user.value.id, inv.id)
+    await downloadDocumentPdf(html, `invoice-${inv.invoice_number}.pdf`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to download invoice')
+  } finally {
+    downloadingId.value = null
+  }
+}
+
+async function downloadCreditNote(cn) {
+  if (downloadingId.value) return
+  downloadingId.value = cn.id
+  try {
+    const html = await apiClient.getPlatformUserCreditNoteHtml(user.value.id, cn.id)
+    await downloadDocumentPdf(html, `credit-note-${cn.credit_note_number}.pdf`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to download credit note')
+  } finally {
+    downloadingId.value = null
+  }
+}
+
+function parseGrantExpiry() {
+  if (!grantExpiryInput.value) return ''
+  const d = new Date(grantExpiryInput.value)
+  if (isNaN(d.getTime())) return null
+  return d.toISOString()
+}
+
+async function doGrant(expiresAt, successMsg) {
+  grantSaving.value = true
+  try {
+    await apiClient.grantSubscription(user.value.id, {
+      plan: grantPlan.value,
+      billingPeriod: grantPeriod.value,
+      expiresAt,
+    })
+    toaster.success(successMsg)
+    await load()
+    await loadPayments()
+  } catch (err) {
+    toaster.push(err.status === 409
+        ? 'Active Paywiser subscription — manage via payments'
+        : (err.message || 'Failed to save subscription'))
+  } finally {
+    grantSaving.value = false
+  }
+}
+
+async function handleGrantSubscription() {
+  const expiresAt = parseGrantExpiry()
+  if (expiresAt === null) {
+    toaster.push('Enter a valid expiration date and time')
+    return
+  }
+
+  const until = expiresAt
+      ? `until ${formatDate(expiresAt)}`
+      : `for one ${grantPeriod.value === 'yearly' ? 'year' : 'month'}`
+  const confirmed = await confirm.show({
+    title: 'Grant Subscription',
+    message: `Grant ${user.value.email} an active ${grantPlan.value === 'team' ? 'Team' : 'Pro'} (${grantPeriod.value}) subscription ${until}? It has no payment gateway behind it and never renews — the expiry sweep ends it.`,
+    confirmText: 'Grant',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+  await doGrant(expiresAt, 'Subscription granted')
+}
+
+async function handleSaveSubscription() {
+  const expiresAt = parseGrantExpiry()
+  if (!expiresAt) {
+    toaster.push('Enter a valid expiration date and time (or use Renew)')
+    return
+  }
+  await doGrant(expiresAt, 'Subscription updated')
+}
+
+async function handleRenewSubscription() {
+  await doGrant('', 'Subscription renewed')
+}
+
+async function handleRevokeSubscription() {
+  const confirmed = await confirm.show({
+    title: 'Revoke Subscription',
+    message: `Revoke ${user.value.email}'s granted subscription? The account drops to Free immediately.`,
+    confirmText: 'Revoke',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  grantSaving.value = true
+  try {
+    await apiClient.revokeSubscription(user.value.id)
+    toaster.success('Subscription revoked')
+    await load()
+    await loadPayments()
+  } catch (err) {
+    toaster.push(err.status === 409
+        ? 'Active Paywiser subscription — manage via payments'
+        : (err.message || 'Failed to revoke subscription'))
+  } finally {
+    grantSaving.value = false
+  }
+}
+
 async function handleSetExpiration() {
   const expiresAt = new Date(expirationInput.value)
   if (isNaN(expiresAt.getTime())) {
@@ -515,27 +739,6 @@ async function handleClearExpiration() {
     toaster.push(err.message || 'Failed to clear expiration')
   } finally {
     expirationSaving.value = false
-  }
-}
-
-async function handleChangeTier() {
-  const confirmed = await confirm.show({
-    title: 'Change Tier',
-    message: `Change ${user.value.email}'s tier to ${selectedTier.value}?`,
-    confirmText: 'Change Tier',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
-
-  actionLoading.value = true
-  try {
-    await apiClient.changePlatformUserTier(user.value.id, selectedTier.value)
-    toaster.success('Tier updated')
-    await load()
-  } catch (err) {
-    toaster.push(err.message || 'Failed to change tier')
-  } finally {
-    actionLoading.value = false
   }
 }
 
@@ -752,7 +955,8 @@ onMounted(() => {
   gap: 16px;
 }
 
-.action-row:last-child {
+.action-row:last-child,
+.action-row:has(+ .action-row--danger) {
   border-bottom: none;
 }
 
@@ -841,6 +1045,10 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+}
+
+.credit-note-row {
+  padding-left: 20px;
 }
 
 /* Email to Inbox */

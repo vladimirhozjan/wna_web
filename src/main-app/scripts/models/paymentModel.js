@@ -1,13 +1,36 @@
 import { reactive } from 'vue'
-import { subscribePayment, getPaymentStatus, cancelSubscription, changeSubscriptionPlan } from '../core/apiClient.js'
+import { subscribePayment, getPaymentStatus, cancelSubscription, getPublicPlans } from '../core/apiClient.js'
 
-// Prices mirror contracts/subscription-tiers.md (EUR, VAT-inclusive)
-export const PLAN_OPTIONS = [
-    {plan: 'pro', billingPeriod: 'monthly', label: 'Pro', periodLabel: 'monthly', price: '€11/month'},
-    {plan: 'pro', billingPeriod: 'yearly', label: 'Pro', periodLabel: 'yearly', price: '€96/year'},
-    {plan: 'team', billingPeriod: 'monthly', label: 'Team', periodLabel: 'monthly', price: '€18/month'},
-    {plan: 'team', billingPeriod: 'yearly', label: 'Team', periodLabel: 'yearly', price: '€156/year'},
-]
+// Defaults mirror contracts/subscription-tiers.md (EUR, VAT-inclusive);
+// loadPlanCatalog overlays the live billing_plan catalog so displayed price = charged price
+export const PLAN_OPTIONS = reactive([
+    {plan: 'pro', billingPeriod: 'monthly', label: 'Pro', periodLabel: 'monthly', price: '€11/month', amount: 11},
+    {plan: 'pro', billingPeriod: 'yearly', label: 'Pro', periodLabel: 'yearly', price: '€96/year', amount: 96, perMonth: 10.67},
+    {plan: 'team', billingPeriod: 'monthly', label: 'Team', periodLabel: 'monthly', price: '€18/month', amount: 18, perUser: true},
+    {plan: 'team', billingPeriod: 'yearly', label: 'Team', periodLabel: 'yearly', price: '€156/year', amount: 156, perMonth: 17.33, perUser: true},
+])
+
+const euro = (v) => Number.isInteger(v) ? String(v) : v.toFixed(2)
+
+// Yearly = 9 paid months ("3 months free"), so the shown per-month rate is amount / 9
+const yearlyPerMonth = (amount) => Math.round(amount / 9 * 100) / 100
+
+let catalogLoaded = false
+
+export async function loadPlanCatalog() {
+    if (catalogLoaded) return
+    try {
+        const data = await getPublicPlans()
+        for (const p of data.plans || []) {
+            const opt = PLAN_OPTIONS.find(o => o.plan === p.plan && o.billingPeriod === p.billing_period)
+            if (!opt || !(p.price_minor > 0)) continue
+            opt.amount = p.price_minor / 100
+            opt.price = `€${euro(opt.amount)}/${opt.billingPeriod === 'yearly' ? 'year' : 'month'}`
+            if (opt.billingPeriod === 'yearly') opt.perMonth = yearlyPerMonth(opt.amount)
+        }
+        catalogLoaded = true
+    } catch { /* keep the contract defaults */ }
+}
 
 let instance = null
 
@@ -23,7 +46,6 @@ export function paymentModel() {
         status: 'none',
         expiresAt: '',
         cancelAtPeriodEnd: false,
-        queuedPlan: null,
     })
 
     function applyStatus(data) {
@@ -32,7 +54,6 @@ export function paymentModel() {
         state.status = data.status || 'none'
         state.expiresAt = data.expires_at || ''
         state.cancelAtPeriodEnd = data.cancel_at_period_end === true
-        state.queuedPlan = data.queued_plan || null
     }
 
     const hasSubscription = () => state.tier !== 'free' && state.status !== 'none' && state.status !== 'expired'
@@ -47,10 +68,10 @@ export function paymentModel() {
         }
     }
 
-    async function subscribe({plan, billingPeriod, billingCountry, billingState}) {
+    async function subscribe({plan, billingPeriod, billingCountry, billingState, billingName, billingAddress1, billingAddress2, billingZip, billingCity}) {
         state.acting = true
         try {
-            return await subscribePayment({plan, billingPeriod, billingCountry, billingState})
+            return await subscribePayment({plan, billingPeriod, billingCountry, billingState, billingName, billingAddress1, billingAddress2, billingZip, billingCity})
         } finally {
             state.acting = false
         }
@@ -67,17 +88,6 @@ export function paymentModel() {
         }
     }
 
-    async function changePlan({plan, billingPeriod}) {
-        state.acting = true
-        try {
-            const data = await changeSubscriptionPlan({plan, billingPeriod})
-            await loadStatus()
-            return data
-        } finally {
-            state.acting = false
-        }
-    }
-
-    instance = { state, hasSubscription, loadStatus, subscribe, cancel, changePlan }
+    instance = { state, hasSubscription, loadStatus, subscribe, cancel }
     return instance
 }

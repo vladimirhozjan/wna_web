@@ -15,7 +15,7 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
 
 ## User flows (this project's part) — the UI for every role (main-app + admin-app)
 - **Free** — main-app Settings "Update plan": **Upgrade** button per plan/period **only when
-  `flagsModel` has BOTH `beta` AND `payments`** (else no payment UI). Clicking → **address capture
+  `flagsModel` has `payments`** (owner 2026-07-05: payments-only — `beta` gates only the BETA badge + registration) (else no payment UI). Clicking → **address capture
   (country required — drives VAT; state optional free text — owner 2026-07-02)** → call subscribe →
   redirect to Paywiser `checkout_url`.
 - **Pro / Team subscriber** — Settings shows active plan + **"Renews on" date ("Access until" after
@@ -61,8 +61,8 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
    table) and confirm it in the running app.
 3. **Leave zero references to anything you renamed/removed** — grep the source and confirm `0` matches
    before claiming done.
-4. **Honor the parent's User flows for every role** — payment UI gated behind **`beta` AND `payments`**
-   (both, via `flagsModel`); required country+state capture; "takes effect at renewal" for change-plan;
+4. **Honor the parent's User flows for every role** — payment UI gated behind the **`payments`** flag
+   (via `flagsModel`; owner 2026-07-05 — payments-only, `beta` gates only badge+registration); required country+state capture; "takes effect at renewal" for change-plan;
    forced refresh on return. Reuse existing components/models (no new component/CSS without approval).
 5. **No false "complete".** If a box is partial or blocked, mark `[~]` (NOT `[x]`) and write exactly
    what's left; if it's intentionally not done or doesn't apply, mark `[NA]` with the reason. Never leave
@@ -82,10 +82,10 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
   `payments` ALONE controls all upgrade UI**; `beta` controls only the BETA badge + registration
   (`src/main-app/scripts/core/flagsModel.js:35`, `paymentsEnabled`). With `payments` off: pricing
   Pro/Team CTAs, the Settings "Update plan" row, and the locked-feature buttons all fall back to
-  **"Contact Us"** (mailto). Backend still enforces the old two-flag gate with the obsolete flag name —
-  **handed to the backend slice** (prompt updated 2026-07-05: rename the registration flag to `beta`
-  AND make `/v1/payments/*` require only `payments`). Parent decision 22 needs the owner's
-  orchestration update to match.
+  **"Contact Us"** (mailto). Backend follow-up landed the `beta` rename but **kept the two-flag
+  payment gate** (`beta`+`payments`) — the owner reaffirmed payments-only 2026-07-05 and a follow-up
+  prompt (drop `beta` from `/v1/payments/*`) was handed over; until it lands, a `payments`-only user
+  sees upgrade UI but the API 403s. Parent decision 22 + `decisions.md` are now updated to payments-only (2026-07-05); the backend-code drop-`beta` is the only remaining gap.
 - [x] Settings "Update plan": Upgrade per plan/period (`SettingsPage.vue:119-133` + `PLAN_OPTIONS`),
   address capture — country required via searchable `Select` over the new static list
   (`src/main-app/scripts/data/countries.js`; modal `SettingsPage.vue:608-655`), state optional `Inpt`;
@@ -116,12 +116,11 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
   mirrors `AuditLogPage`/`DataTable` + `Pagination` (`src/admin-app/views/PaymentsReportPage.vue`);
   route (`src/admin-app/router/router.js:82-87`) + `SidebarNav` entry (`SidebarNav.vue:40-45`), admin
   role. Verified by build + code (browser check needs an OTP admin account — see acceptance note).
-- [~] User-detail additions (`src/admin-app/views/UserDetailPage.vue:123-211`): payment-request list
-  with all statuses (`:168-188`), **full-refund** button money-only (`:452-471`), **edit-expiration**
-  control Set/Clear (`:473-521`), invoices list (number/date/amount/credit-notes, `:190-208`). **[~]
-  because the *current* expiration value can't be displayed** — `GET /admin/platform-users/{id}`
-  doesn't return `subscription_expires_at` (backend/spec gap; shown only after a Set). Blocked on the
-  backend exposing it.
+- [x] User-detail additions (`src/admin-app/views/UserDetailPage.vue`): payment-request list with all
+  statuses, **full-refund** button money-only, **edit-expiration** control Set/Clear, invoices list
+  with nested credit notes + per-row **Download**. The current expiration now displays —
+  `GET /admin/platform-users/{id}` returns `subscription_expires_at` since the backend follow-up
+  (2026-07-05), round-tripped into the card (`UserDetailPage.vue` `load()`).
 - [x] **Billing Templates / Plans page (decision 27)** — fixed 2×2 catalog, create fills a missing
   combo, edit updates price (EUR)/title/active, shows the mapped Paywiser template id
   (`src/admin-app/views/BillingTemplatesPage.vue`; API fns `apiClient.js:705-731`); route
@@ -129,18 +128,21 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
   components — reuses `DataTable`/`Modal`/`Inpt`/`Badge`/`Btn` (Badge's existing status map extended
   for payment statuses, `Badge.vue:33-41,58`).
 ### Invoices — client-side PDF (web owns this; backend has no PDF/GCS)
-- [~] **Invoice list + one-click PDF download (owner-decided 2026-07-02)** — **BLOCKED ON BACKEND
-  ENDPOINTS THAT DON'T EXIST** (verified in `specs/api/api.md`, `specs/api/admin-api.md`, and the
-  backend controllers): there is (a) **no user-facing invoice/billing-history list** (no
-  `GET /v1/payments/history`-like route — `payment_controller.hpp` has only
-  subscribe/status/cancel/change-plan/webhook) and (b) **no invoice-HTML fetch** for user or admin
-  (backend renders invoice HTML only for email). Done within what exists: the **admin** user-detail
-  invoice list renders from the invoice metadata joined into `GET /admin/platform-users/{id}/payments`
-  (`UserDetailPage.vue:190-208`) — without a Download button. Remaining (needs backend + spec first,
-  endpoint specs are backend-owned): user-facing invoice list in Settings billing history; invoice-HTML
-  endpoints; then the sandboxed-iframe → lazy-loaded jsPDF+html2canvas client-side PDF (dep NOT added
-  yet — nothing to feed it, and the main chunk must not grow). DEFERRED TO USER: coordinate the
-  endpoint additions with the backend slice.
+- [x] **Invoice list + one-click PDF download** — backend endpoints landed 2026-07-05 (api.md
+  "Billing history" + invoice/credit-note HTML routes; verified live against the local backend:
+  history returns the `payment ⋈ invoice ⋈ credit_notes` join, HTML routes serve `text/html`).
+  Built (owner-refined 2026-07-05: history is its own page, rows open the HTML in a dialog):
+  **`/billing-history` page** (lazy route `router.js:44`; entry row in the Plan card when `payments`
+  on, `SettingsPage.vue`) listing all payments at once latest-first — kind/status/date/amount,
+  invoice number, credit notes nested (`views/dashboard/BillingHistoryPage.vue`); **row click → HTML
+  popup dialog** (existing `Modal`, iframe `sandbox=""` — no script execution) with Download;
+  **Download** = fetch HTML → hidden iframe `sandbox="allow-same-origin"` (no `allow-scripts`) →
+  **lazy-imported `jspdf`+`html2canvas`** (owner-approved dep 2026-07-05) → save
+  `invoice-<number>.pdf`/`credit-note-<number>.pdf` (`scripts/core/invoicePdf.js`, mirrored into
+  admin-app per the no-shared-runtime policy). Admin user-detail invoice + credit-note rows got the
+  same Download (`UserDetailPage.vue` `downloadInvoice`/`downloadCreditNote`). Build-verified: libs
+  are separate lazy chunks (`html2canvas.esm` 198 kB, `jspdf.es.min` 382 kB), page its own 5.6 kB
+  chunk — main index chunk unchanged.
 
 ## Spec sync (orchestration homes — REQUIRED, not deferrable)
 - [x] Updated `wna_orchestration/specs/features/wna-features.md` — Settings "Update plan"
@@ -174,18 +176,19 @@ This slice lives ONLY in the `develop-a` worktree (never `main`/`develop-b`).
   with Cancel/Change rows hidden — all verified live; DB confirmed `cancel_at_period_end=t`,
   `queued_tier=team/yearly`.
 - [~] admin-app Payments/VAT report filters by year/month with per-country VAT
-  (`PaymentsReportPage.vue`); user-detail shows invoices + all payment statuses + refund +
-  edit-expiration (`UserDetailPage.vue:123-211`). **[~]:** (a) current-expiration *display* blocked on
-  the backend exposing `subscription_expires_at` (edit works); (b) pages verified by green build +
-  spec-shaped API calls only — a live admin-app browser pass needs an OTP-enrolled admin account
-  (operator). Both blockers noted for the user.
+  (`PaymentsReportPage.vue`); user-detail shows expiration (display + edit) + invoices with downloads
+  + all payment statuses + refund (`UserDetailPage.vue`). **[~] only because** the admin pages are
+  verified by green build + spec-shaped API calls — a live admin-app browser pass needs an
+  OTP-enrolled admin account (operator).
 - [x] admin-app Billing Templates page: create/list/edit the 4 options (price/period/EUR/active,
   Paywiser template id shown) per `admin-api.md` §12.5 (`BillingTemplatesPage.vue`); subscribe reads the
   backend `billing_plan` mapping (backend-owned; local subscribe verified against the seeded pro-monthly
   plan).
-- [~] Invoice one-click client-side PDF — **blocked on missing backend endpoints** (no user-facing
-  invoice list, no invoice-HTML fetch); see the Invoices box above. Backend serves HTML only for email
-  today; no PDF dep was added, so the main chunk is unchanged.
+- [x] Invoice one-click client-side PDF — built against the landed endpoints; see the Invoices box
+  above (billing-history page + row-click HTML dialog + Download in Settings-side page and admin
+  user-detail; sandboxed-iframe render; lazy-loaded lib in separate chunks; main chunk unchanged;
+  backend serves HTML only). Browser click-through pending the user (no dev server may be run by the
+  agent).
 - [x] `specs/features/wna-features.md` updated — `wna-features.md:1113-1155` + `:1381-1386`. New files
   limited to slice-required pages/model/data (`PaymentsReportPage.vue`, `BillingTemplatesPage.vue`,
   `paymentModel.js`, `data/countries.js`); no new shared component or CSS token (existing `Badge`
