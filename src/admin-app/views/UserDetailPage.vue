@@ -129,10 +129,26 @@
         </div>
 
         <template v-else>
-          <!-- Subscription — grant (free) / edit granted / read-only Paywiser -->
+          <!-- Current billing status -->
+          <div class="info-row expiration-row">
+            <div class="action-info">
+              <span class="text-body-s fw-medium">Current status</span>
+            </div>
+            <div class="action-control">
+              <Badge type="role" :value="user.subscription_tier || 'free'" />
+              <template v-if="user.subscription">
+                <Badge type="status" :value="user.subscription.status" />
+                <Badge v-if="user.subscription.source === 'paywiser'" type="primary" value="Paywiser" />
+                <span class="text-body-s color-text-secondary">{{ user.subscription.billing_period }} · expires on {{ expirationDisplay || '—' }}</span>
+              </template>
+              <span v-else class="text-body-s color-text-secondary">no subscription</span>
+            </div>
+          </div>
+
+          <!-- Set subscription — grant (free) / edit granted / read-only Paywiser -->
           <div v-if="!user.subscription" class="info-row expiration-row">
             <div class="action-info">
-              <span class="text-body-s fw-medium">Subscription</span>
+              <span class="text-body-s fw-medium">Set subscription</span>
               <span class="text-caption color-text-tertiary">Free — grant an admin subscription (no payment gateway; the expiry sweep ends it)</span>
             </div>
             <div class="action-control">
@@ -165,7 +181,7 @@
           <template v-else-if="user.subscription.source === 'granted'">
             <div class="info-row expiration-row">
               <div class="action-info">
-                <span class="text-body-s fw-medium">Subscription <Badge type="status" :value="user.subscription.status" /></span>
+                <span class="text-body-s fw-medium">Set subscription</span>
                 <span class="text-caption color-text-tertiary">Admin-granted — never auto-renews; the expiry sweep ends it</span>
               </div>
               <div class="action-control">
@@ -218,16 +234,6 @@
           </template>
 
           <template v-else>
-            <div class="info-row expiration-row">
-              <div class="action-info">
-                <span class="text-body-s fw-medium">Subscription <Badge type="primary" value="Paywiser" /></span>
-                <span class="text-caption color-text-tertiary">
-                  {{ user.subscription_tier }} · {{ user.subscription.billing_period }} · {{ user.subscription.status }} ·
-                  {{ user.subscription.status === 'active' ? 'renews' : 'expires' }} {{ expirationDisplay || '—' }}
-                </span>
-              </div>
-            </div>
-
             <!-- Expiration override — Paywiser-backed only; granted subs edit expiry in the form above -->
             <div class="info-row expiration-row">
               <div class="action-info">
