@@ -270,7 +270,12 @@ async function onContinue() {
       toaster.push('The payment provider did not return a checkout link')
     }
   } catch (err) {
-    toaster.push(err.message || 'Failed to start checkout')
+    // 502 = payment gateway failure; checkout never started, so nothing was charged
+    if (err.status === 502) {
+      toaster.push('Our payment provider is having trouble right now — you have not been charged. Please try again in a few minutes.')
+    } else {
+      toaster.push(err.message || 'Failed to start checkout')
+    }
   }
 }
 
