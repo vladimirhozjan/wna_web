@@ -767,6 +767,26 @@ export async function deleteBillingTemplate(tier, period) {
     }
 }
 
+// --- VAT rates endpoints ---
+
+export async function listVatRates() {
+    try {
+        const res = await httpApi.get('/admin/vat-rates')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function refreshVatRates() {
+    try {
+        const res = await httpApi.post('/admin/vat-rates/refresh')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -843,4 +863,6 @@ export default {
     createBillingTemplate,
     updateBillingTemplate,
     deleteBillingTemplate,
+    listVatRates,
+    refreshVatRates,
 }

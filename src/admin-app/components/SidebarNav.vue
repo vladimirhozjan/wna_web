@@ -50,6 +50,12 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h9l3 3v13H4V2z"/><line x1="7" y1="9" x2="13" y2="9"/><line x1="7" y1="12" x2="13" y2="12"/><path d="M13 2v3h3"/></svg>'
   },
   {
+    label: 'VAT Rates',
+    route: '/vat-rates',
+    minRole: 'admin',
+    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="16" x2="16" y2="4"/><circle cx="5.5" cy="5.5" r="2.5"/><circle cx="14.5" cy="14.5" r="2.5"/></svg>'
+  },
+  {
     label: 'GDPR Requests',
     route: '/gdpr',
     minRole: 'admin',

@@ -92,6 +92,12 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'admin' }
             },
             {
+                path: 'vat-rates',
+                name: 'vat-rates',
+                component: () => import('../views/VatRatesPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
                 path: 'gdpr',
                 name: 'gdpr',
                 component: () => import('../views/GdprRequestsPage.vue'),

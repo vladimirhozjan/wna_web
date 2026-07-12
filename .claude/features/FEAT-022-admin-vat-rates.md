@@ -76,20 +76,40 @@ These are non-negotiable:
 
 ## Checklist
 ### admin-app
-- [ ] `scripts/core/apiClient.js`: `listVatRates()` + `refreshVatRates()` (named exports + entries in
+- [x] `scripts/core/apiClient.js`: `listVatRates()` + `refreshVatRates()` (named exports + entries in
       the default-export object, error-normalized, section comment next to the billing-templates block)
-- [ ] `views/VatRatesPage.vue`: current-per-country default view, **Show history** toggle,
+      — `apiClient.js:770-789` (`// --- VAT rates endpoints ---`, both normalize errors) +
+      default-export entries `apiClient.js:866-867`
+- [x] `views/VatRatesPage.vue`: current-per-country default view, **Show history** toggle,
       client-side search (country code or `Intl.DisplayNames` name), columns + source `Badge`,
       **Refresh now** `Btn` → success toast (`errorModel().success`) with source + upserted count →
       reload; reuse `DataTable`/`SearchInput`; `<style scoped>` with token variables only
-- [ ] `router/router.js`: `/vat-rates` child route (lazy import, `meta: { requiresAuth: true,
+      — `VatRatesPage.vue` (filter `:79-91`, `Intl.DisplayNames` `:77`, source `Badge` `:42`,
+      refresh → `toaster.success` with source + upserted → `load()` `:122-135`; only existing
+      components imported; scoped styles use spacing + `--color-text-primary` token only)
+- [x] `router/router.js`: `/vat-rates` child route (lazy import, `meta: { requiresAuth: true,
       minRole: 'admin' }`) + `components/SidebarNav.vue` `NAV_ITEMS` entry "VAT Rates" next to
       Billing Plans (minRole 'admin', inline SVG icon)
-- [ ] Verify live against dev backend: page renders real rows; refresh returns a result toast; role
+      — `router.js:94-99`, `SidebarNav.vue:52-57` (between Billing Plans and GDPR Requests)
+- [x] Verify live against dev backend: page renders real rows; refresh returns a result toast; role
       `support` account neither sees the nav item nor reaches the route (redirect observed)
+      — VERIFIED live 2026-07-12 (dev admin-app localhost:7111 + admin_service, user logged in as
+      admin): 27 country rows rendered (rate %, effective-from, `fallback` badges, fetched-at);
+      search by name ("slov" → SI+SK) and code ("SI" → SI) filters live; Show history toggle works
+      (same rows — table holds no historical rows yet); Refresh now → success toast "VAT rates
+      refreshed (kept, 0 upserted)" + table reload + Audit Log top entry "vat rates refreshed"
+      (target `vat_rate`); unauthenticated `/vat-rates` → login redirect. Support gating observed by
+      temporarily patching the stored session role to `support` (no real support account used —
+      client guard depends only on the role value): sidebar entry hidden AND `/vat-rates` →
+      `/dashboard` redirect; API-side 403 is covered by wna_backend integration tests.
 ### spec sync (orchestration homes this work changes — rule 6)
-- [ ] Update `wna_orchestration/specs/features/wna-features.md` — Admin (admin-app) section gains the
+- [x] Update `wna_orchestration/specs/features/wna-features.md` — Admin (admin-app) section gains the
       VAT Rates page (precedent: FEAT-006 Payments / Billing Plans entries)
-- [ ] Update `wna_orchestration/specs/tests/wna-test-cases.md` — new `(FEAT-022)` section, manual
+      — `wna-features.md:1204-1213` ("**Admin (admin-app, FEAT-022):** — VAT Rates page" entry after
+      the FEAT-006 admin block)
+- [x] Update `wna_orchestration/specs/tests/wna-test-cases.md` — new `(FEAT-022)` section, manual
       admin-app cases starting at TC-589 (compressed Steps/Expected format; "no admin-app harness"
       run-log note per TC-578 precedent)
+      — `wna-test-cases.md:14239-14290` Section 39, cases **TC-590–TC-593** (NOT TC-589: that number
+      was consumed by BUG-013 on 2026-07-10 after this slice was written; next free number used,
+      noted in the parent's log)
