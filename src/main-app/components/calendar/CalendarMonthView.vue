@@ -198,8 +198,17 @@ function isWeekend(date) {
   return day === 0 || day === 6
 }
 
+// Cached per re-render: the template reads this several times per cell
+const itemsByDay = computed(() => {
+  const map = new Map()
+  for (const day of calendarDays.value) {
+    map.set(formatDate(day), calendar.getItemsForDate(day))
+  }
+  return map
+})
+
 function getItemsForDay(date) {
-  return calendar.getItemsForDate(date)
+  return itemsByDay.value.get(formatDate(date)) || []
 }
 
 function onCellClick(day, event) {

@@ -35,7 +35,7 @@
               {
                 'week-view__all-day-cell--today': day.isToday,
                 'week-view__all-day-cell--weekend': day.isWeekend,
-                'week-view__all-day-cell--drag-over': dragOverDate === day.dateStr && !dragOverTime,
+                'week-view__all-day-cell--drag-over': dragOverDate === day.dateStr && dragOverHour === null,
               }
             ]"
             @click="onAllDayCellClick(day)"
@@ -52,7 +52,7 @@
             />
           </template>
           <CalendarItem
-              v-for="item in getAllDayItemsForDate(day.date)"
+              v-for="item in getAllDayItemsForDate(day.dateStr)"
               :key="item.id"
               :item="item"
               :show-time="false"
@@ -98,7 +98,7 @@
               :class="[
                 'week-view__cell',
                 {
-                  'week-view__cell--drag-over': dragOverDate === day.dateStr && dragOverTime?.hour === hour,
+                  'week-view__cell--drag-over': dragOverDate === day.dateStr && dragOverHour === hour,
                   'week-view__cell--outside-business': !isBusinessHour(hour) || !isBusinessDay(day.date.getDay())
                 }
               ]"
@@ -121,7 +121,7 @@
           <!-- Items layer -->
           <div class="week-view__items">
             <div
-                v-for="item in getPositionedItemsForDate(day.date)"
+                v-for="item in getPositionedItemsForDate(day.dateStr)"
                 :key="item.id"
                 class="week-view__item-wrapper"
                 :style="{
@@ -145,7 +145,7 @@
 
           <!-- Start date indicators -->
           <div
-              v-for="item in getStartIndicatorsForDate(day.date)"
+              v-for="item in getStartIndicatorsForDate(day.dateStr)"
               :key="`start-${item.id}`"
               class="week-view__indicator week-view__indicator--start"
               :style="{ top: item.top + 'px' }"
@@ -160,7 +160,7 @@
 
           <!-- Due date indicators -->
           <div
-              v-for="item in getDueIndicatorsForDate(day.date)"
+              v-for="item in getDueIndicatorsForDate(day.dateStr)"
               :key="`due-${item.id}`"
               class="week-view__indicator week-view__indicator--due"
               :style="{ top: item.top + 'px' }"
@@ -215,14 +215,15 @@ const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const quickFormSlot = ref(null)
 const dragOverDate = ref(null)
-const dragOverTime = ref(null)
+const dragOverHour = ref(null)
 const draggingItem = ref(null)
 const currentTimePosition = ref(null)
 let timeUpdateInterval = null
 
+const calendarSettings = computed(() => calendar.getCalendarSettings())
+
 const weekDays = computed(() => {
-  const settings = calendar.getCalendarSettings()
-  const days = getWeekDays(props.currentDate, settings.weekStartsOn)
+  const days = getWeekDays(props.currentDate, calendarSettings.value.weekStartsOn)
   return days.map(date => ({
     date,
     dateStr: formatDate(date),
@@ -233,37 +234,62 @@ const weekDays = computed(() => {
   }))
 })
 
-function getAllDayItemsForDate(date) {
-  return calendar.getItemsForDate(date).filter(item => !calendar.hasTime(item))
-}
-
-function getTimedItemsForDate(date) {
-  return calendar.getItemsForDate(date).filter(item => calendar.hasTime(item))
-}
-
-function getPositionedItemsForDate(date) {
+// Cached per re-render: drag-over re-renders must not rescan items or re-run layout
+const dayItemsByDate = computed(() => {
   const minHeight = hourHeight / 4  // 15 minutes minimum
   const defaultDuration = 15  // 15 minutes default
+  const map = new Map()
 
-  const items = getTimedItemsForDate(date)
-      .filter(item => item._displayReason !== 'start' && item._displayReason !== 'due')
-      .map(item => {
-        const time = calendar.getItemTime(item)
-        const [hours, minutes] = time.split(':').map(Number)
-        const top = (hours * hourHeight) + (minutes / 60) * hourHeight
+  for (const day of weekDays.value) {
+    const items = calendar.getItemsForDate(day.date)
 
-        const duration = item.duration || defaultDuration
-        const durationHeight = (duration / 60) * hourHeight
-        const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
+    const positioned = items
+        .filter(item => item._displayReason !== 'start' && item._displayReason !== 'due' && calendar.hasTime(item))
+        .map(item => {
+          const time = calendar.getItemTime(item)
+          const [hours, minutes] = time.split(':').map(Number)
+          const top = (hours * hourHeight) + (minutes / 60) * hourHeight
 
-        return {
-          ...item,
-          top,
-          height,
-        }
-      })
+          const duration = item.duration || defaultDuration
+          const durationHeight = (duration / 60) * hourHeight
+          const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
 
-  return layoutOverlappingItems(items)
+          return {
+            ...item,
+            top,
+            height,
+          }
+        })
+
+    map.set(day.dateStr, {
+      allDay: items.filter(item => !calendar.hasTime(item)),
+      positioned: layoutOverlappingItems(positioned),
+      startIndicators: items
+          .filter(item => item._displayReason === 'start' && calendar.hasTime(item))
+          .map(item => ({ ...item, top: computeIndicatorTop(item) })),
+      dueIndicators: items
+          .filter(item => item._displayReason === 'due' && calendar.hasTime(item))
+          .map(item => ({ ...item, top: computeIndicatorTop(item) })),
+    })
+  }
+
+  return map
+})
+
+function getAllDayItemsForDate(dateStr) {
+  return dayItemsByDate.value.get(dateStr)?.allDay || []
+}
+
+function getPositionedItemsForDate(dateStr) {
+  return dayItemsByDate.value.get(dateStr)?.positioned || []
+}
+
+function getStartIndicatorsForDate(dateStr) {
+  return dayItemsByDate.value.get(dateStr)?.startIndicators || []
+}
+
+function getDueIndicatorsForDate(dateStr) {
+  return dayItemsByDate.value.get(dateStr)?.dueIndicators || []
 }
 
 function computeIndicatorTop(item) {
@@ -272,31 +298,16 @@ function computeIndicatorTop(item) {
   return (h * hourHeight) + (m / 60) * hourHeight
 }
 
-function getStartIndicatorsForDate(date) {
-  return calendar.getItemsForDate(date)
-      .filter(item => item._displayReason === 'start' && calendar.hasTime(item))
-      .map(item => ({ ...item, top: computeIndicatorTop(item) }))
-}
-
-function getDueIndicatorsForDate(date) {
-  return calendar.getItemsForDate(date)
-      .filter(item => item._displayReason === 'due' && calendar.hasTime(item))
-      .map(item => ({ ...item, top: computeIndicatorTop(item) }))
-}
-
 function formatHour(hour) {
-  const settings = calendar.getCalendarSettings()
-  return calendar.formatHour(hour, settings.timeFormat)
+  return calendar.formatHour(hour, calendarSettings.value.timeFormat)
 }
 
 function isBusinessHour(hour) {
-  const settings = calendar.getCalendarSettings()
-  return calendar.isBusinessHour(hour, settings)
+  return calendar.isBusinessHour(hour, calendarSettings.value)
 }
 
 function isBusinessDay(dayOfWeek) {
-  const settings = calendar.getCalendarSettings()
-  return calendar.isBusinessDay(dayOfWeek, settings)
+  return calendar.isBusinessDay(dayOfWeek, calendarSettings.value)
 }
 
 function formatTimeSlot(hour) {
@@ -331,12 +342,12 @@ function onItemDragStart(item) {
 function onItemDragEnd() {
   draggingItem.value = null
   dragOverDate.value = null
-  dragOverTime.value = null
+  dragOverHour.value = null
 }
 
 function onAllDayDragOver(day) {
   dragOverDate.value = day.dateStr
-  dragOverTime.value = null
+  dragOverHour.value = null
 }
 
 function getHourFromEvent(event) {
@@ -347,13 +358,13 @@ function getHourFromEvent(event) {
 
 function onWrapperDragOver(day, event) {
   dragOverDate.value = day.dateStr
-  dragOverTime.value = { hour: getHourFromEvent(event) }
+  dragOverHour.value = getHourFromEvent(event)
 }
 
 function onWrapperDrop(day, event) {
   event.preventDefault()
   dragOverDate.value = null
-  dragOverTime.value = null
+  dragOverHour.value = null
 
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
@@ -369,7 +380,7 @@ function onWrapperDrop(day, event) {
 
 function onCellDragOver(day, hour) {
   dragOverDate.value = day.dateStr
-  dragOverTime.value = { hour }
+  dragOverHour.value = hour
 }
 
 function onDragLeave() {
@@ -379,7 +390,7 @@ function onDragLeave() {
 function onAllDayDrop(day, event) {
   event.preventDefault()
   dragOverDate.value = null
-  dragOverTime.value = null
+  dragOverHour.value = null
 
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
@@ -394,7 +405,7 @@ function onAllDayDrop(day, event) {
 function onCellDrop(day, hour, event) {
   event.preventDefault()
   dragOverDate.value = null
-  dragOverTime.value = null
+  dragOverHour.value = null
 
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))

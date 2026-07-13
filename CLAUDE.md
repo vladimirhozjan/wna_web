@@ -170,7 +170,7 @@ JWT tokens in localStorage: `auth_token`, `refresh_token`, `current_user`.
 
 ### Production Build
 
-Terser minification (console/debugger stripped). Code obfuscation via `rollup-plugin-obfuscator` configured but currently disabled (`config/vite.core.js:9`).
+Terser minification (console/debugger stripped). Code obfuscation via `javascript-obfuscator` runs as a post-build step on every production build (`config/vite.core.js`). Runtime-heavy options (`controlFlowFlattening`, `deadCodeInjection`, string encoding) must stay off — they multiply runtime cost 5-10x.
 
 ## Mandatory Rules
 

@@ -155,6 +155,8 @@ let timeUpdateInterval = null
 
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
+const calendarSettings = computed(() => calendar.getCalendarSettings())
+
 const showCurrentTime = computed(() => {
   try {
     return isToday(parseISO(props.date))
@@ -207,13 +209,11 @@ const dueIndicators = computed(() => {
 })
 
 function formatHour(hour) {
-  const settings = calendar.getCalendarSettings()
-  return calendar.formatHour(hour, settings.timeFormat)
+  return calendar.formatHour(hour, calendarSettings.value.timeFormat)
 }
 
 function isBusinessHour(hour) {
-  const settings = calendar.getCalendarSettings()
-  return calendar.isBusinessHour(hour, settings)
+  return calendar.isBusinessHour(hour, calendarSettings.value)
 }
 
 function formatTimeSlot(hour, minutes) {
@@ -245,9 +245,16 @@ function getSlotFromEvent(event) {
   return { hour, half }
 }
 
+function setDragOverSlot(hour, half) {
+  const cur = dragOverSlot.value
+  if (!cur || cur.hour !== hour || cur.half !== half) {
+    dragOverSlot.value = { hour, half }
+  }
+}
+
 function onWrapperDragOver(event) {
   const { hour, half } = getSlotFromEvent(event)
-  dragOverSlot.value = { hour, half }
+  setDragOverSlot(hour, half)
 }
 
 function onWrapperDrop(event) {
@@ -276,7 +283,7 @@ function onWrapperDrop(event) {
 }
 
 function onDragOver(hour, half) {
-  dragOverSlot.value = { hour, half }
+  setDragOverSlot(hour, half)
 }
 
 function onDragLeave() {

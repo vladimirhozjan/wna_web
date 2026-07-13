@@ -132,7 +132,7 @@ window.RUNTIME_CONFIG = {
 The project uses:
 
 - **Terser** (minification + mangle, console/debugger stripped)
-- **rollup-plugin-obfuscator** (advanced obfuscation — configured but currently disabled, see `config/vite.core.js:9`)
+- **javascript-obfuscator** (post-build obfuscation of production bundles, see `config/vite.core.js`; runtime-heavy options kept off for performance)
 
 ---
 

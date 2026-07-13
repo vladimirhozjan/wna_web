@@ -6,20 +6,20 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = path.dirname(__filename)
 
+// controlFlowFlattening, deadCodeInjection, and string encoding are kept off:
+// they multiplied runtime cost 5-10x and froze the calendar during drag & drop
 const obfuscatorOptions = {
     compact: true,
-    controlFlowFlattening: true,
-    controlFlowFlatteningThreshold: 0.7,
-    deadCodeInjection: true,
-    deadCodeInjectionThreshold: 0.4,
+    controlFlowFlattening: false,
+    deadCodeInjection: false,
     debugProtection: false,
     disableConsoleOutput: true,
     identifierNamesGenerator: 'hexadecimal',
-    numbersToExpressions: true,
+    numbersToExpressions: false,
     simplify: true,
     splitStrings: false,
     stringArray: true,
-    stringArrayEncoding: ['base64'],
+    stringArrayEncoding: [],
     stringArrayThreshold: 0.75,
     transformObjectKeys: false,
     unicodeEscapeSequence: false,
