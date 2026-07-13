@@ -115,6 +115,24 @@
         <p v-else class="text-caption color-text-tertiary">Unable to load GDPR data.</p>
       </Card>
 
+      <!-- Platform Alarms -->
+      <Card title="Platform Alarms">
+        <div v-if="alarm.countsLoading.value && !alarm.counts.value" class="widget-loading">
+          <Spinner size="sm" />
+        </div>
+        <div v-else-if="alarm.counts.value" class="alarms-widget">
+          <Stat label="Active Alarms" :value="alarm.counts.value.active_count" size="lg" />
+          <div class="stats-grid">
+            <Stat label="Critical" :value="alarm.counts.value.by_severity?.critical ?? 0" />
+            <Stat label="Warning" :value="alarm.counts.value.by_severity?.warning ?? 0" />
+            <Stat label="Info" :value="alarm.counts.value.by_severity?.info ?? 0" />
+            <Stat label="Unacknowledged" :value="alarm.counts.value.unacknowledged_count" />
+          </div>
+          <RouterLink to="/alarms" class="text-caption widget-link">View all &rarr;</RouterLink>
+        </div>
+        <p v-else class="text-caption color-text-tertiary">Unable to load alarm counts.</p>
+      </Card>
+
       <!-- Platform Storage (admin+) -->
       <Card v-if="hasMinRole(role, 'admin')" title="Platform Storage">
         <div v-if="dashboard.storageStatsLoading.value" class="widget-loading">
@@ -160,9 +178,11 @@ import Spinner from '../components/Spinner.vue'
 import Stat from '../components/Stat.vue'
 import StatusDot from '../components/StatusDot.vue'
 import { dashboardModel } from '../scripts/models/dashboardModel.js'
+import { alarmModel } from '../scripts/models/alarmModel.js'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 
 const dashboard = dashboardModel()
+const alarm = alarmModel()
 const auth = authModel()
 
 // App version from Vite define
@@ -200,6 +220,9 @@ const ACTION_LABELS = {
   feature_flag_updated: 'Flag Updated',
   feature_flag_deleted: 'Flag Deleted',
   user_invited: 'User Invited',
+  alarm_acknowledged: 'Alarm Acknowledged',
+  alarm_resolved: 'Alarm Resolved',
+  alarm_resolved_all: 'All Alarms Resolved',
 }
 
 function formatAction(action) {
@@ -358,6 +381,13 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 4px 0;
+}
+
+/* Alarms widget */
+.alarms-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* Quick actions */

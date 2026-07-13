@@ -787,6 +787,53 @@ export async function refreshVatRates() {
     }
 }
 
+// --- Platform alarms endpoints ---
+
+export async function getAlarms(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/alarms', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getAlarmCounts() {
+    try {
+        const res = await httpApi.get('/admin/dashboard/alarms')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function ackAlarm(id) {
+    try {
+        const res = await httpApi.post(`/admin/alarms/${id}/acknowledge`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function resolveAlarm(id) {
+    try {
+        const res = await httpApi.post(`/admin/alarms/${id}/resolve`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function resolveAllAlarms() {
+    try {
+        const res = await httpApi.post('/admin/alarms/resolve-all')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -865,4 +912,9 @@ export default {
     deleteBillingTemplate,
     listVatRates,
     refreshVatRates,
+    getAlarms,
+    getAlarmCounts,
+    ackAlarm,
+    resolveAlarm,
+    resolveAllAlarms,
 }

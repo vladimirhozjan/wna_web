@@ -31,13 +31,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import SidebarProfile from '../components/SidebarProfile.vue'
 import SidebarNav from '../components/SidebarNav.vue'
+import { alarmModel } from '../scripts/models/alarmModel.js'
 
 const route = useRoute()
 const sidebarOpen = ref(false)
+const alarm = alarmModel()
 
 const PAGE_TITLES = {
   dashboard: 'Dashboard',
@@ -48,6 +50,7 @@ const PAGE_TITLES = {
   'content-browser': 'Content Browser',
   'shared-project-detail': 'Shared Project',
   gdpr: 'GDPR Requests',
+  alarms: 'Alarms',
   health: 'System Health',
   analytics: 'Analytics',
   audit: 'Audit Log',
@@ -56,6 +59,11 @@ const PAGE_TITLES = {
 }
 
 const pageTitle = computed(() => PAGE_TITLES[route.name] || 'Admin')
+
+// Alarm counts refresh on mount + route change only — no interval polling
+watch(() => route.path, () => alarm.loadCounts())
+
+onMounted(() => alarm.loadCounts())
 </script>
 
 <style scoped>

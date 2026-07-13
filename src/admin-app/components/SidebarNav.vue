@@ -10,6 +10,7 @@
     >
       <span class="nav-icon" v-html="item.icon"></span>
       <span class="nav-label">{{ item.label }}</span>
+      <span v-if="item.dot && DOT_SIGNALS[item.dot]?.value" class="nav-dot"></span>
     </RouterLink>
   </nav>
 </template>
@@ -18,11 +19,18 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
+import { alarmModel } from '../scripts/models/alarmModel.js'
 
 defineEmits(['navigate'])
 
 const route = useRoute()
 const auth = authModel()
+const alarm = alarmModel()
+
+// Red-dot signals for nav items; an item opts in via its `dot` key
+const DOT_SIGNALS = {
+  alarms: alarm.hasActive,
+}
 
 const NAV_ITEMS = [
   {
@@ -60,6 +68,13 @@ const NAV_ITEMS = [
     route: '/gdpr',
     minRole: 'admin',
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2l7 4v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-4z"/></svg>'
+  },
+  {
+    label: 'Alarms',
+    route: '/alarms',
+    minRole: 'viewer',
+    dot: 'alarms',
+    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a5 5 0 0 0-5 5v3.5L3 14h14l-2-3.5V7a5 5 0 0 0-5-5z"/><path d="M8 16.5a2 2 0 0 0 4 0"/></svg>'
   },
   {
     label: 'System Health',
@@ -154,5 +169,14 @@ function isActive(itemRoute) {
 
 .nav-label {
   white-space: nowrap;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  margin-left: auto;
+  flex-shrink: 0;
 }
 </style>

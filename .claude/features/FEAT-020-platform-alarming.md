@@ -80,38 +80,67 @@ singleton-model conventions. The **only** owner-approved new primitive is the si
 
 ## Checklist
 ### plumbing — apiClient + route + nav
-- [ ] `apiClient.js` — `getAlarms(params)`, `ackAlarm(id)`, `resolveAlarm(id)`, `resolveAllAlarms()`,
+- [x] `apiClient.js` — `getAlarms(params)`, `ackAlarm(id)`, `resolveAlarm(id)`, `resolveAllAlarms()`,
       `getAlarmCounts()` against the parent's `/admin/alarms*` + `/admin/dashboard/alarms` (shapes from
       `specs/api/admin-api.md`), with the file's standard error normalization
-- [ ] `router/router.js` — new `alarms` route, lazy-loaded, `meta.minRole: 'viewer'`, under the admin guard
-- [ ] `SidebarNav.vue` — new Alarms `NAV_ITEMS` entry (viewer+ visible)
+      — `src/admin-app/scripts/core/apiClient.js:790-836` (functions), `:915-919` (default export)
+- [x] `router/router.js` — new `alarms` route, lazy-loaded, `meta.minRole: 'viewer'`, under the admin guard
+      — `src/admin-app/router/router.js:106-111` (child of the guarded `AdminLayout` route)
+- [x] `SidebarNav.vue` — new Alarms `NAV_ITEMS` entry (viewer+ visible)
+      — `src/admin-app/components/SidebarNav.vue:72-78` (`minRole: 'viewer'`, `dot: 'alarms'`)
 ### Alarms page
-- [ ] Alarms page — `DataTable` (severity + status as `Badge` cells) + severity/status/source filter
+- [x] Alarms page — `DataTable` (severity + status as `Badge` cells) + severity/status/source filter
       selects + offset/limit `Pagination`; row-click expands the `context` JSON
-- [ ] ack / resolve buttons **role-gated via `hasMinRole`** (support+; hidden for viewer) + **Resolve all**
+      — `src/admin-app/views/AlarmsPage.vue`: Badge cells `:44-56`, filter selects `:17-33`,
+      offset/limit `Pagination` `:78-84` + `load()` `:184-196`, row-click expand + context JSON
+      `:41,92-115,177-179`
+- [x] ack / resolve buttons **role-gated via `hasMinRole`** (support+; hidden for viewer) + **Resolve all**
       behind `ConfirmDialog`; on success, refetch through `alarmModel` (list + counts + dot)
+      — `AlarmsPage.vue:127` (`canAct = hasMinRole(role, 'support')`), `:158` (actions column only when
+      `canAct`), `:6` (Resolve-all `v-if="canAct"`), `:237-243` (`confirm.show` before resolve-all);
+      refetch: `src/admin-app/scripts/models/alarmModel.js:43-66` (mutations await `refresh()` =
+      list + counts)
 ### Dashboard widget + sidebar dot
-- [ ] Dashboard Alarms widget — counts card by severity (`GdprRequests` widget pattern) from `getAlarmCounts`
-- [ ] **New sidebar red-dot** mechanism on the `NAV_ITEMS` Alarms entry when `active_count > 0`
+- [x] Dashboard Alarms widget — counts card by severity (`GdprRequests` widget pattern) from `getAlarmCounts`
+      — `src/admin-app/views/DashboardPage.vue:118-136` (active/critical/warning/info/unacknowledged
+      Stats + View-all link, reads `alarmModel.counts`)
+- [x] **New sidebar red-dot** mechanism on the `NAV_ITEMS` Alarms entry when `active_count > 0`
       (owner-approved, D9) + `alarmModel` singleton fetched on layout mount / route change / after actions —
       **no `setInterval` / no 30 s auto-refresh** (D9 rejected it)
+      — `SidebarNav.vue:13,31-33,174-181` (dot mechanism, `hasActive` signal, red-dot CSS);
+      `src/admin-app/scripts/models/alarmModel.js:19` (`hasActive = active_count > 0`);
+      `src/admin-app/layouts/AdminLayout.vue:63-66` (route-change watch + mount fetch); grep
+      `setInterval` over alarmModel/AlarmsPage/SidebarNav/AdminLayout = 0 matches (the dashboard's
+      pre-existing 30 s loop in `dashboardModel.js` does not touch alarms)
 ### audit log
-- [ ] `AuditLogPage.vue` — extend `ACTION_OPTIONS` / `ACTION_LABELS` with `alarm_acknowledged`,
+- [x] `AuditLogPage.vue` — extend `ACTION_OPTIONS` / `ACTION_LABELS` with `alarm_acknowledged`,
       `alarm_resolved`, `alarm_resolved_all`
+      — `src/admin-app/views/AuditLogPage.vue:118-120` (options), `:145-147` (labels); same labels
+      added to the dashboard recent-activity formatter (`DashboardPage.vue:207-209`)
 ### spec sync (orchestration home this work changes — rule 6)
-- [ ] Update `wna_orchestration/specs/features/wna-features.md` — add an **"Admin (admin-app, FEAT-020):
+- [x] Update `wna_orchestration/specs/features/wna-features.md` — add an **"Admin (admin-app, FEAT-020):
       Alarms"** subsection (Alarms page + Dashboard widget + sidebar dot) on ship, following the existing
       admin-app precedent there (FEAT-006 line ~1162, FEAT-022 line ~1204). The admin-app IS catalogued in
       this file, and this repo's CLAUDE.md ("Keep Documentation in Sync") requires the entry for a new
       user-facing admin surface.
+      — `wna_orchestration/specs/features/wna-features.md:1215-1236` (subsection after the FEAT-022 entry)
 - [NA] `/admin/alarms*` contract + `alarm_*` audit actions → **not** synced from this slice; their home
       `specs/api/admin-api.md` is owned/synced by the **backend** slice (this UI only consumes them).
 
 ## Acceptance / gates (this repo's portion)
-- [ ] Viewer sees the Alarms page + Dashboard widget + dot but ack/resolve/Resolve-all are hidden
+- [~] Viewer sees the Alarms page + Dashboard widget + dot but ack/resolve/Resolve-all are hidden
       (and 403 if forced) — verified in-app
-- [ ] Support+ can ack / resolve / Resolve-all (Resolve-all confirmed via dialog); list + counts + dot
+      — code complete (route/nav/widget viewer+, all mutation buttons behind `canAct` =
+      `hasMinRole(role, 'support')`: `AlarmsPage.vue:6,127,158`; 403 enforcement is backend-side).
+      DEFERRED TO USER: in-app verification — I don't start dev servers (project rule)
+- [~] Support+ can ack / resolve / Resolve-all (Resolve-all confirmed via dialog); list + counts + dot
       update after each action with no polling
-- [ ] Sidebar dot appears when active alarms exist and **clears** when all are resolved
-- [ ] `AuditLogPage` filters/labels the three `alarm_*` actions
-- [ ] admin-app build green
+      — code complete (`AlarmsPage.vue:206-253`, `alarmModel.js:43-66`; no `setInterval` in any alarm
+      code path). DEFERRED TO USER: in-app verification with real alarms
+- [~] Sidebar dot appears when active alarms exist and **clears** when all are resolved
+      — code complete (`SidebarNav.vue:13,31-33`; dot bound to `hasActive` which recomputes from every
+      `loadCounts()` refetch). DEFERRED TO USER: in-app verification
+- [x] `AuditLogPage` filters/labels the three `alarm_*` actions
+      — `src/admin-app/views/AuditLogPage.vue:118-120,145-147`
+- [x] admin-app build green — `npm run build:admin` ✓ built in 2.78s (2026-07-13), AlarmsPage chunk
+      emitted (`dist/admin-app/assets/AlarmsPage-*.js`)

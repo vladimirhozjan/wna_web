@@ -104,6 +104,12 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'admin' }
             },
             {
+                path: 'alarms',
+                name: 'alarms',
+                component: () => import('../views/AlarmsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'viewer' }
+            },
+            {
                 path: 'health',
                 name: 'health',
                 component: () => import('../views/SystemHealthPage.vue'),

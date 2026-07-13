@@ -115,6 +115,9 @@ const ACTION_OPTIONS = [
   'feature_flag_updated',
   'feature_flag_deleted',
   'user_invited',
+  'alarm_acknowledged',
+  'alarm_resolved',
+  'alarm_resolved_all',
 ]
 
 const ACTION_LABELS = {
@@ -139,6 +142,9 @@ const ACTION_LABELS = {
   feature_flag_updated: 'Feature Flag Updated',
   feature_flag_deleted: 'Feature Flag Deleted',
   user_invited: 'User Invited',
+  alarm_acknowledged: 'Alarm Acknowledged',
+  alarm_resolved: 'Alarm Resolved',
+  alarm_resolved_all: 'All Alarms Resolved',
 }
 
 const columns = [
