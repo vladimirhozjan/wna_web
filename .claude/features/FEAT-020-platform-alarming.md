@@ -128,18 +128,27 @@ singleton-model conventions. The **only** owner-approved new primitive is the si
       `specs/api/admin-api.md` is owned/synced by the **backend** slice (this UI only consumes them).
 
 ## Acceptance / gates (this repo's portion)
-- [~] Viewer sees the Alarms page + Dashboard widget + dot but ack/resolve/Resolve-all are hidden
+- [x] Viewer sees the Alarms page + Dashboard widget + dot but ack/resolve/Resolve-all are hidden
       (and 403 if forced) — verified in-app
-      — code complete (route/nav/widget viewer+, all mutation buttons behind `canAct` =
-      `hasMinRole(role, 'support')`: `AlarmsPage.vue:6,127,158`; 403 enforcement is backend-side).
-      DEFERRED TO USER: in-app verification — I don't start dev servers (project rule)
-- [~] Support+ can ack / resolve / Resolve-all (Resolve-all confirmed via dialog); list + counts + dot
+      — code: `AlarmsPage.vue:6,127,158` (`canAct = hasMinRole(role, 'support')`). Verified in-app
+      2026-07-13 against the running local backend (admin_service :8004, dev-secret viewer JWT):
+      Alarms page rendered read-only (no Ack/Resolve column, no Resolve-all), Dashboard widget showed
+      live counts, sidebar dot present, row-click expanded the context JSON; forced
+      `POST /admin/alarms/{id}/acknowledge` and `/admin/alarms/resolve-all` with the viewer JWT → 403
+- [x] Support+ can ack / resolve / Resolve-all (Resolve-all confirmed via dialog); list + counts + dot
       update after each action with no polling
-      — code complete (`AlarmsPage.vue:206-253`, `alarmModel.js:43-66`; no `setInterval` in any alarm
-      code path). DEFERRED TO USER: in-app verification with real alarms
-- [~] Sidebar dot appears when active alarms exist and **clears** when all are resolved
-      — code complete (`SidebarNav.vue:13,31-33`; dot bound to `hasActive` which recomputes from every
-      `loadCounts()` refetch). DEFERRED TO USER: in-app verification
+      — code: `AlarmsPage.vue:206-253`, `alarmModel.js:43-66`; grep `setInterval` in alarm code paths =
+      0 matches. Verified in-app 2026-07-13: support session showed Ack/Resolve per active row +
+      Resolve-all; Ack flipped a live `paywiser_signature_invalid` row to `acknowledged` (Ack button
+      gone), Resolve flipped it to `resolved`; Resolve-all (super_admin session, 3 active test alarms)
+      showed the ConfirmDialog ("This resolves every non-resolved alarm") and on confirm all rows went
+      `resolved` — list, widget counts, and dot updated after each action with no reload and no polling
+- [x] Sidebar dot appears when active alarms exist and **clears** when all are resolved
+      — code: `SidebarNav.vue:13,31-33` (`hasActive` from `loadCounts()` refetch). Verified in-app
+      2026-07-13: dot shown with `active_count` 21 (viewer) and again with 3 fresh test alarms after a
+      route change; after Resolve-all the dot cleared immediately (`/admin/dashboard/alarms` →
+      `active_count: 0`); new alarms raised later did not repaint it until the next
+      mount/route-change refetch — matching D9 (no interval polling)
 - [x] `AuditLogPage` filters/labels the three `alarm_*` actions
       — `src/admin-app/views/AuditLogPage.vue:118-120,145-147`
 - [x] admin-app build green — `npm run build:admin` ✓ built in 2.78s (2026-07-13), AlarmsPage chunk
