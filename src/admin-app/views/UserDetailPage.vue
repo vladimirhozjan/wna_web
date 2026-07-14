@@ -282,8 +282,6 @@
                 <Btn
                     v-if="p.kind !== 'refund' && p.status === 'paid'"
                     variant="ghost-danger" size="sm"
-                    :loading="refundingId === p.id"
-                    :disabled="refundingId !== null"
                     @click="handleRefund(p)"
                 >
                   Refund
@@ -306,14 +304,22 @@
                     Issued {{ formatDate(inv.issued_at) }} · {{ formatEur(inv.amount_minor) }}
                   </span>
                 </div>
-                <Btn
-                    variant="secondary" size="sm"
-                    :loading="downloadingId === inv.id"
-                    :disabled="downloadingId !== null"
-                    @click="downloadInvoice(inv)"
-                >
-                  Download
-                </Btn>
+                <div class="payment-side">
+                  <Btn
+                      variant="secondary" size="sm"
+                      @click="handleIssueCreditNote(inv)"
+                  >
+                    Credit note
+                  </Btn>
+                  <Btn
+                      variant="secondary" size="sm"
+                      :loading="downloadingId === inv.id"
+                      :disabled="downloadingId !== null"
+                      @click="downloadInvoice(inv)"
+                  >
+                    Download
+                  </Btn>
+                </div>
               </div>
               <div v-for="cn in inv.credit_notes || []" :key="cn.id" class="history-row credit-note-row">
                 <div class="history-main">
@@ -447,6 +453,65 @@
         </Btn>
       </template>
     </Modal>
+
+    <!-- Refund Modal -->
+    <Modal :visible="!!refundTarget" title="Refund Payment" @close="refundTarget = null">
+      <p class="text-body-s">
+        Refund {{ user?.email }} — full or partial. This returns the money only: the tier and
+        expiration are not changed, and no credit note is issued.
+      </p>
+      <p class="text-body-s color-text-secondary refund-remaining">
+        Charged {{ formatEur(refundTarget?.amount_minor) }} · refundable {{ formatEur(refundRemainingMinor) }}
+      </p>
+      <Inpt
+          v-model="refundAmountInput"
+          v-model:error="refundError"
+          type="number"
+          title="Amount (EUR)"
+          placeholder="0.00"
+          :disabled="refundSaving"
+      />
+
+      <template #actions>
+        <Btn variant="secondary" size="sm" @click="refundTarget = null" :disabled="refundSaving">Cancel</Btn>
+        <Btn
+            variant="danger" size="sm"
+            :loading="refundSaving"
+            :disabled="refundSaving"
+            @click="confirmRefund"
+        >
+          Refund
+        </Btn>
+      </template>
+    </Modal>
+
+    <!-- Issue Credit Note Modal -->
+    <Modal :visible="!!creditNoteTarget" title="Issue Credit Note" @close="creditNoteTarget = null">
+      <p class="text-body-s">
+        Issue a credit note against invoice {{ creditNoteTarget?.invoice_number }} — a legal
+        correction document. It moves no money; refunds are separate.
+      </p>
+      <Inpt
+          v-model="creditNoteAmountInput"
+          v-model:error="creditNoteError"
+          type="number"
+          title="Amount (EUR)"
+          placeholder="0.00"
+          :disabled="creditNoteSaving"
+      />
+
+      <template #actions>
+        <Btn variant="secondary" size="sm" @click="creditNoteTarget = null" :disabled="creditNoteSaving">Cancel</Btn>
+        <Btn
+            variant="primary" size="sm"
+            :loading="creditNoteSaving"
+            :disabled="creditNoteSaving"
+            @click="confirmIssueCreditNote"
+        >
+          Issue
+        </Btn>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -486,8 +551,15 @@ const role = computed(() => auth.currentAdmin.value?.role)
 // Payments & billing
 const paymentsLoading = ref(true)
 const payments = ref([])
-const refundingId = ref(null)
 const downloadingId = ref(null)
+const refundTarget = ref(null)
+const refundAmountInput = ref('')
+const refundError = ref('')
+const refundSaving = ref(false)
+const creditNoteTarget = ref(null)
+const creditNoteAmountInput = ref('')
+const creditNoteError = ref('')
+const creditNoteSaving = ref(false)
 const expirationInput = ref('')
 const expirationSaving = ref(false)
 const expirationDisplay = ref('')
@@ -568,24 +640,74 @@ async function loadPayments() {
   }
 }
 
-async function handleRefund(p) {
-  const confirmed = await confirm.show({
-    title: 'Refund Payment',
-    message: `Refund ${formatEur(p.amount_minor)} to ${user.value.email}? This returns the money only — the tier and expiration are not changed.`,
-    confirmText: 'Refund',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
+// Charge minus prior refunds of the same purchase (refund rows share paywiser_purchase_id)
+const refundRemainingMinor = computed(() => {
+  const p = refundTarget.value
+  if (!p) return 0
+  const refunded = payments.value
+      .filter(r => r.kind === 'refund' && r.paywiser_purchase_id === p.paywiser_purchase_id)
+      .reduce((sum, r) => sum + r.amount_minor, 0)
+  return Math.max(0, p.amount_minor - refunded)
+})
 
-  refundingId.value = p.id
+function parseEurInput(value) {
+  const eur = Number(value)
+  if (!Number.isFinite(eur) || eur <= 0) return null
+  return Math.round(eur * 100)
+}
+
+function handleRefund(p) {
+  refundTarget.value = p
+  refundError.value = ''
+  refundAmountInput.value = (refundRemainingMinor.value / 100).toFixed(2)
+}
+
+async function confirmRefund() {
+  const p = refundTarget.value
+  const amountMinor = parseEurInput(refundAmountInput.value)
+  if (amountMinor === null) {
+    refundError.value = 'Enter a valid amount'
+    return
+  }
+
+  refundSaving.value = true
   try {
-    await apiClient.refundPlatformUserPayment(user.value.id, p.id)
+    // full charge ⇒ omit the amount (backend treats an empty body as a full refund)
+    await apiClient.refundPlatformUserPayment(user.value.id, p.id, amountMinor === p.amount_minor ? 0 : amountMinor)
     toaster.success('Payment refunded')
+    refundTarget.value = null
     await loadPayments()
   } catch (err) {
     toaster.push(err.message || 'Failed to refund payment')
   } finally {
-    refundingId.value = null
+    refundSaving.value = false
+  }
+}
+
+function handleIssueCreditNote(inv) {
+  creditNoteTarget.value = inv
+  creditNoteError.value = ''
+  creditNoteAmountInput.value = (inv.amount_minor / 100).toFixed(2)
+}
+
+async function confirmIssueCreditNote() {
+  const inv = creditNoteTarget.value
+  const amountMinor = parseEurInput(creditNoteAmountInput.value)
+  if (amountMinor === null) {
+    creditNoteError.value = 'Enter a valid amount'
+    return
+  }
+
+  creditNoteSaving.value = true
+  try {
+    await apiClient.issueCreditNote(user.value.id, inv.id, amountMinor === inv.amount_minor ? 0 : amountMinor)
+    toaster.success('Credit note issued')
+    creditNoteTarget.value = null
+    await loadPayments()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to issue credit note')
+  } finally {
+    creditNoteSaving.value = false
   }
 }
 
@@ -1072,6 +1194,11 @@ onMounted(() => {
 
 .inbox-empty {
   border-bottom: none;
+}
+
+/* Refund modal */
+.refund-remaining {
+  margin: 8px 0;
 }
 
 /* Delete modal */

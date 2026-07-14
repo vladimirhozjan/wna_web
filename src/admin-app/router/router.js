@@ -86,6 +86,12 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'admin' }
             },
             {
+                path: 'billing-documents',
+                name: 'billing-documents',
+                component: () => import('../views/BillingDocumentsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
                 path: 'billing-templates',
                 name: 'billing-templates',
                 component: () => import('../views/BillingTemplatesPage.vue'),

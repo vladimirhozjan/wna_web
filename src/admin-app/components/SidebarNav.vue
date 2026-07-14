@@ -52,6 +52,12 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="16" height="12" rx="2"/><line x1="2" y1="8" x2="18" y2="8"/><line x1="5" y1="13" x2="9" y2="13"/></svg>'
   },
   {
+    label: 'Invoices',
+    route: '/billing-documents',
+    minRole: 'admin',
+    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2h10v16l-2.5-1.5L10 18l-2.5-1.5L5 18V2z"/><line x1="8" y1="7" x2="12.5" y2="7"/><line x1="8" y1="10.5" x2="12.5" y2="10.5"/></svg>'
+  },
+  {
     label: 'Billing Plans',
     route: '/billing-templates',
     minRole: 'admin',

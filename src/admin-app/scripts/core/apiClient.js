@@ -673,9 +673,20 @@ export async function getPlatformUserPayments(userId) {
     }
 }
 
-export async function refundPlatformUserPayment(userId, paymentId) {
+export async function refundPlatformUserPayment(userId, paymentId, amountMinor = 0) {
     try {
-        const res = await httpApi.post(`/admin/platform-users/${userId}/payments/${paymentId}/refund`, {})
+        const body = amountMinor ? { amount_minor: amountMinor } : {}
+        const res = await httpApi.post(`/admin/platform-users/${userId}/payments/${paymentId}/refund`, body)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function issueCreditNote(userId, invoiceId, amountMinor = 0) {
+    try {
+        const body = amountMinor ? { amount_minor: amountMinor } : {}
+        const res = await httpApi.post(`/admin/platform-users/${userId}/invoices/${invoiceId}/credit-note`, body)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -723,6 +734,37 @@ export async function getPlatformUserInvoiceHtml(userId, invoiceId) {
 export async function getPlatformUserCreditNoteHtml(userId, creditNoteId) {
     try {
         const res = await httpApi.get(`/admin/platform-users/${userId}/credit-notes/${creditNoteId}/html`, { responseType: 'text' })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// --- Billing documents register endpoints ---
+
+export async function getBillingDocuments({ year, month = 0 }) {
+    try {
+        const params = { year }
+        if (month) params.month = month
+        const res = await httpApi.get('/admin/billing-documents', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getBillingDocumentInvoiceHtml(id) {
+    try {
+        const res = await httpApi.get(`/admin/billing-documents/invoices/${id}/html`, { responseType: 'text' })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getBillingDocumentCreditNoteHtml(id) {
+    try {
+        const res = await httpApi.get(`/admin/billing-documents/credit-notes/${id}/html`, { responseType: 'text' })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -901,11 +943,15 @@ export default {
     getPaymentsReport,
     getPlatformUserPayments,
     refundPlatformUserPayment,
+    issueCreditNote,
     setSubscriptionExpiration,
     grantSubscription,
     revokeSubscription,
     getPlatformUserInvoiceHtml,
     getPlatformUserCreditNoteHtml,
+    getBillingDocuments,
+    getBillingDocumentInvoiceHtml,
+    getBillingDocumentCreditNoteHtml,
     listBillingTemplates,
     createBillingTemplate,
     updateBillingTemplate,
