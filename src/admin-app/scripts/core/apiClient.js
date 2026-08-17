@@ -693,29 +693,21 @@ export async function issueCreditNote(userId, invoiceId, amountMinor = 0) {
     }
 }
 
-export async function setSubscriptionExpiration(userId, expiresAt) {
+export async function setSubscription(userId, { tier, billingPeriod, expiresAt }) {
     try {
-        const res = await httpApi.put(`/admin/platform-users/${userId}/subscription-expiration`, { expires_at: expiresAt })
-        return res.data
-    } catch (err) {
-        throw normalizeError(err)
-    }
-}
-
-export async function grantSubscription(userId, {plan, billingPeriod, expiresAt = ''}) {
-    try {
-        const body = { plan, billing_period: billingPeriod }
+        const body = { tier }
+        if (billingPeriod) body.billing_period = billingPeriod
         if (expiresAt) body.expires_at = expiresAt
-        const res = await httpApi.post(`/admin/platform-users/${userId}/grant-subscription`, body)
+        const res = await httpApi.put(`/admin/platform-users/${userId}/subscription`, body)
         return res.data
     } catch (err) {
         throw normalizeError(err)
     }
 }
 
-export async function revokeSubscription(userId) {
+export async function cancelPaywiser(userId) {
     try {
-        const res = await httpApi.delete(`/admin/platform-users/${userId}/grant-subscription`)
+        const res = await httpApi.post(`/admin/platform-users/${userId}/cancel-paywiser`)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -944,9 +936,8 @@ export default {
     getPlatformUserPayments,
     refundPlatformUserPayment,
     issueCreditNote,
-    setSubscriptionExpiration,
-    grantSubscription,
-    revokeSubscription,
+    setSubscription,
+    cancelPaywiser,
     getPlatformUserInvoiceHtml,
     getPlatformUserCreditNoteHtml,
     getBillingDocuments,

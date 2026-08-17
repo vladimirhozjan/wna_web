@@ -138,131 +138,59 @@
               <Badge type="role" :value="user.subscription_tier || 'free'" />
               <template v-if="user.subscription">
                 <Badge type="status" :value="user.subscription.status" />
-                <Badge v-if="user.subscription.source === 'paywiser'" type="primary" value="Paywiser" />
                 <span class="text-body-s color-text-secondary">{{ user.subscription.billing_period }} · expires on {{ expirationDisplay || '—' }}</span>
               </template>
               <span v-else class="text-body-s color-text-secondary">no subscription</span>
             </div>
           </div>
 
-          <!-- Set subscription — grant (free) / edit granted / read-only Paywiser -->
-          <div v-if="!user.subscription" class="info-row expiration-row">
+          <!-- Set subscription — one card, identical for every user -->
+          <div class="info-row expiration-row">
             <div class="action-info">
               <span class="text-body-s fw-medium">Set subscription</span>
-              <span class="text-caption color-text-tertiary">Free — grant an admin subscription (no payment gateway; the expiry sweep ends it)</span>
             </div>
             <div class="action-control">
-              <select v-model="grantPlan" class="text-body-s select-input" :disabled="grantSaving">
+              <select v-model="subTier" class="text-body-s select-input" :disabled="subSaving">
+                <option value="free">Free</option>
                 <option value="pro">Pro</option>
                 <option value="team">Team</option>
               </select>
-              <select v-model="grantPeriod" class="text-body-s select-input" :disabled="grantSaving">
+              <select v-model="subPeriod" class="text-body-s select-input" :disabled="subSaving || subTier === 'free'">
                 <option value="monthly">Monthly</option>
                 <option value="yearly">Yearly</option>
               </select>
               <input
-                  v-model="grantExpiryInput"
+                  v-model="subExpiryInput"
                   type="datetime-local"
                   class="text-body-s select-input"
                   title="Expiration (optional — defaults to one period)"
-                  :disabled="grantSaving"
+                  :disabled="subSaving || subTier === 'free'"
               />
               <Btn
                   variant="secondary" size="sm"
-                  :loading="grantSaving"
-                  :disabled="grantSaving"
-                  @click="handleGrantSubscription"
+                  :loading="subSaving"
+                  :disabled="subSaving || cancelSaving"
+                  @click="handleSaveSubscription"
               >
-                Grant
+                Save
               </Btn>
             </div>
           </div>
-
-          <template v-else-if="user.subscription.source === 'granted'">
-            <div class="info-row expiration-row">
-              <div class="action-info">
-                <span class="text-body-s fw-medium">Set subscription</span>
-                <span class="text-caption color-text-tertiary">Admin-granted — never auto-renews; the expiry sweep ends it</span>
-              </div>
-              <div class="action-control">
-                <select v-model="grantPlan" class="text-body-s select-input" :disabled="grantSaving">
-                  <option value="pro">Pro</option>
-                  <option value="team">Team</option>
-                </select>
-                <select v-model="grantPeriod" class="text-body-s select-input" :disabled="grantSaving">
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-                <input
-                    v-model="grantExpiryInput"
-                    type="datetime-local"
-                    class="text-body-s select-input"
-                    :disabled="grantSaving"
-                />
-                <Btn
-                    variant="secondary" size="sm"
-                    :loading="grantSaving"
-                    :disabled="grantSaving"
-                    @click="handleSaveSubscription"
-                >
-                  Save
-                </Btn>
-              </div>
+          <div class="info-row expiration-row">
+            <div class="action-info">
+              <span class="text-caption color-text-tertiary">Tier changes here never touch Paywiser billing — use Cancel on Paywiser to stop charges</span>
             </div>
-            <div class="info-row expiration-row">
-              <div class="action-info">
-                <span class="text-caption color-text-tertiary">Extend by one billing period, or revoke to Free immediately</span>
-              </div>
-              <div class="action-control">
-                <Btn
-                    variant="secondary" size="sm"
-                    :loading="grantSaving"
-                    :disabled="grantSaving"
-                    @click="handleRenewSubscription"
-                >
-                  Renew +1 {{ grantPeriod === 'yearly' ? 'year' : 'month' }}
-                </Btn>
-                <Btn
-                    variant="ghost-danger" size="sm"
-                    :disabled="grantSaving"
-                    @click="handleRevokeSubscription"
-                >
-                  Revoke
-                </Btn>
-              </div>
+            <div class="action-control">
+              <Btn
+                  variant="ghost-danger" size="sm"
+                  :loading="cancelSaving"
+                  :disabled="subSaving || cancelSaving"
+                  @click="handleCancelPaywiser"
+              >
+                Cancel on Paywiser
+              </Btn>
             </div>
-          </template>
-
-          <template v-else>
-            <!-- Expiration override — Paywiser-backed only; granted subs edit expiry in the form above -->
-            <div class="info-row expiration-row">
-              <div class="action-info">
-                <span class="text-body-s fw-medium">Subscription Expiration</span>
-                <span class="text-caption color-text-tertiary">
-                  {{ expirationDisplay ? `Current: ${expirationDisplay}` : 'No expiration set' }}
-                </span>
-              </div>
-              <div class="action-control">
-                <input
-                    v-model="expirationInput"
-                    type="datetime-local"
-                    class="text-body-s select-input"
-                    :disabled="expirationSaving"
-                />
-                <Btn
-                    variant="secondary" size="sm"
-                    :loading="expirationSaving"
-                    :disabled="expirationSaving || !expirationInput"
-                    @click="handleSetExpiration"
-                >
-                  Set
-                </Btn>
-                <Btn variant="ghost-danger" size="sm" :disabled="expirationSaving" @click="handleClearExpiration">
-                  Clear
-                </Btn>
-              </div>
-            </div>
-          </template>
+          </div>
 
           <!-- Payment requests -->
           <h4 class="text-label color-text-secondary subsection-title">Payments</h4>
@@ -560,13 +488,12 @@ const creditNoteTarget = ref(null)
 const creditNoteAmountInput = ref('')
 const creditNoteError = ref('')
 const creditNoteSaving = ref(false)
-const expirationInput = ref('')
-const expirationSaving = ref(false)
 const expirationDisplay = ref('')
-const grantPlan = ref('pro')
-const grantPeriod = ref('monthly')
-const grantExpiryInput = ref('')
-const grantSaving = ref(false)
+const subTier = ref('free')
+const subPeriod = ref('monthly')
+const subExpiryInput = ref('')
+const subSaving = ref(false)
+const cancelSaving = ref(false)
 
 // invoice rows carry no amount — taken from the backing payment
 const invoices = computed(() => payments.value
@@ -584,9 +511,9 @@ async function load() {
     user.value = await apiClient.getPlatformUser(route.params.id)
     if (user.value) {
       expirationDisplay.value = user.value.subscription_expires_at ? formatDate(user.value.subscription_expires_at) : ''
-      grantPlan.value = user.value.subscription_tier === 'team' ? 'team' : 'pro'
-      grantPeriod.value = user.value.subscription?.billing_period || 'monthly'
-      grantExpiryInput.value = user.value.subscription?.source === 'granted' && user.value.subscription_expires_at
+      subTier.value = user.value.subscription_tier || 'free'
+      subPeriod.value = user.value.subscription?.billing_period || 'monthly'
+      subExpiryInput.value = user.value.subscription_expires_at
           ? format(parseISO(user.value.subscription_expires_at), "yyyy-MM-dd'T'HH:mm")
           : ''
     }
@@ -737,136 +664,74 @@ async function downloadCreditNote(cn) {
   }
 }
 
-function parseGrantExpiry() {
-  if (!grantExpiryInput.value) return ''
-  const d = new Date(grantExpiryInput.value)
+function parseSubExpiry() {
+  if (!subExpiryInput.value) return ''
+  const d = new Date(subExpiryInput.value)
   if (isNaN(d.getTime())) return null
   return d.toISOString()
 }
 
-async function doGrant(expiresAt, successMsg) {
-  grantSaving.value = true
-  try {
-    await apiClient.grantSubscription(user.value.id, {
-      plan: grantPlan.value,
-      billingPeriod: grantPeriod.value,
-      expiresAt,
-    })
-    toaster.success(successMsg)
-    await load()
-    await loadPayments()
-  } catch (err) {
-    toaster.push(err.status === 409
-        ? 'Active Paywiser subscription — manage via payments'
-        : (err.message || 'Failed to save subscription'))
-  } finally {
-    grantSaving.value = false
-  }
-}
-
-async function handleGrantSubscription() {
-  const expiresAt = parseGrantExpiry()
-  if (expiresAt === null) {
+async function handleSaveSubscription() {
+  const free = subTier.value === 'free'
+  const expiresAt = parseSubExpiry()
+  if (!free && expiresAt === null) {
     toaster.push('Enter a valid expiration date and time')
     return
   }
 
   const until = expiresAt
       ? `until ${formatDate(expiresAt)}`
-      : `for one ${grantPeriod.value === 'yearly' ? 'year' : 'month'}`
+      : `for one ${subPeriod.value === 'yearly' ? 'year' : 'month'}`
   const confirmed = await confirm.show({
-    title: 'Grant Subscription',
-    message: `Grant ${user.value.email} an active ${grantPlan.value === 'team' ? 'Team' : 'Pro'} (${grantPeriod.value}) subscription ${until}? It has no payment gateway behind it and never renews — the expiry sweep ends it.`,
-    confirmText: 'Grant',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
-  await doGrant(expiresAt, 'Subscription granted')
-}
-
-async function handleSaveSubscription() {
-  const expiresAt = parseGrantExpiry()
-  if (!expiresAt) {
-    toaster.push('Enter a valid expiration date and time (or use Renew)')
-    return
-  }
-  await doGrant(expiresAt, 'Subscription updated')
-}
-
-async function handleRenewSubscription() {
-  await doGrant('', 'Subscription renewed')
-}
-
-async function handleRevokeSubscription() {
-  const confirmed = await confirm.show({
-    title: 'Revoke Subscription',
-    message: `Revoke ${user.value.email}'s granted subscription? The account drops to Free immediately.`,
-    confirmText: 'Revoke',
+    title: 'Set Subscription',
+    message: free
+        ? `Remove ${user.value.email}'s subscription? The account drops to Free immediately. Paywiser billing is not touched.`
+        : `Set ${user.value.email} to ${subTier.value === 'team' ? 'Team' : 'Pro'} (${subPeriod.value}) ${until}? Paywiser billing is not touched.`,
+    confirmText: free ? 'Remove' : 'Save',
     cancelText: 'Cancel',
   })
   if (!confirmed) return
 
-  grantSaving.value = true
+  subSaving.value = true
   try {
-    await apiClient.revokeSubscription(user.value.id)
-    toaster.success('Subscription revoked')
+    await apiClient.setSubscription(user.value.id, free
+        ? { tier: 'free' }
+        : { tier: subTier.value, billingPeriod: subPeriod.value, expiresAt })
+    toaster.success(free ? 'Subscription removed' : 'Subscription updated')
     await load()
     await loadPayments()
   } catch (err) {
-    toaster.push(err.status === 409
-        ? 'Active Paywiser subscription — manage via payments'
-        : (err.message || 'Failed to revoke subscription'))
+    toaster.push(err.message || 'Failed to set subscription')
   } finally {
-    grantSaving.value = false
+    subSaving.value = false
   }
 }
 
-async function handleSetExpiration() {
-  const expiresAt = new Date(expirationInput.value)
-  if (isNaN(expiresAt.getTime())) {
-    toaster.push('Enter a valid date and time')
-    return
-  }
-
+async function handleCancelPaywiser() {
   const confirmed = await confirm.show({
-    title: 'Set Subscription Expiration',
-    message: `Set ${user.value.email}'s subscription expiration to ${formatDate(expiresAt.toISOString())}?`,
-    confirmText: 'Set Expiration',
-    cancelText: 'Cancel',
+    title: 'Cancel on Paywiser',
+    message: `Cancel ${user.value.email}'s subscription on Paywiser? Billing stops at the gateway (cancel at period end); access runs until expiry.`,
+    confirmText: 'Cancel on Paywiser',
+    cancelText: 'Keep',
   })
   if (!confirmed) return
 
-  expirationSaving.value = true
+  cancelSaving.value = true
   try {
-    const data = await apiClient.setSubscriptionExpiration(user.value.id, expiresAt.toISOString())
-    expirationDisplay.value = formatDate(data.expires_at)
-    toaster.success('Subscription expiration updated')
+    await apiClient.cancelPaywiser(user.value.id)
+    toaster.success('Paywiser subscription cancelled — billing stops at period end')
+    await load()
+    await loadPayments()
   } catch (err) {
-    toaster.push(err.message || 'Failed to set expiration')
+    if (err.status === 404) {
+      toaster.push('Nothing to cancel on Paywiser')
+    } else if (err.status === 502) {
+      toaster.push('Paywiser gateway failed — nothing was changed')
+    } else {
+      toaster.push(err.message || 'Failed to cancel on Paywiser')
+    }
   } finally {
-    expirationSaving.value = false
-  }
-}
-
-async function handleClearExpiration() {
-  const confirmed = await confirm.show({
-    title: 'Clear Subscription Expiration',
-    message: `Clear ${user.value.email}'s subscription expiration? The tier will no longer expire automatically.`,
-    confirmText: 'Clear',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
-
-  expirationSaving.value = true
-  try {
-    await apiClient.setSubscriptionExpiration(user.value.id, '')
-    expirationDisplay.value = ''
-    expirationInput.value = ''
-    toaster.success('Subscription expiration cleared')
-  } catch (err) {
-    toaster.push(err.message || 'Failed to clear expiration')
-  } finally {
-    expirationSaving.value = false
+    cancelSaving.value = false
   }
 }
 
