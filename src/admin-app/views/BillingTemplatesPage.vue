@@ -1,91 +1,149 @@
 <template>
   <div class="page">
     <div class="page-header">
-      <h1 class="page-title">Billing Plans</h1>
+      <h1 class="page-title">Billing Templates</h1>
+      <Btn variant="primary" size="sm" @click="openCreate">Create Template</Btn>
     </div>
 
     <p class="text-body-s color-text-secondary intro">
-      The 4 sellable plan options (Pro/Team × monthly/yearly). Each maps to a Paywiser billing template;
-      subscribe uses the mapped template, so a plan must be configured here before it can be sold.
-      Prices are EUR, VAT-inclusive.
+      Paywiser billing templates are immutable after creation — create a new one when the price or
+      period changes, and hide retired ones. The 4 pricing slots below decide which template each plan
+      option sells; a slot without an active assignment is not offered.
     </p>
 
+    <h3 class="text-label color-text-secondary section-title">Pricing Slots</h3>
     <DataTable
-        :columns="columns"
-        :rows="catalog"
+        :columns="slotColumns"
+        :rows="slotRows"
         :loading="loading"
         :show-pagination="false"
+        class="section-table"
     >
-      <template #cell-plan="{ row }">
+      <template #cell-slot="{ row }">
         <span class="fw-medium">{{ row.planLabel }}</span>
+        <span class="period"> · {{ row.billing_period }}</span>
       </template>
-      <template #cell-billing_period="{ value }">
-        <span class="period">{{ value }}</span>
-      </template>
-      <template #cell-price_minor="{ row }">
-        {{ row.configured ? formatEur(row.price_minor) : '—' }}
+      <template #cell-template="{ row }">
+        <select
+            class="text-body-s slot-select"
+            :value="row.template?.id || ''"
+            :disabled="actionLoading"
+            @change="onAssign(row, $event.target.value)"
+        >
+          <option value="">— Unassigned —</option>
+          <option v-for="t in templates" :key="t.id" :value="t.id">
+            {{ templateLabel(t) }}
+          </option>
+        </select>
       </template>
       <template #cell-active="{ row }">
-        <Badge v-if="row.configured" :type="row.active ? 'active' : 'draft'" :value="row.active ? 'active' : 'inactive'" />
-        <span v-else class="text-caption color-text-tertiary">Not configured</span>
+        <button
+            type="button"
+            class="toggle-btn"
+            :class="{ 'toggle-btn--on': row.active }"
+            :disabled="actionLoading"
+            @click="onToggleActive(row)"
+            :aria-label="row.active ? 'Deactivate' : 'Activate'"
+        >
+          <span class="toggle-knob"></span>
+        </button>
+      </template>
+    </DataTable>
+
+    <div class="catalog-header">
+      <h3 class="text-label color-text-secondary section-title">Template Catalog</h3>
+      <label class="text-body-s hidden-check">
+        <input type="checkbox" v-model="showHidden" />
+        <span>Show hidden</span>
+      </label>
+    </div>
+    <DataTable
+        :columns="catalogColumns"
+        :rows="catalogRows"
+        :loading="loading"
+        :show-pagination="false"
+        empty-text="No billing templates yet."
+    >
+      <template #cell-title="{ row }">
+        <span class="fw-medium">{{ row.title || '—' }}</span>
+        <Badge v-if="row.hidden" type="draft" value="hidden" class="hidden-badge" />
+      </template>
+      <template #cell-price_minor="{ value }">
+        {{ formatPrice(value) }}
+      </template>
+      <template #cell-period="{ row }">
+        {{ formatPeriod(row.period_count, row.period_units) }}
       </template>
       <template #cell-paywiser_billing_template_id="{ value }">
         <span class="text-caption template-id">{{ value || '—' }}</span>
       </template>
+      <template #cell-assigned_to="{ value }">
+        <span v-if="value">{{ slotLabel(value) }}</span>
+        <span v-else class="color-text-tertiary">—</span>
+      </template>
+      <template #cell-created_at="{ value }">
+        {{ formatDate(value) }}
+      </template>
       <template #cell-actions="{ row }">
-        <div class="row-actions">
-          <Btn variant="secondary" size="sm" @click="openForm(row)">
-            {{ row.configured ? 'Edit' : 'Create' }}
-          </Btn>
-          <Btn
-              v-if="row.configured"
-              variant="ghost-danger"
-              size="sm"
-              :loading="deletingId === row.id"
-              :disabled="deletingId !== null"
-              @click="onDelete(row)"
-          >Delete</Btn>
-        </div>
+        <Btn
+            variant="ghost"
+            size="sm"
+            :loading="hidingId === row.id"
+            :disabled="actionLoading"
+            @click="onToggleHidden(row)"
+        >{{ row.hidden ? 'Unhide' : 'Hide' }}</Btn>
       </template>
     </DataTable>
 
-    <!-- Create / edit modal -->
-    <Modal
-        :visible="showForm"
-        :title="`${editing?.configured ? 'Edit' : 'Create'} ${editing?.planLabel || ''} (${editing?.billing_period || ''})`"
-        @close="closeForm"
-    >
+    <!-- Create modal -->
+    <Modal :visible="showCreate" title="Create Billing Template" @close="closeCreate">
       <div class="form-body">
-        <div v-if="editing?.configured" class="form-readonly">
-          <span class="text-body-s color-text-secondary">Paywiser template</span>
-          <span class="text-caption template-id">{{ editing?.paywiser_billing_template_id || '—' }}</span>
+        <div class="form-row">
+          <Inpt
+              v-model="priceInput"
+              type="text"
+              title="Price (VAT-inclusive)"
+              placeholder="e.g. 11.00"
+              :disabled="saving"
+          />
+          <Inpt
+              v-model="currencyInput"
+              type="text"
+              title="Currency"
+              placeholder="EUR"
+              :disabled="saving"
+          />
         </div>
-        <Inpt
-            v-model="priceInput"
-            type="text"
-            title="Price (EUR, VAT-inclusive)"
-            placeholder="e.g. 11.00"
-            :disabled="saving"
-        />
+        <div class="form-row">
+          <Inpt
+              v-model="periodCountInput"
+              type="number"
+              title="Period count"
+              placeholder="1"
+              :disabled="saving"
+          />
+          <label class="select-label">
+            <span class="text-label color-text-primary">Period units</span>
+            <select v-model="periodUnitsInput" class="text-body-m select-input" :disabled="saving">
+              <option value="days">days</option>
+              <option value="weeks">weeks</option>
+              <option value="months">months</option>
+            </select>
+          </label>
+        </div>
         <Inpt
             v-model="titleInput"
             type="text"
             title="Paywiser template title (optional)"
-            placeholder="Defaults to the plan name"
+            placeholder="e.g. WNA Pro monthly"
             :disabled="saving"
         />
-        <label class="text-body-s active-check">
-          <input type="checkbox" v-model="activeInput" :disabled="saving" />
-          <span>Active (sellable)</span>
-        </label>
         <p v-if="formError" class="text-body-s color-text-danger form-error">{{ formError }}</p>
       </div>
 
       <template #actions>
-        <Btn variant="secondary" size="sm" @click="closeForm" :disabled="saving">Cancel</Btn>
-        <Btn variant="primary" size="sm" :loading="saving" :disabled="saving" @click="saveForm">
-          {{ editing?.configured ? 'Save' : 'Create' }}
-        </Btn>
+        <Btn variant="secondary" size="sm" @click="closeCreate" :disabled="saving">Cancel</Btn>
+        <Btn variant="primary" size="sm" :loading="saving" :disabled="saving" @click="saveCreate">Create</Btn>
       </template>
     </Modal>
   </div>
@@ -93,146 +151,204 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { format, parseISO } from 'date-fns'
 import DataTable from '../components/DataTable.vue'
 import Badge from '../components/Badge.vue'
 import Btn from '../components/Btn.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
-import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
-const confirm = confirmModel()
 
-const COMBOS = [
+const SLOT_ORDER = [
   { tier: 'pro', billing_period: 'monthly', planLabel: 'Pro' },
   { tier: 'pro', billing_period: 'yearly', planLabel: 'Pro' },
   { tier: 'team', billing_period: 'monthly', planLabel: 'Team' },
   { tier: 'team', billing_period: 'yearly', planLabel: 'Team' },
 ]
 
-const columns = [
-  { key: 'plan', label: 'Plan', width: '110px' },
-  { key: 'billing_period', label: 'Period', width: '110px' },
-  { key: 'price_minor', label: 'Price', width: '120px' },
-  { key: 'active', label: 'Status', width: '140px' },
-  { key: 'paywiser_billing_template_id', label: 'Paywiser Template' },
-  { key: 'actions', label: '', width: '170px' },
+const slotColumns = [
+  { key: 'slot', label: 'Slot', width: '180px' },
+  { key: 'template', label: 'Assigned Template' },
+  { key: 'active', label: 'Active', width: '90px' },
 ]
 
+const catalogColumns = [
+  { key: 'title', label: 'Title' },
+  { key: 'price_minor', label: 'Price', width: '90px' },
+  { key: 'currency', label: 'Currency', width: '90px' },
+  { key: 'period', label: 'Period', width: '110px' },
+  { key: 'paywiser_billing_template_id', label: 'Paywiser Template' },
+  { key: 'assigned_to', label: 'Assigned Slot', width: '140px' },
+  { key: 'created_at', label: 'Created', width: '120px' },
+  { key: 'actions', label: '', width: '90px' },
+]
+
+const templates = ref([])
 const plans = ref([])
 const loading = ref(false)
+const actionLoading = ref(false)
+const showHidden = ref(false)
 
-const catalog = computed(() => COMBOS.map(combo => {
-  const plan = plans.value.find(p => p.tier === combo.tier && p.billing_period === combo.billing_period)
-  return plan
-      ? { ...combo, ...plan, configured: true, id: `${combo.tier}-${combo.billing_period}` }
-      : { ...combo, configured: false, id: `${combo.tier}-${combo.billing_period}` }
+const slotRows = computed(() => SLOT_ORDER.map(slot => {
+  const plan = plans.value.find(p => p.tier === slot.tier && p.billing_period === slot.billing_period)
+  return { ...slot, ...plan, id: `${slot.tier}-${slot.billing_period}` }
 }))
 
-async function load() {
+const catalogRows = computed(() =>
+    showHidden.value ? templates.value : templates.value.filter(t => !t.hidden))
+
+async function loadAll() {
   loading.value = true
   try {
-    const data = await apiClient.listBillingTemplates()
-    plans.value = data.plans || []
+    const [tplData, planData] = await Promise.all([
+      apiClient.listBillingTemplates({ includeHidden: true }),
+      apiClient.listBillingPlans(),
+    ])
+    templates.value = tplData.templates || []
+    plans.value = planData.plans || []
   } catch (err) {
-    toaster.push(err.message || 'Failed to load billing plans')
+    toaster.push(err.message || 'Failed to load billing templates')
   } finally {
     loading.value = false
   }
 }
 
-function formatEur(minor) {
-  if (minor == null) return '—'
-  return `€${(minor / 100).toFixed(2)}`
+function formatPrice(minor) {
+  return minor == null ? '—' : (minor / 100).toFixed(2)
 }
 
-// Create / edit form
-const showForm = ref(false)
-const editing = ref(null)
+function formatPeriod(count, units) {
+  if (count == null || !units) return '—'
+  return `${count} ${count === 1 ? units.replace(/s$/, '') : units}`
+}
+
+function formatDate(val) {
+  if (!val) return '—'
+  try { return format(parseISO(val), 'MMM d, yyyy') } catch { return val }
+}
+
+function slotLabel({ tier, billing_period }) {
+  const slot = SLOT_ORDER.find(s => s.tier === tier && s.billing_period === billing_period)
+  return `${slot?.planLabel || tier} · ${billing_period}`
+}
+
+function templateLabel(t) {
+  const parts = [t.title || 'Untitled', `${formatPrice(t.price_minor)} ${t.currency}`, formatPeriod(t.period_count, t.period_units)]
+  return parts.join(' — ') + (t.hidden ? ' (hidden)' : '')
+}
+
+// Slot assignment / active toggle
+async function onAssign(slot, templateId) {
+  actionLoading.value = true
+  try {
+    await apiClient.setBillingPlan(slot.tier, slot.billing_period, { billing_template_id: templateId || null })
+    toaster.success(templateId ? `Template assigned to ${slotLabel(slot)}` : `${slotLabel(slot)} unassigned`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to update slot')
+  } finally {
+    actionLoading.value = false
+    await loadAll()
+  }
+}
+
+async function onToggleActive(slot) {
+  actionLoading.value = true
+  try {
+    await apiClient.setBillingPlan(slot.tier, slot.billing_period, { active: !slot.active })
+    toaster.success(`${slotLabel(slot)} ${!slot.active ? 'activated' : 'deactivated'}`)
+  } catch (err) {
+    toaster.push(err.message || 'Failed to update slot')
+  } finally {
+    actionLoading.value = false
+    await loadAll()
+  }
+}
+
+// Hide / unhide
+const hidingId = ref(null)
+
+async function onToggleHidden(row) {
+  hidingId.value = row.id
+  actionLoading.value = true
+  try {
+    await apiClient.setBillingTemplateHidden(row.id, !row.hidden)
+    toaster.success(`Template ${!row.hidden ? 'hidden' : 'unhidden'}`)
+    await loadAll()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to update template')
+  } finally {
+    hidingId.value = null
+    actionLoading.value = false
+  }
+}
+
+// Create form
+const showCreate = ref(false)
 const priceInput = ref('')
+const currencyInput = ref('EUR')
+const periodCountInput = ref('1')
+const periodUnitsInput = ref('months')
 const titleInput = ref('')
-const activeInput = ref(true)
 const saving = ref(false)
 const formError = ref('')
 
-function openForm(row) {
-  editing.value = row
-  priceInput.value = row.configured ? (row.price_minor / 100).toFixed(2) : ''
-  titleInput.value = row.title || ''
-  activeInput.value = row.configured ? row.active !== false : true
+function openCreate() {
+  priceInput.value = ''
+  currencyInput.value = 'EUR'
+  periodCountInput.value = '1'
+  periodUnitsInput.value = 'months'
+  titleInput.value = ''
   formError.value = ''
-  showForm.value = true
+  showCreate.value = true
 }
 
-function closeForm() {
+function closeCreate() {
   if (saving.value) return
-  showForm.value = false
+  showCreate.value = false
 }
 
-async function saveForm() {
+async function saveCreate() {
   formError.value = ''
   const price = Number(priceInput.value.replace(',', '.'))
   if (!Number.isFinite(price) || price <= 0) {
     formError.value = 'Enter a valid price greater than 0'
     return
   }
-  const priceMinor = Math.round(price * 100)
+  const currency = currencyInput.value.trim().toUpperCase()
+  if (!/^[A-Z]{3}$/.test(currency)) {
+    formError.value = 'Currency must be a 3-letter code (e.g. EUR)'
+    return
+  }
+  const periodCount = Number(periodCountInput.value)
+  if (!Number.isInteger(periodCount) || periodCount < 1) {
+    formError.value = 'Period count must be a whole number of at least 1'
+    return
+  }
 
   saving.value = true
   try {
-    if (editing.value.configured) {
-      const body = { price_minor: priceMinor, active: activeInput.value }
-      if (titleInput.value.trim()) body.title = titleInput.value.trim()
-      await apiClient.updateBillingTemplate(editing.value.tier, editing.value.billing_period, body)
-      toaster.success('Billing plan updated')
-    } else {
-      const body = {
-        tier: editing.value.tier,
-        billing_period: editing.value.billing_period,
-        price_minor: priceMinor,
-        currency: 'EUR',
-        active: activeInput.value,
-      }
-      if (titleInput.value.trim()) body.title = titleInput.value.trim()
-      await apiClient.createBillingTemplate(body)
-      toaster.success('Billing plan created')
+    const body = {
+      price_minor: Math.round(price * 100),
+      currency,
+      period_count: periodCount,
+      period_units: periodUnitsInput.value,
     }
-    showForm.value = false
-    await load()
+    if (titleInput.value.trim()) body.title = titleInput.value.trim()
+    await apiClient.createBillingTemplate(body)
+    toaster.success('Billing template created')
+    showCreate.value = false
+    await loadAll()
   } catch (err) {
-    formError.value = err.message || 'Failed to save billing plan'
+    formError.value = err.message || 'Failed to create billing template'
   } finally {
     saving.value = false
   }
 }
 
-// Delete
-const deletingId = ref(null)
-
-async function onDelete(row) {
-  const confirmed = await confirm.show({
-    title: 'Delete billing plan',
-    message: `Delete ${row.planLabel} (${row.billing_period})? The Paywiser template is removed and the plan can no longer be sold until it is re-created. Consider marking it inactive instead if it only needs to be hidden.`,
-    confirmText: 'Delete',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
-
-  deletingId.value = row.id
-  try {
-    await apiClient.deleteBillingTemplate(row.tier, row.billing_period)
-    toaster.success('Billing plan deleted')
-    await load()
-  } catch (err) {
-    toaster.push(err.message || 'Failed to delete billing plan')
-  } finally {
-    deletingId.value = null
-  }
-}
-
-onMounted(load)
+onMounted(loadAll)
 </script>
 
 <style scoped>
@@ -248,8 +364,41 @@ onMounted(load)
 }
 
 .intro {
-  margin: 0 0 16px;
+  margin: 0 0 20px;
   max-width: 720px;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-table {
+  margin-bottom: 24px;
+}
+
+.catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.catalog-header .section-title {
+  margin-bottom: 0;
+}
+
+.hidden-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.hidden-badge {
+  margin-left: 8px;
 }
 
 .period {
@@ -261,29 +410,92 @@ onMounted(load)
   word-break: break-all;
 }
 
-.row-actions {
-  display: flex;
-  gap: 8px;
+/* Slot select */
+.slot-select {
+  max-width: 420px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
 }
 
+.slot-select:focus {
+  outline: none;
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 1px var(--color-action-ring);
+}
+
+/* Toggle */
+.toggle-btn {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  background: var(--color-border-medium);
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.toggle-btn--on {
+  background: var(--color-success);
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-btn--on .toggle-knob {
+  transform: translateX(18px);
+}
+
+.toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Create form */
 .form-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.form-readonly {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
-.active-check {
+.select-label {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
+}
+
+.select-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
   color: var(--color-text-primary);
-  cursor: pointer;
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: var(--color-input-border-focus);
+  box-shadow: 0 0 0 1px var(--color-action-ring);
 }
 
 .form-error {

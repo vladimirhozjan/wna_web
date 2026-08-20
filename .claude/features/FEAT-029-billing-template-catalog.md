@@ -81,29 +81,64 @@
 ## Checklist
 
 ### Admin-app — Billing Templates section redesign
-- [ ] Catalog table: non-hidden by default, "show hidden" toggle; columns title, price, currency,
+- [x] Catalog table: non-hidden by default, "show hidden" toggle; columns title, price, currency,
       period (count + units), Paywiser template id, assigned slot (or —), created date.
-- [ ] Create-template form: price, currency, period count + units, title; prod period-restriction 400
+      Columns: `src/admin-app/views/BillingTemplatesPage.vue:178-187`; non-hidden default + toggle
+      filter `:201` (`showHidden` checkbox `:55-56`); hidden rows badged `:69`.
+- [x] Create-template form: price, currency, period count + units, title; prod period-restriction 400
       surfaced as a clear inline error (not a generic toast).
-- [ ] Hide/unhide action per template; the "assigned to <slot> — unassign first" 400 surfaced clearly.
-- [ ] Slots panel: the 4 pricing options with assigned template; assign (dropdown includes hidden
+      Modal fields `src/admin-app/views/BillingTemplatesPage.vue:100-140`; backend error (incl. the
+      period 400) rendered inline via `formError` `:141` + `:345` — modal stays open, no toast.
+- [x] Hide/unhide action per template; the "assigned to <slot> — unassign first" 400 surfaced clearly.
+      Hide/Unhide button `src/admin-app/views/BillingTemplatesPage.vue:87-94`; `onToggleHidden` `:273`
+      toasts the backend 400 message (slot-naming text passes through `normalizeError`'s
+      `data.detail || data.error`, admin `apiClient.js:14`).
+- [x] Slots panel: the 4 pricing options with assigned template; assign (dropdown includes hidden
       templates), unassign, `active` toggle; assigning a hidden template just works (backend
       auto-unhides — reflect the new state after reload/refetch).
-- [ ] Delete + edit template UI removed entirely (grep `0` matches for the old delete/update calls in
+      Slots DataTable `src/admin-app/views/BillingTemplatesPage.vue:15-51`; select lists ALL templates
+      (catalog always fetched with `include_hidden=true`, `:207`) with "(hidden)" marker `:238-241` and
+      an "— Unassigned —" option `:33`; `onAssign`/`onToggleActive` PUT then `loadAll()` refetch
+      `:244-269`, so the auto-unhidden row reappears in the default catalog view.
+- [x] Delete + edit template UI removed entirely (grep `0` matches for the old delete/update calls in
       the admin apiClient and views).
-- [ ] 409 `paywiser_rejected` handling in admin error path: toast/inline shows `vendor_code` +
+      `grep -rn "updateBillingTemplate\|deleteBillingTemplate" src/` → 0 matches; the only remaining
+      `billing-templates/` path is the PATCH `/admin/billing-templates/${id}` (`apiClient.js:796`);
+      page has no Delete/Edit controls (grep 0 in the view).
+- [x] 409 `paywiser_rejected` handling in admin error path: toast/inline shows `vendor_code` +
       `vendor_message`; 502 keeps the generic gateway message.
+      `src/admin-app/scripts/core/apiClient.js:9-11` — shared `normalizeError`, so it also covers
+      refund + Cancel-on-Paywiser; 502 path unchanged (backend body or `Server error (502)` fallback,
+      and UserDetailPage keeps its distinct gateway-failed toast).
 
 ### Main-app — verification only
-- [ ] Verify pricing page / upgrade modal handle a missing plan (unassigned/inactive slot) gracefully —
+- [NA] Verify pricing page / upgrade modal handle a missing plan (unassigned/inactive slot) gracefully —
       expected: it simply isn't offered; `[NA]` with reason if no code change needed.
-- [ ] Verify subscribe/cancel error normalization surfaces the 409 generic message in the toast
-      (not "gateway error"); `[NA]` with reason if it already does.
+      NO CODE CHANGE — OWNER DECISION 2026-08-20 (asked during implementation): a plan missing from
+      `/v1/plans` keeps its hardcoded contract-default numbers ("minimal effect, fallback to current
+      numbers") instead of disappearing. Verified graceful: `PLAN_OPTIONS` static entries always
+      resolve (`src/main-app/scripts/models/paymentModel.js:6-11`, overlay `:20-33` only updates
+      prices), no crash; a subscribe against it fails server-side into the error toast
+      (`UpgradePage.vue:272-279`). Recorded in `wna-features.md:1517-1520`.
+- [x] Verify subscribe/cancel error normalization surfaces the 409 generic message in the toast
+      (not "gateway error"); `[x]` — required a one-line fix: `normalizeError` now reads
+      `data.message || data.detail || data.error` (`src/main-app/scripts/core/apiClient.js:34`), so
+      the generic body's detail ("the payment provider declined the request") shows instead of the
+      raw `paywiser_rejected` code; the 502 branch (`UpgradePage.vue:274`) is untouched.
 
 ### Build + spec sync (rules 2, 6 — cite file:line)
-- [ ] `npm run build:admin` passes (and `build:main` if main-app was touched).
-- [ ] Update `wna_orchestration/specs/features/wna-features.md` — admin Billing Templates section:
+- [x] `npm run build:admin` passes (and `build:main` if main-app was touched).
+      Both green 2026-08-20: `build:admin` "✓ built in 2.77s" + obfuscator 28 files; `build:main`
+      "✓ built in 3.95s" + obfuscator 18 files (pre-existing >500 kB chunk warning only).
+- [x] Update `wna_orchestration/specs/features/wna-features.md` — admin Billing Templates section:
       catalog + slots + hide, delete/edit removed.
-- [ ] Update `wna_orchestration/specs/tests/wna-test-cases.md` — TCs for: catalog list + show-hidden,
+      Rewritten bullet `wna-features.md:1175-1193` (Billing Templates page: slots panel + catalog +
+      hide, "no edit and no delete UI exists", 409 vendor surfacing); VAT-rates cross-ref `:1227`;
+      main-app missing-plan fallback note `:1517-1521`.
+- [x] Update `wna_orchestration/specs/tests/wna-test-cases.md` — TCs for: catalog list + show-hidden,
       create (incl. prod period 400), hide rejection while assigned, slot assign/unassign/active,
       hidden-assign auto-unhide, 409 vendor-reason display.
+      TC-583 rewritten (`wna-test-cases.md:14111`); new TC-617..622 + TC-623 (main-app generic 409)
+      appended at file end (`:14632` ff.); obsolete TC-315/575/581/587 deleted (owner directive
+      2026-08-20 — retired stubs with empty priority); `regression-ui-tests/update-tests.sh` run —
+      576 TCs parsed, all High/Medium/Low, dashboard data regenerated.

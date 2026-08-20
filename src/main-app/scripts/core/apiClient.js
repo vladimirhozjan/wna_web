@@ -31,7 +31,7 @@ function normalizeError(error) {
     if (error.response) {
         const status = error.response.status
         const data = error.response.data || {}
-        const backendMsg = data.message || data.error
+        const backendMsg = data.message || data.detail || data.error
 
         // Tier limit errors (403 with upgrade_message or limit field)
         if (status === 403 && (data.upgrade_message || data.limit != null)) {

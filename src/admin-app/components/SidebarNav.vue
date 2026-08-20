@@ -58,7 +58,7 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2h10v16l-2.5-1.5L10 18l-2.5-1.5L5 18V2z"/><line x1="8" y1="7" x2="12.5" y2="7"/><line x1="8" y1="10.5" x2="12.5" y2="10.5"/></svg>'
   },
   {
-    label: 'Billing Plans',
+    label: 'Billing Templates',
     route: '/billing-templates',
     minRole: 'admin',
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h9l3 3v13H4V2z"/><line x1="7" y1="9" x2="13" y2="9"/><line x1="7" y1="12" x2="13" y2="12"/><path d="M13 2v3h3"/></svg>'

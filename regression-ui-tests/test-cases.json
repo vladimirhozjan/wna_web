@@ -8197,18 +8197,6 @@
     "expected": "Clicking \"End\" on another session shows a confirmation dialog mentioning the delayed sign-out. Confirming removes the session from the list immediately. The current session remains unaffected. The other session is revoked server-side."
   },
   {
-    "id": "TC-315",
-    "name": "Sessions - End Others Bulk Action — REMOVED",
-    "priority": "",
-    "area": "",
-    "areas": [],
-    "smoke": false,
-    "section": "20: Settings",
-    "preconditions": "",
-    "steps": [],
-    "expected": ""
-  },
-  {
     "id": "TC-316",
     "name": "Sessions - Error State",
     "priority": "Medium",
@@ -12254,18 +12242,6 @@
     "expected": "Subscription goes **past_due** but `tier` stays **pro** (grace — no downgrade);\nSettings still shows Pro; an urgent **payment_failed** notification arrives **in-app** (\"We couldn't\nprocess the payment for your pro subscription\") **and by email** (\"Payment failed for your\nWhatsNextAction subscription\")."
   },
   {
-    "id": "TC-575",
-    "name": "~~Change plan is queued for renewal — not applied immediately~~ — OBSOLETE",
-    "priority": "",
-    "area": "",
-    "areas": [],
-    "smoke": false,
-    "section": "38: Payment & Billing — Paywiser",
-    "preconditions": "",
-    "steps": [],
-    "expected": ""
-  },
-  {
     "id": "TC-576",
     "name": "Re-subscribe after cancel + expiry restores the tier",
     "priority": "High",
@@ -12351,18 +12327,6 @@
     "expected": ""
   },
   {
-    "id": "TC-581",
-    "name": "~~Admin edit-expiration updates the subscription expiration~~ — OBSOLETE",
-    "priority": "",
-    "area": "",
-    "areas": [],
-    "smoke": false,
-    "section": "38: Payment & Billing — Paywiser",
-    "preconditions": "",
-    "steps": [],
-    "expected": ""
-  },
-  {
     "id": "TC-582",
     "name": "Account deletion cancels the subscription and deletes the Paywiser client",
     "priority": "High",
@@ -12382,7 +12346,7 @@
   },
   {
     "id": "TC-583",
-    "name": "Admin Billing Templates page — create/list/edit the 4 plans; saved plan drives subscribe",
+    "name": "Admin Billing Templates page — slot-assigned template drives subscribe",
     "priority": "Medium",
     "area": "Admin-app, Billing",
     "areas": [
@@ -12452,18 +12416,6 @@
       "As admin, deactivate one plan (e.g. Team yearly) in Billing Templates, then reload `/pricing`."
     ],
     "expected": "Step 2 — the page renders exactly the catalog prices (Pro €11/mo, €96/yr; Team €18/mo,\n€156/yr) fetched from the **public, un-gated** `GET /v1/payments/plans`\n(`{ \"plans\": [ { \"plan\", \"billing_period\", \"price_minor\", \"currency\" } ] }`; no JWT required; response\ncarries `Cache-Control: public, max-age=300`). The admin-only `paywiser_billing_template_id` never appears\nin the payload. Step 3 — the deactivated plan disappears from the page (only `active` rows are returned).\nBecause the catalog is the same source the subscribe checkout reads, the displayed price always equals the\nprice that will be charged."
-  },
-  {
-    "id": "TC-587",
-    "name": "~~Admin grant-subscription puts the user into the real subscriber state; re-grant edits a granted subscription; 409 while paid-subscribed~~ — OBSOLETE",
-    "priority": "",
-    "area": "",
-    "areas": [],
-    "smoke": false,
-    "section": "38: Payment & Billing — Paywiser",
-    "preconditions": "",
-    "steps": [],
-    "expected": ""
   },
   {
     "id": "TC-588",
@@ -12885,6 +12837,111 @@
     "areas": [
       "Admin-app",
       "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-617",
+    "name": "Admin billing-template catalog — columns, non-hidden default, show-hidden toggle",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-618",
+    "name": "Admin create billing template — happy path + period-restriction 400 inline",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-619",
+    "name": "Admin hide template — rejected while assigned, allowed once unassigned",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-620",
+    "name": "Admin pricing slots — assign, unassign, active toggle",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-621",
+    "name": "Admin assigns a hidden template — auto-unhide reflected after refetch",
+    "priority": "Low",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-622",
+    "name": "Admin surfaces show the Paywiser vendor reason on 409 — never \"gateway error\"",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "43: Payments Coverage Close-out",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-623",
+    "name": "Main-app subscribe/cancel Paywiser refusal — generic safe message in the toast",
+    "priority": "Medium",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
     ],
     "smoke": false,
     "section": "43: Payments Coverage Close-out",

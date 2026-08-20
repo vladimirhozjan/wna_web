@@ -3,7 +3,14 @@ import { httpApi } from './httpApi.js'
 function normalizeError(error) {
     if (error.response) {
         const status = error.response.status
-        const backendMsg = error.response.data?.detail || error.response.data?.error
+        const data = error.response.data || {}
+
+        // Deliberate Paywiser refusal (D6) — carry the vendor reason, never a generic conflict
+        if (status === 409 && data.error === 'paywiser_rejected') {
+            return { status, message: `Paywiser rejected the request: ${data.vendor_message || 'no reason given'} (code ${data.vendor_code ?? '—'})` }
+        }
+
+        const backendMsg = data.detail || data.error
 
         if (backendMsg) {
             return { status, message: backendMsg }
@@ -765,9 +772,10 @@ export async function getBillingDocumentCreditNoteHtml(id) {
 
 // --- Billing templates endpoints ---
 
-export async function listBillingTemplates() {
+export async function listBillingTemplates({ includeHidden = false } = {}) {
     try {
-        const res = await httpApi.get('/admin/billing-templates')
+        const params = includeHidden ? { include_hidden: true } : {}
+        const res = await httpApi.get('/admin/billing-templates', { params })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -783,18 +791,27 @@ export async function createBillingTemplate(data) {
     }
 }
 
-export async function updateBillingTemplate(tier, period, data) {
+export async function setBillingTemplateHidden(id, hidden) {
     try {
-        const res = await httpApi.put(`/admin/billing-templates/${tier}/${period}`, data)
+        const res = await httpApi.patch(`/admin/billing-templates/${id}`, { hidden })
         return res.data
     } catch (err) {
         throw normalizeError(err)
     }
 }
 
-export async function deleteBillingTemplate(tier, period) {
+export async function listBillingPlans() {
     try {
-        const res = await httpApi.delete(`/admin/billing-templates/${tier}/${period}`)
+        const res = await httpApi.get('/admin/billing-plans')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function setBillingPlan(tier, period, data) {
+    try {
+        const res = await httpApi.put(`/admin/billing-plans/${tier}/${period}`, data)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -945,8 +962,9 @@ export default {
     getBillingDocumentCreditNoteHtml,
     listBillingTemplates,
     createBillingTemplate,
-    updateBillingTemplate,
-    deleteBillingTemplate,
+    setBillingTemplateHidden,
+    listBillingPlans,
+    setBillingPlan,
     listVatRates,
     refreshVatRates,
     getAlarms,
