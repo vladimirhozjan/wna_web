@@ -1,5 +1,6 @@
 import {ref} from 'vue'
 import apiClient from './apiClient.js'
+import { refreshSession } from './httpApi.js'
 import { confirmModel } from './confirmModel.js'
 
 window.addEventListener('storage', (event) => {
@@ -217,7 +218,7 @@ export function authModel() {
         error.value = null
 
         try {
-            return await apiClient.refreshToken()
+            return await refreshSession()
         } catch (err) {
             error.value = err
             throw err

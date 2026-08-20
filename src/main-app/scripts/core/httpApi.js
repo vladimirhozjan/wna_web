@@ -30,17 +30,31 @@ function logout() {
 
 let refreshPromise = null
 
+async function rotateWithLock() {
+    const tokenAtRequest = localStorage.getItem('auth_token')
+    const rotate = async () => {
+        const current = localStorage.getItem('auth_token')
+        // another tab rotated while we waited for the lock — adopt its tokens
+        if (current !== tokenAtRequest) return { access_token: current }
+        const data = await apiClient.refreshToken()
+        window.dispatchEvent(new Event('token_refreshed'))
+        return data
+    }
+    return navigator.locks
+        ? navigator.locks.request('wna_token_refresh', rotate)
+        : rotate()
+}
+
 function doRefresh() {
     if (loggingOut) return Promise.reject({ status: 401, message: 'Logging out' })
     if (!refreshPromise) {
-        refreshPromise = apiClient.refreshToken()
-            .then(data => {
-                window.dispatchEvent(new Event('token_refreshed'))
-                return data
-            })
-            .finally(() => { refreshPromise = null })
+        refreshPromise = rotateWithLock().finally(() => { refreshPromise = null })
     }
     return refreshPromise
+}
+
+export function refreshSession() {
+    return doRefresh()
 }
 
 httpApi.interceptors.request.use(async (req) => {

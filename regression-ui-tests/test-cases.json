@@ -1123,6 +1123,45 @@
     "expected": "- The registration form does not display a \"Sign up with Google\" button.\n- The login form does not display a \"Sign in with Google\" button.\n- No \"or\" divider is shown on either form.\n- The email/password fields and standard registration/login flow work normally."
   },
   {
+    "id": "TC-615",
+    "name": "Concurrent token refresh — one rotation across tabs, loser adopts, no spurious logout",
+    "priority": "High",
+    "area": "Authentication, Session",
+    "areas": [
+      "Authentication",
+      "Session"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Logged-in user; two dashboard tabs opened at the same moment (duplicate tab), so their 30s poll timers stay phase-locked. Network tab open in both.",
+    "steps": [
+      "Leave both tabs open past the access-token refresh point (~4–5 min; access TTL 300s, refresh at <60s remaining).",
+      "Observe `POST /v1/user/refresh` across both tabs at the refresh tick.",
+      "Repeat over 2–3 consecutive ticks.",
+      "Continue using both tabs (navigate, create an item) after each tick."
+    ],
+    "expected": "- Exactly ONE `/v1/user/refresh` request per tick across both tabs (Web Locks serializes rotation; the waiting tab adopts the rotated tokens from localStorage instead of firing its own call).\n- The backend log shows no stale-rotation errors for the user.\n- Neither tab is logged out; both keep working with the new token.\n- A genuinely invalid refresh token (e.g. cleared server-side) still logs out and redirects — the failure path is unchanged."
+  },
+  {
+    "id": "TC-616",
+    "name": "Admin-app concurrent token refresh — one rotation across tabs",
+    "priority": "Medium",
+    "area": "Admin-app, Authentication, Session",
+    "areas": [
+      "Admin-app",
+      "Authentication",
+      "Session"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Logged-in admin; two admin-app tabs opened at the same moment. Admin access TTL 600s, refresh at <60s remaining.",
+    "steps": [
+      "Leave both tabs open past the refresh point (~9–10 min).",
+      "Observe `POST /auth/refresh` across both tabs at the refresh tick, over 2 ticks."
+    ],
+    "expected": "Exactly ONE `/auth/refresh` per tick across both tabs; the waiting tab adopts the rotated access token; neither tab logs out or errors."
+  },
+  {
     "id": "TC-044",
     "name": "Top Nav - Guest View Desktop",
     "priority": "High",

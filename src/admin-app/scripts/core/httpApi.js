@@ -28,18 +28,28 @@ function logout() {
 
 let refreshPromise = null
 
+async function rotateWithLock() {
+    const tokenAtRequest = localStorage.getItem('admin_auth_token')
+    const rotate = async () => {
+        const current = localStorage.getItem('admin_auth_token')
+        // another tab rotated while we waited for the lock — adopt its token
+        if (current !== tokenAtRequest) return
+        const refresh_token = localStorage.getItem('admin_refresh_token')
+        const res = await httpApi.post('/auth/refresh', { refresh_token })
+        if (res.data.access_token) {
+            localStorage.setItem('admin_auth_token', res.data.access_token)
+            window.dispatchEvent(new Event('admin_token_refreshed'))
+        }
+    }
+    return navigator.locks
+        ? navigator.locks.request('wna_admin_token_refresh', rotate)
+        : rotate()
+}
+
 function doRefresh() {
     if (loggingOut) return Promise.reject({ status: 401, message: 'Logging out' })
     if (!refreshPromise) {
-        const refresh_token = localStorage.getItem('admin_refresh_token')
-        refreshPromise = httpApi.post('/auth/refresh', { refresh_token })
-            .then(res => {
-                if (res.data.access_token) {
-                    localStorage.setItem('admin_auth_token', res.data.access_token)
-                    window.dispatchEvent(new Event('admin_token_refreshed'))
-                }
-            })
-            .finally(() => { refreshPromise = null })
+        refreshPromise = rotateWithLock().finally(() => { refreshPromise = null })
     }
     return refreshPromise
 }
