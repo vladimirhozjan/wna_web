@@ -46,6 +46,7 @@
       <template #cell-created_at="{ value }">{{ formatDate(value) }}</template>
       <template #cell-kind="{ value }"><span class="fw-medium">{{ value }}</span></template>
       <template #cell-status="{ value }"><Badge type="status" :value="value" /></template>
+      <template #cell-evidence="{ row }"><PaymentEvidence :payment="row" /></template>
       <template #cell-amount_minor="{ value }">{{ formatEur(value) }}</template>
       <template #cell-vat_rate="{ value }">{{ value != null ? value + '%' : '—' }}</template>
       <template #cell-vat_amount_minor="{ value }">{{ value != null ? formatEur(value) : '—' }}</template>
@@ -68,6 +69,7 @@ import { format, parseISO } from 'date-fns'
 import DataTable from '../components/DataTable.vue'
 import Pagination from '../components/Pagination.vue'
 import Badge from '../components/Badge.vue'
+import PaymentEvidence from '../components/PaymentEvidence.vue'
 import Stat from '../components/Stat.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
@@ -100,6 +102,7 @@ const paymentColumns = [
   { key: 'kind', label: 'Kind', width: '90px' },
   { key: 'status', label: 'Status', width: '110px' },
   { key: 'billing_country', label: 'Country', width: '90px' },
+  { key: 'evidence', label: 'Evidence', width: '90px' },
   { key: 'amount_minor', label: 'Amount (EUR)' },
   { key: 'vat_rate', label: 'VAT Rate', width: '100px' },
   { key: 'vat_amount_minor', label: 'VAT (EUR)' },

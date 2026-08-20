@@ -206,6 +206,7 @@
                 </span>
               </div>
               <div class="payment-side">
+                <PaymentEvidence :payment="p" />
                 <Badge type="status" :value="p.status" />
                 <Btn
                     v-if="p.kind !== 'refund' && p.status === 'paid'"
@@ -455,6 +456,7 @@ import StatusDot from '../components/StatusDot.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
 import UserCollaboration from '../components/UserCollaboration.vue'
+import PaymentEvidence from '../components/PaymentEvidence.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
