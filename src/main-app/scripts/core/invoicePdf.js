@@ -1,5 +1,5 @@
 const A4_WIDTH_PX = 794
-const A4_HEIGHT_PX = Math.round((A4_WIDTH_PX * 297) / 210) // 1123 — A4 page height at 794px width
+const A4_HEIGHT_PX = Math.floor((A4_WIDTH_PX * 297) / 210) // 1122 — floor: a page must map back to ≤ 297mm, else every PDF gains a blank trailing page
 
 // sandbox without allow-scripts — backend HTML must never execute script in the app;
 // allow-same-origin only lets us read the rendered DOM for the snapshot

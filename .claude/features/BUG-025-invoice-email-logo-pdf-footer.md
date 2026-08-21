@@ -67,9 +67,11 @@ Per the parent's User flows; web implements:
       whole-page height, and pin the `#doc-footer` element to the bottom of the last page preserving
       the document's 40px side padding. No `#doc-footer` in the document (historic v1 docs) →
       behavior identical to today. Surgical: no new components/models/deps; edit this file only.
-      Proof: `src/main-app/scripts/core/invoicePdf.js:2` (`A4_HEIGHT_PX = round(794×297/210)` = 1123)
-      and `:30-39` (`getElementById('doc-footer')`; if present: `pages = ceil(scrollHeight/1123)`,
-      body `position:relative; height = pages×1123px`, footer `position:absolute; left/right:40px;
+      Proof: `src/main-app/scripts/core/invoicePdf.js:2` (`A4_HEIGHT_PX = floor(794×297/210)` = 1122;
+      floor, not round — 1123 mapped back to 297.02mm > 297, so the paging loop added a blank
+      trailing page to every v2 PDF; fixed 2026-08-21)
+      and `:30-39` (`getElementById('doc-footer')`; if present: `pages = ceil(scrollHeight/1122)`,
+      body `position:relative; height = pages×1122px`, footer `position:absolute; left/right:40px;
       bottom:48px` — 48px mirrors the document cell's own bottom padding (`padding:48px 40px`) so
       the pinned footer reproduces the in-flow offset; if absent, the block is skipped and the flow
       is byte-identical to before). Only this file changed in `src/`.
