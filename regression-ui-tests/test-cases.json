@@ -12948,5 +12948,50 @@
     "preconditions": "",
     "steps": [],
     "expected": ""
+  },
+  {
+    "id": "TC-624",
+    "name": "Invoice PDF (v2 document) — seller footer at the bottom of the last A4 page",
+    "priority": "Medium",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "44: Billing Document PDF Layout",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-625",
+    "name": "Credit-note PDF (v2 document) — same footer pinning",
+    "priority": "Medium",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "44: Billing Document PDF Layout",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-626",
+    "name": "Historic v1 document PDF unchanged",
+    "priority": "Low",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "44: Billing Document PDF Layout",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
   }
 ]

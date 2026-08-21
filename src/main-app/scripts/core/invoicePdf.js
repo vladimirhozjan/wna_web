@@ -1,4 +1,5 @@
 const A4_WIDTH_PX = 794
+const A4_HEIGHT_PX = Math.round((A4_WIDTH_PX * 297) / 210) // 1123 — A4 page height at 794px width
 
 // sandbox without allow-scripts — backend HTML must never execute script in the app;
 // allow-same-origin only lets us read the rendered DOM for the snapshot
@@ -21,6 +22,22 @@ export async function downloadDocumentPdf(html, filename) {
     const iframe = await renderInFrame(html)
     try {
         const body = iframe.contentDocument.body
+
+        // v2 documents mark the seller footer with #doc-footer: extend the body to a whole
+        // number of A4 pages and pin the footer to the bottom of the last page, keeping the
+        // document cell's 48px bottom / 40px side padding. v1 documents have no marker and
+        // keep the content-height snapshot unchanged.
+        const footer = iframe.contentDocument.getElementById('doc-footer')
+        if (footer) {
+            const pages = Math.ceil(body.scrollHeight / A4_HEIGHT_PX)
+            body.style.position = 'relative'
+            body.style.height = `${pages * A4_HEIGHT_PX}px`
+            footer.style.position = 'absolute'
+            footer.style.left = '40px'
+            footer.style.right = '40px'
+            footer.style.bottom = '48px'
+        }
+
         iframe.style.height = `${body.scrollHeight + 40}px`
 
         const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
