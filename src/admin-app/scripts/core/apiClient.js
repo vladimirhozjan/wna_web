@@ -800,6 +800,15 @@ export async function setBillingTemplateHidden(id, hidden) {
     }
 }
 
+export async function updateBillingTemplate(id, data) {
+    try {
+        const res = await httpApi.patch(`/admin/billing-templates/${id}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function listBillingPlans() {
     try {
         const res = await httpApi.get('/admin/billing-plans')
@@ -963,6 +972,7 @@ export default {
     listBillingTemplates,
     createBillingTemplate,
     setBillingTemplateHidden,
+    updateBillingTemplate,
     listBillingPlans,
     setBillingPlan,
     listVatRates,

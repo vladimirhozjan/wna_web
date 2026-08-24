@@ -6,9 +6,10 @@
     </div>
 
     <p class="text-body-s color-text-secondary intro">
-      Paywiser billing templates are immutable after creation — create a new one when the price or
-      period changes, and hide retired ones. The 4 pricing slots below decide which template each plan
-      option sells; a slot without an active assignment is not offered.
+      A template's price and title are editable — a price edit re-prices all active subscriptions of
+      that template at their next renewal. Currency and period are immutable — create a new template
+      when those change, and hide retired ones. The 4 pricing slots below decide which template each
+      plan option sells; a slot without an active assignment is not offered.
     </p>
 
     <h3 class="text-label color-text-secondary section-title">Pricing Slots</h3>
@@ -85,13 +86,21 @@
         {{ formatDate(value) }}
       </template>
       <template #cell-actions="{ row }">
-        <Btn
-            variant="ghost"
-            size="sm"
-            :loading="hidingId === row.id"
-            :disabled="actionLoading"
-            @click="onToggleHidden(row)"
-        >{{ row.hidden ? 'Unhide' : 'Hide' }}</Btn>
+        <div class="row-actions">
+          <Btn
+              variant="ghost"
+              size="sm"
+              :disabled="actionLoading"
+              @click="openEdit(row)"
+          >Edit</Btn>
+          <Btn
+              variant="ghost"
+              size="sm"
+              :loading="hidingId === row.id"
+              :disabled="actionLoading"
+              @click="onToggleHidden(row)"
+          >{{ row.hidden ? 'Unhide' : 'Hide' }}</Btn>
+        </div>
       </template>
     </DataTable>
 
@@ -146,6 +155,31 @@
         <Btn variant="primary" size="sm" :loading="saving" :disabled="saving" @click="saveCreate">Create</Btn>
       </template>
     </Modal>
+
+    <!-- Edit modal -->
+    <Modal :visible="showEdit" title="Edit Billing Template" @close="closeEdit">
+      <div class="form-body">
+        <Inpt
+            v-model="editPriceInput"
+            type="text"
+            title="Price (VAT-inclusive)"
+            placeholder="e.g. 11.00"
+            :disabled="editSaving"
+        />
+        <Inpt
+            v-model="editTitleInput"
+            type="text"
+            title="Paywiser template title"
+            :disabled="editSaving"
+        />
+        <p v-if="editError" class="text-body-s color-text-danger form-error">{{ editError }}</p>
+      </div>
+
+      <template #actions>
+        <Btn variant="secondary" size="sm" @click="closeEdit" :disabled="editSaving">Cancel</Btn>
+        <Btn variant="primary" size="sm" :loading="editSaving" :disabled="editSaving || !editChanged" @click="saveEdit">Save</Btn>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -158,9 +192,11 @@ import Btn from '../components/Btn.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
+const confirm = confirmModel()
 
 const SLOT_ORDER = [
   { tier: 'pro', billing_period: 'monthly', planLabel: 'Pro' },
@@ -183,7 +219,7 @@ const catalogColumns = [
   { key: 'paywiser_billing_template_id', label: 'Paywiser Template' },
   { key: 'assigned_to', label: 'Assigned Slot', width: '140px' },
   { key: 'created_at', label: 'Created', width: '120px' },
-  { key: 'actions', label: '', width: '90px' },
+  { key: 'actions', label: '', width: '150px' },
 ]
 
 const templates = ref([])
@@ -348,6 +384,88 @@ async function saveCreate() {
   }
 }
 
+// Edit form
+const showEdit = ref(false)
+const editRow = ref(null)
+const editPriceInput = ref('')
+const editTitleInput = ref('')
+const editSaving = ref(false)
+const editError = ref('')
+
+const editChanged = computed(() => {
+  if (!editRow.value) return false
+  return editPriceInput.value !== formatPrice(editRow.value.price_minor)
+      || editTitleInput.value.trim() !== (editRow.value.title || '')
+})
+
+function openEdit(row) {
+  editRow.value = row
+  editPriceInput.value = formatPrice(row.price_minor)
+  editTitleInput.value = row.title || ''
+  editError.value = ''
+  showEdit.value = true
+}
+
+function closeEdit() {
+  if (editSaving.value) return
+  showEdit.value = false
+}
+
+async function saveEdit() {
+  editError.value = ''
+  const row = editRow.value
+  const price = Number(editPriceInput.value.replace(',', '.'))
+  if (!Number.isFinite(price) || price <= 0) {
+    editError.value = 'Enter a valid price greater than 0'
+    return
+  }
+
+  const body = {}
+  const priceMinor = Math.round(price * 100)
+  if (priceMinor !== row.price_minor) body.price_minor = priceMinor
+
+  const title = editTitleInput.value.trim()
+  if (title !== (row.title || '')) {
+    if (!title) {
+      editError.value = 'Title cannot be empty'
+      return
+    }
+    if (title.length > 120) {
+      editError.value = 'Title must be 120 characters or fewer'
+      return
+    }
+    body.title = title
+  }
+
+  if (!Object.keys(body).length) {
+    showEdit.value = false
+    return
+  }
+
+  if ('price_minor' in body) {
+    const count = row.active_subscriptions ?? 0
+    const confirmed = await confirm.show({
+      title: 'Change Price',
+      message: `${count} active subscription${count === 1 ? '' : 's'} will renew at the new price.`,
+      confirmText: 'Change Price',
+      cancelText: 'Cancel',
+    })
+    if (!confirmed) return
+  }
+
+  editSaving.value = true
+  try {
+    await apiClient.updateBillingTemplate(row.id, body)
+    toaster.success('Billing template updated')
+    showEdit.value = false
+    await loadAll()
+  } catch (err) {
+    editError.value = err.message || 'Failed to update billing template'
+  } finally {
+    editSaving.value = false
+  }
+}
+
 onMounted(loadAll)
 </script>
 
@@ -408,6 +526,11 @@ onMounted(loadAll)
 .template-id {
   font-family: var(--font-family-mono);
   word-break: break-all;
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
 }
 
 /* Slot select */

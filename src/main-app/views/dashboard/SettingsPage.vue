@@ -48,7 +48,16 @@
             <h2 class="settings-section-title">Plan</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('plan') }">&#8250;</span>
           </div>
-          <div v-if="isExpanded('plan')" class="settings-section-body">
+          <div v-if="isExpanded('plan') && confirmingPayment" class="settings-section-body">
+            <div class="settings-loading">
+              <Spinner :size="16" />
+              <span>Confirming your payment...</span>
+            </div>
+          </div>
+          <div v-else-if="isExpanded('plan')" class="settings-section-body">
+            <div v-if="paymentStillProcessing && tier === 'free'" class="settings-row">
+              <p class="text-body-s settings-hint">Your payment is still being processed — your plan will update once it's confirmed. Check back in a few minutes.</p>
+            </div>
             <div class="settings-row">
               <span class="settings-label">Current plan</span>
               <span class="settings-value fw-semibold" :class="tier === 'team' ? 'color-text-success' : ''">{{ tierLabel }}</span>
@@ -716,6 +725,12 @@ function formatBytes(bytes) {
 const hasActiveSubscription = computed(() =>
     payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))
 
+// Post-checkout convergence — poll numbers homed in wna_orchestration/contracts/limits.md
+const CONVERGE_POLL_MS = 2000
+const CONVERGE_MAX_ATTEMPTS = 15
+const confirmingPayment = ref(false)
+const paymentStillProcessing = ref(false)
+
 // expires_at arrives as UTC "YYYY-MM-DD HH:MM:SS"
 function formatBillingDate(val) {
   if (!val) return '—'
@@ -758,15 +773,32 @@ async function applyCheckoutReturn() {
 
   if (status === 'success') {
     toaster.success('Payment successful — welcome to your new plan!')
-    try {
-      await auth.refreshToken()
-      await auth.loadUser()
-    } catch { /* stale tier until the next scheduled refresh is acceptable */ }
-    loadPaymentStatus()
+    await convergeAfterCheckout()
   } else if (status === 'failure') {
     toaster.push('Payment failed — you have not been charged. Please try again.')
   } else if (status === 'cancel') {
     toaster.push('Checkout cancelled — your plan is unchanged.')
+  }
+}
+
+// The redirect carries no authority — the tier flips only when the paid webhook lands, so poll
+// until it does (bounded). payment.loadStatus() is called directly: the loadPaymentStatus()
+// guards (in-flight load, flags not loaded yet) would silently drop the refetch.
+async function convergeAfterCheckout() {
+  confirmingPayment.value = true
+  try {
+    try { await auth.refreshToken() } catch { /* the poll below still lands the user object */ }
+    for (let attempt = 0; attempt < CONVERGE_MAX_ATTEMPTS; attempt++) {
+      if (attempt > 0) await new Promise(resolve => setTimeout(resolve, CONVERGE_POLL_MS))
+      if (!auth.isAuthenticated.value) return
+      try {
+        await Promise.all([auth.loadUser(), payment.loadStatus()])
+      } catch { /* transient — keep polling */ }
+      if (tier.value && tier.value !== 'free') return
+    }
+    paymentStillProcessing.value = true
+  } finally {
+    confirmingPayment.value = false
   }
 }
 

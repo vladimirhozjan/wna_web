@@ -59,7 +59,8 @@ watch(() => props.visible, (val) => {
   align-items: center;
   padding-bottom: 48px;
   justify-content: center;
-  z-index: 99998;
+  /* Below ConfirmDialog (99998) — confirms opened from a modal must stack above it */
+  z-index: 99997;
 }
 
 .dialog {

@@ -12516,6 +12516,22 @@
     "expected": ""
   },
   {
+    "id": "TC-629",
+    "name": "VAT Rates list shows only the 27 OSS/VEM countries — no UK, even right after a refresh (BUG-026)",
+    "priority": "Medium",
+    "area": "Admin-app, Billing, VAT",
+    "areas": [
+      "Admin-app",
+      "Billing",
+      "VAT"
+    ],
+    "smoke": false,
+    "section": "39: Admin VAT Rates",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
     "id": "TC-594",
     "name": "Alarms page lists alarms with severity/status/source filters, pagination, and context expand",
     "priority": "Medium",
@@ -12966,7 +12982,7 @@
   },
   {
     "id": "TC-625",
-    "name": "Credit-note PDF (v2 document) — same footer pinning",
+    "name": "Credit-note PDF (credit_note_v3 document) — same footer pinning",
     "priority": "Medium",
     "area": "Billing, Payments",
     "areas": [
@@ -12981,7 +12997,7 @@
   },
   {
     "id": "TC-626",
-    "name": "Historic v1 document PDF unchanged",
+    "name": "Historic pre-BUG-025 document PDF unchanged",
     "priority": "Low",
     "area": "Billing, Payments",
     "areas": [
@@ -12990,6 +13006,142 @@
     ],
     "smoke": false,
     "section": "44: Billing Document PDF Layout",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-627",
+    "name": "Invoice + credit-note emails show the logo icon in Gmail; no logo.png attachment (A2)",
+    "priority": "Medium",
+    "area": "Billing, Payments, Notifications",
+    "areas": [
+      "Billing",
+      "Payments",
+      "Notifications"
+    ],
+    "smoke": false,
+    "section": "45: Billing Document Email Rendering",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-628",
+    "name": "Document web views unchanged — inline SVG logo, same frozen document as the email",
+    "priority": "Medium",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "45: Billing Document Email Rendering",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-630",
+    "name": "Admin edits a template's price — confirm dialog names the active-subscription count",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "46: Admin Billing Template Edit",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-631",
+    "name": "Admin title-only edit — saves without the confirm dialog",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "46: Admin Billing Template Edit",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-632",
+    "name": "Template edit Paywiser refusal — vendor detail inline in the modal; 502 stays generic",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "46: Admin Billing Template Edit",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-633",
+    "name": "Lazy-route navigation shows an immediate pending indicator",
+    "priority": "Medium",
+    "area": "Navigation",
+    "areas": [
+      "Navigation"
+    ],
+    "smoke": false,
+    "section": "47: Lazy-Route Loader & Chunk Recovery",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-634",
+    "name": "Stale-chunk click self-recovers with one reload — never a silent dead click, never a loop",
+    "priority": "Medium",
+    "area": "Navigation",
+    "areas": [
+      "Navigation"
+    ],
+    "smoke": false,
+    "section": "47: Lazy-Route Loader & Chunk Recovery",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-635",
+    "name": "Success return with a slow webhook — \"Confirming your payment…\" until the tier flips",
+    "priority": "High",
+    "area": "Settings, Billing, Webhooks",
+    "areas": [
+      "Settings",
+      "Billing",
+      "Webhooks"
+    ],
+    "smoke": false,
+    "section": "48: Checkout Return Convergence",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-636",
+    "name": "Webhook never lands in the window — honest still-processing state, page stays functional",
+    "priority": "Medium",
+    "area": "Settings, Billing, Webhooks",
+    "areas": [
+      "Settings",
+      "Billing",
+      "Webhooks"
+    ],
+    "smoke": false,
+    "section": "48: Checkout Return Convergence",
     "preconditions": "",
     "steps": [],
     "expected": ""
