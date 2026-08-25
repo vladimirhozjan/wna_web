@@ -21,8 +21,8 @@ GTD domain model (entities, rules, clarify workflow) is a shared fact — see
 
 ```bash
 npm ci                    # Install dependencies
-npm run dev:main          # Start main-app dev server (http://localhost:6222)
-npm run dev:admin         # Start admin-app dev server (http://localhost:7222)
+npm run dev:main          # Start main-app dev server (http://localhost:6111)
+npm run dev:admin         # Start admin-app dev server (http://localhost:7111)
 npm run build:main        # Build main-app → dist/main-app/
 npm run build:admin       # Build admin-app → dist/admin-app/
 npm run clean             # Remove dist folder
@@ -34,7 +34,7 @@ This is a **multi-app Vue 3 + Vite 7** frontend project with two fully implement
 - `main-app` — Primary user-facing GTD application
 - `admin-app` — Internal admin panel (auth with OTP, user management, audit log, analytics, GDPR, feature flags)
 
-Both apps are completely independent — no shared components, models, or runtime code. They share only build tooling (Vite config, package.json) and font assets.
+Both apps are independent — no shared components or models. They share only build tooling (Vite config, package.json), font assets, and `src/shared/` (currently just `invoicePdf.js`, the PDF document generator — both apps must export identical document PDFs).
 
 ### Key Configuration
 
@@ -281,7 +281,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - **Fonts**: Libre Bodoni (serif headings), Montserrat (body/UI)
 - **No utility classes** beyond a small set of text/color helpers
 - **JWT in localStorage** (not httpOnly cookies) — consistent across both apps
-- **No shared runtime code** between main-app and admin-app — same-named components are separate implementations
+- **No shared runtime code** between main-app and admin-app — same-named components are separate implementations. Sole exception: `src/shared/invoicePdf.js` (both apps must export identical document PDFs)
 
 ## Known Pain Points
 

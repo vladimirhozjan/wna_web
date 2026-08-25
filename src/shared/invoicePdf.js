@@ -38,26 +38,32 @@ export async function downloadDocumentPdf(html, filename) {
             footer.style.bottom = '48px'
         }
 
-        iframe.style.height = `${body.scrollHeight + 40}px`
+        iframe.style.height = `${body.scrollHeight}px`
 
         const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
             import('html2canvas'),
             import('jspdf'),
         ])
 
-        const canvas = await html2canvas(body, { scale: 2, backgroundColor: '#ffffff' })
+        // height/windowHeight pinned to the body box so the canvas can never inherit
+        // the iframe viewport height instead
+        const canvas = await html2canvas(body, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            height: body.scrollHeight,
+            windowHeight: body.scrollHeight,
+        })
         const pdf = new jsPDF({ unit: 'mm', format: 'a4' })
         const pageWidth = pdf.internal.pageSize.getWidth()
         const pageHeight = pdf.internal.pageSize.getHeight()
         const imgHeight = (canvas.height * pageWidth) / canvas.width
         const image = canvas.toDataURL('image/png')
 
-        pdf.addImage(image, 'PNG', 0, 0, pageWidth, imgHeight)
-        let rendered = pageHeight
-        while (rendered < imgHeight) {
-            pdf.addPage()
-            pdf.addImage(image, 'PNG', 0, -rendered, pageWidth, imgHeight)
-            rendered += pageHeight
+        if (imgHeight > pageHeight) {
+            // taller than one page: scale down uniformly to fit — never paginate
+            pdf.addImage(image, 'PNG', 0, 0, (pageWidth * pageHeight) / imgHeight, pageHeight)
+        } else {
+            pdf.addImage(image, 'PNG', 0, 0, pageWidth, imgHeight)
         }
 
         pdf.save(filename)

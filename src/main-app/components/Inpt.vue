@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import {ref, defineExpose} from "vue";
+import {ref} from "vue";
 
 const model_value = defineModel()
 const error = defineModel('error', {default: ''})

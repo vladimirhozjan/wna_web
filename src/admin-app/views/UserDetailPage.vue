@@ -461,7 +461,7 @@ import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
-import { downloadDocumentPdf } from '../scripts/core/invoicePdf.js'
+import { downloadDocumentPdf } from '../../shared/invoicePdf.js'
 
 const route = useRoute()
 const auth = authModel()

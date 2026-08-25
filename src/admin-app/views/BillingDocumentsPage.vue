@@ -153,7 +153,7 @@ import Modal from '../components/Modal.vue'
 import SearchInput from '../components/SearchInput.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
-import { downloadDocumentPdf } from '../scripts/core/invoicePdf.js'
+import { downloadDocumentPdf } from '../../shared/invoicePdf.js'
 
 const toaster = errorModel()
 

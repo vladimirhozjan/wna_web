@@ -292,6 +292,11 @@ watch(paymentsEnabled, (on) => {
   if (on) loadPaymentStatus()
 })
 
+// A state entered under a previous country must never ride along with a new country
+watch(billingCountry, () => {
+  stateRegion.value = ''
+})
+
 onMounted(() => {
   loadPlanCatalog()
   loadPaymentStatus()

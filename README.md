@@ -38,15 +38,16 @@ wna_web/
 │   │   ├── components/
 │   │   ├── scripts/
 │   │   └── styles/
-│   └── admin-app/          # Internal admin panel
-│       ├── index.html
-│       ├── main.js
-│       ├── router/
-│       ├── layouts/
-│       ├── views/
-│       ├── components/
-│       ├── scripts/
-│       └── styles/
+│   ├── admin-app/          # Internal admin panel
+│   │   ├── index.html
+│   │   ├── main.js
+│   │   ├── router/
+│   │   ├── layouts/
+│   │   ├── views/
+│   │   ├── components/
+│   │   ├── scripts/
+│   │   └── styles/
+│   └── shared/             # Runtime code shared by both apps (invoicePdf.js)
 ├── dist/                   # Generated builds
 ├── vite.config.js          # Entry point (reads APP env var)
 ├── package.json
@@ -72,8 +73,8 @@ npm ci
 ## Local Development
 
 ```bash
-npm run dev:main          # Start main-app  → http://localhost:6222
-npm run dev:admin         # Start admin-app → http://localhost:7222
+npm run dev:main          # Start main-app  → http://localhost:6111
+npm run dev:admin         # Start admin-app → http://localhost:7111
 ```
 
 The dev server uses Vite proxy to forward API requests:
