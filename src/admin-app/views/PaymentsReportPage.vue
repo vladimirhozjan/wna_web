@@ -102,7 +102,7 @@ const paymentColumns = [
   { key: 'kind', label: 'Kind', width: '90px' },
   { key: 'status', label: 'Status', width: '110px' },
   { key: 'billing_country', label: 'Country', width: '90px' },
-  { key: 'evidence', label: 'Evidence', width: '90px' },
+  { key: 'evidence', label: 'Evidence', width: '200px' },
   { key: 'amount_minor', label: 'Amount (EUR)' },
   { key: 'vat_rate', label: 'VAT Rate', width: '100px' },
   { key: 'vat_amount_minor', label: 'VAT (EUR)' },

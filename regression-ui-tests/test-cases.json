@@ -12186,7 +12186,7 @@
       "Billing History page → click the invoice row (preview) → **Download**.",
       "Cross-check the `payment` ledger columns (`vat_rate`, `vat_amount_minor`, `amount_minor`, `billing_country`, and the buyer-address columns `billing_name`/`billing_address1`/`billing_address2`/ `billing_zip`/`billing_city`)."
     ],
-    "expected": "EU invoice carries the destination **standard** rate (SI = 22%), the invoice number,\nand the EUR amounts extracted from the VAT-inclusive gross; non-EU invoice carries **0% + the\nself-report/reverse-charge clause** (\"VAT not charged … self-accounting\"). The invoice also shows the frozen\n**buyer block** (name / address1 / address2 / zip city / state / country) sourced from the address entered at\nsubscribe (`v2` invoice template; no unsubstituted `{{placeholder}}`). The preview modal renders the HTML in\na sandboxed iframe and **Download** saves `invoice-<number>.pdf` client-side. Ledger columns match."
+    "expected": "EU invoice carries the destination **standard** rate (SI = 22%), the invoice number,\nand the EUR amounts extracted from the VAT-inclusive gross; non-EU invoice carries **0% + the\nself-report clause** (the Article-58 wording: \"Outside the scope of EU VAT — electronically supplied\nservices provided to a customer outside the European Union (Article 58 of Council Directive\n2006/112/EC)…\"). The invoice also shows the frozen\n**buyer block** (name / address1 / address2 / zip city / state / country) sourced from the address entered at\nsubscribe (no unsubstituted `{{placeholder}}`). The preview modal renders the HTML in\na sandboxed iframe and **Download** saves `invoice-<number>.pdf` client-side. Ledger columns match.\n\n**Scope note (BUG-034):** this TC covers only the **single-country** paths (SI and US, one address per\nuser). The change-of-country flow — an earlier subscribe attempt from another country followed by a\nsubscribe + settlement from a new one — is TC-638 (ledger) / TC-639 (invoice HTML) in Section 49."
   },
   {
     "id": "TC-572",
@@ -12817,7 +12817,7 @@
   },
   {
     "id": "TC-612",
-    "name": "Admin payment rows expose the location-evidence info hover — present and absent values",
+    "name": "Admin payment rows render location evidence as plain text — present and absent values",
     "priority": "Medium",
     "area": "Admin-app, Billing",
     "areas": [
@@ -12832,7 +12832,7 @@
   },
   {
     "id": "TC-613",
-    "name": "Conflict warning icon only on double contradiction",
+    "name": "Conflict renders the same evidence text in the warning colour — only on double contradiction",
     "priority": "Medium",
     "area": "Admin-app, Billing",
     "areas": [
@@ -12847,7 +12847,7 @@
   },
   {
     "id": "TC-614",
-    "name": "Legacy payment rows (no evidence captured) never show the warning icon",
+    "name": "Legacy payment rows (no evidence captured) never render in the warning colour",
     "priority": "Low",
     "area": "Admin-app, Billing",
     "areas": [
@@ -12967,7 +12967,7 @@
   },
   {
     "id": "TC-624",
-    "name": "Invoice PDF (v2 document) — seller footer at the bottom of the last A4 page",
+    "name": "Invoice PDF (v2 document) — exactly one A4 page, seller footer at the bottom",
     "priority": "Medium",
     "area": "Billing, Payments",
     "areas": [
@@ -12998,6 +12998,21 @@
   {
     "id": "TC-626",
     "name": "Historic pre-BUG-025 document PDF unchanged",
+    "priority": "Low",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "44: Billing Document PDF Layout",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-637",
+    "name": "Document PDF worst-case content — longest buyer address + wrapped VAT clause, still one page",
     "priority": "Low",
     "area": "Billing, Payments",
     "areas": [
@@ -13145,5 +13160,82 @@
     "preconditions": "",
     "steps": [],
     "expected": ""
+  },
+  {
+    "id": "TC-638",
+    "name": "Change of billing country before paying — settlement bills the country entered last",
+    "priority": "High",
+    "area": "Billing, VAT, Webhooks",
+    "areas": [
+      "Billing",
+      "VAT",
+      "Webhooks"
+    ],
+    "smoke": true,
+    "section": "49: Change-of-Country Settlement & Document Escaping (BUG-034)",
+    "preconditions": "Entitled Free user; mock Paywiser up.",
+    "steps": [
+      "Subscribe with billing country `US` + state `CA` (creates the gateway Client record; do not pay).",
+      "Subscribe again with billing country `DE`, no state.",
+      "Fire `purchase.paid` for the second purchase; wait for the tier flip.",
+      "Read the `payment` ledger."
+    ],
+    "expected": "The paid `initial` row carries `billing_country=DE`, `vat_rate=19.00` and an\n**empty** `billing_state` — the WNA checkout-captured row is authoritative at settlement (BUG-034 D2);\nthe gateway Client echo (frozen at the first subscribe, never updatable) must not win, and no state\nfrom the previous country leaks onto the new one. The created and paid rows of the purchase agree on\ncountry and VAT rate (no D6 divergence)."
+  },
+  {
+    "id": "TC-639",
+    "name": "Change-of-country invoice — new country + its VAT rendered; no stale state, no non-EU clause",
+    "priority": "High",
+    "area": "Billing, Invoicing, VAT",
+    "areas": [
+      "Billing",
+      "Invoicing",
+      "VAT"
+    ],
+    "smoke": false,
+    "section": "49: Change-of-Country Settlement & Document Escaping (BUG-034)",
+    "preconditions": "The TC-638 flow (US/CA attempt, then DE subscribe + `purchase.paid`).",
+    "steps": [
+      "Open `/v1/payments/history`; render the issued invoice's HTML."
+    ],
+    "expected": "The invoice shows **\"Germany\"** in the buyer block, contains **no \"CA\"** anywhere,\ncarries a **19%** VAT line, and has **no Article-58 clause** (\"Outside the scope of EU VAT…\") — the\ndocument matches what was quoted at the DE checkout."
+  },
+  {
+    "id": "TC-640",
+    "name": "/upgrade form — switching the country empties the state input (D5)",
+    "priority": "Medium",
+    "area": "Billing, Settings",
+    "areas": [
+      "Billing",
+      "Settings"
+    ],
+    "smoke": false,
+    "section": "49: Change-of-Country Settlement & Document Escaping (BUG-034)",
+    "preconditions": "Entitled Free user on the `/upgrade` page.",
+    "steps": [
+      "Select country **United States**; type `CA` into State / Province / Region.",
+      "Switch the country to **Germany**."
+    ],
+    "expected": "The state input is **empty** after the country change (BUG-034 D5) — the payload\ncan never pair a new country with the previous country's state."
+  },
+  {
+    "id": "TC-641",
+    "name": "Buyer name with `<` `>` `&` — literal text on the invoice preview and its credit note (D7)",
+    "priority": "High",
+    "area": "Billing, Invoicing, Security",
+    "areas": [
+      "Billing",
+      "Invoicing",
+      "Security"
+    ],
+    "smoke": false,
+    "section": "49: Change-of-Country Settlement & Document Escaping (BUG-034)",
+    "preconditions": "Entitled Free user; admin access for the credit-note issuance.",
+    "steps": [
+      "Subscribe with `billing_name` = `Smith & Sons <b>x</b>` (contains `&` `<` `>`); fire `purchase.paid`.",
+      "Render the invoice HTML; open the billing-history preview.",
+      "Issue a credit note against the invoice (admin `POST …/invoices/{id}/credit-note`); render its HTML."
+    ],
+    "expected": "The name is stored **escaped** in the frozen document data (`v3` invoice /\n`credit_note_v4` templates — BUG-034 Defect B) and both documents render it as **literal text**\n(`Smith &amp; Sons &lt;b&gt;x&lt;/b&gt;` in the HTML; the preview iframe displays the raw characters);\nthe raw markup never appears in either document. The credit note mirrors the invoice's buyer block (R3/R4)."
   }
 ]

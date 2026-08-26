@@ -202,11 +202,10 @@
               <div class="history-main">
                 <span class="text-body-s fw-medium payment-kind">{{ p.kind }} · {{ formatEur(p.amount_minor) }}</span>
                 <span class="text-caption color-text-tertiary">
-                  {{ formatDate(p.created_at) }} · {{ p.billing_country || '—' }}<template v-if="p.vat_amount_minor != null"> · VAT {{ formatEur(p.vat_amount_minor) }}</template>
+                  {{ formatDate(p.created_at) }} · {{ p.billing_country || '—' }}<template v-if="p.vat_amount_minor != null"> · VAT {{ formatEur(p.vat_amount_minor) }}</template><template v-if="p.billing_country || p.card_country || p.ip_country"> · <PaymentEvidence :payment="p" /></template>
                 </span>
               </div>
               <div class="payment-side">
-                <PaymentEvidence :payment="p" />
                 <Badge type="status" :value="p.status" />
                 <Btn
                     v-if="p.kind !== 'refund' && p.status === 'paid'"
