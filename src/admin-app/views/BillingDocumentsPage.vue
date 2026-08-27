@@ -2,6 +2,14 @@
   <div class="page">
     <div class="page-header">
       <h1 class="page-title">Invoices</h1>
+      <Btn
+          variant="secondary" size="sm"
+          :loading="exporting"
+          title="Exports the whole period — ignores the type tabs and search"
+          @click="handleExport"
+      >
+        Export CSV (full period)
+      </Btn>
     </div>
 
     <!-- Period filter -->
@@ -12,6 +20,9 @@
       <select v-model.number="month" class="text-body-s filter-select" @change="load">
         <option :value="0">Whole year</option>
         <option v-for="(m, i) in MONTHS" :key="m" :value="i + 1">{{ m }}</option>
+      </select>
+      <select v-model="sort" class="text-body-s filter-select" @change="load">
+        <option v-for="s in SORT_OPTIONS" :key="s.value" :value="s.value">{{ s.label }}</option>
       </select>
     </div>
 
@@ -33,6 +44,25 @@
           :trend="`VAT ${formatEur(register.totals?.net?.vat_minor)}`"
       />
     </div>
+
+    <!-- Per-country breakdown (documents by issue date, whole period) -->
+    <h2 class="text-label color-text-secondary table-title">Documents by Country — by issue date, incl. credit notes</h2>
+    <DataTable
+        :columns="countryColumns"
+        :rows="register?.by_country ?? []"
+        :loading="loading"
+        empty-text="No documents in this period."
+        :show-pagination="false"
+    >
+      <template #cell-invoiced_count="{ row }">{{ row.invoiced?.count ?? 0 }}</template>
+      <template #cell-invoiced_gross="{ row }">{{ formatEur(row.invoiced?.gross_minor) }}</template>
+      <template #cell-invoiced_vat="{ row }">{{ formatEur(row.invoiced?.vat_minor) }}</template>
+      <template #cell-credited_count="{ row }">{{ row.credited?.count ?? 0 }}</template>
+      <template #cell-credited_gross="{ row }">{{ formatEur(row.credited?.gross_minor) }}</template>
+      <template #cell-credited_vat="{ row }">{{ formatEur(row.credited?.vat_minor) }}</template>
+      <template #cell-net_gross="{ row }">{{ formatEur(row.net?.gross_minor) }}</template>
+      <template #cell-net_vat="{ row }">{{ formatEur(row.net?.vat_minor) }}</template>
+    </DataTable>
 
     <!-- Type filter + search -->
     <div class="toolbar">
@@ -153,6 +183,7 @@ import Modal from '../components/Modal.vue'
 import SearchInput from '../components/SearchInput.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
+import { downloadBlob } from '../scripts/core/downloadUtils.js'
 import { downloadDocumentPdf } from '../../shared/invoicePdf.js'
 
 const toaster = errorModel()
@@ -167,9 +198,19 @@ const TYPE_TABS = [
   { key: 'credit_note', label: 'Credit notes' },
 ]
 
+const SORT_OPTIONS = [
+  { value: 'date_desc', label: 'Newest first' },
+  { value: 'date_asc', label: 'Oldest first' },
+  { value: 'number_desc', label: 'Number high–low' },
+  { value: 'number_asc', label: 'Number low–high' },
+  { value: 'country_asc', label: 'Country A–Z' },
+  { value: 'country_desc', label: 'Country Z–A' },
+]
+
 const now = new Date()
 const year = ref(now.getFullYear())
 const month = ref(now.getMonth() + 1)
+const sort = ref('date_desc')
 
 const yearOptions = computed(() => {
   const years = []
@@ -187,6 +228,18 @@ const columns = [
   { key: 'vat_rate', label: 'VAT Rate', width: '100px' },
   { key: 'vat_amount_minor', label: 'VAT (EUR)', width: '100px' },
   { key: 'actions', label: '', width: '50px' },
+]
+
+const countryColumns = [
+  { key: 'country', label: 'Country', width: '90px' },
+  { key: 'invoiced_count', label: 'Invoiced', width: '90px' },
+  { key: 'invoiced_gross', label: 'Invoiced Gross (EUR)' },
+  { key: 'invoiced_vat', label: 'Invoiced VAT (EUR)' },
+  { key: 'credited_count', label: 'Credited', width: '90px' },
+  { key: 'credited_gross', label: 'Credited Gross (EUR)' },
+  { key: 'credited_vat', label: 'Credited VAT (EUR)' },
+  { key: 'net_gross', label: 'Net Gross (EUR)' },
+  { key: 'net_vat', label: 'Net VAT (EUR)' },
 ]
 
 const register = ref(null)
@@ -226,12 +279,32 @@ async function load() {
   loading.value = true
   page.value = 1
   try {
-    register.value = await apiClient.getBillingDocuments({ year: year.value, month: month.value })
+    register.value = await apiClient.getBillingDocuments({
+      year: year.value, month: month.value, sort: sort.value,
+    })
   } catch (err) {
     toaster.push(err.message || 'Failed to load billing documents')
     register.value = null
   } finally {
     loading.value = false
+  }
+}
+
+const exporting = ref(false)
+
+async function handleExport() {
+  exporting.value = true
+  try {
+    const blob = await apiClient.exportBillingDocuments({
+      year: year.value, month: month.value, sort: sort.value,
+    })
+    const suffix = month.value ? `-${String(month.value).padStart(2, '0')}` : ''
+    downloadBlob(blob, `billing-documents-${year.value}${suffix}.csv`)
+    toaster.success('Export downloaded')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to export billing documents')
+  } finally {
+    exporting.value = false
   }
 }
 
@@ -349,6 +422,16 @@ onMounted(load)
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
   padding: 20px;
+  margin-bottom: 20px;
+}
+
+.table-title {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-title + .data-table-wrapper {
   margin-bottom: 20px;
 }
 

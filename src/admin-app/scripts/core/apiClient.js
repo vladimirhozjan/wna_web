@@ -660,11 +660,28 @@ export async function listUserDelegations(userId) {
 
 // --- Payments oversight endpoints ---
 
-export async function getPaymentsReport({ year, month = 0 }) {
+export async function getPaymentsReport({ year, month = 0, status = '', kind = '', sort = '' }) {
     try {
         const params = { year }
         if (month) params.month = month
+        if (status) params.status = status
+        if (kind) params.kind = kind
+        if (sort) params.sort = sort
         const res = await httpApi.get('/admin/payments/report', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function exportPaymentsReport({ year, month = 0, status = '', kind = '', sort = '' }) {
+    try {
+        const params = { year }
+        if (month) params.month = month
+        if (status) params.status = status
+        if (kind) params.kind = kind
+        if (sort) params.sort = sort
+        const res = await httpApi.get('/admin/payments/report/export', { params, responseType: 'blob' })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -741,11 +758,24 @@ export async function getPlatformUserCreditNoteHtml(userId, creditNoteId) {
 
 // --- Billing documents register endpoints ---
 
-export async function getBillingDocuments({ year, month = 0 }) {
+export async function getBillingDocuments({ year, month = 0, sort = '' }) {
     try {
         const params = { year }
         if (month) params.month = month
+        if (sort) params.sort = sort
         const res = await httpApi.get('/admin/billing-documents', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function exportBillingDocuments({ year, month = 0, sort = '' }) {
+    try {
+        const params = { year }
+        if (month) params.month = month
+        if (sort) params.sort = sort
+        const res = await httpApi.get('/admin/billing-documents/export', { params, responseType: 'blob' })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -959,6 +989,7 @@ export default {
     removeSharedProjectMember,
     listUserDelegations,
     getPaymentsReport,
+    exportPaymentsReport,
     getPlatformUserPayments,
     refundPlatformUserPayment,
     issueCreditNote,
@@ -967,6 +998,7 @@ export default {
     getPlatformUserInvoiceHtml,
     getPlatformUserCreditNoteHtml,
     getBillingDocuments,
+    exportBillingDocuments,
     getBillingDocumentInvoiceHtml,
     getBillingDocumentCreditNoteHtml,
     listBillingTemplates,

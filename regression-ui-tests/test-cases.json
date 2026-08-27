@@ -12297,6 +12297,81 @@
     "expected": ""
   },
   {
+    "id": "TC-643",
+    "name": "Admin Payments — Status and Kind filters narrow the table server-side and reset the pager",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "38: Payment & Billing — Paywiser",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-644",
+    "name": "Admin Payments — Status dropdown is fed by whole-period facets and never collapses",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "38: Payment & Billing — Paywiser",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-645",
+    "name": "Admin Payments — sort select reorders server-side; default newest-first; no Amount sort",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "38: Payment & Billing — Paywiser",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-646",
+    "name": "Admin Payments — all five statistics stay whole-month while filters are active",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "38: Payment & Billing — Paywiser",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-647",
+    "name": "Admin Payments — Export CSV honours the active filters and sort; empty period ⇒ header-only",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "38: Payment & Billing — Paywiser",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
     "id": "TC-579",
     "name": "Admin user-detail shows expiration + invoices + all payment-request statuses",
     "priority": "Medium",
@@ -12451,6 +12526,27 @@
       "Observe the on-screen output when the subscribe call returns 502."
     ],
     "expected": "The error toast reads \"Our payment provider is having trouble right now — you have\nnot been charged. Please try again in a few minutes.\" — not the raw backend text (\"payment gateway\nerror\") and not the generic \"Failed to start checkout\". No redirect happens; the form keeps its values\nso the user can retry. Non-502 subscribe errors keep the existing generic output."
+  },
+  {
+    "id": "TC-642",
+    "name": "Known Paywiser events stop alarming; `purchase.cancelled` cancels the checkout row (BUG-036)",
+    "priority": "Medium",
+    "area": "Billing, Webhooks, Alarms",
+    "areas": [
+      "Billing",
+      "Webhooks",
+      "Alarms"
+    ],
+    "smoke": false,
+    "section": "38: Payment & Billing — Paywiser",
+    "preconditions": "Full local stack + mock Paywiser; an entitled user with a `created` checkout\n`payment` row (subscribe without paying).",
+    "steps": [
+      "Emit each of the five known-inert types (`purchase.created`, `purchase.viewed`, `purchase.pending_execute`, `purchase.pending_charge`, `purchase.pending_refund`) via `POST /control/emit-webhook`.",
+      "Emit an unclassified type (e.g. `payment.charged_back`).",
+      "Emit `purchase.cancelled` for the user's unpaid purchase; re-emit it a second time.",
+      "Run `POST /cron/reconcile-payments`."
+    ],
+    "expected": "(1) each inert delivery ACKs 200 with **no** `paywiser_unhandled_event` alarm row\nand **no** `webhook_event` claim; (2) the unclassified type **still** raises the warning alarm; (3) the\npayment row goes terminal `cancelled` — tier stays `free`, no subscription, no notification — and the\nduplicate is a claim-level no-op (a `paid` row is never demoted); (4) reconcile no longer polls the\ncancelled purchase (nothing heals, row stays `cancelled`)."
   },
   {
     "id": "TC-590",
@@ -12624,6 +12720,52 @@
   {
     "id": "TC-600",
     "name": "Register type filter and search narrow the list client-side",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "41: Admin Billing Documents Register",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-648",
+    "name": "Register sort select reorders server-side; number sort is type-then-numeric; no Amount sort",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "41: Admin Billing Documents Register",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-649",
+    "name": "Register per-country breakdown is whole-period and reconciles with the totals strip",
+    "priority": "Medium",
+    "area": "Admin-app, Billing, VAT",
+    "areas": [
+      "Admin-app",
+      "Billing",
+      "VAT"
+    ],
+    "smoke": false,
+    "section": "41: Admin Billing Documents Register",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-650",
+    "name": "Register Export CSV is labelled and behaves as a full-period export",
     "priority": "Medium",
     "area": "Admin-app, Billing",
     "areas": [

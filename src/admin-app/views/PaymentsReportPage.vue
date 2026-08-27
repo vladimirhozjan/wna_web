@@ -2,6 +2,7 @@
   <div class="page">
     <div class="page-header">
       <h1 class="page-title">Payments</h1>
+      <Btn variant="secondary" size="sm" :loading="exporting" @click="handleExport">Export CSV</Btn>
     </div>
 
     <!-- Period filter -->
@@ -13,13 +14,28 @@
         <option :value="0">Whole year</option>
         <option v-for="(m, i) in MONTHS" :key="m" :value="i + 1">{{ m }}</option>
       </select>
+      <select v-model="status" class="text-body-s filter-select" @change="load">
+        <option value="">All statuses</option>
+        <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
+      </select>
+      <select v-model="kind" class="text-body-s filter-select" @change="load">
+        <option value="">All kinds</option>
+        <option value="initial">Initial</option>
+        <option value="renewal">Renewal</option>
+        <option value="refund">Refund</option>
+      </select>
+      <select v-model="sort" class="text-body-s filter-select" @change="load">
+        <option v-for="s in SORT_OPTIONS" :key="s.value" :value="s.value">{{ s.label }}</option>
+      </select>
     </div>
 
-    <!-- Totals -->
+    <!-- Totals (always whole-month, independent of filters) -->
     <div v-if="report" class="totals-card card">
       <Stat label="Payments" :value="report.totals?.count ?? 0" />
       <Stat label="Gross (EUR)" :value="formatEur(report.totals?.amount_minor)" />
       <Stat label="VAT (EUR)" :value="formatEur(report.totals?.vat_amount_minor)" />
+      <Stat label="Refunded (EUR)" :value="formatEur(report.totals?.refunded?.amount_minor)" />
+      <Stat label="Net (EUR)" :value="formatEur(report.totals?.net?.amount_minor)" />
     </div>
 
     <!-- VAT by country -->
@@ -71,8 +87,10 @@ import Pagination from '../components/Pagination.vue'
 import Badge from '../components/Badge.vue'
 import PaymentEvidence from '../components/PaymentEvidence.vue'
 import Stat from '../components/Stat.vue'
+import Btn from '../components/Btn.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
+import { downloadBlob } from '../scripts/core/downloadUtils.js'
 
 const toaster = errorModel()
 
@@ -80,9 +98,21 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
 const FIRST_PAYMENTS_YEAR = 2026
 
+const SORT_OPTIONS = [
+  { value: 'date_desc', label: 'Newest first' },
+  { value: 'date_asc', label: 'Oldest first' },
+  { value: 'country_asc', label: 'Country A–Z' },
+  { value: 'country_desc', label: 'Country Z–A' },
+  { value: 'status_asc', label: 'Status A–Z' },
+  { value: 'status_desc', label: 'Status Z–A' },
+]
+
 const now = new Date()
 const year = ref(now.getFullYear())
 const month = ref(now.getMonth() + 1)
+const status = ref('')
+const kind = ref('')
+const sort = ref('date_desc')
 
 const yearOptions = computed(() => {
   const years = []
@@ -117,16 +147,43 @@ const payments = computed(() => report.value?.payments ?? [])
 const pagedPayments = computed(() =>
     payments.value.slice((page.value - 1) * pageSize, page.value * pageSize))
 
+const statusOptions = computed(() => {
+  const facets = report.value?.status_facets ?? []
+  return status.value && !facets.includes(status.value) ? [status.value, ...facets] : facets
+})
+
 async function load() {
   loading.value = true
   page.value = 1
   try {
-    report.value = await apiClient.getPaymentsReport({ year: year.value, month: month.value })
+    report.value = await apiClient.getPaymentsReport({
+      year: year.value, month: month.value,
+      status: status.value, kind: kind.value, sort: sort.value,
+    })
   } catch (err) {
     toaster.push(err.message || 'Failed to load payments report')
     report.value = null
   } finally {
     loading.value = false
+  }
+}
+
+const exporting = ref(false)
+
+async function handleExport() {
+  exporting.value = true
+  try {
+    const blob = await apiClient.exportPaymentsReport({
+      year: year.value, month: month.value,
+      status: status.value, kind: kind.value, sort: sort.value,
+    })
+    const suffix = month.value ? `-${String(month.value).padStart(2, '0')}` : ''
+    downloadBlob(blob, `payments-${year.value}${suffix}.csv`)
+    toaster.success('Export downloaded')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to export payments report')
+  } finally {
+    exporting.value = false
   }
 }
 

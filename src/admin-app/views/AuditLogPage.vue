@@ -88,6 +88,7 @@ import Btn from '../components/Btn.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient from '../scripts/core/apiClient.js'
+import { downloadBlob } from '../scripts/core/downloadUtils.js'
 
 const auth = authModel()
 const toaster = errorModel()
@@ -225,17 +226,6 @@ async function handleExport() {
   } finally {
     exporting.value = false
   }
-}
-
-function downloadBlob(blob, filename) {
-  const url = window.URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  window.URL.revokeObjectURL(url)
-  a.remove()
 }
 
 onMounted(load)
