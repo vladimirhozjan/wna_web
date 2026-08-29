@@ -924,6 +924,39 @@ export async function resolveAllAlarms() {
     }
 }
 
+// --- Fiscal oversight endpoints ---
+
+export async function getFiscalStatus() {
+    try {
+        const res = await httpApi.get('/admin/fiscal/status')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function registerFiscalPremise() {
+    try {
+        const res = await httpApi.post('/admin/fiscal/register-premise')
+        return res.data
+    } catch (err) {
+        const data = err.response?.data
+        if (err.response?.status === 502 && data?.error_message) {
+            throw { status: 502, message: `FURS rejected the registration: ${data.error_message} (${data.error_code ?? '—'})` }
+        }
+        throw normalizeError(err)
+    }
+}
+
+export async function fiscalEcho() {
+    try {
+        const res = await httpApi.post('/admin/fiscal/echo')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -1001,6 +1034,9 @@ export default {
     exportBillingDocuments,
     getBillingDocumentInvoiceHtml,
     getBillingDocumentCreditNoteHtml,
+    getFiscalStatus,
+    registerFiscalPremise,
+    fiscalEcho,
     listBillingTemplates,
     createBillingTemplate,
     setBillingTemplateHidden,

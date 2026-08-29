@@ -227,7 +227,7 @@
             <template v-for="inv in invoices" :key="inv.id">
               <div class="history-row">
                 <div class="history-main">
-                  <span class="text-body-s fw-medium">{{ inv.invoice_number }}</span>
+                  <span class="text-body-s fw-medium">{{ inv.invoice_number }} <Badge type="fiscal" :value="inv.fiscal_status" /></span>
                   <span class="text-caption color-text-tertiary">
                     Issued {{ formatDate(inv.issued_at) }} · {{ formatEur(inv.amount_minor) }}
                   </span>

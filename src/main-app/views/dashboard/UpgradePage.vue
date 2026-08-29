@@ -142,6 +142,14 @@
               <span class="text-body-s upgrade-footer__hint">
                 Prices include VAT. You will be redirected to our payment provider to complete the purchase.
               </span>
+              <span class="text-footnote upgrade-footer__fiscal-notice">
+                Prodajalec mora za dobavo blaga ali storitev izdati račun in ga izročiti kupcu.
+                Kupec mora prevzeti račun in ga zadržati neposredno po odhodu iz poslovnega prostora.
+                (www.fu.gov.si/blagajne) — The seller must issue an invoice for the supplied goods or
+                services and hand it over to the buyer. The buyer must take the invoice and retain it
+                immediately after leaving the business premises. (Notice pursuant to Article 12 of the
+                Slovenian ZDavPR.)
+              </span>
               <Btn
                   variant="primary"
                   size="lg"
@@ -579,6 +587,10 @@ onMounted(() => {
 
 .upgrade-footer__hint {
   color: var(--color-text-secondary);
+}
+
+.upgrade-footer__fiscal-notice {
+  color: var(--color-text-tertiary);
 }
 
 .upgrade-footer__cta {

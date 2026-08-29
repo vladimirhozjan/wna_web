@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** June 22, 2026
+**Last updated:** August 29, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -143,6 +143,16 @@ Outside the 14-day withdrawal period, subscription fees are non-refundable excep
 ### 5.6 Price Changes
 
 We may change subscription prices with at least **30 days** notice. Price changes take effect at the start of the next billing cycle following the notice period. If you do not agree with a price change, you may cancel your subscription before the new price takes effect.
+
+### 5.7 Invoice Issuance and Fiscal Verification (Slovenia)
+
+For every purchase we issue an invoice and deliver it to you by email. Where required by the Slovenian Tax Verification of Invoices Act (Zakon o davčnem potrjevanju računov, ZDavPR), invoices are fiscally verified with the Financial Administration of the Republic of Slovenia (FURS).
+
+Notice pursuant to Article 12 of ZDavPR:
+
+> Prodajalec mora za dobavo blaga ali storitev izdati račun in ga izročiti kupcu. Kupec mora prevzeti račun in ga zadržati neposredno po odhodu iz poslovnega prostora. (www.fu.gov.si/blagajne)
+
+English translation, for information only: The seller must issue an invoice for the supplied goods or services and hand it over to the buyer. The buyer must take the invoice and retain it immediately after leaving the business premises.
 
 ## 6. Acceptable Use
 

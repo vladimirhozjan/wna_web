@@ -11,7 +11,7 @@ import { computed } from 'vue'
 const props = defineProps({
   type: {
     type: String,
-    default: 'role', // role, status, primary, active, pending, failed, draft
+    default: 'role', // role, status, fiscal, primary, active, pending, failed, draft
   },
   value: {
     type: String,
@@ -38,15 +38,35 @@ const STATUS_LABELS = {
   error: 'Error',
 }
 
+const FISCAL_LABELS = {
+  confirmed: 'Confirmed',
+  zoi_only_retrying: 'ZOI retrying',
+  rejected: 'Rejected',
+  not_required: 'Not required',
+}
+
+const FISCAL_GENERIC = {
+  confirmed: 'active',
+  zoi_only_retrying: 'pending',
+  rejected: 'failed',
+  not_required: 'draft',
+}
+
 const GENERIC_TYPES = ['primary', 'active', 'pending', 'failed', 'draft']
 
 const isGeneric = computed(() => GENERIC_TYPES.includes(props.type))
 
-const showDot = computed(() => isGeneric.value && props.type !== 'draft')
+const fiscalGeneric = computed(() => FISCAL_GENERIC[props.value] || 'draft')
+
+const showDot = computed(() => {
+  if (props.type === 'fiscal') return fiscalGeneric.value !== 'draft'
+  return isGeneric.value && props.type !== 'draft'
+})
 
 const label = computed(() => {
   if (props.type === 'role') return ROLE_LABELS[props.value] || props.value
   if (props.type === 'status') return STATUS_LABELS[props.value] || props.value
+  if (props.type === 'fiscal') return FISCAL_LABELS[props.value] || props.value
   return props.value || props.type
 })
 
@@ -58,6 +78,7 @@ const badgeClass = computed(() => {
     if (props.value === 'disabled' || props.value === 'refunded') return 'badge--status-disabled'
     return 'badge--status-pending'
   }
+  if (props.type === 'fiscal') return `badge--generic-${fiscalGeneric.value}`
   return ''
 })
 </script>

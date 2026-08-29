@@ -12,6 +12,54 @@
       </Btn>
     </div>
 
+    <!-- Fiscalization (FEAT-028) -->
+    <div v-if="fiscal" class="fiscal-card card">
+      <div class="fiscal-header">
+        <div class="fiscal-premise">
+          <StatusDot :color="premiseDotColor" />
+          <span class="text-body-m fw-semibold">Fiscalization</span>
+          <Badge v-if="!fiscal.enabled" type="draft" value="Disabled" />
+          <Badge v-else-if="fiscal.premise_status === 'registered'" type="active" value="Premise registered" />
+          <Badge v-else-if="fiscal.premise_status === 'failed'" type="failed" value="Premise registration failed" />
+          <Badge v-else type="pending" value="Premise unregistered" />
+          <span class="text-caption color-text-tertiary">
+            {{ fiscal.premise_id }} · {{ fiscal.env }}<template v-if="fiscal.premise_registered_at"> · registered {{ formatDate(fiscal.premise_registered_at) }}</template>
+          </span>
+        </div>
+        <div class="fiscal-actions">
+          <Btn
+              variant="secondary" size="sm"
+              :loading="echoing"
+              :disabled="!fiscal.enabled || echoing || registering"
+              title="FURS connectivity round trip"
+              @click="handleEcho"
+          >
+            Echo test
+          </Btn>
+          <Btn
+              variant="secondary" size="sm"
+              :loading="registering"
+              :disabled="!fiscal.enabled || echoing || registering"
+              @click="handleRegisterPremise"
+          >
+            Register premise
+          </Btn>
+        </div>
+      </div>
+      <div class="fiscal-stats">
+        <Stat label="Pending" :value="fiscal.counts?.pending ?? 0" />
+        <Stat label="Failed (retrying)" :value="fiscal.counts?.failed_retrying ?? 0" />
+        <Stat label="Rejected" :value="fiscal.counts?.rejected ?? 0" />
+        <Stat label="Confirmed" :value="fiscal.counts?.confirmed ?? 0" />
+        <Stat
+            label="Oldest open"
+            :value="formatAge(fiscal.oldest_open_age_seconds)"
+            :trend="fiscal.oldest_open_created_at ? `since ${formatDate(fiscal.oldest_open_created_at)}` : ''"
+        />
+        <Stat label="Country mismatches" :value="fiscal.mismatch_30d ?? 0" trend="last 30 days" />
+      </div>
+    </div>
+
     <!-- Period filter -->
     <div class="filters">
       <select v-model.number="year" class="text-body-s filter-select" @change="load">
@@ -114,6 +162,9 @@
       <template #cell-vat_amount_minor="{ row, value }">
         {{ value != null ? formatSignedEur(row, value) : '—' }}
       </template>
+      <template #cell-fiscal_status="{ value }">
+        <Badge type="fiscal" :value="value" />
+      </template>
       <template #cell-actions="{ row }">
         <Btn
             variant="icon" size="sm"
@@ -178,15 +229,18 @@ import Pagination from '../components/Pagination.vue'
 import Badge from '../components/Badge.vue'
 import Btn from '../components/Btn.vue'
 import Stat from '../components/Stat.vue'
+import StatusDot from '../components/StatusDot.vue'
 import Spinner from '../components/Spinner.vue'
 import Modal from '../components/Modal.vue'
 import SearchInput from '../components/SearchInput.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient from '../scripts/core/apiClient.js'
 import { downloadBlob } from '../scripts/core/downloadUtils.js'
 import { downloadDocumentPdf } from '../../shared/invoicePdf.js'
 
 const toaster = errorModel()
+const confirm = confirmModel()
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -227,6 +281,7 @@ const columns = [
   { key: 'amount_minor', label: 'Gross (EUR)', width: '110px' },
   { key: 'vat_rate', label: 'VAT Rate', width: '100px' },
   { key: 'vat_amount_minor', label: 'VAT (EUR)', width: '100px' },
+  { key: 'fiscal_status', label: 'Fiscal', width: '110px' },
   { key: 'actions', label: '', width: '50px' },
 ]
 
@@ -241,6 +296,10 @@ const countryColumns = [
   { key: 'net_gross', label: 'Net Gross (EUR)' },
   { key: 'net_vat', label: 'Net VAT (EUR)' },
 ]
+
+const fiscal = ref(null)
+const echoing = ref(false)
+const registering = ref(false)
 
 const register = ref(null)
 const loading = ref(false)
@@ -287,6 +346,62 @@ async function load() {
     register.value = null
   } finally {
     loading.value = false
+  }
+}
+
+const premiseDotColor = computed(() => {
+  if (!fiscal.value?.enabled) return 'gray'
+  if (fiscal.value.premise_status === 'registered') return 'green'
+  if (fiscal.value.premise_status === 'failed') return 'red'
+  return 'yellow'
+})
+
+function formatAge(seconds) {
+  if (seconds == null) return '—'
+  const m = Math.floor(seconds / 60)
+  if (m < 60) return `${m}m`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ${m % 60}m`
+  return `${Math.floor(h / 24)}d ${h % 24}h`
+}
+
+async function loadFiscal() {
+  try {
+    fiscal.value = await apiClient.getFiscalStatus()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to load fiscalization status')
+  }
+}
+
+async function handleEcho() {
+  echoing.value = true
+  try {
+    await apiClient.fiscalEcho()
+    toaster.success('FURS echo OK')
+  } catch (err) {
+    toaster.push(`FURS echo failed: ${err.message || 'unknown error'}`)
+  } finally {
+    echoing.value = false
+  }
+}
+
+async function handleRegisterPremise() {
+  const confirmed = await confirm.show({
+    title: 'Register premise',
+    message: `Submit business premise "${fiscal.value?.premise_id}" to FURS (${fiscal.value?.env})? Re-registering an existing premise updates it.`,
+    confirmText: 'Register',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+  registering.value = true
+  try {
+    await apiClient.registerFiscalPremise()
+    toaster.success('Premise registered with FURS')
+  } catch (err) {
+    toaster.push(err.message || 'Premise registration failed')
+  } finally {
+    registering.value = false
+    loadFiscal()
   }
 }
 
@@ -381,7 +496,10 @@ async function downloadDocument(doc) {
 
 watch([typeFilter, search], () => { page.value = 1 })
 
-onMounted(load)
+onMounted(() => {
+  load()
+  loadFiscal()
+})
 </script>
 
 <style scoped>
@@ -415,6 +533,40 @@ onMounted(load)
 .filter-select:focus {
   outline: none;
   border-color: var(--color-input-border-focus);
+}
+
+.fiscal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.fiscal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fiscal-premise {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fiscal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fiscal-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
 }
 
 .totals-card {

@@ -13379,5 +13379,113 @@
       "Issue a credit note against the invoice (admin `POST …/invoices/{id}/credit-note`); render its HTML."
     ],
     "expected": "The name is stored **escaped** in the frozen document data (`v3` invoice /\n`credit_note_v4` templates — BUG-034 Defect B) and both documents render it as **literal text**\n(`Smith &amp; Sons &lt;b&gt;x&lt;/b&gt;` in the HTML; the preview iframe displays the raw characters);\nthe raw markup never appears in either document. The credit note mirrors the invoice's buyer block (R3/R4)."
+  },
+  {
+    "id": "TC-651",
+    "name": "Subscribe without any save-card opt-in — next cycle charges automatically",
+    "priority": "High",
+    "area": "Billing, Webhooks",
+    "areas": [
+      "Billing",
+      "Webhooks"
+    ],
+    "smoke": false,
+    "section": "50: Renewal Auto-Charge (BUG-037)",
+    "preconditions": "Free user; a subscribable template (dev: short renewal period).",
+    "steps": [
+      "Subscribe through the hosted checkout paying without ticking any save-card option (the checkbox must not be offered — the template carries `force_recurring: true`, BUG-037).",
+      "Wait for the next billing cycle."
+    ],
+    "expected": "The renewal is **charged automatically** (gateway shows the renewal purchase as\n**Paid**, not \"Invoice sent\"); WNA receives `purchase.paid`, extends the tier, issues its invoice and\nthe `subscription_extended` notification. No payable invoice email is sent by the gateway."
+  },
+  {
+    "id": "TC-652",
+    "name": "Fiscalization card — premise state and backlog counters",
+    "priority": "High",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-653",
+    "name": "Fiscalization card — disabled state",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-654",
+    "name": "Echo test button — FURS round trip",
+    "priority": "Medium",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-655",
+    "name": "Register premise — confirm, success, and FURS rejection surfaced",
+    "priority": "High",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-656",
+    "name": "Fiscal-status badges — register column and user-detail invoice list",
+    "priority": "High",
+    "area": "Admin-app, Billing",
+    "areas": [
+      "Admin-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-657",
+    "name": "ZDavPR čl. 12 notice — checkout and Terms of Service",
+    "priority": "High",
+    "area": "Main-app, Billing",
+    "areas": [
+      "Main-app",
+      "Billing"
+    ],
+    "smoke": false,
+    "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
   }
 ]
