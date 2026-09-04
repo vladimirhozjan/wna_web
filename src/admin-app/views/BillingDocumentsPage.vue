@@ -44,6 +44,9 @@
           >
             Register premise
           </Btn>
+          <span v-if="fiscal.premise_status === 'registered'" class="text-caption color-text-tertiary fiscal-registration">
+            premise {{ fiscal.premise_id }} · invoice device {{ fiscal.invoice_device_id }} · credit note device {{ fiscal.credit_note_device_id }} · {{ fiscal.env }}
+          </span>
         </div>
       </div>
       <div class="fiscal-stats">
@@ -561,6 +564,13 @@ onMounted(() => {
 .fiscal-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.fiscal-registration {
+  flex-basis: 100%;
+  text-align: right;
 }
 
 .fiscal-stats {
