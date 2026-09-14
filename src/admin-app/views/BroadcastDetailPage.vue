@@ -357,9 +357,9 @@ onUnmounted(() => clearInterval(pollTimer))
 }
 
 .info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
 }
 
 .info-row {
