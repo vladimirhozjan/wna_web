@@ -270,7 +270,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ### Dependency Policy
 - **Minimize dependencies** — prefer vanilla JS/CSS
 - No state management libraries (Pinia/Vuex), no CSS frameworks (Tailwind/Bootstrap), no heavy UI component libraries
-- Current deps: vue 3.5, vue-router 4.6, axios 1.13, date-fns 4.1, chart.js 4.5, vue-chartjs 5.3, vue-draggable-plus 0.6, marked 17.0, qrcode 1.5
+- Current deps: vue 3.5, vue-router 4.6, axios 1.13, date-fns 4.1, chart.js 4.5, vue-chartjs 5.3, vue-draggable-plus 0.6, marked 17.0, qrcode 1.5, html2canvas 1.4, jspdf 4.2
 
 ## Tech Constraints
 
