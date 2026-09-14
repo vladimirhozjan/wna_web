@@ -119,6 +119,13 @@ const ACTION_OPTIONS = [
   'alarm_acknowledged',
   'alarm_resolved',
   'alarm_resolved_all',
+  'broadcast_created',
+  'broadcast_updated',
+  'broadcast_deleted',
+  'broadcast_copied',
+  'broadcast_test_sent',
+  'broadcast_sent',
+  'broadcast_retry_failed',
 ]
 
 const ACTION_LABELS = {
@@ -146,6 +153,13 @@ const ACTION_LABELS = {
   alarm_acknowledged: 'Alarm Acknowledged',
   alarm_resolved: 'Alarm Resolved',
   alarm_resolved_all: 'All Alarms Resolved',
+  broadcast_created: 'Broadcast Created',
+  broadcast_updated: 'Broadcast Updated',
+  broadcast_deleted: 'Broadcast Deleted',
+  broadcast_copied: 'Broadcast Copied',
+  broadcast_test_sent: 'Broadcast Test Sent',
+  broadcast_sent: 'Broadcast Sent',
+  broadcast_retry_failed: 'Broadcast Retry Failed',
 }
 
 const columns = [

@@ -957,6 +957,107 @@ export async function fiscalEcho() {
     }
 }
 
+// --- Broadcast endpoints ---
+
+export async function getBroadcasts(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/broadcasts', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getBroadcast(id) {
+    try {
+        const res = await httpApi.get(`/admin/broadcasts/${id}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getBroadcastShell() {
+    try {
+        const res = await httpApi.get('/admin/broadcasts/shell')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getBroadcastRecipientCount() {
+    try {
+        const res = await httpApi.get('/admin/broadcasts/recipient-count')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createBroadcast(data) {
+    try {
+        const res = await httpApi.post('/admin/broadcasts', data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateBroadcast(id, data) {
+    try {
+        const res = await httpApi.put(`/admin/broadcasts/${id}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteBroadcast(id) {
+    try {
+        const res = await httpApi.delete(`/admin/broadcasts/${id}`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function copyBroadcast(id) {
+    try {
+        const res = await httpApi.post(`/admin/broadcasts/${id}/copy`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function testBroadcast(id) {
+    try {
+        const res = await httpApi.post(`/admin/broadcasts/${id}/test`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function sendBroadcast(id) {
+    try {
+        const res = await httpApi.post(`/admin/broadcasts/${id}/send`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function retryFailedBroadcast(id) {
+    try {
+        const res = await httpApi.post(`/admin/broadcasts/${id}/retry-failed`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -1050,4 +1151,15 @@ export default {
     ackAlarm,
     resolveAlarm,
     resolveAllAlarms,
+    getBroadcasts,
+    getBroadcast,
+    getBroadcastShell,
+    getBroadcastRecipientCount,
+    createBroadcast,
+    updateBroadcast,
+    deleteBroadcast,
+    copyBroadcast,
+    testBroadcast,
+    sendBroadcast,
+    retryFailedBroadcast,
 }

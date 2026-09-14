@@ -83,6 +83,12 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2a5 5 0 0 0-5 5v3.5L3 14h14l-2-3.5V7a5 5 0 0 0-5-5z"/><path d="M8 16.5a2 2 0 0 0 4 0"/></svg>'
   },
   {
+    label: 'Broadcasts',
+    route: '/broadcasts',
+    minRole: 'viewer',
+    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8v4h3l6 4V4L6 8H3z"/><path d="M14.5 7.5a3.5 3.5 0 0 1 0 5"/><path d="M16.5 5a6.5 6.5 0 0 1 0 10"/></svg>'
+  },
+  {
     label: 'System Health',
     route: '/health',
     minRole: 'viewer',

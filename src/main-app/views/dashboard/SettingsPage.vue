@@ -517,7 +517,21 @@
               </div>
             </div>
 
-            <p class="text-body-s settings-hint settings-info-note">In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled.</p>
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Announcements</span>
+                <p class="text-body-s settings-hint">Product news and feature announcements</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.announcement }">
+                <span v-if="notifications.state.saving.announcement" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="announcement" :disabled="!notifications.state.emailEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <p class="text-body-s settings-hint settings-info-note">In-app notifications are always on. Security emails (verification, password reset, login alerts) and service notices (terms, maintenance, security) cannot be disabled.</p>
           </div>
         </div>
 
@@ -664,7 +678,7 @@ const SECTION_KEYWORDS = {
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
   review: 'review weekly sidebar',
-  notifications: 'notifications email reminder daily digest next actions project',
+  notifications: 'notifications email reminder daily digest next actions project announcements',
   about: 'about version',
 }
 
@@ -1032,6 +1046,11 @@ const delegationCompleted = computed({
 const connectionInvite = computed({
   get: () => notifications.state.connectionInvite,
   set: (val) => notifications.setConnectionInvite(val).catch(() => toaster.push('Failed to save notification setting'))
+})
+
+const announcement = computed({
+  get: () => notifications.state.announcement,
+  set: (val) => notifications.setAnnouncement(val).catch(() => toaster.push('Failed to save notification setting'))
 })
 
 const positionOptions = [

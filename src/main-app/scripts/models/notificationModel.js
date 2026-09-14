@@ -17,6 +17,7 @@ export function notificationModel() {
         delegatedToYou: true,
         delegationCompleted: true,
         connectionInvite: true,
+        announcement: true,
 
         loading: false,
         loaded: false,
@@ -27,6 +28,7 @@ export function notificationModel() {
             delegatedToYou: false,
             delegationCompleted: false,
             connectionInvite: false,
+            announcement: false,
         },
         error: null,
     })
@@ -45,6 +47,7 @@ export function notificationModel() {
         state.delegatedToYou = !isDisabled('delegated_to_you')
         state.delegationCompleted = !isDisabled('delegation_completed')
         state.connectionInvite = !isDisabled('connection_invite')
+        state.announcement = !isDisabled('announcement')
     }
 
     function buildDisabledEmail() {
@@ -54,6 +57,7 @@ export function notificationModel() {
         if (!state.delegatedToYou) disabled.push('delegated_to_you')
         if (!state.delegationCompleted) disabled.push('delegation_completed')
         if (!state.connectionInvite) disabled.push('connection_invite')
+        if (!state.announcement) disabled.push('announcement')
         return disabled
     }
 
@@ -133,6 +137,10 @@ export function notificationModel() {
         return toggleEvent('connectionInvite', 'connection_invite', value)
     }
 
+    async function setAnnouncement(value) {
+        return toggleEvent('announcement', 'announcement', value)
+    }
+
     instance = {
         state,
         load,
@@ -142,6 +150,7 @@ export function notificationModel() {
         setDelegatedToYou,
         setDelegationCompleted,
         setConnectionInvite,
+        setAnnouncement,
     }
 
     return instance

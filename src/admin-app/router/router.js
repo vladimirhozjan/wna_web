@@ -116,6 +116,24 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'viewer' }
             },
             {
+                path: 'broadcasts',
+                name: 'broadcasts',
+                component: () => import('../views/BroadcastsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'viewer' }
+            },
+            {
+                path: 'broadcasts/new',
+                name: 'broadcast-new',
+                component: () => import('../views/BroadcastDetailPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
+                path: 'broadcasts/:id',
+                name: 'broadcast-detail',
+                component: () => import('../views/BroadcastDetailPage.vue'),
+                meta: { requiresAuth: true, minRole: 'viewer' }
+            },
+            {
                 path: 'health',
                 name: 'health',
                 component: () => import('../views/SystemHealthPage.vue'),

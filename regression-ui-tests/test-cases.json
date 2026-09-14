@@ -9853,10 +9853,10 @@
       "Scroll to the Notifications section.",
       "Verify the first toggle in the section is labelled \"Email notifications\".",
       "Verify the hint text reads \"Receive email notifications for tasks and reminders\".",
-      "Verify all five individual event toggles appear below the master toggle, in this order: \"Daily digest\", \"Project needs next action\", \"Delegated to you\", \"Delegation completed\", \"Connection invitations\".",
-      "Verify the footer reads: \"In-app notifications are always on. Security emails (verification, password reset, login alerts) cannot be disabled.\""
+      "Verify all six individual event toggles appear below the master toggle, in this order: \"Daily digest\", \"Project needs next action\", \"Delegated to you\", \"Delegation completed\", \"Connection invitations\", \"Announcements\".",
+      "Verify the footer reads: \"In-app notifications are always on. Security emails (verification, password reset, login alerts) and service notices (terms, maintenance, security) cannot be disabled.\""
     ],
-    "expected": "The Notifications section displays a master \"Email notifications\" toggle at the top, followed by five individual event toggles (one per disableable email event). The master toggle has its own saving spinner area. The in-app/security clarification footer is rendered."
+    "expected": "The Notifications section displays a master \"Email notifications\" toggle at the top, followed by six individual event toggles (one per disableable email event). The master toggle has its own saving spinner area. The in-app/security clarification footer is rendered."
   },
   {
     "id": "TC-379",
@@ -13484,6 +13484,249 @@
     ],
     "smoke": false,
     "section": "51: FURS Fiscalization Surfaces (FEAT-028)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-658",
+    "name": "Announcements Toggle - Displayed",
+    "priority": "High",
+    "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "User is logged in; notification settings are at defaults (everything enabled).",
+    "steps": [
+      "Navigate to /settings.",
+      "Scroll to the Notifications section.",
+      "Verify the last individual toggle below the master toggle is labelled \"Announcements\".",
+      "Verify its hint text reads \"Product news and feature announcements\".",
+      "Verify the toggle is ON."
+    ],
+    "expected": "An \"Announcements\" toggle renders after \"Connection invitations\", enabled by default, with the same row layout and saving-spinner area as the other event toggles."
+  },
+  {
+    "id": "TC-659",
+    "name": "Announcements Toggle - Disabled When Master Off",
+    "priority": "High",
+    "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "User is logged in.",
+    "steps": [
+      "Navigate to /settings → Notifications.",
+      "Turn the master \"Email notifications\" toggle OFF.",
+      "Verify the \"Announcements\" toggle is greyed out and cannot be clicked.",
+      "Turn the master toggle back ON.",
+      "Verify the \"Announcements\" toggle is interactive again and shows its previous state."
+    ],
+    "expected": "The Announcements toggle follows the master toggle exactly like the other five event toggles: disabled while the master is OFF, restored (with its previous value) when the master is ON."
+  },
+  {
+    "id": "TC-660",
+    "name": "Announcements Opt-Out - Persists on Reload",
+    "priority": "High",
+    "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "User is logged in; master email toggle ON.",
+    "steps": [
+      "Navigate to /settings → Notifications.",
+      "Turn the \"Announcements\" toggle OFF.",
+      "Verify `PUT /v1/notification/settings` is sent with `disabled_events.email` containing `announcement` (and no other newly disabled event).",
+      "Reload the page and expand the Notifications section.",
+      "Verify \"Announcements\" is still OFF and every other event toggle kept its state.",
+      "Turn \"Announcements\" back ON and verify the PUT body no longer contains `announcement`."
+    ],
+    "expected": "The opt-out maps 1:1 to the `announcement` event in `disabled_events.email`; the server-side state is reflected after reload; re-enabling removes the event from the list."
+  },
+  {
+    "id": "TC-661",
+    "name": "Notifications Footer Note - Service Notices Wording",
+    "priority": "Medium",
+    "area": "Settings",
+    "areas": [
+      "Settings"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "User is logged in.",
+    "steps": [
+      "Navigate to /settings → Notifications.",
+      "Read the note below the last toggle."
+    ],
+    "expected": "The footer reads exactly: \"In-app notifications are always on. Security emails (verification, password reset, login alerts) and service notices (terms, maintenance, security) cannot be disabled.\""
+  },
+  {
+    "id": "TC-662",
+    "name": "Broadcasts list — columns, badges, sidebar entry",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-663",
+    "name": "Broadcasts list — role gating of write actions",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-664",
+    "name": "Broadcasts list — Copy and Delete",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-665",
+    "name": "Broadcasts list — 30 s poll while sending",
+    "priority": "Medium",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-666",
+    "name": "New broadcast — prefilled shell, kind select, Save draft",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-667",
+    "name": "Broadcast editor — WYSIWYG toolbar emits inline-styled tags",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-668",
+    "name": "Broadcast editor — Raw tab and shared HTML string",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-669",
+    "name": "Broadcast editor — email-safe sanitization (paste and raw)",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-670",
+    "name": "Send test to me",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-671",
+    "name": "Send to all — confirm dialog with kind and live recipient count",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
+    "preconditions": "",
+    "steps": [],
+    "expected": ""
+  },
+  {
+    "id": "TC-672",
+    "name": "Sent broadcast — read-only view, Retry failed, failed → Resume send",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "52: Admin Broadcast Email (FEAT-033)",
     "preconditions": "",
     "steps": [],
     "expected": ""
