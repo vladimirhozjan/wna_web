@@ -179,12 +179,13 @@
           <div class="info-row expiration-row">
             <div class="action-info">
               <span class="text-caption color-text-tertiary">Tier changes here never touch Paywiser billing — use Cancel on Paywiser to stop charges</span>
+              <span class="text-caption color-text-secondary">{{ paywiserCaption }}</span>
             </div>
             <div class="action-control">
               <Btn
                   variant="ghost-danger" size="sm"
                   :loading="cancelSaving"
-                  :disabled="subSaving || cancelSaving"
+                  :disabled="subSaving || cancelSaving || paywiserState !== 'active'"
                   @click="handleCancelPaywiser"
               >
                 Cancel on Paywiser
@@ -495,6 +496,19 @@ const subPeriod = ref('monthly')
 const subExpiryInput = ref('')
 const subSaving = ref(false)
 const cancelSaving = ref(false)
+// 'checking' | 'active' | <paywiser status verbatim> | 'no-subscription' | 'unreachable'
+const paywiserState = ref('checking')
+const paywiserNextCharge = ref(null)
+
+const paywiserCaption = computed(() => {
+  switch (paywiserState.value) {
+    case 'checking': return 'Checking Paywiser…'
+    case 'active': return `Next charge on ${formatDate(paywiserNextCharge.value)}`
+    case 'no-subscription': return 'No Paywiser subscription'
+    case 'unreachable': return 'Paywiser unreachable'
+    default: return paywiserState.value
+  }
+})
 
 // invoice rows carry no amount — taken from the backing payment
 const invoices = computed(() => payments.value
@@ -545,6 +559,24 @@ async function loadInboxEmail() {
 function formatDate(val) {
   if (!val) return '—'
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
+}
+
+// Fired after the user-detail load, never awaited by the page; any failure lands in 'unreachable'.
+async function loadPaywiserSubscription() {
+  if (!hasMinRole(role.value, 'admin')) return
+  paywiserState.value = 'checking'
+  paywiserNextCharge.value = null
+  try {
+    const data = await apiClient.getPaywiserSubscription(route.params.id)
+    if (!data?.present) {
+      paywiserState.value = 'no-subscription'
+      return
+    }
+    paywiserState.value = data.status
+    paywiserNextCharge.value = data.next_charge_on || null
+  } catch {
+    paywiserState.value = 'unreachable'
+  }
 }
 
 function formatEur(minor) {
@@ -701,6 +733,7 @@ async function handleSaveSubscription() {
     toaster.success(free ? 'Subscription removed' : 'Subscription updated')
     await load()
     await loadPayments()
+    loadPaywiserSubscription()
   } catch (err) {
     toaster.push(err.message || 'Failed to set subscription')
   } finally {
@@ -723,6 +756,7 @@ async function handleCancelPaywiser() {
     toaster.success('Paywiser subscription cancelled — billing stops at period end')
     await load()
     await loadPayments()
+    loadPaywiserSubscription()
   } catch (err) {
     if (err.status === 404) {
       toaster.push('Nothing to cancel on Paywiser')
@@ -830,7 +864,7 @@ async function confirmDelete() {
 }
 
 onMounted(() => {
-  load()
+  load().then(loadPaywiserSubscription)
   loadInboxEmail()
   loadPayments()
 })

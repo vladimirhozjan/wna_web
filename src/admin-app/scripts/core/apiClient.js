@@ -738,6 +738,15 @@ export async function cancelPaywiser(userId) {
     }
 }
 
+export async function getPaywiserSubscription(userId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/paywiser-subscription`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getPlatformUserInvoiceHtml(userId, invoiceId) {
     try {
         const res = await httpApi.get(`/admin/platform-users/${userId}/invoices/${invoiceId}/html`, { responseType: 'text' })
@@ -1129,6 +1138,7 @@ export default {
     issueCreditNote,
     setSubscription,
     cancelPaywiser,
+    getPaywiserSubscription,
     getPlatformUserInvoiceHtml,
     getPlatformUserCreditNoteHtml,
     getBillingDocuments,
