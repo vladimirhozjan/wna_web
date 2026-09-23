@@ -11,6 +11,7 @@
           :disabled="disabled"
           @input="onInput"
           @focus="open = true"
+          @click="open = true"
           @keydown.esc="open = false"
           @keydown.enter="open = false"
           @blur="open = false"
@@ -78,6 +79,7 @@ function onInput(e) {
 function selectOption(value) {
   emit('update:modelValue', value)
   open.value = false
+  inputRef.value?.blur()
 }
 
 function onClickOutside(e) {

@@ -12,9 +12,10 @@
           :disabled="disabled"
           @input="onHourInput"
           @focus="open = 'hour'"
+          @click="open = 'hour'"
           @keydown.esc="open = null"
           @keydown.enter="open = null"
-          @blur="open = null"
+          @blur="onBlur"
       />
       <span class="text-body-m ti-sep">:</span>
       <input
@@ -28,15 +29,16 @@
           :disabled="disabled"
           @input="onMinuteInput"
           @focus="open = 'minute'"
+          @click="open = 'minute'"
           @keydown.esc="open = null"
           @keydown.enter="open = null"
-          @blur="open = null"
+          @blur="onBlur"
       />
       <span v-if="is12h" class="text-body-m ti-period" @mousedown.prevent @click.stop="togglePeriod">{{ period }}</span>
       <ChevronDownIcon class="ti-arrow" width="10" height="6" />
     </div>
     <!-- Hour dropdown -->
-    <div v-if="open === 'hour'" class="ti-dropdown">
+    <div v-if="open === 'hour'" ref="dropdownRef" class="ti-dropdown">
       <div
           v-for="h in hourOptions"
           :key="h.value"
@@ -46,7 +48,7 @@
       >{{ h.label }}</div>
     </div>
     <!-- Minute dropdown -->
-    <div v-if="open === 'minute'" class="ti-dropdown">
+    <div v-if="open === 'minute'" ref="dropdownRef" class="ti-dropdown">
       <div
           v-for="m in minuteOptions"
           :key="m"
@@ -59,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { settingsModel } from '../scripts/models/settingsModel.js'
 import ChevronDownIcon from '../assets/ChevronDownIcon.vue'
 
@@ -74,6 +76,7 @@ const settings = settingsModel()
 const wrapper = ref(null)
 const hourRef = ref(null)
 const minuteRef = ref(null)
+const dropdownRef = ref(null)
 const open = ref(null)
 
 const is12h = computed(() => settings.getCalendarSettings().timeFormat === '12h')
@@ -161,13 +164,19 @@ function onMinuteInput(e) {
 
 function selectHour(h) {
   emitTime(to24h(h, period.value), minute.value)
-  open.value = 'minute'
   minuteRef.value?.focus()
+  open.value = 'minute'
+}
+
+function onBlur(e) {
+  if (wrapper.value?.contains(e.relatedTarget)) return
+  open.value = null
 }
 
 function selectMinute(m) {
   emitTime(hour24.value, m)
   open.value = null
+  minuteRef.value?.blur()
 }
 
 function togglePeriod() {
@@ -177,6 +186,8 @@ function togglePeriod() {
 }
 
 function onClickOutside(e) {
+  // A picked hour option is already unmounted by the time this runs; it is not an outside click
+  if (!e.target.isConnected) return
   if (wrapper.value && !wrapper.value.contains(e.target)) {
     open.value = null
   }
@@ -187,6 +198,15 @@ function focus() {
 }
 
 defineExpose({ focus })
+
+// Open with the current (or default 09:00) value as the first visible row
+watch(open, async (val) => {
+  if (!val) return
+  await nextTick()
+  const list = dropdownRef.value
+  const active = list?.querySelector('.ti-option--active')
+  if (list && active) list.scrollTop = active.offsetTop
+})
 
 onMounted(() => document.addEventListener('mousedown', onClickOutside))
 onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
