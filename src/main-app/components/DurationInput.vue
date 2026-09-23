@@ -13,6 +13,7 @@
           @focus="open = true"
           @keydown.esc="open = false"
           @keydown.enter="open = false"
+          @blur="open = false"
       />
       <span class="text-body-s dur-unit">min</span>
       <ChevronDownIcon class="dur-arrow" width="10" height="6" />

@@ -14,6 +14,7 @@
           @focus="open = 'hour'"
           @keydown.esc="open = null"
           @keydown.enter="open = null"
+          @blur="open = null"
       />
       <span class="text-body-m ti-sep">:</span>
       <input
@@ -29,8 +30,9 @@
           @focus="open = 'minute'"
           @keydown.esc="open = null"
           @keydown.enter="open = null"
+          @blur="open = null"
       />
-      <span v-if="is12h" class="text-body-m ti-period" @click.stop="togglePeriod">{{ period }}</span>
+      <span v-if="is12h" class="text-body-m ti-period" @mousedown.prevent @click.stop="togglePeriod">{{ period }}</span>
       <ChevronDownIcon class="ti-arrow" width="10" height="6" />
     </div>
     <!-- Hour dropdown -->

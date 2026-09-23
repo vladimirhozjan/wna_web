@@ -3601,9 +3601,11 @@
       "Click the \":\" separator or the chevron and verify the hour segment gets focus with its dropdown open",
       "Pick an hour from the dropdown and verify focus moves to the minute segment with the minute dropdown open",
       "With the minute dropdown open, type a value and press Enter; verify the dropdown closes and the typed minutes stay",
-      "Click the duration input so its dropdown opens, type a value, press Enter; verify the dropdown closes and the value stays"
+      "Click the duration input so its dropdown opens, type a value, press Enter; verify the dropdown closes and the value stays",
+      "Click the minute segment (dropdown open) and press Tab; verify the minute dropdown closes, the time field loses its focus highlight, and the duration input gains focus with its dropdown open",
+      "Press Tab again; verify the duration dropdown closes and the duration field loses its highlight"
     ],
-    "expected": "Clicking a segment of the time input focuses that segment and opens its own dropdown; clicking the minute segment never bounces focus back to the hour segment. Clicking the field chrome outside the inputs focuses the hour segment. Enter closes the open time or duration dropdown without discarding the typed value (Escape does the same)."
+    "expected": "Clicking a segment of the time input focuses that segment and opens its own dropdown; clicking the minute segment never bounces focus back to the hour segment. Clicking the field chrome outside the inputs focuses the hour segment. Enter closes the open time or duration dropdown without discarding the typed value (Escape does the same). Moving focus away with Tab closes the open dropdown and removes the field highlight."
   },
   {
     "id": "TC-138",
