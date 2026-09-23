@@ -168,12 +168,12 @@
     --color-toast-success-text: #86efac;
 
     /* Calendar — scheduled/deferred inherit from accent vars automatically */
-    --color-calendar-today-bg: rgba(245, 158, 11, 0.15);
-    --color-calendar-today-border: #f59e0b;
+    --color-calendar-today-bg: var(--color-bg-accent-light);
+    --color-calendar-today-border: var(--color-action);
     --color-calendar-grid-line: #222222;
     --color-calendar-hour-text: #555555;
-    --color-calendar-weekend-bg: #0e0e0e;
-    --color-calendar-outside-business: #0c0c0c;
+    --color-calendar-weekend-bg: var(--color-app-background);
+    --color-calendar-outside-business: var(--color-app-background);
     /* Calendar: start_after */
     --color-calendar-start: rgba(22, 163, 74, 0.15);
     --color-calendar-start-border: #22c55e;

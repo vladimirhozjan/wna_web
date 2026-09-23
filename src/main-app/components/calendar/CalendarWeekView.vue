@@ -606,7 +606,7 @@ onUnmounted(() => {
 }
 
 .week-view__column--today {
-  background: rgba(254, 243, 199, 0.3);
+  background: color-mix(in srgb, var(--color-calendar-today-bg) 30%, transparent);
 }
 
 .week-view__cell {
