@@ -776,8 +776,8 @@ const FROM_LABELS = {
 // Computed
 const isCompleted = computed(() => project.value?.state === 'COMPLETED')
 const isSomeday = computed(() => project.value?.state === 'SOMEDAY')
-// Mirrors next_action_id (the NEXT-state action) so this warning agrees with the sidebar dot and Engage nudge.
-const hasNextAction = computed(() => orderedActions.value.some(a => a.state === 'NEXT'))
+// Mirrors next_action_id (backlog position 0, whatever its list) so this warning agrees with the sidebar dot and Engage nudge.
+const hasNextAction = computed(() => orderedActions.value.some(a => a.backlog_position === 0))
 
 // Shared-project state
 const ROLE_OPTIONS = [
