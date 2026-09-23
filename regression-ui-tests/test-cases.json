@@ -3603,9 +3603,12 @@
       "With the minute dropdown open, type a value and press Enter; verify the dropdown closes and the typed minutes stay",
       "Click the duration input so its dropdown opens, type a value, press Enter; verify the dropdown closes and the value stays",
       "Click the minute segment (dropdown open) and press Tab; verify the minute dropdown closes, the time field loses its focus highlight, and the duration input gains focus with its dropdown open",
-      "Press Tab again; verify the duration dropdown closes and the duration field loses its highlight"
+      "Press Tab again; verify the duration dropdown closes and the duration field loses its highlight",
+      "Open the hour dropdown on an action with no time set; verify \"09\" is the first visible row and you can scroll up to \"00\" and down to \"23\"",
+      "Set the time to 15:23 with Save, reopen the editor and open the hour and then the minute dropdown; verify \"15\" and \"20\" are the first visible rows",
+      "Pick an hour, then pick a minute; verify the picker closes and neither time input keeps focus. Pick a duration; verify the same"
     ],
-    "expected": "Clicking a segment of the time input focuses that segment and opens its own dropdown; clicking the minute segment never bounces focus back to the hour segment. Clicking the field chrome outside the inputs focuses the hour segment. Enter closes the open time or duration dropdown without discarding the typed value (Escape does the same). Moving focus away with Tab closes the open dropdown and removes the field highlight."
+    "expected": "Clicking a segment of the time input focuses that segment and opens its own dropdown; clicking the minute segment never bounces focus back to the hour segment. Clicking the field chrome outside the inputs focuses the hour segment. Enter closes the open time or duration dropdown without discarding the typed value (Escape does the same). Moving focus away with Tab closes the open dropdown and removes the field highlight. A dropdown opens scrolled so the current hour or minute (09:00 when no time is set) is its first visible row. Picking a minute or a duration closes the list and drops focus."
   },
   {
     "id": "TC-138",
