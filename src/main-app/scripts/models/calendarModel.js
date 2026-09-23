@@ -5,6 +5,7 @@ import {
     getDateRange,
     isOverdue,
     isScheduledOverdue,
+    subDays,
 } from '../core/dateUtils.js'
 import { listCalendar, getCalendarDensity, addAction, deferAction } from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
@@ -17,6 +18,13 @@ function truncateTitle(title, maxLen = 30) {
 }
 
 const STORAGE_KEY = 'calendar_view_mode'
+// The API matches items by scheduled_date only; timed items can run on into later days
+const SPAN_LOOKBACK_DAYS = 7
+const DAY_MINUTES = 24 * 60
+
+function daysBetween(fromStr, toStr) {
+    return Math.round((Date.parse(toStr) - Date.parse(fromStr)) / 86400000)
+}
 const validViewModes = ['day', 'week', 'month', 'year', 'recurring']
 
 function loadSavedViewMode() {
@@ -98,7 +106,11 @@ export function calendarModel() {
         const result = []
         for (const item of items.value) {
             if (item.scheduled_date === dateStr) {
-                result.push({ ...item, _displayReason: 'scheduled' })
+                result.push({ ...item, _displayReason: 'scheduled', _dayOffset: 0 })
+            } else if (item.scheduled_date && item.scheduled_date < dateStr && item.scheduled_time && item.duration) {
+                // Multi-day: a timed item continues onto this day if its end is past this day's midnight
+                const segment = { ...item, _displayReason: 'scheduled', _dayOffset: daysBetween(item.scheduled_date, dateStr) }
+                if (getItemSpan(segment).end > 0) result.push(segment)
             } else {
                 if (item.start_date === dateStr) {
                     result.push({ ...item, _displayReason: 'start' })
@@ -132,9 +144,9 @@ export function calendarModel() {
 
     function getItemCountForDate(date) {
         const dateStr = formatDate(date)
-        // Use density data if available for year view
+        // Year view: density counts by scheduled_date only, so add days a multi-day item runs into
         if (densityData.value[dateStr] !== undefined) {
-            return densityData.value[dateStr]
+            return densityData.value[dateStr] + getItemsForDate(date).filter(i => i._dayOffset > 0).length
         }
         return getItemsForDate(date).length
     }
@@ -182,6 +194,14 @@ export function calendarModel() {
         return item.scheduled_time || item.start_time || null
     }
 
+    // Minutes from the displayed day's midnight to the item's start and end; start is negative
+    // when the item began on an earlier day, end exceeds a day when it continues past midnight
+    function getItemSpan(item, defaultDuration = 15) {
+        const [h, m] = getItemTime(item).split(':').map(Number)
+        const start = h * 60 + m - (item._dayOffset || 0) * DAY_MINUTES
+        return { start, end: start + (item.duration || defaultDuration) }
+    }
+
     function getItemDate(item) {
         if (item._displayReason === 'due') return item.due_date
         return item.scheduled_date || item.start_date || item.due_date
@@ -192,7 +212,7 @@ export function calendarModel() {
         error.value = null
 
         try {
-            const start = formatDate(startDate)
+            const start = formatDate(subDays(startDate, SPAN_LOOKBACK_DAYS))
             const end = formatDate(endDate)
             const data = await listCalendar({ start, end })
             items.value = (data.items || []).map(transformItem)
@@ -408,6 +428,7 @@ export function calendarModel() {
         isItemOverdue,
         hasTime,
         getItemTime,
+        getItemSpan,
         getItemDate,
 
         loadCalendarItems,

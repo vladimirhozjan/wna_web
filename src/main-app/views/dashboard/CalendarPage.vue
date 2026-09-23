@@ -85,8 +85,8 @@ async function loadData() {
     const { start, end } = calendar.dateRange.value
 
     if (viewMode.value === 'year') {
-      // For year view, load density data for efficient rendering
-      await calendar.loadDensity(start, end)
+      // Density for efficient rendering; items so multi-day spans count on their continuation days
+      await Promise.all([calendar.loadDensity(start, end), calendar.loadCalendarItems(start, end)])
     } else {
       await calendar.loadCalendarItems(start, end)
     }

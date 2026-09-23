@@ -71,8 +71,8 @@
       >
         <CalendarItem
             :item="item"
-            :show-time="true"
-            :resizable="!!item.scheduled_time"
+            :show-time="!item._continuesBefore"
+            :resizable="!!item.scheduled_time && !item._continuesAfter"
             @click="onItemClick"
             @drag-start="(item, offsetY) => $emit('drag-start', item, offsetY)"
             @drag-end="$emit('drag-end', $event)"
@@ -176,7 +176,8 @@ const slotPreview = computed(() => {
     return { top: minutesToPx(start), height: minutesToPx(end - start) }
   }
   if (dragOverMinutes.value !== null) {
-    return { top: minutesToPx(dragOverMinutes.value), height: minutesToPx(props.draggingItem?.duration || 60) }
+    const duration = Math.min(props.draggingItem?.duration || 60, 24 * 60 - dragOverMinutes.value)
+    return { top: minutesToPx(dragOverMinutes.value), height: minutesToPx(duration) }
   }
   return null
 })
@@ -196,18 +197,18 @@ const positionedItems = computed(() => {
   const items = props.items
       .filter(item => item._displayReason !== 'start' && item._displayReason !== 'due' && calendar.hasTime(item))
       .map(item => {
-        const time = calendar.getItemTime(item)
-        const [hours, minutes] = time.split(':').map(Number)
-        const top = (hours * props.hourHeight) + (minutes / 60) * props.hourHeight
-
-        const duration = (resizing.value?.id === item.id ? resizing.value.duration : item.duration) || defaultDuration
-        const durationHeight = (duration / 60) * props.hourHeight
-        const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
+        const source = resizing.value?.id === item.id ? { ...item, duration: resizing.value.duration } : item
+        const { start, end } = calendar.getItemSpan(source, defaultDuration)
+        // Clip to this day; multi-day items continue on neighbouring days
+        const top = minutesToPx(Math.max(0, start))
+        const height = Math.max(minHeight, minutesToPx(Math.min(24 * 60, end)) - top) - 2  // -2 for visual spacing
 
         return {
           ...item,
           top,
           height,
+          _continuesBefore: start < 0,
+          _continuesAfter: end > 24 * 60,
         }
       })
 
@@ -293,8 +294,7 @@ function onCellMouseDown(event) {
 }
 
 function onResizeStart(item) {
-  const [h, m] = item.scheduled_time.split(':').map(Number)
-  const start = h * 60 + m
+  const { start } = calendar.getItemSpan(item)
 
   const onMove = (e) => {
     const end = Math.min(24 * 60, Math.max(start + 15, Math.round(minutesFromY(e.clientY) / 15) * 15))

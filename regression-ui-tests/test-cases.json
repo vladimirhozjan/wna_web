@@ -3974,6 +3974,31 @@
     "expected": "Dragging on empty grid space selects a time range in 15-minute steps and opens the quick-add form with that start time and duration. Dragging upward selects from the upper slot. A plain click keeps the existing quick-add behavior. In Week view the selection is bound to the column where the drag started."
   },
   {
+    "id": "TC-144h",
+    "name": "Calendar Multi-Day Scheduled Item",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. One scheduled action exists at 22:00 with a duration of 4 hours (ends 02:00 the next day), and one at 10:00 with a duration of 50 hours (ends 12:00 two days later).",
+    "steps": [
+      "Navigate to the Calendar page (/calendar) and open Day view on the 22:00 action's date",
+      "Verify the block runs from 22:00 to the bottom of the grid and does not extend below the 24:00 line",
+      "Navigate to the next day and verify the block continues from 00:00 to 02:00 without a start time label",
+      "Verify the 00:00–02:00 segment has a resize handle and the 22:00 segment from step 2 has none",
+      "Resize the 00:00–02:00 segment to 03:00 and verify the duration becomes 5 hours in action detail",
+      "Open Day view on the 50-hour action's date and verify segments 10:00–24:00; next day 00:00–24:00; day after 00:00–12:00",
+      "Switch to Week view and verify the same segments per column, including a week where the item started in the previous week",
+      "Switch to Month view and verify both actions appear on every day they cover",
+      "Switch to Year view and verify the density count on the continuation days includes the multi-day actions",
+      "Drag the 00:00–02:00 continuation segment to 08:00 on that day and verify the whole action now starts at 08:00 (duration unchanged)"
+    ],
+    "expected": "A timed scheduled item is shown on every day its duration covers, clipped to each day's 00:00–24:00. Continuation segments hide the start time, only the last segment is resizable, and moving any segment moves the whole item. Month and Year views count the item on each day it covers. Items that started up to 7 days before the visible range are still shown."
+  },
+  {
     "id": "TC-145",
     "name": "Add Project via Collapsible Form",
     "priority": "High",
