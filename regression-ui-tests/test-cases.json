@@ -3611,6 +3611,28 @@
     "expected": "Clicking a segment of the time input focuses that segment and opens its own dropdown; clicking the minute segment never bounces focus back to the hour segment. Clicking the field chrome outside the inputs focuses the hour segment. Enter closes the open time or duration dropdown without discarding the typed value (Escape does the same). Moving focus away with Tab closes the open dropdown and removes the field highlight. A dropdown opens scrolled so the current hour or minute (09:00 when no time is set) is its first visible row. Picking a minute or a duration closes the list and drops focus."
   },
   {
+    "id": "TC-677",
+    "name": "Duration Input Shows Minutes or Hours with a Unit Toggle",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. An action detail page is open with the Scheduled editor showing a time, so the duration input is visible (default \"30 min\").",
+    "steps": [
+      "Open the duration dropdown and pick \"2 hours\"; verify the field reads \"2 h\"",
+      "Pick \"1.5 hours\"; verify the field reads \"1.5 h\"",
+      "Pick \"45 min\"; verify the field reads \"45 min\"",
+      "Click the \"min\" label; verify it switches to \"h\" and the number becomes \"0.75\"",
+      "Click the \"h\" label; verify it switches back to \"min\" and the number becomes \"45\"",
+      "With the unit on \"h\", type \"2\" and press Enter; click Save; reopen the editor and verify the duration shows \"2 h\" and the Scheduled row reads \"(120 min)\"",
+      "With the unit on \"min\", type \"50\" and Save; verify the Scheduled row reads \"(50 min)\""
+    ],
+    "expected": "The duration field displays the stored minutes either as minutes or as hours (decimals allowed, e.g. 1.5). Presets of 60 minutes or more switch the field to hours; smaller presets switch it to minutes. The unit label toggles the display without altering the stored value, and typed values are converted to minutes on save."
+  },
+  {
     "id": "TC-138",
     "name": "Mutual Exclusivity - Due Date Clears Scheduled Date (Action Detail)",
     "priority": "High",

@@ -4,10 +4,11 @@
       <input
           ref="inputRef"
           type="number"
-          :value="modelValue"
+          :value="displayValue"
           class="text-body-m dur-input"
           :style="{ width: inputWidth }"
-          min="1"
+          :min="unit === 'h' ? 0.25 : 1"
+          :step="unit === 'h' ? 'any' : 1"
           :disabled="disabled"
           @input="onInput"
           @focus="open = true"
@@ -16,7 +17,7 @@
           @keydown.enter="open = false"
           @blur="open = false"
       />
-      <span class="text-body-s dur-unit">min</span>
+      <span class="text-body-s dur-unit" @mousedown.prevent @click.stop="toggleUnit">{{ unit }}</span>
       <ChevronDownIcon class="dur-arrow" width="10" height="6" />
     </div>
     <div v-if="open" class="dur-dropdown">
@@ -58,9 +59,20 @@ const emit = defineEmits(['update:modelValue'])
 const wrapper = ref(null)
 const inputRef = ref(null)
 const open = ref(false)
+const unit = ref(unitFor(props.modelValue))
+
+function unitFor(minutes) {
+  return minutes >= 60 ? 'h' : 'min'
+}
+
+const displayValue = computed(() => {
+  if (props.modelValue == null) return ''
+  if (unit.value === 'h') return String(Math.round(props.modelValue / 60 * 100) / 100)
+  return String(props.modelValue)
+})
 
 const inputWidth = computed(() => {
-  const chars = String(props.modelValue ?? '').length
+  const chars = displayValue.value.length
   return Math.max(20, chars * 10) + 'px'
 })
 
@@ -70,14 +82,21 @@ function toggle() {
 }
 
 function onInput(e) {
-  const val = parseInt(e.target.value)
-  if (val > 0) {
-    emit('update:modelValue', val)
+  const val = parseFloat(e.target.value)
+  const minutes = unit.value === 'h' ? Math.round(val * 60) : Math.round(val)
+  if (minutes > 0) {
+    emit('update:modelValue', minutes)
   }
+}
+
+function toggleUnit() {
+  if (props.disabled) return
+  unit.value = unit.value === 'min' ? 'h' : 'min'
 }
 
 function selectOption(value) {
   emit('update:modelValue', value)
+  unit.value = unitFor(value)
   open.value = false
   inputRef.value?.blur()
 }
@@ -137,7 +156,13 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
 
 .dur-unit {
   color: var(--color-text-secondary);
-  pointer-events: none;
+  cursor: pointer;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.dur-unit:hover {
+  background: var(--color-bg-secondary);
 }
 
 .dur-arrow {
