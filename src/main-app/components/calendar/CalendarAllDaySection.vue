@@ -26,7 +26,7 @@
           :item="item"
           :show-time="false"
           @click="onItemClick"
-          @drag-start="$emit('drag-start', $event)"
+          @drag-start="(item, offsetY) => $emit('drag-start', item, offsetY)"
           @drag-end="$emit('drag-end', $event)"
       />
 

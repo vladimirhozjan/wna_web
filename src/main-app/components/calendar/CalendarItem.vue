@@ -16,6 +16,7 @@
     <span v-if="showTime && time" class="fw-semibold calendar-item__time">{{ time }}</span>
     <RecurringIcon v-if="item.recurring_parent_id" class="calendar-item__recurring" width="12" height="12" />
     <span class="calendar-item__title">{{ item.title }}</span>
+    <div v-if="resizable" class="calendar-item__resize" @mousedown.stop.prevent="onResizeStart"></div>
   </div>
 </template>
 
@@ -40,13 +41,18 @@ const props = defineProps({
   draggable: {
     type: Boolean,
     default: true
+  },
+  resizable: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['click', 'drag-start', 'drag-end'])
+const emit = defineEmits(['click', 'drag-start', 'drag-end', 'resize-start'])
 
 const calendar = calendarModel()
 const isDragging = ref(false)
+let suppressClick = false
 
 const displayType = computed(() => calendar.getItemDisplayType(props.item))
 const isOverdueItem = computed(() => calendar.isItemOverdue(props.item))
@@ -63,7 +69,15 @@ const time = computed(() => calendar.getItemTime(props.item))
 
 function onClick(e) {
   e.stopPropagation()
+  if (suppressClick) return
   emit('click', props.item)
+}
+
+function onResizeStart(e) {
+  // The click that follows the resize mouseup must not open the detail page
+  suppressClick = true
+  document.addEventListener('mouseup', () => setTimeout(() => { suppressClick = false }, 0), { once: true })
+  emit('resize-start', props.item, e)
 }
 
 function onDragStart(e) {
@@ -76,7 +90,8 @@ function onDragStart(e) {
     hasDueDate: !!props.item.due_date,
   }))
   e.dataTransfer.effectAllowed = 'move'
-  emit('drag-start', props.item)
+  // Offset of the grab point from the block's top edge, so drop previews follow the block, not the pointer
+  emit('drag-start', props.item, e.clientY - e.currentTarget.getBoundingClientRect().top)
 }
 
 function onDragEnd() {
@@ -99,6 +114,16 @@ function onDragEnd() {
   border-left: 3px solid transparent;
   user-select: none;
   box-sizing: border-box;
+  position: relative;
+}
+
+.calendar-item__resize {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  cursor: ns-resize;
 }
 
 .calendar-item:active {

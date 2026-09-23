@@ -218,7 +218,7 @@ export function calendarModel() {
         }
     }
 
-    async function createScheduledAction(date, time, title) {
+    async function createScheduledAction(date, time, title, duration = null) {
         loading.value = true
         error.value = null
 
@@ -231,6 +231,7 @@ export function calendarModel() {
             }
             if (time) {
                 actionData.scheduled_time = time
+                if (duration) actionData.scheduled_duration = duration
             }
 
             const created = await addAction(actionData)
@@ -245,7 +246,7 @@ export function calendarModel() {
                 scheduled_time: time || null,
                 start_date: null,
                 start_time: null,
-                duration: time ? 30 : null,
+                duration: time ? (duration || 30) : null,
                 due_date: null,
             }
 
@@ -261,25 +262,26 @@ export function calendarModel() {
         }
     }
 
-    async function rescheduleAction(actionId, newDate, newTime, forcedType) {
+    async function rescheduleAction(actionId, newDate, newTime, forcedType, duration = null) {
         loading.value = true
         error.value = null
 
         try {
+            const current = items.value.find(i => i.id === actionId)
             // Auto-detect type from item's current dates when no forcedType
             let type = forcedType
             if (!type) {
-                const item = items.value.find(i => i.id === actionId)
-                if (item?.scheduled_date) {
+                if (current?.scheduled_date) {
                     type = 'scheduled'
-                } else if (item?.start_date) {
+                } else if (current?.start_date) {
                     type = 'start'
                 } else {
                     type = 'scheduled'
                 }
             }
 
-            await deferAction(actionId, type, newDate, newTime)
+            // Preserve duration on move; backend defaults to 60 when time is set without duration
+            await deferAction(actionId, type, newDate, newTime, duration || current?.duration || null)
             // Backend handles mutual exclusivity: /defer with type=scheduled clears due_date
 
             items.value = items.value.map(item => {
@@ -291,8 +293,7 @@ export function calendarModel() {
                             scheduled_time: newTime,
                             start_date: null,
                             start_time: null,
-                            // When dragging to a time slot, preserve existing duration or default to 30
-                            duration: newTime ? (item.duration || 30) : null,
+                            duration: newTime ? (duration || item.duration || 60) : null,
                             // Mutual exclusivity: scheduled clears due
                             due_date: null,
                             due_time: null,

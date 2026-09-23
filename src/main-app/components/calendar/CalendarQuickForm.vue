@@ -1,5 +1,5 @@
 <template>
-  <div class="quick-form" @click.stop>
+  <div class="quick-form" @click.stop @mousedown.stop>
     <input
         ref="inputRef"
         v-model="title"
@@ -22,6 +22,10 @@ const props = defineProps({
   },
   time: {
     type: String,
+    default: null
+  },
+  duration: {
+    type: Number,
     default: null
   }
 })
@@ -47,6 +51,7 @@ function onSubmit() {
       title: trimmedTitle,
       date: props.date,
       time: props.time,
+      duration: props.duration,
     })
   } else {
     emit('cancel')

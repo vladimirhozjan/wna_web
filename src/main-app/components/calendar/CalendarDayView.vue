@@ -19,9 +19,12 @@
           :items="timedItems"
           :date="dateStr"
           :hour-height="hourHeight"
+          :dragging-item="draggingItem"
+          :drag-offset="dragOffset"
           @item-click="onItemClick"
           @create="onCreate"
           @reschedule="onReschedule"
+          @resize="onResize"
           @drag-start="onDragStart"
           @drag-end="onDragEnd"
       />
@@ -44,11 +47,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['item-click', 'create', 'reschedule'])
+const emit = defineEmits(['item-click', 'create', 'reschedule', 'resize'])
 
 const calendar = calendarModel()
 const hourHeight = 60
 const draggingItem = ref(null)
+const dragOffset = ref(0)
 const scrollRef = ref(null)
 
 function scrollToBusinessHours() {
@@ -89,8 +93,13 @@ function onReschedule(data) {
   emit('reschedule', data)
 }
 
-function onDragStart(item) {
+function onResize(data) {
+  emit('resize', data)
+}
+
+function onDragStart(item, offsetY) {
   draggingItem.value = item
+  dragOffset.value = offsetY
 }
 
 function onDragEnd() {

@@ -18,6 +18,7 @@
               @item-click="onItemClick"
               @create="onCreate"
               @reschedule="onReschedule"
+              @resize="onResize"
           />
 
           <CalendarWeekView
@@ -26,6 +27,7 @@
               @item-click="onItemClick"
               @create="onCreate"
               @reschedule="onReschedule"
+              @resize="onResize"
           />
 
           <CalendarMonthView
@@ -135,9 +137,9 @@ function onMonthClick(date) {
   calendar.setViewMode('month')
 }
 
-async function onCreate({ title, date, time }) {
+async function onCreate({ title, date, time, duration }) {
   try {
-    await calendar.createScheduledAction(date, time, title)
+    await calendar.createScheduledAction(date, time, title, duration)
   } catch (err) {
     toaster.push('Failed to create action')
   }
@@ -149,6 +151,15 @@ async function onReschedule({ actionId, newDate, newTime, forcedType }) {
     toaster.success('Action rescheduled')
   } catch (err) {
     toaster.push('Failed to reschedule action')
+  }
+}
+
+async function onResize({ actionId, date, time, duration }) {
+  try {
+    await calendar.rescheduleAction(actionId, date, time, 'scheduled', duration)
+    toaster.success('Duration updated')
+  } catch (err) {
+    toaster.push('Failed to update duration')
   }
 }
 </script>

@@ -3310,10 +3310,10 @@
       "Navigate to the Calendar page (/calendar) and switch to Day view",
       "Identify a scheduled action block (blue, e.g., at 10:00 AM)",
       "Click and hold the action block",
-      "Drag it to a different time slot (e.g., 3:00 PM)",
+      "Drag it to a different time slot (e.g., 3:15 PM) — the drop preview snaps in 15-minute steps and has the same height as the block",
       "Release the mouse button",
-      "Verify the action block moves to the 3:00 PM position automatically (no popover)",
-      "Verify the action's scheduled time has been updated (navigate to action detail to confirm)",
+      "Verify the action block moves to the 3:15 PM position automatically (no popover) and keeps its duration",
+      "Verify the action's scheduled time has been updated and its duration is unchanged (navigate to action detail to confirm)",
       "Switch to Week view",
       "Identify a scheduled action on one day (e.g., Monday)",
       "Drag the action to a different day (e.g., Wednesday at the same time)",
@@ -3327,7 +3327,7 @@
       "Verify the due_date is cleared (mutual exclusivity with scheduled_date)",
       "Reload the page and verify the new schedule persists"
     ],
-    "expected": "All drag reschedules happen automatically without a popover. The type is auto-detected from the item's existing dates: scheduled items stay scheduled, start_after items stay start_after, and due-only items default to scheduled (clearing the due_date due to mutual exclusivity). Changes persist across reloads."
+    "expected": "All drag reschedules happen automatically without a popover. In Day and Week views the drop time snaps to 15-minute slots and the item's duration is preserved. The type is auto-detected from the item's existing dates: scheduled items stay scheduled, start_after items stay start_after, and due-only items default to scheduled (clearing the due_date due to mutual exclusivity). Changes persist across reloads."
   },
   {
     "id": "TC-130",
@@ -3895,6 +3895,83 @@
       "Navigate to a different date (not today) and verify no current time indicator is shown"
     ],
     "expected": "The current time indicator uses the accent color (--color-action) in both day and week views, distinguishing it from the red due date indicators."
+  },
+  {
+    "id": "TC-144e",
+    "name": "Calendar Drag Preserves Duration, All-Day Drop Defaults to 1 Hour",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. One scheduled action with a 30-minute duration at a time slot and one all-day scheduled action (date, no time) exist on the same day.",
+    "steps": [
+      "Navigate to the Calendar page (/calendar) and switch to Day view",
+      "Drag the 30-minute action to another time slot (e.g., 2:45 PM)",
+      "Verify the drop preview is 30 minutes tall while dragging and follows the top edge of the dragged block (not the pointer)",
+      "Release and verify the block is at 2:45 PM and still 30 minutes tall",
+      "Reload the page and verify the block is still 30 minutes tall",
+      "Drag the all-day action from the \"All day\" section into a time slot (e.g., 9:00 AM)",
+      "Verify the drop preview is 1 hour tall while dragging",
+      "Release and verify the block is at 9:00 AM with a 1-hour duration",
+      "Reload the page and verify the 1-hour duration persists",
+      "Switch to Week view and repeat steps 2–5 across columns"
+    ],
+    "expected": "Moving an item keeps its existing duration in both views and across reloads. Dropping an all-day item (no duration) into a time slot gives it a 1-hour default duration."
+  },
+  {
+    "id": "TC-144f",
+    "name": "Calendar Resize Block by Dragging Bottom Edge",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. One scheduled action with time and a 30-minute duration exists on the calendar.",
+    "steps": [
+      "Navigate to the Calendar page (/calendar) and switch to Day view",
+      "Hover over the bottom edge of the scheduled block and verify the cursor changes to a vertical resize cursor",
+      "Press on the bottom edge and drag downward by about 45 minutes",
+      "Verify the block grows in 15-minute steps while dragging",
+      "Release and verify a \"Duration updated\" toast appears and the block stays at the new height",
+      "Open the action detail and verify the duration is 75 minutes; verify the start time is unchanged",
+      "Return to the calendar and drag the bottom edge upward past the start time",
+      "Verify the block cannot shrink below 15 minutes",
+      "Release without changing the height (press and release on the edge) and verify no toast and no navigation to action detail",
+      "Switch to Week view and repeat steps 2–6 on a block in any column",
+      "Verify start_after items (green) have no resize handle"
+    ],
+    "expected": "Dragging the bottom edge of a scheduled block changes its duration in 15-minute steps with a 15-minute minimum. The start time is unchanged. Releasing without a change does nothing. Only scheduled items with a time can be resized."
+  },
+  {
+    "id": "TC-144g",
+    "name": "Calendar Drag-to-Create with Duration",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in, viewing the Calendar page in Day or Week view",
+    "steps": [
+      "In Day view, press on empty grid space at 10:00 AM and drag downward to 11:30 AM",
+      "Verify a highlighted selection band grows in 15-minute steps while dragging",
+      "Release and verify the quick-add form opens as a block spanning 10:00–11:30 AM (same height as the selection)",
+      "Type a title and press Enter",
+      "Verify the new block starts at 10:00 AM and is 90 minutes tall",
+      "Open the action detail and verify the duration is 90 minutes",
+      "Return to the calendar, press at 3:45 PM and drag upward to 3:00 PM, release",
+      "Verify the form opens at 3:00 PM; submit and verify a 60-minute block at 3:00 PM",
+      "Click (without dragging) an empty slot and verify the quick-add form opens as before with the default duration",
+      "Switch to Week view and repeat steps 1–6 in any day column",
+      "Press on an empty slot and drag horizontally into another column, then release; verify the selection stays in the starting column"
+    ],
+    "expected": "Dragging on empty grid space selects a time range in 15-minute steps and opens the quick-add form with that start time and duration. Dragging upward selects from the upper slot. A plain click keeps the existing quick-add behavior. In Week view the selection is bound to the column where the drag started."
   },
   {
     "id": "TC-145",

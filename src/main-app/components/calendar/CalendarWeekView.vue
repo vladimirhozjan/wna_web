@@ -35,7 +35,7 @@
               {
                 'week-view__all-day-cell--today': day.isToday,
                 'week-view__all-day-cell--weekend': day.isWeekend,
-                'week-view__all-day-cell--drag-over': dragOverDate === day.dateStr && dragOverHour === null,
+                'week-view__all-day-cell--drag-over': dragOverDate === day.dateStr && dragOverMinutes === null,
               }
             ]"
             @click="onAllDayCellClick(day)"
@@ -97,25 +97,36 @@
               :key="`${day.dateStr}-${hour}`"
               :class="[
                 'week-view__cell',
-                {
-                  'week-view__cell--drag-over': dragOverDate === day.dateStr && dragOverHour === hour,
-                  'week-view__cell--outside-business': !isBusinessHour(hour) || !isBusinessDay(day.date.getDay())
-                }
+                { 'week-view__cell--outside-business': !isBusinessHour(hour) || !isBusinessDay(day.date.getDay()) }
               ]"
               :style="{ height: hourHeight + 'px' }"
               @click="onCellClick(day, hour)"
-              @dragover.prevent="onCellDragOver(day, hour)"
+              @mousedown="onCellMouseDown(day, $event)"
+              @dragover.prevent="onTimeDragOver(day, $event)"
               @dragleave="onDragLeave"
-              @drop="onCellDrop(day, hour, $event)"
+              @drop="onTimeDrop(day, $event)"
+          ></div>
+
+          <!-- Slot preview: drop target while dragging, or drag-to-create selection -->
+          <div
+              v-if="slotPreview?.date === day.dateStr"
+              class="week-view__slot-preview"
+              :style="{ top: slotPreview.top + 'px', height: slotPreview.height + 'px' }"
+          ></div>
+
+          <!-- Quick-add form, sized like the block it will create -->
+          <div
+              v-if="quickFormSlot?.date === day.dateStr && !quickFormSlot.allDay"
+              class="week-view__slot-preview week-view__quick-form"
+              :style="{ top: minutesToPx(quickFormSlot.minutes) + 'px', height: minutesToPx(Math.max(quickFormSlot.duration || 30, 30)) + 'px' }"
           >
-            <template v-if="quickFormSlot?.date === day.dateStr && quickFormSlot?.hour === hour">
-              <CalendarQuickForm
-                  :date="day.dateStr"
-                  :time="formatTimeSlot(hour)"
-                  @submit="onQuickFormSubmit"
-                  @cancel="onQuickFormCancel"
-              />
-            </template>
+            <CalendarQuickForm
+                :date="day.dateStr"
+                :time="quickFormSlot.time"
+                :duration="quickFormSlot.duration"
+                @submit="onQuickFormSubmit"
+                @cancel="onQuickFormCancel"
+            />
           </div>
 
           <!-- Items layer -->
@@ -130,15 +141,17 @@
                   left: (item.column / item.totalColumns * 100) + '%',
                   width: (100 / item.totalColumns) + '%',
                 }"
-                @dragover.prevent="onWrapperDragOver(day, $event)"
-                @drop="onWrapperDrop(day, $event)"
+                @dragover.prevent="onTimeDragOver(day, $event)"
+                @drop="onTimeDrop(day, $event)"
             >
               <CalendarItem
                   :item="item"
                   :show-time="true"
+                  :resizable="!!item.scheduled_time"
                   @click="onItemClick"
                   @drag-start="onItemDragStart"
                   @drag-end="onItemDragEnd"
+                  @resize-start="onResizeStart"
               />
             </div>
           </div>
@@ -207,7 +220,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['item-click', 'create', 'reschedule'])
+const emit = defineEmits(['item-click', 'create', 'reschedule', 'resize'])
 
 const calendar = calendarModel()
 const hourHeight = 60
@@ -215,12 +228,31 @@ const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const quickFormSlot = ref(null)
 const dragOverDate = ref(null)
-const dragOverHour = ref(null)
+const dragOverMinutes = ref(null)
 const draggingItem = ref(null)
+const dragOffset = ref(0)
+const selection = ref(null)
+const resizing = ref(null)
 const currentTimePosition = ref(null)
 let timeUpdateInterval = null
+let suppressClick = false
 
 const calendarSettings = computed(() => calendar.getCalendarSettings())
+
+const slotPreview = computed(() => {
+  if (selection.value) {
+    const { date, start, end } = selection.value
+    return { date, top: minutesToPx(start), height: minutesToPx(end - start) }
+  }
+  if (dragOverDate.value && dragOverMinutes.value !== null) {
+    return {
+      date: dragOverDate.value,
+      top: minutesToPx(dragOverMinutes.value),
+      height: minutesToPx(draggingItem.value?.duration || 60),
+    }
+  }
+  return null
+})
 
 const weekDays = computed(() => {
   const days = getWeekDays(props.currentDate, calendarSettings.value.weekStartsOn)
@@ -250,7 +282,7 @@ const dayItemsByDate = computed(() => {
           const [hours, minutes] = time.split(':').map(Number)
           const top = (hours * hourHeight) + (minutes / 60) * hourHeight
 
-          const duration = item.duration || defaultDuration
+          const duration = (resizing.value?.id === item.id ? resizing.value.duration : item.duration) || defaultDuration
           const durationHeight = (duration / 60) * hourHeight
           const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
 
@@ -310,8 +342,29 @@ function isBusinessDay(dayOfWeek) {
   return calendar.isBusinessDay(dayOfWeek, calendarSettings.value)
 }
 
-function formatTimeSlot(hour) {
-  return `${String(hour).padStart(2, '0')}:00`
+function formatTimeSlot(hour, minute = 0) {
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+}
+
+function minutesToPx(minutes) {
+  return (minutes / 60) * hourHeight
+}
+
+function minutesFromY(clientY, column) {
+  return ((clientY - column.getBoundingClientRect().top) / hourHeight) * 60
+}
+
+// Start of the 15-minute slot under the pointer
+function slotFromY(clientY, column) {
+  return Math.max(0, Math.min(24 * 60 - 15, Math.floor(minutesFromY(clientY, column) / 15) * 15))
+}
+
+function columnOf(element) {
+  return element.closest('.week-view__column')
+}
+
+function openQuickForm(dateStr, minutes, duration = null) {
+  quickFormSlot.value = { date: dateStr, minutes, time: formatTimeSlot(Math.floor(minutes / 60), minutes % 60), duration }
 }
 
 function onItemClick(item) {
@@ -323,7 +376,57 @@ function onAllDayCellClick(day) {
 }
 
 function onCellClick(day, hour) {
-  quickFormSlot.value = { date: day.dateStr, hour }
+  if (suppressClick) return
+  openQuickForm(day.dateStr, hour * 60)
+}
+
+function onCellMouseDown(day, event) {
+  if (event.button !== 0) return
+  event.preventDefault()
+  const column = columnOf(event.currentTarget)
+  const start = slotFromY(event.clientY, column)
+
+  const onMove = (e) => {
+    const current = slotFromY(e.clientY, column)
+    if (current === start && !selection.value) return
+    selection.value = { date: day.dateStr, start: Math.min(start, current), end: Math.max(start, current) + 15 }
+  }
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup', onUp)
+    const sel = selection.value
+    selection.value = null
+    if (!sel) return
+    // The click that follows this mouseup must not reopen the form without duration
+    suppressClick = true
+    setTimeout(() => { suppressClick = false }, 0)
+    openQuickForm(sel.date, sel.start, sel.end - sel.start)
+  }
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup', onUp)
+}
+
+function onResizeStart(item, event) {
+  const column = columnOf(event.target)
+  const [h, m] = item.scheduled_time.split(':').map(Number)
+  const start = h * 60 + m
+
+  const onMove = (e) => {
+    const end = Math.min(24 * 60, Math.max(start + 15, Math.round(minutesFromY(e.clientY, column) / 15) * 15))
+    const duration = end - start
+    if (resizing.value?.duration !== duration) resizing.value = { id: item.id, duration }
+  }
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup', onUp)
+    const duration = resizing.value?.duration
+    resizing.value = null
+    if (duration && duration !== item.duration) {
+      emit('resize', { actionId: item.id, date: item.scheduled_date, time: item.scheduled_time, duration })
+    }
+  }
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup', onUp)
 }
 
 function onQuickFormSubmit(data) {
@@ -335,52 +438,45 @@ function onQuickFormCancel() {
   quickFormSlot.value = null
 }
 
-function onItemDragStart(item) {
+function onItemDragStart(item, offsetY) {
   draggingItem.value = item
+  dragOffset.value = offsetY
 }
 
 function onItemDragEnd() {
   draggingItem.value = null
   dragOverDate.value = null
-  dragOverHour.value = null
+  dragOverMinutes.value = null
 }
 
 function onAllDayDragOver(day) {
   dragOverDate.value = day.dateStr
-  dragOverHour.value = null
+  dragOverMinutes.value = null
 }
 
-function getHourFromEvent(event) {
-  const container = event.currentTarget.parentElement
-  const y = event.clientY - container.getBoundingClientRect().top
-  return Math.max(0, Math.min(23, Math.floor(y / hourHeight)))
+function onTimeDragOver(day, event) {
+  const minutes = slotFromY(event.clientY - dragOffset.value, columnOf(event.currentTarget))
+  if (dragOverDate.value !== day.dateStr || dragOverMinutes.value !== minutes) {
+    dragOverDate.value = day.dateStr
+    dragOverMinutes.value = minutes
+  }
 }
 
-function onWrapperDragOver(day, event) {
-  dragOverDate.value = day.dateStr
-  dragOverHour.value = getHourFromEvent(event)
-}
-
-function onWrapperDrop(day, event) {
+function onTimeDrop(day, event) {
   event.preventDefault()
+  const minutes = slotFromY(event.clientY - dragOffset.value, columnOf(event.currentTarget))
   dragOverDate.value = null
-  dragOverHour.value = null
+  dragOverMinutes.value = null
 
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
-      const hour = getHourFromEvent(event)
-      const newTime = formatTimeSlot(hour)
+      const newTime = formatTimeSlot(Math.floor(minutes / 60), minutes % 60)
       emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime })
     }
   } catch (e) {
     // Ignore parse errors
   }
-}
-
-function onCellDragOver(day, hour) {
-  dragOverDate.value = day.dateStr
-  dragOverHour.value = hour
 }
 
 function onDragLeave() {
@@ -390,28 +486,12 @@ function onDragLeave() {
 function onAllDayDrop(day, event) {
   event.preventDefault()
   dragOverDate.value = null
-  dragOverHour.value = null
+  dragOverMinutes.value = null
 
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
       emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime: null })
-    }
-  } catch (e) {
-    // Ignore parse errors
-  }
-}
-
-function onCellDrop(day, hour, event) {
-  event.preventDefault()
-  dragOverDate.value = null
-  dragOverHour.value = null
-
-  try {
-    const data = JSON.parse(event.dataTransfer.getData('text/plain'))
-    if (data.type === 'calendar-item') {
-      const newTime = formatTimeSlot(hour)
-      emit('reschedule', { actionId: data.id, newDate: day.dateStr, newTime })
     }
   } catch (e) {
     // Ignore parse errors
@@ -622,10 +702,24 @@ onUnmounted(() => {
   background: var(--color-bg-secondary);
 }
 
-.week-view__cell--drag-over {
-  background: var(--color-calendar-deferred) !important;
+.week-view__slot-preview {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--color-calendar-deferred);
   outline: 2px dashed var(--color-action);
   outline-offset: -2px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.week-view__quick-form {
+  pointer-events: auto;
+  z-index: 6;
+}
+
+.week-view__quick-form :deep(.quick-form__input) {
+  border-color: transparent;
 }
 
 .week-view__cell--outside-business {

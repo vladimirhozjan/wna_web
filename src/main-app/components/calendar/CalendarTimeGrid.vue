@@ -14,44 +14,44 @@
         <!-- First half (:00) -->
         <div
             class="time-grid__cell"
-            :class="{
-              'time-grid__cell--drag-over': dragOverSlot?.hour === hour && dragOverSlot?.half === 0
-            }"
             @click="onCellClick(hour, 0)"
-            @dragover.prevent="onDragOver(hour, 0)"
+            @mousedown="onCellMouseDown"
+            @dragover.prevent="onDragOver"
             @dragleave="onDragLeave"
-            @drop="onDrop(hour, 0, $event)"
-        >
-          <template v-if="quickFormSlot?.hour === hour && quickFormSlot?.half === 0">
-            <CalendarQuickForm
-                :date="date"
-                :time="formatTimeSlot(hour, 0)"
-                @submit="onQuickFormSubmit"
-                @cancel="onQuickFormCancel"
-            />
-          </template>
-        </div>
+            @drop="onDrop"
+        ></div>
         <!-- Second half (:30) -->
         <div
             class="time-grid__cell time-grid__cell--half"
-            :class="{
-              'time-grid__cell--drag-over': dragOverSlot?.hour === hour && dragOverSlot?.half === 30
-            }"
             @click="onCellClick(hour, 30)"
-            @dragover.prevent="onDragOver(hour, 30)"
+            @mousedown="onCellMouseDown"
+            @dragover.prevent="onDragOver"
             @dragleave="onDragLeave"
-            @drop="onDrop(hour, 30, $event)"
-        >
-          <template v-if="quickFormSlot?.hour === hour && quickFormSlot?.half === 30">
-            <CalendarQuickForm
-                :date="date"
-                :time="formatTimeSlot(hour, 30)"
-                @submit="onQuickFormSubmit"
-                @cancel="onQuickFormCancel"
-            />
-          </template>
-        </div>
+            @drop="onDrop"
+        ></div>
       </div>
+    </div>
+
+    <!-- Slot preview: drop target while dragging, or drag-to-create selection -->
+    <div
+        v-if="slotPreview"
+        class="time-grid__slot-preview"
+        :style="{ top: slotPreview.top + 'px', height: slotPreview.height + 'px' }"
+    ></div>
+
+    <!-- Quick-add form, sized like the block it will create -->
+    <div
+        v-if="quickFormSlot"
+        class="time-grid__slot-preview time-grid__quick-form"
+        :style="{ top: minutesToPx(quickFormSlot.minutes) + 'px', height: minutesToPx(Math.max(quickFormSlot.duration || 30, 30)) + 'px' }"
+    >
+      <CalendarQuickForm
+          :date="date"
+          :time="quickFormSlot.time"
+          :duration="quickFormSlot.duration"
+          @submit="onQuickFormSubmit"
+          @cancel="onQuickFormCancel"
+      />
     </div>
 
     <!-- Items layer -->
@@ -66,15 +66,17 @@
             left: (item.column / item.totalColumns * 100) + '%',
             width: (100 / item.totalColumns) + '%',
           }"
-          @dragover.prevent="onWrapperDragOver"
-          @drop="onWrapperDrop"
+          @dragover.prevent="onDragOver"
+          @drop="onDrop"
       >
         <CalendarItem
             :item="item"
             :show-time="true"
+            :resizable="!!item.scheduled_time"
             @click="onItemClick"
-            @drag-start="$emit('drag-start', $event)"
+            @drag-start="(item, offsetY) => $emit('drag-start', item, offsetY)"
             @drag-end="$emit('drag-end', $event)"
+            @resize-start="onResizeStart"
         />
       </div>
     </div>
@@ -141,21 +143,43 @@ const props = defineProps({
   hourHeight: {
     type: Number,
     default: 60
+  },
+  draggingItem: {
+    type: Object,
+    default: null
+  },
+  dragOffset: {
+    type: Number,
+    default: 0
   }
 })
 
-const emit = defineEmits(['item-click', 'create', 'reschedule', 'drag-start', 'drag-end'])
+const emit = defineEmits(['item-click', 'create', 'reschedule', 'resize', 'drag-start', 'drag-end'])
 
 const calendar = calendarModel()
 const gridRef = ref(null)
 const quickFormSlot = ref(null)
-const dragOverSlot = ref(null)
+const dragOverMinutes = ref(null)
+const selection = ref(null)
+const resizing = ref(null)
 const currentTimePosition = ref(null)
 let timeUpdateInterval = null
+let suppressClick = false
 
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const calendarSettings = computed(() => calendar.getCalendarSettings())
+
+const slotPreview = computed(() => {
+  if (selection.value) {
+    const { start, end } = selection.value
+    return { top: minutesToPx(start), height: minutesToPx(end - start) }
+  }
+  if (dragOverMinutes.value !== null) {
+    return { top: minutesToPx(dragOverMinutes.value), height: minutesToPx(props.draggingItem?.duration || 60) }
+  }
+  return null
+})
 
 const showCurrentTime = computed(() => {
   try {
@@ -176,7 +200,7 @@ const positionedItems = computed(() => {
         const [hours, minutes] = time.split(':').map(Number)
         const top = (hours * props.hourHeight) + (minutes / 60) * props.hourHeight
 
-        const duration = item.duration || defaultDuration
+        const duration = (resizing.value?.id === item.id ? resizing.value.duration : item.duration) || defaultDuration
         const durationHeight = (duration / 60) * props.hourHeight
         const height = Math.max(minHeight, durationHeight) - 2  // -2 for visual spacing
 
@@ -220,8 +244,74 @@ function formatTimeSlot(hour, minutes) {
   return `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
 
+function minutesToPx(minutes) {
+  return (minutes / 60) * props.hourHeight
+}
+
+function minutesFromY(clientY) {
+  const gridRect = gridRef.value.getBoundingClientRect()
+  return ((clientY - gridRect.top + gridRef.value.scrollTop) / props.hourHeight) * 60
+}
+
+// Start of the 15-minute slot under the pointer
+function slotFromY(clientY) {
+  return Math.max(0, Math.min(24 * 60 - 15, Math.floor(minutesFromY(clientY) / 15) * 15))
+}
+
+function openQuickForm(minutes, duration = null) {
+  quickFormSlot.value = { minutes, time: formatTimeSlot(Math.floor(minutes / 60), minutes % 60), duration }
+}
+
 function onCellClick(hour, half) {
-  quickFormSlot.value = { hour, half }
+  if (suppressClick) return
+  openQuickForm(hour * 60 + half)
+}
+
+function onCellMouseDown(event) {
+  if (event.button !== 0) return
+  event.preventDefault()
+  const start = slotFromY(event.clientY)
+
+  const onMove = (e) => {
+    const current = slotFromY(e.clientY)
+    if (current === start && !selection.value) return
+    selection.value = { start: Math.min(start, current), end: Math.max(start, current) + 15 }
+  }
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup', onUp)
+    const sel = selection.value
+    selection.value = null
+    if (!sel) return
+    // The click that follows this mouseup must not reopen the form without duration
+    suppressClick = true
+    setTimeout(() => { suppressClick = false }, 0)
+    openQuickForm(sel.start, sel.end - sel.start)
+  }
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup', onUp)
+}
+
+function onResizeStart(item) {
+  const [h, m] = item.scheduled_time.split(':').map(Number)
+  const start = h * 60 + m
+
+  const onMove = (e) => {
+    const end = Math.min(24 * 60, Math.max(start + 15, Math.round(minutesFromY(e.clientY) / 15) * 15))
+    const duration = end - start
+    if (resizing.value?.duration !== duration) resizing.value = { id: item.id, duration }
+  }
+  const onUp = () => {
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup', onUp)
+    const duration = resizing.value?.duration
+    resizing.value = null
+    if (duration && duration !== item.duration) {
+      emit('resize', { actionId: item.id, date: item.scheduled_date, time: item.scheduled_time, duration })
+    }
+  }
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup', onUp)
 }
 
 function onItemClick(item) {
@@ -237,53 +327,9 @@ function onQuickFormCancel() {
   quickFormSlot.value = null
 }
 
-function getSlotFromEvent(event) {
-  const gridRect = gridRef.value.getBoundingClientRect()
-  const y = event.clientY - gridRect.top + gridRef.value.scrollTop
-  const hour = Math.max(0, Math.min(23, Math.floor(y / props.hourHeight)))
-  const half = (y - hour * props.hourHeight) >= props.hourHeight / 2 ? 30 : 0
-  return { hour, half }
-}
-
-function setDragOverSlot(hour, half) {
-  const cur = dragOverSlot.value
-  if (!cur || cur.hour !== hour || cur.half !== half) {
-    dragOverSlot.value = { hour, half }
-  }
-}
-
-function onWrapperDragOver(event) {
-  const { hour, half } = getSlotFromEvent(event)
-  setDragOverSlot(hour, half)
-}
-
-function onWrapperDrop(event) {
-  event.preventDefault()
-  const { hour, half } = getSlotFromEvent(event)
-  dragOverSlot.value = null
-
-  try {
-    const data = JSON.parse(event.dataTransfer.getData('text/plain'))
-    if (data.type === 'calendar-item') {
-      const newTime = formatTimeSlot(hour, half)
-      emit('reschedule', {
-        actionId: data.id,
-        newDate: props.date,
-        newTime,
-        hasDueDate: data.hasDueDate,
-        hasScheduledDate: data.hasScheduledDate,
-        hasStartDate: data.hasStartDate,
-        dropX: event.clientX,
-        dropY: event.clientY,
-      })
-    }
-  } catch (e) {
-    // Ignore parse errors
-  }
-}
-
-function onDragOver(hour, half) {
-  setDragOverSlot(hour, half)
+function onDragOver(event) {
+  const minutes = slotFromY(event.clientY - props.dragOffset)
+  if (dragOverMinutes.value !== minutes) dragOverMinutes.value = minutes
 }
 
 function onDragLeave() {
@@ -291,17 +337,18 @@ function onDragLeave() {
 }
 
 function onGridDragEnd() {
-  dragOverSlot.value = null
+  dragOverMinutes.value = null
 }
 
-function onDrop(hour, half, event) {
+function onDrop(event) {
   event.preventDefault()
-  dragOverSlot.value = null
+  const minutes = slotFromY(event.clientY - props.dragOffset)
+  dragOverMinutes.value = null
 
   try {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'))
     if (data.type === 'calendar-item') {
-      const newTime = formatTimeSlot(hour, half)
+      const newTime = formatTimeSlot(Math.floor(minutes / 60), minutes % 60)
       emit('reschedule', {
         actionId: data.id,
         newDate: props.date,
@@ -407,10 +454,24 @@ onUnmounted(() => {
   background: var(--color-bg-secondary);
 }
 
-.time-grid__cell--drag-over {
-  background: var(--color-calendar-deferred) !important;
+.time-grid__slot-preview {
+  position: absolute;
+  left: 64px;
+  right: 0;
+  background: var(--color-calendar-deferred);
   outline: 2px dashed var(--color-action);
   outline-offset: -2px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.time-grid__quick-form {
+  pointer-events: auto;
+  z-index: 6;
+}
+
+.time-grid__quick-form :deep(.quick-form__input) {
+  border-color: transparent;
 }
 
 .time-grid__items {
