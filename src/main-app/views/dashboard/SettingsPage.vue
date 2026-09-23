@@ -699,8 +699,8 @@ function onSearchInput() {
   }
 }
 
-// Collapsible sections — all collapsed by default
-const expandedSections = ref(new Set())
+// Collapsible sections — all expanded by default
+const expandedSections = ref(new Set(Object.keys(SECTION_KEYWORDS)))
 
 function toggleSection(name) {
   if (expandedSections.value.has(name)) {

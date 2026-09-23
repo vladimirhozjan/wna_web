@@ -7961,6 +7961,7 @@
     "steps": [
       "Navigate to /settings via the browser URL bar or a settings link in the application.",
       "Wait for the page to fully load.",
+      "Verify every section card is already expanded (chevron open, body visible) without clicking any header.",
       "Verify the Account section is visible (showing email, change password option).",
       "Verify the Sessions section is visible (showing active sessions list).",
       "Verify the Application section is visible (showing theme selector and new items position setting).",
@@ -7968,9 +7969,10 @@
       "Verify the Calendar section is visible (showing week start, time format, business hours, business days).",
       "Verify the Review section is visible (showing weekly review toggle).",
       "Verify the Notifications section is visible (showing master email toggle and individual event toggles).",
-      "Verify the About section is visible (showing version and debug mode toggle)."
+      "Verify the About section is visible (showing version and debug mode toggle).",
+      "Click the Account header chevron and verify only that section collapses; click it again to re-expand."
     ],
-    "expected": "The settings page loads completely with all sections visible: Account, Sessions, Application, Tags, Calendar, Review, Notifications, and About. No loading errors occur."
+    "expected": "The settings page loads completely with all sections expanded by default: Account, Sessions, Application, Tags, Calendar, Review, Notifications, and About. Each section can still be collapsed and re-expanded from its header. No loading errors occur."
   },
   {
     "id": "TC-304",
