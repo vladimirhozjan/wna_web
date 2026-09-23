@@ -1,6 +1,8 @@
 /* Dark theme — non-accent base color overrides */
 
 [data-theme="dark"] {
+    color-scheme: dark;
+
     /* Brand */
     --color-action: #22d3ee;
     --color-action-dark: #0e7490;

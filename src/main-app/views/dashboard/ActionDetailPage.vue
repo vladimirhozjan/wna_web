@@ -486,6 +486,7 @@ import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import { reviewModel } from '../../scripts/models/reviewModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
+import { formatDate as toDateStr } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
 
@@ -1174,7 +1175,7 @@ function startScheduledEdit() {
   editingField.value = 'scheduled'
 
   dateEdit.value = {
-    date: action.value.scheduled_date || '',
+    date: action.value.scheduled_date || toDateStr(new Date()),
     time: action.value.scheduled_time || null,
     duration: action.value.scheduled_duration || null
   }
@@ -1260,7 +1261,7 @@ function startStartEdit() {
   editingField.value = 'start_date'
 
   dateEdit.value = {
-    date: action.value.start_date || '',
+    date: action.value.start_date || toDateStr(new Date()),
     time: action.value.start_time || null,
     duration: null
   }
@@ -1339,7 +1340,7 @@ function startDateEdit(field) {
   const timeField = field.replace('_date', '_time')
   const existingTime = action.value[timeField] || ''
   dateEdit.value = {
-    date: action.value[field] || '',
+    date: action.value[field] || toDateStr(new Date()),
     time: existingTime || null,
     duration: null
   }

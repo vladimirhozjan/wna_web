@@ -3558,6 +3558,54 @@
     "expected": "Setting a \"Scheduled for\" date on an action clears the due_date (mutual exclusivity). The Due row shows \"N/A (has scheduled date)\" and is non-editable while a scheduled_date is set. Clearing the scheduled date restores editability of the Due row. The change persists on reload."
   },
   {
+    "id": "TC-675",
+    "name": "Action Detail Date Editors Prefill Today and Show the Picker Icon in Dark Theme",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. An action exists with no scheduled_date, start_date, or due_date. A second action exists with a scheduled_date in the past (e.g., last week).",
+    "steps": [
+      "Open the first action's detail page and expand the Dates section",
+      "Click the Scheduled row to edit",
+      "Verify the date input already shows today's date (not the empty `dd. mm. yyyy` mask)",
+      "Click Cancel, then click the Start After row and verify today's date is prefilled; Cancel",
+      "Click the Due row and verify today's date is prefilled; click Save",
+      "Verify the Due row shows today's date",
+      "Open the second action's detail page and click the Scheduled row",
+      "Verify the input shows the existing past date, not today",
+      "Switch the theme to Dark (Settings → Application) and return to either date editor",
+      "Verify the calendar picker icon inside the date input is clearly visible against the dark input"
+    ],
+    "expected": "Any date editor on the Action Detail page opens with today's date when the field is empty; an existing date is never overwritten. In dark theme the native date and time picker icons render light, so they are visible."
+  },
+  {
+    "id": "TC-676",
+    "name": "Time Picker Keeps Focus on the Clicked Segment",
+    "priority": "Medium",
+    "area": "Calendar",
+    "areas": [
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. An action detail page is open with the Scheduled editor showing a time (click \"Add time...\" if needed).",
+    "steps": [
+      "Click the hour segment of the time input and verify the hour dropdown opens",
+      "Click the minute segment",
+      "Verify the minute dropdown opens and the caret stays in the minute segment (it does not jump back to hours)",
+      "Pick \"30\" from the minute dropdown and verify the minutes read 30 and the dropdown closes",
+      "Click the \":\" separator or the chevron and verify the hour segment gets focus with its dropdown open",
+      "Pick an hour from the dropdown and verify focus moves to the minute segment with the minute dropdown open",
+      "With the minute dropdown open, type a value and press Enter; verify the dropdown closes and the typed minutes stay",
+      "Click the duration input so its dropdown opens, type a value, press Enter; verify the dropdown closes and the value stays"
+    ],
+    "expected": "Clicking a segment of the time input focuses that segment and opens its own dropdown; clicking the minute segment never bounces focus back to the hour segment. Clicking the field chrome outside the inputs focuses the hour segment. Enter closes the open time or duration dropdown without discarding the typed value (Escape does the same)."
+  },
+  {
     "id": "TC-138",
     "name": "Mutual Exclusivity - Due Date Clears Scheduled Date (Action Detail)",
     "priority": "High",

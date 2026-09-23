@@ -13,6 +13,7 @@
           @input="onHourInput"
           @focus="open = 'hour'"
           @keydown.esc="open = null"
+          @keydown.enter="open = null"
       />
       <span class="text-body-m ti-sep">:</span>
       <input
@@ -27,6 +28,7 @@
           @input="onMinuteInput"
           @focus="open = 'minute'"
           @keydown.esc="open = null"
+          @keydown.enter="open = null"
       />
       <span v-if="is12h" class="text-body-m ti-period" @click.stop="togglePeriod">{{ period }}</span>
       <ChevronDownIcon class="ti-arrow" width="10" height="6" />
@@ -36,7 +38,7 @@
       <div
           v-for="h in hourOptions"
           :key="h.value"
-          class="text-body-m ti-option"
+          class="text-body-l ti-option"
           :class="{ 'ti-option--active': h.value === hour }"
           @mousedown.prevent="selectHour(h.value)"
       >{{ h.label }}</div>
@@ -46,7 +48,7 @@
       <div
           v-for="m in minuteOptions"
           :key="m"
-          class="text-body-m ti-option"
+          class="text-body-l ti-option"
           :class="{ 'ti-option--active': m === minute }"
           @mousedown.prevent="selectMinute(m)"
       >{{ String(m).padStart(2, '0') }}</div>
@@ -131,8 +133,9 @@ function emitTime(h24, m) {
   emit('update:modelValue', `${hh}:${mm}`)
 }
 
-function focusHour() {
+function focusHour(e) {
   if (props.disabled) return
+  if (e.target.tagName === 'INPUT') return
   hourRef.value?.focus()
 }
 
@@ -266,12 +269,28 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   box-shadow: var(--shadow-modal);
   z-index: 10;
   padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-light) transparent;
+}
+
+.ti-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ti-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ti-dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
+  border-radius: 2px;
 }
 
 .ti-option {
   padding: 8px 12px;
   cursor: pointer;
   white-space: nowrap;
+  text-align: center;
 }
 
 .ti-option:hover {
