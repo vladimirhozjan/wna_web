@@ -6208,6 +6208,29 @@
     "expected": "Clicking on any item's title in any dashboard section navigates to the correct detail page for that action. The detail page displays the full information for the clicked item."
   },
   {
+    "id": "TC-674",
+    "name": "Dashboard Inline Rename and Reorder Reflect Immediately",
+    "priority": "Medium",
+    "area": "Engage Dashboard",
+    "areas": [
+      "Engage Dashboard"
+    ],
+    "smoke": false,
+    "section": "14: Engage (Dashboard Overview)",
+    "preconditions": "User is logged in. At least 2 items exist in each of the Today, Next Actions, and Waiting For sections on the Engage dashboard.",
+    "steps": [
+      "Navigate to `/engage`",
+      "In the Today section, click the title of the first item, change it, and press Enter",
+      "Verify the row shows the new title immediately — do not refresh",
+      "Repeat steps 2–3 for an item in the Next Actions section and an item in the Waiting For section",
+      "In the Waiting For section, drag the last item above the first item and release",
+      "Verify the Waiting For section shows the new order immediately — do not refresh",
+      "Refresh the page",
+      "Verify the three renamed titles and the Waiting For order persist"
+    ],
+    "expected": "Inline rename and drag reorder in every Engage section are reflected on screen the moment they complete, without a page refresh, and persist after refresh. (Today / Next reorder is covered by TC-236.)"
+  },
+  {
     "id": "TC-238",
     "name": "Review Page Accessible When Weekly Review Is Enabled",
     "priority": "High",
@@ -12091,6 +12114,28 @@
     "expected": "- Step 1: no red dot on the Projects sidebar item (`projects.empty = 0`).\n- Step 2: a red dot appears on the Projects icon (`projects.empty = 1 > 0`), the same\n  `var(--color-danger)` `<circle>` as the Calendar overdue dot; **no number** is printed for it and the\n  active-project count badge is unaffected.\n- Step 3: the Engage nudge reports the project as needing a next action — its lit state **agrees** with the\n  dot (both reflect the one stalled owned project).\n- Step 4: after a Next Action is set, the red dot **clears** (`projects.empty = 0`) and the Engage nudge no\n  longer counts the project — the two surfaces agree again."
   },
   {
+    "id": "TC-673",
+    "name": "Project Top Action in Today — No Banner, No Dot; Re-top and Complete Keep the Invariant (BUG-042)",
+    "priority": "High",
+    "area": "Projects, Project Detail, Sidebar, Engage",
+    "areas": [
+      "Projects",
+      "Project Detail",
+      "Sidebar",
+      "Engage"
+    ],
+    "smoke": false,
+    "section": "37: Daily Digest Mirrors the In-App Lists",
+    "preconditions": "A fresh logged-in user. Desktop viewport (the sidebar is hidden on mobile).",
+    "steps": [
+      "Create a project and add its first action (auto-promoted to the project's Next Action). From the action's detail page, Move → Today; reopen the project detail.",
+      "Read the sidebar Projects icon and the `/engage` \"N projects need a next action\" nudge.",
+      "Back on the project detail, add a second action (lands in the backlog), then drag it to the top of the list.",
+      "Complete the (new) top action from the project detail; re-check the banner, then the sidebar dot and the Engage nudge."
+    ],
+    "expected": "- Step 1: the Today action renders as the **top** row with its \"Today\" state link; **no** \"What's the\n  next physical step?\" banner (the project still has its next action).\n- Step 2: no red dot on the Projects icon, no Engage nudge (`projects.empty = 0` — `next_action_id`\n  still set).\n- Step 3: the new top shows the \"Next Action\" state link (promoted to NEXT, D2); the old top **leaves\n  Today** and renders as a plain backlog row (no state link); still no banner.\n- Step 4: the remaining action is auto-promoted to the new bp=0 and shows the \"Next Action\" link; no\n  banner, no dot, no nudge — the re-top + complete sequence never leaves `next_action_id` NULL\n  (BUG-042 root cause §4 path)."
+  },
+  {
     "id": "TC-567",
     "name": "No payment UI without the `payments` flag (Contact-Us fallback)",
     "priority": "High",
@@ -12894,7 +12939,7 @@
   },
   {
     "id": "TC-608",
-    "name": "Cancel on Paywiser stops gateway billing; 404 nothing-to-cancel; 502 distinct",
+    "name": "Cancel on Paywiser stops gateway billing; gated when nothing to cancel; unreachable distinct",
     "priority": "High",
     "area": "Admin-app, Billing",
     "areas": [
@@ -12906,10 +12951,10 @@
     "preconditions": "One user with a Paywiser-backed subscription, one without. Admin (role ≥ admin).",
     "steps": [
       "Paywiser-backed user → **Cancel on Paywiser** → confirm → `POST /admin/platform-users/{id}/cancel-paywiser`.",
-      "User without a Paywiser-backed subscription → same button.",
-      "With the gateway unreachable (mock returns failure) → same button on a Paywiser-backed user."
+      "User without a Paywiser-backed subscription → open user detail; observe the Cancel-on-Paywiser row (BUG-040: the lazy `GET …/paywiser-subscription` lookup resolves it).",
+      "With the gateway unreachable (mock down / 5xx) → open user detail for a Paywiser-backed user; observe the row."
     ],
-    "expected": "Step 1 — `200`: the subscriber is paused at the gateway,\n`cancel_at_period_end=true`; success toast; the state line reflects cancel-at-period-end (access\nruns to expiry; the sweep downgrades). Audit log `paywiser_subscription_cancelled`. Step 2 —\nbackend `404` surfaces as a \"nothing to cancel on Paywiser\" toast; nothing changes. Step 3 — the\n`502` surfaces distinctly (gateway failed — nothing was changed); no local state change."
+    "expected": "Step 1 — `200`: the subscriber is paused at the gateway,\n`cancel_at_period_end=true`; success toast; the row re-fetches and lands disabled with the\n`subscription_paused` caption (BUG-040 user flow). Audit log `paywiser_subscription_cancelled`.\nStep 2 — the button is **disabled** with caption \"No Paywiser subscription\"; **no gateway call**\nis made (BUG-040 D4); the former click → `404` \"nothing to cancel\" toast path no longer exists.\nStep 3 — the button is **disabled** with caption \"Paywiser unreachable\" (BUG-040 D3; no retry\ncontrol — reload the page to retry); nothing was changed. A cancel-time `502` (gateway up at\nlookup, down at cancel) still surfaces distinctly via the error toast."
   },
   {
     "id": "TC-609",

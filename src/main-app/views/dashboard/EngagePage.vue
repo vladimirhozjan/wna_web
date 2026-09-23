@@ -36,7 +36,7 @@
               <router-link v-if="hasMoreToday" :to="{ name: 'today' }" class="section__link">View all</router-link>
             </div>
             <ItemList
-                v-model="displayToday"
+                v-model="topToday"
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
@@ -66,7 +66,7 @@
               <router-link v-if="hasMoreNext" :to="{ name: 'next' }" class="section__link">View all</router-link>
             </div>
             <ItemList
-                v-model="displayActions"
+                v-model="topActions"
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
@@ -96,7 +96,7 @@
               <router-link v-if="hasMoreWaiting" :to="{ name: 'waiting-for' }" class="section__link">View all</router-link>
             </div>
             <ItemList
-                v-model="displayWaiting"
+                v-model="topWaiting"
                 :loading="false"
                 :has-more="false"
                 :loading-ids="loadingIds"
@@ -252,10 +252,6 @@ const hasMoreToday = computed(() => todayCount.value > 5)
 const hasMoreNext = computed(() => nextCount.value > 5)
 const hasMoreWaiting = computed(() => waitingCount.value > 5)
 
-const displayToday = computed(() => topToday.value.slice(0, 5))
-const displayActions = computed(() => topActions.value.slice(0, 5))
-const displayWaiting = computed(() => topWaiting.value.slice(0, 5))
-
 const reviewLabel = computed(() => {
     const days = daysSinceReview.value
     if (days === null) return 'Never reviewed'
@@ -378,6 +374,10 @@ async function onUpdate(id, { title }) {
     updatingId.value = id
     try {
         await apiClient.updateAction(id, { title })
+        const item = topToday.value.find(i => i.id === id)
+            || topActions.value.find(i => i.id === id)
+            || topWaiting.value.find(i => i.id === id)
+        if (item) item.title = title
     } catch (e) {
         await loadDashboard({ tags: effectiveTags.value })
     } finally {
