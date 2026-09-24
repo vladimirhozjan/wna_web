@@ -26,6 +26,14 @@ export function themeModel() {
 
     function apply() {
         document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+        syncThemeColorMeta()
+    }
+
+    // Keeps the browser/OS chrome (status bar, title bar of the installed app) on the current theme
+    function syncThemeColorMeta() {
+        const meta = document.querySelector('meta[name="theme-color"]')
+        if (!meta) return
+        meta.content = getComputedStyle(document.documentElement).getPropertyValue('--color-bg-primary').trim()
     }
 
     function setMode(m) {

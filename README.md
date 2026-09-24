@@ -32,6 +32,7 @@ wna_web/
 │   ├── main-app/           # User-facing GTD application
 │   │   ├── index.html
 │   │   ├── main.js
+│   │   ├── public/         # Static assets copied as-is: favicon.svg, manifest.webmanifest, app icons
 │   │   ├── router/
 │   │   ├── layouts/
 │   │   ├── views/
@@ -211,3 +212,12 @@ Clean build folder:
 ```bash
 npm run clean
 ```
+App icons (main-app only): `src/main-app/public/` holds the PNG icons referenced by
+`manifest.webmanifest` and the `apple-touch-icon` link, all rendered from `favicon.svg`. When the logo
+changes, re-render them with any SVG rasterizer (no project dependency) and keep the exact set:
+
+| File | Size | Content |
+|------|------|---------|
+| `icon-192.png`, `icon-512.png` | 192, 512 | logo as in `favicon.svg`, transparent corners (`purpose: any`) |
+| `icon-maskable-512.png` | 512 | full-bleed brand gradient, bolt inside the central 80% safe zone, opaque (`purpose: maskable`) |
+| `apple-touch-icon.png` | 180 | full-bleed brand gradient tile, opaque RGB (no alpha channel) |
