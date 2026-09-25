@@ -98,6 +98,7 @@ const chartOptions = computed(() => ({
 
 <style scoped>
 .completed-chart {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
