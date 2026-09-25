@@ -150,6 +150,7 @@ export function createViteConfig(mode, envVars, appConfig) {
         },
 
         server: {
+            host: true,
             proxy: appConfig.proxy || {}
         }
     }

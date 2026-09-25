@@ -82,6 +82,9 @@ The dev server uses Vite proxy to forward API requests:
 - main-app: `/v1/*` → `http://localhost:8000` (router_service)
 - admin-app: `/auth/*`, `/admin/*` → `http://localhost:8004` (admin_service)
 
+Both dev servers listen on all network interfaces, so a phone on the same Wi-Fi can open
+`http://<computer-LAN-IP>:6111` (Vite prints the `Network:` URL on start).
+
 ---
 
 ## Environment Variables

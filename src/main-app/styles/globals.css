@@ -20,7 +20,7 @@ h1, h2, h3, h4, p {
 /* Push toast above FAB input bar when expanded (mobile) */
 @media (max-width: 768px) {
     html[data-fab-open] .toast-wrapper {
-        bottom: 84px;
+        bottom: calc(84px + var(--fab-kb-offset, 0px));
     }
 }
 

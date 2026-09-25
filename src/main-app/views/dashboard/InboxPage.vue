@@ -34,9 +34,9 @@
                 type="text"
                 placeholder="Add new stuff"
                 @keyup.enter="onAdd"
-                :disabled="adding"
             />
-            <Btn @click="onAdd"
+            <Btn @mousedown.prevent
+                 @click="onAdd"
                  :disabled="adding || !new_stuff_title.trim()"
                  :loading="adding"
                  class="add-button"
@@ -245,7 +245,8 @@ function focusAddInput() {
 }
 
 watch(loading, async (v) => {
-  if (!v && !clarifyMode.value) {
+  const typingElsewhere = document.activeElement?.matches('input, textarea') && !document.activeElement.closest('.inbox-input')
+  if (!v && !clarifyMode.value && !typingElsewhere) {
     await nextTick()
     add_input.value?.focus()
   }
@@ -270,7 +271,7 @@ function dismissCelebration() {
 // actions
 async function onAdd() {
   const t = (new_stuff_title.value ?? '').toString().trim()
-  if (!t) return
+  if (!t || adding.value) return
 
   hadItems.value = true
   hasMoreSnapshot.value = hasMore.value

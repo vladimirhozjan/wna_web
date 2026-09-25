@@ -25,19 +25,22 @@
     </div>
 
     <!-- Mobile FAB — quick add -->
-    <div v-if="fabExpanded" class="fab-overlay" @click="fabCollapse"></div>
+    <div v-if="fabExpanded" class="fab-overlay" @click="fabCollapse" @touchmove.prevent @wheel.prevent></div>
     <div class="mobile-fab-area">
       <div v-if="fabExpanded" class="fab-input-bar">
-        <input
-          ref="fabInputRef"
-          v-model="fabTitle"
-          class="fab-input"
-          type="text"
-          placeholder="Add new stuff"
-          @keydown.enter="fabSubmit"
-          @keydown.esc="fabCollapse"
-        />
-        <Btn variant="primary" size="sm" @click="fabSubmit">Add</Btn>
+        <div class="fab-input-wrap">
+          <input
+            ref="fabInputRef"
+            v-model="fabTitle"
+            class="fab-input"
+            type="text"
+            placeholder="Add new stuff"
+            @keydown.enter="fabSubmit"
+            @keydown.esc="fabCollapse"
+          />
+          <ActionBtn v-if="fabTitle" variant="default" class="fab-input-clear" @mousedown.prevent @click="fabClear" />
+        </div>
+        <Btn variant="primary" size="sm" @mousedown.prevent @click="fabSubmit">Add</Btn>
       </div>
       <button v-if="!fabExpanded" class="mobile-fab" @click="fabExpand">
         <PlusIcon width="20" height="20" style="pointer-events: none;" />
@@ -47,11 +50,12 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, onMounted } from "vue";
+import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
 import TopNav from "../components/TopNav.vue";
 import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
 import Btn from "../components/Btn.vue";
+import ActionBtn from "../components/ActionBtn.vue";
 import { authModel } from "../scripts/core/authModel.js";
 import PlusIcon from "../assets/PlusIcon.vue";
 import { settingsModel } from "../scripts/models/settingsModel.js";
@@ -73,13 +77,45 @@ const fabInputRef = ref(null);
 function fabExpand() {
   fabExpanded.value = true;
   document.documentElement.dataset.fabOpen = "";
-  nextTick(() => fabInputRef.value?.focus());
+  window.visualViewport?.addEventListener("resize", updateKeyboardOffset);
+  window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
+  window.addEventListener("scroll", resetWindowScroll);
+  nextTick(() => {
+    const input = fabInputRef.value;
+    if (!input) return;
+    // iOS scrolls the page to reveal a focused input near the bottom; focusing it while shifted off-screen prevents that.
+    input.style.transform = "translateY(-2000px)";
+    input.focus();
+    requestAnimationFrame(() => { input.style.transform = ""; });
+  });
 }
 
 function fabCollapse() {
+  fabInputRef.value?.blur();
   fabExpanded.value = false;
-  fabTitle.value = "";
   delete document.documentElement.dataset.fabOpen;
+  window.visualViewport?.removeEventListener("resize", updateKeyboardOffset);
+  window.visualViewport?.removeEventListener("scroll", updateKeyboardOffset);
+  window.removeEventListener("scroll", resetWindowScroll);
+  document.documentElement.style.removeProperty("--fab-kb-offset");
+  document.documentElement.style.removeProperty("--fab-vv-height");
+}
+
+function fabClear() {
+  fabTitle.value = "";
+  fabInputRef.value?.focus();
+}
+
+// The on-screen keyboard shrinks only the visual viewport; keep the bar pinned just above it.
+function updateKeyboardOffset() {
+  const vv = window.visualViewport;
+  const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+  document.documentElement.style.setProperty("--fab-kb-offset", `${offset}px`);
+  document.documentElement.style.setProperty("--fab-vv-height", `${vv.height}px`);
+}
+
+function resetWindowScroll() {
+  if (window.scrollY) window.scrollTo(0, 0);
 }
 
 async function fabSubmit() {
@@ -88,7 +124,7 @@ async function fabSubmit() {
   try {
     await addStuff(t);
     fabTitle.value = "";
-    fabInputRef.value?.focus();
+    fabCollapse();
   } catch (e) {
     toaster.push(e.message || "Failed to add item");
   }
@@ -109,6 +145,8 @@ watch(() => router.currentRoute.value.path, () => {
   isSidebarOpen.value = false;
 });
 
+onUnmounted(fabCollapse);
+
 onMounted(() => {
   if (auth.isAuthenticated.value && !settings.state.loaded) {
     settings.load().catch(() => {
@@ -122,7 +160,7 @@ onMounted(() => {
 .dashboard {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: var(--fab-vv-height, 100dvh);
 }
 
 .dashboard-body {
@@ -178,6 +216,11 @@ onMounted(() => {
     position: fixed;
     inset: 0;
     z-index: 898;
+    background: var(--color-popup-backdrop);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0.6;
+    touch-action: none;
   }
 
   .mobile-fab-area {
@@ -214,14 +257,22 @@ onMounted(() => {
     align-items: stretch;
     gap: 10px;
     position: fixed;
-    bottom: 26px;
-    left: 16px;
-    right: 20px;
+    bottom: var(--fab-kb-offset, 0px);
+    left: 0;
+    right: 0;
+    padding: 14px 20px 26px 16px;
+  }
+
+  .fab-input-wrap {
+    flex: 1;
+    display: flex;
+    position: relative;
   }
 
   .fab-input {
     flex: 1;
-    padding: 10px;
+    min-width: 0;
+    padding: 10px 32px 10px 10px;
     border-radius: 6px;
     border: 1px solid var(--color-input-border);
     background: var(--color-input-background);
@@ -234,6 +285,14 @@ onMounted(() => {
   .fab-input:focus {
     border-color: var(--color-input-border-focus);
     box-shadow: 0 0 0 1px var(--color-action-ring);
+  }
+
+  .fab-input-clear {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    color: var(--color-text-tertiary);
   }
 
   .fab-input::placeholder {

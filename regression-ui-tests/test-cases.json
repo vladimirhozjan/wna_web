@@ -8323,15 +8323,15 @@
     ],
     "smoke": false,
     "section": "20: Settings",
-    "preconditions": "User is logged in with at least two active sessions (e.g., logged in from both a desktop browser and a mobile device).",
+    "preconditions": "User is logged in with at least two active sessions (e.g., logged in from both a desktop browser and a mobile device). Optionally (backend access), one additional `user_session` row for the same user whose `expires_at` is in the past.",
     "steps": [
       "Navigate to /settings.",
       "Locate the Sessions section.",
-      "Verify a list of active sessions is displayed.",
+      "Verify a list of active sessions is displayed — only sessions whose refresh token is still valid (`expires_at > now()`); the expired row from the preconditions, if seeded, is not listed.",
       "For each session, verify the following information is shown: a. A device icon (phone emoji for mobile, laptop emoji for desktop). b. The device name or browser/OS description. c. The IP address of the session. d. The \"last active\" time (relative or absolute timestamp).",
       "Verify all known active sessions are listed."
     ],
-    "expected": "All active sessions are displayed in a list. Each session entry shows a device icon (phone or laptop emoji), device name, IP address, and last active time."
+    "expected": "All active sessions — and only those (expired, revoked or logged-out sessions never appear; BUG-043) — are displayed in a list. Each session entry shows a device icon (phone or laptop emoji), device name, IP address, and last active time."
   },
   {
     "id": "TC-312",
@@ -8394,9 +8394,9 @@
       "Click \"Confirm\" or the equivalent confirmation button.",
       "Verify the session is removed from the list.",
       "Verify the current session remains active (the user is not logged out).",
-      "On the other device/browser, verify the session is eventually invalidated (within the stated timeframe)."
+      "On the other device/browser, verify the session is invalidated on its next token refresh: the refresh returns `401 Invalid_token`, no new token pair is issued, and the device is bounced to the login page within the access-token lifetime (well inside the dialog's \"within the next hour\")."
     ],
-    "expected": "Clicking \"End\" on another session shows a confirmation dialog mentioning the delayed sign-out. Confirming removes the session from the list immediately. The current session remains unaffected. The other session is revoked server-side."
+    "expected": "Clicking \"End\" on another session shows a confirmation dialog mentioning the delayed sign-out. Confirming removes the session from the list immediately. The current session remains unaffected. The other session is revoked server-side and its refresh token is refused on the next refresh (BUG-043 D1); it cannot keep refreshing or reappear in the list."
   },
   {
     "id": "TC-316",
@@ -8855,16 +8855,18 @@
       "On a mobile viewport, verify the Quick Add button is NOT in the top nav bar.",
       "Verify a circular \"+\" FAB (floating action button) is visible at the bottom-right corner.",
       "Tap the \"+\" FAB.",
-      "Verify the FAB is replaced by a full-width pill-shaped input bar at the bottom of the screen.",
-      "Verify the input bar has a text input and an \"Add\" button.",
+      "Verify the FAB is replaced by a full-width input bar with a text input and an \"Add\" button.",
       "Verify the input is auto-focused and the keyboard opens (on a real device).",
+      "Verify the input bar sits directly above the keyboard and the page (header included) was not pushed up by the keyboard.",
+      "Verify a blurred overlay covers the page (lighter in light theme, darker in dark theme); try to scroll it and verify nothing moves.",
+      "Type a title and verify a clear (×) button appears; tap it and verify the input empties and stays focused.",
       "Type a title and press Enter (or tap the \"Add\" button).",
-      "Verify the item is added to the inbox, a success toast appears, and the input clears but stays expanded for rapid multi-capture.",
-      "Press Escape to collapse.",
-      "Verify the FAB returns to its collapsed \"+\" icon state.",
+      "Verify the item is added to the inbox, a success toast appears, and Quick Add collapses back to the \"+\" FAB.",
+      "Tap the FAB, type a title, then tap the overlay on top of a list item.",
+      "Verify the FAB returns to its collapsed \"+\" icon state and the list item was not opened or checked; tap the FAB again and verify the typed title is still in the input.",
       "Open the sidebar drawer and verify the FAB is hidden behind the overlay."
     ],
-    "expected": "On mobile, Quick Add is a floating action button (FAB) at the bottom-right instead of being in the top nav. Tapping it expands into a pill-shaped input bar. Items are added to the inbox. The input stays open for multi-capture. Escape collapses back to the FAB. The FAB hides behind the sidebar overlay when the drawer is open."
+    "expected": "On mobile, Quick Add is a floating action button (FAB) at the bottom-right instead of being in the top nav. Tapping it expands into an input bar pinned above the keyboard; the page is not pushed up and a theme-tinted blurred overlay covers it and blocks scrolling. Tapping the overlay only collapses Quick Add. Adding an item collapses Quick Add back to the FAB. The clear button empties the input. Collapsing keeps the typed text for the next expand. The FAB hides behind the sidebar overlay when the drawer is open."
   },
   {
     "id": "TC-330",
@@ -13954,5 +13956,150 @@
     "preconditions": "",
     "steps": [],
     "expected": ""
+  },
+  {
+    "id": "TC-678",
+    "name": "Web App Manifest Is Linked and Valid",
+    "priority": "High",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "Main-app is served (dev or deployed). No login needed. Automated in wna-ui-tests (Playwright).",
+    "steps": [
+      "Open `/` and read the document head.",
+      "Verify `<link rel=\"manifest\" href=\"/manifest.webmanifest\">` is present.",
+      "Verify the head also contains `<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">`, `<meta name=\"theme-color\">`, `<meta name=\"mobile-web-app-capable\" content=\"yes\">`, `<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">`, `<meta name=\"apple-mobile-web-app-title\" content=\"WNA\">` and `<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\">`.",
+      "Request `GET /manifest.webmanifest`; verify it returns 200 with a JSON body.",
+      "Verify the JSON has `name` \"WhatsNextAction\", `short_name` \"WNA\", `id` \"/\", `scope` \"/\", `start_url` \"/engage\", `display` \"standalone\", `theme_color` \"#FFFFFF\", `background_color` \"#FFFFFF\".",
+      "Verify `icons` lists `/icon-192.png` (192x192, any), `/icon-512.png` (512x512, any) and `/icon-maskable-512.png` (512x512, maskable), all with type `image/png`."
+    ],
+    "expected": "The manifest is linked from the page head and served as valid JSON with exactly the name, short name, ids, start URL, display mode, colors and icon set above."
+  },
+  {
+    "id": "TC-679",
+    "name": "Manifest Icons and Apple Touch Icon Are Served as PNG at the Declared Size",
+    "priority": "High",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "Main-app is served. No login needed. Automated in wna-ui-tests (Playwright).",
+    "steps": [
+      "Request `GET /icon-192.png`, `GET /icon-512.png`, `GET /icon-maskable-512.png` and `GET /apple-touch-icon.png`.",
+      "Verify each returns 200 with content type `image/png`.",
+      "Decode each body and verify the pixel size is 192x192, 512x512, 512x512 and 180x180 respectively.",
+      "Verify `apple-touch-icon.png` and `icon-maskable-512.png` have no transparent pixels (opaque RGB), while `icon-192.png` and `icon-512.png` have transparent corners."
+    ],
+    "expected": "Every icon referenced by the manifest and the apple-touch-icon link is a real PNG of the declared size; the Apple and maskable icons are fully opaque, the `any` icons keep transparent corners."
+  },
+  {
+    "id": "TC-680",
+    "name": "theme-color Meta Follows the In-App Theme",
+    "priority": "Medium",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User is logged in. Automated in wna-ui-tests (Playwright).",
+    "steps": [
+      "Navigate to /settings.",
+      "Set the Theme dropdown to \"Light\".",
+      "Verify `document.querySelector('meta[name=\"theme-color\"]').content` equals `#FFFFFF` (case-insensitive).",
+      "Set the Theme dropdown to \"Dark\".",
+      "Verify the meta content equals `#111111`.",
+      "Set the Theme dropdown to \"System Default\" with the OS/browser preference emulated as dark; verify the meta content equals `#111111`.",
+      "Emulate the OS preference as light (no reload); verify the meta content switches to `#FFFFFF`.",
+      "Reload the page with Theme \"Dark\" stored; verify the meta content is `#111111` immediately after load."
+    ],
+    "expected": "`<meta name=\"theme-color\">` always equals the current `--color-bg-primary` (light `#FFFFFF`, dark `#111111`), updates on every theme change including OS preference changes in System Default mode, and is correct right after load."
+  },
+  {
+    "id": "TC-681",
+    "name": "iOS Safari - Add to Home Screen",
+    "priority": "High",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "iPhone or iPad with Safari, main-app reachable over HTTPS (dev deployment). Manual device check.",
+    "steps": [
+      "Open the app in Safari (any page, logged in or not).",
+      "Tap Share → Add to Home Screen.",
+      "Verify the sheet shows the name \"WNA\" and the brand icon (gradient tile with the white bolt), not a page screenshot.",
+      "Tap Add and launch the app from the home screen.",
+      "Verify it opens standalone (no Safari address bar or tabs) on `/engage` (after login if the installed app has no session yet).",
+      "Verify the status bar area shows the app's light background and the top nav is not hidden under the notch / status bar.",
+      "Switch the Theme to \"Dark\" in Settings; verify the status bar area follows the dark background."
+    ],
+    "expected": "The installed app has the WNA name and icon, launches standalone on `/engage`, and its status bar color follows the in-app theme."
+  },
+  {
+    "id": "TC-682",
+    "name": "Android Chrome - Install App",
+    "priority": "High",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "Android device with Chrome, main-app reachable over HTTPS (dev deployment). Manual device check.",
+    "steps": [
+      "Open the app in Chrome.",
+      "Open ⋮ → Install app (or \"Add to Home screen\"); verify the prompt shows \"WhatsNextAction\" / \"WNA\" with the brand icon.",
+      "Install and open the app from the launcher / home screen.",
+      "Verify the launcher icon is the maskable icon: the bolt is fully visible and not clipped by the device's icon shape (circle, squircle, rounded square).",
+      "Verify the app opens standalone on `/engage` and the status bar color matches the app background.",
+      "Switch the Theme to \"Dark\"; verify the status bar color follows."
+    ],
+    "expected": "Chrome offers a native install, the launcher shows an unclipped WNA icon, and the app launches standalone on `/engage` with a theme-matched status bar."
+  },
+  {
+    "id": "TC-683",
+    "name": "Desktop Install - macOS Safari Add to Dock, Chrome/Edge Install",
+    "priority": "Medium",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "macOS with Safari 17+, and desktop Chrome or Edge. Main-app reachable over HTTPS (dev deployment). Manual device check.",
+    "steps": [
+      "In Safari open the app and choose File → Add to Dock; verify the dialog shows the name \"WNA\" and the brand icon.",
+      "Launch it from the Dock; verify it opens in its own window without browser chrome, on `/engage`.",
+      "In Chrome or Edge open the app; verify the address bar shows the install icon (Chrome DevTools → Application → Manifest reports installable with no errors).",
+      "Install and launch; verify a standalone window opens on `/engage` with the window title bar using the app's background color, and the WNA icon in the Dock / taskbar."
+    ],
+    "expected": "Both Safari (Add to Dock) and Chromium browsers install the app as a standalone window with the WNA name and icon, launching on `/engage`."
+  },
+  {
+    "id": "TC-684",
+    "name": "Installed iOS App - Logged-out Launch, Google SSO and Checkout Round-trips",
+    "priority": "High",
+    "area": "Install",
+    "areas": [
+      "Install"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "App installed on iOS per TC-681 with no stored session. A Google account and a test Paywiser checkout are available on dev. Manual device check.",
+    "steps": [
+      "Launch the installed app; verify it lands on the login page with `redirect=/engage` and, after logging in with email and password, lands on `/engage`.",
+      "Log out inside the installed app and launch again; choose Continue with Google.",
+      "Verify the Google sign-in completes and returns into the installed app (not a separate Safari window) with the session active, landing on `/engage`.",
+      "In the installed app go to Settings → Plan and start a checkout; complete or cancel it on the Paywiser page.",
+      "Verify the return lands back inside the installed app, still logged in, on the expected post-checkout page."
+    ],
+    "expected": "A logged-out launch goes login → `/engage`. The out-of-scope Google SSO and Paywiser redirects both return into the installed app with the session intact."
   }
 ]
