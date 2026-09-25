@@ -186,6 +186,27 @@ function onCheck(checked) {
   transition: opacity 0.15s ease;
 }
 
+/* Hit areas fill the row height; negative margins keep the row height and label/icon position unchanged. */
+.item__actions :deep(.action-btn) {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: -11px -7px -11px 0;
+}
+
+.item__actions :deep(.base-btn--link) {
+  height: 44px;
+  padding: 0 12px;
+  margin: -11px -4px;
+}
+
+/* An empty subtitle row still adds its top padding; shift down by half of it to stay centered in the row. */
+.item:has(.item__subtitle-row:empty) .item__actions :deep(.action-btn),
+.item:has(.item__subtitle-row:empty) .item__actions :deep(.base-btn--link) {
+  margin-top: -8px;
+  margin-bottom: -14px;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .item:not(.item--no-hover):hover {
     background: var(--color-bg-hover);

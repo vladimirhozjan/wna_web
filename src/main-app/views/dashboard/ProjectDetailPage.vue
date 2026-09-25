@@ -2653,6 +2653,10 @@ async function onAddAction() {
   cursor: pointer;
 }
 
+.completed-row:last-child {
+  border-bottom: none;
+}
+
 .completed-row:hover {
   background: var(--color-bg-secondary);
 }
@@ -2676,7 +2680,10 @@ async function onAddAction() {
 /* Assign / Unassign icon buttons — same scale as ActionBtn (16px icon, 4px 8px padding) */
 .action-assign-btn,
 .action-unassign-btn {
-  padding: 4px 8px;
+  width: 44px;
+  height: 44px;
+  margin: -7px -3px;
+  padding: 0;
   border: none;
   background: transparent;
   border-radius: 4px;
