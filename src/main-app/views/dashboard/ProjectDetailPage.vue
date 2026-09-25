@@ -258,11 +258,15 @@
                           @check="() => onCompleteAction(action)"
                           @click="goToActionDetail(action)"
                       >
+                        <template v-if="ACTION_STATE_ICONS[action.state]" #prefix>
+                          <span class="action-state-icon" :title="actionStateLabel(action.state)" role="img" :aria-label="actionStateLabel(action.state)">
+                            <component :is="ACTION_STATE_ICONS[action.state]" />
+                          </span>
+                        </template>
                         <template #actions>
-                          <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)">✕</ActionBtn>
+                          <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)" />
                         </template>
                       </Item>
-                      <a v-if="action.state !== 'BACKLOG'" class="text-footnote action-state-link" @click.stop="goToActionList(action.state)">{{ actionStateLabel(action.state) }}</a>
                     </div>
                   </div>
                 </VueDraggable>
@@ -647,6 +651,9 @@ import { statsModel } from '../../scripts/models/statsModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import NextIcon from '../../assets/NextIcon.vue'
+import TodayIcon from '../../assets/TodayIcon.vue'
+import WaitingIcon from '../../assets/WaitingIcon.vue'
+import CalendarIcon from '../../assets/CalendarIcon.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import SomedayIcon from '../../assets/SomedayIcon.vue'
 import WarningIcon from '../../assets/WarningIcon.vue'
@@ -1519,20 +1526,15 @@ const ACTION_STATE_LABELS = {
   CALENDAR: 'Calendar',
 }
 
-const ACTION_STATE_ROUTES = {
-  NEXT: 'next',
-  TODAY: 'today',
-  WAITING: 'waiting-for',
-  CALENDAR: 'calendar',
+const ACTION_STATE_ICONS = {
+  NEXT: NextIcon,
+  TODAY: TodayIcon,
+  WAITING: WaitingIcon,
+  CALENDAR: CalendarIcon,
 }
 
 function actionStateLabel(state) {
   return ACTION_STATE_LABELS[state] || state
-}
-
-function goToActionList(state) {
-  const name = ACTION_STATE_ROUTES[state]
-  if (name) router.push({ name })
 }
 
 // ── Project Actions functions ──
@@ -2265,7 +2267,7 @@ async function onAddAction() {
 }
 
 .action-wrapper--chosen .item {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-row-hover);
 }
 
 .action-wrapper--ghost .item {
@@ -2286,7 +2288,7 @@ async function onAddAction() {
 
 @media (hover: hover) and (pointer: fine) {
   .action-row:hover {
-    background: var(--color-bg-hover);
+    background: var(--color-bg-row-hover);
   }
 }
 
@@ -2300,17 +2302,14 @@ async function onAddAction() {
   background: transparent;
 }
 
-.action-state-link {
+.action-state-icon {
+  display: flex;
   color: var(--color-text-tertiary);
-  cursor: pointer;
-  white-space: nowrap;
-  padding-right: 16px;
-  flex-shrink: 0;
 }
 
-.action-state-link:hover {
-  color: var(--color-link-hover);
-  text-decoration: underline;
+.action-state-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ── Actions quick-add ── */

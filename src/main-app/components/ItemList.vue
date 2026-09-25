@@ -309,12 +309,12 @@ function onExternalDrop(e) {
 
 .item-wrapper-chosen .item,
 .item-wrapper--dragging .item {
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-row-hover);
   border-left-color: transparent;
 }
 
 .item-wrapper--dragging.item-wrapper--active .item {
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-row-hover);
   border-left-color: transparent;
 }
 

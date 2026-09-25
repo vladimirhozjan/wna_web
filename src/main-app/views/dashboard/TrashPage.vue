@@ -160,6 +160,6 @@ async function onEmptyTrash() {
 
 /* Remove action color on click/active */
 .trash-content :deep(.item:not(.item--no-hover):active) {
-  background: var(--color-bg-hover) !important;
+  background: var(--color-bg-row-hover) !important;
 }
 </style>

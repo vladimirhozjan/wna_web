@@ -209,7 +209,7 @@ function onCheck(checked) {
 
 @media (hover: hover) and (pointer: fine) {
   .item:not(.item--no-hover):hover {
-    background: var(--color-bg-hover);
+    background: var(--color-bg-row-hover);
   }
 
   .item:not(.item--no-hover):hover .item__actions {
@@ -219,7 +219,7 @@ function onCheck(checked) {
 }
 
 .item:not(.item--no-hover):active {
-  background: var(--color-bg-hover) !important;
+  background: var(--color-bg-row-hover) !important;
 }
 
 .item:not(.item--no-hover):active .item__actions {
