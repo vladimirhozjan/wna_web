@@ -10915,9 +10915,9 @@
     "steps": [
       "Click the bell in the top nav",
       "Observe the dropdown content",
-      "Click one of the unread notifications"
+      "Within about 1 second, click one of the unread notifications"
     ],
-    "expected": "1. The dropdown opens aligned to the right of the bell; notifications load and the panel shows a list with the unread item highlighted and a small dot.\n2. Clicking the notification marks it as read (dot and highlight disappear), decrements the unread badge by one, closes the dropdown, and navigates to the linked entity (stuff, action, project, or the Connections page for connection events, depending on `entity_type`/`type`)."
+    "expected": "1. The dropdown opens aligned to the right of the bell; notifications load and the panel shows a list with the unread item highlighted and a small dot.\n2. Clicking the notification marks it as read (dot and highlight disappear), decrements the unread badge by one, closes the dropdown, and navigates to the linked entity (stuff, action, project, or the Connections page for connection events, depending on `entity_type`/`type`).\n3. Rows that stay fully visible are also marked read on view (see TC-685); clicking a row that is already read still navigates."
   },
   {
     "id": "TC-427",
@@ -14101,6 +14101,44 @@
       "Verify the return lands back inside the installed app, still logged in, on the expected post-checkout page."
     ],
     "expected": "A logged-out launch goes login → `/engage`. The out-of-scope Google SSO and Paywiser redirects both return into the installed app with the session intact."
+  },
+  {
+    "id": "TC-685",
+    "name": "Notifications Are Marked Read on View",
+    "priority": "High",
+    "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User has more unread in-app notifications than fit in the open panel (e.g. 10+). Run on desktop and on mobile (bottom sheet, width ≤ 768px).",
+    "steps": [
+      "Note the unread badge count, then click the bell.",
+      "Without clicking any row, wait about 2 seconds.",
+      "Scroll the list down so more unread rows come fully into view; wait about 2 seconds.",
+      "Note a row that is only partly visible at the bottom edge, then close the panel (backdrop click, Escape, or the sheet's × on mobile).",
+      "Reopen the bell."
+    ],
+    "expected": "1. About 1 second after a row is fully visible, its dot and highlight disappear; rows never fully shown keep their dot.\n2. The badge and the header \"N unread\" drop as each batch is confirmed, matching the number of rows marked read.\n3. After close, the badge shows the server's unread count; a row that was fully visible in the last second before closing is also read on reopen.\n4. The partly visible row from step 4 is still unread on reopen.\n5. On mobile, rows hidden below the sheet's bottom edge are not marked read until scrolled fully into view."
+  },
+  {
+    "id": "TC-686",
+    "name": "Notification Dropdown Infinite Scroll",
+    "priority": "Medium",
+    "area": "Notifications",
+    "areas": [
+      "Notifications"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User has more than 20 in-app notifications. Run on desktop and on mobile (bottom sheet).",
+    "steps": [
+      "Click the bell; confirm the first 20 notifications load.",
+      "Scroll the list to the bottom.",
+      "Keep scrolling until no more notifications load."
+    ],
+    "expected": "1. Near the bottom of the list a spinner shows and the next, older page is appended below without duplicates or a jump in scroll position.\n2. Newly loaded unread rows follow the read-on-view rule (TC-685) once fully visible.\n3. When the last page is loaded, scrolling to the bottom triggers no further requests."
   },
   {
     "id": "TC-687",

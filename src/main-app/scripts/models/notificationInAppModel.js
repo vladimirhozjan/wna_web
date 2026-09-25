@@ -9,7 +9,11 @@ const cursor = ref(null)
 const hasMore = ref(true)
 
 const POLL_INTERVAL_MS = 30000
+const READ_SEND_INTERVAL_MS = 1000
+const READ_BATCH_MAX = 20
 let pollTimer = null
+let readTimer = null
+const pendingReadIds = new Set()
 let instance = null
 
 export function notificationInAppModel() {
@@ -65,6 +69,47 @@ export function notificationInAppModel() {
         }
     }
 
+    function markSeen(id) {
+        const n = notifications.value.find(x => x.id === id)
+        if (!n || n.read) return
+        pendingReadIds.add(id)
+        if (!readTimer) readTimer = setInterval(onReadTick, READ_SEND_INTERVAL_MS)
+    }
+
+    function onReadTick() {
+        if (pendingReadIds.size > 0) {
+            sendReadBatch()
+        } else if (!notifications.value.some(n => !n.read)) {
+            stopReadTimer()
+        }
+    }
+
+    // Failed batches are dropped, not retried — the close-time count check or the poll corrects the badge
+    async function sendReadBatch() {
+        const ids = [...pendingReadIds].slice(0, READ_BATCH_MAX)
+        ids.forEach(id => pendingReadIds.delete(id))
+        try {
+            const data = await apiClient.markNotificationsRead(ids)
+            const sent = new Set(ids)
+            notifications.value.forEach(n => { if (sent.has(n.id)) n.read = true })
+            if (typeof data.unread_count === 'number') unreadCount.value = data.unread_count
+        } catch (err) {
+            if (import.meta.env.DEV) console.warn('[notifications] mark read failed:', err)
+        }
+    }
+
+    async function flushRead() {
+        stopReadTimer()
+        while (pendingReadIds.size > 0) await sendReadBatch()
+    }
+
+    function stopReadTimer() {
+        if (readTimer) {
+            clearInterval(readTimer)
+            readTimer = null
+        }
+    }
+
     function startPolling() {
         stopPolling()
         loadUnreadCount()
@@ -84,6 +129,8 @@ export function notificationInAppModel() {
         cursor.value = null
         hasMore.value = true
         loaded.value = false
+        pendingReadIds.clear()
+        stopReadTimer()
         stopPolling()
     }
 
@@ -98,6 +145,8 @@ export function notificationInAppModel() {
         loadList,
         loadUnreadCount,
         markRead,
+        markSeen,
+        flushRead,
         startPolling,
         stopPolling,
         reset,

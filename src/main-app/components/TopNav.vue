@@ -68,10 +68,11 @@
               You're all caught up.
             </div>
 
-            <ul v-else class="notifications-list">
+            <ul v-else ref="notifListRef" class="notifications-list" @scroll="onNotifScroll">
               <li
                 v-for="n in notifList"
                 :key="n.id"
+                :data-notif-id="n.id"
                 class="notifications-item"
                 :class="{ 'notifications-item--unread': !n.read }"
                 @click="onNotifClick(n, close)"
@@ -81,6 +82,9 @@
                   <span class="notifications-message">{{ n.message }}</span>
                   <span class="text-footnote notifications-time">{{ formatNotifTime(n.created_at) }}</span>
                 </div>
+              </li>
+              <li v-if="notifLoading" class="notifications-state">
+                <Spinner :size="16" />
               </li>
             </ul>
           </div>
@@ -204,15 +208,51 @@ const notifList = notifModel.notifications;
 const notifUnread = computed(() => notifModel.unreadCount.value);
 const notifLoading = computed(() => notifModel.loading.value);
 const notifDropdownOpen = ref(false);
+const notifListRef = ref(null);
+const NOTIF_LOAD_MORE_OFFSET_PX = 40;
+let notifObserver = null;
+let unreadAtOpen = 0;
 
 watch(notifDropdownOpen, async (open) => {
-  if (!open) return;
-  try {
-    await notifModel.loadList({ reset: true });
-  } catch {
-    // Silent — badge reflects last known state
+  if (open) {
+    unreadAtOpen = notifModel.unreadCount.value;
+    try {
+      await notifModel.loadList({ reset: true });
+      unreadAtOpen = notifModel.unreadCount.value;
+    } catch {
+      // Silent — badge reflects last known state
+    }
+    return;
   }
+  await notifModel.flushRead();
+  if (notifModel.unreadCount.value !== unreadAtOpen) notifModel.loadUnreadCount();
 });
+
+// Viewport root so the sheet's clipping on mobile counts too, not just the list's scroll
+watch([notifListRef, () => notifList.value, () => notifList.value.length], ([el]) => {
+  notifObserver?.disconnect();
+  notifObserver = null;
+  if (!el) return;
+  notifObserver = new IntersectionObserver(onNotifIntersect, { threshold: 1.0 });
+  el.querySelectorAll("[data-notif-id]").forEach((row) => notifObserver.observe(row));
+}, { flush: "post" });
+
+function onNotifIntersect(entries) {
+  entries.forEach((e) => {
+    if (e.isIntersecting && e.intersectionRatio >= 1) notifModel.markSeen(e.target.dataset.notifId);
+  });
+}
+
+async function onNotifScroll(e) {
+  const el = e.target;
+  if (notifLoading.value || !notifModel.hasMore.value) return;
+  if (el.scrollTop + el.clientHeight < el.scrollHeight - NOTIF_LOAD_MORE_OFFSET_PX) return;
+  try {
+    await notifModel.loadList();
+  } catch {
+    // Silent — next scroll retries
+  }
+}
 
 async function onNotifClick(n, close) {
   if (!n.read) {
@@ -312,6 +352,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", onClickOutside);
+  notifObserver?.disconnect();
+  notifModel.flushRead();
   notifModel.stopPolling();
 });
 </script>

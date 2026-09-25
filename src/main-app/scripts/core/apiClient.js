@@ -1863,6 +1863,15 @@ export async function markNotificationRead(id) {
     }
 }
 
+export async function markNotificationsRead(ids) {
+    try {
+        const res = await httpApi.post('/v1/notifications/read', {ids}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getUnreadNotificationCount() {
     try {
         const res = await httpApi.get('/v1/notifications/unread-count', {headers: authHeaders()})
@@ -2120,6 +2129,7 @@ const apiClient = {
     // In-App Notifications API
     listNotifications,
     markNotificationRead,
+    markNotificationsRead,
     getUnreadNotificationCount,
 }
 
