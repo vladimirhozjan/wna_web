@@ -44,7 +44,7 @@ parent here. Scope is **main-app only** (parent D2) — admin-app is untouched.
   ids and one-liners reserved in the parent §Contracts touched (re-check the max first; if taken,
   renumber in the parent and tell ui-tests).
 - [x] W8 (`README.md` Project Structure `public/` line + "App icons" note under Utilities listing the exact icon set/sizes/opacity to keep when re-rendering) Update `README.md` only if the icon-rendering step needs documenting for future icon changes.
-- [~] W9 DEFERRED TO USER: run TC-681…TC-684 on dev (iOS Safari, Android Chrome, macOS Safari Add to Dock + desktop Chrome/Edge, iOS Google SSO + Paywiser round-trip) — Ask the owner to run the manual device checks TC-681…TC-684 on dev (you cannot) — mark `[~]`
+- [NA] W9 n/a — owner decision 2026-09-24: TC-681…TC-684 manual device checks are executed by the ui-tests slice (another agent), not by this web slice or the owner; the TCs are authored in `wna-test-cases.md:15888-15975` for them. Ask the owner to run the manual device checks TC-681…TC-684 on dev (you cannot) — mark `[~]`
   with "DEFERRED TO USER" until they confirm.
 
 ## Hard rules for the implementer
