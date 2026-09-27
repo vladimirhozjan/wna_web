@@ -11,7 +11,7 @@
           label="Dashboard"
           :to="{ name: 'engage' }"
       >
-        <template #icon><EngageIcon/></template>
+        <template #icon><EngageIcon :overdue="(stats?.next?.overdue ?? 0) + (stats?.today?.overdue ?? 0) + (stats?.calendar?.overdue ?? 0) + (stats?.waiting?.overdue ?? 0) > 0"/></template>
       </SidebarMenuItem>
 
       <SidebarMenuItem

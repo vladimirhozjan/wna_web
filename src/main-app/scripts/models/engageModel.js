@@ -4,6 +4,8 @@ import { statsModel } from './statsModel.js'
 import { reviewModel } from './reviewModel.js'
 import { settingsModel } from './settingsModel.js'
 
+const topOverdue = ref([])
+const overdueTotal = ref(0)
 const topToday = ref([])
 const topActions = ref([])
 const topWaiting = ref([])
@@ -26,6 +28,8 @@ export function engageModel() {
             const data = await apiClient.getEngage({ tags: tagsParam })
 
             setStats(data.stats)
+            topOverdue.value = data.overdue?.items || []
+            overdueTotal.value = data.overdue?.total_count ?? 0
             topToday.value = data.today?.items || data.today || []
             topActions.value = data.next?.items || data.next || []
             topWaiting.value = data.waiting?.items || data.waiting || []
@@ -42,6 +46,8 @@ export function engageModel() {
 
     return {
         stats,
+        topOverdue,
+        overdueTotal,
         topToday,
         topActions,
         topWaiting,

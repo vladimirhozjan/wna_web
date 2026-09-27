@@ -20,10 +20,31 @@
 
         <template v-else>
 
-          <!-- Overdue alert -->
-          <div v-if="overdueCount > 0" class="overdue-banner" @click="router.push({ name: 'overdue' })">
-            <span class="overdue-banner__text">{{ overdueCount }} overdue item{{ overdueCount !== 1 ? 's' : '' }} need attention</span>
-            <Btn variant="ghost-danger" size="sm" @click.stop="router.push({ name: 'overdue' })">View</Btn>
+          <!-- Overdue section -->
+          <div class="card" v-if="topOverdue.length > 0">
+            <div class="card-header">
+              <router-link :to="{ name: 'overdue' }" class="section__title">
+                Overdue
+                <span v-if="overdueTotal > 0" class="section__count">{{ overdueTotal }}</span>
+              </router-link>
+              <router-link v-if="hasMoreOverdue" :to="{ name: 'overdue' }" class="section__link">View all</router-link>
+            </div>
+            <ItemList
+                v-model="topOverdue"
+                :loading="false"
+                :has-more="false"
+                :disabled="true"
+                :loading-ids="loadingIds"
+                :completing-ids="completingIds"
+                @update="onUpdate"
+                @check="onCheck"
+                @click="onOverdueClick"
+                @delete="onTrash"
+            >
+              <template #subtitle="{ item }">
+                <MetadataRow :item="item" entity-type="action" />
+              </template>
+            </ItemList>
           </div>
 
           <!-- Today section -->
@@ -162,7 +183,6 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
-import Btn from '../../components/Btn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import EngageIcon from '../../assets/EngageIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
@@ -188,6 +208,8 @@ const filterTags = ref([])
 
 const {
     stats,
+    topOverdue,
+    overdueTotal,
     topActions,
     topToday,
     topWaiting,
@@ -240,14 +262,9 @@ const inboxCount = computed(() => stats.value?.inbox?.count ?? 0)
 const todayCount = computed(() => stats.value?.today?.count ?? 0)
 const nextCount = computed(() => stats.value?.next?.count ?? 0)
 const waitingCount = computed(() => stats.value?.waiting?.count ?? 0)
-const overdueCount = computed(() => {
-    return (stats.value?.next?.overdue ?? 0)
-        + (stats.value?.today?.overdue ?? 0)
-        + (stats.value?.calendar?.overdue ?? 0)
-        + (stats.value?.waiting?.overdue ?? 0)
-})
 
 // Show "View all" when count > 5
+const hasMoreOverdue = computed(() => overdueTotal.value > 5)
 const hasMoreToday = computed(() => todayCount.value > 5)
 const hasMoreNext = computed(() => nextCount.value > 5)
 const hasMoreWaiting = computed(() => waitingCount.value > 5)
@@ -283,14 +300,14 @@ const hasNudges = computed(() => {
 })
 
 const noActionItems = computed(() => {
-    return topToday.value.length === 0
+    return topOverdue.value.length === 0
+        && topToday.value.length === 0
         && topActions.value.length === 0
         && topWaiting.value.length === 0
 })
 
 const isEmpty = computed(() => {
     return noActionItems.value
-        && overdueCount.value === 0
         && !hasNudges.value
 })
 
@@ -310,7 +327,8 @@ const ANIM_MS = 800
 async function onCheck(id, checked) {
     if (!checked) return
 
-    const item = topToday.value.find(i => i.id === id)
+    const item = topOverdue.value.find(i => i.id === id)
+        || topToday.value.find(i => i.id === id)
         || topActions.value.find(i => i.id === id)
         || topWaiting.value.find(i => i.id === id)
     const title = truncateTitle(item?.title)
@@ -324,6 +342,7 @@ async function onCheck(id, checked) {
             apiClient.completeAction(id),
             new Promise(r => setTimeout(r, ANIM_MS))
         ])
+        removeFromList(topOverdue, id)
         removeFromList(topToday, id)
         removeFromList(topActions, id)
         removeFromList(topWaiting, id)
@@ -339,7 +358,8 @@ async function onCheck(id, checked) {
 }
 
 async function onTrash(id) {
-    const item = topToday.value.find(i => i.id === id)
+    const item = topOverdue.value.find(i => i.id === id)
+        || topToday.value.find(i => i.id === id)
         || topActions.value.find(i => i.id === id)
         || topWaiting.value.find(i => i.id === id)
     const title = truncateTitle(item?.title)
@@ -355,6 +375,7 @@ async function onTrash(id) {
         deletingId.value = id
         try {
             await apiClient.trashAction(id)
+            removeFromList(topOverdue, id)
             removeFromList(topToday, id)
             removeFromList(topActions, id)
             removeFromList(topWaiting, id)
@@ -374,7 +395,8 @@ async function onUpdate(id, { title }) {
     updatingId.value = id
     try {
         await apiClient.updateAction(id, { title })
-        const item = topToday.value.find(i => i.id === id)
+        const item = topOverdue.value.find(i => i.id === id)
+            || topToday.value.find(i => i.id === id)
             || topActions.value.find(i => i.id === id)
             || topWaiting.value.find(i => i.id === id)
         if (item) item.title = title
@@ -417,6 +439,10 @@ async function onWaitingMove(id, newIndex) {
     } finally {
         movingId.value = null
     }
+}
+
+function onOverdueClick(item) {
+    router.push({ name: 'action-detail', params: { id: item.id }, query: { from: 'engage' } })
 }
 
 function onTodayClick(item) {
@@ -526,32 +552,6 @@ async function onDropToWaiting(data) {
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
-}
-
-
-/* Overdue banner */
-.overdue-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--color-danger-bg-subtle);
-  border: 1px solid var(--color-danger-light);
-  border-left: 3px solid var(--color-danger);
-  border-radius: 8px;
-  padding: 10px 16px;
-  margin-bottom: 20px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.overdue-banner:hover {
-  background: var(--color-danger-bg-medium);
-}
-
-.overdue-banner__text {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text-danger);
 }
 
 
