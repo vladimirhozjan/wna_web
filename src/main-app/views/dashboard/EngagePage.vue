@@ -21,16 +21,17 @@
         <template v-else>
 
           <!-- Overdue section -->
-          <div class="card" v-if="topOverdue.length > 0">
+          <div class="card" v-if="topOverdue.length > 0" data-testid="engage-overdue-section">
             <div class="card-header">
-              <router-link :to="{ name: 'overdue' }" class="section__title">
+              <router-link :to="{ name: 'overdue' }" class="section__title" data-testid="engage-overdue-title">
                 Overdue
-                <span v-if="overdueTotal > 0" class="section__count">{{ overdueTotal }}</span>
+                <span v-if="overdueTotal > 0" class="section__count" data-testid="engage-overdue-count">{{ overdueTotal }}</span>
               </router-link>
-              <router-link v-if="hasMoreOverdue" :to="{ name: 'overdue' }" class="section__link">View all</router-link>
+              <router-link v-if="hasMoreOverdue" :to="{ name: 'overdue' }" class="section__link" data-testid="engage-overdue-view-all">View all</router-link>
             </div>
             <ItemList
                 v-model="topOverdue"
+                data-testid="engage-overdue-list"
                 :loading="false"
                 :has-more="false"
                 :disabled="true"
