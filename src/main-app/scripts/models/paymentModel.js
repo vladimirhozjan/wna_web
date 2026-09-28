@@ -47,6 +47,7 @@ export function paymentModel() {
         expiresAt: '',
         cancelAtPeriodEnd: false,
         euCountries: [],
+        fiscalCountries: [],
     })
 
     function applyStatus(data) {
@@ -56,6 +57,7 @@ export function paymentModel() {
         state.expiresAt = data.expires_at || ''
         state.cancelAtPeriodEnd = data.cancel_at_period_end === true
         state.euCountries = data.eu_countries || []
+        state.fiscalCountries = data.fiscal_countries || []
     }
 
     const hasSubscription = () => state.tier !== 'free' && state.status !== 'none' && state.status !== 'expired'

@@ -142,7 +142,7 @@
               <span class="text-body-s upgrade-footer__hint">
                 Prices include VAT. You will be redirected to our payment provider to complete the purchase.
               </span>
-              <span class="text-footnote upgrade-footer__fiscal-notice">
+              <span v-if="isFiscalCountry" class="text-footnote upgrade-footer__fiscal-notice">
                 Prodajalec mora za dobavo blaga ali storitev izdati račun in ga izročiti kupcu.
                 Kupec mora prevzeti račun in ga zadržati neposredno po odhodu iz poslovnega prostora.
                 (www.fu.gov.si/blagajne) — The seller must issue an invoice for the supplied goods or
@@ -261,6 +261,7 @@ function optionFor(plan) {
 const selectedOption = computed(() => optionFor(selectedPlan.value))
 
 const isEuCountry = computed(() => payment.state.euCountries.includes(billingCountry.value))
+const isFiscalCountry = computed(() => payment.state.fiscalCountries.includes(billingCountry.value))
 
 const hasActiveSubscription = computed(() =>
     payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))

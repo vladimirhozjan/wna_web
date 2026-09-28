@@ -14379,9 +14379,8 @@
       "Click \"Terms of Service\" and verify `/legal/terms` opens in a new tab; click \"Privacy Policy\" and verify `/legal/privacy` opens in a new tab",
       "Switch to sign-in mode (`/login`)",
       "Verify the same line is shown under the **Sign in with Google** button",
-      "Verify the email sign-up form still has its own \"I agree to the Terms of Service and Privacy Policy\" checkbox, unchanged",
-      "Repeat steps 2 and 5 in dark theme"
+      "Verify the email sign-up form still has its own \"I agree to the Terms of Service and Privacy Policy\" checkbox, unchanged"
     ],
-    "expected": "The Google ToS/Privacy line is shown under the Google button in both sign-up and sign-in modes with working links; the email sign-up checkbox is unchanged. Renders correctly in light and dark themes."
+    "expected": "The Google ToS/Privacy line is shown under the Google button in both sign-up and sign-in modes with working links; the email sign-up checkbox is unchanged. (No dark-theme step: the auth dialog lives on the landing layout, which always renders light — `LandingLayout.vue` forces `data-theme=\"light\"`.)"
   }
 ]
