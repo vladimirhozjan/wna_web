@@ -222,7 +222,7 @@ export const faq = [
   {
     question: 'How do I upgrade to Pro or Team?',
     answer:
-      'Go to Settings and, in the Plan section, tap Update plan → Upgrade (the Pricing page and upgrade prompts lead to the same place). Choose Pro or Team and a monthly or yearly billing cycle, enter your billing address (the country determines the VAT on your invoice), and tap Continue to Payment. You enter your card on our payment provider\'s secure checkout page — we never see or store your card details. As soon as the payment is confirmed, your new plan is active. Prices are in EUR and include VAT.',
+      'Go to Settings and, in the Plan section, tap Update plan → Upgrade (the Pricing page and upgrade prompts lead to the same place). Choose Pro or Team and a monthly or yearly billing cycle, enter your billing address (the country determines the VAT on your invoice), agree to the Terms of Service (buyers in the EU tick the checkbox), and tap Subscribe and pay. You enter your card on our payment provider\'s secure checkout page — we never see or store your full card number; only the card brand and last 4 digits appear on your invoice. As soon as the payment is confirmed, your new plan is active. Prices are in EUR and include VAT.',
   },
   {
     question: 'How do I cancel my subscription?',

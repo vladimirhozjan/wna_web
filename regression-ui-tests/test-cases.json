@@ -6251,22 +6251,23 @@
     ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
-    "preconditions": "User is logged in. Multiple actions exist across Today, Next Actions, and Waiting For sections. Some actions have the tag `@office`, others have `@home`, and some have no tags.",
+    "preconditions": "User is logged in. Multiple actions exist across Today, Next Actions, and Waiting For sections, and at least one `@office` and one `@home` action is overdue (past due date). Some actions have the tag `@office`, others have `@home`, and some have no tags.",
     "steps": [
       "Navigate to `/engage`",
-      "Note the items displayed in Today, Next Actions, and Waiting For sections",
+      "Note the items displayed in Overdue, Today, Next Actions, and Waiting For sections",
       "Locate the global context filter in the sidebar (below Dashboard link)",
       "Select the `@office` context tag",
       "Verify the Today section now only shows items tagged with `@office`",
       "Verify the Next Actions section now only shows items tagged with `@office`",
       "Verify the Waiting For section now only shows items tagged with `@office`",
-      "Verify the section counts update to reflect only the filtered items",
+      "Verify the Overdue section now only shows overdue items tagged with `@office` and its count equals that number",
+      "Verify the Today, Next Actions and Waiting For header counts are unchanged (they show the unfiltered bucket totals from stats, which the context filter does not affect)",
       "Change the context filter to `@home`",
-      "Verify all three sections update simultaneously to show only `@home` items",
+      "Verify all four sections (Overdue, Today, Next Actions, Waiting For) update simultaneously to show only `@home` items",
       "Clear the context filter",
       "Verify all sections return to showing all items regardless of tags"
     ],
-    "expected": "Setting a global context tag filters all dashboard sections (Today, Next Actions, Waiting For) simultaneously. Only items matching the selected context tag are displayed. Counts update accordingly. Clearing the filter restores all items."
+    "expected": "Setting a global context tag filters the items of all dashboard sections (Overdue, Today, Next Actions, Waiting For) simultaneously. Only items matching the selected context tag are displayed. The Overdue count follows the filter (tag-filtered `overdue.total_count`); the Today / Next Actions / Waiting For counts stay the unfiltered stats totals. Clearing the filter restores all items."
   },
   {
     "id": "TC-234",
@@ -6278,20 +6279,18 @@
     ],
     "smoke": false,
     "section": "14: Engage (Dashboard Overview)",
-    "preconditions": "User is logged in. Actions exist in various buckets but none are tagged with `@calls`.",
+    "preconditions": "User is logged in. Actions exist in Overdue, Today, Next Actions and Waiting For, but none are tagged with `@calls`.",
     "steps": [
       "Navigate to `/engage`",
       "Verify items are visible in the dashboard sections",
       "Set the global context filter to `@calls`",
-      "Verify the Today section shows an empty state message such as \"No actions for this context\"",
-      "Verify the Next Actions section shows a similar empty state message",
-      "Verify the Waiting For section shows a similar empty state message",
-      "Verify no overdue alert is shown (since no filtered items are overdue)",
-      "Verify no error messages or broken UI elements appear",
+      "Verify the Overdue, Today, Next Actions and Waiting For section cards are all hidden",
+      "Verify a single dashboard empty state \"No actions for this context\" is shown, naming the active tag",
+      "Verify no overdue banner is shown and no error messages or broken UI elements appear",
       "Clear the context filter",
       "Verify items reappear in all sections"
     ],
-    "expected": "When a context filter is applied that matches no items, all dashboard sections display \"No actions for this context\" (or similar) instead of their normal item lists. The UI remains clean and usable without errors."
+    "expected": "When a context filter matches no items, the section cards are hidden and one \"No actions for this context\" empty state is shown in their place. The UI remains clean and usable without errors; clearing the filter restores all sections."
   },
   {
     "id": "TC-235",
@@ -6359,7 +6358,7 @@
     ],
     "smoke": true,
     "section": "14: Engage (Dashboard Overview)",
-    "preconditions": "User is logged in. At least 1 action exists in each section: Today (an action with due date today), Next Actions (a standalone action), Waiting For (a delegated action). At least 1 action belongs to a project.",
+    "preconditions": "User is logged in. At least 1 action exists in each section: Overdue (an action with a past due date), Today (an action with due date today), Next Actions (a standalone action), Waiting For (a delegated action). At least 1 action belongs to a project.",
     "steps": [
       "Navigate to `/engage`",
       "In the Today section, click on an item's title (not the checkbox)",
@@ -6373,7 +6372,11 @@
       "Verify the browser navigates to the action detail page for that item",
       "Navigate back to `/engage`",
       "If a project-linked action is displayed, click it",
-      "Verify it navigates to the action detail page (not the project page)"
+      "Verify it navigates to the action detail page (not the project page)",
+      "Navigate back to `/engage`",
+      "In the Overdue section, click on an item's row (not the checkbox)",
+      "Verify the browser navigates to the action detail page for that item, then use the detail page's back control",
+      "Verify the browser returns to `/engage`"
     ],
     "expected": "Clicking on any item's title in any dashboard section navigates to the correct detail page for that action. The detail page displays the full information for the clicked item."
   },
@@ -12378,7 +12381,7 @@
     "section": "38: Payment & Billing — Paywiser",
     "preconditions": "Entitled Free user; mock Paywiser up; the static `custom_config.paywiser.webhook_public_key`\nconfig PEM matches the mock's `backend/mock_paywiser/keys/webhook_public.pem` (no cache seeding, no cron call).",
     "steps": [
-      "Settings → Plan → Upgrade → `/upgrade` page: select Pro + Monthly, fill Billing Details (full name, address 1, zip and city required; country required — drives VAT; Slovenia; address 2 and state optional) → Continue to Payment.",
+      "Settings → Plan → Upgrade → `/upgrade` page: select Pro + Monthly, fill Billing Details (full name, address 1, zip and city required; country required — drives VAT; Slovenia; address 2 and state optional) → tick \"I agree to the Terms of Service.\" → Subscribe and pay.",
       "Browser is redirected to the provider checkout (mock `/checkout/{purchase_id}`).",
       "The mock fires the RSA-signed `purchase.paid` webhook at the public `POST /paywiser/webhook`.",
       "Return to `/settings/billing?status=success`."
@@ -12741,7 +12744,7 @@
     "section": "38: Payment & Billing — Paywiser",
     "preconditions": "User with the `payments` flag and no active subscription; a way to make\n`POST /v1/payments/subscribe` return `502 {\"message\":\"payment gateway error\"}` (mock Paywiser down or\nits create-client/enroll call forced to fail).",
     "steps": [
-      "Open `/upgrade`, select a plan, fill the billing address, click \"Continue to Payment\".",
+      "Open `/upgrade`, select a plan, fill the billing address, tick the Terms of Service checkbox if shown, click \"Subscribe and pay\".",
       "Observe the on-screen output when the subscribe call returns 502."
     ],
     "expected": "The error toast reads \"Our payment provider is having trouble right now — you have\nnot been charged. Please try again in a few minutes.\" — not the raw backend text (\"payment gateway\nerror\") and not the generic \"Failed to start checkout\". No redirect happens; the form keeps its values\nso the user can retry. Non-502 subscribe errors keep the existing generic output."
@@ -14252,5 +14255,133 @@
       "Repeat step 1 in dark theme with a new overdue action"
     ],
     "expected": "The Dashboard icon carries a binary red dot while any action in Next, Today, Calendar or Waiting For is overdue and clears when none are; it renders correctly in light and dark themes."
+  },
+  {
+    "id": "TC-693",
+    "name": "Upgrade — EU Billing Country Requires the Terms of Service Checkbox",
+    "priority": "High",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User is logged in on the Free tier with the `payments` feature flag. `/upgrade` is open.",
+    "steps": [
+      "Select a plan and period, fill in Full name, Address 1, Zip and City, and select an EU country (e.g. Slovenia)",
+      "Verify that directly above the button the line \"Renews every {month|year} at €{amount} until you cancel.\" matches the selected plan and period",
+      "Verify an unticked checkbox \"I agree to the Terms of Service.\" is shown and the button reads \"Subscribe and pay — {price}\"",
+      "Click the \"Terms of Service\" link and verify `/legal/terms` opens in a new tab",
+      "Click **Subscribe and pay** without ticking the checkbox",
+      "Verify the inline error \"You must agree to the Terms of Service\" appears and no `POST /v1/payments/subscribe` request is sent",
+      "Tick the checkbox and click **Subscribe and pay**",
+      "Verify the subscribe request body carries `terms_version` (the Terms' \"Last updated\" date, `YYYY-MM-DD`) and `terms_accepted: true`, and the browser is redirected to the payment provider",
+      "Repeat steps 1–3 in dark theme"
+    ],
+    "expected": "An EU buyer sees the renewal line and an unticked ToS checkbox directly above \"Subscribe and pay\"; checkout is blocked with an inline error until the box is ticked, and the request then carries the displayed ToS version and the acceptance. Renders correctly in light and dark themes."
+  },
+  {
+    "id": "TC-694",
+    "name": "Upgrade — Non-EU Billing Country Shows the Passive Terms Line",
+    "priority": "High",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User is logged in on the Free tier with the `payments` feature flag. `/upgrade` is open.",
+    "steps": [
+      "Fill in the billing address and select a non-EU country (e.g. United States)",
+      "Verify no checkbox is shown; instead the line \"By continuing, you agree to the Terms of Service.\" appears directly above the button, below the renewal line",
+      "Click **Subscribe and pay**",
+      "Verify the subscribe request carries `terms_version` and the browser is redirected to the payment provider — no tick is needed"
+    ],
+    "expected": "A non-EU buyer sees the passive ToS line instead of the checkbox and can proceed without ticking anything; the request still carries the ToS version."
+  },
+  {
+    "id": "TC-695",
+    "name": "Upgrade — Switching Country Swaps Checkbox and Line and Resets the Tick",
+    "priority": "Medium",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User is logged in on the Free tier with the `payments` feature flag. `/upgrade` is open.",
+    "steps": [
+      "Select an EU country and tick \"I agree to the Terms of Service.\"",
+      "Change the country to a non-EU country",
+      "Verify the checkbox is replaced by the line \"By continuing, you agree to the Terms of Service.\"",
+      "Change the country back to an EU country",
+      "Verify the checkbox is shown again and is unticked"
+    ],
+    "expected": "The checkbox and the passive line swap live as the billing country changes between EU and non-EU; a tick never carries over a country change."
+  },
+  {
+    "id": "TC-696",
+    "name": "API — EU Subscribe Without Terms Acceptance Is Rejected",
+    "priority": "High",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "Free user with the `payments` feature flag and a valid JWT. The current ToS version is known from `GET /v1/payments/status` (`terms_version`).",
+    "steps": [
+      "`POST /v1/payments/subscribe` with an EU `billing_country` (e.g. `SI`), the current `terms_version`, and no `terms_accepted`",
+      "Verify the response is `400 {\"error\":\"terms_acceptance_required\"}`",
+      "Repeat with `terms_accepted: false`",
+      "Verify the same `400`, and that no checkout was started and no payment row was created for the user"
+    ],
+    "expected": "An EU buyer cannot start a checkout without explicitly accepting the Terms of Service; nothing is created."
+  },
+  {
+    "id": "TC-697",
+    "name": "API — Subscribe With a Missing or Wrong Terms Version Is Rejected",
+    "priority": "High",
+    "area": "Billing, Payments",
+    "areas": [
+      "Billing",
+      "Payments"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "Free user with the `payments` feature flag and a valid JWT.",
+    "steps": [
+      "`POST /v1/payments/subscribe` with a valid billing address and no `terms_version`",
+      "Verify the response is `409 {\"error\":\"terms_version_mismatch\"}`",
+      "Repeat with `terms_version: \"2000-01-01\"` and with a malformed value",
+      "Verify the same `409` each time, and that no checkout was started and no payment row was created"
+    ],
+    "expected": "Subscribe is refused with `409 terms_version_mismatch` unless it carries the current ToS version (on `/upgrade` the page then reloads to show the current Terms)."
+  },
+  {
+    "id": "TC-698",
+    "name": "Auth Dialog — Google Button Shows the Terms and Privacy Line",
+    "priority": "Medium",
+    "area": "Auth Dialog Behaviors",
+    "areas": [
+      "Auth Dialog Behaviors"
+    ],
+    "smoke": false,
+    "section": "53: Install to Home Screen (FEAT-034)",
+    "preconditions": "User is logged out. Google SSO is enabled.",
+    "steps": [
+      "Open the auth dialog in sign-up mode (`/register`)",
+      "Verify the line \"By continuing with Google, you agree to the Terms of Service and acknowledge the Privacy Policy.\" is shown under the **Sign up with Google** button",
+      "Click \"Terms of Service\" and verify `/legal/terms` opens in a new tab; click \"Privacy Policy\" and verify `/legal/privacy` opens in a new tab",
+      "Switch to sign-in mode (`/login`)",
+      "Verify the same line is shown under the **Sign in with Google** button",
+      "Verify the email sign-up form still has its own \"I agree to the Terms of Service and Privacy Policy\" checkbox, unchanged",
+      "Repeat steps 2 and 5 in dark theme"
+    ],
+    "expected": "The Google ToS/Privacy line is shown under the Google button in both sign-up and sign-in modes with working links; the email sign-up checkbox is unchanged. Renders correctly in light and dark themes."
   }
 ]

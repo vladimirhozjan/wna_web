@@ -46,6 +46,7 @@ export function paymentModel() {
         status: 'none',
         expiresAt: '',
         cancelAtPeriodEnd: false,
+        euCountries: [],
     })
 
     function applyStatus(data) {
@@ -54,6 +55,7 @@ export function paymentModel() {
         state.status = data.status || 'none'
         state.expiresAt = data.expires_at || ''
         state.cancelAtPeriodEnd = data.cancel_at_period_end === true
+        state.euCountries = data.eu_countries || []
     }
 
     const hasSubscription = () => state.tier !== 'free' && state.status !== 'none' && state.status !== 'expired'
@@ -68,10 +70,10 @@ export function paymentModel() {
         }
     }
 
-    async function subscribe({plan, billingPeriod, billingCountry, billingState, billingName, billingAddress1, billingAddress2, billingZip, billingCity}) {
+    async function subscribe({plan, billingPeriod, billingCountry, billingState, billingName, billingAddress1, billingAddress2, billingZip, billingCity, termsVersion, termsAccepted}) {
         state.acting = true
         try {
-            return await subscribePayment({plan, billingPeriod, billingCountry, billingState, billingName, billingAddress1, billingAddress2, billingZip, billingCity})
+            return await subscribePayment({plan, billingPeriod, billingCountry, billingState, billingName, billingAddress1, billingAddress2, billingZip, billingCity, termsVersion, termsAccepted})
         } finally {
             state.acting = false
         }

@@ -150,6 +150,23 @@
                 immediately after leaving the business premises. (Notice pursuant to Article 12 of the
                 Slovenian ZDavPR.)
               </span>
+              <p class="text-body-s upgrade-footer__renewal">
+                Renews every {{ yearly ? 'year' : 'month' }} at €{{ selectedOption.amount }} until you cancel.
+              </p>
+              <template v-if="isEuCountry">
+                <label class="terms-checkbox" :class="{ 'terms-checkbox--error': termsError }">
+                  <input v-model="termsAccepted" type="checkbox" @change="termsError = ''" />
+                  <span class="text-body-s">
+                    I agree to the
+                    <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>.
+                  </span>
+                </label>
+                <span v-if="termsError" class="text-footnote color-text-error">{{ termsError }}</span>
+              </template>
+              <p v-else class="text-body-s terms-line">
+                By continuing, you agree to the
+                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>.
+              </p>
               <Btn
                   variant="primary"
                   size="lg"
@@ -158,7 +175,7 @@
                   :disabled="payment.state.acting"
                   @click="onContinue"
               >
-                Continue to Payment — {{ selectedOption.price }}
+                Subscribe and pay — {{ selectedOption.price }}
               </Btn>
             </div>
           </template>
@@ -232,6 +249,8 @@ const stateRegion = ref('')
 const billingCountry = ref('')
 const countryError = ref('')
 const countryOptions = [{ value: '', label: 'Select country…' }, ...COUNTRIES]
+const termsAccepted = ref(false)
+const termsError = ref('')
 
 const billingPeriod = computed(() => yearly.value ? 'yearly' : 'monthly')
 
@@ -240,6 +259,8 @@ function optionFor(plan) {
 }
 
 const selectedOption = computed(() => optionFor(selectedPlan.value))
+
+const isEuCountry = computed(() => payment.state.euCountries.includes(billingCountry.value))
 
 const hasActiveSubscription = computed(() =>
     payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))
@@ -258,7 +279,8 @@ async function onContinue() {
   zipError.value = zip.value.trim() ? '' : 'Zip is required'
   cityError.value = city.value.trim() ? '' : 'City is required'
   countryError.value = billingCountry.value ? '' : 'Country is required'
-  if (fullNameError.value || address1Error.value || zipError.value || cityError.value || countryError.value) return
+  termsError.value = isEuCountry.value && !termsAccepted.value ? 'You must agree to the Terms of Service' : ''
+  if (fullNameError.value || address1Error.value || zipError.value || cityError.value || countryError.value || termsError.value) return
 
   try {
     const data = await payment.subscribe({
@@ -271,6 +293,8 @@ async function onContinue() {
       billingAddress2: address2.value.trim(),
       billingZip: zip.value.trim(),
       billingCity: city.value.trim(),
+      termsVersion: __TERMS_VERSION__,
+      termsAccepted: isEuCountry.value && termsAccepted.value,
     })
     if (data.checkout_url) {
       window.location.assign(data.checkout_url)
@@ -279,7 +303,12 @@ async function onContinue() {
     }
   } catch (err) {
     // 502 = payment gateway failure; checkout never started, so nothing was charged
-    if (err.status === 502) {
+    if (err.status === 409 && err.message === 'terms_version_mismatch') {
+      // The Terms changed since this page loaded — reload so the buyer sees and accepts the current version
+      window.location.reload()
+    } else if (err.status === 400 && err.message === 'terms_acceptance_required') {
+      termsError.value = 'You must agree to the Terms of Service'
+    } else if (err.status === 502) {
       toaster.push('Our payment provider is having trouble right now — you have not been charged. Please try again in a few minutes.')
     } else {
       toaster.push(err.message || 'Failed to start checkout')
@@ -303,6 +332,8 @@ watch(paymentsEnabled, (on) => {
 // A state entered under a previous country must never ride along with a new country
 watch(billingCountry, () => {
   stateRegion.value = ''
+  termsAccepted.value = false
+  termsError.value = ''
 })
 
 onMounted(() => {
@@ -591,6 +622,52 @@ onMounted(() => {
 
 .upgrade-footer__fiscal-notice {
   color: var(--color-text-tertiary);
+}
+
+.upgrade-footer__renewal {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.terms-line {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.terms-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.terms-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  cursor: pointer;
+  accent-color: var(--color-action);
+  flex-shrink: 0;
+}
+
+.terms-checkbox span {
+  color: var(--color-text-secondary);
+}
+
+.terms-checkbox a,
+.terms-line a {
+  color: var(--color-link-text);
+  text-decoration: underline;
+}
+
+.terms-checkbox a:hover,
+.terms-line a:hover {
+  color: var(--color-link-hover);
+}
+
+.terms-checkbox--error input[type="checkbox"] {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 1px;
 }
 
 .upgrade-footer__cta {

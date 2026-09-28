@@ -205,6 +205,12 @@
                 <span class="text-caption color-text-tertiary">
                   {{ formatDate(p.created_at) }} · {{ p.billing_country || '—' }}<template v-if="p.vat_amount_minor != null"> · VAT {{ formatEur(p.vat_amount_minor) }}</template><template v-if="p.billing_country || p.card_country || p.ip_country"> · <PaymentEvidence :payment="p" /></template>
                 </span>
+                <span v-if="p.card_brand || p.card_last4" class="text-caption color-text-tertiary">
+                  Paid with {{ formatCard(p) }}
+                </span>
+                <span v-if="p.terms_version" class="text-caption color-text-tertiary payment-terms">
+                  ToS {{ p.terms_version }} accepted {{ formatDate(p.terms_accepted_at) }}<template v-if="p.terms_accepted_ip"> · IP {{ p.terms_accepted_ip }}</template><template v-if="p.terms_accepted_user_agent"> · {{ p.terms_accepted_user_agent }}</template>
+                </span>
               </div>
               <div class="payment-side">
                 <Badge type="status" :value="p.status" />
@@ -559,6 +565,11 @@ async function loadInboxEmail() {
 function formatDate(val) {
   if (!val) return '—'
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
+}
+
+function formatCard(p) {
+  const brand = p.card_brand ? p.card_brand.charAt(0).toUpperCase() + p.card_brand.slice(1) : ''
+  return [brand, p.card_last4 ? `•••• ${p.card_last4}` : ''].filter(Boolean).join(' ')
 }
 
 // Fired after the user-detail load, never awaited by the page; any failure lands in 'unreachable'.
@@ -1062,6 +1073,10 @@ onMounted(() => {
 
 .expiration-row {
   gap: 16px;
+}
+
+.payment-terms {
+  overflow-wrap: anywhere;
 }
 
 .payment-kind {

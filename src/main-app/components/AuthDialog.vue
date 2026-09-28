@@ -59,6 +59,12 @@
                 <GoogleIcon class="google-icon" width="18" height="18" />
                 Sign up with Google
               </Btn>
+              <p v-if="googleSsoEnabled" class="text-footnote google-terms">
+                By continuing with Google, you agree to the
+                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+                and acknowledge the
+                <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+              </p>
             </template>
           </section>
 
@@ -85,6 +91,12 @@
               <GoogleIcon class="google-icon" width="18" height="18" />
               Sign in with Google
             </Btn>
+            <p v-if="googleSsoEnabled" class="text-footnote google-terms">
+              By continuing with Google, you agree to the
+              <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+              and acknowledge the
+              <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+            </p>
             <template v-if="!registrationDisabled">
               <div class="separator"></div>
               <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
@@ -593,12 +605,14 @@ h2 {
   color: var(--color-text-secondary);
 }
 
-.agree-checkbox a {
+.agree-checkbox a,
+.google-terms a {
   color: var(--color-link-text);
   text-decoration: underline;
 }
 
-.agree-checkbox a:hover {
+.agree-checkbox a:hover,
+.google-terms a:hover {
   color: var(--color-link-hover);
 }
 
@@ -637,6 +651,12 @@ h2 {
 
 .google-icon {
   flex-shrink: 0;
+}
+
+.google-terms {
+  margin: -8px 0 0;
+  color: var(--color-text-secondary);
+  text-align: center;
 }
 
 .auth-fade-enter-active,

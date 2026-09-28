@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** September 27, 2026
+**Last updated:** September 28, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -61,10 +61,11 @@ We share this data only with the specific users you choose, and only to provide 
 If you subscribe to a paid plan, we collect and store:
 
 - **Billing details** - the full name, address, and country you enter at checkout (the country determines the VAT rate)
-- **Payment records** - date, amount, plan, status, and refunds of each payment, together with the invoices and credit notes we issue to you
+- **Payment records** - date, amount, plan, status, card brand and last 4 digits, and refunds of each payment, together with the invoices and credit notes we issue to you
 - **Location evidence for VAT** - the country of your card's issuer (received from our payment provider) and, for your first payment, the country derived from your IP address. EU VAT law requires us to keep evidence of the customer's location.
+- **ToS acceptance record** - the version of the Terms of Service you accepted at checkout, the time, your IP address and browser (user agent)
 
-We never receive or store your card number or other card details; these are entered directly on our payment provider's checkout page.
+We never receive or store your full card number or other card details (expiry date, cardholder name); these are entered directly on our payment provider's checkout page. We receive only the card brand and last 4 digits, which appear on your invoice.
 
 ### 2.6 Technical and Session Data
 
@@ -104,6 +105,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
 | Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
+| ToS acceptance record | Legitimate interest (Art. 6(1)(f)) | Proof of the contract terms you accepted at checkout |
 | Technical/session data | Legitimate interest (Art. 6(1)(f)) | Security, fraud prevention, and service reliability |
 | Preference data | Contract performance (Art. 6(1)(b)) | Necessary to provide personalized service features |
 
@@ -144,7 +146,7 @@ We share your personal data only with the following categories of recipients, st
 
 ### 5.4 Payment Processing
 
-- **Dinaro d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed by the Bank of Slovenia - processes subscription card payments. We share your email address, billing details, and the plan you purchase with Dinaro so it can process your payments; on its checkout page Dinaro also collects your card details (card number, expiry date, cardholder name) and IP address. Your full card details are never received or stored by us; we receive only the payment result and the country of your card's issuer.
+- **Dinaro d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed by the Bank of Slovenia - processes subscription card payments. We share your email address, billing details, and the plan you purchase with Dinaro so it can process your payments; on its checkout page Dinaro also collects your card details (card number, expiry date, cardholder name) and IP address. Your full card details are never received or stored by us; we receive only the payment result, the country of your card's issuer, and the card brand and last 4 digits.
   - **As our processor:** for the payment gateway (integration and technical operation of card acceptance) and the settlement of payments, Dinaro processes personal data on our behalf under a data processing agreement. Its sub-processor for the payment gateway software is SIA Spell (Riga, Latvia).
   - **As an independent controller:** for card acquiring and payment processing under its licence, fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Dinaro decides how it processes the data itself. For this it works with financial partners such as partner banks (e.g. Shift4 Limited, Malta) and the card schemes (Visa, Mastercard). Dinaro's own processing is described in its privacy policy at [dinaro.si/privacy-policy](https://dinaro.si/privacy-policy).
   - Dinaro generally retains payment and transaction records for 10 years after the transaction, or longer where required by law. When you delete your account, we also delete your customer record at the payment platform, subject to these legal retention obligations.
@@ -189,7 +191,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Session data | Sessions expire after 14 days without activity; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Backups | Retained for up to 30 days, then permanently deleted |
-| Invoices, credit notes, and payment records (including VAT location evidence) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
+| Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
 
 When you delete your account, we initiate permanent deletion of all your personal data and content, except invoices, credit notes, and payment records that we are legally required to retain (Art. 17(3)(b) GDPR). Backup copies are purged according to our backup retention schedule (up to 30 days).
 

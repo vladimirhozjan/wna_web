@@ -101,6 +101,15 @@ function obfuscateDir(dir) {
     console.log(`[obfuscator] Obfuscated ${count} files in ${assetsDir}`)
 }
 
+// ToS version of record = the "Last updated" date of terms.md, as YYYY-MM-DD (checked by the backend at subscribe)
+function readTermsVersion() {
+    const md = readFileSync(path.resolve(__dirname, '..', 'src/main-app/content/legal/terms.md'), 'utf-8')
+    const match = md.match(/\*\*Last updated:\*\*\s*(.+)/)
+    const date = match ? new Date(`${match[1].trim()} UTC`) : null
+    if (!date || isNaN(date)) throw new Error('terms.md: cannot parse the "Last updated" line')
+    return date.toISOString().slice(0, 10)
+}
+
 export function createViteConfig(mode, envVars, appConfig) {
     let isProduction = mode === 'production'
     const plugins = [...appConfig.plugins]
@@ -122,7 +131,8 @@ export function createViteConfig(mode, envVars, appConfig) {
         },
 
         define: {
-            __APP_VERSION__: JSON.stringify(envVars.PROJECT_VERSION || '')
+            __APP_VERSION__: JSON.stringify(envVars.PROJECT_VERSION || ''),
+            __TERMS_VERSION__: JSON.stringify(readTermsVersion()),
         },
 
         plugins,

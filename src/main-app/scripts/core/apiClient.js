@@ -1893,7 +1893,7 @@ export async function getPublicPlans() {
     }
 }
 
-export async function subscribePayment({plan, billingPeriod, billingCountry, billingState = '', billingName = '', billingAddress1 = '', billingAddress2 = '', billingZip = '', billingCity = ''}) {
+export async function subscribePayment({plan, billingPeriod, billingCountry, billingState = '', billingName = '', billingAddress1 = '', billingAddress2 = '', billingZip = '', billingCity = '', termsVersion, termsAccepted = false}) {
     try {
         const res = await httpApi.post('/v1/payments/subscribe', {
             plan,
@@ -1905,6 +1905,8 @@ export async function subscribePayment({plan, billingPeriod, billingCountry, bil
             billing_address2: billingAddress2,
             billing_zip: billingZip,
             billing_city: billingCity,
+            terms_version: termsVersion,
+            terms_accepted: termsAccepted,
         }, {headers: authHeaders()})
         return res.data
     } catch (err) {

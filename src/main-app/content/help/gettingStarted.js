@@ -82,7 +82,7 @@ export const gettingStarted = [
   {
     title: 'Upgrading Your Plan',
     description:
-      'Open Settings and use Update plan → Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, and continue to our payment provider\'s secure checkout to enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period.',
+      'Open Settings and use Update plan → Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, agree to the Terms of Service, and tap Subscribe and pay to continue to our payment provider\'s secure checkout, where you enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period.',
   },
   {
     title: 'Customizing Your Settings',
