@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** June 22, 2026
+**Last updated:** September 27, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -56,7 +56,17 @@ If you use collaboration features on the Team plan, certain data becomes visible
 
 We share this data only with the specific users you choose, and only to provide the collaboration features you have enabled.
 
-### 2.5 Technical and Session Data
+### 2.5 Billing and Payment Data
+
+If you subscribe to a paid plan, we collect and store:
+
+- **Billing details** - the full name, address, and country you enter at checkout (the country determines the VAT rate)
+- **Payment records** - date, amount, plan, status, and refunds of each payment, together with the invoices and credit notes we issue to you
+- **Location evidence for VAT** - the country of your card's issuer (received from our payment provider) and, for your first payment, the country derived from your IP address. EU VAT law requires us to keep evidence of the customer's location.
+
+We never receive or store your card number or other card details; these are entered directly on our payment provider's checkout page.
+
+### 2.6 Technical and Session Data
 
 We automatically collect certain technical data when you use the Service:
 
@@ -65,7 +75,7 @@ We automatically collect certain technical data when you use the Service:
 - **Session timestamps** - login time and last activity time per session
 - **Authentication tokens** - stored in your browser's localStorage for session management
 
-### 2.6 Preference Data
+### 2.7 Preference Data
 
 Your application settings are stored to provide a personalized experience:
 
@@ -75,11 +85,11 @@ Your application settings are stored to provide a personalized experience:
 - Notification preferences (email notification toggles)
 - Dismissed tips and hints
 
-### 2.7 Data We Do Not Collect
+### 2.8 Data We Do Not Collect
 
 - We do not use analytics or tracking tools
 - We do not use advertising cookies or pixels
-- We do not collect location data beyond your IP address
+- We do not collect location data beyond your IP address and the country-level evidence described in Section 2.5
 - We do not collect biometric data
 
 ## 3. Legal Basis for Processing
@@ -93,6 +103,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
 | Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
+| Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
 | Technical/session data | Legitimate interest (Art. 6(1)(f)) | Security, fraud prevention, and service reliability |
 | Preference data | Contract performance (Art. 6(1)(b)) | Necessary to provide personalized service features |
 
@@ -104,10 +115,11 @@ We use your personal data exclusively for the following purposes:
 
 - **Providing the Service** - storing and organizing your content, synchronizing across your sessions
 - **Authentication and security** - verifying your identity, managing login sessions, detecting unauthorized access
-- **Account communications** - sending password reset emails, email verification, login alerts, security notifications, and essential service updates
+- **Account communications** - sending password reset emails, email verification, login alerts, security notifications, subscription and payment notices, and service notices (such as changes to these terms, maintenance, and security matters)
+- **Product announcements** - occasional emails about new features and product news (you can opt out in notification settings)
 - **Task notifications** - sending optional email reminders such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
 - **Collaboration** - enabling delegation and shared projects with the connections you choose (Team plan)
-- **Subscription management** - processing payments, managing plan tiers and feature access
+- **Subscription management** - processing payments, issuing invoices, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
 - **Legal compliance** - fulfilling our legal obligations under applicable law
 
@@ -123,7 +135,8 @@ We share your personal data only with the following categories of recipients, st
 
 ### 5.2 Email Delivery
 
-- **Google Workspace** - delivers transactional emails (password resets, account notifications)
+- **Zoho ZeptoMail (EU data centre)** - delivers our emails (account, security, and notification emails)
+- **Zoho Mail (EU data centre)** - receives messages sent to Email-to-Inbox addresses before they are added to your inbox
 
 ### 5.3 Sign-In with Google
 
@@ -131,30 +144,39 @@ We share your personal data only with the following categories of recipients, st
 
 ### 5.4 Payment Processing
 
-- **Payment service provider** - processes subscription payments. Your payment details (card number, billing address) are handled directly by the payment processor and are never stored on our servers. The payment processor acts as an independent data controller for payment data.
+- **Dinaro d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed by the Bank of Slovenia - processes subscription card payments. We share your email address, billing details, and the plan you purchase with Dinaro so it can process your payments; on its checkout page Dinaro also collects your card details (card number, expiry date, cardholder name) and IP address. Your full card details are never received or stored by us; we receive only the payment result and the country of your card's issuer.
+  - **As our processor:** for the payment gateway (integration and technical operation of card acceptance) and the settlement of payments, Dinaro processes personal data on our behalf under a data processing agreement. Its sub-processor for the payment gateway software is SIA Spell (Riga, Latvia).
+  - **As an independent controller:** for card acquiring and payment processing under its licence, fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Dinaro decides how it processes the data itself. For this it works with financial partners such as partner banks (e.g. Shift4 Limited, Malta) and the card schemes (Visa, Mastercard). Dinaro's own processing is described in its privacy policy at [dinaro.si/privacy-policy](https://dinaro.si/privacy-policy).
+  - Dinaro generally retains payment and transaction records for 10 years after the transaction, or longer where required by law. When you delete your account, we also delete your customer record at the payment platform, subject to these legal retention obligations.
 
-### 5.5 Avatar Service
+### 5.5 Tax Authority
+
+- **Financial Administration of the Republic of Slovenia (FURS)** - where required by Slovenian law (ZDavPR), we send invoice data to FURS for fiscal verification of invoices. We also report VAT as required by law.
+
+### 5.6 Avatar Service
 
 - **Gravatar (Automattic, Inc.)** — We send a one-way SHA-256 hash of your lowercase email address to gravatar.com to retrieve your profile avatar image. No other personal data is shared with Gravatar. If no Gravatar account exists for your email, no image is returned and a local fallback (your initials) is displayed instead.
 
-### 5.6 Other WhatsNextAction Users (Team plan)
+### 5.7 Other WhatsNextAction Users (Team plan)
 
 - If you use collaboration features, content you choose to delegate or share becomes visible to the specific connections you select, as described in Section 2.4. This sharing happens only at your direction and only with the users you choose.
 
-### 5.7 What We Do Not Do
+### 5.8 What We Do Not Do
 
 - We do **not** sell your personal data to any third party
 - We do **not** share your data with advertisers or data brokers
 - We do **not** use your content to train machine learning models
 - We do **not** provide any third party with access to your content beyond what is described above
 
-### 5.8 Legal Obligations
+### 5.9 Legal Obligations
 
 We may disclose your data if required to do so by law, court order, or a binding request from a competent authority.
 
 ## 6. International Data Transfers
 
-All data processing takes place within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Prague, Czech Republic.
+We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Prague, Czech Republic, and our email providers operate from EU data centres.
+
+The exception is card payment data. To process a card payment, it may be transferred to, processed, and stored outside Slovenia and the EEA by our payment provider Dinaro, its service providers (located mostly in the EEA and in Hong Kong), its partner banks, and the international card schemes (such as Visa and Mastercard), and may be disclosed where required by law. Such transfers take place where they are necessary to perform the payment you request (Art. 49(1)(b) GDPR) or under safeguards such as Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Dinaro's privacy policy.
 
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
 
@@ -165,11 +187,11 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Active account data and content | Retained for the duration of your account |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
-| Session data | Retained until the session expires or you end it manually |
+| Session data | Sessions expire after 14 days without activity; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Backups | Retained for up to 30 days, then permanently deleted |
-| Payment records | Retained as required by applicable tax and accounting laws (up to 10 years under Slovenian law) |
+| Invoices, credit notes, and payment records (including VAT location evidence) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
 
-When you delete your account, we initiate permanent deletion of all your personal data and content. Backup copies are purged according to our backup retention schedule (up to 30 days).
+When you delete your account, we initiate permanent deletion of all your personal data and content, except invoices, credit notes, and payment records that we are legally required to retain (Art. 17(3)(b) GDPR). Backup copies are purged according to our backup retention schedule (up to 30 days).
 
 ## 8. Your Rights
 

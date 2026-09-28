@@ -33,7 +33,7 @@ export const faq = [
   {
     question: 'What are sessions and how do I manage them?',
     answer:
-      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using.',
+      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using. An ended device is signed out within a few minutes. Sessions that have not been used for 14 days expire automatically and no longer appear in the list.',
   },
 
   {
@@ -206,7 +206,7 @@ export const faq = [
   {
     question: 'What plans are available?',
     answer:
-      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Visit the Pricing page for current prices (in USD) and yearly discounts.',
+      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts.',
   },
   {
     question: 'What are the limits on each plan?',
@@ -217,6 +217,32 @@ export const faq = [
     question: 'What are the limits on attachments and comments?',
     answer:
       'Each item (action, project, or stuff) supports up to 10 file attachments; the maximum file size is 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Comments are limited to 50 per item, with each comment up to 2000 characters. The attachment count, comment count, and comment length apply across all plans.',
+  },
+
+  {
+    question: 'How do I upgrade to Pro or Team?',
+    answer:
+      'Go to Settings and, in the Plan section, tap Update plan → Upgrade (the Pricing page and upgrade prompts lead to the same place). Choose Pro or Team and a monthly or yearly billing cycle, enter your billing address (the country determines the VAT on your invoice), and tap Continue to Payment. You enter your card on our payment provider\'s secure checkout page — we never see or store your card details. As soon as the payment is confirmed, your new plan is active. Prices are in EUR and include VAT.',
+  },
+  {
+    question: 'How do I cancel my subscription?',
+    answer:
+      'Go to Settings → Plan and tap Cancel subscription. Automatic renewal stops, and you keep your paid plan until the date shown ("Access until …"). After that your account returns to the Free plan — nothing is deleted, but Free plan limits apply again. You can subscribe again at any time. Cancelling does not refund the current period. Within 14 days of purchase, EU consumers can instead withdraw and get a full refund by emailing info@whatsnextaction.com — see the Terms of Service.',
+  },
+  {
+    question: 'Can I switch between plans or billing cycles?',
+    answer:
+      'Not directly. To move between Pro and Team or between monthly and yearly billing, cancel your current subscription, and once it has ended, subscribe to the new plan from Settings.',
+  },
+  {
+    question: 'Where can I find my invoices?',
+    answer:
+      'An invoice is emailed to you for every payment, including each renewal. You can also open Settings → Plan → Billing history to see all your payments, refunds, invoices, and credit notes, view any document, and download it as a PDF.',
+  },
+  {
+    question: 'What happens if a renewal payment fails?',
+    answer:
+      'You receive a payment notice by email and in the app, and your plan stays active until the end of the current billing period while the payment provider retries the charge. If the payment still does not go through, your account returns to the Free plan at the end of the period. Your data is kept, and you can subscribe again at any time.',
   },
 
   // --- Appearance & Notifications ---
@@ -233,17 +259,17 @@ export const faq = [
   {
     question: 'How do I manage email notifications?',
     answer:
-      'Go to Settings and find the Notifications section. A master toggle turns all email notifications on or off. Below it, individual toggles let you control specific emails: daily digest, project-needs-next-action alerts, delegated-to-you, delegation-completed, and connection invitations. Urgent emails like verification, password resets, and login alerts are always delivered and cannot be disabled. In-app notifications (the bell in the top bar) cannot be turned off.',
+      'Go to Settings and find the Notifications section. A master toggle turns all email notifications on or off. Below it, individual toggles let you control specific emails: daily digest, project-needs-next-action alerts, delegated-to-you, delegation-completed, and connection invitations. An Announcements toggle controls occasional product news emails. Security emails (verification, password resets, login alerts), subscription and payment notices, and service notices (terms changes, maintenance, security) are always delivered and cannot be disabled. In-app notifications (the bell in the top bar) cannot be turned off.',
   },
   {
     question: 'What are in-app notifications?',
     answer:
-      'In-app notifications appear under the bell icon in the top navigation bar, with a badge showing your unread count. Open it to see your most recent notifications — project-needs-next-action alerts, delegation updates (delegated to you and delegation completed), shared-project activity, and connection invitations. Click a notification to mark it as read and jump straight to the related item. In-app notifications are available to every signed-in user and cannot be disabled.',
+      'In-app notifications appear under the bell icon in the top navigation bar, with a badge showing your unread count. Open it to see your most recent notifications — project-needs-next-action alerts, delegation updates (delegated to you and delegation completed), shared-project activity, connection invitations, and subscription and payment notices. Scroll down to load older ones. Notifications are marked as read automatically once they are fully visible in the open list; click one to jump straight to the related item. In-app notifications are available to every signed-in user and cannot be disabled.',
   },
   {
     question: 'What does "overdue" mean and how are overdue items shown?',
     answer:
-      'An item is overdue when its due date has passed, or when a timed scheduled action\'s time slot has already ended. Overdue items are highlighted with a red left border and light red background in all list views. On the Dashboard, a red alert banner appears at the top showing how many items are overdue. In the Calendar, overdue items appear in dark red. A "Start after" tickler date never makes an item overdue.',
+      'An item is overdue when its due date has passed, or when a timed scheduled action\'s time slot has already ended. Overdue items are highlighted with a red left border and light red background in all list views. On the Dashboard, an Overdue section appears first, showing how many items are overdue and the oldest deadlines, and a red dot appears on the Dashboard icon (and on the affected list) in the sidebar. In the Calendar, overdue items appear in dark red. A "Start after" tickler date never makes an item overdue.',
   },
 
   // --- Help & Support ---
@@ -257,14 +283,14 @@ export const faq = [
   {
     question: 'How do I delete my account?',
     answer:
-      'You can delete your account from the Settings page. Upon deletion, your content is permanently removed within 30 days, including backup copies. If you have an active paid subscription, it will be cancelled. This action cannot be undone. If you have any questions before deleting, contact support@whatsnextaction.com.',
+      'You can delete your account from the Settings page. Upon deletion, your content is permanently removed within 30 days, including backup copies. If you have an active paid subscription, it will be cancelled. Invoices and payment records are kept for the period required by tax law, as described in the Privacy Policy. This action cannot be undone. If you have any questions before deleting, contact support@whatsnextaction.com.',
   },
 
   // --- Device & Accessibility ---
   {
     question: 'Can I use WhatsNextAction on my phone?',
     answer:
-      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover.',
+      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover. You can also install WhatsNextAction on your home screen so it opens like an app: on Android (Chrome) use ⋮ → Install app or Add to Home screen, on iPhone/iPad (Safari) use Share → Add to Home Screen, on a Mac (Safari) use File → Add to Dock, and in desktop Chrome or Edge use the install icon in the address bar.',
   },
   {
     question: 'Are there keyboard shortcuts?',
@@ -276,6 +302,6 @@ export const faq = [
   {
     question: 'What is the Dashboard / Engage page?',
     answer:
-      'The Engage page is your home screen after logging in. It gives you a bird\'s-eye overview: a red alert if anything is overdue, your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying, projects are missing a next action, or your Weekly Review is overdue. All sections respect the active Context Filter so you can focus on one context at a time.',
+      'The Engage page is your home screen after logging in. It gives you a bird\'s-eye overview: an Overdue section when anything is overdue, your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying, projects are missing a next action, or your Weekly Review is overdue. All sections respect the active Context Filter so you can focus on one context at a time.',
   },
 ]

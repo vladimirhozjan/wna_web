@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** August 29, 2026
+**Last updated:** September 27, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -116,9 +116,12 @@ The Free plan provides access to the core Service with limited usage quotas at n
 Paid subscriptions provide access to additional features and higher usage limits as described on our Pricing page.
 
 - **Billing cycles:** Monthly or yearly. Yearly subscriptions include a discount as displayed at the time of purchase.
-- **Pricing:** Current prices are displayed on the Pricing page. All prices are in USD and exclude applicable VAT, which is handled by our payment provider where required.
-- **Payment processing:** Payments are processed by our third-party payment provider. By subscribing, you also agree to the payment provider's terms of service.
-- **Automatic renewal:** Subscriptions renew automatically at the end of each billing cycle unless cancelled before the renewal date.
+- **Pricing:** Current prices are displayed on the Pricing page. All prices are in EUR and include VAT. The VAT rate is determined by the billing country you provide at checkout and is shown separately on your invoice.
+- **Billing address:** At checkout you must provide a billing name, address, and country. You are responsible for providing accurate billing information.
+- **Payment processing:** Card payments are processed by **DINARO družba za izdajo elektronskega denarja in plačilne storitve, d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed and supervised by the Bank of Slovenia (licence no. 0.04.5.4-5/2020-70). Card details are entered on the payment provider's secure checkout page and are never received or stored by us. Payments are charged in EUR.
+- **Automatic renewal:** Subscriptions renew automatically at the end of each billing cycle unless cancelled before the renewal date. Your card is saved securely with our payment provider and charged automatically at each renewal.
+- **Failed payments:** If a renewal payment fails, your plan remains active until the end of the current billing period while the payment provider retries the charge. If payment is not completed by then, your account reverts to the Free plan.
+- **Changing plans:** To switch between plans or billing cycles, cancel your current subscription and subscribe to the new plan after the current billing period ends.
 
 ### 5.3 Cancellation
 
@@ -132,9 +135,32 @@ You may cancel your subscription at any time through your account settings. Upon
 
 If you are a consumer in the European Union, you have the right to withdraw from a paid subscription within **14 days** of purchase without giving any reason, in accordance with the Consumer Rights Directive (2011/83/EU).
 
-To exercise this right, contact us at **info@whatsnextaction.com** with a clear statement of your decision to withdraw. We will refund the full amount within 14 days using the same payment method.
+To exercise this right, contact us at **info@whatsnextaction.com** with a clear statement of your decision to withdraw. We will refund the full amount within 14 days to the same card used for the original payment.
 
-If you have actively used the Service during the withdrawal period, we may deduct a proportional amount for the service already provided, provided you were informed of this condition before purchase.
+Cancelling your subscription in your account settings (Section 5.3) only stops automatic renewal and is not a withdrawal: it does not trigger a refund. To withdraw and receive a refund, you must send us your request by email as described above.
+
+You may use the following model withdrawal form, but you are not obliged to:
+
+> **Model withdrawal form**
+> (complete and return this form only if you wish to withdraw from the contract)
+>
+> To: QubForge, tehnološke rešitve, d.o.o., Jakopičeva ulica 9, 2000 Maribor, Slovenia, info@whatsnextaction.com
+>
+> I/We (\*) hereby give notice that I/We (\*) withdraw from my/our (\*) contract for the provision of the following service (\*): WhatsNextAction subscription (plan: ……)
+>
+> Ordered on (\*): ……
+>
+> Name of consumer(s): ……
+>
+> Email address of the account: ……
+>
+> Address of consumer(s): ……
+>
+> Signature of consumer(s) (only if this form is notified on paper): ……
+>
+> Date: ……
+>
+> (\*) Delete as appropriate.
 
 ### 5.5 Refunds
 
@@ -262,8 +288,9 @@ You agree to indemnify and hold harmless QubForge, tehnološke rešitve, d.o.o. 
 You may delete your account at any time through the Service. Upon account deletion:
 
 - Your Content will be permanently deleted within 30 days
-- If you have an active paid subscription, cancellation terms in Section 5.3 apply
+- Any active paid subscription is cancelled and will not renew
 - Backup copies of your data will be purged within our backup retention period (up to 30 days)
+- Invoices, credit notes, and related payment records are retained for the period required by tax law, as described in our [Privacy Policy](/legal/privacy)
 
 ### 11.2 Termination by Us
 
@@ -314,13 +341,6 @@ Any disputes arising from or relating to these Terms shall be submitted to the e
 
 If you are a consumer in the European Union, you retain all rights available to you under the mandatory consumer protection laws of your country of residence. Nothing in these Terms deprives you of these rights.
 
-### 14.4 Online Dispute Resolution
-
-The European Commission provides an online dispute resolution platform for consumers. You can access it at:
-[https://ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr)
-
-Our email for dispute resolution purposes is: **info@whatsnextaction.com**
-
 ## 15. Miscellaneous
 
 ### 15.1 Entire Agreement
@@ -345,4 +365,7 @@ If you have any questions about these Terms, contact us at:
 
 **QubForge, tehnološke rešitve, d.o.o.**
 Jakopičeva ulica 9, 2000 Maribor, Slovenia
+Registration number: 7502125000
+VAT ID: SI76693635
+Registered with the District Court of Maribor (Okrožno sodišče v Mariboru); share capital EUR 7,500.00
 Email: **info@whatsnextaction.com**

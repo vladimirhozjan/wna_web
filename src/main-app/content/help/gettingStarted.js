@@ -22,12 +22,12 @@ export const gettingStarted = [
   {
     title: 'Understanding Your Dashboard',
     description:
-      'After logging in you land on the Engage page — your command center. It shows your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying or projects are missing a next action. If anything is overdue, a red alert appears at the top. Use this page to decide what to work on right now.',
+      'After logging in you land on the Engage page — your command center. If anything is overdue, an Overdue section appears first, listing your oldest deadlines so you can complete, rename, or trash them right there. Below it you see your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying or projects are missing a next action. Use this page to decide what to work on right now.',
   },
   {
     title: 'Navigating the App',
     description:
-      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Completed, and Trash. Count badges next to each item show how many items are in that bucket. The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
+      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Completed, and Trash. Count badges next to each item show how many items are in that bucket, and a small red dot on an icon means something needs attention — overdue items (on Dashboard, Today, Next Actions, Calendar, and Waiting For), a project without a next action (Projects), or a pending connection request (Connections). The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
   },
   {
     title: 'Quick Add — Capture From Anywhere',
@@ -80,13 +80,18 @@ export const gettingStarted = [
       'On the Team plan you can collaborate with other people. Connect with someone by sending an invitation to their email from the Connections page — anyone, on any plan, can accept or decline an invitation they receive. Once connected, you can delegate an action to a connection: it lands in their Inbox and moves to your Waiting For list, and when they complete or trash it you get a "Done." note and the action returns to your Next Actions (or your Calendar if it was scheduled) automatically. You can also share a whole project with connections, giving each person Write or Read-only access so you can work the backlog together. Free and Pro users can receive and accept invitations; sending invitations, delegating, and sharing projects require the Team plan.',
   },
   {
+    title: 'Upgrading Your Plan',
+    description:
+      'Open Settings and use Update plan → Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, and continue to our payment provider\'s secure checkout to enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period.',
+  },
+  {
     title: 'Customizing Your Settings',
     description:
-      'Visit Settings to personalize the app. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review section, manage notifications, change your password, and review active sessions from here. Changes save automatically.',
+      'Visit Settings to personalize the app. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review section, manage notifications, change your password, review active sessions, and manage your plan and billing from here. Changes save automatically.',
   },
   {
     title: 'Notifications',
     description:
-      'A notification bell in the top navigation bar shows in-app alerts — delegated actions, delegation completions, connection invitations, shared-project activity, and project-needs-next-action reminders — with an unread count; click one to jump straight to the relevant item. WhatsNextAction can also send you helpful emails: a daily digest (your today, next actions, and items due), alerts when a project is missing a next action, and updates about delegations and connection invitations. Control email from Settings — a master toggle turns all email on or off, and individual toggles let you enable or disable each type. Urgent emails like verification, password resets, and login alerts are always delivered and cannot be turned off. In-app notifications are always on.',
+      'A notification bell in the top navigation bar shows in-app alerts — delegated actions, delegation completions, connection invitations, shared-project activity, and project-needs-next-action reminders — with an unread count. Notifications are marked as read as soon as you see them in the open list; click one to jump straight to the relevant item. WhatsNextAction can also send you helpful emails: a daily digest (your overdue, today, and next actions), alerts when a project is missing a next action, updates about delegations and connection invitations, and occasional product announcements. Control email from Settings — a master toggle turns all email on or off, and individual toggles let you enable or disable each type. Security emails (verification, password resets, login alerts), subscription and payment notices, and service notices (terms changes, maintenance, security) are always delivered and cannot be turned off. In-app notifications are always on.',
   },
 ]

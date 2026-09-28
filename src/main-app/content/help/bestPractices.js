@@ -2,7 +2,7 @@ export const bestPractices = [
   {
     title: 'Start From the Dashboard',
     description:
-      'Begin each work session on the Engage page. It gives you a bird\'s-eye view of what needs attention: overdue items flagged in red, your Today list, a snapshot of Next Actions, Waiting For items, and nudges when your Inbox needs clarifying or projects are stuck. Set a context filter to focus on where you are (@office, @home) and let the Dashboard tell you what to do next.',
+      'Begin each work session on the Engage page. It gives you a bird\'s-eye view of what needs attention: an Overdue section at the top when a deadline has passed, your Today list, a snapshot of Next Actions, Waiting For items, and nudges when your Inbox needs clarifying or projects are stuck. Set a context filter to focus on where you are (@office, @home) and let the Dashboard tell you what to do next.',
   },
   {
     title: 'The Two-Minute Rule',
@@ -82,7 +82,7 @@ export const bestPractices = [
   {
     title: 'Manage Your Sessions',
     description:
-      'Check Settings periodically to review your active sessions. You can see which devices are logged in, how recently each was active, and end any session remotely. If you log in on a shared computer and forget to sign out, you can revoke that session from any other device.',
+      'Check Settings periodically to review your active sessions. You can see which devices are logged in, how recently each was active, and end any session remotely. If you log in on a shared computer and forget to sign out, you can revoke that session from any other device. Sessions unused for 14 days expire on their own and drop off the list.',
   },
   {
     title: 'Automate With Recurring Actions',
