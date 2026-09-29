@@ -224,3 +224,7 @@ changes, re-render them with any SVG rasterizer (no project dependency) and keep
 | `icon-192.png`, `icon-512.png` | 192, 512 | logo as in `favicon.svg`, transparent corners (`purpose: any`) |
 | `icon-maskable-512.png` | 512 | full-bleed brand gradient, bolt inside the central 80% safe zone, opaque (`purpose: maskable`) |
 | `apple-touch-icon.png` | 180 | full-bleed brand gradient tile, bolt scaled to 90% around the center, opaque RGB (no alpha channel) |
+
+The icon URLs in `manifest.webmanifest` and `index.html` (incl. `favicon.svg`) carry a `?v=N` suffix. Bump it on
+every icon change: installed apps and browsers cache icons by URL (Chrome only refreshes an installed app's icon
+when its manifest URL changes).
