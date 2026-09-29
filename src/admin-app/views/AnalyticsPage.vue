@@ -106,6 +106,7 @@ import Stat from '../components/Stat.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import apiClient from '../scripts/core/apiClient.js'
+import { themeModel } from '../scripts/models/themeModel.js'
 
 ChartJS.register(
     CategoryScale, LinearScale, PointElement, LineElement, BarElement,
@@ -114,6 +115,7 @@ ChartJS.register(
 
 const toaster = errorModel()
 const auth = authModel()
+const theme = themeModel()
 const role = computed(() => auth.currentAdmin.value?.role)
 
 // Chart theme colors (read from CSS vars at runtime)
@@ -121,7 +123,9 @@ function getCssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
 
-function chartColors() {
+// Re-read on theme change so charts pick up the new palette
+const chartColors = computed(() => {
+  theme.isDark.value
   return {
     action: getCssVar('--color-action') || '#6366f1',
     success: getCssVar('--color-success') || '#10b981',
@@ -129,19 +133,19 @@ function chartColors() {
     border: getCssVar('--color-border-subtle') || '#e5e7eb',
     text: getCssVar('--color-text-tertiary') || '#9ca3af',
   }
-}
+})
 
-const baseOptions = {
+const baseOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
+    legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 16, color: chartColors.value.text } },
   },
   scales: {
-    x: { grid: { display: false } },
-    y: { beginAtZero: true, grid: { color: () => chartColors().border } },
+    x: { grid: { display: false }, ticks: { color: chartColors.value.text } },
+    y: { beginAtZero: true, grid: { color: chartColors.value.border }, ticks: { color: chartColors.value.text } },
   },
-}
+}))
 
 // --- Signups ---
 const signupPeriod = ref('day')
@@ -151,7 +155,7 @@ const signupsLoading = ref(false)
 const signupsTotalPeriod = computed(() => signups.value.reduce((sum, i) => sum + (i.signups || 0), 0))
 
 const signupChartData = computed(() => {
-  const c = chartColors()
+  const c = chartColors.value
   return {
     labels: signups.value.map(i => formatChartDate(i.date)),
     datasets: [
@@ -161,7 +165,10 @@ const signupChartData = computed(() => {
   }
 })
 
-const signupChartOptions = { ...baseOptions, scales: { ...baseOptions.scales, x: { ...baseOptions.scales.x, stacked: true }, y: { ...baseOptions.scales.y, stacked: true } } }
+const signupChartOptions = computed(() => {
+  const b = baseOptions.value
+  return { ...b, scales: { ...b.scales, x: { ...b.scales.x, stacked: true }, y: { ...b.scales.y, stacked: true } } }
+})
 
 async function loadSignups() {
   signupsLoading.value = true
@@ -183,7 +190,7 @@ const activeUsers = ref([])
 const activeUsersLoading = ref(false)
 
 const activeUsersChartData = computed(() => {
-  const c = chartColors()
+  const c = chartColors.value
   return {
     labels: activeUsers.value.map(i => formatChartDate(i.date)),
     datasets: [
@@ -216,7 +223,7 @@ const featureUsageLoading = ref(false)
 
 const featureUsageChartData = computed(() => {
   if (!featureUsage.value) return { labels: [], datasets: [] }
-  const c = chartColors()
+  const c = chartColors.value
   const entries = Object.entries(featureUsage.value)
   return {
     labels: entries.map(([k]) => formatKey(k)),
@@ -229,11 +236,11 @@ const featureUsageChartData = computed(() => {
   }
 })
 
-const horizontalBarOptions = {
-  ...baseOptions,
+const horizontalBarOptions = computed(() => ({
+  ...baseOptions.value,
   indexAxis: 'y',
-  plugins: { ...baseOptions.plugins, legend: { display: false } },
-}
+  plugins: { ...baseOptions.value.plugins, legend: { display: false } },
+}))
 
 async function loadFeatureUsage() {
   featureUsageLoading.value = true

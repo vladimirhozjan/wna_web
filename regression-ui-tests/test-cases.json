@@ -14382,5 +14382,105 @@
       "Verify the email sign-up form still has its own \"I agree to the Terms of Service and Privacy Policy\" checkbox, unchanged"
     ],
     "expected": "The Google ToS/Privacy line is shown under the Google button in both sign-up and sign-in modes with working links; the email sign-up checkbox is unchanged. (No dark-theme step: the auth dialog lives on the landing layout, which always renders light — `LandingLayout.vue` forces `data-theme=\"light\"`.)"
+  },
+  {
+    "id": "TC-699",
+    "name": "Admin Settings — Theme Select Switches Mode Instantly",
+    "priority": "High",
+    "area": "Admin Appearance",
+    "areas": [
+      "Admin Appearance"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Logged in to the admin-app (any role, incl. viewer).",
+    "steps": [
+      "Open **Settings**",
+      "Verify the first card is **Appearance** (above Change Password) with a **Theme** select showing System Default / Light / Dark",
+      "Select **Dark**",
+      "Verify the whole admin UI (sidebar, content, cards, tables) switches to the dark palette immediately with the amber accent, without a save button or toast",
+      "Select **Light**",
+      "Verify the UI switches back to light immediately"
+    ],
+    "expected": "The Theme select re-themes the entire admin UI instantly in both directions; no save step, no toast."
+  },
+  {
+    "id": "TC-700",
+    "name": "Admin Theme Persists Across Reload and Logout",
+    "priority": "High",
+    "area": "Admin Appearance",
+    "areas": [
+      "Admin Appearance"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Logged in to the admin-app.",
+    "steps": [
+      "In Settings, select **Dark**",
+      "Reload the page",
+      "Verify the UI is dark on reload and Settings shows **Dark**",
+      "Log out",
+      "Verify the Login page renders dark",
+      "Log in again and verify the UI is still dark"
+    ],
+    "expected": "The theme choice is kept per browser (`localStorage` `wna_theme`) across reloads and logout/login."
+  },
+  {
+    "id": "TC-701",
+    "name": "Admin Theme — System Default Follows OS Appearance Live",
+    "priority": "Medium",
+    "area": "Admin Appearance",
+    "areas": [
+      "Admin Appearance"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Logged in to the admin-app. OS appearance set to Light.",
+    "steps": [
+      "In Settings, select **System Default**",
+      "Verify the UI is light",
+      "Switch the OS appearance to Dark (without reloading)",
+      "Verify the admin UI turns dark",
+      "Switch the OS appearance back to Light and verify the UI turns light"
+    ],
+    "expected": "In System Default the admin UI follows the OS `prefers-color-scheme` live, without reload. A fresh browser (no stored choice) starts in System Default."
+  },
+  {
+    "id": "TC-702",
+    "name": "Admin Analytics Charts Re-theme on Switch",
+    "priority": "Medium",
+    "area": "Admin Appearance",
+    "areas": [
+      "Admin Appearance"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Logged in to the admin-app. Analytics has signup / active-user / feature-usage data.",
+    "steps": [
+      "Open **Analytics** with the Light theme and verify the charts render",
+      "Switch to **Dark** (via Settings, then back to Analytics, or via OS appearance with System Default)",
+      "Verify the chart bars/lines use the dark accent colors and the axis labels, legend and grid lines are readable on the dark background",
+      "Switch back to Light and verify the charts return to the light palette"
+    ],
+    "expected": "Charts pick up the current theme palette without a page reload."
+  },
+  {
+    "id": "TC-703",
+    "name": "Admin Auth Pages Honor the Stored Theme",
+    "priority": "Medium",
+    "area": "Admin Appearance",
+    "areas": [
+      "Admin Appearance"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app in a browser where Theme = Dark was chosen earlier; logged out.",
+    "steps": [
+      "Open the Login page",
+      "Verify it renders dark (no light flash after load)",
+      "Proceed to OTP setup / Set password (where applicable) and verify those pages render dark",
+      "Verify the OTP QR code keeps its light background and stays scannable"
+    ],
+    "expected": "Login, OTP setup and Set password pages use the stored theme; the QR code keeps its own light quiet zone."
   }
 ]

@@ -2,6 +2,19 @@
   <div class="page">
     <h1 class="page-title">Settings</h1>
 
+    <!-- Appearance -->
+    <div class="settings-card card">
+      <h3 class="text-label color-text-secondary section-title">Appearance</h3>
+      <div class="settings-row">
+        <span class="text-body-m color-text-primary">Theme</span>
+        <Select
+            v-model="themeMode"
+            :options="themeModeOptions"
+            title="Theme"
+        />
+      </div>
+    </div>
+
     <!-- Change Password -->
     <div class="settings-card card">
       <h3 class="text-label color-text-secondary section-title">Change Password</h3>
@@ -76,15 +89,30 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Btn from '../components/Btn.vue'
 import Inpt from '../components/Inpt.vue'
+import Select from '../components/Select.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import { authModel } from '../scripts/core/authModel.js'
 import apiClient from '../scripts/core/apiClient.js'
+import { themeModel } from '../scripts/models/themeModel.js'
 
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
 const auth = authModel()
+const theme = themeModel()
+
+// --- Appearance ---
+const themeMode = computed({
+  get: () => theme.mode.value,
+  set: (val) => theme.setMode(val)
+})
+
+const themeModeOptions = [
+  { value: 'system', label: 'System Default' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' }
+]
 
 // --- Change Password ---
 const currentPassword = ref('')
@@ -216,6 +244,13 @@ async function handleResetOtp() {
   margin: 0 0 16px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .settings-form {

@@ -1,6 +1,8 @@
 /* Dark theme — admin */
 
 [data-theme="dark"] {
+    color-scheme: dark;
+
     /* Backgrounds */
     --color-app-background: #090909;
     --color-bg-primary: #111111;
