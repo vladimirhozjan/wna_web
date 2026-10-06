@@ -1,13 +1,23 @@
 import { httpApi } from './httpApi.js'
 
+export const GATEWAYS = [
+    { value: 'paywiser', label: 'Paywiser' },
+    { value: 'stripe', label: 'Stripe' },
+]
+
+export function gatewayLabel(provider) {
+    return GATEWAYS.find(g => g.value === provider)?.label || provider
+}
+
 function normalizeError(error) {
     if (error.response) {
         const status = error.response.status
         const data = error.response.data || {}
 
-        // Deliberate Paywiser refusal (D6) — carry the vendor reason, never a generic conflict
-        if (status === 409 && data.error === 'paywiser_rejected') {
-            return { status, message: `Paywiser rejected the request: ${data.vendor_message || 'no reason given'} (code ${data.vendor_code ?? '—'})` }
+        // Deliberate gateway refusal (D6) — carry the vendor reason, never a generic conflict
+        if (status === 409 && (data.error === 'paywiser_rejected' || data.error === 'gateway_rejected')) {
+            const gateway = gatewayLabel(data.provider || (data.error === 'paywiser_rejected' ? 'paywiser' : 'stripe'))
+            return { status, message: `${gateway} rejected the request: ${data.vendor_message || 'no reason given'} (code ${data.vendor_code ?? '—'})` }
         }
 
         const backendMsg = data.detail || data.error
@@ -514,6 +524,26 @@ export async function deleteFeatureFlag(id) {
     }
 }
 
+// --- Platform settings endpoints ---
+
+export async function listPlatformSettings() {
+    try {
+        const res = await httpApi.get('/admin/platform-settings')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updatePlatformSetting(key, value) {
+    try {
+        const res = await httpApi.put(`/admin/platform-settings/${encodeURIComponent(key)}`, { value })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // --- Admin profile endpoints ---
 
 export async function changePassword(currentPassword, newPassword) {
@@ -660,12 +690,13 @@ export async function listUserDelegations(userId) {
 
 // --- Payments oversight endpoints ---
 
-export async function getPaymentsReport({ year, month = 0, status = '', kind = '', sort = '' }) {
+export async function getPaymentsReport({ year, month = 0, status = '', kind = '', gateway = '', sort = '' }) {
     try {
         const params = { year }
         if (month) params.month = month
         if (status) params.status = status
         if (kind) params.kind = kind
+        if (gateway) params.gateway = gateway
         if (sort) params.sort = sort
         const res = await httpApi.get('/admin/payments/report', { params })
         return res.data
@@ -674,12 +705,13 @@ export async function getPaymentsReport({ year, month = 0, status = '', kind = '
     }
 }
 
-export async function exportPaymentsReport({ year, month = 0, status = '', kind = '', sort = '' }) {
+export async function exportPaymentsReport({ year, month = 0, status = '', kind = '', gateway = '', sort = '' }) {
     try {
         const params = { year }
         if (month) params.month = month
         if (status) params.status = status
         if (kind) params.kind = kind
+        if (gateway) params.gateway = gateway
         if (sort) params.sort = sort
         const res = await httpApi.get('/admin/payments/report/export', { params, responseType: 'blob' })
         return res.data
@@ -729,18 +761,18 @@ export async function setSubscription(userId, { tier, billingPeriod, expiresAt }
     }
 }
 
-export async function cancelPaywiser(userId) {
+export async function cancelGateway(userId) {
     try {
-        const res = await httpApi.post(`/admin/platform-users/${userId}/cancel-paywiser`)
+        const res = await httpApi.post(`/admin/platform-users/${userId}/cancel-gateway`)
         return res.data
     } catch (err) {
         throw normalizeError(err)
     }
 }
 
-export async function getPaywiserSubscription(userId) {
+export async function getGatewaySubscription(userId) {
     try {
-        const res = await httpApi.get(`/admin/platform-users/${userId}/paywiser-subscription`)
+        const res = await httpApi.get(`/admin/platform-users/${userId}/gateway-subscription`)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1121,6 +1153,8 @@ export default {
     createFeatureFlag,
     updateFeatureFlag,
     deleteFeatureFlag,
+    listPlatformSettings,
+    updatePlatformSetting,
     changePassword,
     resetOtp,
     listConnections,
@@ -1137,8 +1171,8 @@ export default {
     refundPlatformUserPayment,
     issueCreditNote,
     setSubscription,
-    cancelPaywiser,
-    getPaywiserSubscription,
+    cancelGateway,
+    getGatewaySubscription,
     getPlatformUserInvoiceHtml,
     getPlatformUserCreditNoteHtml,
     getBillingDocuments,

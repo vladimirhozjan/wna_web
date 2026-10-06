@@ -178,17 +178,17 @@
           </div>
           <div class="info-row expiration-row">
             <div class="action-info">
-              <span class="text-caption color-text-tertiary">Tier changes here never touch Paywiser billing — use Cancel on Paywiser to stop charges</span>
-              <span class="text-caption color-text-secondary">{{ paywiserCaption }}</span>
+              <span class="text-caption color-text-tertiary">Tier changes here never touch {{ gatewayName }} billing — use Cancel on {{ gatewayName }} to stop charges</span>
+              <span class="text-caption color-text-secondary">{{ gatewayCaption }}</span>
             </div>
             <div class="action-control">
               <Btn
                   variant="ghost-danger" size="sm"
                   :loading="cancelSaving"
-                  :disabled="subSaving || cancelSaving || paywiserState !== 'active'"
-                  @click="handleCancelPaywiser"
+                  :disabled="subSaving || cancelSaving || gatewayState !== 'active'"
+                  @click="handleCancelGateway"
               >
-                Cancel on Paywiser
+                Cancel on {{ gatewayName }}
               </Btn>
             </div>
           </div>
@@ -204,6 +204,9 @@
                 <span class="text-body-s fw-medium payment-kind">{{ p.kind }} · {{ formatEur(p.amount_minor) }}</span>
                 <span class="text-caption color-text-tertiary">
                   {{ formatDate(p.created_at) }} · {{ p.billing_country || '—' }}<template v-if="p.vat_amount_minor != null"> · VAT {{ formatEur(p.vat_amount_minor) }}</template><template v-if="p.billing_country || p.card_country || p.ip_country"> · <PaymentEvidence :payment="p" /></template>
+                </span>
+                <span v-if="p.provider" class="text-caption color-text-tertiary">
+                  {{ gatewayLabel(p.provider) }}<template v-if="p.payment_method_type"> · {{ p.payment_method_type }}</template>
                 </span>
                 <span v-if="p.card_brand || p.card_last4" class="text-caption color-text-tertiary">
                   Paid with {{ formatCard(p) }}
@@ -466,7 +469,7 @@ import PaymentEvidence from '../components/PaymentEvidence.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
-import apiClient from '../scripts/core/apiClient.js'
+import apiClient, { gatewayLabel } from '../scripts/core/apiClient.js'
 import { downloadDocumentPdf } from '../../shared/invoicePdf.js'
 
 const route = useRoute()
@@ -502,17 +505,23 @@ const subPeriod = ref('monthly')
 const subExpiryInput = ref('')
 const subSaving = ref(false)
 const cancelSaving = ref(false)
-// 'checking' | 'active' | <paywiser status verbatim> | 'no-subscription' | 'unreachable'
-const paywiserState = ref('checking')
-const paywiserNextCharge = ref(null)
+// 'checking' | 'active' | <gateway status verbatim> | 'no-subscription' | 'unreachable'
+const gatewayState = ref('checking')
+const gatewayNextCharge = ref(null)
+// Known only once the gateway-subscription lookup answers; generic wording until then
+const gatewayProvider = ref(null)
 
-const paywiserCaption = computed(() => {
-  switch (paywiserState.value) {
-    case 'checking': return 'Checking Paywiser…'
-    case 'active': return `Next charge on ${formatDate(paywiserNextCharge.value)}`
-    case 'no-subscription': return 'No Paywiser subscription'
-    case 'unreachable': return 'Paywiser unreachable'
-    default: return paywiserState.value
+const gatewayName = computed(() => gatewayProvider.value ? gatewayLabel(gatewayProvider.value) : 'gateway')
+
+const gatewayCaption = computed(() => {
+  const name = gatewayName.value
+  const Name = name.charAt(0).toUpperCase() + name.slice(1)
+  switch (gatewayState.value) {
+    case 'checking': return `Checking ${name}…`
+    case 'active': return `${Name} · Next charge on ${formatDate(gatewayNextCharge.value)}`
+    case 'no-subscription': return `No ${name} subscription`
+    case 'unreachable': return `${Name} unreachable`
+    default: return `${Name} · ${gatewayState.value}`
   }
 })
 
@@ -573,20 +582,22 @@ function formatCard(p) {
 }
 
 // Fired after the user-detail load, never awaited by the page; any failure lands in 'unreachable'.
-async function loadPaywiserSubscription() {
+async function loadGatewaySubscription() {
   if (!hasMinRole(role.value, 'admin')) return
-  paywiserState.value = 'checking'
-  paywiserNextCharge.value = null
+  gatewayState.value = 'checking'
+  gatewayNextCharge.value = null
+  gatewayProvider.value = null
   try {
-    const data = await apiClient.getPaywiserSubscription(route.params.id)
+    const data = await apiClient.getGatewaySubscription(route.params.id)
+    gatewayProvider.value = data?.provider || null
     if (!data?.present) {
-      paywiserState.value = 'no-subscription'
+      gatewayState.value = 'no-subscription'
       return
     }
-    paywiserState.value = data.status
-    paywiserNextCharge.value = data.next_charge_on || null
+    gatewayState.value = data.status
+    gatewayNextCharge.value = data.next_charge_on || null
   } catch {
-    paywiserState.value = 'unreachable'
+    gatewayState.value = 'unreachable'
   }
 }
 
@@ -611,12 +622,12 @@ async function loadPayments() {
   }
 }
 
-// Charge minus prior refunds of the same purchase (refund rows share paywiser_purchase_id)
+// Charge minus prior refunds of the same charge (refund rows share gateway_charge_id)
 const refundRemainingMinor = computed(() => {
   const p = refundTarget.value
   if (!p) return 0
   const refunded = payments.value
-      .filter(r => r.kind === 'refund' && r.paywiser_purchase_id === p.paywiser_purchase_id)
+      .filter(r => r.kind === 'refund' && r.gateway_charge_id === p.gateway_charge_id)
       .reduce((sum, r) => sum + r.amount_minor, 0)
   return Math.max(0, p.amount_minor - refunded)
 })
@@ -729,8 +740,8 @@ async function handleSaveSubscription() {
   const confirmed = await confirm.show({
     title: 'Set Subscription',
     message: free
-        ? `Remove ${user.value.email}'s subscription? The account drops to Free immediately. Paywiser billing is not touched.`
-        : `Set ${user.value.email} to ${subTier.value === 'team' ? 'Team' : 'Pro'} (${subPeriod.value}) ${until}? Paywiser billing is not touched.`,
+        ? `Remove ${user.value.email}'s subscription? The account drops to Free immediately. Gateway billing is not touched.`
+        : `Set ${user.value.email} to ${subTier.value === 'team' ? 'Team' : 'Pro'} (${subPeriod.value}) ${until}? Gateway billing is not touched.`,
     confirmText: free ? 'Remove' : 'Save',
     cancelText: 'Cancel',
   })
@@ -744,7 +755,7 @@ async function handleSaveSubscription() {
     toaster.success(free ? 'Subscription removed' : 'Subscription updated')
     await load()
     await loadPayments()
-    loadPaywiserSubscription()
+    loadGatewaySubscription()
   } catch (err) {
     toaster.push(err.message || 'Failed to set subscription')
   } finally {
@@ -752,29 +763,30 @@ async function handleSaveSubscription() {
   }
 }
 
-async function handleCancelPaywiser() {
+async function handleCancelGateway() {
+  const name = gatewayName.value
   const confirmed = await confirm.show({
-    title: 'Cancel on Paywiser',
-    message: `Cancel ${user.value.email}'s subscription on Paywiser? Billing stops at the gateway (cancel at period end); access runs until expiry.`,
-    confirmText: 'Cancel on Paywiser',
+    title: `Cancel on ${name}`,
+    message: `Cancel ${user.value.email}'s subscription on ${name}? Billing stops at the gateway (cancel at period end); access runs until expiry.`,
+    confirmText: `Cancel on ${name}`,
     cancelText: 'Keep',
   })
   if (!confirmed) return
 
   cancelSaving.value = true
   try {
-    await apiClient.cancelPaywiser(user.value.id)
-    toaster.success('Paywiser subscription cancelled — billing stops at period end')
+    await apiClient.cancelGateway(user.value.id)
+    toaster.success(`${name} subscription cancelled — billing stops at period end`)
     await load()
     await loadPayments()
-    loadPaywiserSubscription()
+    loadGatewaySubscription()
   } catch (err) {
     if (err.status === 404) {
-      toaster.push('Nothing to cancel on Paywiser')
+      toaster.push(`Nothing to cancel on ${name}`)
     } else if (err.status === 502) {
-      toaster.push('Paywiser gateway failed — nothing was changed')
+      toaster.push(`${name} gateway failed — nothing was changed`)
     } else {
-      toaster.push(err.message || 'Failed to cancel on Paywiser')
+      toaster.push(err.message || `Failed to cancel on ${name}`)
     }
   } finally {
     cancelSaving.value = false
@@ -875,7 +887,7 @@ async function confirmDelete() {
 }
 
 onMounted(() => {
-  load().then(loadPaywiserSubscription)
+  load().then(loadGatewaySubscription)
   loadInboxEmail()
   loadPayments()
 })

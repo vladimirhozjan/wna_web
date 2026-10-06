@@ -13127,11 +13127,11 @@
     "section": "42: Admin Unified Set-Subscription",
     "preconditions": "One user with a Paywiser-backed subscription, one without. Admin (role ≥ admin).",
     "steps": [
-      "Paywiser-backed user → **Cancel on Paywiser** → confirm → `POST /admin/platform-users/{id}/cancel-paywiser`.",
-      "User without a Paywiser-backed subscription → open user detail; observe the Cancel-on-Paywiser row (BUG-040: the lazy `GET …/paywiser-subscription` lookup resolves it).",
+      "Paywiser-backed user → **Cancel on Paywiser** → confirm → `POST /admin/platform-users/{id}/cancel-gateway` (FEAT-040; the button names the subscription's own gateway — the Stripe variant is TC-710).",
+      "User without a Paywiser-backed subscription → open user detail; observe the Cancel-on-{Gateway} row (BUG-040: the lazy `GET …/gateway-subscription` lookup resolves it).",
       "With the gateway unreachable (mock down / 5xx) → open user detail for a Paywiser-backed user; observe the row."
     ],
-    "expected": "Step 1 — `200`: the subscriber is paused at the gateway,\n`cancel_at_period_end=true`; success toast; the row re-fetches and lands disabled with the\n`subscription_paused` caption (BUG-040 user flow). Audit log `paywiser_subscription_cancelled`.\nStep 2 — the button is **disabled** with caption \"No Paywiser subscription\"; **no gateway call**\nis made (BUG-040 D4); the former click → `404` \"nothing to cancel\" toast path no longer exists.\nStep 3 — the button is **disabled** with caption \"Paywiser unreachable\" (BUG-040 D3; no retry\ncontrol — reload the page to retry); nothing was changed. A cancel-time `502` (gateway up at\nlookup, down at cancel) still surfaces distinctly via the error toast."
+    "expected": "Step 1 — `200`: the subscriber is paused at the gateway,\n`cancel_at_period_end=true`; success toast; the row re-fetches and lands disabled with the\n`subscription_paused` caption (BUG-040 user flow). Audit log `paywiser_subscription_cancelled`.\nStep 2 — the button (**Cancel on gateway** unless the response names a provider) is **disabled** with\ncaption \"No gateway subscription\" (\"No Paywiser subscription\" when `provider` is returned); **no gateway call**\nis made (BUG-040 D4); the former click → `404` \"nothing to cancel\" toast path no longer exists.\nStep 3 — the button is **disabled** with caption \"Gateway unreachable\" (BUG-040 D3; no retry\ncontrol — reload the page to retry); nothing was changed. A cancel-time `502` (gateway up at\nlookup, down at cancel) still surfaces distinctly via the error toast."
   },
   {
     "id": "TC-609",
@@ -14482,5 +14482,178 @@
       "Verify the OTP QR code keeps its light background and stays scannable"
     ],
     "expected": "Login, OTP setup and Set password pages use the stored theme; the QR code keeps its own light quiet zone."
+  },
+  {
+    "id": "TC-704",
+    "name": "Platform Flags Table Lists payments.gateway with Readiness",
+    "priority": "High",
+    "area": "Admin Platform Flags (FEAT-040)",
+    "areas": [
+      "Admin Platform Flags (FEAT-040)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app logged in as role `admin`; fresh migration 015 (`payments.gateway` = `paywiser`); Stripe secrets empty or Stripe slots unassigned.",
+    "steps": [
+      "Open Feature Flags",
+      "Look above the Feature Flags table",
+      "Inspect the `payments.gateway` row",
+      "Log in as `viewer` and open Feature Flags"
+    ],
+    "expected": "A **Platform Flags** table is shown above the **Feature Flags** table with the same styling and columns Name · Description · Value · Updated. Row `payments.gateway` shows Value \"Paywiser\" (select offering Paywiser / Stripe) and a caption like \"Paywiser: ready · Stripe: missing credentials, pricing slots\". No Create / Delete controls exist for platform flags. A `viewer` cannot open the page / gets 403 (min role `admin`)."
+  },
+  {
+    "id": "TC-705",
+    "name": "Switching to an Unready Gateway Is Refused with the Reason",
+    "priority": "High",
+    "area": "Admin Platform Flags (FEAT-040)",
+    "areas": [
+      "Admin Platform Flags (FEAT-040)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "As TC-704 — Stripe not ready.",
+    "steps": [
+      "In the `payments.gateway` row pick \"Stripe\"",
+      "Read the confirm dialog, then confirm",
+      "Pick \"Stripe\" again and press Cancel in the dialog",
+      "Make Stripe ready (secrets + all four Stripe slots assigned), reload, pick \"Stripe\" and confirm",
+      "Switch back to \"Paywiser\""
+    ],
+    "expected": "Step 2 — the confirm names the target (\"New checkouts will go to Stripe. Existing subscriptions stay on their own gateway. Stripe readiness: missing …\"); after confirming, an error toast shows the server's `gateway_not_ready` reason and the select still reads \"Paywiser\". Step 3 — nothing is sent, value stays \"Paywiser\". Step 4 — success toast, Value \"Stripe\", Updated refreshed, audit log has `platform_setting_changed` (old paywiser → new stripe). Step 5 — back to \"Paywiser\"."
+  },
+  {
+    "id": "TC-706",
+    "name": "Upgrade on Stripe Redirects to Stripe Checkout",
+    "priority": "High",
+    "area": "Payments — Stripe gateway (FEAT-040) | **Automated:** Playwright (ui-tests T1)",
+    "areas": [
+      "Payments — Stripe gateway (FEAT-040) | **Automated:** Playwright (ui-tests T1)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Dev env with `payments.gateway` = `stripe` (Stripe sandbox ready); a Free user with the `payments` flag.",
+    "steps": [
+      "Open `/upgrade`",
+      "Pick Pro monthly, fill the billing address, accept ToS if EU",
+      "Click **Subscribe and pay**"
+    ],
+    "expected": "The browser is redirected to a `checkout.stripe.com` page showing the Pro price; nothing else on `/upgrade` differs from the Paywiser flow."
+  },
+  {
+    "id": "TC-707",
+    "name": "Stripe Sandbox Checkout Returns and Converges to Pro",
+    "priority": "High",
+    "area": "Payments — Stripe gateway (FEAT-040) | **Automated:** Playwright (ui-tests T1)",
+    "areas": [
+      "Payments — Stripe gateway (FEAT-040) | **Automated:** Playwright (ui-tests T1)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "As TC-706.",
+    "steps": [
+      "Complete Stripe Checkout with card `4242 4242 4242 4242`, any future expiry, any CVC",
+      "Observe the return to `/settings/billing?status=success`",
+      "Wait for the Plan card"
+    ],
+    "expected": "Toast \"Payment submitted — confirming with the payment provider…\"; the Plan card shows \"Confirming your payment…\" and then Current plan **Pro** with \"Renews on <date>\"; the `status` param is stripped from the URL. If the webhook is slower than the poll window, the hint reads \"…Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.\""
+  },
+  {
+    "id": "TC-708",
+    "name": "Invoice \"Paid with\" Line — Card and Non-Card Methods",
+    "priority": "Medium",
+    "area": "Payments — Stripe gateway (FEAT-040) | **Automated:** card variant Playwright (ui-tests T1); non-card manual",
+    "areas": [
+      "Payments — Stripe gateway (FEAT-040) | **Automated:** card variant Playwright (ui-tests T1); non-card manual"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "A user who paid on Stripe with `4242…` (TC-707); a second user who paid on Stripe sandbox with SEPA Direct Debit test IBAN `DE89 3704 0044 0532 0130 00` and whose payment has settled.",
+    "steps": [
+      "Open Settings → Billing history → View as the card user",
+      "Click the initial invoice row to open the preview",
+      "Repeat as the SEPA user"
+    ],
+    "expected": "Card user — the invoice preview shows \"Paid with Visa •••• 4242\". SEPA user — \"Paid with SEPA Direct Debit •••• 3000\". The history rows themselves carry no \"Paid with\" line (the document does)."
+  },
+  {
+    "id": "TC-709",
+    "name": "Billing Templates — Stripe Template, Per-Gateway Assignment, Mismatch Badge",
+    "priority": "High",
+    "area": "Admin Billing Templates (FEAT-040)",
+    "areas": [
+      "Admin Billing Templates (FEAT-040)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `admin`; Stripe sandbox configured.",
+    "steps": [
+      "Click **Create Stripe template**: €11.00, EUR, 1 month, title \"WNA Pro monthly\" → Create",
+      "Set the catalog gateway filter to Stripe, then Paywiser, then All gateways",
+      "In Pricing Slots, pick the new template in the **Stripe** column of Pro · monthly",
+      "Make the Paywiser-assigned Pro · monthly template a different price (or assign one at another price)",
+      "Edit the Stripe template's price to €12.00 and read the confirm",
+      "Edit a Paywiser template's price and read the confirm",
+      "Unassign the Stripe column of Pro · monthly"
+    ],
+    "expected": "Step 1 — the modal is titled \"Create Stripe Template\"; the new row shows Gateway \"Stripe\" and a Gateway ref `price_…`. Step 2 — the catalog narrows to that gateway's rows. Step 3 — success toast \"Template assigned to Pro · monthly on Stripe\"; the Paywiser column is unchanged and the Stripe select only lists Stripe templates. Step 4 — a \"price mismatch\" badge appears beside Pro · monthly. Step 5 — confirm reads \"Existing subscriptions keep their price (N active) — only new subscriptions are charged the new price\"; after saving, the Gateway ref changes to a new `price_…`. Step 6 — confirm reads \"N active subscriptions will renew at the new price next cycle\". Step 7 — \"Pro · monthly on Stripe unassigned\"; the mismatch badge disappears."
+  },
+  {
+    "id": "TC-710",
+    "name": "User Detail — Cancel on Stripe Caption, State and Cancel",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-040)",
+    "areas": [
+      "Admin User Detail (FEAT-040)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `admin`; user A with an active Stripe subscription (TC-707); user B Free.",
+    "steps": [
+      "Open user A's detail page and watch the subscription row while it loads",
+      "Click **Cancel on Stripe**, read the confirm, confirm",
+      "Open user B's detail page",
+      "Inspect user A's payment rows"
+    ],
+    "expected": "Step 1 — caption \"Checking gateway…\" then \"Stripe · Next charge on <date>\"; the static caption reads \"…never touch Stripe billing — use Cancel on Stripe…\"; the button reads **Cancel on Stripe** and is enabled. Step 2 — confirm \"Cancel …'s subscription on Stripe?…\"; success toast \"Stripe subscription cancelled — billing stops at period end\"; the row re-fetches and the button disables (caption shows the Stripe status / no next charge). Step 3 — \"No gateway subscription\" (or \"No Paywiser/Stripe subscription\" when the response names a provider), button **Cancel on gateway** disabled. Step 4 — each row shows \"Stripe · card\" and, on the paid row, \"Paid with Visa •••• 4242\"; a Refund on the paid row pre-fills the remaining amount. A gateway refusal surfaces as \"Stripe rejected the request: …\"."
+  },
+  {
+    "id": "TC-711",
+    "name": "Payments Report — Gateway Filter and CSV Column",
+    "priority": "Medium",
+    "area": "Admin Payments Report (FEAT-040)",
+    "areas": [
+      "Admin Payments Report (FEAT-040)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `admin`; the selected month has payments on both Paywiser and Stripe.",
+    "steps": [
+      "Open Payments",
+      "Check the payments table's last column",
+      "Set the gateway filter to Stripe",
+      "Click **Export CSV** and open the file",
+      "Set the gateway filter back to All gateways"
+    ],
+    "expected": "Step 2 — a **Gateway** column shows Paywiser / Stripe per row. Step 3 — only Stripe rows are listed; the five statistics and VAT-by-country do not change; the pager resets to page 1. Step 4 — the CSV holds only the Stripe rows and ends with a `Gateway` column (`stripe`). Step 5 — all rows return."
+  },
+  {
+    "id": "TC-712",
+    "name": "Stripe Webhook Outcomes via mock_stripe (backend platform)",
+    "priority": "High",
+    "area": "Payments — Stripe gateway (FEAT-040) | **Automated:** `wna_backend/test/platform/auth/test_stripe_payments.py` (local; skipped on dev — real Stripe sandbox there)",
+    "areas": [
+      "Payments — Stripe gateway (FEAT-040) | **Automated:** `wna_backend/test/platform/auth/test_stripe_payments.py` (local; skipped on dev — real Stripe sandbox there)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Local stack with migration 015, `mock_stripe` (:10003, `APP_WEBHOOK_URL` → router `/stripe/webhook`), Stripe secrets in user_service `secret.json`; four Stripe templates assigned to every slot and `payments.gateway` = `stripe` (fixture, restored afterwards).",
+    "steps": [
+      "Subscribe an entitled user via `POST /v1/payments/subscribe`; complete the session with `/control/complete-session`",
+      "Drive `/control/renewal-paid`, `/control/payment-failed`, `/control/action-required`, `POST /v1/payments/cancel`",
+      "Refund from the admin app (echo), seed an over-cap local refund then `/control/refund`, `/control/dispute`",
+      "`/control/replay` the `invoice.paid` event; post a signed inert type, an unknown type and a wrong-secret body to `/stripe/webhook`"
+    ],
+    "expected": "Step 1 — tier Pro, history row `provider=stripe`, `gateway_charge_id` = invoice id, `payment_method_type=card`, WNA invoice \"Paid with Visa •••• 4242\". Step 2 — `past_due` on failure/action-required, `active` + `renewal/paid` row on recovery; cancel sets `cancel_at_period_end` on the Stripe Subscription. Step 3 — one refund row (echo deduped); over-headroom → `stripe_refund_over_headroom` alarm, no row; dispute → `stripe_dispute_opened` (critical), no row. Step 4 — replay adds nothing; inert → 200 no claim; unknown → 200 + `stripe_unhandled_event`; bad signature → 401."
   }
 ]

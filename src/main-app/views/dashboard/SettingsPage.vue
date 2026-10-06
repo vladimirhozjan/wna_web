@@ -56,7 +56,7 @@
           </div>
           <div v-else-if="isExpanded('plan')" class="settings-section-body">
             <div v-if="paymentStillProcessing && tier === 'free'" class="settings-row">
-              <p class="text-body-s settings-hint">Your payment is still being processed — your plan will update once it's confirmed. Check back in a few minutes.</p>
+              <p class="text-body-s settings-hint">Your payment is still being processed — your plan will update once it's confirmed. Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.</p>
             </div>
             <div class="settings-row">
               <span class="settings-label">Current plan</span>
@@ -777,7 +777,7 @@ async function onCancelSubscription() {
   }
 }
 
-// Paywiser checkout returns to /settings/billing?status=…
+// The gateway's hosted checkout returns to /settings/billing?status=…
 async function applyCheckoutReturn() {
   const status = route.query.status
   if (!status) return
@@ -786,7 +786,7 @@ async function applyCheckoutReturn() {
   router.replace({query})
 
   if (status === 'success') {
-    toaster.success('Payment successful — welcome to your new plan!')
+    toaster.success('Payment submitted — confirming with the payment provider…')
     await convergeAfterCheckout()
   } else if (status === 'failure') {
     toaster.push('Payment failed — you have not been charged. Please try again.')

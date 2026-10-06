@@ -24,6 +24,10 @@
         <option value="renewal">Renewal</option>
         <option value="refund">Refund</option>
       </select>
+      <select v-model="gateway" class="text-body-s filter-select" @change="load">
+        <option value="">All gateways</option>
+        <option v-for="g in GATEWAYS" :key="g.value" :value="g.value">{{ g.label }}</option>
+      </select>
       <select v-model="sort" class="text-body-s filter-select" @change="load">
         <option v-for="s in SORT_OPTIONS" :key="s.value" :value="s.value">{{ s.label }}</option>
       </select>
@@ -66,6 +70,7 @@
       <template #cell-amount_minor="{ value }">{{ formatEur(value) }}</template>
       <template #cell-vat_rate="{ value }">{{ value != null ? value + '%' : '—' }}</template>
       <template #cell-vat_amount_minor="{ value }">{{ value != null ? formatEur(value) : '—' }}</template>
+      <template #cell-provider="{ value }">{{ gatewayLabel(value) || '—' }}</template>
 
       <template #pagination>
         <Pagination
@@ -89,7 +94,7 @@ import PaymentEvidence from '../components/PaymentEvidence.vue'
 import Stat from '../components/Stat.vue'
 import Btn from '../components/Btn.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
-import apiClient from '../scripts/core/apiClient.js'
+import apiClient, { GATEWAYS, gatewayLabel } from '../scripts/core/apiClient.js'
 import { downloadBlob } from '../scripts/core/downloadUtils.js'
 
 const toaster = errorModel()
@@ -112,6 +117,7 @@ const year = ref(now.getFullYear())
 const month = ref(now.getMonth() + 1)
 const status = ref('')
 const kind = ref('')
+const gateway = ref('')
 const sort = ref('date_desc')
 
 const yearOptions = computed(() => {
@@ -158,7 +164,7 @@ async function load() {
   try {
     report.value = await apiClient.getPaymentsReport({
       year: year.value, month: month.value,
-      status: status.value, kind: kind.value, sort: sort.value,
+      status: status.value, kind: kind.value, gateway: gateway.value, sort: sort.value,
     })
   } catch (err) {
     toaster.push(err.message || 'Failed to load payments report')
@@ -175,7 +181,7 @@ async function handleExport() {
   try {
     const blob = await apiClient.exportPaymentsReport({
       year: year.value, month: month.value,
-      status: status.value, kind: kind.value, sort: sort.value,
+      status: status.value, kind: kind.value, gateway: gateway.value, sort: sort.value,
     })
     const suffix = month.value ? `-${String(month.value).padStart(2, '0')}` : ''
     downloadBlob(blob, `payments-${year.value}${suffix}.csv`)

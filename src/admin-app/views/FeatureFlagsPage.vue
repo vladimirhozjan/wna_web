@@ -5,6 +5,35 @@
       <Btn variant="primary" size="sm" @click="openCreateModal">Create Flag</Btn>
     </div>
 
+    <h3 class="text-label color-text-secondary section-title">Platform Flags</h3>
+    <DataTable
+        :columns="settingColumns"
+        :rows="settings"
+        :loading="settingsLoading"
+        :show-pagination="false"
+        empty-text="No platform flags defined."
+        class="section-table"
+    >
+      <template #cell-key="{ value }">
+        <span class="fw-medium">{{ value }}</span>
+      </template>
+      <template #cell-value="{ row }">
+        <div class="setting-value">
+          <Select
+              :model-value="row.value"
+              :options="settingOptions(row)"
+              :title="row.key"
+              @update:model-value="v => handleSettingChange(row, v)"
+          />
+          <span v-if="row.readiness" class="text-caption color-text-tertiary">{{ readinessSummary(row.readiness) }}</span>
+        </div>
+      </template>
+      <template #cell-updated_at="{ value }">
+        {{ formatDate(value) }}
+      </template>
+    </DataTable>
+
+    <h3 class="text-label color-text-secondary section-title">Feature Flags</h3>
     <DataTable
         :columns="columns"
         :rows="flags"
@@ -114,10 +143,11 @@ import DataTable from '../components/DataTable.vue'
 import Btn from '../components/Btn.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
+import Select from '../components/Select.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
-import apiClient from '../scripts/core/apiClient.js'
+import apiClient, { gatewayLabel } from '../scripts/core/apiClient.js'
 
 const auth = authModel()
 const toaster = errorModel()
@@ -133,6 +163,17 @@ const columns = [
   { key: 'updated_at', label: 'Updated', sortable: false, width: '150px' },
 ]
 
+const settingColumns = [
+  { key: 'key', label: 'Name', sortable: false },
+  { key: 'description', label: 'Description', sortable: false },
+  { key: 'value', label: 'Value', sortable: false, width: '240px' },
+  { key: 'updated_at', label: 'Updated', sortable: false, width: '150px' },
+]
+
+const settings = ref([])
+const settingsLoading = ref(false)
+const settingSaving = ref(false)
+
 const flags = ref([])
 const loading = ref(false)
 const actionLoading = ref(false)
@@ -146,6 +187,65 @@ async function load() {
     toaster.push(err.message || 'Failed to load feature flags')
   } finally {
     loading.value = false
+  }
+}
+
+async function loadSettings() {
+  settingsLoading.value = true
+  try {
+    const data = await apiClient.listPlatformSettings()
+    settings.value = (data.settings || []).map(r => ({ ...r, id: r.key }))
+  } catch (err) {
+    toaster.push(err.message || 'Failed to load platform flags')
+  } finally {
+    settingsLoading.value = false
+  }
+}
+
+function valueLabel(row, value) {
+  return row.key === 'payments.gateway' ? gatewayLabel(value) : value
+}
+
+function settingOptions(row) {
+  return (row.allowed_values || []).map(v => ({ value: v, label: valueLabel(row, v) }))
+}
+
+function gatewayReadiness(r) {
+  if (!r) return 'unknown'
+  const missing = []
+  if (!r.configured) missing.push('credentials')
+  if (!r.slots_assigned) missing.push('pricing slots')
+  return missing.length ? `missing ${missing.join(', ')}` : 'ready'
+}
+
+function readinessSummary(readiness) {
+  return Object.entries(readiness).map(([p, r]) => `${gatewayLabel(p)}: ${gatewayReadiness(r)}`).join(' · ')
+}
+
+// The select shows row.value, so a refused change reverts by simply not touching the row
+async function handleSettingChange(row, value) {
+  if (value === row.value || settingSaving.value) return
+  const isGateway = row.key === 'payments.gateway'
+  const target = valueLabel(row, value)
+  const confirmed = await confirm.show({
+    title: isGateway ? 'Switch Payment Gateway' : 'Change Platform Flag',
+    message: isGateway
+        ? `New checkouts will go to ${target}. Existing subscriptions stay on their own gateway. ${target} readiness: ${gatewayReadiness(row.readiness?.[value])}.`
+        : `Change ${row.key} from ${valueLabel(row, row.value)} to ${target}?`,
+    confirmText: isGateway ? `Switch to ${target}` : 'Change',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  settingSaving.value = true
+  try {
+    await apiClient.updatePlatformSetting(row.key, value)
+    toaster.success(`${row.key} set to ${target}`)
+    await loadSettings()
+  } catch (err) {
+    toaster.push(err.message || 'Failed to update platform flag')
+  } finally {
+    settingSaving.value = false
   }
 }
 
@@ -317,7 +417,10 @@ async function handleDelete() {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  loadSettings()
+  load()
+})
 </script>
 
 <style scoped>
@@ -330,6 +433,22 @@ onMounted(load)
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-table {
+  margin-bottom: 24px;
+}
+
+.setting-value {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* Toggle */

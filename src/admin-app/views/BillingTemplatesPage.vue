@@ -2,14 +2,22 @@
   <div class="page">
     <div class="page-header">
       <h1 class="page-title">Billing Templates</h1>
-      <Btn variant="primary" size="sm" @click="openCreate">Create Template</Btn>
+      <div class="header-actions">
+        <Btn
+            v-for="g in GATEWAYS" :key="g.value"
+            variant="primary" size="sm"
+            @click="openCreate(g.value)"
+        >Create {{ g.label }} template</Btn>
+      </div>
     </div>
 
     <p class="text-body-s color-text-secondary intro">
-      A template's price and title are editable — a price edit re-prices all active subscriptions of
-      that template at their next renewal. Currency and period are immutable — create a new template
+      Every template belongs to one gateway. A template's price and title are editable — on Paywiser a
+      price edit re-prices all active subscriptions of that template at their next renewal; on Stripe
+      existing subscriptions keep their price. Currency and period are immutable — create a new template
       when those change, and hide retired ones. The 4 pricing slots below decide which template each
-      plan option sells; a slot without an active assignment is not offered.
+      plan option sells on each gateway; the active gateway's assignment is what checkout sells, and a
+      slot without an active assignment is not offered.
     </p>
 
     <h3 class="text-label color-text-secondary section-title">Pricing Slots</h3>
@@ -23,16 +31,17 @@
       <template #cell-slot="{ row }">
         <span class="fw-medium">{{ row.planLabel }}</span>
         <span class="period"> · {{ row.billing_period }}</span>
+        <Badge v-if="row.price_mismatch" type="pending" value="price mismatch" class="mismatch-badge" />
       </template>
-      <template #cell-template="{ row }">
+      <template v-for="g in GATEWAYS" :key="g.value" #[`cell-${g.value}`]="{ row }">
         <select
             class="text-body-s slot-select"
-            :value="row.template?.id || ''"
+            :value="row[g.value]?.id || ''"
             :disabled="actionLoading"
-            @change="onAssign(row, $event.target.value)"
+            @change="onAssign(row, g.value, $event.target.value)"
         >
           <option value="">— Unassigned —</option>
-          <option v-for="t in templates" :key="t.id" :value="t.id">
+          <option v-for="t in templatesOf(g.value)" :key="t.id" :value="t.id">
             {{ templateLabel(t) }}
           </option>
         </select>
@@ -53,10 +62,16 @@
 
     <div class="catalog-header">
       <h3 class="text-label color-text-secondary section-title">Template Catalog</h3>
-      <label class="text-body-s hidden-check">
-        <input type="checkbox" v-model="showHidden" />
-        <span>Show hidden</span>
-      </label>
+      <div class="catalog-filters">
+        <select v-model="providerFilter" class="text-body-s filter-select">
+          <option value="">All gateways</option>
+          <option v-for="g in GATEWAYS" :key="g.value" :value="g.value">{{ g.label }}</option>
+        </select>
+        <label class="text-body-s hidden-check">
+          <input type="checkbox" v-model="showHidden" />
+          <span>Show hidden</span>
+        </label>
+      </div>
     </div>
     <DataTable
         :columns="catalogColumns"
@@ -75,7 +90,10 @@
       <template #cell-period="{ row }">
         {{ formatPeriod(row.period_count, row.period_units) }}
       </template>
-      <template #cell-paywiser_billing_template_id="{ value }">
+      <template #cell-provider="{ value }">
+        {{ gatewayLabel(value) }}
+      </template>
+      <template #cell-gateway_price_id="{ value }">
         <span class="text-caption template-id">{{ value || '—' }}</span>
       </template>
       <template #cell-assigned_to="{ value }">
@@ -105,7 +123,7 @@
     </DataTable>
 
     <!-- Create modal -->
-    <Modal :visible="showCreate" title="Create Billing Template" @close="closeCreate">
+    <Modal :visible="showCreate" :title="`Create ${gatewayLabel(createProvider)} Template`" @close="closeCreate">
       <div class="form-body">
         <div class="form-row">
           <Inpt
@@ -143,7 +161,7 @@
         <Inpt
             v-model="titleInput"
             type="text"
-            title="Paywiser template title (optional)"
+            title="Template title (optional)"
             placeholder="e.g. WNA Pro monthly"
             :disabled="saving"
         />
@@ -169,7 +187,7 @@
         <Inpt
             v-model="editTitleInput"
             type="text"
-            title="Paywiser template title"
+            title="Template title"
             :disabled="editSaving"
         />
         <p v-if="editError" class="text-body-s color-text-danger form-error">{{ editError }}</p>
@@ -193,7 +211,7 @@ import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
-import apiClient from '../scripts/core/apiClient.js'
+import apiClient, { GATEWAYS, gatewayLabel } from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
 const confirm = confirmModel()
@@ -207,16 +225,17 @@ const SLOT_ORDER = [
 
 const slotColumns = [
   { key: 'slot', label: 'Slot', width: '180px' },
-  { key: 'template', label: 'Assigned Template' },
+  ...GATEWAYS.map(g => ({ key: g.value, label: g.label })),
   { key: 'active', label: 'Active', width: '90px' },
 ]
 
 const catalogColumns = [
   { key: 'title', label: 'Title' },
+  { key: 'provider', label: 'Gateway', width: '100px' },
   { key: 'price_minor', label: 'Price', width: '90px' },
   { key: 'currency', label: 'Currency', width: '90px' },
   { key: 'period', label: 'Period', width: '110px' },
-  { key: 'paywiser_billing_template_id', label: 'Paywiser Template' },
+  { key: 'gateway_price_id', label: 'Gateway ref' },
   { key: 'assigned_to', label: 'Assigned Slot', width: '140px' },
   { key: 'created_at', label: 'Created', width: '120px' },
   { key: 'actions', label: '', width: '150px' },
@@ -227,14 +246,19 @@ const plans = ref([])
 const loading = ref(false)
 const actionLoading = ref(false)
 const showHidden = ref(false)
+const providerFilter = ref('')
 
 const slotRows = computed(() => SLOT_ORDER.map(slot => {
   const plan = plans.value.find(p => p.tier === slot.tier && p.billing_period === slot.billing_period)
   return { ...slot, ...plan, id: `${slot.tier}-${slot.billing_period}` }
 }))
 
-const catalogRows = computed(() =>
-    showHidden.value ? templates.value : templates.value.filter(t => !t.hidden))
+const catalogRows = computed(() => templates.value.filter(t =>
+    (showHidden.value || !t.hidden) && (!providerFilter.value || t.provider === providerFilter.value)))
+
+function templatesOf(provider) {
+  return templates.value.filter(t => t.provider === provider)
+}
 
 async function loadAll() {
   loading.value = true
@@ -277,11 +301,12 @@ function templateLabel(t) {
 }
 
 // Slot assignment / active toggle
-async function onAssign(slot, templateId) {
+async function onAssign(slot, provider, templateId) {
   actionLoading.value = true
   try {
-    await apiClient.setBillingPlan(slot.tier, slot.billing_period, { billing_template_id: templateId || null })
-    toaster.success(templateId ? `Template assigned to ${slotLabel(slot)}` : `${slotLabel(slot)} unassigned`)
+    await apiClient.setBillingPlan(slot.tier, slot.billing_period, { provider, billing_template_id: templateId || null })
+    const where = `${slotLabel(slot)} on ${gatewayLabel(provider)}`
+    toaster.success(templateId ? `Template assigned to ${where}` : `${where} unassigned`)
   } catch (err) {
     toaster.push(err.message || 'Failed to update slot')
   } finally {
@@ -323,6 +348,7 @@ async function onToggleHidden(row) {
 
 // Create form
 const showCreate = ref(false)
+const createProvider = ref('paywiser')
 const priceInput = ref('')
 const currencyInput = ref('EUR')
 const periodCountInput = ref('1')
@@ -331,7 +357,8 @@ const titleInput = ref('')
 const saving = ref(false)
 const formError = ref('')
 
-function openCreate() {
+function openCreate(provider) {
+  createProvider.value = provider
   priceInput.value = ''
   currencyInput.value = 'EUR'
   periodCountInput.value = '1'
@@ -367,6 +394,7 @@ async function saveCreate() {
   saving.value = true
   try {
     const body = {
+      provider: createProvider.value,
       price_minor: Math.round(price * 100),
       currency,
       period_count: periodCount,
@@ -374,7 +402,7 @@ async function saveCreate() {
     }
     if (titleInput.value.trim()) body.title = titleInput.value.trim()
     await apiClient.createBillingTemplate(body)
-    toaster.success('Billing template created')
+    toaster.success(`${gatewayLabel(createProvider.value)} template created`)
     showCreate.value = false
     await loadAll()
   } catch (err) {
@@ -446,7 +474,9 @@ async function saveEdit() {
     const count = row.active_subscriptions ?? 0
     const confirmed = await confirm.show({
       title: 'Change Price',
-      message: `${count} active subscription${count === 1 ? '' : 's'} will renew at the new price.`,
+      message: row.provider === 'stripe'
+          ? `Existing subscriptions keep their price (${count} active) — only new subscriptions are charged the new price.`
+          : `${count} active subscription${count === 1 ? '' : 's'} will renew at the new price next cycle.`,
       confirmText: 'Change Price',
       cancelText: 'Cancel',
     })
@@ -479,6 +509,12 @@ onMounted(loadAll)
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .intro {
@@ -515,8 +551,29 @@ onMounted(loadAll)
   cursor: pointer;
 }
 
-.hidden-badge {
+.hidden-badge,
+.mismatch-badge {
   margin-left: 8px;
+}
+
+.catalog-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
+  min-width: 160px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-input-border-focus);
 }
 
 .period {
