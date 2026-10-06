@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { formatDate } from '../core/dateUtils.js'
 
 let instance = null
 
@@ -27,7 +28,7 @@ export function moveModel() {
         return new Promise((resolve) => {
             state.type = 'schedule'
             state.title = options.title || 'Schedule for when?'
-            state.date = options.date || ''
+            state.date = options.date || formatDate(new Date())
             state.time = options.time || null
             state.duration = options.duration ?? null
             state.visible = true

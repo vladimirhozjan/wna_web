@@ -3751,6 +3751,32 @@
     "expected": "Moving an action from CALENDAR to any other state (Next, Today, Someday) clears the scheduled_date/start_date via the undefer API but preserves the due_date. Changes persist on reload."
   },
   {
+    "id": "TC-713",
+    "name": "Schedule Dialog Opens on Today",
+    "priority": "Medium",
+    "area": "Calendar (BUG-045)",
+    "areas": [
+      "Calendar (BUG-045)"
+    ],
+    "smoke": false,
+    "section": "7: Calendar",
+    "preconditions": "User is logged in. An inbox item exists; a NEXT action exists with no scheduled date; an action outside CALENDAR state has a `scheduled_date` other than today.",
+    "steps": [
+      "Open the inbox item's detail page and choose Move → Calendar",
+      "Verify the \"Schedule for when?\" dialog's date field shows today's date (not the `dd. mm. llll` placeholder); cancel",
+      "Drag the inbox item onto Calendar in the Sidebar (quick-schedule)",
+      "Verify the dialog's date field shows today's date; cancel",
+      "Open the NEXT action's detail page and choose Move → Calendar",
+      "Verify the dialog's date field shows today's date; confirm",
+      "Verify the action is moved to Calendar on today's date",
+      "Open an action that has a `scheduled_date` but is not in CALENDAR state (e.g. WAITING or SOMEDAY with a scheduled date) and choose Move → Calendar",
+      "Verify the dialog opens on that action's scheduled date, not today; cancel",
+      "Open Clarify on an inbox item → Create Action, and add a recurrence with an end date",
+      "Verify the \"Scheduled for\" and recurrence \"until\" date fields still open empty"
+    ],
+    "expected": "From every opener the schedule dialog starts on today's date (local time zone) for an unscheduled item; an already-scheduled action keeps its date. Clarify dates and the recurrence \"until\" field are unchanged (empty)."
+  },
+  {
     "id": "TC-142",
     "name": "Calendar Drag Reschedule for Due-Only Items",
     "priority": "Medium",
