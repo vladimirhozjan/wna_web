@@ -56,6 +56,42 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'support' }
             },
             {
+                path: 'users/:id/payments',
+                name: 'user-payments',
+                component: () => import('../views/UserPaymentsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
+                path: 'users/:id/invoices',
+                name: 'user-invoices',
+                component: () => import('../views/UserInvoicesPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
+                path: 'users/:id/connections',
+                name: 'user-connections',
+                component: () => import('../views/UserConnectionsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
+                path: 'users/:id/shared-projects',
+                name: 'user-shared-projects',
+                component: () => import('../views/UserSharedProjectsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
+                path: 'users/:id/delegations',
+                name: 'user-delegations',
+                component: () => import('../views/UserDelegationsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
+                path: 'users/:id/sessions',
+                name: 'user-sessions',
+                component: () => import('../views/UserSessionsPage.vue'),
+                meta: { requiresAuth: true, minRole: 'support' }
+            },
+            {
                 path: 'admins',
                 name: 'admins',
                 component: () => import('../views/AdminUsersPage.vue'),

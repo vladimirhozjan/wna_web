@@ -12451,7 +12451,7 @@
     "steps": [
       "Open Settings → Plan."
     ],
-    "expected": "**Current plan Pro**; a **\"Renews on <MMM d, yyyy>\"** row equal to the status\n`expires_at`; a **Cancel subscription** row. No Change-plan control (owner decision 2026-07-07: plan\nswitching = cancel → expiry → upgrade)."
+    "expected": "**Current plan Pro**; a **\"Renews on <MMM d, yyyy>\"** row equal to the status\n`expires_at` (UTC) rendered in the **browser's local timezone** (owner 2026-10-07; FEAT-016 local-tz rule); a **Cancel subscription** row. No Change-plan control (owner decision 2026-07-07: plan\nswitching = cancel → expiry → upgrade)."
   },
   {
     "id": "TC-573",
@@ -14639,9 +14639,9 @@
       "Open user A's detail page and watch the subscription row while it loads",
       "Click **Cancel on Stripe**, read the confirm, confirm",
       "Open user B's detail page",
-      "Inspect user A's payment rows"
+      "Open user A's Payments sub-page (`/users/:id/payments`) and inspect the rows"
     ],
-    "expected": "Step 1 — caption \"Checking gateway…\" then \"Stripe · Next charge on <date>\"; the static caption reads \"…never touch Stripe billing — use Cancel on Stripe…\"; the button reads **Cancel on Stripe** and is enabled. Step 2 — confirm \"Cancel …'s subscription on Stripe?…\"; success toast \"Stripe subscription cancelled — billing stops at period end\"; the row re-fetches and the button disables (caption shows the Stripe status / no next charge). Step 3 — \"No gateway subscription\" (or \"No Paywiser/Stripe subscription\" when the response names a provider), button **Cancel on gateway** disabled. Step 4 — each row shows \"Stripe · card\" and, on the paid row, \"Paid with Visa •••• 4242\"; a Refund on the paid row pre-fills the remaining amount. A gateway refusal surfaces as \"Stripe rejected the request: …\"."
+    "expected": "Step 1 — caption \"Checking gateway…\" then \"Stripe · Next charge on <date>\"; the static caption reads \"…never touch Stripe billing — use Cancel on Stripe…\"; the button reads **Cancel on Stripe** and is enabled. Step 2 — confirm \"Cancel …'s subscription on Stripe?…\"; success toast \"Stripe subscription cancelled — billing stops at period end\"; the row re-fetches and the button disables (caption shows the Stripe status / no next charge). Step 3 — \"No gateway subscription\" (or \"No Paywiser/Stripe subscription\" when the response names a provider), button **Cancel on gateway** disabled. Step 4 — each row shows Gateway \"Stripe\", Method \"card\" and, on the paid row, Card \"Visa •••• 4242\"; a Refund on the paid row pre-fills the remaining amount. A gateway refusal surfaces as \"Stripe rejected the request: …\"."
   },
   {
     "id": "TC-711",
@@ -14681,5 +14681,191 @@
       "`/control/replay` the `invoice.paid` event; post a signed inert type, an unknown type and a wrong-secret body to `/stripe/webhook`"
     ],
     "expected": "Step 1 — tier Pro, history row `provider=stripe`, `gateway_charge_id` = invoice id, `payment_method_type=card`, WNA invoice \"Paid with Visa •••• 4242\". Step 2 — `past_due` on failure/action-required, `active` + `renewal/paid` row on recovery; cancel sets `cancel_at_period_end` on the Stripe Subscription. Step 3 — one refund row (echo deduped); over-headroom → `stripe_refund_over_headroom` alarm, no row; dispute → `stripe_dispute_opened` (critical), no row. Step 4 — replay adds nothing; inert → 200 no claim; unknown → 200 + `stripe_unhandled_event`; bad signature → 401."
+  },
+  {
+    "id": "TC-714",
+    "name": "User Detail — Card Grid Layout per Role",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app; user U with payments, invoices, connections; one `admin` and one `support` admin account.",
+    "steps": [
+      "As `admin`, open U's detail page at a wide window (≥1280px)",
+      "Narrow the window to ≤1024px",
+      "As `support`, open the same page"
+    ],
+    "expected": "Step 1 — row 1 Profile | WNA Summary, row 2 Collaboration | Actions, row 3 Payments & Billing spanning the full width; no inline payment, invoice, login-history, connection, shared-project or delegation lists anywhere on the page; Browse User Data sits inside WNA Summary; Actions holds Disable/Enable, Reset Password, Force Logout, Delete. Step 2 — all cards stack in one column, no horizontal page scroll. Step 3 — Profile, WNA Summary (with Browse User Data) and Collaboration (full row width) render; no Actions card and no Payments & Billing card."
+  },
+  {
+    "id": "TC-715",
+    "name": "User Detail — Email to Inbox Row and Popup",
+    "priority": "Medium",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `support`+; user A with an inbox address, user B without one (or Free).",
+    "steps": [
+      "Open A's detail page; read the Profile card's Email to Inbox row",
+      "Click the address",
+      "Close the popup; open B's detail page"
+    ],
+    "expected": "Step 1 — the row shows a capture status dot and A's address (monospace). Step 2 — a popup titled \"Email to Inbox\" lists Address, Capture (dot), Used Today (\"N of {cap}\"), Created. Step 3 — the row reads \"Not generated\" and is not clickable; no error toast."
+  },
+  {
+    "id": "TC-716",
+    "name": "User Detail — Sessions Row and Sessions Sub-page",
+    "priority": "Medium",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `support`+; user U with more than 20 sessions (some expired).",
+    "steps": [
+      "Open U's detail page; read the Profile card's Sessions row",
+      "Click it",
+      "Page to page 2, reload the browser, then click ← User"
+    ],
+    "expected": "Step 1 — \"N active · last login <date>\" where N matches U's unexpired sessions. Step 2 — `/users/:id/sessions` lists Device · IP · User agent · Login · Last active, 20 rows, newest activity first, expired sessions included. Step 3 — the URL carries `?page=2` and the reload keeps page 2; ← User returns to the detail page."
+  },
+  {
+    "id": "TC-717",
+    "name": "User Detail — Collaboration Tiles and Independent Card Errors",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `support`+; user U with accepted + pending connections, owned + member shared projects, open delegations in both directions.",
+    "steps": [
+      "Open U's detail page; read the Collaboration card",
+      "Click each tile in turn (back between clicks)",
+      "Make `GET .../collaboration-stats` fail (core_service down) and reload the detail page"
+    ],
+    "expected": "Step 1 — Connections = accepted count with \"N pending\"; Shared Projects = owned + member with \"N owned · N member\"; Delegations = by them + to them with \"N by them · N to them\". Step 2 — the tiles open `/users/:id/connections`, `/users/:id/shared-projects`, `/users/:id/delegations`, and each tile count equals that list's total. Step 3 — the Collaboration card shows an error message inside it; Profile, WNA Summary, Actions and Payments & Billing still render normally."
+  },
+  {
+    "id": "TC-718",
+    "name": "User Detail — Billing Stat Tiles and Deep Links",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `admin`; user U with paid, failed and refunded payments, invoices and at least one credit note.",
+    "steps": [
+      "Open U's detail page; read the Payments & Billing card",
+      "Click Total paid, Refunded, Failed, Last payment (back between clicks)",
+      "Click Invoices, Credit notes, Fiscal issues, Last issued (back between clicks)"
+    ],
+    "expected": "Step 1 — Current status, Set subscription and Cancel on {Gateway} work as before; below them a Payments tile row (Total paid €, Paid count, Refunded \"€X (N)\", Failed, Last payment) and an Invoices tile row (Invoices, Credit notes, Fiscal issues, Last issued). Step 2 — the payments sub-page opens with Status = Paid / Kind = Refund / Status = Failed / no filter respectively, and the filter selects show those values. Step 3 — the invoices sub-page opens with Type = Invoices / Type = Credit notes / no filter / no filter."
+  },
+  {
+    "id": "TC-719",
+    "name": "User Payments Sub-page — Columns, Filters, Pagination, Evidence Row, Refund",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `admin`; user U with more than 20 payments incl. a paid charge with ToS proof and a location-conflict row.",
+    "steps": [
+      "Open `/users/:id/payments`",
+      "Go to page 2; set Kind = Renewal",
+      "Set Status = Failed, then reload the browser",
+      "Clear the filters; click the initial paid row, then click it again",
+      "Click Refund on a paid charge that was already partially refunded",
+      "Narrow the window to ≤1024px"
+    ],
+    "expected": "Step 1 — columns Date · Kind · Amount · VAT · Billing country · Card (\"Visa •••• 1111 · DE\") · IP country · Gateway · Method · Status · Refund; 20 rows, newest first. Step 2 — the list resets to page 1 and shows only renewals; URL `?kind=renewal`. Step 3 — the reload keeps both filters. Step 4 — a detail row opens beneath it with \"ToS {version} accepted {datetime} · IP … · {user agent}\" and the location evidence (warning colour + the conflict note on a conflict row); the second click collapses it. Step 5 — the amount modal pre-fills the remaining refundable amount, prior refunds included even when they are on another page; refunding reloads the list. Step 6 — the table scrolls horizontally; columns are not squashed."
+  },
+  {
+    "id": "TC-720",
+    "name": "User Invoices Sub-page — Credit Notes as Rows, Filters, Credit Note and Download",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `admin`; user U with invoices (one with a fiscal issue) and a credit note.",
+    "steps": [
+      "Open `/users/:id/invoices`",
+      "Set Type = Credit notes, then Fiscal status = Rejected",
+      "Clear filters; click Credit note on an invoice row and issue a partial credit note",
+      "Click Download on an invoice row and on a credit-note row"
+    ],
+    "expected": "Step 1 — columns Number · Type · Issued · Amount · Fiscal status badge · Linked payment (date · kind) · actions; a credit note is its own row with \"for <invoice number>\" and a −€ amount; invoice rows have Credit note + Download, credit-note rows only Download. Step 2 — the list narrows accordingly, URL-synced, pager resets to page 1. Step 3 — the modal pre-fills the invoice gross; on success a toast shows and the new CN row appears. Step 4 — PDFs `invoice-<number>.pdf` / `credit-note-<number>.pdf` download."
+  },
+  {
+    "id": "TC-721",
+    "name": "User Connections and Shared Projects Sub-pages",
+    "priority": "Medium",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app; user U with connections in several statuses and shared projects; an `admin` and a `support` account.",
+    "steps": [
+      "As `admin`, open `/users/:id/connections`; set Status = Pending",
+      "Clear the filter; click Remove on an accepted row and confirm",
+      "As `support`, open the same page",
+      "Open `/users/:id/shared-projects`; click a row, then the project page's back link"
+    ],
+    "expected": "Step 1 — Connection (the other party, correct when U is the invitee) · Status · Since; only pending rows after filtering, URL `?status=pending`. Step 2 — the confirm explains the membership cascade; success toast, list reloads. Step 3 — no Remove buttons. Step 4 — Title · Role · State, paginated; the row opens `/shared-projects/:id`, whose back link returns to the shared-projects sub-page."
+  },
+  {
+    "id": "TC-722",
+    "name": "User Delegations Sub-page — By Them / To Them Tabs",
+    "priority": "Medium",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app as `support`+; user U with more than 20 delegations out and some in.",
+    "steps": [
+      "Open `/users/:id/delegations`",
+      "Go to page 2",
+      "Click To them"
+    ],
+    "expected": "Step 1 — the By them tab is active; Title · Counterpart (email) · Status · Since (waiting since), paginated. Step 2 — page 2 of the out list. Step 3 — the To them tab is active with its own list starting at page 1 (URL `?direction=in`); states show inbox/clarified/completed/trashed badges."
+  },
+  {
+    "id": "TC-723",
+    "name": "User Detail Sub-pages — Role Gates",
+    "priority": "High",
+    "area": "Admin User Detail (FEAT-041)",
+    "areas": [
+      "Admin User Detail (FEAT-041)"
+    ],
+    "smoke": false,
+    "section": "54: Admin Dark Theme (FEAT-039)",
+    "preconditions": "Admin-app; a `support` and a `viewer` admin; any user id.",
+    "steps": [
+      "As `support`, open `/users/:id/payments` and `/users/:id/invoices` by URL",
+      "As `support`, open the connections, shared-projects, delegations and sessions sub-pages",
+      "As `viewer`, open any `/users/:id/…` sub-page by URL",
+      "Log out and open a sub-page URL"
+    ],
+    "expected": "Step 1 — both redirect to the dashboard; no crash, no billing data shown. Step 2 — all four load. Step 3 — redirected to the dashboard. Step 4 — redirected to login."
   }
 ]

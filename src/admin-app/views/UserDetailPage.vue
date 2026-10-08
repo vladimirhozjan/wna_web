@@ -44,12 +44,36 @@
           <span class="text-label color-text-secondary">Last Active</span>
           <span class="text-body-s">{{ formatDate(user.last_active) }}</span>
         </div>
+        <div class="info-row">
+          <span class="text-label color-text-secondary">Email to Inbox</span>
+          <span v-if="inboxEmailLoading" class="text-body-s color-text-tertiary">…</span>
+          <span v-else-if="inboxEmailError" class="text-body-s color-text-danger">Failed to load</span>
+          <button
+              v-else-if="inboxEmail && inboxEmail.email"
+              type="button"
+              class="text-body-s row-link inbox-trigger"
+              @click="showInboxModal = true"
+          >
+            <StatusDot
+                :color="inboxEmail.enabled ? 'green' : 'gray'"
+                :title="inboxEmail.enabled ? 'Capture is on' : 'Capture is paused'"
+            />
+            <span class="inbox-address">{{ inboxEmail.email }}</span>
+          </button>
+          <span v-else class="text-body-s color-text-tertiary">Not generated</span>
+        </div>
+        <div class="info-row">
+          <span class="text-label color-text-secondary">Sessions</span>
+          <RouterLink :to="`/users/${user.id}/sessions`" class="text-body-s row-link">
+            {{ user.session_summary?.active_count ?? 0 }} active · last login {{ formatDate(user.session_summary?.last_login_at) }} &rarr;
+          </RouterLink>
+        </div>
       </div>
 
       <!-- WNA Data Summary -->
-      <div v-if="user.wna_data" class="info-card card">
+      <div class="info-card card">
         <h3 class="text-label color-text-secondary section-title">WNA Summary</h3>
-        <div class="wna-grid">
+        <div v-if="user.wna_data" class="wna-grid">
           <Stat label="Inbox (Stuff)" :value="user.wna_data.stuff_count" />
           <Stat label="Next Actions" :value="user.wna_data.action_next" />
           <Stat label="Today" :value="user.wna_data.action_today" />
@@ -63,225 +87,33 @@
           <Stat label="Someday Projects" :value="user.wna_data.project_someday" />
           <Stat label="Tags" :value="user.wna_data.tag_count" />
         </div>
+        <RouterLink :to="`/content/${user.id}`" class="browse-btn">
+          <svg class="browse-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h5l2 2h7v12H3V3z"/></svg>
+          <div class="browse-text">
+            <span class="text-body-s fw-medium">Browse User Data</span>
+            <span class="text-caption color-text-tertiary">View inbox, actions, projects, tags, attachments</span>
+          </div>
+          <span class="text-body-s color-text-tertiary">&rarr;</span>
+        </RouterLink>
       </div>
 
-      <!-- Email to Inbox -->
-      <div class="info-card card">
-        <h3 class="text-label color-text-secondary section-title">Email to Inbox</h3>
-
-        <div v-if="inboxEmailLoading" class="inbox-loading">
+      <!-- Collaboration -->
+      <div class="info-card card" :class="{ 'span-full': !isAdmin }">
+        <h3 class="text-label color-text-secondary section-title">Collaboration</h3>
+        <div v-if="collabLoading" class="inbox-loading">
           <Spinner />
         </div>
-
-        <template v-else-if="inboxEmail && inboxEmail.email">
-          <div class="info-row">
-            <span class="text-label color-text-secondary">Address</span>
-            <span class="text-body-s inbox-address">{{ inboxEmail.email }}</span>
-          </div>
-          <div class="info-row">
-            <span class="text-label color-text-secondary">Capture</span>
-            <StatusDot
-                :color="inboxEmail.enabled ? 'green' : 'gray'"
-                :title="inboxEmail.enabled ? 'Capture is on' : 'Capture is paused'"
-            />
-          </div>
-          <div class="info-row">
-            <span class="text-label color-text-secondary">Used Today</span>
-            <span class="text-body-s">{{ inboxEmail.emails_today ?? 0 }} of {{ inboxEmail.daily_limit ?? '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="text-label color-text-secondary">Created</span>
-            <span class="text-body-s">{{ formatDate(inboxEmail.created_at) }}</span>
-          </div>
-        </template>
-
-        <div v-else class="info-row inbox-empty">
-          <span class="text-body-s color-text-tertiary">No inbox address generated.</span>
+        <p v-else-if="collabError" class="text-body-s color-text-danger">{{ collabError }}</p>
+        <div v-else class="tile-grid">
+          <RouterLink v-for="t in collabTiles" :key="t.label" :to="t.to" class="tile">
+            <Stat :label="t.label" :value="t.value" />
+            <span class="text-caption color-text-tertiary">{{ t.detail }}</span>
+          </RouterLink>
         </div>
-      </div>
-
-      <!-- Login History -->
-      <div v-if="user.login_history && user.login_history.length" class="info-card card">
-        <h3 class="text-label color-text-secondary section-title">Login History</h3>
-        <div class="login-history">
-          <div v-for="session in user.login_history" :key="session.id" class="history-row">
-            <div class="history-main">
-              <span class="text-body-s fw-medium">{{ session.device || 'Unknown device' }}</span>
-              <span class="text-caption color-text-tertiary">IP: {{ session.ip || '—' }}</span>
-            </div>
-            <div class="history-times">
-              <span class="text-caption color-text-tertiary">Login: {{ formatDate(session.created_at) }}</span>
-              <span class="text-caption color-text-tertiary">Active: {{ formatDate(session.last_active) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Collaboration (connections, shared projects, delegations) -->
-      <UserCollaboration v-if="hasMinRole(role, 'support')" :user-id="user.id" :user-email="user.email" />
-
-      <!-- Payments & Billing -->
-      <div v-if="hasMinRole(role, 'admin')" class="info-card card">
-        <h3 class="text-label color-text-secondary section-title">Payments &amp; Billing</h3>
-
-        <div v-if="paymentsLoading" class="inbox-loading">
-          <Spinner />
-        </div>
-
-        <template v-else>
-          <!-- Current billing status -->
-          <div class="info-row expiration-row">
-            <div class="action-info">
-              <span class="text-body-s fw-medium">Current status</span>
-            </div>
-            <div class="action-control">
-              <Badge type="role" :value="user.subscription_tier || 'free'" />
-              <template v-if="user.subscription">
-                <Badge type="status" :value="user.subscription.status" />
-                <span class="text-body-s color-text-secondary">{{ user.subscription.billing_period }} · expires on {{ expirationDisplay || '—' }}</span>
-              </template>
-              <span v-else class="text-body-s color-text-secondary">no subscription</span>
-            </div>
-          </div>
-
-          <!-- Set subscription — one card, identical for every user -->
-          <div class="info-row expiration-row">
-            <div class="action-info">
-              <span class="text-body-s fw-medium">Set subscription</span>
-            </div>
-            <div class="action-control">
-              <select v-model="subTier" class="text-body-s select-input" :disabled="subSaving">
-                <option value="free">Free</option>
-                <option value="pro">Pro</option>
-                <option value="team">Team</option>
-              </select>
-              <select v-model="subPeriod" class="text-body-s select-input" :disabled="subSaving || subTier === 'free'">
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-              <input
-                  v-model="subExpiryInput"
-                  type="datetime-local"
-                  class="text-body-s select-input"
-                  title="Expiration (optional — defaults to one period)"
-                  :disabled="subSaving || subTier === 'free'"
-              />
-              <Btn
-                  variant="secondary" size="sm"
-                  :loading="subSaving"
-                  :disabled="subSaving || cancelSaving"
-                  @click="handleSaveSubscription"
-              >
-                Save
-              </Btn>
-            </div>
-          </div>
-          <div class="info-row expiration-row">
-            <div class="action-info">
-              <span class="text-caption color-text-tertiary">Tier changes here never touch {{ gatewayName }} billing — use Cancel on {{ gatewayName }} to stop charges</span>
-              <span class="text-caption color-text-secondary">{{ gatewayCaption }}</span>
-            </div>
-            <div class="action-control">
-              <Btn
-                  variant="ghost-danger" size="sm"
-                  :loading="cancelSaving"
-                  :disabled="subSaving || cancelSaving || gatewayState !== 'active'"
-                  @click="handleCancelGateway"
-              >
-                Cancel on {{ gatewayName }}
-              </Btn>
-            </div>
-          </div>
-
-          <!-- Payment requests -->
-          <h4 class="text-label color-text-secondary subsection-title">Payments</h4>
-          <div v-if="!payments.length" class="info-row inbox-empty">
-            <span class="text-body-s color-text-tertiary">No payments.</span>
-          </div>
-          <div v-else class="login-history">
-            <div v-for="p in payments" :key="p.id" class="history-row">
-              <div class="history-main">
-                <span class="text-body-s fw-medium payment-kind">{{ p.kind }} · {{ formatEur(p.amount_minor) }}</span>
-                <span class="text-caption color-text-tertiary">
-                  {{ formatDate(p.created_at) }} · {{ p.billing_country || '—' }}<template v-if="p.vat_amount_minor != null"> · VAT {{ formatEur(p.vat_amount_minor) }}</template><template v-if="p.billing_country || p.card_country || p.ip_country"> · <PaymentEvidence :payment="p" /></template>
-                </span>
-                <span v-if="p.provider" class="text-caption color-text-tertiary">
-                  {{ gatewayLabel(p.provider) }}<template v-if="p.payment_method_type"> · {{ p.payment_method_type }}</template>
-                </span>
-                <span v-if="p.card_brand || p.card_last4" class="text-caption color-text-tertiary">
-                  Paid with {{ formatCard(p) }}
-                </span>
-                <span v-if="p.terms_version" class="text-caption color-text-tertiary payment-terms">
-                  ToS {{ p.terms_version }} accepted {{ formatDate(p.terms_accepted_at) }}<template v-if="p.terms_accepted_ip"> · IP {{ p.terms_accepted_ip }}</template><template v-if="p.terms_accepted_user_agent"> · {{ p.terms_accepted_user_agent }}</template>
-                </span>
-              </div>
-              <div class="payment-side">
-                <Badge type="status" :value="p.status" />
-                <Btn
-                    v-if="p.kind !== 'refund' && p.status === 'paid'"
-                    variant="ghost-danger" size="sm"
-                    @click="handleRefund(p)"
-                >
-                  Refund
-                </Btn>
-              </div>
-            </div>
-          </div>
-
-          <!-- Issued invoices -->
-          <h4 class="text-label color-text-secondary subsection-title">Invoices</h4>
-          <div v-if="!invoices.length" class="info-row inbox-empty">
-            <span class="text-body-s color-text-tertiary">No invoices issued.</span>
-          </div>
-          <div v-else class="login-history">
-            <template v-for="inv in invoices" :key="inv.id">
-              <div class="history-row">
-                <div class="history-main">
-                  <span class="text-body-s fw-medium">{{ inv.invoice_number }} <Badge type="fiscal" :value="inv.fiscal_status" /></span>
-                  <span class="text-caption color-text-tertiary">
-                    Issued {{ formatDate(inv.issued_at) }} · {{ formatEur(inv.amount_minor) }}
-                  </span>
-                </div>
-                <div class="payment-side">
-                  <Btn
-                      variant="secondary" size="sm"
-                      @click="handleIssueCreditNote(inv)"
-                  >
-                    Credit note
-                  </Btn>
-                  <Btn
-                      variant="secondary" size="sm"
-                      :loading="downloadingId === inv.id"
-                      :disabled="downloadingId !== null"
-                      @click="downloadInvoice(inv)"
-                  >
-                    Download
-                  </Btn>
-                </div>
-              </div>
-              <div v-for="cn in inv.credit_notes || []" :key="cn.id" class="history-row credit-note-row">
-                <div class="history-main">
-                  <span class="text-body-s fw-medium">{{ cn.credit_note_number }}</span>
-                  <span class="text-caption color-text-tertiary">
-                    Issued {{ formatDate(cn.issued_at) }} · −{{ formatEur(cn.amount_minor) }}
-                  </span>
-                </div>
-                <Btn
-                    variant="secondary" size="sm"
-                    :loading="downloadingId === cn.id"
-                    :disabled="downloadingId !== null"
-                    @click="downloadCreditNote(cn)"
-                >
-                  Download
-                </Btn>
-              </div>
-            </template>
-          </div>
-        </template>
       </div>
 
       <!-- Actions -->
-      <div v-if="hasMinRole(role, 'admin')" class="actions-card card">
+      <div v-if="isAdmin" class="actions-card card">
         <h3 class="text-label color-text-secondary section-title">Actions</h3>
 
         <!-- Disable / Enable -->
@@ -335,8 +167,8 @@
           </Btn>
         </div>
 
-        <!-- Delete Account (admin+) -->
-        <div v-if="hasMinRole(role, 'admin')" class="action-row action-row--danger">
+        <!-- Delete Account -->
+        <div class="action-row action-row--danger">
           <div class="action-info">
             <span class="text-body-s fw-medium color-text-danger">Delete Account</span>
             <span class="text-caption color-text-tertiary">Soft-delete with 30-day grace period</span>
@@ -352,18 +184,119 @@
         </div>
       </div>
 
-      <!-- Browse Data -->
-      <div v-if="hasMinRole(role, 'support')" class="browse-card card">
-        <RouterLink :to="`/content/${user.id}`" class="browse-btn">
-          <svg class="browse-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3h5l2 2h7v12H3V3z"/></svg>
-          <div class="browse-text">
-            <span class="text-body-s fw-medium">Browse User Data</span>
-            <span class="text-caption color-text-tertiary">View inbox, actions, projects, tags, attachments</span>
+      <!-- Payments & Billing -->
+      <div v-if="isAdmin" class="info-card card span-full">
+        <h3 class="text-label color-text-secondary section-title">Payments &amp; Billing</h3>
+
+        <!-- Current billing status -->
+        <div class="info-row expiration-row">
+          <div class="action-info">
+            <span class="text-body-s fw-medium">Current status</span>
           </div>
-          <span class="text-body-s color-text-tertiary">&rarr;</span>
-        </RouterLink>
+          <div class="action-control">
+            <Badge type="role" :value="user.subscription_tier || 'free'" />
+            <template v-if="user.subscription">
+              <Badge type="status" :value="user.subscription.status" />
+              <span class="text-body-s color-text-secondary">{{ user.subscription.billing_period }} · expires on {{ expirationDisplay || '—' }}</span>
+            </template>
+            <span v-else class="text-body-s color-text-secondary">no subscription</span>
+          </div>
+        </div>
+
+        <!-- Set subscription — one card, identical for every user -->
+        <div class="info-row expiration-row">
+          <div class="action-info">
+            <span class="text-body-s fw-medium">Set subscription</span>
+          </div>
+          <div class="action-control">
+            <select v-model="subTier" class="text-body-s select-input" :disabled="subSaving">
+              <option value="free">Free</option>
+              <option value="pro">Pro</option>
+              <option value="team">Team</option>
+            </select>
+            <select v-model="subPeriod" class="text-body-s select-input" :disabled="subSaving || subTier === 'free'">
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            <input
+                v-model="subExpiryInput"
+                type="datetime-local"
+                class="text-body-s select-input"
+                title="Expiration (optional — defaults to one period)"
+                :disabled="subSaving || subTier === 'free'"
+            />
+            <Btn
+                variant="secondary" size="sm"
+                :loading="subSaving"
+                :disabled="subSaving || cancelSaving"
+                @click="handleSaveSubscription"
+            >
+              Save
+            </Btn>
+          </div>
+        </div>
+        <div class="info-row expiration-row">
+          <div class="action-info">
+            <span class="text-caption color-text-tertiary">Tier changes here never touch {{ gatewayName }} billing — use Cancel on {{ gatewayName }} to stop charges</span>
+            <span class="text-caption color-text-secondary">{{ gatewayCaption }}</span>
+          </div>
+          <div class="action-control">
+            <Btn
+                variant="ghost-danger" size="sm"
+                :loading="cancelSaving"
+                :disabled="subSaving || cancelSaving || gatewayState !== 'active'"
+                @click="handleCancelGateway"
+            >
+              Cancel on {{ gatewayName }}
+            </Btn>
+          </div>
+        </div>
+
+        <div v-if="billingLoading" class="inbox-loading">
+          <Spinner />
+        </div>
+        <p v-else-if="billingError" class="text-body-s color-text-danger billing-error">{{ billingError }}</p>
+        <template v-else>
+          <h4 class="text-label color-text-secondary subsection-title">Payments</h4>
+          <div class="tile-grid">
+            <RouterLink v-for="t in paymentTiles" :key="t.label" :to="t.to" class="tile">
+              <Stat :label="t.label" :value="t.value" />
+            </RouterLink>
+          </div>
+          <h4 class="text-label color-text-secondary subsection-title">Invoices</h4>
+          <div class="tile-grid">
+            <RouterLink v-for="t in invoiceTiles" :key="t.label" :to="t.to" class="tile">
+              <Stat :label="t.label" :value="t.value" />
+            </RouterLink>
+          </div>
+        </template>
       </div>
     </div>
+
+    <!-- Email to Inbox Modal -->
+    <Modal :visible="showInboxModal" title="Email to Inbox" @close="showInboxModal = false">
+      <template v-if="inboxEmail">
+        <div class="info-row">
+          <span class="text-label color-text-secondary">Address</span>
+          <span class="text-body-s inbox-address">{{ inboxEmail.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="text-label color-text-secondary">Capture</span>
+          <StatusDot
+              :color="inboxEmail.enabled ? 'green' : 'gray'"
+              :title="inboxEmail.enabled ? 'Capture is on' : 'Capture is paused'"
+          />
+        </div>
+        <div class="info-row">
+          <span class="text-label color-text-secondary">Used Today</span>
+          <span class="text-body-s">{{ inboxEmail.emails_today ?? 0 }} of {{ inboxEmail.daily_limit ?? '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="text-label color-text-secondary">Created</span>
+          <span class="text-body-s">{{ formatDate(inboxEmail.created_at) }}</span>
+        </div>
+      </template>
+    </Modal>
 
     <!-- Delete Confirmation Modal -->
     <Modal :visible="showDeleteModal" title="Delete User Account" @close="showDeleteModal = false">
@@ -391,65 +324,6 @@
         </Btn>
       </template>
     </Modal>
-
-    <!-- Refund Modal -->
-    <Modal :visible="!!refundTarget" title="Refund Payment" @close="refundTarget = null">
-      <p class="text-body-s">
-        Refund {{ user?.email }} — full or partial. This returns the money only: the tier and
-        expiration are not changed, and no credit note is issued.
-      </p>
-      <p class="text-body-s color-text-secondary refund-remaining">
-        Charged {{ formatEur(refundTarget?.amount_minor) }} · refundable {{ formatEur(refundRemainingMinor) }}
-      </p>
-      <Inpt
-          v-model="refundAmountInput"
-          v-model:error="refundError"
-          type="number"
-          title="Amount (EUR)"
-          placeholder="0.00"
-          :disabled="refundSaving"
-      />
-
-      <template #actions>
-        <Btn variant="secondary" size="sm" @click="refundTarget = null" :disabled="refundSaving">Cancel</Btn>
-        <Btn
-            variant="danger" size="sm"
-            :loading="refundSaving"
-            :disabled="refundSaving"
-            @click="confirmRefund"
-        >
-          Refund
-        </Btn>
-      </template>
-    </Modal>
-
-    <!-- Issue Credit Note Modal -->
-    <Modal :visible="!!creditNoteTarget" title="Issue Credit Note" @close="creditNoteTarget = null">
-      <p class="text-body-s">
-        Issue a credit note against invoice {{ creditNoteTarget?.invoice_number }} — a legal
-        correction document. It moves no money; refunds are separate.
-      </p>
-      <Inpt
-          v-model="creditNoteAmountInput"
-          v-model:error="creditNoteError"
-          type="number"
-          title="Amount (EUR)"
-          placeholder="0.00"
-          :disabled="creditNoteSaving"
-      />
-
-      <template #actions>
-        <Btn variant="secondary" size="sm" @click="creditNoteTarget = null" :disabled="creditNoteSaving">Cancel</Btn>
-        <Btn
-            variant="primary" size="sm"
-            :loading="creditNoteSaving"
-            :disabled="creditNoteSaving"
-            @click="confirmIssueCreditNote"
-        >
-          Issue
-        </Btn>
-      </template>
-    </Modal>
   </div>
 </template>
 
@@ -464,13 +338,10 @@ import Stat from '../components/Stat.vue'
 import StatusDot from '../components/StatusDot.vue'
 import Modal from '../components/Modal.vue'
 import Inpt from '../components/Inpt.vue'
-import UserCollaboration from '../components/UserCollaboration.vue'
-import PaymentEvidence from '../components/PaymentEvidence.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient, { gatewayLabel } from '../scripts/core/apiClient.js'
-import { downloadDocumentPdf } from '../../shared/invoicePdf.js'
 
 const route = useRoute()
 const auth = authModel()
@@ -484,21 +355,21 @@ const actionLoading = ref(false)
 // Inbox address + usage
 const inboxEmail = ref(null)
 const inboxEmailLoading = ref(true)
+const inboxEmailError = ref(false)
+const showInboxModal = ref(false)
 
 const role = computed(() => auth.currentAdmin.value?.role)
+const isAdmin = computed(() => hasMinRole(role.value, 'admin'))
+
+// Stat tiles — each card loads on its own (D14)
+const collabStats = ref(null)
+const collabLoading = ref(true)
+const collabError = ref('')
+const billingStats = ref(null)
+const billingLoading = ref(true)
+const billingError = ref('')
 
 // Payments & billing
-const paymentsLoading = ref(true)
-const payments = ref([])
-const downloadingId = ref(null)
-const refundTarget = ref(null)
-const refundAmountInput = ref('')
-const refundError = ref('')
-const refundSaving = ref(false)
-const creditNoteTarget = ref(null)
-const creditNoteAmountInput = ref('')
-const creditNoteError = ref('')
-const creditNoteSaving = ref(false)
 const expirationDisplay = ref('')
 const subTier = ref('free')
 const subPeriod = ref('monthly')
@@ -525,10 +396,41 @@ const gatewayCaption = computed(() => {
   }
 })
 
-// invoice rows carry no amount — taken from the backing payment
-const invoices = computed(() => payments.value
-    .filter(p => p.invoice)
-    .map(p => ({ ...p.invoice, amount_minor: p.amount_minor })))
+const collabTiles = computed(() => {
+  const s = collabStats.value || {}
+  const base = `/users/${route.params.id}`
+  const c = s.connections || {}
+  const sp = s.shared_projects || {}
+  const d = s.delegations || {}
+  return [
+    { label: 'Connections', value: c.accepted ?? 0, detail: `${c.pending ?? 0} pending`, to: `${base}/connections` },
+    { label: 'Shared Projects', value: (sp.owned ?? 0) + (sp.member ?? 0), detail: `${sp.owned ?? 0} owned · ${sp.member ?? 0} member`, to: `${base}/shared-projects` },
+    { label: 'Delegations', value: (d.out_open ?? 0) + (d.in_open ?? 0), detail: `${d.out_open ?? 0} by them · ${d.in_open ?? 0} to them`, to: `${base}/delegations` },
+  ]
+})
+
+const paymentTiles = computed(() => {
+  const p = billingStats.value?.payments || {}
+  const path = `/users/${route.params.id}/payments`
+  return [
+    { label: 'Total paid', value: formatEur(p.total_paid_minor ?? 0), to: { path, query: { status: 'paid' } } },
+    { label: 'Paid', value: p.paid_count ?? 0, to: { path, query: { status: 'paid' } } },
+    { label: 'Refunded', value: `${formatEur(p.refunded_total_minor ?? 0)} (${p.refunded_count ?? 0})`, to: { path, query: { kind: 'refund' } } },
+    { label: 'Failed', value: p.failed_count ?? 0, to: { path, query: { status: 'failed' } } },
+    { label: 'Last payment', value: formatDate(p.last_payment_at), to: { path } },
+  ]
+})
+
+const invoiceTiles = computed(() => {
+  const i = billingStats.value?.invoices || {}
+  const path = `/users/${route.params.id}/invoices`
+  return [
+    { label: 'Invoices', value: i.invoice_count ?? 0, to: { path, query: { type: 'invoice' } } },
+    { label: 'Credit notes', value: i.credit_note_count ?? 0, to: { path, query: { type: 'credit_note' } } },
+    { label: 'Fiscal issues', value: i.fiscal_issue_count ?? 0, to: { path } },
+    { label: 'Last issued', value: formatDate(i.last_issued_at), to: { path } },
+  ]
+})
 
 // Delete modal state
 const showDeleteModal = ref(false)
@@ -558,12 +460,13 @@ async function load() {
 // Address + usage; 404 (none generated) / 403 (Free, not entitled) → empty state, no toast.
 async function loadInboxEmail() {
   inboxEmailLoading.value = true
+  inboxEmailError.value = false
   try {
     inboxEmail.value = await apiClient.getPlatformUserInboxEmail(route.params.id)
   } catch (err) {
-    if (err.status === 404 || err.status === 403) {
-      inboxEmail.value = null
-    } else {
+    inboxEmail.value = null
+    if (err.status !== 404 && err.status !== 403) {
+      inboxEmailError.value = true
       toaster.push(err.message || 'Failed to load inbox email')
     }
   } finally {
@@ -576,9 +479,29 @@ function formatDate(val) {
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
 }
 
-function formatCard(p) {
-  const brand = p.card_brand ? p.card_brand.charAt(0).toUpperCase() + p.card_brand.slice(1) : ''
-  return [brand, p.card_last4 ? `•••• ${p.card_last4}` : ''].filter(Boolean).join(' ')
+async function loadCollabStats() {
+  collabLoading.value = true
+  collabError.value = ''
+  try {
+    collabStats.value = await apiClient.getPlatformUserCollaborationStats(route.params.id)
+  } catch (err) {
+    collabError.value = err.message || 'Failed to load collaboration stats'
+  } finally {
+    collabLoading.value = false
+  }
+}
+
+async function loadBillingStats() {
+  if (!isAdmin.value) return
+  billingLoading.value = true
+  billingError.value = ''
+  try {
+    billingStats.value = await apiClient.getPlatformUserBillingStats(route.params.id)
+  } catch (err) {
+    billingError.value = err.message || 'Failed to load billing stats'
+  } finally {
+    billingLoading.value = false
+  }
 }
 
 // Fired after the user-detail load, never awaited by the page; any failure lands in 'unreachable'.
@@ -604,119 +527,6 @@ async function loadGatewaySubscription() {
 function formatEur(minor) {
   if (minor == null) return '—'
   return `€${(minor / 100).toFixed(2)}`
-}
-
-async function loadPayments() {
-  if (!hasMinRole(role.value, 'admin')) {
-    paymentsLoading.value = false
-    return
-  }
-  paymentsLoading.value = true
-  try {
-    const data = await apiClient.getPlatformUserPayments(route.params.id)
-    payments.value = data.payments || []
-  } catch (err) {
-    toaster.push(err.message || 'Failed to load payments')
-  } finally {
-    paymentsLoading.value = false
-  }
-}
-
-// Charge minus prior refunds of the same charge (refund rows share gateway_charge_id)
-const refundRemainingMinor = computed(() => {
-  const p = refundTarget.value
-  if (!p) return 0
-  const refunded = payments.value
-      .filter(r => r.kind === 'refund' && r.gateway_charge_id === p.gateway_charge_id)
-      .reduce((sum, r) => sum + r.amount_minor, 0)
-  return Math.max(0, p.amount_minor - refunded)
-})
-
-function parseEurInput(value) {
-  const eur = Number(value)
-  if (!Number.isFinite(eur) || eur <= 0) return null
-  return Math.round(eur * 100)
-}
-
-function handleRefund(p) {
-  refundTarget.value = p
-  refundError.value = ''
-  refundAmountInput.value = (refundRemainingMinor.value / 100).toFixed(2)
-}
-
-async function confirmRefund() {
-  const p = refundTarget.value
-  const amountMinor = parseEurInput(refundAmountInput.value)
-  if (amountMinor === null) {
-    refundError.value = 'Enter a valid amount'
-    return
-  }
-
-  refundSaving.value = true
-  try {
-    // full charge ⇒ omit the amount (backend treats an empty body as a full refund)
-    await apiClient.refundPlatformUserPayment(user.value.id, p.id, amountMinor === p.amount_minor ? 0 : amountMinor)
-    toaster.success('Payment refunded')
-    refundTarget.value = null
-    await loadPayments()
-  } catch (err) {
-    toaster.push(err.message || 'Failed to refund payment')
-  } finally {
-    refundSaving.value = false
-  }
-}
-
-function handleIssueCreditNote(inv) {
-  creditNoteTarget.value = inv
-  creditNoteError.value = ''
-  creditNoteAmountInput.value = (inv.amount_minor / 100).toFixed(2)
-}
-
-async function confirmIssueCreditNote() {
-  const inv = creditNoteTarget.value
-  const amountMinor = parseEurInput(creditNoteAmountInput.value)
-  if (amountMinor === null) {
-    creditNoteError.value = 'Enter a valid amount'
-    return
-  }
-
-  creditNoteSaving.value = true
-  try {
-    await apiClient.issueCreditNote(user.value.id, inv.id, amountMinor === inv.amount_minor ? 0 : amountMinor)
-    toaster.success('Credit note issued')
-    creditNoteTarget.value = null
-    await loadPayments()
-  } catch (err) {
-    toaster.push(err.message || 'Failed to issue credit note')
-  } finally {
-    creditNoteSaving.value = false
-  }
-}
-
-async function downloadInvoice(inv) {
-  if (downloadingId.value) return
-  downloadingId.value = inv.id
-  try {
-    const html = await apiClient.getPlatformUserInvoiceHtml(user.value.id, inv.id)
-    await downloadDocumentPdf(html, `invoice-${inv.invoice_number}.pdf`)
-  } catch (err) {
-    toaster.push(err.message || 'Failed to download invoice')
-  } finally {
-    downloadingId.value = null
-  }
-}
-
-async function downloadCreditNote(cn) {
-  if (downloadingId.value) return
-  downloadingId.value = cn.id
-  try {
-    const html = await apiClient.getPlatformUserCreditNoteHtml(user.value.id, cn.id)
-    await downloadDocumentPdf(html, `credit-note-${cn.credit_note_number}.pdf`)
-  } catch (err) {
-    toaster.push(err.message || 'Failed to download credit note')
-  } finally {
-    downloadingId.value = null
-  }
 }
 
 function parseSubExpiry() {
@@ -754,7 +564,7 @@ async function handleSaveSubscription() {
         : { tier: subTier.value, billingPeriod: subPeriod.value, expiresAt })
     toaster.success(free ? 'Subscription removed' : 'Subscription updated')
     await load()
-    await loadPayments()
+    loadBillingStats()
     loadGatewaySubscription()
   } catch (err) {
     toaster.push(err.message || 'Failed to set subscription')
@@ -778,7 +588,7 @@ async function handleCancelGateway() {
     await apiClient.cancelGateway(user.value.id)
     toaster.success(`${name} subscription cancelled — billing stops at period end`)
     await load()
-    await loadPayments()
+    loadBillingStats()
     loadGatewaySubscription()
   } catch (err) {
     if (err.status === 404) {
@@ -889,14 +699,15 @@ async function confirmDelete() {
 onMounted(() => {
   load().then(loadGatewaySubscription)
   loadInboxEmail()
-  loadPayments()
+  loadCollabStats()
+  loadBillingStats()
 })
 </script>
 
 <style scoped>
 .page {
   padding: 24px;
-  max-width: 800px;
+  max-width: 1400px;
 }
 
 .page-header {
@@ -924,9 +735,18 @@ onMounted(() => {
 }
 
 .detail {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  align-items: start;
+}
+
+.detail > .card {
+  margin-bottom: 0;
+}
+
+.span-full {
+  grid-column: 1 / -1;
 }
 
 .info-card {
@@ -958,38 +778,48 @@ onMounted(() => {
   gap: 16px;
 }
 
-/* Login history */
-.login-history {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.history-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--color-border-subtle);
-  gap: 16px;
-}
-
-.history-row:last-child {
-  border-bottom: none;
-}
-
-.history-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.history-times {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* Linked rows (Email to Inbox, Sessions) */
+.row-link {
+  color: var(--color-link-text);
+  text-decoration: none;
   text-align: right;
-  white-space: nowrap;
+}
+
+.row-link:hover {
+  color: var(--color-link-hover);
+}
+
+.inbox-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Stat tiles */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tile:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border-light);
 }
 
 /* Actions card */
@@ -1042,16 +872,13 @@ onMounted(() => {
   border-color: var(--color-input-border-focus);
 }
 
-/* Browse card */
-.browse-card {
-  padding: 0;
-}
-
+/* Browse User Data link */
 .browse-btn {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  margin-top: 16px;
+  padding: 12px;
   text-decoration: none;
   color: var(--color-text-primary);
   border-radius: 8px;
@@ -1087,23 +914,8 @@ onMounted(() => {
   gap: 16px;
 }
 
-.payment-terms {
-  overflow-wrap: anywhere;
-}
-
-.payment-kind {
-  text-transform: capitalize;
-}
-
-.payment-side {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.credit-note-row {
-  padding-left: 20px;
+.billing-error {
+  margin: 16px 0 0;
 }
 
 /* Email to Inbox */
@@ -1119,15 +931,6 @@ onMounted(() => {
   padding: 12px 0;
 }
 
-.inbox-empty {
-  border-bottom: none;
-}
-
-/* Refund modal */
-.refund-remaining {
-  margin: 8px 0;
-}
-
 /* Delete modal */
 .delete-email {
   margin: 8px 0;
@@ -1138,19 +941,16 @@ onMounted(() => {
   margin: 8px 0 0;
 }
 
+@media (max-width: 1024px) {
+  .detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .action-row {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .history-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .history-times {
-    text-align: left;
   }
 }
 </style>

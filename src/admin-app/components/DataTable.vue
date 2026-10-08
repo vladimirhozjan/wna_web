@@ -30,18 +30,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-              v-for="(row, idx) in rows"
-              :key="row.id || idx"
-              :class="{ clickable: rowClickable }"
-              @click="rowClickable && $emit('row-click', row)"
-          >
-            <td v-for="col in columns" :key="col.key" class="text-body-s">
-              <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
-                {{ row[col.key] }}
-              </slot>
-            </td>
-          </tr>
+          <template v-for="(row, idx) in rows" :key="row.id || idx">
+            <tr
+                :class="{ clickable: rowClickable, expanded: expandedKey != null && row.id === expandedKey }"
+                @click="rowClickable && $emit('row-click', row)"
+            >
+              <td v-for="col in columns" :key="col.key" class="text-body-s">
+                <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
+                  {{ row[col.key] }}
+                </slot>
+              </td>
+            </tr>
+            <tr v-if="expandedKey != null && row.id === expandedKey" class="expanded-row">
+              <td :colspan="columns.length" class="text-body-s">
+                <slot name="expanded" :row="row" />
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
@@ -87,6 +92,11 @@ const props = defineProps({
   showPagination: {
     type: Boolean,
     default: true,
+  },
+  // id of the row whose #expanded slot renders as a full-width row beneath it
+  expandedKey: {
+    type: [String, Number],
+    default: null,
   },
 })
 
@@ -174,6 +184,14 @@ function onSort(key) {
 }
 
 .data-table tbody tr.clickable:hover {
+  background: var(--color-bg-secondary);
+}
+
+.data-table tbody tr.expanded td {
+  border-bottom: none;
+}
+
+.data-table tbody tr.expanded-row td {
   background: var(--color-bg-secondary);
 }
 

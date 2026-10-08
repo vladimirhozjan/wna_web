@@ -313,6 +313,24 @@ export async function invitePlatformUser(email, tier) {
     }
 }
 
+export async function listPlatformUserSessions(id, params = {}) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${id}/sessions`, { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUserCollaborationStats(id) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${id}/collaboration-stats`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // 404 = no address generated
 export async function getPlatformUserInboxEmail(id) {
     try {
@@ -679,9 +697,9 @@ export async function removeSharedProjectMember(id, userId) {
     }
 }
 
-export async function listUserDelegations(userId) {
+export async function listUserDelegations(userId, params = {}) {
     try {
-        const res = await httpApi.get(`/admin/platform-users/${userId}/delegations`)
+        const res = await httpApi.get(`/admin/platform-users/${userId}/delegations`, { params })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -720,9 +738,27 @@ export async function exportPaymentsReport({ year, month = 0, status = '', kind 
     }
 }
 
-export async function getPlatformUserPayments(userId) {
+export async function getPlatformUserPayments(userId, params = {}) {
     try {
-        const res = await httpApi.get(`/admin/platform-users/${userId}/payments`)
+        const res = await httpApi.get(`/admin/platform-users/${userId}/payments`, { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listPlatformUserInvoices(userId, params = {}) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/invoices`, { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUserBillingStats(userId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/billing-stats`)
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1132,6 +1168,8 @@ export default {
     resetPlatformUserPassword,
     invitePlatformUser,
     getPlatformUserInboxEmail,
+    listPlatformUserSessions,
+    getPlatformUserCollaborationStats,
     getInboxEmailStats,
     getUserItems,
     getUserTags,
@@ -1168,6 +1206,8 @@ export default {
     getPaymentsReport,
     exportPaymentsReport,
     getPlatformUserPayments,
+    listPlatformUserInvoices,
+    getPlatformUserBillingStats,
     refundPlatformUserPayment,
     issueCreditNote,
     setSubscription,
