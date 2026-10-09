@@ -10064,6 +10064,28 @@
     "expected": "The footer is responsive: 4 columns on desktop, 2 columns on tablet, and 1 column on mobile. All content is properly aligned and readable at each breakpoint."
   },
   {
+    "id": "TC-724",
+    "name": "Public Footer - Social Links",
+    "priority": "Medium",
+    "area": "Public Footer",
+    "areas": [
+      "Public Footer"
+    ],
+    "smoke": false,
+    "section": "25: Public Footer",
+    "preconditions": "User is on a public page with the footer visible.",
+    "steps": [
+      "Navigate to / and scroll to the footer.",
+      "Verify the bottom row shows 4 icons next to the copyright line, in this order: YouTube, Instagram, TikTok, LinkedIn.",
+      "Verify the links point to: a. YouTube: `https://www.youtube.com/@WhatsNextAction` b. Instagram: `https://www.instagram.com/whatsnextaction` c. TikTok: `https://www.tiktok.com/@whatsnextaction` d. LinkedIn: `https://www.linkedin.com/company/qubforge`",
+      "Hover each icon and verify it changes to the accent color.",
+      "Click each icon and verify the profile opens in a new tab while the WNA page stays open.",
+      "Navigate to /pricing, /help and /legal/terms and verify the same 4 icons appear in the footer.",
+      "Resize the viewport to a mobile width (e.g., 375px) and verify the icons stack below the copyright line."
+    ],
+    "expected": "The footer shows 4 social icons (YouTube, Instagram, TikTok, LinkedIn) on every public page. Each links to the correct WNA profile and opens in a new tab (`target=\"_blank\"`, `rel=\"noopener noreferrer\"`)."
+  },
+  {
     "id": "TC-378",
     "name": "Master Email Toggle - Displayed",
     "priority": "High",

@@ -36,6 +36,20 @@
 
       <div class="footer-bottom">
         <p class="text-footnote footer-copyright">&copy; 2026 WhatsNextAction. All rights reserved.</p>
+        <div class="footer-social">
+          <a
+            v-for="link in socialLinks"
+            :key="link.platform"
+            :href="link.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            :aria-label="`WhatsNextAction on ${link.name}`"
+            :data-testid="`footer-social-${link.platform}`"
+            class="footer-social-link"
+          >
+            <component :is="link.icon" class="footer-social-icon" />
+          </a>
+        </div>
       </div>
     </div>
   </footer>
@@ -43,6 +57,17 @@
 
 <script setup>
 import AppIcon from '../../assets/AppIcon.vue'
+import YoutubeIcon from '../../assets/YoutubeIcon.vue'
+import InstagramIcon from '../../assets/InstagramIcon.vue'
+import TiktokIcon from '../../assets/TiktokIcon.vue'
+import LinkedinIcon from '../../assets/LinkedinIcon.vue'
+
+const socialLinks = [
+  { platform: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/@WhatsNextAction', icon: YoutubeIcon },
+  { platform: 'instagram', name: 'Instagram', url: 'https://www.instagram.com/whatsnextaction', icon: InstagramIcon },
+  { platform: 'tiktok', name: 'TikTok', url: 'https://www.tiktok.com/@whatsnextaction', icon: TiktokIcon },
+  { platform: 'linkedin', name: 'LinkedIn', url: 'https://www.linkedin.com/company/qubforge', icon: LinkedinIcon }
+]
 </script>
 
 <style scoped>
@@ -128,6 +153,10 @@ import AppIcon from '../../assets/AppIcon.vue'
 .footer-bottom {
   border-top: 1px solid var(--color-border-dark-subtle);
   padding: 20px var(--section-px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .footer-copyright {
@@ -135,10 +164,38 @@ import AppIcon from '../../assets/AppIcon.vue'
   margin: 0;
 }
 
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-social-link {
+  display: flex;
+  color: var(--color-text-secondary);
+  transition: color 0.15s;
+}
+
+.footer-social-link:hover {
+  color: var(--color-action-medium);
+}
+
+.footer-social-icon {
+  width: 20px;
+  height: 20px;
+}
+
 @media (min-width: 769px) {
   .footer-grid {
     grid-template-columns: 1.5fr 1fr 1fr 1fr;
     padding: var(--section-py) var(--section-px);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
