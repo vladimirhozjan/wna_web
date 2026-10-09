@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authModel } from '../scripts/core/authModel.js'
+import { applySeoHead } from '../scripts/core/seoHead.js'
 
 import LandingPage from '../views/public/LandingPage.vue'
 import NextPage from '../views/dashboard/NextPage.vue'
@@ -25,7 +26,11 @@ import GoogleSsoPage from '../views/public/GoogleSsoPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
-    {path: '/', name: 'landing', component: LandingPage},
+    {path: '/', name: 'landing', component: LandingPage, meta: {seo: {
+        title: 'WhatsNextAction — GTD App for Getting Things Done',
+        description: "Stress-free productivity with a GTD app built on David Allen's Getting Things Done: capture, clarify, organize next actions and run your weekly review.",
+        jsonLd: 'app',
+    }}},
     {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}},
     {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}},
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
@@ -57,14 +62,37 @@ const routes = [
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
-    {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue')},
-    {path: '/help', name: 'help', component: () => import('../views/public/HelpPage.vue')},
-    {path: '/help/getting-started', name: 'help-getting-started', component: () => import('../views/public/HelpGettingStartedPage.vue')},
-    {path: '/help/faq', name: 'help-faq', component: () => import('../views/public/HelpFaqPage.vue')},
-    {path: '/help/best-practices', name: 'help-best-practices', component: () => import('../views/public/HelpBestPracticesPage.vue')},
+    {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue'), meta: {seo: {
+        title: 'Pricing — To-Do List & Task Manager App | WhatsNextAction',
+        description: 'Start free, upgrade when you need more. Compare the Free, Pro and Team plans of a productivity app and task manager built on GTD.',
+        jsonLd: 'app',
+    }}},
+    {path: '/help', name: 'help', component: () => import('../views/public/HelpPage.vue'), meta: {seo: {
+        title: 'Help & GTD Guides | WhatsNextAction',
+        description: 'Guides for the WhatsNextAction GTD app: getting started, Getting Things Done best practices, and answers to frequently asked questions.',
+    }}},
+    {path: '/help/getting-started', name: 'help-getting-started', component: () => import('../views/public/HelpGettingStartedPage.vue'), meta: {seo: {
+        title: 'Getting Started with the GTD App | WhatsNextAction',
+        description: 'Set up WhatsNextAction in minutes: capture to your inbox, clarify into next actions and projects, and see what to do next, the Getting Things Done way.',
+    }}},
+    {path: '/help/faq', name: 'help-faq', component: () => import('../views/public/HelpFaqPage.vue'), meta: {seo: {
+        title: 'FAQ — GTD App Questions Answered | WhatsNextAction',
+        description: 'Answers about accounts, the inbox, next actions, projects, the weekly review, the calendar, plans and billing in the WhatsNextAction GTD app.',
+        jsonLd: 'faq',
+    }}},
+    {path: '/help/best-practices', name: 'help-best-practices', component: () => import('../views/public/HelpBestPracticesPage.vue'), meta: {seo: {
+        title: 'GTD Best Practices & Weekly Review Tips | WhatsNextAction',
+        description: 'Practical Getting Things Done habits: a trusted inbox, clear next actions, contexts, and a weekly review that keeps your task manager current.',
+    }}},
     {path: '/legal', name: 'legal', redirect: '/legal/terms'},
-    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'terms'}},
-    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'privacy'}},
+    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'terms'}, meta: {seo: {
+        title: 'Terms of Service | WhatsNextAction',
+        description: 'Terms of Service for WhatsNextAction, the GTD productivity app operated by QubForge d.o.o.',
+    }}},
+    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'privacy'}, meta: {seo: {
+        title: 'Privacy Policy | WhatsNextAction',
+        description: 'How WhatsNextAction collects, uses and protects your personal data under the GDPR.',
+    }}},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
 
@@ -93,4 +121,8 @@ router.beforeEach((to) => {
     if (PUBLIC_ROUTE_NAMES.has(to.name)) return
     if (auth.isAuthenticated.value) return
     return { name: 'login', query: { redirect: to.fullPath } }
+})
+
+router.afterEach((to, from, failure) => {
+    if (!failure) applySeoHead(to)
 })

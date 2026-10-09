@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** September 27, 2026
+**Last updated:** October 8, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -118,8 +118,8 @@ Paid subscriptions provide access to additional features and higher usage limits
 - **Billing cycles:** Monthly or yearly. Yearly subscriptions include a discount as displayed at the time of purchase.
 - **Pricing:** Current prices are displayed on the Pricing page. All prices are in EUR and include VAT. The VAT rate is determined by the billing country you provide at checkout and is shown separately on your invoice.
 - **Billing address:** At checkout you must provide a billing name, address, and country. You are responsible for providing accurate billing information.
-- **Payment processing:** Card payments are processed by **DINARO družba za izdajo elektronskega denarja in plačilne storitve, d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed and supervised by the Bank of Slovenia (licence no. 0.04.5.4-5/2020-70). Card details are entered on the payment provider's secure checkout page and are never received or stored by us. Payments are charged in EUR.
-- **Automatic renewal:** Subscriptions renew automatically at the end of each billing cycle unless cancelled before the renewal date. Your card is saved securely with our payment provider and charged automatically at each renewal.
+- **Payment processing:** Payments are processed by our payment provider: **DINARO družba za izdajo elektronskega denarja in plačilne storitve, d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed and supervised by the Bank of Slovenia (licence no. 0.04.5.4-5/2020-70), or **Stripe Payments Europe, Limited**, Dublin, Ireland, with payment services provided by Stripe Technology Europe, Limited, an electronic money institution authorised by the Central Bank of Ireland. The provider is shown on the checkout page. Payment details are entered on the payment provider's secure checkout page and are never received or stored by us. Payments are charged in EUR.
+- **Automatic renewal:** Subscriptions renew automatically at the end of each billing cycle unless cancelled before the renewal date. Your payment method is saved securely with our payment provider and charged automatically at each renewal.
 - **Failed payments:** If a renewal payment fails, your plan remains active until the end of the current billing period while the payment provider retries the charge. If payment is not completed by then, your account reverts to the Free plan.
 - **Changing plans:** To switch between plans or billing cycles, cancel your current subscription and subscribe to the new plan after the current billing period ends.
 
@@ -135,7 +135,7 @@ You may cancel your subscription at any time through your account settings. Upon
 
 If you are a consumer in the European Union, you have the right to withdraw from a paid subscription within **14 days** of purchase without giving any reason, in accordance with the Consumer Rights Directive (2011/83/EU).
 
-To exercise this right, contact us at **info@whatsnextaction.com** with a clear statement of your decision to withdraw. We will refund the full amount within 14 days to the same card used for the original payment.
+To exercise this right, contact us at **info@whatsnextaction.com** with a clear statement of your decision to withdraw. We will refund the full amount within 14 days to the original payment method.
 
 Cancelling your subscription in your account settings (Section 5.3) only stops automatic renewal and is not a withdrawal: it does not trigger a refund. To withdraw and receive a refund, you must send us your request by email as described above.
 

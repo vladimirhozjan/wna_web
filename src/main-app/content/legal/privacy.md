@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** September 28, 2026
+**Last updated:** October 8, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -61,11 +61,11 @@ We share this data only with the specific users you choose, and only to provide 
 If you subscribe to a paid plan, we collect and store:
 
 - **Billing details** - the full name, address, and country you enter at checkout (the country determines the VAT rate)
-- **Payment records** - date, amount, plan, status, card brand and last 4 digits, and refunds of each payment, together with the invoices and credit notes we issue to you
-- **Location evidence for VAT** - the country of your card's issuer (received from our payment provider) and, for your first payment, the country derived from your IP address. EU VAT law requires us to keep evidence of the customer's location.
+- **Payment records** - date, amount, plan, status, payment method type and, for cards, the card brand and last 4 digits, and refunds of each payment, together with the invoices and credit notes we issue to you
+- **Location evidence for VAT** - the country of your card's issuer, where available (received from our payment provider) and, for your first payment, the country derived from your IP address. EU VAT law requires us to keep evidence of the customer's location.
 - **ToS acceptance record** - the version of the Terms of Service you accepted at checkout, the time, your IP address and browser (user agent)
 
-We never receive or store your full card number or other card details (expiry date, cardholder name); these are entered directly on our payment provider's checkout page. We receive only the card brand and last 4 digits, which appear on your invoice.
+We never receive your full card number, bank account details or other payment credentials; these are entered on our payment provider's page. For card payments we receive only the card brand and last 4 digits, which appear on your invoice.
 
 ### 2.6 Technical and Session Data
 
@@ -150,6 +150,10 @@ We share your personal data only with the following categories of recipients, st
   - **As our processor:** for the payment gateway (integration and technical operation of card acceptance) and the settlement of payments, Dinaro processes personal data on our behalf under a data processing agreement. Its sub-processor for the payment gateway software is SIA Spell (Riga, Latvia).
   - **As an independent controller:** for card acquiring and payment processing under its licence, fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Dinaro decides how it processes the data itself. For this it works with financial partners such as partner banks (e.g. Shift4 Limited, Malta) and the card schemes (Visa, Mastercard). Dinaro's own processing is described in its privacy policy at [dinaro.si/privacy-policy](https://dinaro.si/privacy-policy).
   - Dinaro generally retains payment and transaction records for 10 years after the transaction, or longer where required by law. When you delete your account, we also delete your customer record at the payment platform, subject to these legal retention obligations.
+- **Stripe Payments Europe, Limited**, 1 Wilton Park, Wilton Place, Dublin 2, D02 FX04, Ireland - processes subscription payments when the checkout page shows Stripe as the payment provider. We share your email address, billing name, address and country, the plan you purchase, and our internal user identifier with Stripe so it can process your payments; on its checkout page Stripe also collects your payment details (such as card number or bank account details), IP address, and device data. Your full payment details are never received or stored by us; we receive only the payment result, the payment method type and, for cards, the country of the card's issuer and the card brand and last 4 digits.
+  - **As our processor:** for processing payments on our behalf, Stripe processes personal data under the data processing agreement that forms part of its Services Agreement.
+  - **As an independent controller:** for fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Stripe decides how it processes the data itself. Payment services are provided by Stripe Technology Europe, Limited, an electronic money institution authorised by the Central Bank of Ireland. Stripe's own processing is described in its privacy policy at [stripe.com/privacy](https://stripe.com/privacy).
+  - Stripe retains payment and transaction records as required by its legal obligations. When you delete your account, we also delete your customer record at Stripe, subject to these legal retention obligations.
 
 ### 5.5 Tax Authority
 
@@ -179,6 +183,8 @@ We may disclose your data if required to do so by law, court order, or a binding
 We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Prague, Czech Republic, and our email providers operate from EU data centres.
 
 The exception is card payment data. To process a card payment, it may be transferred to, processed, and stored outside Slovenia and the EEA by our payment provider Dinaro, its service providers (located mostly in the EEA and in Hong Kong), its partner banks, and the international card schemes (such as Visa and Mastercard), and may be disclosed where required by law. Such transfers take place where they are necessary to perform the payment you request (Art. 49(1)(b) GDPR) or under safeguards such as Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Dinaro's privacy policy.
+
+If you pay through Stripe, your payment data may also be transferred by Stripe to Stripe, LLC in the United States and to its sub-processors. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Stripe's privacy policy.
 
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
 

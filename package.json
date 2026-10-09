@@ -9,7 +9,7 @@
   "scripts": {
     "dev:main": "APP=main-app vite --port 6111",
     "dev:admin": "APP=admin-app vite --port 7111",
-    "build:main": "APP=main-app vite build",
+    "build:main": "APP=main-app vite build && node config/prerender.js",
     "build:admin": "APP=admin-app vite build",
     "clean": "rimraf dist"
   },
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.2",
     "javascript-obfuscator": "^4.1.1",
+    "puppeteer": "^25.13.0",
     "rimraf": "^6.1.2",
     "terser": "^5.44.1",
     "vite": "^7.2.4",

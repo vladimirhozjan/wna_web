@@ -27,12 +27,13 @@ WNA Web is a **multi-app Vue 3 + Vite 7** frontend project optimized for:
 wna_web/
 ├── config/
 │   ├── vite.core.js        # Shared Vite config factory (aliases, minification, proxy)
+│   ├── prerender.js        # Post-build pre-render of the public pages (Puppeteer)
 │   └── apps.js             # App definitions (root dir, port, proxy targets)
 ├── src/
 │   ├── main-app/           # User-facing GTD application
 │   │   ├── index.html
 │   │   ├── main.js
-│   │   ├── public/         # Static assets copied as-is: favicon.svg, manifest.webmanifest, app icons
+│   │   ├── public/         # Static assets copied as-is: favicon.svg, manifest.webmanifest, app icons, robots.txt, sitemap.xml, og-image.png
 │   │   ├── router/
 │   │   ├── layouts/
 │   │   ├── views/
@@ -62,6 +63,9 @@ wna_web/
 
 - Node `^20.19.0 || >=22.12.0`
 - npm
+- Chrome for Puppeteer (used by `build:main`). npm 10 downloads it on `npm ci`; if your npm blocks install
+  scripts, run `npx puppeteer browsers install chrome`. On Linux (Docker builder) Chrome's system libraries
+  must be installed.
 
 ## Install Dependencies
 
@@ -100,10 +104,15 @@ APP=main-app    # or admin-app
 ## Build Commands
 
 ```bash
-npm run build:main        # Build main-app  → dist/main-app/
+npm run build:main        # Build main-app  → dist/main-app/ (+ pre-render, see below)
 npm run build:admin       # Build admin-app → dist/admin-app/
 npm run clean             # Remove dist folder
 ```
+
+`build:main` runs `config/prerender.js` after the Vite build (and its obfuscation): it serves `dist/main-app`
+with `vite preview`, opens the 8 public pages in headless Chrome with API requests blocked, and saves each
+rendered page to `dist/main-app/_prerender/<route>/index.html` (landing: `_prerender/index.html`). nginx serves
+those files for the exact public paths; `dist/main-app/index.html` stays the empty SPA shell.
 
 ---
 

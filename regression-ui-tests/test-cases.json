@@ -9560,6 +9560,24 @@
     "expected": "/legal/terms and /legal/privacy load with placeholder content and proper headings. Navigating to /legal redirects to /legal/terms."
   },
   {
+    "id": "TC-725",
+    "name": "Legal Pages Name Both Payment Providers",
+    "priority": "Medium",
+    "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
+    "smoke": false,
+    "section": "23: Public Pages",
+    "preconditions": "Browser is open.",
+    "steps": [
+      "Navigate to /legal/terms and read \"Last updated\" and §5.2 Payment processing, Automatic renewal, and §5.4 refund sentence.",
+      "Navigate to /legal/privacy and read \"Last updated\", §2.5, §5.4 Payment Processing, and §6 International Data Transfers.",
+      "As an entitled Free user open /upgrade, accept the Terms, and start checkout; inspect the `POST /v1/payments/subscribe` body."
+    ],
+    "expected": "Step 1 — \"Last updated: October 8, 2026\"; Payment processing names both DINARO (Bank of Slovenia) and Stripe Payments Europe, Limited (payment services by Stripe Technology Europe, Limited, Central Bank of Ireland) and says the provider is shown on the checkout page; renewal reads \"Your payment method is saved…\"; the withdrawal refund goes \"to the original payment method\". Step 2 — \"Last updated: October 8, 2026\"; §2.5 lists \"payment method type and, for cards, the card brand and last 4 digits\" and says full card numbers and bank account details are never received; §5.4 has a Dinaro entry and a Stripe Payments Europe, Limited entry (1 Wilton Park, Wilton Place, Dublin 2, D02 FX04, Ireland; processor + independent controller; link stripe.com/privacy); §6 adds the Stripe transfer to Stripe, LLC (USA) under the EU-US Data Privacy Framework and SCCs. Step 3 — `terms_version` is `2026-10-08` and checkout proceeds (no `409 terms_version_mismatch`)."
+  },
+  {
     "id": "TC-358",
     "name": "Error Toast",
     "priority": "High",
@@ -14889,5 +14907,113 @@
       "Log out and open a sub-page URL"
     ],
     "expected": "Step 1 — both redirect to the dashboard; no crash, no billing data shown. Step 2 — all four load. Step 3 — redirected to the dashboard. Step 4 — redirected to login."
+  },
+  {
+    "id": "TC-726",
+    "name": "Public Pages Serve Pre-rendered HTML with Their Own Head Tags",
+    "priority": "High",
+    "area": "SEO",
+    "areas": [
+      "SEO"
+    ],
+    "smoke": false,
+    "section": "55: Search Engine Visibility",
+    "preconditions": "Production build deployed (nginx); no browser JavaScript involved.",
+    "steps": [
+      "`curl` each of the 8 indexed routes: `/`, `/pricing`, `/help`, `/help/getting-started`, `/help/faq`, `/help/best-practices`, `/legal/terms`, `/legal/privacy`.",
+      "In each response, read `<title>`, `<meta name=\"description\">` and `<link rel=\"canonical\">`.",
+      "Search the response body for the page's main heading text."
+    ],
+    "expected": "Each route returns 200 with its own title and description (the approved D4 texts), canonical `https://whatsnextaction.com<path>`, and the page's visible text (e.g. \"Stress-Free Productivity\" on `/`, \"Frequently Asked Questions\" on `/help/faq`). No response contains the \"Loading your content...\" splash. No redirect (no trailing slash added)."
+  },
+  {
+    "id": "TC-727",
+    "name": "App and Flow Routes Get the Empty Shell and noindex",
+    "priority": "High",
+    "area": "SEO",
+    "areas": [
+      "SEO"
+    ],
+    "smoke": false,
+    "section": "55: Search Engine Visibility",
+    "preconditions": "Production build deployed.",
+    "steps": [
+      "`curl /next`, `/verify` and `/google/sso`.",
+      "In a browser, log in and open `/next`; inspect `<head>`.",
+      "Log out and open `/login`; inspect `<head>`."
+    ],
+    "expected": "Step 1 — each returns the SPA shell (\"Loading your content...\" splash, title \"WhatsNextAction\", no canonical, no page text). Step 2 — title \"WhatsNextAction\" and `<meta name=\"robots\" content=\"noindex\">`; no canonical, description, OG tags or JSON-LD. Step 3 — the same noindex head (the login dialog route is not indexed)."
+  },
+  {
+    "id": "TC-728",
+    "name": "robots.txt and sitemap.xml",
+    "priority": "Medium",
+    "area": "SEO",
+    "areas": [
+      "SEO"
+    ],
+    "smoke": false,
+    "section": "55: Search Engine Visibility",
+    "preconditions": "Production build deployed.",
+    "steps": [
+      "`curl /robots.txt`.",
+      "`curl /sitemap.xml`."
+    ],
+    "expected": "Both return 200 (text/plain and XML). robots.txt allows all and has `Sitemap: https://whatsnextaction.com/sitemap.xml`. The sitemap lists exactly the 8 indexed routes on `https://whatsnextaction.com` and nothing else."
+  },
+  {
+    "id": "TC-729",
+    "name": "Open Graph and Twitter Preview Tags",
+    "priority": "Medium",
+    "area": "SEO",
+    "areas": [
+      "SEO"
+    ],
+    "smoke": false,
+    "section": "55: Search Engine Visibility",
+    "preconditions": "Production build deployed.",
+    "steps": [
+      "`curl` any indexed route and read the `og:*` and `twitter:*` meta tags.",
+      "`curl -I` the `og:image` URL and check the image size.",
+      "Paste `https://whatsnextaction.com/pricing` into a link-preview tool (e.g. LinkedIn Post Inspector) or a Slack message."
+    ],
+    "expected": "Step 1 — `og:type` website, `og:site_name`, `og:title`/`og:description` equal the page title/description, `og:url` = canonical, `og:image` = `https://whatsnextaction.com/og-image.png` with width 1200 / height 630, `twitter:card` summary_large_image with matching title, description and image. Step 2 — 200, PNG 1200×630. Step 3 — the preview shows the page title, description and the brand image."
+  },
+  {
+    "id": "TC-730",
+    "name": "JSON-LD Structured Data",
+    "priority": "Medium",
+    "area": "SEO",
+    "areas": [
+      "SEO"
+    ],
+    "smoke": false,
+    "section": "55: Search Engine Visibility",
+    "preconditions": "Production build deployed.",
+    "steps": [
+      "`curl /` and `/pricing`; read `<script id=\"seo-jsonld\" type=\"application/ld+json\">`.",
+      "`curl /help/faq`; read the same script.",
+      "Run each URL through Google's Rich Results Test."
+    ],
+    "expected": "Step 1 — a `SoftwareApplication` named WhatsNextAction with offers Free €0, Pro monthly €11, Pro yearly €96, Team monthly €18, Team yearly €156 (EUR) — the Pricing page's default prices. Step 2 — a `FAQPage` whose questions and answers are exactly the FAQ page's items, in the same order. Step 3 — no errors. Other indexed pages carry no JSON-LD."
+  },
+  {
+    "id": "TC-731",
+    "name": "App Takes Over the Pre-rendered Page",
+    "priority": "High",
+    "area": "SEO",
+    "areas": [
+      "SEO"
+    ],
+    "smoke": false,
+    "section": "55: Search Engine Visibility",
+    "preconditions": "Production build deployed; logged out.",
+    "steps": [
+      "Open `/` directly; click **Sign In**.",
+      "Close the dialog; navigate in-app to Pricing, then Help → FAQ; check the tab title after each.",
+      "On `/pricing`, switch the Monthly/Yearly toggle.",
+      "Log in, then open `/` directly."
+    ],
+    "expected": "Step 1 — the landing page is visible immediately; the login dialog opens. Step 2 — the tab title and description change to each page's own (\"Pricing — To-Do List & Task Manager App | WhatsNextAction\", \"FAQ — GTD App Questions Answered | WhatsNextAction\"). Step 3 — prices switch as before. Step 4 — the user lands where they did before this change; no duplicated content or broken layout after the app mounts."
   }
 ]
