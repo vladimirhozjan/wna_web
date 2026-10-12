@@ -808,7 +808,10 @@ async function convergeAfterCheckout() {
       try {
         await Promise.all([auth.loadUser(), payment.loadStatus()])
       } catch { /* transient — keep polling */ }
-      if (tier.value && tier.value !== 'free') return
+      if (tier.value && tier.value !== 'free') {
+        try { await auth.refreshToken() } catch { /* the JWT tier catches up on the next rotation */ }
+        return
+      }
     }
     paymentStillProcessing.value = true
   } finally {

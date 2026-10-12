@@ -38,6 +38,7 @@ const routes = [
     {path: '/reset-password', name: 'reset-password', component: LandingPage, props: route => ({mode: 'reset', token: route.query.token || ''})},
     {path: '/verify', name: 'verify-email', component: VerifyEmailPage},
     {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage},
+    {path: '/google/:feature', name: 'google-connect', component: () => import('../views/dashboard/GoogleConnectPage.vue')},
     {path: '/engage', name: 'engage', component: EngagePage},
     {path: '/next', name: 'next', component: NextPage},
     {path: '/calendar', name: 'calendar', component: CalendarPage},

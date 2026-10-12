@@ -269,6 +269,17 @@ export function authModel() {
         return true
     }
 
+    function connectedFeatures(provider) {
+        const token = localStorage.getItem('auth_token')
+        if (!token) return []
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+            return payload.connections?.[provider] || []
+        } catch {
+            return []
+        }
+    }
+
     _init()
 
     return {
@@ -287,6 +298,7 @@ export function authModel() {
         refreshToken,
         logoutUser,
         logoutWithConfirm,
+        connectedFeatures,
         forgotPassword,
         resetPassword,
         verifyEmail,

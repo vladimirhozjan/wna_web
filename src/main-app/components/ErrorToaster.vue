@@ -74,6 +74,12 @@ const error = errorModel()
   color: var(--color-toast-success-text);
 }
 
+/* noinspection CssUnusedSymbol - used via dynamic :class binding */
+.toast--warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
 /* noinspection CssUnusedSymbol - Vue TransitionGroup classes */
 :global(.toast-enter-from) {
   opacity: 0;

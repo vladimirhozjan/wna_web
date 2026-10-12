@@ -1,4 +1,4 @@
-import {httpApi} from './httpApi.js'
+import {httpApi, refreshSession} from './httpApi.js'
 import {upgradeModel} from './upgradeModel.js'
 import {PAGE_SIZE} from './domains.js'
 
@@ -1695,6 +1695,52 @@ export async function googleSso(code) {
     }
 }
 
+// ── Google Connection API ──
+
+function googleConnectError(err) {
+    const normalized = normalizeError(err)
+    if (normalized.status === 403) upgradeModel().show({message: normalized.message})
+    return normalized
+}
+
+export async function startGoogleConnect(feature) {
+    try {
+        const res = await httpApi.get(`/v1/${feature}/connect`, {headers: authHeaders()})
+        window.location.assign(res.data.url)
+    } catch (err) {
+        throw googleConnectError(err)
+    }
+}
+
+// The JWT `connections` claim changed — rotate so it is current; a failed rotation self-heals on expiry
+async function refreshConnectionsClaim() {
+    try { await refreshSession() } catch { /* stale claim until the next rotation */ }
+}
+
+export async function completeGoogleConnect(feature, code, state) {
+    let data
+    try {
+        const res = await httpApi.post(`/v1/${feature}/callback`, {code, state}, {headers: authHeaders()})
+        data = res.data
+    } catch (err) {
+        throw googleConnectError(err)
+    }
+    await refreshConnectionsClaim()
+    return data
+}
+
+export async function disconnectGoogle(feature) {
+    let data
+    try {
+        const res = await httpApi.post(`/v1/${feature}/disconnect`, {}, {headers: authHeaders()})
+        data = res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+    await refreshConnectionsClaim()
+    return data
+}
+
 // ── Engage API ──
 
 export async function getEngage({tags = null} = {}) {
@@ -2112,6 +2158,10 @@ const apiClient = {
     // Google Auth API
     googleAuth,
     googleSso,
+    // Google Connection API
+    startGoogleConnect,
+    completeGoogleConnect,
+    disconnectGoogle,
     // Connections API
     inviteConnection,
     acceptConnectionInvite,
