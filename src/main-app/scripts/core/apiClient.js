@@ -1,4 +1,4 @@
-import {httpApi, refreshSession} from './httpApi.js'
+import {httpApi} from './httpApi.js'
 import {upgradeModel} from './upgradeModel.js'
 import {PAGE_SIZE} from './domains.js'
 
@@ -1703,42 +1703,40 @@ function googleConnectError(err) {
     return normalized
 }
 
+export async function getGoogleStatus() {
+    try {
+        const res = await httpApi.get('/v1/google/status', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function startGoogleConnect(feature) {
     try {
-        const res = await httpApi.get(`/v1/${feature}/connect`, {headers: authHeaders()})
+        const res = await httpApi.get(`/v1/google/${feature}/consent-url`, {headers: authHeaders()})
         window.location.assign(res.data.url)
     } catch (err) {
         throw googleConnectError(err)
     }
 }
 
-// The JWT `connections` claim changed — rotate so it is current; a failed rotation self-heals on expiry
-async function refreshConnectionsClaim() {
-    try { await refreshSession() } catch { /* stale claim until the next rotation */ }
-}
-
 export async function completeGoogleConnect(feature, code, state) {
-    let data
     try {
-        const res = await httpApi.post(`/v1/${feature}/callback`, {code, state}, {headers: authHeaders()})
-        data = res.data
+        const res = await httpApi.post(`/v1/google/${feature}/callback`, {code, state}, {headers: authHeaders()})
+        return res.data
     } catch (err) {
         throw googleConnectError(err)
     }
-    await refreshConnectionsClaim()
-    return data
 }
 
 export async function disconnectGoogle(feature) {
-    let data
     try {
-        const res = await httpApi.post(`/v1/${feature}/disconnect`, {}, {headers: authHeaders()})
-        data = res.data
+        const res = await httpApi.post(`/v1/google/${feature}/disconnect`, {}, {headers: authHeaders()})
+        return res.data
     } catch (err) {
         throw normalizeError(err)
     }
-    await refreshConnectionsClaim()
-    return data
 }
 
 // ── Engage API ──
@@ -2159,6 +2157,7 @@ const apiClient = {
     googleAuth,
     googleSso,
     // Google Connection API
+    getGoogleStatus,
     startGoogleConnect,
     completeGoogleConnect,
     disconnectGoogle,
