@@ -82,6 +82,8 @@ function transformItem(apiItem) {
         due_date: apiItem.due_date || null,
         due_time: formatTime(apiItem.due_time),
         recurring_parent_id: apiItem.recurring_parent_id || null,
+        synced: !!apiItem.synced,
+        provider: apiItem.provider || null,
     }
 }
 
