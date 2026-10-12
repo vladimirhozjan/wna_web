@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** October 8, 2026
+**Last updated:** October 12, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -41,6 +41,7 @@ The Service includes the following functionality:
 - **In-App Notifications** - In-app alerts within the Service for delegations, connection invites, and other events
 - **Email Notifications** - Optional task reminders, daily summaries, and project nudges delivered by email
 - **Google Sign-In** - Optional sign-in and registration using your Google account
+- **Google Calendar Sync** - Optional two-way sync of your scheduled actions with your Google Calendar (available on Pro and Team plans)
 
 Feature availability depends on your subscription plan (see Section 5).
 
@@ -272,6 +273,10 @@ Nothing in these Terms limits or excludes our liability for:
 ### 9.6 Consumer Rights
 
 If you are a consumer in the European Union, you benefit from mandatory consumer protection laws in your country of residence. Nothing in these Terms affects your rights under such laws. In case of conflict between these Terms and mandatory consumer protection provisions, the consumer protection provisions shall prevail.
+
+### 9.7 Third-Party Integrations
+
+Some features connect the Service to services run by third parties, such as Google Calendar sync. When you connect such a service, its provider's own terms and privacy policy also apply to your use of it. We do not control third-party services and are not liable for their availability, changes, or how they handle your data, including events stored in your Google Calendar. You can disconnect an integration at any time in your settings.
 
 ## 10. Indemnification
 

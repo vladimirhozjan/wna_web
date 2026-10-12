@@ -13,11 +13,13 @@ import {useRoute, useRouter} from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Spinner from '../../components/Spinner.vue'
 import {errorModel} from '../../scripts/core/errorModel.js'
+import {authModel} from '../../scripts/core/authModel.js'
 import {completeGoogleConnect} from '../../scripts/core/apiClient.js'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
+const auth = authModel()
 
 async function finish() {
   const {code, state} = route.query
@@ -31,6 +33,7 @@ async function finish() {
     if (dropped.length) {
       toaster.push(`Google access for ${dropped.join(', ')} was removed. Reconnect it in Settings.`, 'warning')
     }
+    try { await auth.refreshToken() } catch { /* the JWT catches up on the next rotation */ }
   } catch (err) {
     if (err.status !== 403) toaster.push(err.message)
   }

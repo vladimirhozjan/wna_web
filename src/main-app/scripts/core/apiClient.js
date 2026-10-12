@@ -1723,7 +1723,8 @@ export async function startGoogleConnect(feature) {
 
 export async function completeGoogleConnect(feature, code, state) {
     try {
-        const res = await httpApi.post(`/v1/google/${feature}/callback`, {code, state}, {headers: authHeaders()})
+        const params = feature === 'calendar' ? {tz: liveTz()} : {}
+        const res = await httpApi.post(`/v1/google/${feature}/callback`, {code, state}, {params, headers: authHeaders()})
         return res.data
     } catch (err) {
         throw googleConnectError(err)
@@ -1733,6 +1734,35 @@ export async function completeGoogleConnect(feature, code, state) {
 export async function disconnectGoogle(feature) {
     try {
         const res = await httpApi.post(`/v1/google/${feature}/disconnect`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// ── Calendar Sync API ──
+
+export async function listGoogleCalendars() {
+    try {
+        const res = await httpApi.get('/v1/calendar/calendars', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function selectGoogleCalendar(calendarId) {
+    try {
+        const res = await httpApi.put('/v1/calendar/selected', {calendar_id: calendarId}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function syncCalendarNow() {
+    try {
+        const res = await httpApi.post('/v1/calendar/sync', {}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -2161,6 +2191,10 @@ const apiClient = {
     startGoogleConnect,
     completeGoogleConnect,
     disconnectGoogle,
+    // Calendar Sync API
+    listGoogleCalendars,
+    selectGoogleCalendar,
+    syncCalendarNow,
     // Connections API
     inviteConnection,
     acceptConnectionInvite,

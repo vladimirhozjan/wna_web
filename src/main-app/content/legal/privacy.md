@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 8, 2026
+**Last updated:** October 12, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -22,7 +22,7 @@ When you register for the Service, we collect:
 
 - **Email address** - used as your account identifier and for account-related communications (password resets, security notifications)
 - **Password** - stored only in hashed form; we never have access to your plain-text password
-- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier and your email address from Google to create or link your account. We do not receive your Google password, and we do not request access to your Gmail, Google Calendar, Google Drive, or other Google services.
+- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier and your email address from Google to create or link your account. We do not receive your Google password, and signing in with Google does not give us access to your Gmail, Google Calendar, Google Drive, or other Google services. We request access to a Google service only when you connect a feature that needs it (see Section 2.8).
 
 ### 2.2 User-Generated Content
 
@@ -86,7 +86,22 @@ Your application settings are stored to provide a personalized experience:
 - Notification preferences (email notification toggles)
 - Dismissed tips and hints
 
-### 2.8 Data We Do Not Collect
+### 2.8 Connected Google Services (Google Calendar Sync)
+
+If you connect **Google Calendar sync** (available on the Pro and Team plans), you grant us permission, on a separate Google consent screen, to create and manage events in your Google Calendar. When you connect, we store:
+
+- An encrypted Google refresh token (encrypted with keys managed by Google Cloud Key Management Service), which lets us act for you without asking you to sign in to Google again
+- The email address of the connected Google account and the Google permissions you granted
+- The timezone of your browser at the moment you connect, used to place timed events at the right time
+- The calendar you selected and, for each synced action, the Google event identifier and its sync state
+
+**What we send to Google:** for each scheduled action in your Next, Today, Calendar and Waiting For lists, its title, description, and scheduled date, time and duration.
+
+**What we read from Google:** only changes to the events that WhatsNextAction created in your calendar (for example, a reschedule), so we can update the matching action, and the list of calendars you can write to, so you can choose one. We do not read, import, or store your other calendar events.
+
+You can disconnect Google Calendar at any time in your settings. Events already in your Google Calendar stay there.
+
+### 2.9 Data We Do Not Collect
 
 - We do not use analytics or tracking tools
 - We do not use advertising cookies or pixels
@@ -102,6 +117,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Account data (email, password) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
 | User-generated content | Contract performance (Art. 6(1)(b)) | Necessary to deliver the core functionality of the Service |
 | Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
+| Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar at your request |
 | Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
 | Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
@@ -140,9 +156,12 @@ We share your personal data only with the following categories of recipients, st
 - **Zoho ZeptoMail (EU data centre)** - delivers our emails (account, security, and notification emails)
 - **Zoho Mail (EU data centre)** - receives messages sent to Email-to-Inbox addresses before they are added to your inbox
 
-### 5.3 Sign-In with Google
+### 5.3 Google Sign-In and Google Calendar
 
-- **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier and your email address to create or link your account. This is governed by Google's own privacy policy. We do not request access to any of your Google data beyond basic sign-in information.
+- **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier and your email address to create or link your account. Sign-in does not give us access to any of your Google data beyond basic sign-in information.
+- **Google Calendar API** - if you connect Google Calendar sync, we exchange the data described in Section 2.8 with Google through the Google Calendar API, only to provide the sync you requested.
+
+This is governed by Google's own privacy policy. WhatsNextAction's use and transfer of information received from Google APIs to any other app will adhere to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements. We use data received from Google only to provide and improve the sync features you see in the Service; we do not use it for advertising, we do not sell it, we do not use it to develop or train generalized AI or machine-learning models, and no person at WhatsNextAction reads it unless you ask us to, it is needed for security, or the law requires it.
 
 ### 5.4 Payment Processing
 
@@ -186,6 +205,8 @@ The exception is card payment data. To process a card payment, it may be transfe
 
 If you pay through Stripe, your payment data may also be transferred by Stripe to Stripe, LLC in the United States and to its sub-processors. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Stripe's privacy policy.
 
+If you connect Google Calendar sync, the events we create for you are held by Google in your own Google Calendar under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the sync you requested (Art. 49(1)(b) GDPR).
+
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
 
 ## 7. Data Retention
@@ -195,6 +216,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Active account data and content | Retained for the duration of your account |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
+| Google Calendar connection (encrypted token, connected Google account, granted permissions, selected calendar, event identifiers) | Kept until you disconnect Google Calendar or delete your account. On account deletion we also revoke our access at Google. Events already in your Google Calendar are yours and stay there |
 | Session data | Sessions expire after 14 days without activity; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |

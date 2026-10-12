@@ -15,6 +15,7 @@
   >
     <span v-if="showTime && time" class="fw-semibold calendar-item__time">{{ time }}</span>
     <RecurringIcon v-if="item.recurring_parent_id" class="calendar-item__recurring" width="12" height="12" />
+    <GoogleIcon v-if="isSynced" class="calendar-item__synced" width="12" height="12" data-testid="calendar-item-synced" />
     <span class="calendar-item__title">{{ item.title }}</span>
     <div v-if="resizable" class="calendar-item__resize" @mousedown.stop.prevent="onResizeStart"></div>
   </div>
@@ -24,6 +25,8 @@
 import { ref, computed } from 'vue'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 import RecurringIcon from '../../assets/RecurringIcon.vue'
+import GoogleIcon from '../../assets/GoogleIcon.vue'
+import { flagsModel } from '../../scripts/core/flagsModel.js'
 
 const props = defineProps({
   item: {
@@ -56,6 +59,7 @@ let suppressClick = false
 
 const displayType = computed(() => calendar.getItemDisplayType(props.item))
 const isOverdueItem = computed(() => calendar.isItemOverdue(props.item))
+const isSynced = computed(() => !!props.item.synced && flagsModel().hasFlag('calendar'))
 
 const displayClass = computed(() => {
   // Overdue first: timed scheduled slots report displayType 'scheduled' (never 'due'), so a due-only guard can't redden them.
@@ -180,6 +184,10 @@ function onDragEnd() {
 .calendar-item__recurring {
   flex-shrink: 0;
   opacity: 0.6;
+}
+
+.calendar-item__synced {
+  flex-shrink: 0;
 }
 
 .calendar-item__title {

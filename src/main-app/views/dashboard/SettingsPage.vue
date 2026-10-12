@@ -403,6 +403,79 @@
           </div>
         </div>
 
+        <!-- Calendar Sync Section -->
+        <div v-if="tier && calendarSyncEnabled && sectionVisible('calendarSync')" class="card" data-testid="calendar-sync-card">
+          <div class="card-header card-header--toggle" @click="toggleSection('calendarSync')">
+            <h2 class="settings-section-title">Calendar Sync</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('calendarSync') }">&#8250;</span>
+          </div>
+          <div v-if="isExpanded('calendarSync')" class="settings-section-body">
+
+            <!-- Free: locked -->
+            <div v-if="!isProOrTeam" class="settings-row settings-row--column" data-testid="calendar-sync-lockout">
+              <span class="settings-value email-locked">🔒 Google Calendar sync is available on Pro and Team plans.</span>
+              <Btn variant="primary" size="sm" data-testid="calendar-sync-upgrade" @click="paymentsEnabled ? onUpgradeCalendarSync() : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
+            </div>
+
+            <!-- Pro/Team -->
+            <template v-else>
+              <div v-if="gcal.loading && !gcal.loaded" class="settings-loading">
+                <Spinner :size="16" />
+                <span>Loading...</span>
+              </div>
+
+              <!-- Not connected / reconnect needed -->
+              <div v-else-if="!gcal.connected || gcal.reauth" class="settings-row settings-row--column">
+                <span class="settings-value" data-testid="calendar-sync-status">{{ calendarNeedsReconnect ? 'Google Calendar needs to be reconnected' : 'Not connected' }}</span>
+                <span class="text-body-s settings-hint email-valueprop">Show your scheduled actions in Google Calendar. Reschedules made on either side sync both ways.</span>
+                <Btn variant="primary" size="sm" :loading="gcal.acting" :disabled="gcal.acting" data-testid="calendar-sync-connect" @click="onConnectCalendar">{{ calendarNeedsReconnect ? 'Reconnect Google Calendar' : 'Connect Google Calendar' }}</Btn>
+              </div>
+
+              <!-- Connected -->
+              <template v-else>
+                <div class="settings-row">
+                  <span class="settings-label">Status</span>
+                  <span class="settings-value color-text-success" data-testid="calendar-sync-status">Connected</span>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Calendar</span>
+                  <div class="settings-control" :class="{ 'settings-control--saving': gcal.savingCalendar }">
+                    <span v-if="gcal.savingCalendar" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                    <Select v-model="selectedCalendar" :options="calendarOptions" title="Calendar" data-testid="calendar-sync-picker" />
+                  </div>
+                </div>
+
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Timezone</span>
+                    <p class="text-body-s settings-hint">Timed events in Google Calendar use this timezone</p>
+                  </div>
+                  <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timezone }">
+                    <span v-if="settings.state.saving.timezone" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                    <Select v-model="timezone" :options="timezoneOptions" title="Timezone" data-testid="calendar-sync-timezone" />
+                  </div>
+                </div>
+
+                <div class="settings-row settings-row--column" data-testid="calendar-sync-what-syncs">
+                  <span class="settings-label">What syncs</span>
+                  <span class="text-body-s settings-hint email-valueprop">Scheduled actions in Next, Today, Calendar and Waiting For: title, description, date and time. Changes made in Google to these events come back to WNA. Due dates, start dates and your other Google events do not sync. Completing or trashing an action removes its event.</span>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Sync now</span>
+                  <Btn variant="secondary" size="sm" :loading="gcal.syncing" :disabled="gcal.syncing" data-testid="calendar-sync-now" @click="onSyncCalendarNow">Sync now</Btn>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Disconnect</span>
+                  <Btn variant="ghost-danger" size="sm" :loading="gcal.acting" :disabled="gcal.acting" data-testid="calendar-sync-disconnect" @click="onDisconnectCalendar">Disconnect</Btn>
+                </div>
+              </template>
+            </template>
+          </div>
+        </div>
+
         <!-- Review Section -->
         <div v-if="sectionVisible('review')" class="card">
           <div class="card-header card-header--toggle" @click="toggleSection('review')">
@@ -631,7 +704,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
-import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled } from '../../scripts/core/apiClient.js'
+import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, syncCalendarNow } from '../../scripts/core/apiClient.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
@@ -652,7 +725,7 @@ const notifications = notificationModel()
 const theme = themeModel()
 
 const { stats, loadStats } = statsModel()
-const { paymentsEnabled } = flagsModel()
+const { paymentsEnabled, hasFlag } = flagsModel()
 const payment = paymentModel()
 
 // Search
@@ -677,6 +750,7 @@ const SECTION_KEYWORDS = {
   application: 'application theme dark light position new items timezone time zone',
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
+  calendarSync: 'calendar sync google connect disconnect reconnect sync now events timezone',
   review: 'review weekly sidebar',
   notifications: 'notifications email reminder daily digest next actions project announcements',
   about: 'about version',
@@ -938,6 +1012,133 @@ function onUpgradeEmail() {
   })
 }
 
+// Calendar Sync — Pro/Team only, behind the `calendar` flag; reactive on tier so a downgrade reverts to locked
+const calendarSyncEnabled = computed(() => hasFlag('calendar'))
+
+const gcal = reactive({
+  connected: false,      // calendar feature granted
+  hasGrant: false,       // any Google grant exists
+  reauth: false,         // 409 calendar_reauth_required
+  calendars: [],
+  selected: 'primary',
+  loading: false,
+  loaded: false,
+  acting: false,         // connect / disconnect in flight
+  savingCalendar: false,
+  syncing: false,
+})
+
+const calendarNeedsReconnect = computed(() => gcal.reauth || (gcal.hasGrant && !gcal.connected))
+
+const calendarOptions = computed(() => gcal.calendars.map(c => ({ value: c.id, label: c.summary })))
+
+const selectedCalendar = computed({
+  get: () => gcal.selected,
+  set: (val) => onSelectCalendar(val),
+})
+
+function applyGoogleStatus(data) {
+  gcal.hasGrant = !!data.connected
+  gcal.connected = (data.features || []).includes('calendar')
+}
+
+function onCalendarSyncError(err, fallback) {
+  if (err.status === 409) {
+    gcal.reauth = true
+    toaster.push('Google Calendar needs to be reconnected.')
+  } else {
+    toaster.push(err.message || fallback)
+  }
+}
+
+async function loadCalendarSync() {
+  if (!isProOrTeam.value || !calendarSyncEnabled.value) return
+  gcal.loading = true
+  try {
+    applyGoogleStatus(await getGoogleStatus())
+    if (gcal.connected) {
+      const data = await listGoogleCalendars()
+      gcal.calendars = data.calendars || []
+      gcal.selected = data.selected || 'primary'
+    }
+  } catch (err) {
+    onCalendarSyncError(err, 'Failed to load Google Calendar status')
+  } finally {
+    gcal.loading = false
+    gcal.loaded = true
+  }
+}
+
+async function onConnectCalendar() {
+  if (gcal.acting) return
+  gcal.acting = true
+  try {
+    await startGoogleConnect('calendar')   // redirects to Google
+  } catch (err) {
+    if (err.status !== 403) toaster.push(err.message || 'Failed to connect Google Calendar')
+    gcal.acting = false
+  }
+}
+
+async function onDisconnectCalendar() {
+  if (gcal.acting) return
+  const confirmed = await confirm.show({
+    title: 'Disconnect Google Calendar',
+    message: 'Stop syncing your scheduled actions with Google Calendar? Events already in your Google Calendar stay there. You can reconnect at any time.',
+    confirmText: 'Disconnect',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  gcal.acting = true
+  try {
+    applyGoogleStatus(await disconnectGoogle('calendar'))
+    gcal.reauth = false
+    gcal.calendars = []
+    try { await auth.refreshToken() } catch { /* the JWT catches up on the next rotation */ }
+    toaster.success('Google Calendar disconnected')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to disconnect Google Calendar')
+  } finally {
+    gcal.acting = false
+  }
+}
+
+async function onSelectCalendar(calendarId) {
+  if (gcal.savingCalendar || calendarId === gcal.selected) return
+  const previous = gcal.selected
+  gcal.selected = calendarId
+  gcal.savingCalendar = true
+  try {
+    const data = await selectGoogleCalendar(calendarId)
+    gcal.selected = data.selected || calendarId
+  } catch (err) {
+    gcal.selected = previous
+    onCalendarSyncError(err, 'Failed to change calendar')
+  } finally {
+    gcal.savingCalendar = false
+  }
+}
+
+async function onSyncCalendarNow() {
+  if (gcal.syncing) return
+  gcal.syncing = true
+  try {
+    const data = await syncCalendarNow()
+    toaster.success(`Sync complete: ${data.exported ?? 0} sent to Google, ${data.imported ?? 0} updated from Google`)
+  } catch (err) {
+    onCalendarSyncError(err, 'Calendar sync failed')
+  } finally {
+    gcal.syncing = false
+  }
+}
+
+function onUpgradeCalendarSync() {
+  upgradeModel().show({
+    message: 'Google Calendar sync is available on Pro and Team plans. Upgrade to see your scheduled actions in Google Calendar and keep reschedules in sync both ways.',
+  })
+}
+
 // App version from Vite define
 const appVersion = __APP_VERSION__
 
@@ -1158,6 +1359,7 @@ onMounted(() => {
   })
 
   loadInboxEmail()
+  loadCalendarSync()
   loadPaymentStatus()
 
   applySectionQuery()
@@ -1175,6 +1377,17 @@ watch(tier, (t) => {
   } else {
     inbox.address = null
     inbox.loaded = false
+  }
+})
+
+// Flags load asynchronously and the tier can change — load on entitlement, reset on downgrade
+watch([isProOrTeam, calendarSyncEnabled], ([entitled, enabled]) => {
+  if (entitled && enabled) {
+    if (!gcal.loaded) loadCalendarSync()
+  } else {
+    gcal.loaded = false
+    gcal.reauth = false
+    gcal.calendars = []
   }
 })
 

@@ -55,6 +55,12 @@
         <span class="chip__text" :class="isScheduledOverdueItem ? 'chip__text--overdue' : 'chip__text--scheduled'">{{ isScheduledOverdueItem ? 'Overdue' : 'Scheduled' }} {{ formattedScheduledDate }}</span>
       </span>
 
+      <!-- Google Calendar sync -->
+      <span v-if="entityType === 'action' && isSynced" class="chip" data-testid="synced-chip">
+        <GoogleIcon class="chip__icon" />
+        <span class="chip__text chip__text--tertiary">Synced</span>
+      </span>
+
       <!-- Start date -->
       <span v-if="entityType === 'action' && item.start_date" class="chip">
         <CalendarIcon class="chip__icon chip__icon--start" />
@@ -103,14 +109,18 @@ import RecurringIcon from '../assets/RecurringIcon.vue'
 import WarningIcon from '../assets/WarningIcon.vue'
 import DescriptionIcon from '../assets/DescriptionIcon.vue'
 import SharedIcon from '../assets/SharedIcon.vue'
+import GoogleIcon from '../assets/GoogleIcon.vue'
 import { isOverdue, isScheduledOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
 import { describeRRule } from '../scripts/core/rruleUtils.js'
 import { authModel } from '../scripts/core/authModel.js'
+import { flagsModel } from '../scripts/core/flagsModel.js'
 
 const props = defineProps({
   item: { type: Object, required: true },
   entityType: { type: String, required: true },
 })
+
+const isSynced = computed(() => !!props.item.synced && flagsModel().hasFlag('calendar'))
 
 const isItemOverdue = computed(() =>
     props.entityType === 'action' && isOverdue(props.item.due_date)
