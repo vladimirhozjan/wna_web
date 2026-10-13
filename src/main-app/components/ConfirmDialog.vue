@@ -9,6 +9,9 @@
             <Btn variant="secondary" size="sm" @click="confirm.state.onCancel">
               {{ confirm.state.cancelText }}
             </Btn>
+            <Btn v-if="confirm.state.altText" variant="secondary" size="sm" @click="confirm.state.onAlt">
+              {{ confirm.state.altText }}
+            </Btn>
             <Btn variant="danger" size="sm" @click="confirm.state.onConfirm">
               {{ confirm.state.confirmText }}
             </Btn>

@@ -74,6 +74,15 @@
             Spawn next
           </Btn>
           <Btn
+              v-if="template.active_instance_id"
+              variant="ghost-danger"
+              size="sm"
+              :loading="actionLoading === 'instance'"
+              @click="onDeleteInstance"
+          >
+            Delete instance
+          </Btn>
+          <Btn
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'delete'"
@@ -251,6 +260,7 @@ const {
   updateRecurring,
   deleteRecurring: deleteRecurringFn,
   spawnRecurring,
+  deleteRecurringInstance,
 } = recurringModel()
 
 const template = ref({})
@@ -533,19 +543,41 @@ async function onSpawn() {
   }
 }
 
+async function onDeleteInstance() {
+  const confirmed = await confirm.show({
+    title: 'Delete Instance',
+    message: 'Delete the active task without spawning the next one? Use Spawn next to resume.',
+    confirmText: 'Delete',
+    cancelText: 'Cancel'
+  })
+  if (!confirmed) return
+
+  actionLoading.value = 'instance'
+  try {
+    const updated = await deleteRecurringInstance(template.value.id)
+    template.value = { ...updated }
+    toaster.success('Instance deleted')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to delete instance')
+  } finally {
+    actionLoading.value = null
+  }
+}
+
 async function onDelete() {
   const hasInstance = !!template.value.active_instance_id
 
   let deleteInstance = false
   if (hasInstance) {
-    const confirmed = await confirm.show({
+    const choice = await confirm.show({
       title: 'Delete Template',
-      message: `Delete "${template.value.title}"? This will also delete the active instance.`,
-      confirmText: 'Delete All',
-      cancelText: 'Cancel'
+      message: `Delete "${template.value.title}"? Its active task can be deleted too, or kept as a standalone task.`,
+      confirmText: 'Delete task too',
+      cancelText: 'Cancel',
+      altText: 'Keep task'
     })
-    if (!confirmed) return
-    deleteInstance = true
+    if (!choice) return
+    deleteInstance = choice === true
   } else {
     const confirmed = await confirm.show({
       title: 'Delete Template',

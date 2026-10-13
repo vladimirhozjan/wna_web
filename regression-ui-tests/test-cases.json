@@ -2145,9 +2145,9 @@
       "Select a date and verify it is set",
       "Verify the Due Date section is **hidden** when \"Scheduled for\" is selected (mutual exclusivity)",
       "Click \"Add time...\" and verify a time input, a DurationInput, and a \"Clear\" link appear together (default duration: 30 min)",
-      "Verify the DurationInput shows a number input with a dropdown of preset options: 15, 30, 45, 60, 90, 120, 180, 240 minutes",
+      "Verify the DurationInput shows an editable value field with a dropdown of preset options: 15, 30, 45, 60, 90, 120, 180, 240 minutes",
       "Click on the DurationInput number field and verify the dropdown opens; select a preset (e.g., 60 min) and verify it updates",
-      "Type a custom value (e.g., 25) directly in the number input and verify it accepts any value > 0",
+      "Type a custom value (e.g., 25) directly in the field and verify it accepts any value > 0 (decimal comma in the h unit: see TC-753)",
       "Click \"Clear\" and verify time and duration are removed, reverting to the \"Add time...\" placeholder",
       "Click on the \"Start after\" radio option and verify a DateTimeInput appears",
       "Verify the Due Date section **reappears** when \"Start after\" is selected",
@@ -7075,16 +7075,15 @@
       "Verify the detail page loads at `/recurring/:id`",
       "Locate the \"Spawn next\" button",
       "Click \"Spawn next\"",
-      "Verify a success confirmation is displayed (e.g., toast message \"Next instance created\")",
+      "Verify a success toast \"Next instance spawned\" is displayed",
       "Verify the \"Active instance\" badge appears (or updates) on the detail page, linking to the new action",
       "Click the \"Active instance\" link",
       "Verify a new action has been created with the recurring template's title, scheduled time, and duration",
-      "Verify the action's due date corresponds to the next occurrence per the recurrence rule",
+      "Verify the action's scheduled date is a date produced by the recurrence rule, on or after today — never an off-rule \"today\" (e.g. a weekly Friday rule spawned on a Tuesday lands on Friday)",
       "Navigate back to the recurring template detail page",
-      "Try clicking \"Spawn next\" again while an active instance already exists",
-      "Verify appropriate behavior (either prevented with a message like \"Active instance already exists\", or a second instance is created at the following occurrence)"
+      "Verify the \"Spawn next\" button is hidden while the active instance exists (a \"Delete instance\" button is shown instead)"
     ],
-    "expected": "Clicking \"Spawn next\" manually creates the next action instance based on the recurrence rule. The new action appears with the correct title, time, duration, and due date. The \"Active instance\" badge updates to link to the new action."
+    "expected": "Clicking \"Spawn next\" manually creates the next action instance based on the recurrence rule. The new action appears with the correct title, time, duration, and a rule-produced scheduled date. The \"Active instance\" badge updates to link to the new action."
   },
   {
     "id": "TC-262",
@@ -7101,18 +7100,15 @@
       "Navigate to the Recurring list",
       "Verify \"Old recurring task\" is listed",
       "Click on \"Old recurring task\" to open its detail page",
-      "Locate the Trash or Delete button",
+      "Make sure the template has **no** active instance (use \"Delete instance\" first if needed)",
       "Click the Trash button",
-      "If a confirmation dialog appears, verify it warns about deleting the template",
-      "Confirm the deletion",
-      "Verify a success confirmation is displayed (e.g., \"Recurring action deleted\")",
-      "Verify the browser navigates back to the Recurring list (or the list updates)",
-      "Verify \"Old recurring task\" is no longer in the Recurring list",
-      "Navigate to `/trash`",
-      "Verify the recurring template appears in the Trash",
-      "If an active instance existed for the template, verify the behavior of that instance (it may remain as a standalone action or be trashed as well, depending on design)"
+      "Verify the confirm dialog \"Delete Template\" asks \"Are you sure you want to delete \"Old recurring task\"?\" with Cancel / Delete",
+      "Click Delete",
+      "Verify a success toast \"\"Old recurring task\" deleted\" is displayed",
+      "Verify the browser navigates back to the Calendar Recurring view",
+      "Verify \"Old recurring task\" is no longer in the Recurring list"
     ],
-    "expected": "Clicking Trash on a recurring template removes it from the Recurring list and moves it to the Trash. A confirmation dialog may appear before deletion. The template is recoverable from the Trash page."
+    "expected": "Deleting a template without an active instance shows a plain two-button confirm and removes the template from the Recurring list. (Templates with an active instance get the three-way dialog — TC-752.)"
   },
   {
     "id": "TC-262b",
@@ -15311,5 +15307,100 @@
       "Sign in as a Free user; trigger a tier limit (e.g. exceed the project quota); open `/upgrade`."
     ],
     "expected": "No \"BETA\" badge next to the logo. The Free CTA reads \"Start for Free\" and is enabled.\nThe Register dialog shows the \"Create Your Account\" form (no \"We're in Closed Beta\" notice) and\nregistration succeeds; Google sign-up creates the account (no \"Closed Beta\" screen). The upgrade modal\nreads \"Self-service upgrades are temporarily unavailable…\" and `/upgrade` reads \"Self-service upgrades\nare temporarily unavailable. Contact us…\" — no \"beta\" or \"aren't available yet\" wording."
+  },
+  {
+    "id": "TC-749",
+    "name": "Trashing the Active Instance Spawns the Next Occurrence",
+    "priority": "High",
+    "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user. Recurring template with rule \"every week on Friday\", time 10:00, duration 1.5 h, and an active instance on the coming Friday.",
+    "steps": [
+      "Open the active instance (via the template's \"Active instance\" badge) and trash it.",
+      "Open the template detail page again.",
+      "Click \"Active instance\"."
+    ],
+    "expected": "The template has a new active instance (\"Spawn next\" is hidden). The new action is scheduled on the **following** Friday (one week after the trashed one) at 10:00 with a 1.5 h duration. The trashed instance is in Trash. For a template with an \"After N occurrences\" end, the remaining count decreases by one, as on complete — it is never reset to unlimited."
+  },
+  {
+    "id": "TC-750",
+    "name": "Delete Instance Without Respawn, Then Spawn Next",
+    "priority": "High",
+    "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user. Recurring template \"every week on Friday\" with an active instance.",
+    "steps": [
+      "Open the template detail page; verify a \"Delete instance\" button is shown next to Trash.",
+      "Click \"Delete instance\"; verify the confirm \"Delete Instance\" asks \"Delete the active task without spawning the next one? Use Spawn next to resume.\"; click Delete.",
+      "Verify the toast \"Instance deleted\", the \"Active instance\" badge and \"Delete instance\" button disappear, and \"Spawn next\" appears.",
+      "Open Trash; verify the instance is there.",
+      "Back on the template, click \"Spawn next\"."
+    ],
+    "expected": "Step 2 trashes the instance and spawns nothing. Step 5 creates an instance on a Friday on or after today (a rule date) — not on today's date if today is not a Friday."
+  },
+  {
+    "id": "TC-751",
+    "name": "Restored Recurring Instance Comes Back Standalone",
+    "priority": "Medium",
+    "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user. A recurring instance was trashed (TC-749 or TC-750).",
+    "steps": [
+      "Open Trash and restore the recurring instance.",
+      "Open the restored action and complete it.",
+      "Open the template."
+    ],
+    "expected": "The restored action is a standalone action (no recurring link). Completing it does not spawn anything and does not change the template's active instance."
+  },
+  {
+    "id": "TC-752",
+    "name": "Delete Template With Active Instance — Delete Task Too / Keep Task / Cancel",
+    "priority": "High",
+    "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user. Three recurring templates A, B, C, each with an active instance.",
+    "steps": [
+      "Open template A, click Trash. Verify the dialog \"Delete Template\": \"Delete \"A\"? Its active task can be deleted too, or kept as a standalone task.\" with buttons Cancel · Keep task · Delete task too.",
+      "Click Cancel; verify nothing changes.",
+      "Click Trash again, then **Delete task too**.",
+      "Open template B, click Trash, then **Keep task**.",
+      "On the Calendar Recurring view, click the delete action on template C's row; verify the same three-way dialog; click **Keep task**."
+    ],
+    "expected": "Step 3: template A is gone and its instance is in Trash. Steps 4–5: templates B and C are gone; their instances stay in their lists as standalone actions (no recurring badge; completing them spawns nothing). A template without an active instance still gets the plain two-button confirm (TC-262)."
+  },
+  {
+    "id": "TC-753",
+    "name": "Duration With a Decimal Comma (\"1,5\" h)",
+    "priority": "Medium",
+    "area": "Recurring Actions",
+    "areas": [
+      "Recurring Actions"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user. Recurring template with a scheduled time.",
+    "steps": [
+      "On the template detail page, set the duration unit to \"h\" and type `1,5` in the duration field; press Enter.",
+      "Reload the page.",
+      "Type `1.5` instead; press Enter. Then type `abc` and blur the field.",
+      "Spawn an instance (or trash the active one) and open it."
+    ],
+    "expected": "After step 1 the field shows 1.5 h and after reload still 1.5 h (stored 90 min). `1.5` behaves the same. Invalid text is not saved, and on blur the field repaints to the saved value — it never shows a duration that was not saved. The spawned instance has a 90 min duration. Same behavior in the action detail DurationInput."
   }
 ]

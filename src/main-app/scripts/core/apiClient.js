@@ -1618,6 +1618,15 @@ export async function spawnRecurring(id) {
     }
 }
 
+export async function deleteRecurringInstance(id) {
+    try {
+        const res = await httpApi.post(`/v1/recurring/${id}/instance/delete`, {}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function moveRecurring(id, destination) {
     try {
         const res = await httpApi.post(`/v1/recurring/${id}/move`, {destination}, {headers: authHeaders()})
@@ -2169,6 +2178,7 @@ const apiClient = {
     updateRecurring,
     deleteRecurring,
     spawnRecurring,
+    deleteRecurringInstance,
     moveRecurring,
     // Stats API
     getStats,

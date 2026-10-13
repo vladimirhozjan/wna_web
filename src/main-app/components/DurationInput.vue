@@ -3,19 +3,18 @@
     <div class="dur-field" :class="{ 'dur-field--open': open, 'dur-field--disabled': disabled }" @click="toggle">
       <input
           ref="inputRef"
-          type="number"
+          type="text"
+          inputmode="decimal"
           :value="displayValue"
           class="text-body-m dur-input"
           :style="{ width: inputWidth }"
-          :min="unit === 'h' ? 0.25 : 1"
-          :step="unit === 'h' ? 'any' : 1"
           :disabled="disabled"
           @input="onInput"
           @focus="open = true"
           @click="open = true"
           @keydown.esc="open = false"
-          @keydown.enter="open = false"
-          @blur="open = false"
+          @keydown.enter="commit"
+          @blur="commit"
       />
       <span class="text-body-s dur-unit" @mousedown.prevent @click.stop="toggleUnit">{{ unit }}</span>
       <ChevronDownIcon class="dur-arrow" width="10" height="6" />
@@ -82,11 +81,16 @@ function toggle() {
 }
 
 function onInput(e) {
-  const val = parseFloat(e.target.value)
+  const val = Number(e.target.value.trim().replace(',', '.'))
   const minutes = unit.value === 'h' ? Math.round(val * 60) : Math.round(val)
   if (minutes > 0) {
     emit('update:modelValue', minutes)
   }
+}
+
+function commit(e) {
+  open.value = false
+  e.target.value = displayValue.value
 }
 
 function toggleUnit() {
@@ -144,14 +148,6 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   background: transparent;
   color: var(--color-text-primary);
   text-align: right;
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.dur-input::-webkit-inner-spin-button,
-.dur-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 
 .dur-unit {

@@ -11,16 +11,19 @@ export function confirmModel() {
         message: '',
         confirmText: 'Confirm',
         cancelText: 'Cancel',
+        altText: '',
         onConfirm: null,
+        onAlt: null,
         onCancel: null,
     })
 
-    function show({ title = 'Confirm', message, confirmText = 'Confirm', cancelText = 'Cancel' }) {
+    function show({ title = 'Confirm', message, confirmText = 'Confirm', cancelText = 'Cancel', altText = '' }) {
         return new Promise((resolve) => {
             state.title = title
             state.message = message
             state.confirmText = confirmText
             state.cancelText = cancelText
+            state.altText = altText
             state.visible = true
 
             state.onConfirm = () => {
@@ -31,6 +34,11 @@ export function confirmModel() {
             state.onCancel = () => {
                 state.visible = false
                 resolve(false)
+            }
+
+            state.onAlt = () => {
+                state.visible = false
+                resolve('alt')
             }
         })
     }

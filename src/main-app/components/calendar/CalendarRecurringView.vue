@@ -171,18 +171,30 @@ async function onDelete(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
-  const confirmed = await confirm.show({
-    title: 'Delete Template',
-    message: `Are you sure you want to delete "${item?.title || 'this template'}"?`,
-    confirmText: 'Delete',
-    cancelText: 'Cancel'
-  })
-
-  if (!confirmed) return
+  let deleteInstance = false
+  if (item?.active_instance_id) {
+    const choice = await confirm.show({
+      title: 'Delete Template',
+      message: `Delete "${item.title}"? Its active task can be deleted too, or kept as a standalone task.`,
+      confirmText: 'Delete task too',
+      cancelText: 'Cancel',
+      altText: 'Keep task'
+    })
+    if (!choice) return
+    deleteInstance = choice === true
+  } else {
+    const confirmed = await confirm.show({
+      title: 'Delete Template',
+      message: `Are you sure you want to delete "${item?.title || 'this template'}"?`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel'
+    })
+    if (!confirmed) return
+  }
 
   deletingId.value = id
   try {
-    await deleteRecurring(id)
+    await deleteRecurring(id, deleteInstance)
     toaster.success(`"${title}" deleted`)
   } catch (err) {
     toaster.push(err.message || 'Failed to delete template')

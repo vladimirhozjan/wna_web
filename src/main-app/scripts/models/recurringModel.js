@@ -119,6 +119,20 @@ export function recurringModel() {
         }
     }
 
+    async function deleteRecurringInstance(id) {
+        error.value = null
+
+        try {
+            await apiClient.deleteRecurringInstance(id)
+            const updated = await getRecurring(id)
+            statsModel().refreshStats()
+            return updated
+        } catch (err) {
+            error.value = err
+            throw err
+        }
+    }
+
     return {
         items,
         current,
@@ -132,5 +146,6 @@ export function recurringModel() {
         deleteRecurring,
         moveRecurring,
         spawnRecurring,
+        deleteRecurringInstance,
     }
 }
