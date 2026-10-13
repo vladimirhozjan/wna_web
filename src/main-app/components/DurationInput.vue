@@ -5,7 +5,7 @@
           ref="inputRef"
           type="text"
           inputmode="decimal"
-          :value="displayValue"
+          :value="draft ?? displayValue"
           class="text-body-m dur-input"
           :style="{ width: inputWidth }"
           :disabled="disabled"
