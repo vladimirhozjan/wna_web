@@ -123,7 +123,7 @@ import CtaBanner from '../../components/public/CtaBanner.vue'
 import CheckIcon from '../../assets/CheckIcon.vue'
 
 const router = useRouter()
-const { isBeta, paymentsEnabled } = flagsModel()
+const { paymentsEnabled } = flagsModel()
 const auth = authModel()
 const authMode = ref(null)
 const yearly = ref(true)
@@ -149,7 +149,7 @@ function onSuccess() {
 
 function tierCta(tier) {
   if (tier.name === 'Free') {
-    return { text: isBeta.value ? 'Coming soon' : tier.ctaText, disabled: isBeta.value, action: tier.action }
+    return { text: tier.ctaText, disabled: false, action: tier.action }
   }
   if (paymentsEnabled.value) {
     return { text: 'Upgrade', disabled: false, action: goToUpgrade }

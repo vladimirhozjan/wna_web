@@ -23,7 +23,6 @@ import {ref, computed, watch} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
-import {flagsModel} from '../../scripts/core/flagsModel.js'
 import HeroSection from '../../components/public/HeroSection.vue'
 import HowItWorksSection from '../../components/public/HowItWorksSection.vue'
 import FeaturesSection from '../../components/public/FeaturesSection.vue'
@@ -45,7 +44,6 @@ const props = defineProps({
 
 const router = useRouter()
 const route = useRoute()
-const { isBeta } = flagsModel()
 
 function resolveRedirect() {
   const r = route.query.redirect

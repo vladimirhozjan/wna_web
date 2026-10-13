@@ -12,7 +12,7 @@
           <!-- Payments not enabled — contact support -->
           <div v-if="!paymentsEnabled" class="card upgrade-notice">
             <p class="text-body-m upgrade-notice-text">
-              Self-service upgrades aren't available yet. Contact us to enable a paid plan on your account.
+              Self-service upgrades are temporarily unavailable. Contact us to enable a paid plan on your account.
             </p>
             <Btn variant="primary" size="md" @click="onContactSupport">Contact Us</Btn>
           </div>

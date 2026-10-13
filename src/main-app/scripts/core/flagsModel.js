@@ -28,8 +28,6 @@ export function flagsModel() {
         return [...new Set([...publicFlags.value, ...userFlags])]
     })
 
-    const isBeta = computed(() => activeFlags.value.includes('beta'))
-
     const paymentsEnabled = computed(() => activeFlags.value.includes('payments'))
 
     function hasFlag(name) {
@@ -38,6 +36,6 @@ export function flagsModel() {
 
     loadPublicFlags()
 
-    instance = { activeFlags, publicFlags, loaded, isBeta, paymentsEnabled, hasFlag, loadPublicFlags }
+    instance = { activeFlags, publicFlags, loaded, paymentsEnabled, hasFlag, loadPublicFlags }
     return instance
 }

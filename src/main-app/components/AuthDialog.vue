@@ -5,67 +5,46 @@
         <div class="auth-dialog" @click.stop :key="props.mode || 'closed'">
 
           <section v-if="props.mode === 'register'">
-            <!-- Beta closed state -->
-            <template v-if="registrationDisabled">
-              <div class="beta-notice">
-                <h2 class="text-h2 color-text-primary">We're in Closed Beta</h2>
-                <p class="text-body-s color-text-secondary beta-message">
-                  Thanks for your interest in WhatsNextAction! We're currently fine-tuning the experience
-                  with a small group of early users before opening the doors to everyone.
-                </p>
-                <p class="text-body-s color-text-secondary beta-message">
-                  Want early access? We'd love to hear from you — drop us a line and tell us a bit about yourself.
-                </p>
-                <a href="mailto:info@whatsnextaction.com" class="beta-contact-btn">
-                  Get in touch
-                </a>
-                <p class="text-caption color-text-tertiary beta-email">info@whatsnextaction.com</p>
-              </div>
-              <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
-            </template>
-            <!-- Normal registration form -->
-            <template v-else>
-              <div>
-                <h2 class="text-h2 color-text-primary">Create Your Account</h2>
-                <p class="subtitle text-body-s color-text-primary">
-                  Start your journey to better clarity and control.
-                </p>
-              </div>
-              <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
-                    v-model:error="emailError"/>
-              <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
-                    footer="Use 8 or more characters with a mix of letters, numbers and symbols"
-                    v-model:error="passwordError"/>
-              <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
-                    placeholder="Confirm your password" v-model:error="confirmError"/>
-              <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
-                <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
-                <span class="text-body-s">
-                  I agree to the
-                  <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
-                  and
-                  <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
-                </span>
-              </label>
-              <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
-              <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
-              <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
-              <div v-if="googleSsoEnabled" class="or-divider">
-                <span class="or-divider__line"></span>
-                <span class="or-divider__text text-body-s color-text-secondary">or</span>
-                <span class="or-divider__line"></span>
-              </div>
-              <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
-                <GoogleIcon class="google-icon" width="18" height="18" />
-                Sign up with Google
-              </Btn>
-              <p v-if="googleSsoEnabled" class="text-footnote google-terms">
-                By continuing with Google, you agree to the
-                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
-                and acknowledge the
-                <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+            <div>
+              <h2 class="text-h2 color-text-primary">Create Your Account</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                Start your journey to better clarity and control.
               </p>
-            </template>
+            </div>
+            <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                  v-model:error="emailError"/>
+            <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
+                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                  v-model:error="passwordError"/>
+            <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
+                  placeholder="Confirm your password" v-model:error="confirmError"/>
+            <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
+              <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
+              <span class="text-body-s">
+                I agree to the
+                <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
+                and
+                <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
+              </span>
+            </label>
+            <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
+            <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
+            <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
+            <div v-if="googleSsoEnabled" class="or-divider">
+              <span class="or-divider__line"></span>
+              <span class="or-divider__text text-body-s color-text-secondary">or</span>
+              <span class="or-divider__line"></span>
+            </div>
+            <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
+              <GoogleIcon class="google-icon" width="18" height="18" />
+              Sign up with Google
+            </Btn>
+            <p v-if="googleSsoEnabled" class="text-footnote google-terms">
+              By continuing with Google, you agree to the
+              <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+              and acknowledge the
+              <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+            </p>
           </section>
 
           <section v-else-if="props.mode === 'login'">
@@ -97,10 +76,8 @@
               and acknowledge the
               <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
             </p>
-            <template v-if="!registrationDisabled">
-              <div class="separator"></div>
-              <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
-            </template>
+            <div class="separator"></div>
+            <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
           </section>
 
           <section v-else-if="props.mode === 'forgot'">
@@ -174,12 +151,10 @@ import {authModel} from '../scripts/core/authModel.js'
 import {errorModel} from '../scripts/core/errorModel.js'
 import {mapApiError, ErrorScenario} from '../scripts/core/errorMapper.js'
 import {isGoogleSsoEnabled, redirectToGoogle} from '../scripts/core/googleSso.js'
-import {flagsModel} from '../scripts/core/flagsModel.js'
 import GoogleIcon from '../assets/GoogleIcon.vue'
 
 const auth = authModel()
 const error = errorModel()
-const { isBeta } = flagsModel()
 
 const googleSsoEnabled = isGoogleSsoEnabled()
 
@@ -213,8 +188,6 @@ const passwordError = ref('')
 const confirmError = ref('')
 const agreeTerms = ref(false)
 const agreeError = ref('')
-const registrationDisabledByApi = ref(false)
-const registrationDisabled = computed(() => isBeta.value || registrationDisabledByApi.value)
 
 const reset_token = ref(props.token || '')
 const userId = ref(null)
@@ -447,11 +420,7 @@ async function doRegister() {
   } catch (err) {
     console.log(err)
     const mapped = mapApiError(err, ErrorScenario.REGISTER)
-    if (mapped === 'registration_disabled') {
-      registrationDisabledByApi.value = true
-    } else {
-      error.push('Registration failed with error: ' + mapped)
-    }
+    error.push('Registration failed with error: ' + mapped)
   }
 }
 
@@ -552,36 +521,6 @@ h2 {
 .subtitle {
   text-align: center;
   margin: 10px 20px 0 20px;
-}
-
-.beta-notice {
-  text-align: center;
-}
-
-.beta-message {
-  margin: 12px 0 0;
-  line-height: var(--lh-relaxed);
-}
-
-.beta-contact-btn {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 24px;
-  background: var(--color-action);
-  color: var(--color-btn-primary-text);
-  border-radius: 6px;
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-body-s);
-  text-decoration: none;
-  transition: background 0.15s;
-}
-
-.beta-contact-btn:hover {
-  background: var(--color-action-dark);
-}
-
-.beta-email {
-  margin: 8px 0 0;
 }
 
 .agree-checkbox {

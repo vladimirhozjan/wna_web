@@ -13,7 +13,7 @@
               You can upgrade your plan anytime from Settings.
             </p>
             <p v-else class="text-body-s color-text-secondary hint">
-              WhatsNextAction is currently in beta and self-service upgrades aren't available yet. To enable Team features on your account, please contact <a class="hint-link" href="mailto:support@whatsnextaction.com?subject=Team%20plan%20access">support@whatsnextaction.com</a>.
+              Self-service upgrades are temporarily unavailable. To enable Team features on your account, please contact <a class="hint-link" href="mailto:support@whatsnextaction.com?subject=Team%20plan%20access">support@whatsnextaction.com</a>.
             </p>
           </div>
           <div class="dialog-actions">

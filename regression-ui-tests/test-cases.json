@@ -12753,7 +12753,7 @@
     ],
     "smoke": false,
     "section": "38: Payment & Billing — Paywiser",
-    "preconditions": "Verified user signed in **before** `payments` is enabled platform-wide (segments\ntype `all`), so the cached `current_user.active_flags` in localStorage lacks `payments`; `beta` off.",
+    "preconditions": "Verified user signed in **before** `payments` is enabled platform-wide (segments\ntype `all`), so the cached `current_user.active_flags` in localStorage lacks `payments`.",
     "steps": [
       "As admin, enable the `payments` flag with segments type `all` (it must appear in `GET /v1/flags/public`).",
       "Without logging out or refreshing the token, reload `/pricing` as the signed-in user."
@@ -15015,5 +15015,301 @@
       "Log in, then open `/` directly."
     ],
     "expected": "Step 1 — the landing page is visible immediately; the login dialog opens. Step 2 — the tab title and description change to each page's own (\"Pricing — To-Do List & Task Manager App | WhatsNextAction\", \"FAQ — GTD App Questions Answered | WhatsNextAction\"). Step 3 — prices switch as before. Step 4 — the user lands where they did before this change; no duplicated content or broken layout after the app mounts."
+  },
+  {
+    "id": "TC-732",
+    "name": "Free User Sees the Calendar Sync Lockout",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Free user; User has the `calendar` feature flag.",
+    "steps": [
+      "Open Settings and expand **Calendar Sync**."
+    ],
+    "expected": "The card shows \"Google Calendar sync is available on Pro and Team plans.\" with an Upgrade (or Contact Us) button. No Connect button is shown."
+  },
+  {
+    "id": "TC-733",
+    "name": "Free User Cannot Start Calendar Consent",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Free user; User has the `calendar` feature flag.",
+    "steps": [
+      "Call `GET /v1/google/calendar/consent-url`."
+    ],
+    "expected": "`403`. No consent URL is returned."
+  },
+  {
+    "id": "TC-734",
+    "name": "Pro User Connects Google Calendar",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user; User has the `calendar` feature flag; browser timezone differs from the one stored at registration.",
+    "steps": [
+      "Open Settings → Calendar Sync and click **Connect Google Calendar**.",
+      "Complete Google consent.",
+      "Call `GET /v1/google/status`."
+    ],
+    "expected": "The browser returns to Settings and the card shows **Connected** with the calendar picker, timezone, \"What syncs\", Sync now and Disconnect. Status has `connected: true` and `features` contains `calendar`. The stored grant holds the `calendar.events` scope. The user's stored timezone is now the browser timezone sent on connect."
+  },
+  {
+    "id": "TC-735",
+    "name": "Timed Scheduled Action Exports with Timezone; Synced Shown",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected to Google Calendar.",
+    "steps": [
+      "Create a CALENDAR action today at 14:30 for 45 minutes.",
+      "Look at the event in Google Calendar.",
+      "Open Today, then the Calendar page."
+    ],
+    "expected": "The event has `start.dateTime` `<date>T14:30`, `end.dateTime` `<date>T15:15`, and `timeZone` = the user's timezone on both (no UTC offset, no `Z`). The action is `synced: true`. Today shows a **Synced** chip on the row; the Calendar page shows the Google icon on the item."
+  },
+  {
+    "id": "TC-736",
+    "name": "All-Day Scheduled Action Exports with Exclusive End",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected to Google Calendar.",
+    "steps": [
+      "Create a CALENDAR action with only `scheduled_date` (no time)."
+    ],
+    "expected": "The event has `start.date` = the scheduled date and `end.date` = the next day."
+  },
+  {
+    "id": "TC-737",
+    "name": "Editing an Action Patches Its Event; Google-Only Fields Kept",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced timed action.",
+    "steps": [
+      "Rename the action in WNA.",
+      "In Google, add a location to the event; run a sync.",
+      "Rename the action in WNA again."
+    ],
+    "expected": "After each rename the same event (same id) carries the new title without a sync run in between. The location set in Google is still on the event after the second rename."
+  },
+  {
+    "id": "TC-738",
+    "name": "Google Reschedule Updates the Action",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced timed action.",
+    "steps": [
+      "In Google, move the event to another day, 09:00–10:00.",
+      "Run a sync."
+    ],
+    "expected": "The action's `scheduled_date` is the new day, `scheduled_time` 09:00 and `scheduled_duration` 60."
+  },
+  {
+    "id": "TC-739",
+    "name": "WNA Changes Are Not Re-imported (Echo Suppression)",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced timed action.",
+    "steps": [
+      "Rename the action in WNA and wait for the event to update.",
+      "Click/call **Sync now**."
+    ],
+    "expected": "Sync reports `imported: 0`. The action's `updated` timestamp and title are unchanged by the sync."
+  },
+  {
+    "id": "TC-740",
+    "name": "Google Delete Leaves the Action and Re-creates the Event",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced timed action.",
+    "steps": [
+      "Delete the event in Google.",
+      "Run a sync."
+    ],
+    "expected": "The action's title, state and schedule are unchanged. A live event for the action exists again in Google."
+  },
+  {
+    "id": "TC-741",
+    "name": "Complete / Trash Deletes the Event; Restore Re-creates It",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; two synced timed actions.",
+    "steps": [
+      "Complete the first action.",
+      "Trash the second action.",
+      "Restore the second action."
+    ],
+    "expected": "Completing and trashing each remove the action's event from Google. Restoring brings a live event back."
+  },
+  {
+    "id": "TC-742",
+    "name": "Disconnect Calendar Keeps Other Google Scopes",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected to Google Calendar and to Drive (same Google account); a synced action.",
+    "steps": [
+      "Settings → Calendar Sync → **Disconnect** and confirm.",
+      "Call `GET /v1/google/status`.",
+      "Open Today."
+    ],
+    "expected": "The card reads \"Google Calendar needs to be reconnected\" with a **Reconnect Google Calendar** button. Status is `connected: true` with `features: [\"drive\"]`; the grant keeps the Drive scope and loses `calendar.events`. The event stays in Google. The Synced indicator is cleared on the action."
+  },
+  {
+    "id": "TC-743",
+    "name": "Reconnect Resumes Sync Without Duplicates",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected (calendar only); a synced action.",
+    "steps": [
+      "Disconnect Google Calendar.",
+      "Connect again with the same Google account.",
+      "Run **Sync now**; then rename the action."
+    ],
+    "expected": "After disconnect the card shows \"Not connected\" and **Connect Google Calendar**. After reconnect there is still exactly one event for the action, with the same id. The rename reaches that same event."
+  },
+  {
+    "id": "TC-744",
+    "name": "Switching Calendars Moves the Events",
+    "priority": "Medium",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced action; the Google account has a second writable calendar \"Team\".",
+    "steps": [
+      "Settings → Calendar Sync → pick **Team** in the Calendar picker."
+    ],
+    "expected": "The picker shows Team. The action's event is deleted from the primary calendar and created in Team. `GET /v1/calendar/calendars` returns `selected` = Team's id."
+  },
+  {
+    "id": "TC-745",
+    "name": "Sync Now Imports a Google Change",
+    "priority": "Medium",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced action.",
+    "steps": [
+      "Rename the event in Google.",
+      "Settings → Calendar Sync → **Sync now**."
+    ],
+    "expected": "A toast reads \"Sync complete: N sent to Google, 1 updated from Google\". The action carries the Google title, with no cron run."
+  },
+  {
+    "id": "TC-746",
+    "name": "Downgrade Pauses Sync; Re-upgrade Resumes It",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a synced action.",
+    "steps": [
+      "Downgrade the user to Free and sign in again.",
+      "Rename the action; run the daily sync.",
+      "Upgrade back to Pro, sign in again and run the daily sync."
+    ],
+    "expected": "On Free the card shows the lockout and `POST /v1/calendar/sync` returns `403`. The event stays in Google with its old title. After re-upgrade, with no new consent, the same event takes the new title and Calendar is still a connected feature."
+  },
+  {
+    "id": "TC-747",
+    "name": "Start-Date and Due-Date Actions Are Not Exported",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected.",
+    "steps": [
+      "Create an action with only a start date, one with only a due date, and a scheduled control action.",
+      "Run **Sync now**."
+    ],
+    "expected": "The control action has an event. The start-date and due-date actions have no event and are `synced: false`."
+  },
+  {
+    "id": "TC-748",
+    "name": "No closed-beta UI — registration always open, neutral payments-off copy",
+    "priority": "Medium",
+    "area": "Registration, Pricing, Flags",
+    "areas": [
+      "Registration",
+      "Pricing",
+      "Flags"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "`payments` flag off. A `beta` flag row may still exist (enabled) — it must have no effect.",
+    "steps": [
+      "Open `/` and `/pricing` signed out; inspect the top nav and the Free tier CTA.",
+      "Open the Register dialog; register a new email account.",
+      "Sign up with Google using a new Google account.",
+      "Sign in as a Free user; trigger a tier limit (e.g. exceed the project quota); open `/upgrade`."
+    ],
+    "expected": "No \"BETA\" badge next to the logo. The Free CTA reads \"Start for Free\" and is enabled.\nThe Register dialog shows the \"Create Your Account\" form (no \"We're in Closed Beta\" notice) and\nregistration succeeds; Google sign-up creates the account (no \"Closed Beta\" screen). The upgrade modal\nreads \"Self-service upgrades are temporarily unavailable…\" and `/upgrade` reads \"Self-service upgrades\nare temporarily unavailable. Contact us…\" — no \"beta\" or \"aren't available yet\" wording."
   }
 ]

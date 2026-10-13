@@ -9,21 +9,6 @@
           <h2 class="text-h2 color-text-primary">Signing you in...</h2>
         </div>
 
-        <!-- Beta closed -->
-        <div v-else-if="status === 'beta'" class="sso-state">
-          <span class="sso-icon sso-icon--warning">
-            <ExclamationIcon width="24" height="24" />
-          </span>
-          <h2 class="text-h2 color-text-primary">Closed Beta</h2>
-          <p class="text-body-s color-text-secondary">
-            WhatsNextAction is currently in closed beta. New accounts cannot be created via Google Sign-In.
-          </p>
-          <p class="text-body-s color-text-secondary">
-            Want to join? Contact <a href="mailto:info@whatsnextaction.com">info@whatsnextaction.com</a>
-          </p>
-          <Btn @click="goToLogin">Back to login</Btn>
-        </div>
-
         <!-- Error -->
         <div v-else-if="status === 'error'" class="sso-state">
           <span class="sso-icon sso-icon--error">
@@ -86,12 +71,8 @@ async function exchangeCode(code) {
     router.push({name: 'engage'})
   } catch (err) {
     const mapped = mapApiError(err, ErrorScenario.GOOGLE_LOGIN)
-    if (mapped === 'registration_disabled') {
-      status.value = 'beta'
-    } else {
-      status.value = 'error'
-      errorMessage.value = mapped
-    }
+    status.value = 'error'
+    errorMessage.value = mapped
   }
 }
 
