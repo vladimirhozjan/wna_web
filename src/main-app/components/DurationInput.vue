@@ -58,6 +58,7 @@ const emit = defineEmits(['update:modelValue'])
 const wrapper = ref(null)
 const inputRef = ref(null)
 const open = ref(false)
+const draft = ref(null)
 const unit = ref(unitFor(props.modelValue))
 
 function unitFor(minutes) {
@@ -71,7 +72,7 @@ const displayValue = computed(() => {
 })
 
 const inputWidth = computed(() => {
-  const chars = displayValue.value.length
+  const chars = (draft.value ?? displayValue.value).length
   return Math.max(20, chars * 10) + 'px'
 })
 
@@ -81,15 +82,20 @@ function toggle() {
 }
 
 function onInput(e) {
-  const val = Number(e.target.value.trim().replace(',', '.'))
-  const minutes = unit.value === 'h' ? Math.round(val * 60) : Math.round(val)
-  if (minutes > 0) {
-    emit('update:modelValue', minutes)
-  }
+  draft.value = e.target.value
 }
 
+// Emit only on Enter/blur: parents save on every update and disable the field while saving
 function commit(e) {
   open.value = false
+  if (draft.value != null) {
+    const val = Number(draft.value.trim().replace(',', '.'))
+    const minutes = unit.value === 'h' ? Math.round(val * 60) : Math.round(val)
+    draft.value = null
+    if (minutes > 0 && minutes !== props.modelValue) {
+      emit('update:modelValue', minutes)
+    }
+  }
   e.target.value = displayValue.value
 }
 
@@ -99,6 +105,7 @@ function toggleUnit() {
 }
 
 function selectOption(value) {
+  draft.value = null
   emit('update:modelValue', value)
   unit.value = unitFor(value)
   open.value = false
