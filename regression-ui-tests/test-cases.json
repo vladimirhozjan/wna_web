@@ -12386,7 +12386,7 @@
     ],
     "smoke": false,
     "section": "38: Payment & Billing — Paywiser",
-    "preconditions": "Verified user whose flags do NOT include `payments` (beta-only in the automated run).",
+    "preconditions": "Verified user whose flags do NOT include `payments` (no flags at all in the automated run).",
     "steps": [
       "Open Settings → Plan.",
       "Inspect the Update-plan surface."
@@ -12395,7 +12395,7 @@
   },
   {
     "id": "TC-568",
-    "name": "`payments` flag alone shows the upgrade UI — no `beta` required",
+    "name": "`payments` flag alone shows the upgrade UI — no `beta` required — RETIRED (FEAT-045)",
     "priority": "High",
     "area": "Settings, Billing, Flags",
     "areas": [
@@ -15078,7 +15078,7 @@
       "Look at the event in Google Calendar.",
       "Open Today, then the Calendar page."
     ],
-    "expected": "The event has `start.dateTime` `<date>T14:30`, `end.dateTime` `<date>T15:15`, and `timeZone` = the user's timezone on both (no UTC offset, no `Z`). The action is `synced: true`. Today shows a **Synced** chip on the row; the Calendar page shows the Google icon on the item."
+    "expected": "The event has `start.dateTime` `<date>T14:30`, `end.dateTime` `<date>T15:15`, and `timeZone` = the user's timezone on both (no UTC offset, no `Z`). The action is `synced: true`."
   },
   {
     "id": "TC-736",
@@ -15199,7 +15199,7 @@
       "Call `GET /v1/google/status`.",
       "Open Today."
     ],
-    "expected": "The card reads \"Google Calendar needs to be reconnected\" with a **Reconnect Google Calendar** button. Status is `connected: true` with `features: [\"drive\"]`; the grant keeps the Drive scope and loses `calendar.events`. The event stays in Google. The Synced indicator is cleared on the action."
+    "expected": "The card reads \"Google Calendar needs to be reconnected\" with a **Reconnect Google Calendar** button. Status is `connected: true` with `features: [\"drive\"]`; the grant keeps the Drive scope and loses `calendar.events`. The event stays in Google. `synced` is `false` on the action."
   },
   {
     "id": "TC-743",

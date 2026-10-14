@@ -29,5 +29,6 @@ Rules:
   `specs/features/wna-features.md`). Don't write into other sibling repos (`wna_backend`, `wna_deploy`,
   `wna-ui-tests`) or into any orchestration file outside those pointed-to homes. Changing a contract's
   value/meaning still requires STOP-and-ask (see the rule above).
+- Spec sync is part of done: list every orchestration home your change touched and update it. Specs describe what the code/config IS, never per-env rollout state: no "applied to dev", "not yet on prod", "to be applied" notes — the home for applied migration state is `wna_deploy/backend/db_tools/sql/*/MIGRATION_VERSION`, for deployed config the `gcloud/<env>/` manifests.
 
-Output: checklist items done vs remaining, CI status, and anything deferred to me.
+Output: checklist items done vs remaining, CI status, spec homes updated (`file:line`, or "none — <reason>"), and anything deferred to me.
