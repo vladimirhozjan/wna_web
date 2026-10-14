@@ -181,9 +181,10 @@ Terser minification (console/debugger stripped). Code obfuscation via `javascrip
 - **Before creating any new `.vue` component, model, CSS variable, or utility function** — ask the user for approval. Explain what you need and why an existing one can't be used
 
 ### Keep Documentation in Sync
-When adding features, fixing bugs, or changing behavior, update the relevant specs **in `wna_orchestration`**
-(this repo's `.claude/*.md` are pointers):
-- `wna_orchestration/specs/features/wna-features.md` — if a user-facing feature is added, changed, or removed
+When adding features, fixing bugs, or changing behavior — with or without a slice — update the relevant specs
+**in `wna_orchestration`** (this repo keeps no spec copies):
+- `wna_orchestration/specs/features/wna-features.md` — if a user-facing feature is added, changed, or removed,
+  and for every new/removed route in either app's router (main-app AND admin-app)
 - `wna_orchestration/specs/tests/wna-test-cases.md` — add/update test cases for new or changed functionality
 - `wna_orchestration/specs/ci/frontend-ci.md` — if build config, Docker, K8s manifests, or deployment changes
 - `README.md` — update if dev setup, build commands, project structure, or tooling changes (stays local)
@@ -294,7 +295,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## Related Docs
 
-All specs are centralized in `wna_orchestration` (this repo's `.claude/*.md` are pointers):
+All specs are centralized in `wna_orchestration` (this repo keeps no spec copies):
 - `README.md` — Dev setup, build commands, Docker, deployment (stays local)
 - `wna_orchestration/specs/domain/wna-specification.md` — Full GTD domain specification
 - `wna_orchestration/specs/ci/frontend-ci.md` — CI/CD, Docker, Kubernetes manifests
