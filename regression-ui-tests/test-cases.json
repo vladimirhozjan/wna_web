@@ -14033,10 +14033,10 @@
     "steps": [
       "Open `/` and read the document head.",
       "Verify `<link rel=\"manifest\" href=\"/manifest.webmanifest\">` is present.",
-      "Verify the head also contains `<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png?v=2\">`, `<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg?v=2\">`, `<meta name=\"theme-color\">`, `<meta name=\"mobile-web-app-capable\" content=\"yes\">`, `<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">`, `<meta name=\"apple-mobile-web-app-title\" content=\"WNA\">` and `<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\">`.",
+      "Verify the head also contains `<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png?v=3\">`, `<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg?v=3\">`, `<meta name=\"theme-color\">`, `<meta name=\"mobile-web-app-capable\" content=\"yes\">`, `<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">`, `<meta name=\"apple-mobile-web-app-title\" content=\"WNA\">` and `<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\">`.",
       "Request `GET /manifest.webmanifest`; verify it returns 200 with a JSON body.",
       "Verify the JSON has `name` \"WhatsNextAction\", `short_name` \"WNA\", `id` \"/\", `scope` \"/\", `start_url` \"/engage\", `display` \"standalone\", `theme_color` \"#FFFFFF\", `background_color` \"#FFFFFF\".",
-      "Verify `icons` lists `/icon-192.png?v=2` (192x192, any), `/icon-512.png?v=2` (512x512, any) and `/icon-maskable-512.png?v=2` (512x512, maskable), all with type `image/png`."
+      "Verify `icons` lists `/icon-192.png?v=3` (192x192, any), `/icon-512.png?v=3` (512x512, any) and `/icon-maskable-512.png?v=3` (512x512, maskable), all with type `image/png`."
     ],
     "expected": "The manifest is linked from the page head and served as valid JSON with exactly the name, short name, ids, start URL, display mode, colors and icon set above."
   },
@@ -14096,7 +14096,7 @@
     "steps": [
       "Open the app in Safari (any page, logged in or not).",
       "Tap Share → Add to Home Screen.",
-      "Verify the sheet shows the name \"WNA\" and the brand icon (gradient tile with the white bolt), not a page screenshot.",
+      "Verify the sheet shows the name \"WNA\" and the brand icon (the J1 logo: teal-gradient circle with the white N-bolt), not a page screenshot.",
       "Tap Add and launch the app from the home screen.",
       "Verify it opens standalone (no Safari address bar or tabs) on `/engage` (after login if the installed app has no session yet).",
       "Verify the status bar area shows the app's light background and the top nav is not hidden under the notch / status bar.",
@@ -14119,7 +14119,7 @@
       "Open the app in Chrome.",
       "Open ⋮ → Install app (or \"Add to Home screen\"); verify the prompt shows \"WhatsNextAction\" / \"WNA\" with the brand icon.",
       "Install and open the app from the launcher / home screen.",
-      "Verify the launcher icon is the maskable icon: the bolt is fully visible and not clipped by the device's icon shape (circle, squircle, rounded square).",
+      "Verify the launcher icon is the maskable icon: the J1 N-bolt glyph (including its pointed stroke ends) is fully visible and not clipped by the device's icon shape (circle, squircle, rounded square).",
       "Verify the app opens standalone on `/engage` and the status bar color matches the app background.",
       "Switch the Theme to \"Dark\"; verify the status bar color follows."
     ],
@@ -15421,7 +15421,7 @@
       "Click **Connect Google Drive** and complete Google consent.",
       "Call `GET /v1/google/status`."
     ],
-    "expected": "Before connecting the card shows \"Google Drive not connected\" and the **Save attachments to** selector is disabled on Local. After consent the browser returns to Settings and the card shows \"Connected as {email}\", an enabled selector and **Disconnect**. Status has `features` containing `drive`. A `WNA` folder with `reference` and `attachments` subfolders exists in the user's Drive."
+    "expected": "Before connecting the card shows \"Google Drive not connected\" and the **Save attachments to** selector is disabled on Local. After consent the browser returns to Settings and the card shows \"Connected as {email}\", an enabled selector and **Disconnect**. Status has `features` containing `drive`. No folders are created in the user's Drive on connect: the `WNA` folder with `reference` and `attachments` subfolders is created on first use, by the first Drive upload (TC-755, TC-756)."
   },
   {
     "id": "TC-755",
