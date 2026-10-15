@@ -1047,7 +1047,7 @@
       "On the Google consent screen, click \"Cancel\" or close the Google window / navigate back.",
       "Observe the application behavior."
     ],
-    "expected": "- The user is returned to the application without an authorization code.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.\n- The landing page is displayed (or the authentication dialog is still accessible).\n- No error messages are shown (the user intentionally cancelled)."
+    "expected": "- Google returns to `/google/sso?error=access_denied&state=…` without an authorization code.\n- No `POST /v1/user/google-sso` request is sent; the page redirects to the landing page (`/`).\n- `sessionStorage` no longer contains `google_sso_state` or `google_sso_verifier`.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`.\n- No error messages are shown — neither \"Invalid sign-in link\" nor \"Sign-in failed\" (the user intentionally cancelled)."
   },
   {
     "id": "TC-397",
@@ -15705,9 +15705,9 @@
       "Enter `TestPass1!` in the password and confirm password fields.",
       "Check the Terms of Service checkbox.",
       "Click the \"Register\" submit button.",
-      "Open Mailpit and click the verification link in the newest \"Verify your WNA account\" email."
+      "Open Mailpit and click the verification link in the newest \"Verify your WhatsNextAction account\" email."
     ],
-    "expected": "- Step 6: the backend returns HTTP 201 with the same body shape as a new signup; no error toast is shown, and the dialog shows the normal \"verify-sent\" screen. Nothing in the UI indicates that the email is already registered.\n- Step 6: the returned `user_id` is a UUID that is **not** the existing account's id.\n- Mailpit shows a fresh \"Verify your WNA account\" email to `unverified@example.com` (no existing-account email).\n- Step 7: the `/verify` page shows success and the account is verified."
+    "expected": "- Step 6: the backend returns HTTP 201 with the same body shape as a new signup; no error toast is shown, and the dialog shows the normal \"verify-sent\" screen. Nothing in the UI indicates that the email is already registered.\n- Step 6: the returned `user_id` is a UUID that is **not** the existing account's id.\n- Mailpit shows a fresh \"Verify your WhatsNextAction account\" email to `unverified@example.com` (no existing-account email).\n- Step 7: the `/verify` page shows success and the account is verified."
   },
   {
     "id": "TC-771",

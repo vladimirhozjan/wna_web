@@ -58,6 +58,10 @@ const errorMessage = ref('')
 onMounted(() => {
   const code = route.query.code
   const verifier = takeGoogleSsoVerifier(route.query.state)
+  if (route.query.error) {
+    router.replace({name: 'landing'})
+    return
+  }
   if (!code || !verifier) {
     status.value = 'invalid'
     return
