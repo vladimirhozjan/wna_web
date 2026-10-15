@@ -15576,5 +15576,23 @@
       "Download the file."
     ],
     "expected": "Both show \"This file is too large to open in WhatsNextAction — open it in Google Drive\" (413 `drive_file_too_large`); no file is downloaded and no upgrade modal opens."
+  },
+  {
+    "id": "TC-764",
+    "name": "Storage Limit Modal — Drive Hint and Team Wording",
+    "priority": "Low",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user and Team user, both at the reference storage limit.",
+    "steps": [
+      "As the Pro user with the `drive` flag active, upload a reference file.",
+      "Turn the `drive` flag off for the Pro user, sign in again, and upload a reference file.",
+      "As the Team user with the `drive` flag active, upload a reference file."
+    ],
+    "expected": "Step 1: the \"Upgrade Your Plan\" modal shows \"You've reached your storage limit. Upgrade your plan for more space to keep your reference files organized. Or connect Google Drive in Settings — files saved there don't count toward your limit.\" Step 2: same text without the Google Drive sentence. Step 3: the modal title is \"Storage Limit Reached\", the message is \"You've reached your storage limit. Free up space by deleting files you no longer need. Or connect Google Drive in Settings — files saved there don't count toward your limit.\", the footer reads \"Need more space? Contact support@whatsnextaction.com.\" with a working mailto link, and the only button is **Got it** (no \"View plans\")."
   }
 ]

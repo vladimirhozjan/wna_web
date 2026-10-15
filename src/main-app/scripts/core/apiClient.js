@@ -1,5 +1,7 @@
 import {httpApi} from './httpApi.js'
 import {upgradeModel} from './upgradeModel.js'
+import {flagsModel} from './flagsModel.js'
+import {authModel} from './authModel.js'
 import {PAGE_SIZE} from './domains.js'
 
 function friendlyUpgradeMessage(raw) {
@@ -9,8 +11,12 @@ function friendlyUpgradeMessage(raw) {
         return 'You\'ve reached the project limit on your current plan. Upgrade to Pro for unlimited projects and keep organizing your work.'
     if (lower.includes('tag'))
         return 'You\'ve reached the tag limit on your current plan. Upgrade to Pro for unlimited tags and better context filtering.'
-    if (lower.includes('storage') || lower.includes('file'))
-        return 'You\'ve reached your storage limit. Upgrade your plan for more space to keep your reference files organized.'
+    if (lower.includes('storage') || lower.includes('file')) {
+        const msg = authModel().currentUser.value?.subscription_tier === 'team'
+            ? 'You\'ve reached your storage limit. Free up space by deleting files you no longer need.'
+            : 'You\'ve reached your storage limit. Upgrade your plan for more space to keep your reference files organized.'
+        return flagsModel().hasFlag('drive') ? `${msg} Or connect Google Drive in Settings — files saved there don't count toward your limit.` : msg
+    }
     if (lower.includes('recurring'))
         return 'Recurring templates let you automate repeating actions. This feature is available on Pro and Team plans.'
     if (lower.includes('reference'))
@@ -78,6 +84,7 @@ function normalizeError(error) {
             upgrade.show({
                 message: friendlyUpgradeMessage(data.upgrade_message || backendMsg || 'storage'),
                 limit: data.limit,
+                kind: 'storage',
             })
             return {status, message: backendMsg || 'File too large or storage quota exceeded.'}
         }
