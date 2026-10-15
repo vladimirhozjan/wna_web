@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** October 14, 2026
+**Last updated:** October 15, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -42,6 +42,7 @@ The Service includes the following functionality:
 - **Email Notifications** - Optional task reminders, daily summaries, and project nudges delivered by email
 - **Google Sign-In** - Optional sign-in and registration using your Google account
 - **Google Calendar Sync** - Optional two-way sync of your scheduled actions with your Google Calendar (available on Pro and Team plans)
+- **Google Drive Storage** - Optional storage of your reference files and attachments in your own Google Drive (available on all plans)
 
 Feature availability depends on your subscription plan (see Section 5).
 
@@ -103,6 +104,8 @@ Usage limits apply based on your subscription plan:
 | Max file size | 5 MB | 20 MB | 50 MB |
 | Comments per item | 50 | 50 | 50 |
 | Comment max length | 2000 chars | 2000 chars | 2000 chars |
+
+Files stored in your own Google Drive (Google Drive storage) do not count toward Storage or Max file size; they use your Google storage quota instead. The largest file the Service can upload or open is still limited.
 
 We reserve the right to modify these limits with reasonable notice.
 
@@ -220,6 +223,8 @@ We strive to provide a reliable and continuously available Service. However, we 
 - Third-party service outages
 - Circumstances beyond our reasonable control
 
+Files stored in your Google Drive are available in the Service only while Google Drive is available and connected to your account. While Google Drive is disconnected, you cannot open them in the Service until you connect it again.
+
 ### 8.2 Modifications
 
 We may modify, update, or discontinue features of the Service at any time. For material changes that reduce functionality available under paid plans, we will provide reasonable advance notice.
@@ -242,6 +247,7 @@ While we implement reasonable technical measures to protect your data, including
 - No system of electronic storage is 100% secure or reliable
 - We are not liable for any loss of or damage to your Content, except where such loss results from our intentional misconduct or gross negligence
 - You are responsible for maintaining your own backups of critical information
+- Files stored in your Google Drive are held by Google, not by us; if you move, change, or delete them in Google Drive, we cannot recover them
 
 We strongly recommend that you keep copies of important data outside the Service.
 
@@ -276,7 +282,7 @@ If you are a consumer in the European Union, you benefit from mandatory consumer
 
 ### 9.7 Third-Party Integrations
 
-Some features connect the Service to services run by third parties, such as Google Calendar sync. When you connect such a service, its provider's own terms and privacy policy also apply to your use of it. We do not control third-party services and are not liable for their availability, changes, or how they handle your data, including events stored in your Google Calendar. You can disconnect an integration at any time in your settings.
+Some features connect the Service to services run by third parties, such as Google Calendar sync or Google Drive storage. When you connect such a service, its provider's own terms and privacy policy also apply to your use of it. We do not control third-party services and are not liable for their availability, changes, or how they handle your data, including events stored in your Google Calendar or files stored in your Google Drive. You can disconnect an integration at any time in your settings.
 
 ## 10. Indemnification
 
@@ -292,7 +298,7 @@ You agree to indemnify and hold harmless QubForge, tehnološke rešitve, d.o.o. 
 
 You may delete your account at any time through the Service. Upon account deletion:
 
-- Your Content will be permanently deleted within 30 days
+- Your Content will be permanently deleted within 30 days; files stored in your own Google Drive are not deleted and stay in your Google Drive
 - Any active paid subscription is cancelled and will not renew
 - Backup copies of your data will be purged within our backup retention period (up to 30 days)
 - Invoices, credit notes, and related payment records are retained for the period required by tax law, as described in our [Privacy Policy](/legal/privacy)

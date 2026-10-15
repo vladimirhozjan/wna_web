@@ -18,6 +18,32 @@ function friendlyUpgradeMessage(raw) {
     return raw
 }
 
+function driveErrorMessage(code, method) {
+    switch (code) {
+        case 'drive_reconnect_required':
+            return method === 'get' ? 'Reconnect Google Drive to open this file' : 'Reconnect Google Drive in Settings to upload files'
+        case 'drive_disabled':
+            return 'Drive storage is temporarily unavailable'
+        case 'drive_file_too_large':
+            return 'This file is too large to open in WhatsNextAction — open it in Google Drive'
+        default:
+            return null
+    }
+}
+
+// Blob responses carry their JSON error body as a Blob
+async function parseBlobError(err) {
+    const data = err.response?.data
+    if (data instanceof Blob) {
+        try {
+            err.response.data = JSON.parse(await data.text())
+        } catch {
+            err.response.data = {}
+        }
+    }
+    return err
+}
+
 function normalizeError(error) {
     if (error.response) {
         const cfg = error.config || {}
@@ -32,6 +58,9 @@ function normalizeError(error) {
         const status = error.response.status
         const data = error.response.data || {}
         const backendMsg = data.message || data.detail || data.error
+
+        const driveMsg = driveErrorMessage(data.error, error.config?.method)
+        if (driveMsg) return {status, code: data.error, message: driveMsg}
 
         // Tier limit errors (403 with upgrade_message or limit field)
         if (status === 403 && (data.upgrade_message || data.limit != null)) {
@@ -1361,7 +1390,7 @@ export async function downloadRefFile(id) {
         })
         return res.data
     } catch (err) {
-        throw normalizeError(err)
+        throw normalizeError(await parseBlobError(err))
     }
 }
 
@@ -1373,7 +1402,7 @@ export async function previewRefFile(id) {
         })
         return res.data
     } catch (err) {
-        throw normalizeError(err)
+        throw normalizeError(await parseBlobError(err))
     }
 }
 
@@ -1493,7 +1522,7 @@ export async function downloadAttachment(entityType, itemId, attachmentId) {
             {headers: authHeaders(), responseType: 'blob'}
         )
     } catch (err) {
-        throw normalizeError(err)
+        throw normalizeError(await parseBlobError(err))
     }
 }
 
@@ -1743,6 +1772,26 @@ export async function completeGoogleConnect(feature, code, state) {
 export async function disconnectGoogle(feature) {
     try {
         const res = await httpApi.post(`/v1/google/${feature}/disconnect`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// ── Storage Settings API ──
+
+export async function getStorageSettings() {
+    try {
+        const res = await httpApi.get('/v1/storage/settings', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateStorageSettings(attachmentsDestination) {
+    try {
+        const res = await httpApi.put('/v1/storage/settings', {attachments_destination: attachmentsDestination}, {headers: authHeaders()})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -2201,6 +2250,8 @@ const apiClient = {
     startGoogleConnect,
     completeGoogleConnect,
     disconnectGoogle,
+    getStorageSettings,
+    updateStorageSettings,
     // Calendar Sync API
     listGoogleCalendars,
     selectGoogleCalendar,

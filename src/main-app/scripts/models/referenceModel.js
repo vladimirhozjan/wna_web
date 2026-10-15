@@ -5,6 +5,17 @@ import { statsModel } from './statsModel.js'
 
 let instance = null
 
+// Splits files into "Google" / "Local" by `provider`; a single unlabeled group when nothing is in Drive
+export function providerSections(files) {
+    const google = files.filter(f => f.provider === 'gdrive')
+    if (google.length === 0) return [{key: 'all', label: null, files}]
+    const local = files.filter(f => f.provider !== 'gdrive')
+    return [
+        {key: 'gdrive', label: 'Google', files: google},
+        {key: 'local', label: 'Local', files: local},
+    ].filter(s => s.files.length > 0)
+}
+
 export function referenceModel() {
     if (instance) return instance
 
@@ -267,6 +278,7 @@ export function referenceModel() {
             if (err.status !== 415) {
                 error.value = err
             }
+            if (err.code) preview.visible = false
         } finally {
             preview.loading = false
         }

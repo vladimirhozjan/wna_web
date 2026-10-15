@@ -476,6 +476,51 @@
           </div>
         </div>
 
+        <!-- Storage Section -->
+        <div v-if="tier && driveEnabled && sectionVisible('storage')" class="card" data-testid="drive-card">
+          <div class="card-header card-header--toggle" @click="toggleSection('storage')">
+            <h2 class="settings-section-title">Storage</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('storage') }">&#8250;</span>
+          </div>
+          <div v-if="isExpanded('storage')" class="settings-section-body">
+            <div v-if="drive.loading && !drive.loaded" class="settings-loading">
+              <Spinner :size="16" />
+              <span>Loading...</span>
+            </div>
+
+            <template v-else>
+              <!-- Not connected -->
+              <div v-if="!drive.connected" class="settings-row settings-row--column">
+                <span class="settings-value" data-testid="drive-status">Google Drive not connected</span>
+                <span class="text-body-s settings-hint email-valueprop">Store your reference files and attachments in your own Google Drive. Files saved there don't count toward your storage limit.</span>
+                <Btn variant="primary" size="sm" :loading="drive.acting" :disabled="drive.acting" data-testid="drive-connect" @click="onConnectDrive">Connect Google Drive</Btn>
+              </div>
+
+              <!-- Connected -->
+              <div v-else class="settings-row">
+                <span class="settings-label">Google Drive</span>
+                <span class="settings-value color-text-success" data-testid="drive-status">Connected<template v-if="drive.email"> as {{ drive.email }}</template></span>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <span class="settings-label">Save attachments to</span>
+                  <p class="text-body-s settings-hint">New reference files go to Google Drive while it is connected</p>
+                </div>
+                <div class="settings-control" :class="{ 'settings-control--saving': drive.savingDestination }">
+                  <span v-if="drive.savingDestination" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                  <Select v-model="attachmentsDestination" :options="destinationOptions" :disabled="!drive.connected" title="Save attachments to" data-testid="drive-destination" />
+                </div>
+              </div>
+
+              <div v-if="drive.connected" class="settings-row">
+                <span class="settings-label">Disconnect</span>
+                <Btn variant="ghost-danger" size="sm" :loading="drive.acting" :disabled="drive.acting" data-testid="drive-disconnect" @click="onDisconnectDrive">Disconnect</Btn>
+              </div>
+            </template>
+          </div>
+        </div>
+
         <!-- Review Section -->
         <div v-if="sectionVisible('review')" class="card">
           <div class="card-header card-header--toggle" @click="toggleSection('review')">
@@ -704,7 +749,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
-import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, syncCalendarNow } from '../../scripts/core/apiClient.js'
+import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, syncCalendarNow, getStorageSettings, updateStorageSettings } from '../../scripts/core/apiClient.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
@@ -751,6 +796,7 @@ const SECTION_KEYWORDS = {
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
   calendarSync: 'calendar sync google connect disconnect reconnect sync now events timezone',
+  storage: 'storage google drive connect disconnect reconnect attachments reference files local',
   review: 'review weekly sidebar',
   notifications: 'notifications email reminder daily digest next actions project announcements',
   about: 'about version',
@@ -1017,7 +1063,6 @@ const calendarSyncEnabled = computed(() => hasFlag('calendar'))
 
 const gcal = reactive({
   connected: false,      // calendar feature granted
-  hasGrant: false,       // any Google grant exists
   reauth: false,         // 409 calendar_reauth_required
   calendars: [],
   selected: 'primary',
@@ -1028,7 +1073,7 @@ const gcal = reactive({
   syncing: false,
 })
 
-const calendarNeedsReconnect = computed(() => gcal.reauth || (gcal.hasGrant && !gcal.connected))
+const calendarNeedsReconnect = computed(() => gcal.reauth)
 
 const calendarOptions = computed(() => gcal.calendars.map(c => ({ value: c.id, label: c.summary })))
 
@@ -1038,7 +1083,6 @@ const selectedCalendar = computed({
 })
 
 function applyGoogleStatus(data) {
-  gcal.hasGrant = !!data.connected
   gcal.connected = (data.features || []).includes('calendar')
 }
 
@@ -1130,6 +1174,100 @@ async function onSyncCalendarNow() {
     onCalendarSyncError(err, 'Calendar sync failed')
   } finally {
     gcal.syncing = false
+  }
+}
+
+// Google Drive storage — all tiers, behind the `drive` flag
+const driveEnabled = computed(() => hasFlag('drive'))
+
+const drive = reactive({
+  connected: false,
+  email: null,
+  destination: 'local',
+  loading: false,
+  loaded: false,
+  acting: false,
+  savingDestination: false,
+})
+
+const destinationOptions = [
+  { value: 'local', label: 'Local' },
+  { value: 'gdrive', label: 'Google Drive' },
+]
+
+const attachmentsDestination = computed({
+  get: () => drive.connected ? drive.destination : 'local',
+  set: (val) => onSelectDestination(val),
+})
+
+function applyDriveStatus(data) {
+  drive.connected = (data.features || []).includes('drive')
+  drive.email = data.email || null
+}
+
+async function loadDriveStorage() {
+  if (!driveEnabled.value) return
+  drive.loading = true
+  try {
+    const [status, storage] = await Promise.all([getGoogleStatus(), getStorageSettings()])
+    applyDriveStatus(status)
+    drive.destination = storage.attachments_destination || 'local'
+  } catch (err) {
+    toaster.push(err.message || 'Failed to load Google Drive status')
+  } finally {
+    drive.loading = false
+    drive.loaded = true
+  }
+}
+
+async function onConnectDrive() {
+  if (drive.acting) return
+  drive.acting = true
+  try {
+    await startGoogleConnect('drive')   // redirects to Google
+  } catch (err) {
+    if (err.status !== 403) toaster.push(err.message || 'Failed to connect Google Drive')
+    drive.acting = false
+  }
+}
+
+async function onDisconnectDrive() {
+  if (drive.acting) return
+  const confirmed = await confirm.show({
+    title: 'Disconnect Google Drive',
+    message: 'Files already in your Google Drive stay there, but they can\'t be opened in WhatsNextAction until you reconnect. New files will be saved locally.',
+    confirmText: 'Disconnect',
+    cancelText: 'Cancel',
+  })
+  if (!confirmed) return
+
+  drive.acting = true
+  try {
+    applyDriveStatus(await disconnectGoogle('drive'))
+    const storage = await getStorageSettings()
+    drive.destination = storage.attachments_destination || 'local'
+    try { await auth.refreshToken() } catch { /* the JWT catches up on the next rotation */ }
+    toaster.success('Google Drive disconnected')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to disconnect Google Drive')
+  } finally {
+    drive.acting = false
+  }
+}
+
+async function onSelectDestination(value) {
+  if (drive.savingDestination || value === drive.destination) return
+  const previous = drive.destination
+  drive.destination = value
+  drive.savingDestination = true
+  try {
+    const data = await updateStorageSettings(value)
+    drive.destination = data.attachments_destination || value
+  } catch (err) {
+    drive.destination = previous
+    toaster.push(err.message || 'Failed to save setting')
+  } finally {
+    drive.savingDestination = false
   }
 }
 
@@ -1360,6 +1498,7 @@ onMounted(() => {
 
   loadInboxEmail()
   loadCalendarSync()
+  loadDriveStorage()
   loadPaymentStatus()
 
   applySectionQuery()
@@ -1389,6 +1528,10 @@ watch([isProOrTeam, calendarSyncEnabled], ([entitled, enabled]) => {
     gcal.reauth = false
     gcal.calendars = []
   }
+})
+
+watch(driveEnabled, (enabled) => {
+  if (enabled && !drive.loaded) loadDriveStorage()
 })
 
 watch(() => route.query.section, applySectionQuery)

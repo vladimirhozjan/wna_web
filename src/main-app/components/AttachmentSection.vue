@@ -206,7 +206,9 @@ async function uploadFile(file) {
     }
     toaster.success('File attached')
   } catch (err) {
-    if (err.status === 409) {
+    if (err.code) {
+      toaster.push(err.message)
+    } else if (err.status === 409) {
       toaster.push('Attachment limit reached (max 10)')
     } else if (err.status === 413) {
       toaster.push('File too large or storage quota exceeded')
@@ -275,8 +277,8 @@ async function openPreview(att) {
     } else {
       preview.url = URL.createObjectURL(blob)
     }
-  } catch {
-    toaster.push('Failed to load preview')
+  } catch (err) {
+    toaster.push(err.code ? err.message : 'Failed to load preview')
     preview.visible = false
   } finally {
     preview.loading = false
@@ -314,8 +316,8 @@ async function download(att) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-  } catch {
-    toaster.push('Failed to download file')
+  } catch (err) {
+    toaster.push(err.code ? err.message : 'Failed to download file')
   }
 }
 

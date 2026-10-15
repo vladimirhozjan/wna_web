@@ -11,9 +11,10 @@
           @move-file="$emit('move-file', $event)"
       />
     </template>
-    <template v-if="files.length > 0">
+    <template v-for="section in sections" :key="'s-' + section.key">
+      <h3 v-if="section.label" class="text-body-s fw-semibold grid-section" :data-testid="'ref-section-' + section.key">{{ section.label }}</h3>
       <RefFileCard
-          v-for="file in files"
+          v-for="file in section.files"
           :key="'fi-' + file.id"
           :file="file"
           :mode="mode"
@@ -32,11 +33,13 @@
 </template>
 
 <script setup>
+import {computed} from 'vue'
 import RefFolderCard from './RefFolderCard.vue'
 import RefFileCard from './RefFileCard.vue'
 import Btn from '../Btn.vue'
+import {providerSections} from '../../scripts/models/referenceModel.js'
 
-defineProps({
+const props = defineProps({
   folders: {
     type: Array,
     default: () => [],
@@ -68,6 +71,8 @@ defineEmits([
   'load-more',
   'move-file',
 ])
+
+const sections = computed(() => providerSections(props.files))
 </script>
 
 <style scoped>
@@ -76,6 +81,12 @@ defineEmits([
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
   padding: 16px;
+}
+
+.grid-section {
+  grid-column: 1 / -1;
+  margin: 8px 0 0;
+  color: var(--color-text-secondary);
 }
 
 .load-more {

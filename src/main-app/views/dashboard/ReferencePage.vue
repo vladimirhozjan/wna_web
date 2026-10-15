@@ -269,6 +269,7 @@ const normalizedAttachments = computed(() => {
     mime_type: att.mime_type,
     size_bytes: att.size_bytes,
     created_at: att.created_at,
+    provider: att.provider,
     _subtitle: att.item_title || 'Untitled',
     _raw: att,
   }))
@@ -505,8 +506,8 @@ async function openAttachmentPreview(att) {
     } else {
       model.preview.url = URL.createObjectURL(blob)
     }
-  } catch {
-    toaster.push('Failed to load preview')
+  } catch (err) {
+    toaster.push(err.code ? err.message : 'Failed to load preview')
     model.preview.visible = false
   } finally {
     model.preview.loading = false

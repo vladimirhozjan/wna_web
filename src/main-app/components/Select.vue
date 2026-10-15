@@ -7,6 +7,7 @@
         ref="triggerRef"
         aria-haspopup="listbox"
         :aria-expanded="isOpen"
+        :disabled="disabled"
         @click="toggle"
     >
       <span class="select-value">{{ selectedLabel }}</span>
@@ -134,6 +135,10 @@ const props = defineProps({
   searchable: {
     type: [Boolean, String],
     default: 'auto'
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -339,6 +344,11 @@ onUnmounted(() => {
 
 .select-trigger:hover {
   border-color: var(--color-border-light);
+}
+
+.select-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .select-trigger--open {

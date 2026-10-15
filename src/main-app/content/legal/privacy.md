@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 12, 2026
+**Last updated:** October 15, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -86,7 +86,11 @@ Your application settings are stored to provide a personalized experience:
 - Notification preferences (email notification toggles)
 - Dismissed tips and hints
 
-### 2.8 Connected Google Services (Google Calendar Sync)
+### 2.8 Connected Google Services (Google Calendar Sync and Google Drive Storage)
+
+You can connect Google services to WhatsNextAction. Each service is connected separately, on its own Google consent screen, and you can disconnect each one at any time in your settings.
+
+#### Google Calendar Sync
 
 If you connect **Google Calendar sync** (available on the Pro and Team plans), you grant us permission, on a separate Google consent screen, to create and manage events in your Google Calendar. When you connect, we store:
 
@@ -100,6 +104,16 @@ If you connect **Google Calendar sync** (available on the Pro and Team plans), y
 **What we read from Google:** only changes to the events that WhatsNextAction created in your calendar (for example, a reschedule), so we can update the matching action, and the list of calendars you can write to, so you can choose one. We do not read, import, or store your other calendar events.
 
 You can disconnect Google Calendar at any time in your settings. Events already in your Google Calendar stay there.
+
+#### Google Drive Storage
+
+If you connect **Google Drive storage** (available on all plans), you grant us permission, on a separate Google consent screen, to create files in your Google Drive and to access only the files that WhatsNextAction created there (the Google `drive.file` permission). We cannot see or open any other files in your Google Drive. When you connect, we create a visible `WNA` folder in your Google Drive, with `reference` and `attachments` subfolders; your reference folders are mirrored as subfolders there. The same encrypted Google refresh token and connected-account details described above are used.
+
+**What we store:** for each file kept in your Google Drive, its name, size, file type, its Google Drive file identifier, and the folder it belongs to. We do not keep a copy of the file contents on our servers: when you upload, download, or preview a file stored in Google Drive, its contents pass through our servers only to be transferred between your device and Google Drive.
+
+**Your Google Drive quota:** files stored in your Google Drive count against your own Google storage quota, not against your WhatsNextAction storage limit.
+
+If you disconnect Google Drive, the files stay in your Google Drive, but you cannot open them in WhatsNextAction until you connect Google Drive again.
 
 ### 2.9 Data We Do Not Collect
 
@@ -118,6 +132,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | User-generated content | Contract performance (Art. 6(1)(b)) | Necessary to deliver the core functionality of the Service |
 | Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
 | Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar at your request |
+| Connected Google services data (Google Drive storage) | Contract performance (Art. 6(1)(b)) | Necessary to store your reference files and attachments in your Google Drive at your request |
 | Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
 | Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
@@ -156,10 +171,11 @@ We share your personal data only with the following categories of recipients, st
 - **Zoho ZeptoMail (EU data centre)** - delivers our emails (account, security, and notification emails)
 - **Zoho Mail (EU data centre)** - receives messages sent to Email-to-Inbox addresses before they are added to your inbox
 
-### 5.3 Google Sign-In and Google Calendar
+### 5.3 Google Sign-In, Google Calendar and Google Drive
 
 - **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier and your email address to create or link your account. Sign-in does not give us access to any of your Google data beyond basic sign-in information.
 - **Google Calendar API** - if you connect Google Calendar sync, we exchange the data described in Section 2.8 with Google through the Google Calendar API, only to provide the sync you requested.
+- **Google Drive API** - if you connect Google Drive storage, we upload, read, rename, move, and delete the files that WhatsNextAction created in your Google Drive through the Google Drive API, only to provide the storage you requested. Google holds these files as your own provider, under your agreement with Google; Google is not our processor for them.
 
 This is governed by Google's own privacy policy. WhatsNextAction's use and transfer of information received from Google APIs to any other app will adhere to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements. We use data received from Google only to provide and improve the sync features you see in the Service; we do not use it for advertising, we do not sell it, we do not use it to develop or train generalized AI or machine-learning models, and no person at WhatsNextAction reads it unless you ask us to, it is needed for security, or the law requires it.
 
@@ -207,6 +223,8 @@ If you pay through Stripe, your payment data may also be transferred by Stripe t
 
 If you connect Google Calendar sync, the events we create for you are held by Google in your own Google Calendar under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the sync you requested (Art. 49(1)(b) GDPR).
 
+If you connect Google Drive storage, the files we store for you are held by Google in your own Google Drive under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the storage you requested (Art. 49(1)(b) GDPR).
+
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
 
 ## 7. Data Retention
@@ -217,6 +235,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Google Calendar connection (encrypted token, connected Google account, granted permissions, selected calendar, event identifiers) | Kept until you disconnect Google Calendar or delete your account. On account deletion we also revoke our access at Google. Events already in your Google Calendar are yours and stay there |
+| Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
 | Session data | Sessions expire after 14 days without activity; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
@@ -229,7 +248,7 @@ Under the GDPR, you have the following rights regarding your personal data:
 
 - **Right of access** (Art. 15) - You can request a copy of all personal data we hold about you.
 - **Right to rectification** (Art. 16) - You can correct inaccurate data. Most data can be corrected directly in the Service (e.g., editing your content). For email changes, contact us.
-- **Right to erasure** (Art. 17) - You can delete your account and all associated data. You can also delete individual items within the Service at any time.
+- **Right to erasure** (Art. 17) - You can delete your account and all associated data. You can also delete individual items within the Service at any time. Files stored in your own Google Drive are not deleted when you delete your account or disconnect Google Drive; you can delete them yourself in Google Drive.
 - **Right to restrict processing** (Art. 18) - You can request that we limit processing of your data in certain circumstances.
 - **Right to data portability** (Art. 20) - You can request an export of your data in a commonly used, machine-readable format. Contact us at info@whatsnextaction.com to request an export.
 - **Right to object** (Art. 21) - You can object to processing based on legitimate interest. We will cease processing unless we have compelling legitimate grounds.
