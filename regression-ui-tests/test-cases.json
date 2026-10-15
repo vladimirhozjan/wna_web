@@ -97,17 +97,18 @@
     ],
     "smoke": false,
     "section": "1: Authentication & Account",
-    "preconditions": "An account already exists with the email `existing@example.com` (or another known registered email). User is not logged in.",
+    "preconditions": "A **verified** account already exists with the email `existing@example.com` (or another known registered email). User is not logged in. Mailpit is running on `localhost:8025`.",
     "steps": [
       "Navigate to `http://localhost:5173/` (the landing page).",
       "Click \"Start Here\" to open the authentication dialog in registration mode.",
       "Enter the already-registered email address in the email field (e.g., `existing@example.com`).",
       "Enter a valid password: `TestPass1!`.",
       "Enter the same password in the confirm password field: `TestPass1!`.",
+      "Check the Terms of Service checkbox.",
       "Click the \"Register\" submit button.",
       "Wait for the backend response."
     ],
-    "expected": "- The backend returns HTTP 409 (Conflict).\n- An error message is displayed to the user containing text such as \"Email already exists\" or similar wording indicating the email is taken.\n- The user remains on the registration form and can correct the email.\n- No tokens are stored in localStorage."
+    "expected": "- The backend returns HTTP 201 with the same body shape as a new signup (`message` \"Verification email sent\" + a `user_id`).\n- No error toast is shown, and nothing in the UI indicates that the email is already registered.\n- The auth dialog transitions to the normal \"verify-sent\" screen, exactly as for a new signup.\n- No tokens are stored in localStorage.\n- Mailpit (`http://localhost:8025`) shows an existing-account email to `existing@example.com` saying someone tried to create an account with this email, with sign-in and forgot-password links. No verification email is sent.\n- Signing in with the account's original password still works (the existing account is unchanged)."
   },
   {
     "id": "TC-006",
@@ -15594,5 +15595,46 @@
       "As the Team user with the `drive` flag active, upload a reference file."
     ],
     "expected": "Step 1: the \"Upgrade Your Plan\" modal shows \"You've reached your storage limit. Upgrade your plan for more space to keep your reference files organized. Or connect Google Drive in Settings — files saved there don't count toward your limit.\" Step 2: same text without the Google Drive sentence. Step 3: the modal title is \"Storage Limit Reached\", the message is \"You've reached your storage limit. Free up space by deleting files you no longer need. Or connect Google Drive in Settings — files saved there don't count toward your limit.\", the footer reads \"Need more space? Contact support@whatsnextaction.com.\" with a working mailto link, and the only button is **Got it** (no \"View plans\")."
+  },
+  {
+    "id": "TC-770",
+    "name": "Registration with an Existing Unverified Email Resends Verification",
+    "priority": "High",
+    "area": "Registration",
+    "areas": [
+      "Registration"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "An account exists for `unverified@example.com` that has registered but **not** verified its email. User is not logged in. Mailpit is running on `localhost:8025`.",
+    "steps": [
+      "Navigate to `http://localhost:5173/` (the landing page).",
+      "Click \"Start Here\" to open the authentication dialog in registration mode.",
+      "Enter `unverified@example.com` in the email field.",
+      "Enter `TestPass1!` in the password and confirm password fields.",
+      "Check the Terms of Service checkbox.",
+      "Click the \"Register\" submit button.",
+      "Open Mailpit and click the verification link in the newest \"Verify your WNA account\" email."
+    ],
+    "expected": "- Step 6: the backend returns HTTP 201 with the same body shape as a new signup; no error toast is shown, and the dialog shows the normal \"verify-sent\" screen. Nothing in the UI indicates that the email is already registered.\n- Mailpit shows a fresh \"Verify your WNA account\" email to `unverified@example.com` (no existing-account email).\n- Step 7: the `/verify` page shows success and the account is verified."
+  },
+  {
+    "id": "TC-771",
+    "name": "Login to a Disabled Account with a Wrong Password Shows the Generic Error",
+    "priority": "High",
+    "area": "Login",
+    "areas": [
+      "Login"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "A verified account `disabled@example.com` has been disabled in the admin panel. No account exists for `nobody@example.com`. User is not logged in.",
+    "steps": [
+      "Navigate to `http://localhost:5173/` and open the login dialog.",
+      "Enter `disabled@example.com` with a wrong password and click \"Login\".",
+      "Enter `nobody@example.com` with any password and click \"Login\".",
+      "Enter `disabled@example.com` with the correct password and click \"Login\"."
+    ],
+    "expected": "- Steps 2 and 3: both return HTTP 401 with the same response body, and both show the same error: \"Incorrect email and/or password. Please correct your credentials.\" Nothing indicates the account exists or is disabled.\n- Step 4: login is refused — the response is HTTP 401 with the \"Account disabled\" detail (visible in the network tab); the UI shows the same wrong-credentials message.\n- No tokens are stored in localStorage after any step."
   }
 ]
