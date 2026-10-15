@@ -4,12 +4,15 @@
       <div v-if="upgrade.state.visible" class="overlay" @click.self="upgrade.close()">
         <div class="dialog">
           <div class="dialog-header">
-            <h3 class="text-body-l fw-semibold title">Upgrade Your Plan</h3>
+            <h3 class="text-body-l fw-semibold title">{{ teamStorageLimit ? 'Storage Limit Reached' : 'Upgrade Your Plan' }}</h3>
             <button type="button" class="close-btn" @click="upgrade.close()" aria-label="Close">&times;</button>
           </div>
           <div class="dialog-body">
             <p class="text-body-m message">{{ upgrade.state.message }}</p>
-            <p v-if="paymentsEnabled" class="text-body-s color-text-secondary hint">
+            <p v-if="teamStorageLimit" class="text-body-s color-text-secondary hint">
+              Need more space? Contact <a class="hint-link" href="mailto:support@whatsnextaction.com?subject=Storage%20limit">support@whatsnextaction.com</a>.
+            </p>
+            <p v-else-if="paymentsEnabled" class="text-body-s color-text-secondary hint">
               You can upgrade your plan anytime from Settings.
             </p>
             <p v-else class="text-body-s color-text-secondary hint">
@@ -17,8 +20,8 @@
             </p>
           </div>
           <div class="dialog-actions">
-            <button v-if="paymentsEnabled" type="button" class="btn-ghost text-body-s" @click="upgrade.close()">Not now</button>
-            <button v-if="paymentsEnabled" type="button" class="btn-close text-body-s" @click="goToPlans">View plans</button>
+            <button v-if="paymentsEnabled && !teamStorageLimit" type="button" class="btn-ghost text-body-s" @click="upgrade.close()">Not now</button>
+            <button v-if="paymentsEnabled && !teamStorageLimit" type="button" class="btn-close text-body-s" @click="goToPlans">View plans</button>
             <button v-else type="button" class="btn-close text-body-s" @click="upgrade.close()">Got it</button>
           </div>
         </div>
@@ -28,13 +31,18 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { upgradeModel } from '../scripts/core/upgradeModel.js'
 import { flagsModel } from '../scripts/core/flagsModel.js'
+import { authModel } from '../scripts/core/authModel.js'
 
 const upgrade = upgradeModel()
 const { paymentsEnabled } = flagsModel()
 const router = useRouter()
+const auth = authModel()
+
+const teamStorageLimit = computed(() => upgrade.state.kind === 'storage' && auth.currentUser.value?.subscription_tier === 'team')
 
 function goToPlans() {
   upgrade.close()

@@ -9,11 +9,13 @@ export function upgradeModel() {
         visible: false,
         message: '',
         limit: null,
+        kind: null,
     })
 
-    function show({ message, limit }) {
+    function show({ message, limit, kind }) {
         state.message = message || 'You have reached a limit on your current plan.'
         state.limit = limit ?? null
+        state.kind = kind ?? null
         state.visible = true
     }
 
@@ -21,6 +23,7 @@ export function upgradeModel() {
         state.visible = false
         state.message = ''
         state.limit = null
+        state.kind = null
     }
 
     instance = { state, show, close }
