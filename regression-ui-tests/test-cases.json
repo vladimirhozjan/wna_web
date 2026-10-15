@@ -108,7 +108,7 @@
       "Click the \"Register\" submit button.",
       "Wait for the backend response."
     ],
-    "expected": "- The backend returns HTTP 201 with the same body shape as a new signup (`message` \"Verification email sent\" + a `user_id`).\n- No error toast is shown, and nothing in the UI indicates that the email is already registered.\n- The auth dialog transitions to the normal \"verify-sent\" screen, exactly as for a new signup.\n- No tokens are stored in localStorage.\n- Mailpit (`http://localhost:8025`) shows an existing-account email to `existing@example.com` saying someone tried to create an account with this email, with sign-in and forgot-password links. No verification email is sent.\n- Signing in with the account's original password still works (the existing account is unchanged)."
+    "expected": "- The backend returns HTTP 201 with the same body shape as a new signup (`message` \"Verification email sent\" + a `user_id`).\n- The returned `user_id` is a UUID that is **not** the existing account's id, and `GET /v1/user/verified?id=<returned user_id>` returns `false`.\n- No error toast is shown, and nothing in the UI indicates that the email is already registered.\n- The auth dialog transitions to the normal \"verify-sent\" screen, exactly as for a new signup.\n- No tokens are stored in localStorage.\n- Mailpit (`http://localhost:8025`) shows an existing-account email to `existing@example.com` saying someone tried to create an account with this email, with sign-in and forgot-password links. No verification email is sent.\n- Signing in with the account's original password still works (the existing account is unchanged)."
   },
   {
     "id": "TC-006",
@@ -969,7 +969,7 @@
       "Click the \"Sign up with Google\" button (or switch to login and click \"Sign in with Google\").",
       "Observe the browser navigation."
     ],
-    "expected": "- The browser redirects to `https://accounts.google.com/o/oauth2/v2/auth` with the following query parameters:\n  - `client_id` matching the configured Google client ID.\n  - `redirect_uri` set to `http://localhost:5173/google/sso`.\n  - `response_type` set to `code`.\n  - `scope` set to `openid email profile`.\n  - `access_type` set to `offline`.\n  - `prompt` set to `select_account`.\n- The Google account selection / consent screen is displayed."
+    "expected": "- The browser redirects to `https://accounts.google.com/o/oauth2/v2/auth` with the following query parameters:\n  - `client_id` matching the configured Google client ID.\n  - `redirect_uri` set to `http://localhost:5173/google/sso`.\n  - `response_type` set to `code`.\n  - `scope` set to `openid email profile`.\n  - `access_type` set to `offline`.\n  - `prompt` set to `select_account`.\n  - `state` set to a random URL-safe value (≥ 43 characters).\n  - `code_challenge` set to a URL-safe base64 SHA-256 value (43 characters).\n  - `code_challenge_method` set to `S256`.\n- Before leaving the page, `sessionStorage` contains `google_sso_state` (equal to the `state` parameter) and `google_sso_verifier`.\n- Clicking the Google button again produces a different `state` and `code_challenge`.\n- The Google account selection / consent screen is displayed."
   },
   {
     "id": "TC-393",
@@ -1061,11 +1061,12 @@
     "section": "1: Authentication & Account",
     "preconditions": "Google SSO is configured. User is not logged in.",
     "steps": [
-      "Navigate to `http://localhost:5173/google/sso?code=invalid_fake_code_12345`.",
+      "Navigate to `http://localhost:5173/`, open the authentication dialog and click \"Sign in with Google\"; note the `state` query parameter of the Google URL (this stores `google_sso_state` + `google_sso_verifier` in `sessionStorage`).",
+      "In the same tab, navigate to `http://localhost:5173/google/sso?code=invalid_fake_code_12345&state=<noted state>`.",
       "Observe the Google SSO page behavior.",
       "Wait for the API response."
     ],
-    "expected": "- The page initially shows a spinning loader with the text \"Signing you in...\".\n- A `POST /v1/user/google-sso` request is sent with the invalid code.\n- The backend rejects the code and returns an error.\n- The page transitions to an error state showing an error icon (red circle with X) and the heading \"Sign-in failed\".\n- A user-friendly error message is displayed below the heading.\n- A \"Back to login\" button is displayed.\n- Clicking \"Back to login\" navigates to the login page.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`."
+    "expected": "- The page initially shows a spinning loader with the text \"Signing you in...\".\n- A `POST /v1/user/google-sso` request is sent with the invalid code and a non-empty `code_verifier`.\n- `sessionStorage` no longer contains `google_sso_state` or `google_sso_verifier`.\n- The backend rejects the code and returns an error.\n- The page transitions to an error state showing an error icon (red circle with X) and the heading \"Sign-in failed\".\n- A user-friendly error message is displayed below the heading.\n- A \"Back to login\" button is displayed.\n- Clicking \"Back to login\" navigates to the login page.\n- The user is not authenticated — `localStorage` does not contain `auth_token` or `refresh_token`."
   },
   {
     "id": "TC-398",
@@ -1100,7 +1101,7 @@
       "Navigate directly to `http://localhost:5173/google/sso` (without any `code` query parameter).",
       "Observe the Google SSO page behavior."
     ],
-    "expected": "- The page does not show the loading spinner.\n- The page displays a warning icon (yellow circle with exclamation mark).\n- The heading \"Invalid sign-in link\" is displayed.\n- The message \"This link is missing an authorization code. Please try signing in again.\" is displayed.\n- A \"Back to login\" button is displayed.\n- Clicking \"Back to login\" navigates to the login page.\n- The user is not authenticated."
+    "expected": "- The page does not show the loading spinner.\n- The page displays a warning icon (yellow circle with exclamation mark).\n- The heading \"Invalid sign-in link\" is displayed.\n- The message \"This sign-in link is invalid or has expired. Please try signing in again.\" is displayed.\n- No `POST /v1/user/google-sso` request is sent.\n- A \"Back to login\" button is displayed.\n- Clicking \"Back to login\" navigates to the login page.\n- The user is not authenticated."
   },
   {
     "id": "TC-400",
@@ -15597,6 +15598,96 @@
     "expected": "Step 1: the \"Upgrade Your Plan\" modal shows \"You've reached your storage limit. Upgrade your plan for more space to keep your reference files organized. Or connect Google Drive in Settings — files saved there don't count toward your limit.\" Step 2: same text without the Google Drive sentence. Step 3: the modal title is \"Storage Limit Reached\", the message is \"You've reached your storage limit. Free up space by deleting files you no longer need. Or connect Google Drive in Settings — files saved there don't count toward your limit.\", the footer reads \"Need more space? Contact support@whatsnextaction.com.\" with a working mailto link, and the only button is **Got it** (no \"View plans\")."
   },
   {
+    "id": "TC-765",
+    "name": "`POST /v1/stuff/for-user` Is Not Reachable with a User JWT",
+    "priority": "Critical",
+    "area": "API Security",
+    "areas": [
+      "API Security"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Two verified users, A and B, each with a JWT. Router on `localhost:8000`.",
+    "steps": [
+      "As A, `POST /v1/stuff/for-user` with body `{\"user_id\": \"<B's id>\", \"title\": \"<unique title>\"}`.",
+      "As B, `GET /v1/inbox?limit=100`."
+    ],
+    "expected": "Step 1 returns HTTP 404. Step 2: B's inbox does not contain the item."
+  },
+  {
+    "id": "TC-766",
+    "name": "`PUT /v1/notification/settings/{other_user_id}/disabled` Is Not Reachable",
+    "priority": "Critical",
+    "area": "API Security",
+    "areas": [
+      "API Security"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Two verified users, A and B, each with a JWT.",
+    "steps": [
+      "As B, `GET /v1/notification/settings` and note the body.",
+      "As A, `PUT /v1/notification/settings/<B's id>/disabled`.",
+      "As B, `GET /v1/notification/settings`."
+    ],
+    "expected": "Step 2 returns HTTP 404. Step 3 returns the same body as step 1."
+  },
+  {
+    "id": "TC-767",
+    "name": "Notification Admin and Internal Reads Are Not Reachable Through `/v1/notification`",
+    "priority": "Critical",
+    "area": "API Security",
+    "areas": [
+      "API Security"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "A verified user with a JWT (no admin rights).",
+    "steps": [
+      "As the user, `GET` each of: `/v1/notification/admin/alarms`, `/v1/notification/admin/alarms/counts`, `/v1/notification/admin/broadcasts`, `/v1/notification/admin/broadcasts/shell`, `/v1/notification/admin/broadcasts/recipient-count`, `/v1/notification/admin/broadcasts/<random uuid>`, `/v1/notification/notifications`."
+    ],
+    "expected": "Every request returns HTTP 404."
+  },
+  {
+    "id": "TC-768",
+    "name": "Documented `/v1/notification/settings` and `/v1/notification/history` Still Work",
+    "priority": "High",
+    "area": "API Security",
+    "areas": [
+      "API Security"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "A verified user with a JWT.",
+    "steps": [
+      "`GET /v1/notification/settings`.",
+      "`PUT /v1/notification/settings` with `{\"disabled_events\": {\"email\": [\"daily_digest\"]}}`.",
+      "`GET /v1/notification/settings` again.",
+      "`GET /v1/notification/history`."
+    ],
+    "expected": "Step 1: HTTP 200 with `disabled_events`. Step 2: HTTP 200, `disabled_events.email` is `[\"daily_digest\"]`. Step 3 returns the saved value. Step 4: HTTP 200 with an `items` array."
+  },
+  {
+    "id": "TC-769",
+    "name": "Account Delete Purges the Inbox-Email Address, Email Logs and Core Data",
+    "priority": "High",
+    "area": "Account / GDPR",
+    "areas": [
+      "Account / GDPR"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Local stack (web on `localhost:5173`). A verified Pro user with a generated inbox address. Local-only DB access (`wna_postgres`).",
+    "steps": [
+      "Send one email to the user's inbox address and wait until it appears in the user's Inbox.",
+      "Check `wna_email_db`: one `inbox_email_address` row and one `inbox_email_log` row for the user; `wna_core_db`: one `user_state` row.",
+      "As the user, `DELETE /v1/user/delete`.",
+      "Check the same tables again.",
+      "Send another email to the old address and wait one poll cycle."
+    ],
+    "expected": "Step 3 returns HTTP 200. Step 4: no `inbox_email_address`, `inbox_email_log` or core `user_state` rows remain for the user. Step 5: the mail is logged as `unknown_hash` with no user, and no row is created for the deleted user. (The core purge does not remove `item_meta`, attachment or storage rows; see `specs/ci/backend-ci.md` §`DELETE /internal/settings`.)"
+  },
+  {
     "id": "TC-770",
     "name": "Registration with an Existing Unverified Email Resends Verification",
     "priority": "High",
@@ -15616,7 +15707,7 @@
       "Click the \"Register\" submit button.",
       "Open Mailpit and click the verification link in the newest \"Verify your WNA account\" email."
     ],
-    "expected": "- Step 6: the backend returns HTTP 201 with the same body shape as a new signup; no error toast is shown, and the dialog shows the normal \"verify-sent\" screen. Nothing in the UI indicates that the email is already registered.\n- Mailpit shows a fresh \"Verify your WNA account\" email to `unverified@example.com` (no existing-account email).\n- Step 7: the `/verify` page shows success and the account is verified."
+    "expected": "- Step 6: the backend returns HTTP 201 with the same body shape as a new signup; no error toast is shown, and the dialog shows the normal \"verify-sent\" screen. Nothing in the UI indicates that the email is already registered.\n- Step 6: the returned `user_id` is a UUID that is **not** the existing account's id.\n- Mailpit shows a fresh \"Verify your WNA account\" email to `unverified@example.com` (no existing-account email).\n- Step 7: the `/verify` page shows success and the account is verified."
   },
   {
     "id": "TC-771",
@@ -15636,5 +15727,41 @@
       "Enter `disabled@example.com` with the correct password and click \"Login\"."
     ],
     "expected": "- Steps 2 and 3: both return HTTP 401 with the same response body, and both show the same error: \"Incorrect email and/or password. Please correct your credentials.\" Nothing indicates the account exists or is disabled.\n- Step 4: login is refused — the response is HTTP 401 with the \"Account disabled\" detail (visible in the network tab); the UI shows the same wrong-credentials message.\n- No tokens are stored in localStorage after any step."
+  },
+  {
+    "id": "TC-772",
+    "name": "Google SSO - Forged Callback Without the Stored State Is Rejected",
+    "priority": "High",
+    "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Google SSO is configured. User is not logged in. A fresh browser tab (no `google_sso_state` / `google_sso_verifier` in `sessionStorage`). Browser DevTools Network tab is open.",
+    "steps": [
+      "Navigate to `http://localhost:5173/google/sso?code=attacker_code_12345` (no `state`).",
+      "Navigate to `http://localhost:5173/google/sso?code=attacker_code_12345&state=forged_state`.",
+      "Open the authentication dialog, click \"Sign in with Google\" (stores a real `state`), then in the same tab navigate to `http://localhost:5173/google/sso?code=attacker_code_12345&state=forged_state`."
+    ],
+    "expected": "- Every step shows the warning icon, the heading \"Invalid sign-in link\", the message \"This sign-in link is invalid or has expired. Please try signing in again.\" and a \"Back to login\" button; no \"Signing you in...\" spinner.\n- No `POST /v1/user/google-sso` request is sent in any step.\n- After step 3, `sessionStorage` no longer contains `google_sso_state` or `google_sso_verifier`.\n- The user is not authenticated — `localStorage` does not contain `auth_token`, `refresh_token` or `current_user`."
+  },
+  {
+    "id": "TC-773",
+    "name": "Google SSO - Sign-in With Matching State Sends the PKCE Verifier",
+    "priority": "High",
+    "area": "Google SSO",
+    "areas": [
+      "Google SSO"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Local stack running with `mock_google_oauth` (enforces PKCE). The browser request to `https://accounts.google.com/o/oauth2/v2/auth` is routed to `mock_google_oauth` (the ui-tests route it as for Calendar connect). User is not logged in. Browser DevTools Network tab is open.",
+    "steps": [
+      "Navigate to `http://localhost:5173/`, open the authentication dialog and click \"Sign in with Google\".",
+      "Complete the sign-in on the mock consent screen so it redirects back to `/google/sso?code=…&state=…`.",
+      "Inspect the `POST /v1/user/google-sso` request body."
+    ],
+    "expected": "- The callback URL's `state` equals the `state` sent in the authorization URL.\n- The `POST /v1/user/google-sso` body contains `code`, `code_verifier` (the value stored before the redirect) and `tz`.\n- The backend returns 200; the user is redirected to `/engage` and is signed in (`auth_token`, `refresh_token` in `localStorage`).\n- `sessionStorage` no longer contains `google_sso_state` or `google_sso_verifier`."
   }
 ]

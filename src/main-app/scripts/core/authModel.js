@@ -186,12 +186,12 @@ export function authModel() {
         }
     }
 
-    async function googleSsoLogin(code) {
+    async function googleSsoLogin(code, codeVerifier) {
         loading.value = true
         error.value = null
 
         try {
-            const data = await apiClient.googleSso(code)
+            const data = await apiClient.googleSso(code, codeVerifier)
 
             if (data.user) {
                 currentUser.value = data.user

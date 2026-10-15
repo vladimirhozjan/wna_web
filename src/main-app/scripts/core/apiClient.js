@@ -1720,9 +1720,9 @@ export async function googleAuth(idToken) {
     }
 }
 
-export async function googleSso(code) {
+export async function googleSso(code, codeVerifier) {
     try {
-        const res = await httpApi.post('/v1/user/google-sso', {code, tz: liveTz()})
+        const res = await httpApi.post('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz()})
         const data = res.data
 
         if (!data.access_token || !data.refresh_token) {

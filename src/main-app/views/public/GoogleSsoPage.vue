@@ -19,14 +19,14 @@
           <Btn @click="goToLogin">Back to login</Btn>
         </div>
 
-        <!-- Invalid (no code) -->
+        <!-- Invalid (no code or state mismatch) -->
         <div v-else-if="status === 'invalid'" class="sso-state">
           <span class="sso-icon sso-icon--warning">
             <ExclamationIcon width="24" height="24" />
           </span>
           <h2 class="text-h2 color-text-primary">Invalid sign-in link</h2>
           <p class="text-body-s color-text-secondary">
-            This link is missing an authorization code. Please try signing in again.
+            This sign-in link is invalid or has expired. Please try signing in again.
           </p>
           <Btn @click="goToLogin">Back to login</Btn>
         </div>
@@ -43,6 +43,7 @@ import LandingLayout from '../../layouts/LandingLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Spinner from '../../components/Spinner.vue'
 import {authModel} from '../../scripts/core/authModel.js'
+import {takeGoogleSsoVerifier} from '../../scripts/core/googleSso.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
 import ExclamationIcon from '../../assets/ExclamationIcon.vue'
 import CrossIcon from '../../assets/CrossIcon.vue'
@@ -56,17 +57,18 @@ const errorMessage = ref('')
 
 onMounted(() => {
   const code = route.query.code
-  if (!code) {
+  const verifier = takeGoogleSsoVerifier(route.query.state)
+  if (!code || !verifier) {
     status.value = 'invalid'
     return
   }
-  exchangeCode(code)
+  exchangeCode(code, verifier)
 })
 
-async function exchangeCode(code) {
+async function exchangeCode(code, verifier) {
   status.value = 'loading'
   try {
-    await auth.googleSsoLogin(code)
+    await auth.googleSsoLogin(code, verifier)
     await auth.loadUser()
     router.push({name: 'engage'})
   } catch (err) {
