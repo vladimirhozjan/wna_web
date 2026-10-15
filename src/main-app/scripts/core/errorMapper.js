@@ -38,10 +38,6 @@ export function mapApiError(error, scenario=ErrorScenario.GENERIC) {
             if (status === 401) {
                 return "Google authentication failed.";
             }
-        } else if (scenario === ErrorScenario.REGISTER) {
-            if (status === 409) {
-                return "Email already exists. Change email or sign in.";
-            }
         } else if (scenario === ErrorScenario.CHANGE_PASSWORD) {
             if (status === 400) {
                 return "New password does not meet requirements.";
