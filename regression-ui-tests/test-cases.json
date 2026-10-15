@@ -14096,7 +14096,7 @@
     "steps": [
       "Open the app in Safari (any page, logged in or not).",
       "Tap Share → Add to Home Screen.",
-      "Verify the sheet shows the name \"WNA\" and the brand icon (the J1 logo: teal-gradient circle with the white N-bolt), not a page screenshot.",
+      "Verify the sheet shows the name \"WNA\" and the brand icon (the G4 logo: teal-gradient circle with a white \"wn\" and a cyan \"›\" chevron), not a page screenshot.",
       "Tap Add and launch the app from the home screen.",
       "Verify it opens standalone (no Safari address bar or tabs) on `/engage` (after login if the installed app has no session yet).",
       "Verify the status bar area shows the app's light background and the top nav is not hidden under the notch / status bar.",
@@ -14119,7 +14119,7 @@
       "Open the app in Chrome.",
       "Open ⋮ → Install app (or \"Add to Home screen\"); verify the prompt shows \"WhatsNextAction\" / \"WNA\" with the brand icon.",
       "Install and open the app from the launcher / home screen.",
-      "Verify the launcher icon is the maskable icon: the J1 N-bolt glyph (including its pointed stroke ends) is fully visible and not clipped by the device's icon shape (circle, squircle, rounded square).",
+      "Verify the launcher icon is the maskable icon: the G4 \"wn›\" glyph (including the ends of the \"w\" and the chevron tip) is fully visible and not clipped by the device's icon shape (circle, squircle, rounded square).",
       "Verify the app opens standalone on `/engage` and the status bar color matches the app background.",
       "Switch the Theme to \"Dark\"; verify the status bar color follows."
     ],

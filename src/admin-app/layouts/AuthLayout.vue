@@ -2,7 +2,7 @@
   <div class="auth-layout">
     <div class="auth-card">
       <div class="auth-brand">
-        <img class="auth-logo" src="/favicon.svg" alt="" />
+        <img class="auth-logo" src="/favicon.svg?v=4" alt="" />
         <span class="text-body-l fw-semibold color-text-primary">WNA Admin</span>
       </div>
       <slot />
