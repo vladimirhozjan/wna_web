@@ -38,7 +38,7 @@
       <template #cell-vat_amount_minor="{ value }">{{ value != null ? formatEur(value) : '—' }}</template>
       <template #cell-billing_country="{ value }">{{ value || '—' }}</template>
       <template #cell-card="{ row }">{{ formatCard(row) }}</template>
-      <template #cell-ip_country="{ value }">{{ value || '—' }}</template>
+      <template #cell-ip_country="{ value }">{{ value ? `${value}*` : '—' }}</template>
       <template #cell-provider="{ value }">{{ gatewayLabel(value) || '—' }}</template>
       <template #cell-payment_method_type="{ value }">{{ value || '—' }}</template>
       <template #cell-status="{ value }"><Badge type="status" :value="value" /></template>
@@ -68,6 +68,7 @@
         <Pagination :page="page" :page-size="pageSize" :total="total" @update:page="setPage" />
       </template>
     </DataTable>
+    <DbIpAttribution class="attribution" />
 
     <!-- Refund Modal -->
     <Modal :visible="!!refundTarget" title="Refund Payment" @close="refundTarget = null">
@@ -113,6 +114,7 @@ import Inpt from '../components/Inpt.vue'
 import Modal from '../components/Modal.vue'
 import Pagination from '../components/Pagination.vue'
 import PaymentEvidence from '../components/PaymentEvidence.vue'
+import DbIpAttribution from '../components/DbIpAttribution.vue'
 import Select from '../components/Select.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import apiClient, { gatewayLabel } from '../scripts/core/apiClient.js'
@@ -277,6 +279,11 @@ async function confirmRefund() {
 
 .evidence-terms {
   overflow-wrap: anywhere;
+}
+
+.attribution {
+  display: block;
+  margin-top: 8px;
 }
 
 .refund-remaining {

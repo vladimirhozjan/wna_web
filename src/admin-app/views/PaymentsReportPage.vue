@@ -81,6 +81,7 @@
         />
       </template>
     </DataTable>
+    <DbIpAttribution class="attribution" />
   </div>
 </template>
 
@@ -91,6 +92,7 @@ import DataTable from '../components/DataTable.vue'
 import Pagination from '../components/Pagination.vue'
 import Badge from '../components/Badge.vue'
 import PaymentEvidence from '../components/PaymentEvidence.vue'
+import DbIpAttribution from '../components/DbIpAttribution.vue'
 import Stat from '../components/Stat.vue'
 import Btn from '../components/Btn.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
@@ -251,6 +253,11 @@ onMounted(load)
   margin: 0 0 10px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.attribution {
+  display: block;
+  margin-top: 8px;
 }
 
 .table-title + .data-table-wrapper {

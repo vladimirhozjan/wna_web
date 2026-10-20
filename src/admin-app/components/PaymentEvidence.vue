@@ -18,7 +18,7 @@ const props = defineProps({
 const evidenceText = computed(() => [
   props.payment.billing_country ? `Billing ${props.payment.billing_country}` : null,
   props.payment.card_country ? `Card ${props.payment.card_country}` : null,
-  props.payment.ip_country ? `IP ${props.payment.ip_country}` : null,
+  props.payment.ip_country ? `IP ${props.payment.ip_country}*` : null,
 ].filter(Boolean).join(' · '))
 </script>
 
