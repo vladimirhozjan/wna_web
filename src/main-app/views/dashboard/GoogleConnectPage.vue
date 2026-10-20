@@ -25,7 +25,7 @@ async function finish() {
   const {code, state} = route.query
   if (!code || !state) {
     toaster.push('Google connection was cancelled or the link is invalid.')
-    return
+    return false
   }
   try {
     const data = await completeGoogleConnect(route.params.feature, code, state)
@@ -34,14 +34,20 @@ async function finish() {
       toaster.push(`Google access for ${dropped.join(', ')} was removed. Reconnect it in Settings.`, 'warning')
     }
     try { await auth.refreshToken() } catch { /* the JWT catches up on the next rotation */ }
+    return true
   } catch (err) {
     if (err.status !== 403) toaster.push(err.message)
+    return false
   }
 }
 
 onMounted(async () => {
-  await finish()
-  router.replace({name: 'settings'})
+  const connected = await finish()
+  if (connected && route.params.feature === 'calendar') {
+    router.replace({name: 'settings', query: {section: 'calendarSync', calendar: 'connected'}})
+  } else {
+    router.replace({name: 'settings'})
+  }
 })
 </script>
 

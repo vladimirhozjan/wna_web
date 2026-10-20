@@ -92,18 +92,25 @@ You can connect Google services to WhatsNextAction. Each service is connected se
 
 #### Google Calendar Sync
 
-If you connect **Google Calendar sync** (available on the Pro and Team plans), you grant us permission, on a separate Google consent screen, to create and manage events in your Google Calendar. When you connect, we store:
+If you connect **Google Calendar sync** (available on the Pro and Team plans), you grant us permission, on a separate Google consent screen, to create and manage events in your Google Calendar, to see the list of your calendars, and to create a dedicated **WhatsNextAction** calendar in your Google account. We create that calendar only when you ask us to (after connecting, or later in your settings); you can also sync with another calendar you choose. When you connect, we store:
 
 - An encrypted Google refresh token (encrypted with keys managed by Google Cloud Key Management Service), which lets us act for you without asking you to sign in to Google again
 - The email address of the connected Google account and the Google permissions you granted
 - The timezone of your browser at the moment you connect, used to place timed events at the right time
-- The calendar you selected and, for each synced action, the Google event identifier and its sync state
+- The calendar you selected and, if you create one, the identifier of your WhatsNextAction calendar
+- For each synced action, the Google event identifier, its sync state and, for an occurrence of a recurring event, the identifier of its series
 
 **What we send to Google:** for each scheduled action in your Next, Today, Calendar and Waiting For lists, its title, description, and scheduled date, time and duration.
 
-**What we read from Google:** only changes to the events that WhatsNextAction created in your calendar (for example, a reschedule), so we can update the matching action, and the list of calendars you can write to, so you can choose one. We do not read, import, or store your other calendar events.
+**What we read from Google:**
 
-You can disconnect Google Calendar at any time in your settings. Events already in your Google Calendar stay there.
+- Changes to the events that WhatsNextAction created in your calendar (for example, a reschedule or a delete), so we can update the matching action. If you delete such an event in Google, we move its action to Trash.
+- If you sync with the WhatsNextAction calendar: the events you create in that calendar in Google (their title, description, date, time and duration), which we store as scheduled actions in your account. For a recurring event, each occurrence within the next 30 days is stored as its own action. These actions are then part of your content (Section 2.2) and sync like any other scheduled action.
+- The list of calendars you can write to, so you can choose one.
+
+We do not read, import, or store events in your other calendars unless WhatsNextAction created them.
+
+You can disconnect Google Calendar at any time in your settings. Your WhatsNextAction calendar and all events already in your Google Calendar stay there. We keep the identifier of your WhatsNextAction calendar and of your synced events so that reconnecting continues where you left off.
 
 #### Google Drive Storage
 
@@ -131,7 +138,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Account data (email, password) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
 | User-generated content | Contract performance (Art. 6(1)(b)) | Necessary to deliver the core functionality of the Service |
 | Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
-| Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar at your request |
+| Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar and, if you use the WhatsNextAction calendar, to import the events you create there, at your request |
 | Connected Google services data (Google Drive storage) | Contract performance (Art. 6(1)(b)) | Necessary to store your reference files and attachments in your Google Drive at your request |
 | Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
@@ -221,7 +228,7 @@ The exception is card payment data. To process a card payment, it may be transfe
 
 If you pay through Stripe, your payment data may also be transferred by Stripe to Stripe, LLC in the United States and to its sub-processors. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Stripe's privacy policy.
 
-If you connect Google Calendar sync, the events we create for you are held by Google in your own Google Calendar under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the sync you requested (Art. 49(1)(b) GDPR).
+If you connect Google Calendar sync, the events we create for you, and the WhatsNextAction calendar if you ask us to create it, are held by Google in your own Google Calendar under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the sync you requested (Art. 49(1)(b) GDPR).
 
 If you connect Google Drive storage, the files we store for you are held by Google in your own Google Drive under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the storage you requested (Art. 49(1)(b) GDPR).
 
@@ -234,7 +241,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Active account data and content | Retained for the duration of your account |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
-| Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar and event identifiers until you disconnect Google Calendar or delete your account. On account deletion we also revoke our access at Google. Events already in your Google Calendar are yours and stay there |
+| Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, WhatsNextAction calendar identifier, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar, the WhatsNextAction calendar identifier and the event identifiers are kept after you disconnect Google Calendar, so that reconnecting continues where you left off, and are deleted when you delete your account. On account deletion we also revoke our access at Google. Your WhatsNextAction calendar and the events already in your Google Calendar are yours and stay there |
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
 | Session data | Sessions expire after 14 days without activity; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Backups | Retained for up to 30 days, then permanently deleted |

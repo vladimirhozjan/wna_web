@@ -1825,6 +1825,15 @@ export async function selectGoogleCalendar(calendarId) {
     }
 }
 
+export async function createWnaCalendar() {
+    try {
+        const res = await httpApi.post('/v1/calendar/wna-calendar', {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw googleConnectError(err)
+    }
+}
+
 export async function syncCalendarNow() {
     try {
         const res = await httpApi.post('/v1/calendar/sync', {}, {headers: authHeaders()})
@@ -2262,6 +2271,7 @@ const apiClient = {
     // Calendar Sync API
     listGoogleCalendars,
     selectGoogleCalendar,
+    createWnaCalendar,
     syncCalendarNow,
     // Connections API
     inviteConnection,

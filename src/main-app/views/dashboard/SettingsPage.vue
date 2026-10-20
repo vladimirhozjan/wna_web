@@ -435,7 +435,13 @@
               <template v-else>
                 <div class="settings-row">
                   <span class="settings-label">Status</span>
-                  <span class="settings-value color-text-success" data-testid="calendar-sync-status">Connected</span>
+                  <span class="settings-value" :class="{ 'color-text-success': !gcal.missing }" data-testid="calendar-sync-status">{{ gcal.missing ? 'Calendar was removed in Google' : 'Connected' }}</span>
+                </div>
+
+                <!-- Selected calendar removed in Google: sync paused -->
+                <div v-if="gcal.missing" class="settings-row settings-row--column" data-testid="calendar-sync-missing">
+                  <span class="text-body-s settings-hint email-valueprop">Sync is paused and your actions are unchanged. Re-create the WhatsNextAction calendar or pick another calendar.</span>
+                  <Btn variant="primary" size="sm" :loading="gcal.savingCalendar" :disabled="gcal.savingCalendar" data-testid="calendar-sync-recreate" @click="onCreateWnaCalendar">Re-create calendar</Btn>
                 </div>
 
                 <div class="settings-row">
@@ -459,7 +465,7 @@
 
                 <div class="settings-row settings-row--column" data-testid="calendar-sync-what-syncs">
                   <span class="settings-label">What syncs</span>
-                  <span class="text-body-s settings-hint email-valueprop">Scheduled actions in Next, Today, Calendar and Waiting For: title, description, date and time. Changes made in Google to these events come back to WNA. Due dates, start dates and your other Google events do not sync. Completing or trashing an action removes its event.</span>
+                  <span class="text-body-s settings-hint email-valueprop">Scheduled actions in Next, Today, Calendar and Waiting For: title, description, date and time. Changes made in Google to these events come back to WNA, and deleting one in Google moves its action to Trash. In the WhatsNextAction calendar, events you create in Google become scheduled actions, and each occurrence of a recurring event in the next 30 days becomes its own action. Due dates, start dates and your other Google events do not sync. Completing or trashing an action removes its event.</span>
                 </div>
 
                 <div class="settings-row">
@@ -475,6 +481,14 @@
             </template>
           </div>
         </div>
+
+        <Modal :visible="gcal.offerCreate" title="WhatsNextAction calendar" @close="onDeclineWnaCalendar">
+          <div class="text-body-m color-text-secondary" data-testid="calendar-sync-create-modal">Create a WhatsNextAction calendar in your Google account and sync your scheduled actions there? Events you create in that calendar in Google become actions in WNA. You can change the calendar at any time.</div>
+          <template #actions>
+            <Btn variant="secondary" size="sm" data-testid="calendar-sync-create-no" @click="onDeclineWnaCalendar">No</Btn>
+            <Btn variant="primary" size="sm" data-testid="calendar-sync-create-yes" @click="onAcceptWnaCalendar">Yes</Btn>
+          </template>
+        </Modal>
 
         <!-- Storage Section -->
         <div v-if="tier && driveEnabled && sectionVisible('storage')" class="card" data-testid="drive-card">
@@ -741,6 +755,7 @@ import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import Select from '../../components/Select.vue'
+import Modal from '../../components/Modal.vue'
 import TagInput from '../../components/TagInput.vue'
 import { DEFAULT_PRESETS } from '../../scripts/models/tagModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
@@ -749,7 +764,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
-import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, syncCalendarNow, getStorageSettings, updateStorageSettings } from '../../scripts/core/apiClient.js'
+import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, createWnaCalendar, syncCalendarNow, getStorageSettings, updateStorageSettings } from '../../scripts/core/apiClient.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
@@ -1064,6 +1079,8 @@ const calendarSyncEnabled = computed(() => hasFlag('calendar'))
 const gcal = reactive({
   connected: false,      // calendar feature granted
   reauth: false,         // 409 calendar_reauth_required
+  missing: false,        // selected calendar removed in Google — sync paused
+  offerCreate: false,    // post-connect WhatsNextAction calendar modal
   calendars: [],
   selected: 'primary',
   loading: false,
@@ -1075,7 +1092,18 @@ const gcal = reactive({
 
 const calendarNeedsReconnect = computed(() => gcal.reauth)
 
-const calendarOptions = computed(() => gcal.calendars.map(c => ({ value: c.id, label: c.summary })))
+const CREATE_WNA_CALENDAR = 'create-wna-calendar'
+
+const calendarOptions = computed(() => {
+  const options = gcal.calendars.map(c => ({ value: c.id, label: c.summary }))
+  if (!gcal.calendars.some(c => c.wna)) {
+    options.push({ value: CREATE_WNA_CALENDAR, label: '+ Create WhatsNextAction calendar', testid: 'calendar-sync-picker-create' })
+  }
+  return options
+})
+
+// Set by the /google/calendar return; consumed once the calendar list is loaded
+let offerCreateAfterLoad = false
 
 const selectedCalendar = computed({
   get: () => gcal.selected,
@@ -1087,7 +1115,10 @@ function applyGoogleStatus(data) {
 }
 
 function onCalendarSyncError(err, fallback) {
-  if (err.status === 409) {
+  if (err.status === 409 && err.message === 'calendar_missing') {
+    gcal.missing = true
+    toaster.push('Calendar was removed in Google. Re-create it or pick another calendar.')
+  } else if (err.status === 409) {
     gcal.reauth = true
     toaster.push('Google Calendar needs to be reconnected.')
   } else {
@@ -1101,16 +1132,33 @@ async function loadCalendarSync() {
   try {
     applyGoogleStatus(await getGoogleStatus())
     if (gcal.connected) {
-      const data = await listGoogleCalendars()
-      gcal.calendars = data.calendars || []
-      gcal.selected = data.selected || 'primary'
+      await loadCalendarList()
+      if (offerCreateAfterLoad) {
+        gcal.offerCreate = !gcal.calendars.some(c => c.wna && c.id === gcal.selected)
+      }
     }
   } catch (err) {
     onCalendarSyncError(err, 'Failed to load Google Calendar status')
   } finally {
+    offerCreateAfterLoad = false
     gcal.loading = false
     gcal.loaded = true
   }
+}
+
+async function loadCalendarList() {
+  const data = await listGoogleCalendars()
+  gcal.calendars = data.calendars || []
+  gcal.selected = data.selected || 'primary'
+  gcal.missing = !!data.calendar_missing
+}
+
+function applyCalendarConnectReturn() {
+  if (route.query.calendar !== 'connected') return
+  const query = {...route.query}
+  delete query.calendar
+  router.replace({query})
+  offerCreateAfterLoad = true
 }
 
 async function onConnectCalendar() {
@@ -1128,7 +1176,7 @@ async function onDisconnectCalendar() {
   if (gcal.acting) return
   const confirmed = await confirm.show({
     title: 'Disconnect Google Calendar',
-    message: 'Stop syncing your scheduled actions with Google Calendar? Events already in your Google Calendar stay there. You can reconnect at any time.',
+    message: 'Stop syncing your scheduled actions with Google Calendar? The WhatsNextAction calendar and all events already in your Google Calendar stay there. You can reconnect at any time.',
     confirmText: 'Disconnect',
     cancelText: 'Cancel',
   })
@@ -1138,6 +1186,7 @@ async function onDisconnectCalendar() {
   try {
     applyGoogleStatus(await disconnectGoogle('calendar'))
     gcal.reauth = false
+    gcal.missing = false
     gcal.calendars = []
     try { await auth.refreshToken() } catch { /* the JWT catches up on the next rotation */ }
     toaster.success('Google Calendar disconnected')
@@ -1149,6 +1198,7 @@ async function onDisconnectCalendar() {
 }
 
 async function onSelectCalendar(calendarId) {
+  if (calendarId === CREATE_WNA_CALENDAR) return onCreateWnaCalendar()
   if (gcal.savingCalendar || calendarId === gcal.selected) return
   const previous = gcal.selected
   gcal.selected = calendarId
@@ -1156,12 +1206,38 @@ async function onSelectCalendar(calendarId) {
   try {
     const data = await selectGoogleCalendar(calendarId)
     gcal.selected = data.selected || calendarId
+    gcal.missing = false
   } catch (err) {
     gcal.selected = previous
     onCalendarSyncError(err, 'Failed to change calendar')
   } finally {
     gcal.savingCalendar = false
   }
+}
+
+async function onCreateWnaCalendar() {
+  if (gcal.savingCalendar) return
+  gcal.savingCalendar = true
+  try {
+    const data = await createWnaCalendar()
+    gcal.selected = data.selected
+    gcal.missing = false
+    toaster.success('WhatsNextAction calendar created')
+    await loadCalendarList()
+  } catch (err) {
+    if (err.status !== 403) onCalendarSyncError(err, 'Failed to create the WhatsNextAction calendar')
+  } finally {
+    gcal.savingCalendar = false
+  }
+}
+
+function onAcceptWnaCalendar() {
+  gcal.offerCreate = false
+  onCreateWnaCalendar()
+}
+
+function onDeclineWnaCalendar() {
+  gcal.offerCreate = false
 }
 
 async function onSyncCalendarNow() {
@@ -1497,6 +1573,7 @@ onMounted(() => {
   })
 
   loadInboxEmail()
+  applyCalendarConnectReturn()
   loadCalendarSync()
   loadDriveStorage()
   loadPaymentStatus()
@@ -1526,6 +1603,8 @@ watch([isProOrTeam, calendarSyncEnabled], ([entitled, enabled]) => {
   } else {
     gcal.loaded = false
     gcal.reauth = false
+    gcal.missing = false
+    gcal.offerCreate = false
     gcal.calendars = []
   }
 })

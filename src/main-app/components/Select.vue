@@ -48,6 +48,7 @@
                 type="button"
                 role="option"
                 :aria-selected="option.value === modelValue"
+                :data-testid="option.testid"
                 class="text-body-m select-option"
                 :class="{
                   'select-option--selected': option.value === modelValue,
@@ -96,6 +97,7 @@
                   type="button"
                   role="option"
                   :aria-selected="option.value === modelValue"
+                  :data-testid="option.testid"
                   class="text-body-l select-sheet-option"
                   :class="{
                     'select-sheet-option--selected': option.value === modelValue,
