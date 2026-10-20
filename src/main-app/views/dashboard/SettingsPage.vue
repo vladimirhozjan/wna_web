@@ -1112,6 +1112,7 @@ const selectedCalendar = computed({
 
 function applyGoogleStatus(data) {
   gcal.connected = (data.features || []).includes('calendar')
+  if ((data.partial_features || []).includes('calendar')) gcal.reauth = true
 }
 
 function onCalendarSyncError(err, fallback) {

@@ -15,7 +15,7 @@ first (CLAUDE.md "Reuse First").
   modal (Yes → create route, success toast, card refresh; No → picker as today); picker entry "+ Create
   WhatsNextAction calendar" only when none exists; calendar-missing card state with **Re-create calendar** + picker;
   "What syncs" text covers the WNA-calendar import, recurring occurrences and Google delete → Trash; disconnect dialog
-  says the WhatsNextAction calendar stays in Google; pre-FEAT-050 connections show the existing Reconnect state.
+  says the WhatsNextAction calendar stays in Google; pre-FEAT-050 connections show the Reconnect state (parent D14/D15, via `partial_features`).
 - **Team owner / Team member** — same as Pro (no team-specific UI).
 - **Admin** — n/a — no admin-app surface.
 - **Not-entitled / blocked** — 403 on create → upgrade modal (existing pattern); 409 `calendar_reauth_required` →
@@ -37,21 +37,21 @@ first (CLAUDE.md "Reuse First").
 ## Checklist
 - [x] W-1 `apiClient.js`: create-calendar call + the new calendars/status fields (WNA marker, exists, calendar-missing)
   per `specs/api/api.md` §Calendar Sync. — `apiClient.js:1828` `createWnaCalendar()` (403 → upgrade modal via
-  `googleConnectError`); `wna` / `calendar_missing` read in `SettingsPage.vue:1153` (`loadCalendarList`), 409
-  `calendar_missing` split from reauth at `SettingsPage.vue:1118`.
+  `googleConnectError`); `wna` / `calendar_missing` read in `SettingsPage.vue:1154` (`loadCalendarList`), 409
+  `calendar_missing` split from reauth at `SettingsPage.vue:1119`.
 - [x] W-2 Post-connect modal (D11): shown once after a successful calendar connect return; Yes → create, No → close
   (picker stays on its default). Reuse `Modal`/`confirmModel`; `data-testid`s listed in W-8. — `GoogleConnectPage.vue:47`
-  adds `?calendar=connected` on success; `SettingsPage.vue:1156` consumes it once; `SettingsPage.vue:1137` skips the
+  adds `?calendar=connected` on success; `SettingsPage.vue:1157` consumes it once; `SettingsPage.vue:1138` skips the
   modal when the WNA calendar is already selected (owner decision 2026-10-20); modal `Modal` at `SettingsPage.vue:485-491`.
 - [x] W-3 Picker entry (D12): "+ Create WhatsNextAction calendar" when no WNA calendar exists; selecting it calls create
   (spinner, revert on error as the existing picker does); hidden once one exists. — `SettingsPage.vue:1100` (option only
-  when no `wna`), `:1201` routes it to `onCreateWnaCalendar` (`:1218`); `Select.vue:51,100` optional `option.testid`
+  when no `wna`), `:1202` routes it to `onCreateWnaCalendar` (`:1219`); `Select.vue:51,100` optional `option.testid`
   (owner-approved).
 - [x] W-4 Calendar-missing state (D10): status line "Calendar was removed in Google" + **Re-create calendar** (create
   route) + picker; no other card actions break. — `SettingsPage.vue:438` status text, `:442-445` missing row +
   Re-create; cleared on select/create/disconnect/downgrade.
 - [x] W-5 Texts: "What syncs" summary (D2/D3/D4/D6) and disconnect confirmation (D9: the WhatsNextAction calendar and
-  its events stay in Google). — What syncs `SettingsPage.vue:468`; disconnect `SettingsPage.vue:1179`.
+  its events stay in Google). — What syncs `SettingsPage.vue:468`; disconnect `SettingsPage.vue:1180`.
 - [x] W-6 Legal (parent §Legal impact): rewrite `src/main-app/content/legal/privacy.md` §2.8 (what we read from Google,
   WNA may create a calendar, stored WNA calendar id) and any §2.1/§5.3/transfer/retention rows it affects; update the
   effective/updated date in both texts. — `privacy.md:95-113` (§2.8), `:141` (§3), `:231` (§6), `:244` (§7 retention:
@@ -62,13 +62,18 @@ first (CLAUDE.md "Reuse First").
   `terms.md:44`.
 - [x] W-8 Test ids for the ui-tests slice: modal (`calendar-sync-create-modal`, `-create-yes`, `-create-no`), picker
   entry (`calendar-sync-picker-create`), missing state (`calendar-sync-missing`, `calendar-sync-recreate`) — record the
-  final ids in wna-features. — `SettingsPage.vue:486,488,489,1100,442,444`; recorded in `wna-features.md:1795-1799`.
+  final ids in wna-features. — `SettingsPage.vue:486,488,489,1100,442,444`; recorded in `wna-features.md:1796-1800`.
 - [x] W-9 Update `../../wna_orchestration/specs/features/wna-features.md` §21.11 (and §8.8b if its sync text changes):
-  modal, picker entry, missing state, texts, test ids. — `wna-features.md:1757-1799` (§21.11), `:1812-1814` (§21.12
+  modal, picker entry, missing state, texts, test ids. — `wna-features.md:1757-1800` (§21.11), `:1813-1815` (§21.12
   return query); §8.8b has no sync text → unchanged.
 - [~] W-10 `npm run build:main` passes; ask the owner to verify the flows at runtime (CLAUDE.md §4). — build green
   2026-10-20; DEFERRED TO OWNER: runtime check of the modal after connect, picker entry, missing card state, and the
-  rendered /legal/privacy + /legal/terms (needs the FEAT-050 backend running locally).
+  rendered /legal/privacy + /legal/terms, and the reconnect state for a partial grant (needs the FEAT-050 backend incl. B-17 running locally).
+- [x] W-11 Partial grant (parent D15): `applyGoogleStatus` (`SettingsPage.vue`) sets `gcal.reauth = true` when
+  `partial_features` holds `calendar` → "Google Calendar needs to be reconnected" + **Reconnect Google Calendar**.
+  Needs backend B-17. — `SettingsPage.vue:1115`; with `calendar` absent from `features` the card takes the
+  `!gcal.connected || gcal.reauth` branch (`:428`) and `calendarNeedsReconnect` picks the reconnect texts; Drive-only
+  grants untouched. Spec: `wna-features.md:1758-1760`. Runtime check needs backend B-17 → covered by W-10.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
