@@ -4,10 +4,14 @@
       <div class="hero-inner">
         <BoltIcon class="hero-bolt" />
         <h1 class="text-display hero-heading">Stress-Free Productivity</h1>
-        <p class="text-body-m hero-subtitle">With a system you can trust.</p>
+        <p class="text-body-m hero-subtitle">A Getting Things Done app that works with your Google Calendar, your Google Drive, your email and your team.</p>
         <div class="hero-actions">
           <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
           <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
+        </div>
+        <p class="text-footnote hero-trust" data-testid="landing-trust-line">Made in the EU · Hosted in the EU · GDPR-compliant</p>
+        <div v-if="!shotFailed" class="hero-shot" data-testid="landing-hero-shot">
+          <img :src="engageShot" alt="WhatsNextAction dashboard with today's actions, next actions and waiting-for items" class="hero-shot-img" @error="shotFailed = true" />
         </div>
       </div>
     </div>
@@ -15,13 +19,17 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import Btn from '../Btn.vue'
 import BoltIcon from '../../assets/BoltIcon.vue'
+import engageShot from '../../assets/landing/landing-engage.png'
 
 defineEmits(['open-register'])
 
+const shotFailed = ref(false)
+
 function scrollToFeatures() {
-  const el = document.getElementById('how-it-works')
+  const el = document.getElementById('features')
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 </script>
@@ -96,6 +104,28 @@ function scrollToFeatures() {
 
 .hero-ghost-btn:hover {
   background: var(--color-on-dark-glass);
+}
+
+.hero-trust {
+  color: var(--color-text-on-dark-secondary);
+  margin-top: 24px;
+}
+
+.hero-shot {
+  aspect-ratio: 16 / 10;
+  margin-top: 40px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  background: var(--color-bg-subtle);
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+}
+
+.hero-shot-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 @media (min-width: 769px) {

@@ -1,11 +1,13 @@
 <template>
   <LandingLayout class="page" @open-login="openAuth('login')" @open-register="openAuth('register')">
     <HeroSection @open-register="openAuth('register')" />
+    <ApartSection />
     <HowItWorksSection />
     <FeaturesSection />
     <WhyUsSection />
     <TestimonySection />
     <BookSection />
+    <LandingFaqSection />
     <CtaBanner @open-register="openAuth('register')" />
   </LandingLayout>
   <AuthDialog
@@ -24,11 +26,13 @@ import {useRouter, useRoute} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import HeroSection from '../../components/public/HeroSection.vue'
+import ApartSection from '../../components/public/ApartSection.vue'
 import HowItWorksSection from '../../components/public/HowItWorksSection.vue'
 import FeaturesSection from '../../components/public/FeaturesSection.vue'
 import WhyUsSection from '../../components/public/WhyUsSection.vue'
 import TestimonySection from '../../components/public/TestimonySection.vue'
 import BookSection from '../../components/public/BookSection.vue'
+import LandingFaqSection from '../../components/public/LandingFaqSection.vue'
 import CtaBanner from '../../components/public/CtaBanner.vue'
 
 const props = defineProps({

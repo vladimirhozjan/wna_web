@@ -49,7 +49,7 @@ unchanged (parent §Screens).
   /help/getting-started OK.
 - [x] W-6 Update `../wna_orchestration/specs/features/wna-features.md` §21.10 — hint line + attachment behaviour sentence
   (parent § Contracts touched). Cite `file:line`. — `wna_orchestration/specs/features/wna-features.md:1774-1779`.
-- [~] W-7 Ask the user to verify at runtime: Settings → Email to Inbox (Pro user) shows the hint line in place; Help FAQ +
+- [NA] W-7 (PM conclude 2026-10-21: handed to wna-ui-tests as TC-828/829 boxes — owner) Ask the user to verify at runtime: Settings → Email to Inbox (Pro user) shows the hint line in place; Help FAQ +
   Getting Started show the new sentence.
   — TC-828 (Settings hint) + TC-829 (Help) added to `wna_orchestration/specs/tests/wna-test-cases.md`;
   runtime confirmation is by ui-tests, not the user (owner 2026-10-21). DEFERRED TO wna-ui-tests: automate TC-828/829.

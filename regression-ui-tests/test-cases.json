@@ -9536,7 +9536,7 @@
       "Navigate to /pricing.",
       "Check the Free, Pro and Team cards: title, description, badge, CTA and bullets."
     ],
-    "expected": "Three cards Free, Pro and Team (descriptions \"Get started with GTD for free.\", \"For the individual power user.\", \"For teams that delegate work together.\"); Pro is marked \"Most Popular\". CTAs: Free \"Start for Free\"; Pro and Team \"Contact Us\" (or \"Upgrade\" with the `payments` flag). Bullets in order (values from `contracts/limits.md`), each with a check icon:\n- Free: Unlimited stuff & actions · Up to 7 projects · Up to 10 tags · Reference files: view-only, full in Google Drive · Google Drive storage · 50 MB storage\n- Pro: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Google Calendar sync · Google Drive storage · 250 MB storage\n- Team: \"Everything in Pro, plus:\" (lead-in line, no check icon) · Connections & delegation · Shared projects · Google Drive storage · 1 GB/user storage\n\nDrive and Calendar sync are shown regardless of the `drive` / `calendar` flags."
+    "expected": "Three cards Free, Pro and Team (descriptions \"Get started with GTD for free.\", \"For the individual power user.\", \"For teams that delegate work together.\"); Pro is marked \"Most Popular\". CTAs: Free \"Start for Free\"; Pro and Team \"Contact Us\" (or \"Upgrade\" with the `payments` flag). Bullets in order (values from `contracts/limits.md`), each with a check icon:\n- Free: Unlimited stuff & actions · Up to 7 projects · Up to 10 tags · Reference files: view-only, full in Google Drive · Google Drive storage · 50 MB storage\n- Pro: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Google Calendar sync · Google Drive storage · 250 MB storage\n- Team: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Google Calendar sync · Connections & delegation · Shared projects · Google Drive storage · 1 GB/user storage\n\nDrive and Calendar sync are shown regardless of the `drive` / `calendar` flags."
   },
   {
     "id": "TC-355",
@@ -12127,6 +12127,121 @@
     "preconditions": "Authenticated Pro/Team user with a generated address.",
     "steps": [],
     "expected": "A Stuff appears with **title = subject**; **description = provenance line `From: <from> · <date>` + body**.\n\n> **Note (ui-tests):** automated by `tests/e2e/inbox-email.spec.ts` (TC-547). **PASS** (provenance line + body verified on the Stuff detail)."
+  },
+  {
+    "id": "TC-548",
+    "name": "Email Attachment Within Plan Limits Is Stored on the Stuff",
+    "priority": "High",
+    "area": "Email to Inbox, Processing, Attachments (FEAT-053)",
+    "areas": [
+      "Email to Inbox",
+      "Processing",
+      "Attachments (FEAT-053)"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro user with a generated address; \"Save attachments to\" = Local.",
+    "steps": [
+      "Send a mail with a body and one small file `tc548-notes.txt` to the address.",
+      "Wait for the Stuff to appear; open it."
+    ],
+    "expected": "The Stuff detail's Attachments section lists `tc548-notes.txt` (one file). The description holds\nthe provenance line + body and **no** \"attachment(s) skipped\" note (FEAT-053 D1)."
+  },
+  {
+    "id": "TC-549",
+    "name": "File Over the Plan's Max Attachment Is Skipped; Stuff Still Created With a Note",
+    "priority": "High",
+    "area": "Email to Inbox, Processing, Attachments (FEAT-053)",
+    "areas": [
+      "Email to Inbox",
+      "Processing",
+      "Attachments (FEAT-053)"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro user with a generated address. Pro **Max attachment** per `contracts/limits.md`.",
+    "steps": [
+      "Send one mail with two files, in this order: `big.txt` (larger than the Pro Max attachment, sent as 7bit text so the whole mail stays under the max message size, `contracts/limits.md` §Email-to-inbox), then `small.txt`.",
+      "Wait for the Stuff to appear; open it."
+    ],
+    "expected": "The Stuff is created. Attachments lists `small.txt` only (a size skip does not stop later files).\nThe description ends with the note line `— 1 attachment(s) skipped: big.txt (exceeds <N> MB plan limit)`, N = the Pro\nMax attachment (FEAT-053 D1, D4; `specs/features/email-to-inbox.md` §4 Attachment handling)."
+  },
+  {
+    "id": "TC-793",
+    "name": "Eleven Files → Ten Stored, the 11th Named in the Note Line",
+    "priority": "High",
+    "area": "Email to Inbox, Processing, Attachments (FEAT-053)",
+    "areas": [
+      "Email to Inbox",
+      "Processing",
+      "Attachments (FEAT-053)"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro user with a generated address. **Attachments per item** per `contracts/limits.md`.",
+    "steps": [
+      "Send one mail with eleven small files `f01.txt` … `f11.txt`, in that order.",
+      "Wait for the Stuff to appear; open it."
+    ],
+    "expected": "Attachments lists `f01.txt` … `f10.txt` (the per-item cap) and not `f11.txt`. The description\nends with `— 1 attachment(s) skipped: f11.txt (more than 10 attachments)` (FEAT-053 D1)."
+  },
+  {
+    "id": "TC-794",
+    "name": "Storage Quota Full → the File Is Skipped and Named in the Note Line",
+    "priority": "High",
+    "area": "Email to Inbox, Processing, Attachments, Quotas (FEAT-053)",
+    "areas": [
+      "Email to Inbox",
+      "Processing",
+      "Attachments",
+      "Quotas (FEAT-053)"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro user with a generated address; \"Save attachments to\" = Local. Storage seeded\nthrough API uploads (`POST /v1/stuff/{id}/attachments` on helper Stuff items) until `GET /v1/reference/quota`\n`available_bytes` is 512 KiB (Pro **Storage** per `contracts/limits.md`). The seeded files are deleted after the test.",
+    "steps": [
+      "Send one mail with three files, in this order: `a.txt` (1 KiB, fits), `b.txt` (1 MiB, does not fit), `c.txt` (1 KiB, would still fit).",
+      "Wait for the Stuff to appear; open it."
+    ],
+    "expected": "Attachments lists `a.txt` only. The description ends with\n`— 2 attachment(s) skipped: b.txt (storage quota full); c.txt (storage quota full)` — once storage is full every later\nfile is skipped (FEAT-053 D1)."
+  },
+  {
+    "id": "TC-795",
+    "name": "Inline Photo With a Filename Is Imported; a `cid:`-Referenced Logo Is Not",
+    "priority": "High",
+    "area": "Email to Inbox, Processing, Attachments (FEAT-053)",
+    "areas": [
+      "Email to Inbox",
+      "Processing",
+      "Attachments (FEAT-053)"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro user with a generated address.",
+    "steps": [
+      "Send one mail with a text body and an HTML body containing `<img src=\"cid:logo-1@example.com\">`, plus two `Content-Disposition: inline` parts that carry a filename: `logo.png` (`Content-ID: <logo-1@example.com>`, referenced by the HTML) and `IMG_0001.jpg` (Content-ID not referenced).",
+      "Wait for the Stuff to appear; open it."
+    ],
+    "expected": "Attachments lists `IMG_0001.jpg` only; `logo.png` is not imported and the description has **no**\n\"attachment(s) skipped\" note — a `cid:`-referenced part is not an attachment (FEAT-053 D6)."
+  },
+  {
+    "id": "TC-796",
+    "name": "Mail Over the Max Message Size → Header-Only Stuff With the \"Message Too Large\" Note",
+    "priority": "High",
+    "area": "Email to Inbox, Processing, Attachments (FEAT-053)",
+    "areas": [
+      "Email to Inbox",
+      "Processing",
+      "Attachments (FEAT-053)"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro user with a generated address. Max message size per `contracts/limits.md`\n§Email-to-inbox.",
+    "steps": [
+      "Send a mail larger than the max message size (a body line plus one large file) to the address.",
+      "Wait for the Stuff to appear; open it."
+    ],
+    "expected": "A Stuff appears with **title = subject**; the description is the provenance line (`From:` the\nsender) + the too-large note `message too large (over 25 MB), content not imported` (`specs/features/email-to-inbox.md`\n§4 Attachment handling); the body line is **not** imported; the Attachments section is empty (FEAT-053 D3)."
   },
   {
     "id": "TC-550",

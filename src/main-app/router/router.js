@@ -28,7 +28,7 @@ import GoogleSsoPage from '../views/public/GoogleSsoPage.vue'
 const routes = [
     {path: '/', name: 'landing', component: LandingPage, meta: {seo: {
         title: 'WhatsNextAction — GTD App for Getting Things Done',
-        description: "Stress-free productivity with a GTD app built on David Allen's Getting Things Done: capture, clarify, organize next actions and run your weekly review.",
+        description: 'Stress-free productivity with a GTD app: two-way Google Calendar sync, Google Drive storage, email to inbox and team delegation. Start free, upgrade anytime.',
         jsonLd: 'app',
     }}},
     {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}},
@@ -102,7 +102,7 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
     scrollBehavior(to, from, savedPosition) {
-        if (to.hash) return {el: to.hash, behavior: 'smooth'}
+        if (to.hash) return {el: to.hash, top: 64, behavior: 'smooth'}
         if (savedPosition) return savedPosition
         return {top: 0}
     },
