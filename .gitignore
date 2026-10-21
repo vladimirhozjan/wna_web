@@ -1,3 +1,4 @@
 renders
 src/main-app/config.js
 src/admin-app/config.js
+src/main-app/public/config.js
