@@ -3,31 +3,36 @@ import {upgradeModel} from './upgradeModel.js'
 import {flagsModel} from './flagsModel.js'
 import {authModel} from './authModel.js'
 import {PAGE_SIZE} from './domains.js'
+import {referenceModel} from '../models/referenceModel.js'
 
-function friendlyUpgradeMessage(raw) {
+function friendlyUpgradeMessage(raw, {storageHint = null} = {}) {
     if (!raw) return 'You\'ve reached a limit on your current plan. Upgrade to unlock more and keep your system growing.'
     const lower = raw.toLowerCase()
     if (lower.includes('project'))
         return 'You\'ve reached the project limit on your current plan. Upgrade to Pro for unlimited projects and keep organizing your work.'
     if (lower.includes('tag'))
         return 'You\'ve reached the tag limit on your current plan. Upgrade to Pro for unlimited tags and better context filtering.'
+    // Before the storage match — the reference gate message also contains "file"
+    if (lower.includes('reference')) {
+        const msg = 'Full reference file management is available on Pro and Team plans. Upgrade to upload and organize your files.'
+        return referenceModel().showSwitch.value ? `${msg} Or use the Google Drive side — files there can be organized on every plan.` : msg
+    }
     if (lower.includes('storage') || lower.includes('file')) {
         const msg = authModel().currentUser.value?.subscription_tier === 'team'
             ? 'You\'ve reached your storage limit. Free up space by deleting files you no longer need.'
             : 'You\'ve reached your storage limit. Upgrade your plan for more space to keep your reference files organized.'
+        if (storageHint === 'side') return `${msg} Or keep it on the Google Drive side — files there don't count toward your limit.`
         return flagsModel().hasFlag('drive') ? `${msg} Or connect Google Drive in Settings — files saved there don't count toward your limit.` : msg
     }
     if (lower.includes('recurring'))
         return 'Recurring templates let you automate repeating actions. This feature is available on Pro and Team plans.'
-    if (lower.includes('reference'))
-        return 'Full reference file management is available on Pro and Team plans. Upgrade to upload and organize your files.'
     return raw
 }
 
 function driveErrorMessage(code, method) {
     switch (code) {
         case 'drive_reconnect_required':
-            return method === 'get' ? 'Reconnect Google Drive to open this file' : 'Reconnect Google Drive in Settings to upload files'
+            return method === 'get' ? 'Reconnect Google Drive to open this file' : 'Reconnect Google Drive to make changes'
         case 'drive_disabled':
             return 'Drive storage is temporarily unavailable'
         case 'drive_file_too_large':
@@ -50,7 +55,7 @@ async function parseBlobError(err) {
     return err
 }
 
-function normalizeError(error) {
+function normalizeError(error, {storageHint = null} = {}) {
     if (error.response) {
         const cfg = error.config || {}
         console.error(`[api] ${cfg.method?.toUpperCase() || 'REQ'} ${cfg.url || ''} → ${error.response.status}`, error.response.data)
@@ -65,6 +70,11 @@ function normalizeError(error) {
         const data = error.response.data || {}
         const backendMsg = data.message || data.detail || data.error
 
+        // A broken grant is only seen on use — the Reference Google side switches to the reconnect bar
+        if (data.error === 'drive_reconnect_required' && error.config?.url?.startsWith('/v1/reference/')) {
+            referenceModel().markGrantBroken()
+        }
+
         const driveMsg = driveErrorMessage(data.error, error.config?.method)
         if (driveMsg) return {status, code: data.error, message: driveMsg}
 
@@ -72,7 +82,7 @@ function normalizeError(error) {
         if (status === 403 && (data.upgrade_message || data.limit != null)) {
             const upgrade = upgradeModel()
             upgrade.show({
-                message: friendlyUpgradeMessage(data.upgrade_message || backendMsg),
+                message: friendlyUpgradeMessage(data.upgrade_message || backendMsg, {storageHint}),
                 limit: data.limit,
             })
             return {status, message: backendMsg || 'Limit reached'}
@@ -82,7 +92,7 @@ function normalizeError(error) {
         if (status === 413) {
             const upgrade = upgradeModel()
             upgrade.show({
-                message: friendlyUpgradeMessage(data.upgrade_message || backendMsg || 'storage'),
+                message: friendlyUpgradeMessage(data.upgrade_message || backendMsg || 'storage', {storageHint}),
                 limit: data.limit,
                 kind: 'storage',
             })
@@ -1275,9 +1285,9 @@ export async function restoreProject(projectId) {
 
 // ── Reference API ──
 
-export async function createRefFolder({name, parent_id = null}) {
+export async function createRefFolder({name, parent_id = null, side = 'local'}) {
     try {
-        const body = {name}
+        const body = {name, side}
         if (parent_id) body.parent_id = parent_id
         const res = await httpApi.post('/v1/reference/folders', body, {headers: authHeaders()})
         return res.data
@@ -1286,9 +1296,9 @@ export async function createRefFolder({name, parent_id = null}) {
     }
 }
 
-export async function listRefFolders(parent_id = null) {
+export async function listRefFolders(parent_id = null, side = 'local') {
     try {
-        const params = {}
+        const params = {side}
         if (parent_id) params.parent_id = parent_id
         const res = await httpApi.get('/v1/reference/folders', {params, headers: authHeaders()})
         return res.data
@@ -1327,11 +1337,12 @@ export async function deleteRefFolder(id) {
     }
 }
 
-export async function uploadRefFile(file, folder_id = null, onProgress = null) {
+export async function uploadRefFile(file, folder_id = null, onProgress = null, side = 'local') {
     try {
         const formData = new FormData()
         formData.append('file', file)
         if (folder_id) formData.append('folder_id', folder_id)
+        formData.append('side', side)
 
         const res = await httpApi.post('/v1/reference/files', formData, {
             headers: authHeaders(),
@@ -1346,9 +1357,9 @@ export async function uploadRefFile(file, folder_id = null, onProgress = null) {
     }
 }
 
-export async function listRefFiles({folder_id = null, type = null, q = null, limit = PAGE_SIZE, offset = 0} = {}) {
+export async function listRefFiles({folder_id = null, type = null, q = null, limit = PAGE_SIZE, offset = 0, side = 'local'} = {}) {
     try {
-        const params = {limit, offset}
+        const params = {limit, offset, side}
         if (folder_id) params.folder_id = folder_id
         if (type) params.type = type
         if (q) params.q = q
@@ -1422,9 +1433,9 @@ export async function getRefQuota() {
     }
 }
 
-export async function listRefTrash({limit = PAGE_SIZE, offset = 0} = {}) {
+export async function listRefTrash({limit = PAGE_SIZE, offset = 0, side = 'local'} = {}) {
     try {
-        const params = {limit, offset}
+        const params = {limit, offset, side}
         const res = await httpApi.get('/v1/reference/trash', {params, headers: authHeaders()})
         return res.data
     } catch (err) {
@@ -1450,12 +1461,39 @@ export async function permanentDeleteRefFile(id) {
     }
 }
 
-export async function emptyRefTrash() {
+export async function emptyRefTrash(side = 'local') {
     try {
-        const res = await httpApi.delete('/v1/reference/trash', {headers: authHeaders()})
+        const res = await httpApi.delete('/v1/reference/trash', {params: {side}, headers: authHeaders()})
         return res.data || true
     } catch (err) {
         throw normalizeError(err)
+    }
+}
+
+export async function getRefSides() {
+    try {
+        const res = await httpApi.get('/v1/reference/sides', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function moveRefFileSide(id, side) {
+    try {
+        const res = await httpApi.post(`/v1/reference/files/${id}/move-side`, {side}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err, {storageHint: 'side'})
+    }
+}
+
+export async function moveRefFolderSide(id, side) {
+    try {
+        const res = await httpApi.post(`/v1/reference/folders/${id}/move-side`, {side}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err, {storageHint: 'side'})
     }
 }
 
@@ -1564,11 +1602,11 @@ export async function deleteAttachment(entityType, itemId, attachmentId) {
     }
 }
 
-export async function listAllAttachments({limit = PAGE_SIZE, offset = 0} = {}) {
+export async function listAllAttachments({limit = PAGE_SIZE, offset = 0, side = 'local'} = {}) {
     try {
         const res = await httpApi.get('/v1/reference/attachments', {
             headers: authHeaders(),
-            params: {limit, offset},
+            params: {limit, offset, side},
         })
         return res.data
     } catch (err) {
@@ -1757,8 +1795,11 @@ export async function getGoogleStatus() {
     }
 }
 
-export async function startGoogleConnect(feature) {
+// `returnTo` — where the /google/:feature callback lands instead of Settings
+export async function startGoogleConnect(feature, returnTo = null) {
     try {
+        if (returnTo) sessionStorage.setItem('google_connect_return', JSON.stringify({feature, path: returnTo}))
+        else sessionStorage.removeItem('google_connect_return')
         const res = await httpApi.get(`/v1/google/${feature}/consent-url`, {headers: authHeaders()})
         window.location.assign(res.data.url)
     } catch (err) {
@@ -2226,6 +2267,9 @@ const apiClient = {
     restoreRefFile,
     permanentDeleteRefFile,
     emptyRefTrash,
+    getRefSides,
+    moveRefFileSide,
+    moveRefFolderSide,
     // Comments API
     listComments,
     createComment,

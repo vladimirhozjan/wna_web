@@ -15129,7 +15129,7 @@
       "Complete Google consent.",
       "Call `GET /v1/google/status`."
     ],
-    "expected": "The browser returns to Settings and the card shows **Connected** with the calendar picker, timezone, \"What syncs\", Sync now and Disconnect. Status has `connected: true` and `features` contains `calendar`. The stored grant holds the `calendar.events` scope. The user's stored timezone is now the browser timezone sent on connect."
+    "expected": "The browser returns to Settings and the card shows **Connected** with the calendar picker, timezone, \"What syncs\", Sync now and Disconnect. A modal asks \"Create a WhatsNextAction calendar in your Google account and sync your scheduled actions there?\" with **Yes** and **No**. Status has `connected: true` and `features` contains `calendar`. The stored grant holds the `calendar.events` and `calendar.app.created` scopes. The user's stored timezone is now the browser timezone sent on connect."
   },
   {
     "id": "TC-735",
@@ -15218,7 +15218,7 @@
   },
   {
     "id": "TC-740",
-    "name": "Google Delete Leaves the Action and Re-creates the Event",
+    "name": "Google Delete Moves the Action to Trash",
     "priority": "High",
     "area": "Calendar Sync",
     "areas": [
@@ -15226,12 +15226,12 @@
     ],
     "smoke": false,
     "section": "56: Google Calendar Sync",
-    "preconditions": "Pro user connected; a synced timed action.",
+    "preconditions": "Pro user connected; `primary` selected; a synced timed action.",
     "steps": [
       "Delete the event in Google.",
       "Run a sync."
     ],
-    "expected": "The action's title, state and schedule are unchanged. A live event for the action exists again in Google."
+    "expected": "The action is in Trash and no longer in the calendar list. No event for the action is re-created in Google."
   },
   {
     "id": "TC-741",
@@ -15353,6 +15353,235 @@
       "Run **Sync now**."
     ],
     "expected": "The control action has an event. The start-date and due-date actions have no event and are `synced: false`."
+  },
+  {
+    "id": "TC-778",
+    "name": "Connect → Yes Creates the WhatsNextAction Calendar and Moves Actions Into It",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user; User has the `calendar` feature flag; a scheduled timed action exists before connecting.",
+    "steps": [
+      "Settings → Calendar Sync → **Connect Google Calendar** and complete Google consent.",
+      "In the modal, click **Yes**."
+    ],
+    "expected": "The picker shows **WhatsNextAction**. The Google account has exactly one calendar named \"WhatsNextAction\". `GET /v1/calendar/calendars` lists it with `wna: true` and has `selected` = its id. The action's event is in the WhatsNextAction calendar and no longer in the primary calendar. The action is `synced: true`."
+  },
+  {
+    "id": "TC-779",
+    "name": "Connect → No Keeps the Picker Default",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user; User has the `calendar` feature flag.",
+    "steps": [
+      "Connect Google Calendar and complete consent.",
+      "In the modal, click **No**."
+    ],
+    "expected": "The modal closes. No WhatsNextAction calendar is created in Google. `GET /v1/calendar/calendars` has `selected` = `primary` and no item with `wna: true`. The picker shows the primary calendar."
+  },
+  {
+    "id": "TC-780",
+    "name": "Picker \"+ Create WhatsNextAction calendar\" Creates and Switches",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected (answered **No** to the modal); a synced timed action in the primary calendar.",
+    "steps": [
+      "Open the Calendar picker.",
+      "Pick **+ Create WhatsNextAction calendar**.",
+      "Open the Calendar picker again."
+    ],
+    "expected": "Step 1 — the entry \"+ Create WhatsNextAction calendar\" is listed. Step 2 — the picker shows **WhatsNextAction**, the calendar is selected, and the action's event moves from the primary calendar into it. Step 3 — WhatsNextAction is an option and the create entry is gone."
+  },
+  {
+    "id": "TC-781",
+    "name": "Event Created in Google in the WhatsNextAction Calendar Becomes an Action",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected.",
+    "steps": [
+      "In Google, create a single event in the WhatsNextAction calendar in two days, 10:00–11:30, with a description.",
+      "Run **Sync now**.",
+      "Run **Sync now** again."
+    ],
+    "expected": "Step 2 — exactly one CALENDAR action exists with the event's title and description, `scheduled_date` = the event day, `scheduled_time` 10:00, `scheduled_duration` 90, no project and no tags, `synced: true`. Step 3 — `imported: 0` and still one action (no duplicate)."
+  },
+  {
+    "id": "TC-782",
+    "name": "Event Created in Google in Another Selected Calendar Is Not Imported",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with `primary` selected (no WhatsNextAction calendar).",
+    "steps": [
+      "In Google, create a single event in the primary calendar.",
+      "Run **Sync now** and the daily sync."
+    ],
+    "expected": "No action with the event's title exists in WNA."
+  },
+  {
+    "id": "TC-783",
+    "name": "Google Recurring Series Imports One Action per Occurrence Within 30 Days",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected.",
+    "steps": [
+      "In Google, create a weekly series in the WhatsNextAction calendar starting tomorrow 09:00–09:30, 10 occurrences.",
+      "Run **Sync now**.",
+      "Run **Sync now** again."
+    ],
+    "expected": "Step 2 — five CALENDAR actions exist, one per occurrence at tomorrow +0, +7, +14, +21 and +28 days, each at 09:00. No action exists for the occurrences beyond 30 days. The rule stays in Google. Step 3 — the same five actions, no duplicates."
+  },
+  {
+    "id": "TC-784",
+    "name": "Editing One Imported Occurrence Changes Only That Instance in Google",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected; a Google weekly series of 3 occurrences imported as 3 actions.",
+    "steps": [
+      "Rename the second occurrence's action in WNA."
+    ],
+    "expected": "In Google only that occurrence carries the new title. The series itself and the other occurrences keep the original title. The other two actions are unchanged."
+  },
+  {
+    "id": "TC-785",
+    "name": "Google Delete in the WhatsNextAction Calendar Moves the Action to Trash; Restore Re-creates the Event",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected; a Google-created event imported as an action.",
+    "steps": [
+      "In Google, delete the event.",
+      "Run **Sync now**.",
+      "Restore the action from Trash."
+    ],
+    "expected": "Step 2 — the action is in Trash and no longer in the calendar list. Step 3 — a live event for the action exists again in the WhatsNextAction calendar with the action's title and time."
+  },
+  {
+    "id": "TC-786",
+    "name": "Google Delete in Another Selected Calendar Moves the Action to Trash",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected; a second writable calendar \"Team\" selected in the picker; a synced timed action in Team.",
+    "steps": [
+      "In Google, delete the action's event in Team.",
+      "Run **Sync now**."
+    ],
+    "expected": "The action is in Trash and no longer in the calendar list. No event for it is re-created in Team."
+  },
+  {
+    "id": "TC-787",
+    "name": "Completing an Imported Action or Occurrence Deletes Its Event; the Series Stays",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected; a Google-created single event and a weekly series of 3 occurrences, all imported.",
+    "steps": [
+      "Complete the single event's action.",
+      "Complete the second occurrence's action."
+    ],
+    "expected": "Step 1 — the single event is deleted in Google. Step 2 — only that occurrence is cancelled in Google; the series stays and the other two occurrences remain as active actions."
+  },
+  {
+    "id": "TC-788",
+    "name": "WhatsNextAction Calendar Deleted in Google Shows the Removed State; Re-create Pushes All",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected; a WNA-created timed action and a Google-created imported action in it.",
+    "steps": [
+      "Delete the WhatsNextAction calendar in Google.",
+      "Run the daily sync, then call `POST /v1/calendar/sync`.",
+      "Open Settings → Calendar Sync.",
+      "Click **Re-create calendar**."
+    ],
+    "expected": "Step 2 — `GET /v1/calendar/calendars` has `calendar_missing: true`; Sync now returns `409` `calendar_missing`. Both actions keep their title and CALENDAR state and are not in Trash. Step 3 — the status reads \"Calendar was removed in Google\" with the paused hint and **Re-create calendar**. Step 4 — the status reads **Connected**, the removed row is gone, a new WhatsNextAction calendar (new id) is selected with `calendar_missing: false`, and both actions have a live event in it."
+  },
+  {
+    "id": "TC-789",
+    "name": "Disconnect Keeps the WhatsNextAction Calendar; Reconnect Reuses It",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected with the WhatsNextAction calendar selected; a synced timed action.",
+    "steps": [
+      "Settings → Calendar Sync → **Disconnect**; read the dialog and confirm.",
+      "Reconnect with the same Google account.",
+      "Call `POST /v1/calendar/wna-calendar`."
+    ],
+    "expected": "Step 1 — the dialog says the WhatsNextAction calendar and all events already in Google Calendar stay there; the card reads \"Not connected\"; the calendar and the action's event still exist in Google. Step 2 — no create modal (the WhatsNextAction calendar is still selected); the picker shows WhatsNextAction. Step 3 — `selected` is the same calendar id; the Google account still has exactly one WhatsNextAction calendar; the action keeps its one event (same id)."
+  },
+  {
+    "id": "TC-790",
+    "name": "Connection Without calendar.app.created Needs a Reconnect; Sync Resumes After It",
+    "priority": "High",
+    "area": "Calendar Sync",
+    "areas": [
+      "Calendar Sync"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Pro user connected before FEAT-050: the stored grant holds `calendar.events` but not `calendar.app.created`; a synced timed action.",
+    "steps": [
+      "Call `POST /v1/calendar/sync`.",
+      "Open Settings → Calendar Sync.",
+      "Reconnect with the same Google account and answer **No**.",
+      "Rename the action."
+    ],
+    "expected": "Step 1 — `409` `calendar_reauth_required`. Step 2 — `GET /v1/google/status` has no `calendar` in `features` and `partial_features: [\"calendar\"]`; the card reads \"Google Calendar needs to be reconnected\" with **Reconnect Google Calendar**. Step 3 — the grant holds `calendar.app.created`. Step 4 — the rename reaches the same event in Google."
   },
   {
     "id": "TC-748",
@@ -15606,9 +15835,9 @@
     "preconditions": "Free user; `drive` flag; Drive connected; destination Google Drive; the grant is broken (mock `invalid_grant`).",
     "steps": [
       "Attach a file to a personal action.",
-      "Upload a file in Reference → Files."
+      "Upload a file in Reference → Files on the Google Drive side."
     ],
-    "expected": "Both uploads are rejected with 409 `drive_reconnect_required` and show \"Reconnect Google Drive in Settings to upload files\" (not \"Attachment limit reached\"). Nothing is silently stored locally."
+    "expected": "Both uploads are rejected with 409 `drive_reconnect_required` and show \"Reconnect Google Drive to make changes\" (not \"Attachment limit reached\"). Nothing is silently stored locally."
   },
   {
     "id": "TC-762",

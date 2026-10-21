@@ -2,6 +2,7 @@ import {ref, computed} from 'vue'
 import apiClient from '../core/apiClient.js'
 import { PAGE_SIZE } from '../core/domains.js'
 import { statsModel } from './statsModel.js'
+import { referenceModel } from './referenceModel.js'
 
 let instance = null
 
@@ -29,6 +30,7 @@ export function referenceTrashModel() {
             const data = await apiClient.listRefTrash({
                 limit: limit.value,
                 offset: offset.value,
+                side: referenceModel().side.value,
             })
 
             const items = Array.isArray(data) ? data : (data.files || [])
@@ -81,7 +83,7 @@ export function referenceTrashModel() {
     async function emptyTrash() {
         error.value = null
         try {
-            await apiClient.emptyRefTrash()
+            await apiClient.emptyRefTrash(referenceModel().side.value)
             files.value = []
             totalFiles.value = 0
             statsModel().refreshStats()

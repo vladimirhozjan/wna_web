@@ -519,7 +519,6 @@
               <div class="settings-row">
                 <div>
                   <span class="settings-label">Save attachments to</span>
-                  <p class="text-body-s settings-hint">New reference files go to Google Drive while it is connected</p>
                 </div>
                 <div class="settings-control" :class="{ 'settings-control--saving': drive.savingDestination }">
                   <span v-if="drive.savingDestination" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>

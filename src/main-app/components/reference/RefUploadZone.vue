@@ -21,13 +21,19 @@ import UploadIcon from '../../assets/UploadIcon.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
+const props = defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
 const emit = defineEmits(['upload'])
 
 const isDragging = ref(false)
 let dragCounter = 0
 
 function isInternalDrag() {
-  return drag.state.isDragging
+  return props.disabled || drag.state.isDragging
 }
 
 function onDragOver() {

@@ -7,6 +7,7 @@
         :class="{ 'segment-switch__option--active': modelValue === option.value }"
         role="tab"
         :aria-selected="modelValue === option.value"
+        :data-testid="option.testid"
         type="button"
         @click="$emit('update:modelValue', option.value)"
     >

@@ -5,17 +5,6 @@ import { statsModel } from './statsModel.js'
 
 let instance = null
 
-// Splits files into "Google" / "Local" by `provider`; a single unlabeled group when nothing is in Drive
-export function providerSections(files) {
-    const google = files.filter(f => f.provider === 'gdrive')
-    if (google.length === 0) return [{key: 'all', label: null, files}]
-    const local = files.filter(f => f.provider !== 'gdrive')
-    return [
-        {key: 'gdrive', label: 'Google', files: google},
-        {key: 'local', label: 'Local', files: local},
-    ].filter(s => s.files.length > 0)
-}
-
 export function referenceModel() {
     if (instance) return instance
 
@@ -32,6 +21,12 @@ export function referenceModel() {
     const searchQuery = ref('')
     const uploads = ref([])
     const quota = ref(null)
+    const side = ref('local')
+    const showSwitch = ref(false)
+    const driveConnected = ref(false)
+    const movingIds = ref([])
+    // Set by the first Google-side 409 drive_reconnect_required; kept until the app reloads
+    let grantBroken = false
 
     const preview = reactive({
         visible: false,
@@ -68,11 +63,41 @@ export function referenceModel() {
         breadcrumbs.value = crumbs
     }
 
+    async function loadSides() {
+        try {
+            const data = await apiClient.getRefSides()
+            showSwitch.value = !!data.show_switch
+            driveConnected.value = !!data.drive_connected && !grantBroken
+        } catch {
+            showSwitch.value = false
+            driveConnected.value = false
+        }
+        if (!showSwitch.value) {
+            side.value = 'local'
+            return
+        }
+        const stored = localStorage.getItem('ref_side')
+        side.value = stored === 'local' || stored === 'gdrive' ? stored : (driveConnected.value ? 'gdrive' : 'local')
+    }
+
+    function markGrantBroken() {
+        grantBroken = true
+        driveConnected.value = false
+    }
+
+    function setSide(value) {
+        side.value = value
+        localStorage.setItem('ref_side', value)
+    }
+
     async function navigateToFolder(folderId) {
         currentFolderId.value = folderId
         searchQuery.value = ''
         if (folderId) {
             await buildBreadcrumbs(folderId)
+            // A deep link into the other side's folder switches to that side
+            const provider = folderCache.get(folderId)?.provider
+            if (showSwitch.value && provider && provider !== side.value) setSide(provider)
         } else {
             breadcrumbs.value = []
         }
@@ -91,12 +116,13 @@ export function referenceModel() {
             const isSearch = searchQuery.value.trim().length > 0
 
             const [foldersData, filesData] = await Promise.all([
-                isSearch ? Promise.resolve([]) : apiClient.listRefFolders(currentFolderId.value),
+                isSearch ? Promise.resolve([]) : apiClient.listRefFolders(currentFolderId.value, side.value),
                 apiClient.listRefFiles({
                     folder_id: isSearch ? null : currentFolderId.value,
                     q: isSearch ? searchQuery.value.trim() : null,
                     limit: limit.value,
                     offset: offset.value,
+                    side: side.value,
                 }),
             ])
 
@@ -128,6 +154,7 @@ export function referenceModel() {
             const folder = await apiClient.createRefFolder({
                 name,
                 parent_id: currentFolderId.value,
+                side: side.value,
             })
             folderCache.set(folder.id, folder)
             folders.value.unshift(folder)
@@ -184,6 +211,33 @@ export function referenceModel() {
         }
     }
 
+    async function moveFileToSide(id, target) {
+        error.value = null
+        movingIds.value.push(id)
+        try {
+            await apiClient.moveRefFileSide(id, target)
+            files.value = files.value.filter(f => f.id !== id)
+            totalFiles.value = Math.max(0, totalFiles.value - 1)
+            loadQuota()
+        } finally {
+            movingIds.value = movingIds.value.filter(m => m !== id)
+        }
+    }
+
+    async function moveFolderToSide(id, target) {
+        error.value = null
+        movingIds.value.push(id)
+        try {
+            await apiClient.moveRefFolderSide(id, target)
+            folders.value = folders.value.filter(f => f.id !== id)
+            // The moved subtree changed side; cached providers are stale
+            folderCache.clear()
+            loadQuota()
+        } finally {
+            movingIds.value = movingIds.value.filter(m => m !== id)
+        }
+    }
+
     async function trashFile(id) {
         error.value = null
         try {
@@ -213,7 +267,7 @@ export function referenceModel() {
             try {
                 const result = await apiClient.uploadRefFile(file, currentFolderId.value, (pct) => {
                     entry.progress = pct
-                })
+                }, side.value)
                 entry.status = 'done'
                 entry.progress = 100
                 if (result && result.id) {
@@ -349,10 +403,17 @@ export function referenceModel() {
         searchQuery,
         uploads,
         quota,
+        side,
+        showSwitch,
+        driveConnected,
+        movingIds,
         preview,
         rename,
         hasMore,
 
+        loadSides,
+        markGrantBroken,
+        setSide,
         navigateToFolder,
         loadContents,
         loadMoreFiles,
@@ -361,6 +422,8 @@ export function referenceModel() {
         renameFile,
         deleteFolder,
         moveFile,
+        moveFileToSide,
+        moveFolderToSide,
         trashFile,
         uploadFiles,
         downloadFile,

@@ -10,6 +10,9 @@
       <div class="alert__title text-label">{{ title }}</div>
       <div class="alert__message text-body-s color-text-secondary" v-if="message">{{ message }}</div>
     </div>
+    <div v-if="$slots.default" class="alert__actions">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -61,6 +64,11 @@ defineProps({
 
 .alert__message {
   margin-top: 2px;
+}
+
+.alert__actions {
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .alert--info {

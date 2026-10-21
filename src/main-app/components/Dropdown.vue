@@ -285,6 +285,12 @@ onUnmounted(() => {
   background: var(--color-bg-secondary);
 }
 
+.dropdown-item:disabled {
+  color: var(--color-text-tertiary);
+  background: none;
+  cursor: default;
+}
+
 .dropdown-item-icon {
   width: 32px;
   height: 32px;

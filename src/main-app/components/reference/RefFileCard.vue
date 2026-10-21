@@ -4,8 +4,9 @@
     <FileName class="file-card__name" :name="file.name" />
     <a v-if="file._subtitle" class="file-card__subtitle text-body-s" @click.stop="$emit('subtitle-click', file)">{{ file._subtitle }}</a>
     <span class="file-card__size">{{ formatSize(file.size_bytes) }}</span>
-    <div class="file-card__actions" @click.stop>
-      <Dropdown align="right" title="File actions">
+    <div class="file-card__actions" :class="{ 'file-card__actions--busy': busy }" @click.stop>
+      <Spinner v-if="busy" :size="16" class="file-card__spinner" />
+      <Dropdown v-else align="right" title="File actions">
         <template #trigger>
           <button class="file-card__menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
         </template>
@@ -16,8 +17,11 @@
           <button v-if="mode !== 'trash'" class="dropdown-item" @click="close(); $emit('download', file)">
             <DownloadIcon class="dropdown-item-icon" /> Download
           </button>
-          <button v-if="mode === 'file'" class="dropdown-item" @click="close(); $emit('rename', file)">
+          <button v-if="mode === 'file'" class="dropdown-item" :disabled="writesDisabled" @click="close(); $emit('rename', file)">
             <RenameIcon class="dropdown-item-icon" /> Rename
+          </button>
+          <button v-if="mode === 'file' && moveSide" class="dropdown-item" :disabled="moveSide.disabled" :data-testid="'ref-move-' + moveSide.target" @click="close(); $emit('move-side', file)">
+            <MoveIcon class="dropdown-item-icon" /> {{ moveSide.label }}
           </button>
           <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash', file)">
             <TrashIcon class="dropdown-item-icon" /> {{ mode === 'trash' ? 'Delete permanently' : mode === 'attachment' ? 'Delete' : 'Move to Trash' }}
@@ -36,6 +40,8 @@ import Dropdown from '../Dropdown.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import MoveIcon from '../../assets/MoveIcon.vue'
+import Spinner from '../Spinner.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
@@ -49,9 +55,21 @@ const props = defineProps({
     type: String,
     default: 'file',
   },
+  moveSide: {
+    type: Object,
+    default: null,
+  },
+  writesDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  busy: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-defineEmits(['preview', 'download', 'rename', 'trash', 'restore', 'subtitle-click'])
+defineEmits(['preview', 'download', 'rename', 'trash', 'restore', 'subtitle-click', 'move-side'])
 
 function onDragStart(evt) {
   const file = props.file
@@ -139,8 +157,13 @@ function formatSize(bytes) {
   transition: opacity 0.15s;
 }
 
-.file-card:hover .file-card__actions {
+.file-card:hover .file-card__actions,
+.file-card__actions--busy {
   opacity: 1;
+}
+
+.file-card__spinner {
+  margin: 6px;
 }
 
 @media (pointer: coarse) {

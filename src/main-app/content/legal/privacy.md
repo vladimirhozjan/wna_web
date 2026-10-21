@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 20, 2026
+**Last updated:** October 21, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -114,7 +114,7 @@ You can disconnect Google Calendar at any time in your settings. Your WhatsNextA
 
 #### Google Drive Storage
 
-If you connect **Google Drive storage** (available on all plans), you grant us permission, on a separate Google consent screen, to create files in your Google Drive and to access only the files that WhatsNextAction created there (the Google `drive.file` permission). We cannot see or open any other files in your Google Drive. When the first file is stored in your Google Drive, we create a visible `WNA` folder there, with `reference` and `attachments` subfolders; your reference folders are mirrored as subfolders there. The same encrypted Google refresh token and connected-account details described above are used.
+If you connect **Google Drive storage** (available on all plans), you grant us permission, on a separate Google consent screen, to create files in your Google Drive and to access only the files that WhatsNextAction created there (the Google `drive.file` permission). We cannot see or open any other files in your Google Drive. When the first file is stored in your Google Drive, we create a visible `WNA` folder there, with `reference` and `attachments` subfolders, and a `trash` subfolder for files you move to the trash in WhatsNextAction; folders you create on the Google Drive side of Reference are created inside `reference`. When you delete such a folder, we move its Google Drive folder to your Google Drive trash. The same encrypted Google refresh token and connected-account details described above are used.
 
 **What we store:** for each file kept in your Google Drive, its name, size, file type, its Google Drive file identifier, and the folder it belongs to. We do not keep a copy of the file contents on our servers: when you upload, download, or preview a file stored in Google Drive, its contents pass through our servers only to be transferred between your device and Google Drive.
 
@@ -171,7 +171,7 @@ We share your personal data only with the following categories of recipients, st
 
 ### 5.1 Infrastructure Provider
 
-- **Google Cloud Platform (EU region - Prague, Czech Republic)** - hosts our servers and databases within the European Economic Area
+- **Google Cloud Platform (EU regions - servers in Warsaw, Poland; backups in Madrid, Spain)** - hosts our servers, databases and backups within the European Economic Area
 
 ### 5.2 Email Delivery
 
@@ -222,7 +222,7 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 ## 6. International Data Transfers
 
-We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Prague, Czech Republic, and our email providers operate from EU data centres.
+We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres.
 
 The exception is card payment data. To process a card payment, it may be transferred to, processed, and stored outside Slovenia and the EEA by our payment provider Dinaro, its service providers (located mostly in the EEA and in Hong Kong), its partner banks, and the international card schemes (such as Visa and Mastercard), and may be disclosed where required by law. Such transfers take place where they are necessary to perform the payment you request (Art. 49(1)(b) GDPR) or under safeguards such as Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Dinaro's privacy policy.
 

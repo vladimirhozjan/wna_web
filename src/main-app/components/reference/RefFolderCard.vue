@@ -9,14 +9,18 @@
   >
     <FolderIcon class="folder-card__icon" />
     <FileName class="folder-card__name" :name="folder.name" />
-    <div class="folder-card__actions" @click.stop>
-      <Dropdown align="right" title="Folder actions">
+    <div class="folder-card__actions" :class="{ 'folder-card__actions--busy': busy }" @click.stop>
+      <Spinner v-if="busy" :size="16" class="folder-card__spinner" />
+      <Dropdown v-else align="right" title="Folder actions">
         <template #trigger>
           <button class="folder-card__menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
         </template>
         <template #default="{ close }">
-          <button class="dropdown-item" @click="close(); $emit('rename', folder)">
+          <button class="dropdown-item" :disabled="writesDisabled" @click="close(); $emit('rename', folder)">
             <RenameIcon class="dropdown-item-icon" /> Rename
+          </button>
+          <button v-if="moveSide" class="dropdown-item" :disabled="moveSide.disabled" :data-testid="'ref-move-' + moveSide.target" @click="close(); $emit('move-side', folder)">
+            <MoveIcon class="dropdown-item-icon" /> {{ moveSide.label }}
           </button>
           <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('delete', folder)">
             <TrashIcon class="dropdown-item-icon" /> Delete
@@ -35,6 +39,8 @@ import MoreIcon from '../../assets/MoreIcon.vue'
 import Dropdown from '../Dropdown.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import MoveIcon from '../../assets/MoveIcon.vue'
+import Spinner from '../Spinner.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
@@ -45,9 +51,21 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  moveSide: {
+    type: Object,
+    default: null,
+  },
+  writesDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  busy: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(['navigate', 'rename', 'delete', 'move-file'])
+const emit = defineEmits(['navigate', 'rename', 'delete', 'move-file', 'move-side'])
 
 function onDragOver() {
   if (!drag.state.isDragging || drag.state.sourceType !== 'reference') return
@@ -117,8 +135,13 @@ function onDrop() {
   transition: opacity 0.15s;
 }
 
-.folder-card:hover .folder-card__actions {
+.folder-card:hover .folder-card__actions,
+.folder-card__actions--busy {
   opacity: 1;
+}
+
+.folder-card__spinner {
+  margin: 6px;
 }
 
 @media (pointer: coarse) {

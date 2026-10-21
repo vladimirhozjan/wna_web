@@ -41,9 +41,21 @@ async function finish() {
   }
 }
 
+function takeReturnPath() {
+  let saved = null
+  try {
+    saved = JSON.parse(sessionStorage.getItem('google_connect_return') || 'null')
+  } catch { /* ignore a malformed value */ }
+  sessionStorage.removeItem('google_connect_return')
+  return saved?.feature === route.params.feature ? saved.path : null
+}
+
 onMounted(async () => {
   const connected = await finish()
-  if (connected && route.params.feature === 'calendar') {
+  const returnPath = takeReturnPath()
+  if (returnPath) {
+    router.replace(returnPath)
+  } else if (connected && route.params.feature === 'calendar') {
     router.replace({name: 'settings', query: {section: 'calendarSync', calendar: 'connected'}})
   } else {
     router.replace({name: 'settings'})

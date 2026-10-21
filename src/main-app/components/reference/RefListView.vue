@@ -29,13 +29,17 @@
           <td class="col-size">&mdash;</td>
           <td class="col-modified">{{ formatDate(folder.created_at) }}</td>
           <td class="col-actions" @click.stop>
-            <Dropdown align="right" title="Folder actions">
+            <Spinner v-if="movingIds.includes(folder.id)" :size="16" class="row-spinner" />
+            <Dropdown v-else align="right" title="Folder actions">
               <template #trigger>
                 <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
               </template>
               <template #default="{ close }">
-                <button class="dropdown-item" @click="close(); $emit('rename-folder', folder)">
+                <button class="dropdown-item" :disabled="writesDisabled" @click="close(); $emit('rename-folder', folder)">
                   <RenameIcon class="dropdown-item-icon" /> Rename
+                </button>
+                <button v-if="moveSide" class="dropdown-item" :disabled="moveSide.disabled" :data-testid="'ref-move-' + moveSide.target" @click="close(); $emit('move-side-folder', folder)">
+                  <MoveIcon class="dropdown-item-icon" /> {{ moveSide.label }}
                 </button>
                 <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('delete-folder', folder)">
                   <TrashIcon class="dropdown-item-icon" /> Delete
@@ -45,52 +49,51 @@
           </td>
         </tr>
 
-        <!-- Files, grouped by storage provider -->
-        <template v-for="section in sections" :key="'s-' + section.key">
-          <tr v-if="section.label" class="list-section" :data-testid="'ref-section-' + section.key">
-            <td colspan="5" class="text-body-s fw-semibold">{{ section.label }}</td>
-          </tr>
-          <tr
-              v-for="file in section.files"
-              :key="'fi-' + file.id"
-              class="list-row list-row--file"
-              :draggable="mode === 'file'"
-              @click="$emit('preview-file', file)"
-              @dragstart="mode === 'file' && onFileDragStart($event, file)"
-              @dragend="mode === 'file' && drag.endDrag()"
-          >
-            <td class="col-icon">
-              <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
-            </td>
-            <td class="col-name">
-              <FileName :name="file.name" />
-              <a v-if="file._subtitle" class="file-subtitle text-body-s" @click.stop="$emit('subtitle-click', file)">{{ file._subtitle }}</a>
-            </td>
-            <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
-            <td class="col-modified">{{ formatDate(file.created_at) }}</td>
-            <td class="col-actions" @click.stop>
-              <Dropdown align="right" title="File actions">
-                <template #trigger>
-                  <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
-                </template>
-                <template #default="{ close }">
-                  <button v-if="mode === 'trash'" class="dropdown-item" @click="close(); $emit('restore-file', file)">
-                    <DownloadIcon class="dropdown-item-icon" /> Restore
-                  </button>
-                  <button v-if="mode !== 'trash'" class="dropdown-item" @click="close(); $emit('download-file', file)">
-                    <DownloadIcon class="dropdown-item-icon" /> Download
-                  </button>
-                  <button v-if="mode === 'file'" class="dropdown-item" @click="close(); $emit('rename-file', file)">
-                    <RenameIcon class="dropdown-item-icon" /> Rename
-                  </button>
-                  <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash-file', file)">
-                    <TrashIcon class="dropdown-item-icon" /> {{ mode === 'trash' ? 'Delete permanently' : mode === 'attachment' ? 'Delete' : 'Move to Trash' }}
-                  </button>
-                </template>
-              </Dropdown>
-            </td>
-          </tr>
-        </template>
+        <!-- Files -->
+        <tr
+            v-for="file in files"
+            :key="'fi-' + file.id"
+            class="list-row list-row--file"
+            :draggable="mode === 'file'"
+            @click="$emit('preview-file', file)"
+            @dragstart="mode === 'file' && onFileDragStart($event, file)"
+            @dragend="mode === 'file' && drag.endDrag()"
+        >
+          <td class="col-icon">
+            <RefFileIcon class="row-icon" :mime-type="file.mime_type" />
+          </td>
+          <td class="col-name">
+            <FileName :name="file.name" />
+            <a v-if="file._subtitle" class="file-subtitle text-body-s" @click.stop="$emit('subtitle-click', file)">{{ file._subtitle }}</a>
+          </td>
+          <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
+          <td class="col-modified">{{ formatDate(file.created_at) }}</td>
+          <td class="col-actions" @click.stop>
+            <Spinner v-if="movingIds.includes(file.id)" :size="16" class="row-spinner" />
+            <Dropdown v-else align="right" title="File actions">
+              <template #trigger>
+                <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
+              </template>
+              <template #default="{ close }">
+                <button v-if="mode === 'trash'" class="dropdown-item" @click="close(); $emit('restore-file', file)">
+                  <DownloadIcon class="dropdown-item-icon" /> Restore
+                </button>
+                <button v-if="mode !== 'trash'" class="dropdown-item" @click="close(); $emit('download-file', file)">
+                  <DownloadIcon class="dropdown-item-icon" /> Download
+                </button>
+                <button v-if="mode === 'file'" class="dropdown-item" :disabled="writesDisabled" @click="close(); $emit('rename-file', file)">
+                  <RenameIcon class="dropdown-item-icon" /> Rename
+                </button>
+                <button v-if="mode === 'file' && moveSide" class="dropdown-item" :disabled="moveSide.disabled" :data-testid="'ref-move-' + moveSide.target" @click="close(); $emit('move-side-file', file)">
+                  <MoveIcon class="dropdown-item-icon" /> {{ moveSide.label }}
+                </button>
+                <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash-file', file)">
+                  <TrashIcon class="dropdown-item-icon" /> {{ mode === 'trash' ? 'Delete permanently' : mode === 'attachment' ? 'Delete' : 'Move to Trash' }}
+                </button>
+              </template>
+            </Dropdown>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -100,7 +103,7 @@
 </template>
 
 <script setup>
-import {ref, computed} from 'vue'
+import {ref} from 'vue'
 import FolderIcon from '../../assets/FolderIcon.vue'
 import RefFileIcon from './RefFileIcon.vue'
 import FileName from './FileName.vue'
@@ -110,13 +113,14 @@ import Btn from '../Btn.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import MoveIcon from '../../assets/MoveIcon.vue'
+import Spinner from '../Spinner.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
-import { providerSections } from '../../scripts/models/referenceModel.js'
 
 const drag = dragModel()
 const dropTargetId = ref(null)
 
-const props = defineProps({
+defineProps({
   folders: {
     type: Array,
     default: () => [],
@@ -133,6 +137,18 @@ const props = defineProps({
     type: String,
     default: 'file',
   },
+  moveSide: {
+    type: Object,
+    default: null,
+  },
+  writesDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  movingIds: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const emit = defineEmits([
@@ -147,9 +163,9 @@ const emit = defineEmits([
   'subtitle-click',
   'load-more',
   'move-file',
+  'move-side-file',
+  'move-side-folder',
 ])
-
-const sections = computed(() => providerSections(props.files))
 
 function onFileDragStart(evt, file) {
   const targetMap = { 1: 'STUFF', 2: 'ACTION', 3: 'PROJECT' }
@@ -247,12 +263,6 @@ function formatDate(dateStr) {
   white-space: nowrap;
 }
 
-.list-section td {
-  padding: 16px 12px 8px;
-  color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border-light);
-}
-
 .col-icon {
   width: 40px;
 }
@@ -307,6 +317,10 @@ function formatDate(dateStr) {
 
 .row-icon--folder {
   color: var(--color-action);
+}
+
+.row-spinner {
+  margin: 6px;
 }
 
 .row-menu-btn {
