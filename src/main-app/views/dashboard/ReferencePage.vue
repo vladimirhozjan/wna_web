@@ -498,11 +498,12 @@ async function onRenameConfirm(name) {
     }
     model.closeRename()
   } catch (err) {
-    if (err.status === 409) {
+    if (err.status === 409 && !err.code) {
       const label = type === 'file' ? 'file' : 'folder'
       toaster.push(`A ${label} with this name already exists`)
     } else {
       toaster.push(err.message || 'Operation failed')
+      if (err.code === 'drive_reconnect_required') model.closeRename()
     }
   }
 }
@@ -519,7 +520,7 @@ async function onDeleteFolder(folder) {
       await model.deleteFolder(folder.id)
       toaster.success('Folder deleted')
     } catch (err) {
-      if (err.status === 409) {
+      if (err.status === 409 && !err.code) {
         toaster.push('Folder is not empty. Move or delete the files inside first.')
       } else {
         toaster.push(err.message || 'Failed to delete folder')
@@ -551,7 +552,7 @@ async function onMoveFile({fileId, targetFolderId}) {
     await model.moveFile(fileId, targetFolderId)
     toaster.success('File moved')
   } catch (err) {
-    if (err.status === 409) {
+    if (err.status === 409 && !err.code) {
       toaster.push('A file with this name already exists in the target folder')
     } else {
       toaster.push(err.message || 'Failed to move file')

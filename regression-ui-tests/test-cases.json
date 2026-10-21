@@ -9514,18 +9514,12 @@
     "preconditions": "User is not logged in (or logged out). Browser is open.",
     "steps": [
       "Navigate to /pricing.",
-      "Verify the pricing page loads.",
-      "Verify a Monthly/Yearly toggle is present at the top of the pricing section.",
-      "Verify the default selection is \"Yearly\".",
-      "Verify a \"Save 20%\" badge is displayed near the Yearly option.",
-      "Note the prices displayed for each tier (they should reflect yearly pricing).",
+      "Verify a Monthly / Yearly toggle is present at the top of the pricing section, with a \"3 months free\" badge on the Yearly option.",
+      "Note the Pro and Team prices (default selection).",
       "Toggle to \"Monthly\".",
-      "Verify the prices update to reflect monthly pricing (higher per-month cost).",
-      "Verify the \"Save 20%\" badge remains visible (indicating the savings on yearly).",
-      "Toggle back to \"Yearly\".",
-      "Verify the prices revert to yearly pricing."
+      "Toggle back to \"Yearly\"."
     ],
-    "expected": "The pricing page defaults to Yearly billing with a \"Save 20%\" badge. Toggling between Monthly and Yearly updates the displayed prices accordingly. The toggle is smooth and prices update immediately."
+    "expected": "The page defaults to Yearly: Pro and Team show a per-month price and \"Billed annually at €{yearly amount}\" (yearly per-month = amount / 9, `specs/features/wna-features.md` §24.2). The \"3 months free\" badge stays on the Yearly option in both states; no \"Save 20%\" text. Monthly removes the \"Billed annually at\" lines; switching back restores the same yearly figures."
   },
   {
     "id": "TC-354",
@@ -9540,13 +9534,9 @@
     "preconditions": "User is on the pricing page /pricing.",
     "steps": [
       "Navigate to /pricing.",
-      "Verify 3 pricing tiers are displayed: Free, Pro, and Team.",
-      "For the Free tier: a. Verify the price is displayed as €0 or \"Free\". b. Verify a list of included features is shown. c. Verify a CTA button is present (e.g., \"Get Started\").",
-      "For the Pro tier: a. Verify the price is displayed with the correct monthly or yearly amount. b. Verify it is marked as \"Most Popular\" with a visual badge or highlight. c. Verify a list of included features is shown (more than Free). d. Verify a CTA button is present (e.g., \"Start Free Trial\" or \"Subscribe\").",
-      "For the Team tier: a. Verify the price is displayed with the correct monthly or yearly amount. b. Verify a list of included features is shown (more than Pro). c. Verify a CTA button is present (e.g., \"Contact Sales\" or \"Subscribe\").",
-      "Click each CTA button and verify it navigates to the appropriate page (signup, checkout, or contact)."
+      "Check the Free, Pro and Team cards: title, description, badge, CTA and bullets."
     ],
-    "expected": "Three pricing tiers (Free, Pro, Team) are displayed with correct prices, feature lists, and CTA buttons. The Pro tier is marked as \"Most Popular\"."
+    "expected": "Three cards Free, Pro and Team (descriptions \"Get started with GTD for free.\", \"For the individual power user.\", \"For teams that delegate work together.\"); Pro is marked \"Most Popular\". CTAs: Free \"Start for Free\"; Pro and Team \"Contact Us\" (or \"Upgrade\" with the `payments` flag). Bullets in order (values from `contracts/limits.md`), each with a check icon:\n- Free: Unlimited stuff & actions · Up to 7 projects · Up to 10 tags · Reference files: view-only, full in Google Drive · Google Drive storage · 50 MB storage\n- Pro: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Google Calendar sync · Google Drive storage · 250 MB storage\n- Team: \"Everything in Pro, plus:\" (lead-in line, no check icon) · Connections & delegation · Shared projects · Google Drive storage · 1 GB/user storage\n\nDrive and Calendar sync are shown regardless of the `drive` / `calendar` flags."
   },
   {
     "id": "TC-355",
@@ -9560,15 +9550,10 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the pricing page /pricing.",
     "steps": [
-      "Navigate to /pricing and scroll down to the feature comparison section.",
-      "Verify a comparison table is displayed.",
-      "Verify the table has 7 feature rows in 2 groups (Core, Storage) and no Support group.",
-      "Verify each row shows the feature name and availability across Free, Pro, and Team tiers (e.g., checkmarks, dashes, or specific values).",
-      "On desktop, verify the comparison is displayed as a full table with columns for each tier.",
-      "On mobile (or narrow viewport), verify the comparison is displayed as cards (one card per feature showing availability across tiers).",
-      "Verify all 7 feature rows are visible (scrolling if necessary)."
+      "Navigate to /pricing and scroll to \"Compare Features\".",
+      "On desktop, check the table; on mobile (or a narrow viewport), check the per-feature cards."
     ],
-    "expected": "A 7-row feature comparison in 2 groups (Core, Storage) is displayed. On desktop, it renders as a full table. On mobile, it renders as per-feature cards. All features and their tier availability are clearly indicated."
+    "expected": "12 feature rows in 4 groups, in order, and no Support group (✓ = check icon, — = dash):\n- **Core** — Stuff & Actions (Unlimited / Unlimited / Unlimited), Projects (7 / Unlimited / Unlimited), Tags (10 / Unlimited / Unlimited), Recurring actions (— / ✓ / ✓), Reference files (View only · Full in Google Drive / Full / Full)\n- **Storage** — WNA hosted storage (50 MB / 250 MB / 1 GB/user), Max attachment size (5 MB / 20 MB / 50 MB)\n- **Integrations** — Email to Inbox (— / 50 / day / 100 / day), Google Calendar sync (— / ✓ / ✓), Google Drive storage (✓ / ✓ / ✓)\n- **Collaboration** — Connections & delegation (— / — / ✓), Shared projects (— / — / ✓)\n\nDesktop: a table with columns Feature / Free / Pro / Team. Mobile: one card per feature with the three tiers."
   },
   {
     "id": "TC-356",
@@ -15776,7 +15761,7 @@
   },
   {
     "id": "TC-755",
-    "name": "New Reference File Lands Under \"Google\"; Download Returns It",
+    "name": "New Reference File on the Google Drive Side; Older File on the Local Side; Download Returns It",
     "priority": "High",
     "area": "Google Drive Storage",
     "areas": [
@@ -15784,13 +15769,14 @@
     ],
     "smoke": false,
     "section": "57: Google Drive Storage (BYOS)",
-    "preconditions": "Free user; `drive` flag; Drive connected; at least one older local reference file.",
+    "preconditions": "Free user; `drive` flag; Drive connected; at least one older local reference file; a Google-side folder.",
     "steps": [
-      "Open Reference → Files and upload a file.",
+      "Open Reference → Files (first visit: the Google Drive side is selected) and upload a file.",
       "Check the list and grid views.",
-      "Download the new file."
+      "Download the new file.",
+      "Switch to the Local side."
     ],
-    "expected": "The new file is listed under the **Google** heading (`provider: \"gdrive\"`), the older file under **Local**; folders stay on top. The downloaded file has the same bytes and filename as the upload."
+    "expected": "The new file is listed on the Google Drive side (`provider: \"gdrive\"`, stored in Drive under `WNA/reference/`), with the folder on top in list and grid; the older local file is not listed there. The downloaded file has the same bytes and filename as the upload. The Local side lists the older file only — no Google file, no Google folder."
   },
   {
     "id": "TC-756",
@@ -15806,9 +15792,9 @@
     "steps": [
       "Settings → Storage → set **Save attachments to** to **Google Drive**; reload Settings.",
       "Attach a file to the action.",
-      "Download and preview it; open Reference → Attachments."
+      "Download and preview it; open Reference → Attachments on the Google Drive side, then the Local side."
     ],
-    "expected": "The selector keeps Google Drive after reload. The attachment is stored in Drive (`provider: \"gdrive\"`, in `WNA/attachments/`). Download and preview work. In Reference → Attachments it is listed under **Google**."
+    "expected": "The selector keeps Google Drive after reload. The attachment is stored in Drive (`provider: \"gdrive\"`, in `WNA/attachments/`). Download and preview work. In Reference → Attachments it is listed on the Google Drive side only, not on the Local side."
   },
   {
     "id": "TC-757",
@@ -15840,9 +15826,10 @@
     "preconditions": "Team owner and member; `drive` flag; owner has Drive connected and destination Google Drive; a shared project.",
     "steps": [
       "As the owner, attach a file to the shared project.",
+      "As the owner, open Reference → Attachments on the Local side, then the Google Drive side.",
       "As the member, download it."
     ],
-    "expected": "The attachment is stored locally (`provider: \"local\"`), not in the owner's Drive. The member downloads it."
+    "expected": "The attachment is stored locally (`provider: \"local\"`), not in the owner's Drive. It is listed on the Local side of the owner's Attachments, not on the Google Drive side. The member downloads it."
   },
   {
     "id": "TC-759",
@@ -15857,7 +15844,7 @@
     "preconditions": "Free user; `drive` flag; Drive connected; destination Google Drive; a Drive-stored reference file and attachment.",
     "steps": [
       "Settings → Storage → **Disconnect** and confirm.",
-      "Open (preview) and download the Drive-stored reference file and attachment.",
+      "Open (preview) and download the Drive-stored reference file (Reference → Google Drive side) and attachment.",
       "Open a local file."
     ],
     "expected": "The confirmation warns that Drive files can't be opened until reconnect. After disconnect the card shows \"Google Drive not connected\" and the selector shows Local (disabled). Opening a Drive file shows the toast \"Reconnect Google Drive to open this file\" (409) — no blank preview, no 500. Local files open normally. The files are still in the user's Drive."
@@ -15898,7 +15885,7 @@
   },
   {
     "id": "TC-762",
-    "name": "`drive` Flag Off — Card Hidden, Drive File Blocked",
+    "name": "`drive` Flag Off — Card Hidden, No Switch, Drive File Blocked",
     "priority": "High",
     "area": "Google Drive Storage",
     "areas": [
@@ -15909,9 +15896,10 @@
     "preconditions": "Free user with Drive-stored files; the `drive` flag is turned off in admin feature flags; user re-logged.",
     "steps": [
       "Open Settings.",
-      "Open a Drive-stored reference file and attachment."
+      "Open Reference.",
+      "Download the Drive-stored reference file and attachment (API); open the attachment on its item."
     ],
-    "expected": "No Storage card in Settings. Opening a Drive file shows \"Drive storage is temporarily unavailable\" (403 `drive_disabled`); no Google call is made. New uploads are stored locally."
+    "expected": "No Storage card in Settings. Reference has no Local | Google Drive switch and lists the Local side only (the Drive reference file is not listed). Downloading a Drive file returns 403 `drive_disabled` and opening the attachment shows \"Drive storage is temporarily unavailable\"; no Google call is made. New uploads are stored locally."
   },
   {
     "id": "TC-763",
@@ -16114,5 +16102,314 @@
       "Inspect the `POST /v1/user/google-sso` request body."
     ],
     "expected": "- The callback URL's `state` equals the `state` sent in the authorization URL.\n- The `POST /v1/user/google-sso` body contains `code`, `code_verifier` (the value stored before the redirect) and `tz`.\n- The backend returns 200; the user is redirected to `/engage` and is signed in (`auth_token`, `refresh_token` in `localStorage`).\n- `sessionStorage` no longer contains `google_sso_state` or `google_sso_verifier`."
+  },
+  {
+    "id": "TC-807",
+    "name": "Reference Switch Appears After Drive Connect; Last Selected Side Is Kept",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive not connected; no Google-side files.",
+    "steps": [
+      "Open Reference.",
+      "Settings → Storage → **Connect Google Drive**.",
+      "Open Reference.",
+      "Select **Local**, reload; select **Google Drive**, reload."
+    ],
+    "expected": "`GET /v1/reference/sides` is `{\"show_switch\": false, \"drive_connected\": false}` before and `{\"show_switch\": true, \"drive_connected\": true}` after the connect. Before: no switch, Reference shows Local only. After: a **Local** · **Google Drive** switch under the title; on the first visit Google Drive is selected. After each reload the last selected side is still selected."
+  },
+  {
+    "id": "TC-808",
+    "name": "Switch Stays After Disconnect While the Google Side Holds Files",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected.",
+    "steps": [
+      "Create an empty folder on the Google Drive side; disconnect Drive; open Reference.",
+      "Reconnect with the same Google account; upload a file on the Google Drive side; disconnect; open Reference."
+    ],
+    "expected": "Step 1: `show_switch` false — an empty Google folder alone does not keep the switch; Reference has no switch. Step 2: `show_switch` true, `drive_connected` false; the switch is shown and the Google Drive side lists the file."
+  },
+  {
+    "id": "TC-809",
+    "name": "Folder Created on the Google Drive Side Exists Only There and in Drive",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected.",
+    "steps": [
+      "Reference → Google Drive side → **New Folder** \"TC809 Google\".",
+      "Switch to Local → **New Folder** \"TC809 Local\".",
+      "Switch back to Google Drive."
+    ],
+    "expected": "The Google folder is listed only on the Google Drive side and exists in Drive at `WNA/reference/TC809 Google`. The Local folder is listed only on the Local side and is not created in Drive. `GET /v1/reference/folders?side=gdrive` / `?side=local` each return only their folder."
+  },
+  {
+    "id": "TC-810",
+    "name": "Upload Lands on the Selected Side; Download Returns the Same Bytes",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected.",
+    "steps": [
+      "On the Google Drive side upload a file and download it.",
+      "On the Local side upload another file and download it."
+    ],
+    "expected": "The Google upload has `provider: \"gdrive\"` and is in Drive under `WNA/reference/`; the Local upload has `provider: \"local\"` and is not in Drive; each side lists only its own file. Both downloads return the uploaded bytes."
+  },
+  {
+    "id": "TC-811",
+    "name": "Attachments and Trash Tabs Show Only the Selected Side",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; one local and one Drive attachment; one local and one Google-side reference file in Trash.",
+    "steps": [
+      "Reference → Attachments: Google Drive side, then Local side (list view).",
+      "Reference → Trash: Local side, then Google Drive side."
+    ],
+    "expected": "Each tab lists only the selected side's attachments / trashed files. No Google / Local heading rows are shown."
+  },
+  {
+    "id": "TC-812",
+    "name": "Free — Local Side Is Read-Only, Google Drive Side Is Writable",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Free user; `drive` flag; Drive connected.",
+    "steps": [
+      "Local side: **New Folder** → name → **Create**; then **Upload** a file.",
+      "Google Drive side: **New Folder** → name → **Create**; then **Upload** a file."
+    ],
+    "expected": "Local: each write opens the upgrade dialog \"Full reference file management is available on Pro and Team plans. Upgrade to upload and organize your files.\" with \"Or use the Google Drive side — files there can be organized on every plan.\"; nothing is created. Google Drive: the folder and the file are created and listed (file in Drive under `WNA/reference/`); no upgrade dialog."
+  },
+  {
+    "id": "TC-813",
+    "name": "Trashing a Google File Moves It to WNA/trash in Drive; Restore Moves It Back",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; a Google-side folder with a file (Drive `WNA/reference/{folder}/`).",
+    "steps": [
+      "Open the folder on the Google Drive side and **Move to Trash** the file.",
+      "Reference → Trash → Google Drive side → **Restore** it."
+    ],
+    "expected": "After trashing, the Drive file is in `WNA/trash/` (not in the Google Drive trash). After restore the toast `\"{name}\" restored` shows, the Drive file is back in `WNA/reference/{folder}/` and the file is back in its folder in WNA."
+  },
+  {
+    "id": "TC-814",
+    "name": "Drive Disconnected — Google Side Lists, Reconnect Bar, Writes Disabled",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; a Local file and a Google-side file; Drive disconnected in Settings.",
+    "steps": [
+      "Reference → Google Drive side.",
+      "Open the Google file's menu; preview the file.",
+      "Switch to Local; open the Local file's menu."
+    ],
+    "expected": "Google Drive side: the file is still listed; a warning bar \"Google Drive is not connected\" with **Reconnect** shows above the list; **New Folder**, **Upload** and **Move to Local** are disabled; preview shows the toast \"Reconnect Google Drive to open this file\" and no preview. Local side: no bar, writes enabled, and the menu has no **Move to Google Drive**."
+  },
+  {
+    "id": "TC-815",
+    "name": "Pro — Move a File to Google Drive and Back to Local; Quota Follows",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; a Local file.",
+    "steps": [
+      "Local side: file menu → **Move to Google Drive**.",
+      "Google Drive side: file menu → **Move to Local**.",
+      "Download the file."
+    ],
+    "expected": "Step 1: toast `\"{name}\" moved to Google Drive`, the file leaves the Local list, is at the Google root (Drive `WNA/reference/`) and the Storage quota drops by its size. Step 2: toast `\"{name}\" moved to Local`, the file is back on Local, the Drive copy is removed and the quota is back. The download returns the original bytes."
+  },
+  {
+    "id": "TC-816",
+    "name": "Folder Subtree Moves Local → Google; Free Has No Move to Local",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Free user; `drive` flag; Drive connected; a Local folder with a subfolder and a file in each.",
+    "steps": [
+      "Local side: folder menu → **Move to Google Drive**.",
+      "Google Drive side: open the folder menu and a file menu."
+    ],
+    "expected": "Toast `\"{name}\" moved to Google Drive`; the folder leaves Local and is a root folder on the Google Drive side with its subfolder and files; in Drive the tree is `WNA/reference/{folder}/{subfolder}/` with the files. On the Google Drive side neither menu offers **Move to Local**."
+  },
+  {
+    "id": "TC-817",
+    "name": "Google → Local Folder Move Over the Storage Quota Moves Nothing",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; a Google-side folder with a file; Storage used within a few bytes of the quota (test seam: `user_storage.used_bytes`).",
+    "steps": [
+      "Google Drive side: folder menu → **Move to Local**."
+    ],
+    "expected": "`POST /v1/reference/folders/{id}/move-side` returns 413. The storage-limit upgrade dialog shows \"You've reached your storage limit.\" with \"Or keep it on the Google Drive side — files there don't count toward your limit.\". Nothing moved: the folder and file stay on the Google Drive side and in their Drive folder; Storage used is unchanged."
+  },
+  {
+    "id": "TC-818",
+    "name": "Search Returns Only the Selected Side's Files",
+    "priority": "Medium",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; a Local and a Google file whose names share a prefix.",
+    "steps": [
+      "Google Drive side: search the prefix.",
+      "Switch to Local; search the prefix again."
+    ],
+    "expected": "Each search lists only the selected side's file. Switching side clears the search field. `GET /v1/reference/files?q=…&side=…` returns only that side's file."
+  },
+  {
+    "id": "TC-819",
+    "name": "Storage Quota Shown on the Local Toolbar Only",
+    "priority": "Medium",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected.",
+    "steps": [
+      "Reference → Files: Local side, then Google Drive side.",
+      "Reference → Attachments: Google Drive side, then Local side."
+    ],
+    "expected": "The quota display shows on the Local toolbar in Files and Attachments, and not on the Google Drive toolbar."
+  },
+  {
+    "id": "TC-820",
+    "name": "`drive` Flag Off — No Switch, Local Only",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user with a Local and a Google file; Google Drive side last selected; then the `drive` flag is turned off and the user re-logs.",
+    "steps": [
+      "Open Reference."
+    ],
+    "expected": "`show_switch` is false and `GET /v1/reference/files?side=gdrive` returns 403 `drive_disabled`. Reference has no switch and no reconnect bar; it lists the Local file only (the stored Google side is ignored)."
+  },
+  {
+    "id": "TC-821",
+    "name": "Migration + Drive Tidy-Up of a Pre-FEAT-051 Mirrored Folder",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user with the `drive` flag who has not used Drive yet in this core run, in the state migration core 019 leaves: a Local folder with its old Drive mirror (`drive_folder_id`) and its Drive file at the Google root in WNA, while in Drive the file still sits in `WNA/reference/{folder}/`; `drive_tidy_done` false (test seam: seeded via the DB from a second user's real Drive folder on the same Google account).",
+    "steps": [
+      "Settings → Storage → **Connect Google Drive** with that Google account (first Drive access).",
+      "Open Reference: Local side, then Google Drive side."
+    ],
+    "expected": "The folder is on the Local side; the file is at the Google root. In the background the tidy-up moves the Drive file to `WNA/reference/` and the old mirrored Drive folder to the Google Drive trash (`trashed=true`); `drive_tidy_done` becomes true."
+  },
+  {
+    "id": "TC-822",
+    "name": "Broken Grant — First Google-Side Write Shows the Reconnect Bar",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; Reference on the Google Drive side; then the grant breaks (Drive rejects the token).",
+    "steps": [
+      "Upload a file on the Google Drive side.",
+      "Switch to Local.",
+      "Variant (new session, grant broken): **New Folder** on the Google Drive side as the first write."
+    ],
+    "expected": "Step 3: the folder create is rejected the same way — \"Reconnect Google Drive to make changes\", the name dialog closes, the bar with **New Folder** and **Upload** disabled, and no folder in WNA or in Drive. The upload is rejected and \"Reconnect Google Drive to make changes\" is shown; the Google Drive side then shows the \"Google Drive is not connected\" bar with **New Folder** and **Upload** disabled; nothing is stored. The Local side has no bar and its writes stay enabled."
+  },
+  {
+    "id": "TC-823",
+    "name": "Reconnect From Reference Returns to Reference",
+    "priority": "High",
+    "area": "Google Drive Storage",
+    "areas": [
+      "Google Drive Storage"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "Pro user; `drive` flag; a Google file; Drive disconnected.",
+    "steps": [
+      "Reference → Google Drive side → **Reconnect** in the bar; complete Google consent with the same account."
+    ],
+    "expected": "After consent the browser returns to `/reference` (not Settings); `drive_connected` is true, the bar is gone, **New Folder** is enabled and the Google file is listed."
+  },
+  {
+    "id": "TC-824",
+    "name": "Help Covers the Reference Switch, Drive Storage and Calendar Sync",
+    "priority": "Medium",
+    "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
+    "smoke": false,
+    "section": "57: Google Drive Storage (BYOS)",
+    "preconditions": "User is not logged in.",
+    "steps": [
+      "Open `/help/faq`; open \"How does the Reference file manager work?\", \"Can I keep my files in my Google Drive?\", \"How does Google Calendar sync work?\", \"What plans are available?\" and \"Can I sign in with Google?\".",
+      "Open `/help/getting-started`."
+    ],
+    "expected": "FAQ: \"How does Google Calendar sync work?\" follows \"How does the Calendar work?\" and \"Can I keep my files in my Google Drive?\" follows the Reference entry. The Reference answer describes the Local | Google Drive switch, that every plan (Free included) can upload and organize files on the Google Drive side, and the Local per-file limits (20 MB Pro, 50 MB Team). The Drive entry starts \"Yes, on every plan.\"; the Calendar sync entry starts \"On the Pro and Team plans you can sync your scheduled actions with Google Calendar in both directions.\"; the plans entry has \"(reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too)\". \"Can I sign in with Google?\" has no \"If Google sign-in is not configured…\" sentence. Getting Started: \"Keeping a Reference Library\" is followed by \"Storing Files in Google Drive\" and \"Syncing With Google Calendar (Pro & Team)\"; the Reference card says \"On the Free plan your WhatsNextAction (Local) files are view-only…\" (no \"On the Free plan Reference is view-only\")."
   }
 ]
