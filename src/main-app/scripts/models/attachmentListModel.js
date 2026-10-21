@@ -2,6 +2,7 @@ import {ref, computed} from 'vue'
 import apiClient from '../core/apiClient.js'
 import { PAGE_SIZE } from '../core/domains.js'
 import {statsModel} from './statsModel.js'
+import {referenceModel} from './referenceModel.js'
 
 let instance = null
 
@@ -29,6 +30,7 @@ export function attachmentListModel() {
             const data = await apiClient.listAllAttachments({
                 limit: limit.value,
                 offset: offset.value,
+                side: referenceModel().side.value,
             })
 
             const list = Array.isArray(data) ? data : (data.attachments || [])

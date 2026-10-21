@@ -16,8 +16,11 @@
           <button v-if="mode !== 'trash'" class="dropdown-item" @click="close(); $emit('download', file)">
             <DownloadIcon class="dropdown-item-icon" /> Download
           </button>
-          <button v-if="mode === 'file'" class="dropdown-item" @click="close(); $emit('rename', file)">
+          <button v-if="mode === 'file'" class="dropdown-item" :disabled="writesDisabled" @click="close(); $emit('rename', file)">
             <RenameIcon class="dropdown-item-icon" /> Rename
+          </button>
+          <button v-if="mode === 'file' && moveSide" class="dropdown-item" :disabled="moveSide.disabled" :data-testid="'ref-move-' + moveSide.target" @click="close(); $emit('move-side', file)">
+            <MoveIcon class="dropdown-item-icon" /> {{ moveSide.label }}
           </button>
           <button class="dropdown-item dropdown-item--danger" @click="close(); $emit('trash', file)">
             <TrashIcon class="dropdown-item-icon" /> {{ mode === 'trash' ? 'Delete permanently' : mode === 'attachment' ? 'Delete' : 'Move to Trash' }}
@@ -36,6 +39,7 @@ import Dropdown from '../Dropdown.vue'
 import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
+import MoveIcon from '../../assets/MoveIcon.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
@@ -49,9 +53,17 @@ const props = defineProps({
     type: String,
     default: 'file',
   },
+  moveSide: {
+    type: Object,
+    default: null,
+  },
+  writesDisabled: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-defineEmits(['preview', 'download', 'rename', 'trash', 'restore', 'subtitle-click'])
+defineEmits(['preview', 'download', 'rename', 'trash', 'restore', 'subtitle-click', 'move-side'])
 
 function onDragStart(evt) {
   const file = props.file
