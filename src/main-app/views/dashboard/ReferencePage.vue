@@ -42,7 +42,7 @@
 
         <RefUploadZone :disabled="writesDisabled" @upload="onUploadFiles" class="ref-content">
           <!-- Loading -->
-          <div v-if="model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0" class="ref-loading">
+          <div v-if="initialLoading || (model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0)" class="ref-loading">
             <Spinner :size="28" />
           </div>
 
@@ -52,7 +52,8 @@
                 :icon="ReferenceIcon"
                 :title="model.searchQuery.value ? 'No results found' : 'No files yet'"
                 :text="model.searchQuery.value ? 'Try a different search term.' : 'Upload files or create folders to organize your reference material.'"
-                :buttonText="model.searchQuery.value || writesDisabled ? '' : 'Upload File'"
+                :buttonText="model.searchQuery.value ? '' : 'Upload File'"
+                :button-disabled="writesDisabled"
                 @action="triggerUpload"
             />
           </div>
@@ -65,6 +66,7 @@
               :has-more="model.hasMore.value"
               :move-side="moveSide"
               :writes-disabled="writesDisabled"
+              :moving-ids="model.movingIds.value"
               @navigate-folder="onNavigate"
               @rename-folder="onRenameFolder"
               @delete-folder="onDeleteFolder"
@@ -86,6 +88,7 @@
               :has-more="model.hasMore.value"
               :move-side="moveSide"
               :writes-disabled="writesDisabled"
+              :moving-ids="model.movingIds.value"
               @navigate-folder="onNavigate"
               @rename-folder="onRenameFolder"
               @delete-folder="onDeleteFolder"
@@ -131,13 +134,17 @@
         />
 
         <!-- Loading -->
-        <div v-if="attModel_.loading.value && attModel_.items.value.length === 0" class="ref-loading">
+        <div v-if="initialLoading || (attModel_.loading.value && attModel_.items.value.length === 0)" class="ref-loading">
           <Spinner :size="28" />
         </div>
 
         <!-- Empty state -->
         <div v-else-if="!attModel_.loading.value && attModel_.items.value.length === 0" class="ref-empty">
-          <EmptyState :icon="AttachmentIcon" title="No attachments" text="Attachments added to your items will appear here." />
+          <EmptyState
+              :icon="AttachmentIcon"
+              title="No attachments"
+              :text="isLocal ? 'Attachments added to your items will appear here.' : 'Attachments saved to Google Drive appear here. Choose where new attachments go in Settings → Storage.'"
+          />
         </div>
 
         <!-- Attachment list view -->
@@ -181,7 +188,7 @@
         />
 
         <!-- Loading -->
-        <div v-if="trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-loading">
+        <div v-if="initialLoading || (trashModel_.loading.value && trashModel_.files.value.length === 0)" class="ref-loading">
           <Spinner :size="28" />
         </div>
 
@@ -276,17 +283,20 @@ const sideOptions = [
 
 const activeTab = ref('files')
 const sidesReady = ref(false)
+// Spinner until the side and the first list are known — no empty-state flash
+const initialLoading = ref(true)
 const reconnecting = ref(false)
 
 const isLocal = computed(() => model.side.value === 'local')
 const writesDisabled = computed(() => !isLocal.value && !model.driveConnected.value)
 const isFree = computed(() => (auth.currentUser.value?.subscription_tier || 'free') === 'free')
 
-// Free may only move Local → Google Drive; every cross-side move needs Drive connected
+// Free may only move Local → Google Drive; while disconnected it is hidden and Move to Local is disabled
 const moveSide = computed(() => {
   if (!model.showSwitch.value) return null
   const target = isLocal.value ? 'gdrive' : 'local'
   if (target === 'local' && isFree.value) return null
+  if (target === 'gdrive' && !model.driveConnected.value) return null
   return {target, label: `Move to ${SIDE_LABELS[target]}`, disabled: !model.driveConnected.value}
 })
 
@@ -384,12 +394,13 @@ onMounted(async () => {
   sidesReady.value = true
   if (activeTab.value === 'files') {
     const folderId = route.query.folder || null
-    model.navigateToFolder(folderId).catch(() => {})
+    await model.navigateToFolder(folderId).catch(() => {})
   } else if (activeTab.value === 'attachments') {
-    attModel_.loadAttachments({reset: true}).catch(() => {})
+    await attModel_.loadAttachments({reset: true}).catch(() => {})
   } else {
-    trashModel_.loadTrash({reset: true}).catch(() => {})
+    await trashModel_.loadTrash({reset: true}).catch(() => {})
   }
+  initialLoading.value = false
 })
 
 function switchTab(tab) {
@@ -428,9 +439,9 @@ async function onReconnect() {
   if (reconnecting.value) return
   reconnecting.value = true
   try {
-    await startGoogleConnect('drive')   // redirects to Google
+    await startGoogleConnect('drive', route.fullPath)   // redirects to Google
   } catch (err) {
-    if (err.status !== 403) toaster.push(err.message || 'Failed to connect Google Drive')
+    if (err.status !== 403) toaster.push('Failed to connect Google Drive')
     reconnecting.value = false
   }
 }
@@ -566,6 +577,10 @@ async function onMoveFolderSide(folder) {
   } catch (err) {
     if (err.status === 409 && !err.code) {
       toaster.push(`A folder with this name already exists in ${SIDE_LABELS[target]}`)
+    } else if (err.status === 502) {
+      toaster.push(`Google Drive is not responding — "${folder.name}" was not moved. Try again.`)
+    } else if (err.status === 404) {
+      toaster.push(`"${folder.name}" was not moved — a file in it was deleted in Google Drive.`)
     } else if (err.status !== 413) {
       toaster.push(err.message || 'Failed to move folder')
     }

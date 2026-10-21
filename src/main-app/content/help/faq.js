@@ -13,7 +13,7 @@ export const faq = [
   {
     question: 'Can I sign in with Google?',
     answer:
-      'Yes. The Sign Up dialog has a "Sign up with Google" button and the Sign In dialog has a "Sign in with Google" button. Choose your Google account, and if it is your first time you are signed up automatically — no separate password needed. If you already have an account with the same email, signing in with Google links to it. You can still use email and password at any time. (If Google sign-in is not configured for your deployment, the button is hidden and you sign in with email and password.)',
+      'Yes. The Sign Up dialog has a "Sign up with Google" button and the Sign In dialog has a "Sign in with Google" button. Choose your Google account, and if it is your first time you are signed up automatically — no separate password needed. If you already have an account with the same email, signing in with Google links to it. You can still use email and password at any time.',
   },
   {
     question: 'How do I reset my password?',
@@ -125,6 +125,11 @@ export const faq = [
       'The Calendar shows your time-specific actions and commitments — your "hard landscape". It offers Day, Week, Month, Year, and Recurring views. In Day and Week views, scheduled actions appear as time blocks based on their start time and duration. You can click an empty time slot to create a new action, drag items to reschedule them, and switch to the Recurring view to manage repeating action templates. Calendar settings (week start day, time format, business hours) are configurable in Settings.',
   },
   {
+    question: 'How does Google Calendar sync work?',
+    answer:
+      'On the Pro and Team plans you can sync your scheduled actions with Google Calendar in both directions. Go to Settings → Calendar Sync and click Connect Google Calendar. After you approve access, WhatsNextAction offers to create its own WhatsNextAction calendar in your Google account, or you can pick one of your existing calendars. Scheduled actions in Next Actions, Today, Calendar and Waiting For sync with their title, description, date and time — change them on either side and the other follows. Deleting an event in Google moves its action to Trash; completing or trashing an action removes its event. In the WhatsNextAction calendar, events you create in Google become scheduled actions. Due dates, start-after dates and your other Google events are not synced. Use Sync now to sync right away, or Disconnect to stop — events already in Google stay there.',
+  },
+  {
     question: 'What are recurring actions?',
     answer:
       'Recurring actions let you create templates that automatically spawn action instances on a schedule. You can set the frequency (daily, weekly, monthly, or yearly), choose specific days, set a time and duration, and define an end condition (never, after N occurrences, or until a date). Access recurring templates from the Calendar page\'s Recurring view. This feature is available on the Pro and Team plans.',
@@ -163,7 +168,12 @@ export const faq = [
   {
     question: 'How does the Reference file manager work?',
     answer:
-      'Reference is your non-actionable file storage — the Reference bucket. It works like a file manager with folders, file uploads (up to 20 MB per file on Pro and 50 MB on Team), global search, and a separate trash. Uploading and organizing files requires a Pro or Team plan — Free accounts have view-only access. You can create folders, upload files by clicking or dragging, rename and move items, and preview images, PDFs, and text files in the browser. Your storage quota is shown in the toolbar. Stuff items clarified as "Reference" are automatically saved here as text notes.',
+      'Reference is your non-actionable file storage — the Reference bucket. It works like a file manager with folders, file uploads, search, and a separate trash. Once you connect Google Drive in Settings → Storage, a Local | Google Drive switch appears at the top of Reference: Local is your WhatsNextAction storage, Google Drive is the WNA/reference folder in your own Drive. Each side has its own folders, files, attachments and trash, and search looks only in the side you have selected. On Local, uploading and organizing files requires a Pro or Team plan — Free accounts can view and download. On the Google Drive side every plan, Free included, can upload and organize files. To move a file or folder to the other side, open its menu and choose Move to Google Drive or Move to Local (on Free, files and folders can only be moved to Google Drive). Local files count toward your storage quota, shown in the toolbar, and are limited to 20 MB per file on Pro and 50 MB on Team; files on the Google Drive side use your Drive space instead and don\'t count toward either limit. You can create folders, upload files by clicking or dragging, rename and move items, and preview images, PDFs, and text files in the browser. Stuff items clarified as "Reference" are automatically saved here as text notes.',
+  },
+  {
+    question: 'Can I keep my files in my Google Drive?',
+    answer:
+      'Yes, on every plan. In Settings → Storage, click Connect Google Drive and approve access. WhatsNextAction works only in its own WNA folder in your Drive and sees only the files it created there. A Local | Google Drive switch then appears on the Reference page: files and folders you add on the Google Drive side are stored in your Drive and don\'t count toward your WhatsNextAction storage. Under "Save attachments to" you choose whether new attachments on your items go to Local or Google Drive (attachments on shared projects always stay in WhatsNextAction). If you disconnect, your files stay in your Drive and are still listed in Reference, but you need to reconnect to open or change them.',
   },
 
   // --- Trash & Recovery ---
@@ -206,7 +216,7 @@ export const faq = [
   {
     question: 'What plans are available?',
     answer:
-      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts.',
+      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts.',
   },
   {
     question: 'What are the limits on each plan?',

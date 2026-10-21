@@ -32,6 +32,7 @@
     </Btn>
 
     <ul class="tier__features">
+      <li v-if="lead" class="tier__feature text-body-s">{{ lead }}</li>
       <li v-for="(feat, i) in features" :key="i" class="tier__feature text-body-s">
         <CheckIcon class="tier__check" />
         {{ feat }}
@@ -50,6 +51,7 @@ defineProps({
   period:      { type: String, default: 'month' },
   description: { type: String, default: '' },
   features:    { type: Array, default: () => [] },
+  lead:        { type: String, default: '' },
   featured:    { type: Boolean, default: false },
   ctaText:     { type: String, default: 'Get Started' },
   perUser:     { type: Boolean, default: false },

@@ -9,8 +9,9 @@
   >
     <FolderIcon class="folder-card__icon" />
     <FileName class="folder-card__name" :name="folder.name" />
-    <div class="folder-card__actions" @click.stop>
-      <Dropdown align="right" title="Folder actions">
+    <div class="folder-card__actions" :class="{ 'folder-card__actions--busy': busy }" @click.stop>
+      <Spinner v-if="busy" :size="16" class="folder-card__spinner" />
+      <Dropdown v-else align="right" title="Folder actions">
         <template #trigger>
           <button class="folder-card__menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
         </template>
@@ -39,6 +40,7 @@ import Dropdown from '../Dropdown.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
 import MoveIcon from '../../assets/MoveIcon.vue'
+import Spinner from '../Spinner.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
@@ -54,6 +56,10 @@ const props = defineProps({
     default: null,
   },
   writesDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  busy: {
     type: Boolean,
     default: false,
   },
@@ -129,8 +135,13 @@ function onDrop() {
   transition: opacity 0.15s;
 }
 
-.folder-card:hover .folder-card__actions {
+.folder-card:hover .folder-card__actions,
+.folder-card__actions--busy {
   opacity: 1;
+}
+
+.folder-card__spinner {
+  margin: 6px;
 }
 
 @media (pointer: coarse) {

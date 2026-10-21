@@ -24,6 +24,9 @@ export function referenceModel() {
     const side = ref('local')
     const showSwitch = ref(false)
     const driveConnected = ref(false)
+    const movingIds = ref([])
+    // Set by the first Google-side 409 drive_reconnect_required; kept until the app reloads
+    let grantBroken = false
 
     const preview = reactive({
         visible: false,
@@ -64,7 +67,7 @@ export function referenceModel() {
         try {
             const data = await apiClient.getRefSides()
             showSwitch.value = !!data.show_switch
-            driveConnected.value = !!data.drive_connected
+            driveConnected.value = !!data.drive_connected && !grantBroken
         } catch {
             showSwitch.value = false
             driveConnected.value = false
@@ -75,6 +78,11 @@ export function referenceModel() {
         }
         const stored = localStorage.getItem('ref_side')
         side.value = stored === 'local' || stored === 'gdrive' ? stored : (driveConnected.value ? 'gdrive' : 'local')
+    }
+
+    function markGrantBroken() {
+        grantBroken = true
+        driveConnected.value = false
     }
 
     function setSide(value) {
@@ -205,19 +213,29 @@ export function referenceModel() {
 
     async function moveFileToSide(id, target) {
         error.value = null
-        await apiClient.moveRefFileSide(id, target)
-        files.value = files.value.filter(f => f.id !== id)
-        totalFiles.value = Math.max(0, totalFiles.value - 1)
-        loadQuota()
+        movingIds.value.push(id)
+        try {
+            await apiClient.moveRefFileSide(id, target)
+            files.value = files.value.filter(f => f.id !== id)
+            totalFiles.value = Math.max(0, totalFiles.value - 1)
+            loadQuota()
+        } finally {
+            movingIds.value = movingIds.value.filter(m => m !== id)
+        }
     }
 
     async function moveFolderToSide(id, target) {
         error.value = null
-        await apiClient.moveRefFolderSide(id, target)
-        folders.value = folders.value.filter(f => f.id !== id)
-        // The moved subtree changed side; cached providers are stale
-        folderCache.clear()
-        loadQuota()
+        movingIds.value.push(id)
+        try {
+            await apiClient.moveRefFolderSide(id, target)
+            folders.value = folders.value.filter(f => f.id !== id)
+            // The moved subtree changed side; cached providers are stale
+            folderCache.clear()
+            loadQuota()
+        } finally {
+            movingIds.value = movingIds.value.filter(m => m !== id)
+        }
     }
 
     async function trashFile(id) {
@@ -388,11 +406,13 @@ export function referenceModel() {
         side,
         showSwitch,
         driveConnected,
+        movingIds,
         preview,
         rename,
         hasMore,
 
         loadSides,
+        markGrantBroken,
         setSide,
         navigateToFolder,
         loadContents,

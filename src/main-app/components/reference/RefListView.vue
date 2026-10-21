@@ -29,7 +29,8 @@
           <td class="col-size">&mdash;</td>
           <td class="col-modified">{{ formatDate(folder.created_at) }}</td>
           <td class="col-actions" @click.stop>
-            <Dropdown align="right" title="Folder actions">
+            <Spinner v-if="movingIds.includes(folder.id)" :size="16" class="row-spinner" />
+            <Dropdown v-else align="right" title="Folder actions">
               <template #trigger>
                 <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
               </template>
@@ -68,7 +69,8 @@
           <td class="col-size">{{ formatSize(file.size_bytes) }}</td>
           <td class="col-modified">{{ formatDate(file.created_at) }}</td>
           <td class="col-actions" @click.stop>
-            <Dropdown align="right" title="File actions">
+            <Spinner v-if="movingIds.includes(file.id)" :size="16" class="row-spinner" />
+            <Dropdown v-else align="right" title="File actions">
               <template #trigger>
                 <button class="row-menu-btn" type="button"><MoreIcon class="menu-btn-icon" /></button>
               </template>
@@ -112,6 +114,7 @@ import DownloadIcon from '../../assets/DownloadIcon.vue'
 import RenameIcon from '../../assets/RenameIcon.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
 import MoveIcon from '../../assets/MoveIcon.vue'
+import Spinner from '../Spinner.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
 
 const drag = dragModel()
@@ -141,6 +144,10 @@ defineProps({
   writesDisabled: {
     type: Boolean,
     default: false,
+  },
+  movingIds: {
+    type: Array,
+    default: () => [],
   },
 })
 
@@ -310,6 +317,10 @@ function formatDate(dateStr) {
 
 .row-icon--folder {
   color: var(--color-action);
+}
+
+.row-spinner {
+  margin: 6px;
 }
 
 .row-menu-btn {

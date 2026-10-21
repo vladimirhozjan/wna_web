@@ -67,7 +67,17 @@ export const gettingStarted = [
   {
     title: 'Keeping a Reference Library',
     description:
-      'The Reference section is a file manager for non-actionable material you want to keep — documents, images, PDFs, and notes. Organize files into folders, search across everything, switch between list and grid views, and preview images and PDFs without downloading. Your storage allowance grows with your plan (50 MB on Free, 250 MB on Pro, 1 GB per user on Team). On the Free plan Reference is view-only; upgrade to Pro or Team to upload and organize your own files.',
+      'The Reference section is a file manager for non-actionable material you want to keep — documents, images, PDFs, and notes. Organize files into folders, search across everything, switch between list and grid views, and preview images and PDFs without downloading. Your storage allowance grows with your plan (50 MB on Free, 250 MB on Pro, 1 GB per user on Team). On the Free plan your WhatsNextAction (Local) files are view-only; upgrade to Pro or Team to upload and organize them — or connect Google Drive in Settings and organize files freely on the Google Drive side of Reference, on any plan.',
+  },
+  {
+    title: 'Storing Files in Google Drive',
+    description:
+      'Connect Google Drive in Settings → Storage to keep reference files in your own Drive, on any plan. A Local | Google Drive switch appears at the top of Reference — each side has its own folders, files and trash. Files on the Google Drive side don\'t use your WhatsNextAction storage. Move a file or folder between sides from its menu, and choose in Settings whether new attachments are saved locally or in Google Drive.',
+  },
+  {
+    title: 'Syncing With Google Calendar (Pro & Team)',
+    description:
+      'Connect Google Calendar in Settings → Calendar Sync to see your scheduled actions next to the rest of your day. WhatsNextAction can create its own calendar in your Google account; scheduled actions then sync both ways — move one in Google and it moves here too. Events you add to the WhatsNextAction calendar in Google arrive as scheduled actions.',
   },
   {
     title: 'Reviewing What You\'ve Completed',

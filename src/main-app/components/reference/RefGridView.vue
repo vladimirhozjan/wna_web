@@ -7,6 +7,7 @@
           :folder="folder"
           :move-side="moveSide"
           :writes-disabled="writesDisabled"
+          :busy="movingIds.includes(folder.id)"
           @navigate="$emit('navigate-folder', folder.id)"
           @rename="$emit('rename-folder', folder)"
           @delete="$emit('delete-folder', folder)"
@@ -21,6 +22,7 @@
         :mode="mode"
         :move-side="moveSide"
         :writes-disabled="writesDisabled"
+        :busy="movingIds.includes(file.id)"
         @preview="$emit('preview-file', file)"
         @download="$emit('download-file', file)"
         @rename="$emit('rename-file', file)"
@@ -64,6 +66,10 @@ defineProps({
   writesDisabled: {
     type: Boolean,
     default: false,
+  },
+  movingIds: {
+    type: Array,
+    default: () => [],
   },
 })
 

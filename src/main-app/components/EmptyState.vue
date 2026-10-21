@@ -2,7 +2,7 @@
   <component :is="icon" class="empty-state__icon" />
   <h2 class="text-h3-italic empty-state__title">{{ title }}</h2>
   <p class="text-body-s empty-state__text">{{ text }}</p>
-  <Btn v-if="buttonText" variant="primary" size="md" class="empty-state__btn" @click="$emit('action')">{{ buttonText }}</Btn>
+  <Btn v-if="buttonText" variant="primary" size="md" class="empty-state__btn" :disabled="buttonDisabled" @click="$emit('action')">{{ buttonText }}</Btn>
   <slot />
 </template>
 
@@ -14,6 +14,7 @@ defineProps({
   title: { type: String, required: true },
   text: { type: String, required: true },
   buttonText: { type: String, default: '' },
+  buttonDisabled: { type: Boolean, default: false },
 })
 
 defineEmits(['action'])

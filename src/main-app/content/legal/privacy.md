@@ -171,7 +171,7 @@ We share your personal data only with the following categories of recipients, st
 
 ### 5.1 Infrastructure Provider
 
-- **Google Cloud Platform (EU region - Prague, Czech Republic)** - hosts our servers and databases within the European Economic Area
+- **Google Cloud Platform (EU regions - servers in Warsaw, Poland; backups in Madrid, Spain)** - hosts our servers, databases and backups within the European Economic Area
 
 ### 5.2 Email Delivery
 
@@ -222,7 +222,7 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 ## 6. International Data Transfers
 
-We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Prague, Czech Republic, and our email providers operate from EU data centres.
+We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres.
 
 The exception is card payment data. To process a card payment, it may be transferred to, processed, and stored outside Slovenia and the EEA by our payment provider Dinaro, its service providers (located mostly in the EEA and in Hong Kong), its partner banks, and the international card schemes (such as Visa and Mastercard), and may be disclosed where required by law. Such transfers take place where they are necessary to perform the payment you request (Art. 49(1)(b) GDPR) or under safeguards such as Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Dinaro's privacy policy.
 

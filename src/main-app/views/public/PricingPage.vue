@@ -34,6 +34,7 @@
               :period="yearly ? 'year' : 'month'"
               :description="tier.description"
               :features="tier.features"
+              :lead="tier.lead || ''"
               :featured="tier.featured"
               :cta-text="tierCta(tier).text"
               :per-user="tier.perUser || false"
@@ -187,7 +188,8 @@ const tiers = computed(() => [
       'Unlimited stuff & actions',
       'Up to 7 projects',
       'Up to 10 tags',
-      'View-only reference files',
+      'Reference files: view-only, full in Google Drive',
+      'Google Drive storage',
       '50 MB storage',
     ],
     action: () => openAuth('register'),
@@ -205,6 +207,9 @@ const tiers = computed(() => [
       'Unlimited projects & tags',
       'Recurring actions',
       'Full reference files',
+      'Email to Inbox',
+      'Google Calendar sync',
+      'Google Drive storage',
       '250 MB storage',
     ],
     action: () => { window.location.href = 'mailto:support@whatsnextaction.com' },
@@ -218,11 +223,11 @@ const tiers = computed(() => [
     description: 'For teams that delegate work together.',
     featured: false,
     ctaText: 'Contact Us',
+    lead: 'Everything in Pro, plus:',
     features: [
-      'Unlimited stuff & actions',
-      'Unlimited projects & tags',
-      'Recurring actions',
-      'Full reference files',
+      'Connections & delegation',
+      'Shared projects',
+      'Google Drive storage',
       '1 GB/user storage',
     ],
     action: () => { window.location.href = 'mailto:support@whatsnextaction.com' },
@@ -235,10 +240,17 @@ const comparisonRows = [
   { feature: 'Projects',            free: '7',           pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Tags',                free: '10',          pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Recurring actions',   free: false,         pro: true,         team: true },
-  { feature: 'Reference files',     free: 'View only',   pro: 'Full',       team: 'Full' },
+  { feature: 'Reference files',     free: 'View only · Full in Google Drive', pro: 'Full', team: 'Full' },
   { group: 'Storage' },
   { feature: 'WNA hosted storage',  free: '50 MB',       pro: '250 MB',     team: '1 GB/user' },
   { feature: 'Max attachment size', free: '5 MB',        pro: '20 MB',      team: '50 MB' },
+  { group: 'Integrations' },
+  { feature: 'Email to Inbox',       free: false,         pro: '50 / day',   team: '100 / day' },
+  { feature: 'Google Calendar sync', free: false,         pro: true,         team: true },
+  { feature: 'Google Drive storage', free: true,          pro: true,         team: true },
+  { group: 'Collaboration' },
+  { feature: 'Connections & delegation', free: false,     pro: false,        team: true },
+  { feature: 'Shared projects',      free: false,         pro: false,        team: true },
 ]
 </script>
 
