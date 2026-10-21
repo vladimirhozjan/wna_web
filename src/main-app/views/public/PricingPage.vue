@@ -68,7 +68,7 @@
               </tr>
               <tr v-else>
                 <td class="text-body-s compare-feature">{{ row.feature }}</td>
-                <td class="text-body-s compare-value" v-for="val in [row.free, row.pro, row.team]" :key="val">
+                <td class="text-body-s compare-value" v-for="(val, i) in [row.free, row.pro, row.team]" :key="i">
                   <CheckIcon v-if="val === true" class="icon-check" />
                   <span v-else-if="val === false" class="icon-dash">—</span>
                   <span v-else>{{ val }}</span>

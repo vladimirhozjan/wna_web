@@ -351,11 +351,6 @@ const attachmentsQuota = computed(() => {
   }
 })
 
-const attachmentsQuotaPercent = computed(() => {
-  if (!attachmentsQuota.value || !attachmentsQuota.value.quota_bytes) return 0
-  return Math.min(100, Math.round((attachmentsQuota.value.used_bytes / attachmentsQuota.value.quota_bytes) * 100))
-})
-
 // Watch model errors
 watch(() => model.error.value, (err) => {
   if (!err) return
@@ -743,14 +738,6 @@ async function onDeleteAttachment(att) {
   } catch (err) {
     toaster.push(err.message || 'Failed to delete attachment')
   }
-}
-
-function formatSize(bytes) {
-  if (!bytes && bytes !== 0) return ''
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
-  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB'
 }
 </script>
 
