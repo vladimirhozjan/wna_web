@@ -579,7 +579,7 @@ async function onMoveFolderSide(folder) {
       toaster.push(`A folder with this name already exists in ${SIDE_LABELS[target]}`)
     } else if (err.status === 502) {
       toaster.push(`Google Drive is not responding — "${folder.name}" was not moved. Try again.`)
-    } else if (err.status === 404) {
+    } else if (err.code === 'drive_file_not_found') {
       toaster.push(`"${folder.name}" was not moved — a file in it was deleted in Google Drive.`)
     } else if (err.status !== 413) {
       toaster.push(err.message || 'Failed to move folder')

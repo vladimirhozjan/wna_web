@@ -70,8 +70,8 @@ function normalizeError(error, {storageHint = null} = {}) {
         const data = error.response.data || {}
         const backendMsg = data.message || data.detail || data.error
 
-        // A broken grant is only seen on use — the Reference Google side switches to the reconnect bar
-        if (data.error === 'drive_reconnect_required' && error.config?.url?.startsWith('/v1/reference/')) {
+        // A broken grant is only seen on use — any Google-side 409 switches the Reference Google side to the reconnect bar
+        if (data.error === 'drive_reconnect_required') {
             referenceModel().markGrantBroken()
         }
 
@@ -103,6 +103,7 @@ function normalizeError(error, {storageHint = null} = {}) {
         if (backendMsg) {
             const normalized = {status, message: backendMsg}
             if (data.user_id) normalized.user_id = data.user_id
+            if (data.error === 'drive_file_not_found') normalized.code = data.error
             return normalized
         }
 

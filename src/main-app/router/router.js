@@ -34,8 +34,9 @@ const routes = [
     {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}},
     {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}},
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
-    {path: '/reset', name: 'reset', component: LandingPage, props: {mode: 'reset'}},
-    {path: '/reset-password', name: 'reset-password', component: LandingPage, props: route => ({mode: 'reset', token: route.query.token || ''})},
+    {path: '/reset', redirect: '/forgot'},
+    {path: '/reset-password', name: 'reset-password', component: LandingPage, props: route => ({mode: 'reset', token: route.query.token || ''}),
+        beforeEnter: to => (to.query.token ? true : {name: 'forgot'})},
     {path: '/verify', name: 'verify-email', component: VerifyEmailPage},
     {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage},
     {path: '/google/:feature', name: 'google-connect', component: () => import('../views/dashboard/GoogleConnectPage.vue')},
@@ -112,7 +113,7 @@ export default router
 const auth = authModel()
 
 const PUBLIC_ROUTE_NAMES = new Set([
-    'landing', 'login', 'register', 'forgot', 'reset', 'reset-password',
+    'landing', 'login', 'register', 'forgot', 'reset-password',
     'verify-email', 'google-sso', 'pricing',
     'help', 'help-getting-started', 'help-faq', 'help-best-practices',
     'legal', 'legal-terms', 'legal-privacy',

@@ -9,7 +9,7 @@ export const httpApi = axios.create({
     timeout: 30000,
 })
 
-const AUTH_PATHS = ['/v1/user/login', '/v1/user/refresh', '/v1/user/register', '/v1/user/reset-password', '/v1/user/verify-email', '/v1/user/google-sso']
+const AUTH_PATHS = ['/v1/user/login', '/v1/user/refresh', '/v1/user/register', '/v1/user/reset', '/v1/user/verify-email', '/v1/user/google-sso']
 
 function isAuthPath(url) {
     return AUTH_PATHS.some(p => url && url.startsWith(p))

@@ -18,7 +18,7 @@ export const faq = [
   {
     question: 'How do I reset my password?',
     answer:
-      'On the login screen, tap "Forgot your password? Reset it." Enter your email address and follow the instructions. You will be taken to a form where you can set a new password and then log in with it.',
+      'On the login screen, tap "Forgot your password? Reset it." and enter your email address. Then open the reset link we email you — it opens a form where you set a new password. Once it is saved, sign in with your new password.',
   },
   {
     question: 'How do I change my password?',

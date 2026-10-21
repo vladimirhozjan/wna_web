@@ -16,6 +16,7 @@ export const ErrorScenario = Object.freeze({
     LOGIN: "Login",
     REGISTER: "Register",
     CHANGE_PASSWORD: "ChangePassword",
+    RESET_PASSWORD: "ResetPassword",
     GOOGLE_LOGIN: "GoogleLogin",
     GENERIC: "Generic",
 })
@@ -44,6 +45,10 @@ export function mapApiError(error, scenario=ErrorScenario.GENERIC) {
             }
             if (status === 401) {
                 return "Current password is incorrect.";
+            }
+        } else if (scenario === ErrorScenario.RESET_PASSWORD) {
+            if (status === 401) {
+                return "This reset link is invalid or has expired. Request a new one.";
             }
         }
 
