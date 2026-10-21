@@ -34,7 +34,6 @@
               :period="yearly ? 'year' : 'month'"
               :description="tier.description"
               :features="tier.features"
-              :lead="tier.lead || ''"
               :featured="tier.featured"
               :cta-text="tierCta(tier).text"
               :per-user="tier.perUser || false"
@@ -223,8 +222,13 @@ const tiers = computed(() => [
     description: 'For teams that delegate work together.',
     featured: false,
     ctaText: 'Contact Us',
-    lead: 'Everything in Pro, plus:',
     features: [
+      'Unlimited stuff & actions',
+      'Unlimited projects & tags',
+      'Recurring actions',
+      'Full reference files',
+      'Email to Inbox',
+      'Google Calendar sync',
       'Connections & delegation',
       'Shared projects',
       'Google Drive storage',
