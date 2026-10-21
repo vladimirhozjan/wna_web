@@ -30,23 +30,29 @@ unchanged (parent §Screens).
 
 ## Checklist
 ### Screens (parent § Screens)
-- [ ] W-1 Settings email-to-inbox panel — hint line built per the parent's § Screens: exact copy, placed below the address
+- [x] W-1 Settings email-to-inbox panel — hint line built per the parent's § Screens: exact copy, placed below the address
   block, existing text class + tokens (no new CSS variable/class). Shown only in the unlocked (Pro/Team) panel state.
+  — `src/main-app/views/dashboard/SettingsPage.vue:166` (`text-body-s settings-hint`, inside the address-present block
+  under `v-else` of `!isProOrTeam` at :144/:158).
 
 ### Help (parent § Help impact)
-- [ ] W-2 `src/main-app/content/help/faq.js` "Can I send items to my Inbox by email?" — add the attachments sentence per
-  parent § Help impact.
-- [ ] W-3 `src/main-app/content/help/gettingStarted.js` "Capture by Email" — same sentence per parent § Help impact.
+- [x] W-2 `src/main-app/content/help/faq.js` "Can I send items to my Inbox by email?" — add the attachments sentence per
+  parent § Help impact. — `src/main-app/content/help/faq.js:86`; present in built `dist/main-app/_prerender/help/faq/index.html`.
+- [x] W-3 `src/main-app/content/help/gettingStarted.js` "Capture by Email" — same sentence per parent § Help impact.
+  — `src/main-app/content/help/gettingStarted.js:40`; present in built `dist/main-app/_prerender/help/getting-started/index.html`.
 
 ### Legal (parent § Legal impact)
 - [NA] W-4 ToS / Privacy Policy — parent § Legal impact is n/a (existing clauses already cover it); no legal-text edit.
 
 ### Verify + spec sync
-- [ ] W-5 `npm run build:main` passes; record the result.
-- [ ] W-6 Update `../wna_orchestration/specs/features/wna-features.md` §21.10 — hint line + attachment behaviour sentence
-  (parent § Contracts touched). Cite `file:line`.
-- [ ] W-7 Ask the user to verify at runtime: Settings → Email to Inbox (Pro user) shows the hint line in place; Help FAQ +
+- [x] W-5 `npm run build:main` passes; record the result. — 2026-10-21, exit 0, prerender of /help, /help/faq,
+  /help/getting-started OK.
+- [x] W-6 Update `../wna_orchestration/specs/features/wna-features.md` §21.10 — hint line + attachment behaviour sentence
+  (parent § Contracts touched). Cite `file:line`. — `wna_orchestration/specs/features/wna-features.md:1774-1779`.
+- [~] W-7 Ask the user to verify at runtime: Settings → Email to Inbox (Pro user) shows the hint line in place; Help FAQ +
   Getting Started show the new sentence.
+  — TC-828 (Settings hint) + TC-829 (Help) added to `wna_orchestration/specs/tests/wna-test-cases.md`;
+  runtime confirmation is by ui-tests, not the user (owner 2026-10-21). DEFERRED TO wna-ui-tests: automate TC-828/829.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

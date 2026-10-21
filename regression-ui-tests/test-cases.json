@@ -22,7 +22,7 @@
       "Click the \"Register\" button.",
       "Wait for the request to complete."
     ],
-    "expected": "- The registration request succeeds (no error messages displayed).\n- The auth dialog transitions to a \"verify-sent\" screen showing a confirmation message that a verification email has been sent to the registered email address.\n- The user is **not** automatically logged in — `localStorage` does **not** contain `auth_token` or `refresh_token`.\n- A \"Resend Verification Email\" button is visible on the verify-sent screen.\n- Checking Mailpit (`http://localhost:8025`) shows a verification email was received with subject \"Verify your WNA account\" sent to the registered email address."
+    "expected": "- The registration request succeeds (no error messages displayed).\n- The auth dialog transitions to a \"verify-sent\" screen showing a confirmation message that a verification email has been sent to the registered email address.\n- The user is **not** automatically logged in — `localStorage` does **not** contain `auth_token` or `refresh_token`.\n- A \"Resend Verification Email\" button is visible on the verify-sent screen.\n- Checking Mailpit (`http://localhost:8025`) shows a verification email was received with subject \"Verify your WhatsNextAction account\" sent to the registered email address."
   },
   {
     "id": "TC-002",
@@ -304,7 +304,7 @@
       "Wait for the backend response.",
       "Click \"Back to login\"."
     ],
-    "expected": "- The request is sent to the backend (`POST /v1/user/forgot`) and returns HTTP 200.\n- The dialog shows \"Check your inbox\" / \"If an account exists for this email, we sent a link to reset your password. It may take a few minutes to arrive.\" and the \"Remember your password? Back to login\" link. The typed email is not shown; there is no resend button.\n- No reset password form (new password / confirm fields) is shown.\n- A \"Reset your WNA password\" email arrives in Mailpit for the address.\n- \"Back to login\" opens the login form with the email still filled."
+    "expected": "- The request is sent to the backend (`POST /v1/user/forgot`) and returns HTTP 200.\n- The dialog shows \"Check your inbox\" / \"If an account exists for this email, we sent a link to reset your password. It may take a few minutes to arrive.\" and the \"Remember your password? Back to login\" link. The typed email is not shown; there is no resend button.\n- No reset password form (new password / confirm fields) is shown.\n- A \"Reset your WhatsNextAction password\" email arrives in Mailpit for the address.\n- \"Back to login\" opens the login form with the email still filled."
   },
   {
     "id": "TC-015",
@@ -316,7 +316,7 @@
     ],
     "smoke": false,
     "section": "1: Authentication & Account",
-    "preconditions": "The forgot password step has been completed (TC-014). The \"Reset your WNA password\" email is in Mailpit.",
+    "preconditions": "The forgot password step has been completed (TC-014). The \"Reset your WhatsNextAction password\" email is in Mailpit.",
     "steps": [
       "Open the reset link (`/reset-password?token=…`) from the email to reach the reset password form.",
       "Verify the form shows \"Set a new password\" with password and confirm password fields.",
@@ -364,7 +364,7 @@
     "steps": [
       "Open the login form, click \"Forgot your password? Reset it\", enter the user's email and click \"Send reset link\".",
       "Verify the \"Check your inbox\" screen is shown.",
-      "Open the reset link from the \"Reset your WNA password\" email in Mailpit.",
+      "Open the reset link from the \"Reset your WhatsNextAction password\" email in Mailpit.",
       "Enter `NewTestPass1!` in both password fields and click \"Update password\".",
       "Sign in with the email and `NewTestPass1!`."
     ],
@@ -654,7 +654,7 @@
     "preconditions": "A new user account has been registered but not yet verified. The verification email has been received in Mailpit (`http://localhost:8025`). The user is not logged in.",
     "steps": [
       "Open Mailpit at `http://localhost:8025`.",
-      "Locate the verification email sent to the registered email address (subject: \"Verify your WNA account\").",
+      "Locate the verification email sent to the registered email address (subject: \"Verify your WhatsNextAction account\").",
       "Open the email and locate the verification link.",
       "Copy the verification URL (should be in the format `http://localhost:5173/verify?token=<64-char-token>`).",
       "Open the verification URL in the browser.",
@@ -751,7 +751,7 @@
       "Wait for the 60-second cooldown to expire.",
       "Verify the button becomes clickable again after 60 seconds."
     ],
-    "expected": "- Clicking the resend button sends a new verification email (visible in Mailpit with subject \"Verify your WNA account\").\n- The button enters a disabled state with a 60-second countdown timer visible.\n- The button cannot be clicked again until the countdown expires.\n- After 60 seconds, the button becomes enabled again and can be clicked to resend.\n- A success indicator or message confirms the email was resent."
+    "expected": "- Clicking the resend button sends a new verification email (visible in Mailpit with subject \"Verify your WhatsNextAction account\").\n- The button enters a disabled state with a 60-second countdown timer visible.\n- The button cannot be clicked again until the countdown expires.\n- After 60 seconds, the button becomes enabled again and can be clicked to resend.\n- A success indicator or message confirms the email was resent."
   },
   {
     "id": "TC-032",
@@ -871,7 +871,7 @@
       "View the plaintext version of the email.",
       "Verify the verification link URL format."
     ],
-    "expected": "- **From:** `noreply@whatsnextaction.com` (or \"WhatsNextAction\" display name)\n- **Subject:** \"Verify your WNA account\"\n- **To:** The registered email address\n- Both HTML and plaintext versions are present (multipart MIME).\n- The email contains a verification link in the format `https://<app-domain>/verify?token=<64-char-token>`.\n- The token in the URL is exactly 64 characters long.\n- The email mentions a 24-hour expiry for the verification link."
+    "expected": "- **From:** `noreply@whatsnextaction.com` (or \"WhatsNextAction\" display name)\n- **Subject:** \"Verify your WhatsNextAction account\"\n- **To:** The registered email address\n- Both HTML and plaintext versions are present (multipart MIME).\n- The email contains a verification link in the format `https://<app-domain>/verify?token=<64-char-token>`.\n- The token in the URL is exactly 64 characters long.\n- The email mentions a 24-hour expiry for the verification link."
   },
   {
     "id": "TC-038",
@@ -889,7 +889,7 @@
       "After successful verification, check Mailpit for a new email.",
       "Inspect the newly received email."
     ],
-    "expected": "- A welcome email is sent after successful verification.\n- **Subject:** \"Welcome to WNA!\"\n- **From:** `noreply@whatsnextaction.com`\n- The email contains a welcome message and a link to the application."
+    "expected": "- A welcome email is sent after successful verification.\n- **Subject:** \"Welcome to WhatsNextAction!\"\n- **From:** `noreply@whatsnextaction.com`\n- The email contains a welcome message and a link to the application."
   },
   {
     "id": "TC-039",
@@ -910,7 +910,7 @@
       "Open Mailpit and locate the password reset email.",
       "Inspect the email content."
     ],
-    "expected": "- A password reset email is sent to the user's email address.\n- **Subject:** \"Reset your WNA password\"\n- **From:** `noreply@whatsnextaction.com`\n- The email contains a reset link with a token (valid for 1 hour).\n- Both HTML and plaintext versions are present."
+    "expected": "- A password reset email is sent to the user's email address.\n- **Subject:** \"Reset your WhatsNextAction password\"\n- **From:** `noreply@whatsnextaction.com`\n- The email contains a `/reset-password?token=` reset link.\n- Both HTML and plaintext versions are present."
   },
   {
     "id": "TC-040",
@@ -951,7 +951,7 @@
       "After success, check Mailpit for a new email.",
       "Inspect the confirmation email."
     ],
-    "expected": "- A password changed confirmation email is sent after successful reset.\n- **Subject:** \"Your WNA password was changed\"\n- **From:** `noreply@whatsnextaction.com`\n- The email confirms the password was changed and includes the timestamp."
+    "expected": "- A password changed confirmation email is sent after successful reset.\n- **Subject:** \"Your WhatsNextAction password was changed\"\n- **From:** `noreply@whatsnextaction.com`\n- The email confirms the password was changed and includes the timestamp."
   },
   {
     "id": "TC-042",
@@ -969,7 +969,7 @@
       "After successful login, check Mailpit for a new email.",
       "Inspect the login alert email."
     ],
-    "expected": "- A login alert email is sent after successful login.\n- **Subject:** \"New login to your WNA account\"\n- **From:** `noreply@whatsnextaction.com`\n- The email includes the device name, IP address, and login time."
+    "expected": "- A login alert email is sent after successful login.\n- **Subject:** \"New sign-in to your WhatsNextAction account\"\n- **From:** `noreply@whatsnextaction.com`\n- The email includes the device name, IP address, and login time."
   },
   {
     "id": "TC-043",
@@ -12240,6 +12240,43 @@
     "expected": "Admin can view inbox-email stats.\n\n> **Note (ui-tests):** **N/A** for this suite — admin inbox-email stats live in the admin-app + admin_service,\n> not the main-app + Google-OAuth E2E suite. Belongs in an admin-app E2E suite if one is added."
   },
   {
+    "id": "TC-828",
+    "name": "Attachments Hint Line Shows Only With an Address (Pro/Team)",
+    "priority": "Medium",
+    "area": "Email to Inbox, Settings UI",
+    "areas": [
+      "Email to Inbox",
+      "Settings UI"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "Authenticated Pro/Team user; a Free user.",
+    "steps": [
+      "As the Pro/Team user with no address, Settings → expand \"Email to Inbox\".",
+      "Click **Generate Address**.",
+      "As the Free user, Settings → expand \"Email to Inbox\"."
+    ],
+    "expected": "Step 1 — no \"Attachments are saved with the item within your plan's limits.\" line. Step 2 — the line renders directly below \"Forward any email to this address to capture it as a new item.\" in the address block. Step 3 — locked state; the line is not shown."
+  },
+  {
+    "id": "TC-829",
+    "name": "Help Describes Email Attachment Import",
+    "priority": "Medium",
+    "area": "Email to Inbox, Public Pages",
+    "areas": [
+      "Email to Inbox",
+      "Public Pages"
+    ],
+    "smoke": false,
+    "section": "30: Email to Inbox",
+    "preconditions": "User is not logged in.",
+    "steps": [
+      "Open `/help/faq`; open \"Can I send items to my Inbox by email?\".",
+      "Open `/help/getting-started`; read \"Capture by Email (Pro & Team)\"."
+    ],
+    "expected": "Both texts contain \"Attached files are imported up to your plan's limits — any file that doesn't fit is listed at the end of the item's description, and an email over 25 MB arrives as a note only (subject and sender, without its content).\" right after the subject/body sentence."
+  },
+  {
     "id": "TC-561",
     "name": "Settings → Plan \"Storage\" shows real usage",
     "priority": "Medium",
@@ -15624,6 +15661,24 @@
       "Rename the action."
     ],
     "expected": "Step 1 — `409` `calendar_reauth_required`. Step 2 — `GET /v1/google/status` has no `calendar` in `features` and `partial_features: [\"calendar\"]`; the card reads \"Google Calendar needs to be reconnected\" with **Reconnect Google Calendar**. Step 3 — the grant holds `calendar.app.created`. Step 4 — the rename reaches the same event in Google."
+  },
+  {
+    "id": "TC-792",
+    "name": "Member's Claimed Overdue Shared Action Shows for the Member, Not the Owner",
+    "priority": "High",
+    "area": "Shared Projects, Overdue",
+    "areas": [
+      "Shared Projects",
+      "Overdue"
+    ],
+    "smoke": false,
+    "section": "56: Google Calendar Sync",
+    "preconditions": "Two fresh Team-tier users, the owner and the member, connected. The owner has a project shared with the member (`write`) and, in it, a Next action due yesterday. The member has claimed that action. Neither user has any other action.",
+    "steps": [
+      "As the member, open `/overdue` and look at the sidebar **Next Action** item.",
+      "As the owner, open `/overdue` and look at the sidebar **Next Action** item."
+    ],
+    "expected": "Step 1 — the Overdue page lists the claimed action and the **Next Action** item shows the red dot. Step 2 — the Overdue page does not list the action (it shows \"No overdue items\") and the **Next Action** item shows no red dot. (BUG-059)"
   },
   {
     "id": "TC-748",

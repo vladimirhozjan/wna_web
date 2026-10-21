@@ -83,7 +83,7 @@ export const faq = [
   {
     question: 'Can I send items to my Inbox by email?',
     answer:
-      'Yes, on the Pro and Team plans. Go to Settings and find the "Email to Inbox" section, then generate your unique inbox address. Tap Copy to copy it, then email or forward anything to that address — the subject becomes the item title and the body becomes its description, and it lands in your Inbox as new stuff. You can pause capture with the toggle, or reset the address (the old one stops working immediately). Daily limits apply: 50 emails per day on Pro and 100 per day on Team. This feature is not available on the Free plan.',
+      'Yes, on the Pro and Team plans. Go to Settings and find the "Email to Inbox" section, then generate your unique inbox address. Tap Copy to copy it, then email or forward anything to that address — the subject becomes the item title and the body becomes its description, and it lands in your Inbox as new stuff. Attached files are imported up to your plan\'s limits — any file that doesn\'t fit is listed at the end of the item\'s description, and an email over 25 MB arrives as a note only (subject and sender, without its content). You can pause capture with the toggle, or reset the address (the old one stops working immediately). Daily limits apply: 50 emails per day on Pro and 100 per day on Team. This feature is not available on the Free plan.',
   },
 
   // --- Moving & Organizing ---

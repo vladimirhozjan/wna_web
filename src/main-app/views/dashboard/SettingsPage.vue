@@ -163,6 +163,7 @@
                     <Btn variant="secondary" size="sm" @click="onCopyAddress">{{ copied ? 'Copied!' : 'Copy' }}</Btn>
                   </div>
                   <span class="text-body-s settings-hint">Forward any email to this address to capture it as a new item.</span>
+                  <span class="text-body-s settings-hint">Attachments are saved with the item within your plan's limits.</span>
                 </div>
 
                 <div class="settings-row">
