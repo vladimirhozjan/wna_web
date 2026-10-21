@@ -37,7 +37,7 @@ export const gettingStarted = [
   {
     title: 'Capture by Email (Pro & Team)',
     description:
-      'On Pro and Team plans you can send things straight to your Inbox by email. Open Settings and generate your personal inbox address, then copy it and email or forward anything to it — the subject becomes the item title and the body becomes its description. Use the toggle to pause and resume capture, and reset the address at any time if you ever want to retire the old one. Each plan has a daily limit on inbound emails (50 per day on Pro, 100 per day on Team). On the Free plan this feature is locked — upgrade to unlock it.',
+      'On Pro and Team plans you can send things straight to your Inbox by email. Open Settings and generate your personal inbox address, then copy it and email or forward anything to it — the subject becomes the item title and the body becomes its description. Attached files are imported up to your plan\'s limits — any file that doesn\'t fit is listed at the end of the item\'s description, and an email over 25 MB arrives as a note only (subject and sender, without its content). Use the toggle to pause and resume capture, and reset the address at any time if you ever want to retire the old one. Each plan has a daily limit on inbound emails (50 per day on Pro, 100 per day on Team). On the Free plan this feature is locked — upgrade to unlock it.',
   },
   {
     title: 'From Stuff to Action',
