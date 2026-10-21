@@ -109,6 +109,16 @@
             <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
           </section>
 
+          <section v-else-if="props.mode === 'forgot-sent'">
+            <div>
+              <h2 class="text-h2 color-text-primary">Check your inbox</h2>
+              <p class="subtitle text-body-s color-text-primary">
+                If an account exists for this email, we sent a link to reset your password. It may take a few minutes to arrive.
+              </p>
+            </div>
+            <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
+          </section>
+
           <section v-else-if="props.mode === 'verify-sent'">
             <div>
               <h2 class="text-h2 color-text-primary">Check your inbox</h2>
@@ -161,7 +171,7 @@ const googleSsoEnabled = isGoogleSsoEnabled()
 const props = defineProps({
   mode: {
     type: String,
-    default: null, // 'login' | 'register' | 'forgot' | 'reset' | 'verify-sent' | 'unverified' | null
+    default: null, // 'login' | 'register' | 'forgot' | 'forgot-sent' | 'reset' | 'verify-sent' | 'unverified' | null
   },
   token: {
     type: String,
@@ -189,11 +199,11 @@ const confirmError = ref('')
 const agreeTerms = ref(false)
 const agreeError = ref('')
 
-const reset_token = ref(props.token || '')
+const resetToken = ref(props.token || '')
 const userId = ref(null)
 
 watch(() => props.token, (t) => {
-  if (t) reset_token.value = t
+  if (t) resetToken.value = t
 })
 
 watch(
@@ -252,11 +262,6 @@ function goToRegister() {
 function goToForgot() {
   clearErrors()
   emit('update:mode', 'forgot')
-}
-
-function goToReset() {
-  clearErrors()
-  emit('update:mode', 'reset')
 }
 
 function clearErrors() {
@@ -436,10 +441,8 @@ async function doForgot() {
   }
 
   try {
-    reset_token.value = ''
-    const data = await auth.forgotPassword(email.value)
-    reset_token.value = data.reset_token
-    goToReset()
+    await auth.forgotPassword(email.value)
+    emit('update:mode', 'forgot-sent')
   } catch (err) {
     console.log(err)
     error.push('Forgot password failed with error: ' + mapApiError(err))
@@ -462,11 +465,16 @@ async function doReset() {
   }
 
   try {
-    await auth.resetPassword(password.value, reset_token.value)
+    await auth.resetPassword(password.value, resetToken.value)
     goToLogin()
   } catch (err) {
     console.log(err)
-    error.push('Update password failed with error: ' + mapApiError(err))
+    if (err.status === 401) {
+      error.push(mapApiError(err, ErrorScenario.RESET_PASSWORD))
+      goToForgot()
+      return
+    }
+    error.push('Update password failed with error: ' + mapApiError(err, ErrorScenario.RESET_PASSWORD))
   }
 }
 

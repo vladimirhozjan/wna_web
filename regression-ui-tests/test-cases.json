@@ -300,10 +300,11 @@
     "steps": [
       "Open the forgot password form (follow steps 1-5 from TC-013).",
       "Enter a valid registered email address in the email field (e.g., `testuser@example.com`).",
-      "Click the submit button (e.g., \"Send Reset Code\" or \"Submit\").",
-      "Wait for the backend response."
+      "Click \"Send reset link\".",
+      "Wait for the backend response.",
+      "Click \"Back to login\"."
     ],
-    "expected": "- The request is sent to the backend (`POST /v1/user/forgot`).\n- Upon success, the dialog transitions to the password reset form, which includes fields for new password and confirm new password (and possibly a reset code/token field).\n- A success message or instruction may be displayed (e.g., \"Check your email for a reset code\").\n- The user remains in the authentication dialog flow."
+    "expected": "- The request is sent to the backend (`POST /v1/user/forgot`) and returns HTTP 200.\n- The dialog shows \"Check your inbox\" / \"If an account exists for this email, we sent a link to reset your password. It may take a few minutes to arrive.\" and the \"Remember your password? Back to login\" link. The typed email is not shown; there is no resend button.\n- No reset password form (new password / confirm fields) is shown.\n- A \"Reset your WNA password\" email arrives in Mailpit for the address.\n- \"Back to login\" opens the login form with the email still filled."
   },
   {
     "id": "TC-015",
@@ -315,16 +316,16 @@
     ],
     "smoke": false,
     "section": "1: Authentication & Account",
-    "preconditions": "The forgot password step has been completed (TC-014). The reset password form is displayed. A valid reset code/token is available (from email or test setup).",
+    "preconditions": "The forgot password step has been completed (TC-014). The \"Reset your WNA password\" email is in Mailpit.",
     "steps": [
-      "Complete the forgot password flow (TC-014) to reach the reset password form.",
-      "If a reset code/token field is present, enter the valid reset code.",
+      "Open the reset link (`/reset-password?token=…`) from the email to reach the reset password form.",
+      "Verify the form shows \"Set a new password\" with password and confirm password fields.",
       "In the new password field, enter a password meeting all requirements: `NewTestPass1!` (min 8 chars, 1 letter, 1 digit, 1 symbol).",
       "In the confirm new password field, enter the same password: `NewTestPass1!`.",
       "Click the submit button (e.g., \"Reset Password\").",
       "Wait for the backend response."
     ],
-    "expected": "- The request is sent to the backend (`POST /v1/user/reset`).\n- Upon success, the dialog transitions back to the login form.\n- A success message may be displayed (e.g., \"Password reset successfully. Please log in.\").\n- The user can now log in with the new password.\n- The old password no longer works."
+    "expected": "- The request is sent to the backend (`POST /v1/user/reset`).\n- Upon success, the dialog transitions back to the login form.\n- The user can now log in with the new password.\n- The old password no longer works."
   },
   {
     "id": "TC-016",
@@ -336,9 +337,9 @@
     ],
     "smoke": false,
     "section": "1: Authentication & Account",
-    "preconditions": "The reset password form is displayed (reached via TC-013 and TC-014 steps).",
+    "preconditions": "The reset password form is displayed (opened from the emailed reset link — TC-014, TC-015 step 1).",
     "steps": [
-      "Reach the reset password form (complete TC-014).",
+      "Reach the reset password form via the emailed `/reset-password?token=…` link.",
       "**Test weak password:** Enter `12345678` in the new password field and `12345678` in the confirm field. Attempt to submit.",
       "Observe the validation error.",
       "Clear the fields.",
@@ -348,6 +349,61 @@
       "**Test empty fields:** Leave both password fields empty. Observe the submit button state."
     ],
     "expected": "- Weak password: A validation error is shown indicating the password does not meet strength requirements (must include letter, digit, and symbol).\n- Password mismatch: A validation error is shown indicating the passwords do not match.\n- Empty fields: The submit button is disabled or submission is prevented.\n- In all failing cases, no reset request is sent to the backend."
+  },
+  {
+    "id": "TC-825",
+    "name": "Emailed Reset Link Opens the Reset Form; New Password Signs In",
+    "priority": "High",
+    "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "A verified user account exists. Mailpit is accessible. User is not logged in.",
+    "steps": [
+      "Open the login form, click \"Forgot your password? Reset it\", enter the user's email and click \"Send reset link\".",
+      "Verify the \"Check your inbox\" screen is shown.",
+      "Open the reset link from the \"Reset your WNA password\" email in Mailpit.",
+      "Enter `NewTestPass1!` in both password fields and click \"Update password\".",
+      "Sign in with the email and `NewTestPass1!`."
+    ],
+    "expected": "- Step 3 opens the landing page with the \"Set a new password\" form.\n- `POST /v1/user/reset` returns HTTP 200 and the dialog switches to the login form (\"Welcome Back\").\n- Sign-in with the new password succeeds and lands on `/engage`; the old password returns \"Incorrect email and/or password\"."
+  },
+  {
+    "id": "TC-826",
+    "name": "Invalid or Expired Reset Link Shows a Toast and the Forgot Form",
+    "priority": "Medium",
+    "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "User is not logged in. A reset link whose token was already used (e.g. the link from TC-825), or `/reset-password?token=invalid`.",
+    "steps": [
+      "Open the used/invalid reset link.",
+      "Enter `NewTestPass1!` in both password fields and click \"Update password\"."
+    ],
+    "expected": "- `POST /v1/user/reset` returns HTTP 401.\n- An error toast shows \"This reset link is invalid or has expired. Request a new one.\"\n- The page does not reload; the dialog switches to the \"Forgot Your Password?\" form.\n- The password is not changed."
+  },
+  {
+    "id": "TC-827",
+    "name": "/reset and Token-less /reset-password Redirect to /forgot",
+    "priority": "Low",
+    "area": "Forgot/Reset Password",
+    "areas": [
+      "Forgot/Reset Password"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "User is not logged in.",
+    "steps": [
+      "Navigate to `/reset`.",
+      "Navigate to `/reset-password` (no query).",
+      "Navigate to `/reset-password?token=` (empty token)."
+    ],
+    "expected": "- Each URL ends on `/forgot` with the \"Forgot Your Password?\" form open.\n- The reset password form is never shown."
   },
   {
     "id": "TC-017",
@@ -872,9 +928,10 @@
       "Enter `nonexistent_user@example.com`.",
       "Submit the form.",
       "Observe the HTTP response and UI behavior.",
-      "Check Mailpit for any outgoing emails to that address."
+      "Check Mailpit for any outgoing emails to that address.",
+      "Repeat steps 1-4 with a verified registered email."
     ],
-    "expected": "- The API returns HTTP 200 (success) to prevent email enumeration.\n- The frontend shows the same behavior as when the email does exist (no indication that the email is not registered).\n- No email is actually sent (Mailpit shows no message for this address)."
+    "expected": "- The API returns HTTP 200 (success) to prevent email enumeration.\n- With `return_verification_token` off, the response body is `null` for both emails — it never carries a `reset_token`.\n- The frontend shows the same \"Check your inbox\" screen for both emails (no indication whether the email is registered) and never opens the reset password form.\n- No email is actually sent (Mailpit shows no message for this address)."
   },
   {
     "id": "TC-041",
