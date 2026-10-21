@@ -112,6 +112,11 @@ export const faq = [
     answer:
       'Waiting For tracks actions you have delegated or are waiting on someone else to complete. Each item records who or what you are waiting for and how long you have been waiting. When the item comes back to you, use the "Got it" button to move it to your Next Actions list, or mark it as done if it has been completed.',
   },
+  {
+    question: 'How do I search?',
+    answer:
+      'Click the search icon in the top navigation bar, or press Cmd+K (Ctrl+K on Windows and Linux), and type at least 2 characters. The best matches appear below the field — click one to open it. Press Enter or click "See all" to open the Search page with the full list, where you can narrow the results to Inbox, Actions, Projects, Recurring or Reference. On a phone, tap the search icon to open the Search page. Search looks in titles, descriptions, project outcomes and Reference file names, ignoring upper/lower case and accents. It covers your Inbox, actions in every list including Someday/Maybe, projects, recurring actions, Reference files on both the Local and Google Drive sides, and completed items, which are marked "Completed". Items in Trash and archived items are not searched. On shared projects, you find the project and every action in it, whether or not it is assigned to you.',
+  },
 
   // --- Calendar & Dates ---
   {
