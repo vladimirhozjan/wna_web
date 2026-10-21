@@ -70,13 +70,13 @@ an existing tab/toggle control.
   `startGoogleConnect('drive', route.fullPath)` `ReferencePage.vue:442`; disabled: New Folder / Upload
   `RefToolbar.vue:21-22` (`ReferencePage.vue:34`), drop upload `RefUploadZone.vue:36` (`ReferencePage.vue:43`),
   empty-state Upload disabled `ReferencePage.vue:56`, rename `RefListView.vue:38,84`, `RefFileCard.vue:20`,
-  `RefFolderCard.vue:19`, drag-move `ReferencePage.vue:549`, cross-side move (`moveSide.disabled`
+  `RefFolderCard.vue:19`, drag-move `ReferencePage.vue:550`, cross-side move (`moveSide.disabled`
   `ReferencePage.vue:300`). Disabled dropdown style `Dropdown.vue:288`. Preview / download unchanged.
 - [x] W-7 Cross-side move (D9, S1): **Move to Google Drive** / **Move to Local** on files and folders (Free: only to
   Google); on success the item leaves the current side; on failure the existing error toast / storage-limit modal and
   the item stays.
   → menu items `RefListView.vue:41,87`, `RefFileCard.vue:23`, `RefFolderCard.vue:22`; handlers
-  `ReferencePage.vue:562,572`; model removes the item only on success `referenceModel.js:219,232`; 413 → existing
+  `ReferencePage.vue:563,573`; model removes the item only on success `referenceModel.js:219,232`; 413 → existing
   storage-limit modal (no extra toast), 409 name clash → toast, other errors → toast.
 - [x] W-8 Test ids for ui-tests (switch, side buttons, reconnect bar, move actions) — list them here for the ui-tests
   slice.
@@ -88,8 +88,8 @@ an existing tab/toggle control.
 - [x] W-9 Update `../wna_orchestration/specs/features/wna-features.md` §12.2 / §12.3 (switch replaces "Google / Local
   sections"; per-side folders, search, quota, reconnect bar, cross-side move, test ids). Cite `file:line`.
   → `wna_orchestration/specs/features/wna-features.md:738-766` (switch, per-side tier, reconnect bar, test ids),
-  `:770-776` (toolbar per side), `:783,810` (cross-side move), `:816,820` (search, Attachments), `:829` (write
-  toast), `:837,841` (Trash per side), `:1899-1900` (§21.13 storage sentence); `specs/tests/wna-test-cases.md:17999`
+  `:770-776` (toolbar per side), `:783,810` (cross-side move), `:816,822` (search, Attachments), `:828-830` (write
+  toast), `:838,841` (Trash per side), `:1899-1902` (§21.13 storage sentence); `specs/tests/wna-test-cases.md:17999`
   (TC-761 toast text; `regression-ui-tests/update-tests.sh` run).
 - [x] W-10 Legal re-confirm (parent §Legal impact): check `src/main-app/content/legal/privacy.md` §2.8 / §5.3 still
   describe what WNA does in Drive after D7 (`WNA/trash`) and S3 (folders moved to the Google Drive trash); edit only
@@ -132,7 +132,7 @@ Re-check the W-1…W-11 work above against the parent § Screens and fix any dri
   404 / other (Q9). 413 storage modal sentence "Or keep it on the Google Drive side…" while connected (Q12).
   → no confirm (`onMoveFileSide` / `onMoveFolderSide`); spinner replaces the `⋯` menu while moving — model
   `movingIds` `referenceModel.js:27,216-237`, list `RefListView.vue:32,72`, grid `RefGridView.vue:10,25`, cards
-  `RefFileCard.vue:7-8`, `RefFolderCard.vue`; folder 502 / 404 copy `ReferencePage.vue:580-583`, other → backend
+  `RefFileCard.vue:7-8`, `RefFolderCard.vue`; folder 502 / 404 copy `ReferencePage.vue:581-584`, other → backend
   message; 413 sentence "Or keep it on the Google Drive side…" via `storageHint: 'side'` `apiClient.js:24,1487,1496`
   (move-side calls only; Team keeps its storage variant).
 - [x] W-17 Screen P1 (Pricing tier cards, G4/D15): `PricingTier` lead-in line without a check for "Everything in Pro,
@@ -168,11 +168,11 @@ Re-check the W-1…W-11 work above against the parent § Screens and fix any dri
   - §24.2 Pricing to the final copy (G8: badge "3 months free", tier descriptions, D15–D16);
   - the Help section if it lists FAQ / Getting Started entries.
   Cite `file:line`.
-  → `wna_orchestration/specs/features/wna-features.md:736-765` (§12.1 S1 + S4 final copy: visibility, loading,
-  change side, Free-on-Local copy, reconnect bar, grant broken, test ids), `:781-792` + `:808` (S5 move copy),
-  `:816-823` (empty states, Attachments copy), `:1869-1871` (§21.12 return path), `:1896-1899` (§21.13 move-to-Local
-  storage sentence), `:2021` (badge "3 months free"), `:2027-2044` (tier descriptions synced to code + card bullets),
-  `:2071-2077` (comparison table 4 groups). Help §24.3 lists no FAQ / Getting Started entries — no change.
+  → `wna_orchestration/specs/features/wna-features.md:738-766` (§12.1 S1 + S4 final copy: visibility, loading,
+  change side, Free-on-Local copy, reconnect bar, grant broken, test ids), `:783-794` + `:810-812` (S5 move copy),
+  `:818-825` (empty states, Attachments copy), `:1872-1874` (§21.12 return path), `:1899-1902` (§21.13 move-to-Local
+  storage sentence), `:2024` (badge "3 months free"), `:2030-2048` (tier descriptions synced to code + card bullets),
+  `:2071-2080` (comparison table 4 groups). Help §24.3 lists no FAQ / Getting Started entries — no change.
 - [x] W-23 `npm run build:main` passes after W-12…W-22.
   → `npm run build:main` ✓ (2026-10-21, after W-12…W-22).
 
@@ -183,8 +183,8 @@ Re-check the W-1…W-11 work above against the parent § Screens and fix any dri
   (parent § Screens S5).
   → `apiClient.js:106` sets `code` for `drive_file_not_found` (owner 2026-10-21: on every request, so preview /
   download of a file deleted in Drive now toast the backend `detail` "File no longer exists in Google Drive" and the
-  Reference preview closes, like the other Drive codes); `ReferencePage.vue:582` Q9 copy only on that code; any other
-  404 falls to the backend message `:584-585`.
+  Reference preview closes, like the other Drive codes); `ReferencePage.vue:583` Q9 copy only on that code; any other
+  404 falls to the backend message `:585-586`.
 - [x] W-25 Q4 broken grant from any Google-side request. The first 409 `drive_reconnect_required` switches the Google
   side to the reconnect bar for the session; this includes Google-side attachment requests
   (`/v1/{entity}/{id}/attachments/…`), not only `/v1/reference/` (`apiClient.js:74`). Parent § Screens S4.
@@ -195,11 +195,11 @@ Re-check the W-1…W-11 work above against the parent § Screens and fix any dri
   per § Screens S5, not the reconnect toast; else `[NA]` with the reason.
   → GATE NOT MET — backend B-20 is still open (`wna_backend/.claude/features/FEAT-051-*.md:139` `[ ]`) and
   `specs/api/api.md:4615` lists only `drive_reconnect_required` for the file move-side 409. Today the file 409 shows
-  the backend message (`ReferencePage.vue:568`); revisit when B-20 lands a distinct code.
+  the backend message (`ReferencePage.vue:569`); revisit when B-20 lands a distinct code.
 - [x] W-27 Update `../wna_orchestration/specs/features/wna-features.md` §12.1 to W-24 / W-25 ("from a Reference request"
   → any Google-side request; 404 copy only for `drive_file_not_found`). Cite `file:line`.
   → `wna_orchestration/specs/features/wna-features.md:762-763` (any Google-side request, incl. attachments), `:791`
-  (404 `drive_file_not_found`), `:831` and `:1133` (`drive_file_not_found` shows the backend `detail` on
+  (404 `drive_file_not_found`), `:832` and `:1134` (`drive_file_not_found` shows the backend `detail` on
   preview / download / attachments).
 - [x] W-28 Refresh stale citations in W-1, W-3, W-5, W-6, W-7, W-9 to the current lines.
   → re-read each cited line after W-24…W-27; citations above updated.
