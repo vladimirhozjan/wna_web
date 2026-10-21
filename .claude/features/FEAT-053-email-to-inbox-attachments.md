@@ -1,20 +1,19 @@
-# BUG-057 — web slice: forgot shows "check your inbox"; reset only from the emailed link
+# FEAT-053 — web slice: Email-to-Inbox attachment ingestion (Settings hint + Help)
 
-**Parent (canonical):** `../../wna_orchestration/features/BUG-057-forgot-password-returns-reset-token.md` — §User
-flows, §Screens (Screens 1–3, S1–S8 — exact copy lives there), §Design (D2, D5), §Help impact, §Work breakdown › web.
-Read it first, plus `../../wna_orchestration/specs/api/api.md` §Forgot Password / §Reset Password. This file is only
-this repo's checklist; nothing from the parent is restated.
+**Parent (canonical):** `../wna_orchestration/features/FEAT-053-email-to-inbox-attachments.md` — §User flows, §Screens
+(hint line copy + placement), §Help impact, §Legal impact, §Work breakdown → web. Read it first. This file is only this
+repo's checklist; nothing from the parent is restated.
 
-**Scope:** main-app only — `AuthDialog.vue`, `router.js`, `errorMapper.js`, `content/help/faq.js`. Admin-app is out of
-scope.
+**Scope:** main-app only — `views/dashboard/SettingsPage.vue` (email-to-inbox panel), `content/help/faq.js`,
+`content/help/gettingStarted.js`. No new component, model, route or API call. `StuffDetailPage` / `AttachmentSection`
+unchanged (parent §Screens).
 
 ## User flows (this project's part)
-- **Free / Pro / Team owner / Team member** — forgot submit → parent Screen 2 for any email (response body never
-  read); the new-password form opens only from the emailed `/reset-password?token=` link; invalid/expired link →
-  parent S4 toast + forgot form; success → login form.
-- **Admin** — n/a — admin-app reset is the separate `/set-password` flow (parent §User flows).
-- **Unauthenticated / not-entitled (attacker knowing only an email)** — sees the same Screen 2 as any user; no
-  reset form, no account-exists signal. `/reset` and token-less `/reset-password` redirect to `/forgot` (S1).
+- **Free** — n/a — the Settings email panel's locked state is unchanged; the hint line belongs to the unlocked panel only.
+- **Pro / Team owner / Team member** — parent "Pro user / Team owner / Team member": the Settings email panel shows the one
+  hint line; imported attachments and the note line render through the existing Stuff detail (no web change).
+- **Admin (support+)** — n/a — `error_detail` is shown by the existing admin email-log page; no admin-app change.
+- **Unauthenticated / not-entitled** — n/a — no public surface; Help text is the only public-facing change (Help items below).
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -30,40 +29,31 @@ scope.
   so the hygiene edit is intentionally skipped"; "n/a — no admin surface"). Does NOT block closure.
 
 ## Checklist
-### Screens (one box per parent § Screens screen — every state + exact copy)
-- [x] W-1 Screen 1 — Forgot form: every state in the parent table (idle, invalid format, submitting, success → Screen 2
-  without reading the body, error toasts). `data.reset_token` no longer read — grep `reset_token` in `src/` → `0`.
-  ✔ `AuthDialog.vue:444-445` (body ignored → `'forgot-sent'`); idle/invalid/spinner/error toast unchanged `:83-94`, `:433-450`; `grep -rn reset_token src/` → 0 (local ref renamed `resetToken` `:202`).
-- [x] W-2 Screen 2 — new `AuthDialog` mode `'forgot-sent'` (S8), elements + exact copy per parent.
-  ✔ `AuthDialog.vue:112-120` — h2 / subtitle / `Lnk` → `goToLogin()` (email kept), no `Btn`.
-- [x] W-3 Screen 3 — reset form from the link: S1 router redirects (`router.js`) and S4 invalid/expired-link toast via a
-  new `ErrorScenario` in `errorMapper.js` + switch to the forgot form.
-  ✔ `router.js:37-39` (`/reset` → `/forgot`; `beforeEnter` token-less → `forgot`), `:116` (`reset` dropped from public names);
-  `errorMapper.js:19`, `:49-52` (`RESET_PASSWORD`); `AuthDialog.vue:472-476` (401 → toast + `goToForgot()`).
-  Owner-approved extra (2026-10-21): `httpApi.js:12` AUTH_PATHS `'/v1/user/reset-password'` (no such endpoint) → `'/v1/user/reset'`,
-  else a logged-out 401 triggered refresh → `logout()` → reload to `/`, so S4 never showed.
-### Help
-- [x] W-4 `content/help/faq.js` "How do I reset my password?" rewritten per parent § Help impact (no lifetime — D5).
-  ✔ `faq.js:21`.
-### Specs (orchestration homes)
-- [x] W-5 Update `../../wna_orchestration/specs/features/wna-features.md` §2.4 / §2.5 per parent §Work breakdown › web
-  (incl. dropping the "valid for 1 hour" claim and the `/reset` → `/forgot` redirect).
-  ✔ `wna-features.md:162-165` (§2.4), `:169`, `:173` (§2.5), `:181` (8 modes), `:203` (allowlist); owner-approved `:2261` reset tokens 1 h → 24 h.
-- [x] W-6 Update `../../wna_orchestration/specs/tests/wna-test-cases.md` — TC-014, TC-015, TC-016, TC-040 and new
-  TC-825, TC-826, TC-827 per parent §Work breakdown › web.
-  ✔ `wna-test-cases.md:426` TC-014, `:453` TC-015, `:478` TC-016, `:507` TC-825, `:532` TC-826, `:555` TC-827, `:1266` TC-040;
-  `regression-ui-tests/update-tests.sh` re-run.
-### Verify
-- [x] W-7 `npm run build:main` passes; ask the owner to verify Screens 1–3 at runtime on the local stack.
-  Build ✔ (2026-10-21). Owner verified Screens 1–3 on local :6111 (2026-10-21).
+### Screens (parent § Screens)
+- [ ] W-1 Settings email-to-inbox panel — hint line built per the parent's § Screens: exact copy, placed below the address
+  block, existing text class + tokens (no new CSS variable/class). Shown only in the unlocked (Pro/Team) panel state.
+
+### Help (parent § Help impact)
+- [ ] W-2 `src/main-app/content/help/faq.js` "Can I send items to my Inbox by email?" — add the attachments sentence per
+  parent § Help impact.
+- [ ] W-3 `src/main-app/content/help/gettingStarted.js` "Capture by Email" — same sentence per parent § Help impact.
+
+### Legal (parent § Legal impact)
+- [NA] W-4 ToS / Privacy Policy — parent § Legal impact is n/a (existing clauses already cover it); no legal-text edit.
+
+### Verify + spec sync
+- [ ] W-5 `npm run build:main` passes; record the result.
+- [ ] W-6 Update `../wna_orchestration/specs/features/wna-features.md` §21.10 — hint line + attachment behaviour sentence
+  (parent § Contracts touched). Cite `file:line`.
+- [ ] W-7 Ask the user to verify at runtime: Settings → Email to Inbox (Pro user) shows the hint line in place; Help FAQ +
+  Getting Started show the new sentence.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
    cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.
 2. **Definition of done = observable end-user behavior**, not "code compiles" or "tests pass". State
-   the concrete artifact to inspect (here: the auth dialog after a forgot submit for a known and an unknown email, the
-   reset form opened from the Mailpit link, the expired-link toast, `/reset` landing on `/forgot`, the FAQ entry) and
-   confirm it.
+   the concrete artifact to inspect (the Settings email-to-inbox panel with the hint line, the Help FAQ and Getting
+   Started entries) and confirm it.
 3. **Leave zero references to anything you renamed/removed** — grep the source and confirm `0` matches
    before claiming done.
 4. **Honor the parent's User flows for every role** (viewer-centric / entitlement rules etc.); don't
