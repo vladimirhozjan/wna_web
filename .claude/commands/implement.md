@@ -14,6 +14,8 @@ Implement $ARGUMENTS in this repo.
    features) when the slice needs a shared fact or you must pull its authoritative form (exact predicate,
    response shape, DDL). Reading is unrestricted; writing is not (see the Rules). If a shared fact you
    need exists nowhere in the slice or orchestration, STOP and ask.
+   Big orchestration files (`specs/**`, `roadmap.md`, `decisions.md`): locate the § with `grep -n` and
+   read only that range — never the whole file.
 2. Implement the slice's checklist, ticking items as you complete them. Write tests. Get the repo's
    CI gates green (build, types, tests, sanitizers/linters per CLAUDE.md) before calling it done.
 3. Check all items in the checklist that were done
@@ -21,6 +23,8 @@ Implement $ARGUMENTS in this repo.
 Rules:
 - If the slice is unclear, missing, or conflicts with the actual code, STOP and ask me in ONE batch
   before writing code. Don't guess and don't invent spec.
+- If the same failure (same root cause) is still red after 2 fix attempts, STOP and bring me the cause
+  and the options — don't try a third.
 - If implementing would require changing a contract or a shared fact, STOP and ask me — don't decide
   it locally.
 - Keep edits within this repo, with ONE exception: when the slice's spec-sync (Hard rule #6) requires
@@ -29,6 +33,6 @@ Rules:
   `specs/features/wna-features.md`). Don't write into other sibling repos (`wna_backend`, `wna_deploy`,
   `wna-ui-tests`) or into any orchestration file outside those pointed-to homes. Changing a contract's
   value/meaning still requires STOP-and-ask (see the rule above).
-- Spec sync is part of done: list every orchestration home your change touched and update it. Specs describe what the code/config IS, never per-env rollout state: no "applied to dev", "not yet on prod", "to be applied" notes — the home for applied migration state is `wna_deploy/backend/db_tools/sql/*/MIGRATION_VERSION`, for deployed config the `gcloud/<env>/` manifests.
+- Spec sync is part of done: list every orchestration home your change touched and update it. Specs describe what the code/config IS, never per-env rollout state: no "applied to dev", "not yet on prod", "to be applied" notes — the home for applied migration state is `wna_deploy/backend/db_tools/sql/*/MIGRATION_VERSION`, for deployed config `wna_deploy/backend/gce/config/<env>/` and `wna_deploy/vm/wna/<env>/`.
 
 Output: checklist items done vs remaining, CI status, spec homes updated (`file:line`, or "none — <reason>"), and anything deferred to me.
