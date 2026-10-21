@@ -3,6 +3,8 @@
     <InboxIcon v-if="type === 'STUFF'" />
     <NextIcon v-else-if="type === 'ACTION'" />
     <ProjectsIcon v-else-if="type === 'PROJECT'" />
+    <RecurringIcon v-else-if="type === 'RECURRING'" />
+    <ReferenceIcon v-else-if="type === 'REFERENCE'" />
   </span>
 </template>
 
@@ -11,6 +13,8 @@ import { computed } from 'vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
+import RecurringIcon from '../assets/RecurringIcon.vue'
+import ReferenceIcon from '../assets/ReferenceIcon.vue'
 
 const props = defineProps({
   type: { type: String, required: true },

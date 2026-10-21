@@ -35,6 +35,7 @@
               @click.stop
           />
         </span>
+        <span v-else-if="$slots.title" class="item__title"><slot name="title" /></span>
         <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
         <slot name="title-suffix" />
       </div>

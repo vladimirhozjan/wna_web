@@ -2071,6 +2071,21 @@ export async function getUnreadNotificationCount() {
     }
 }
 
+// ── Search API ──
+
+export async function searchItems({q, types = [], limit, cursor = null}) {
+    try {
+        const params = {q, limit}
+        if (types.length) params.types = types.join(',')
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/search', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // ── Payments API ──
 
 // Public plan catalog — no auth, not gated by the payments flag
@@ -2339,6 +2354,8 @@ const apiClient = {
     markNotificationRead,
     markNotificationsRead,
     getUnreadNotificationCount,
+    // Search API
+    searchItems,
 }
 
 export default apiClient

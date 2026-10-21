@@ -263,7 +263,7 @@ import Btn from '../../components/Btn.vue'
 import {errorModel} from '../../scripts/core/errorModel.js'
 import {confirmModel} from '../../scripts/core/confirmModel.js'
 import {authModel} from '../../scripts/core/authModel.js'
-import {downloadAttachment, deleteAttachment, transformFileToOriginal, startGoogleConnect} from '../../scripts/core/apiClient.js'
+import {downloadAttachment, deleteAttachment, transformFileToOriginal, startGoogleConnect, getRefFile} from '../../scripts/core/apiClient.js'
 import Spinner from '../../components/Spinner.vue'
 
 const route = useRoute()
@@ -376,6 +376,10 @@ watch(() => route.query, (query) => {
   } else {
     activeTab.value = 'files'
     if (!sidesReady.value) return
+    if (query.side || query.file) {
+      openDeepLink(query)
+      return
+    }
     const folderId = query.folder || null
     if (folderId !== model.currentFolderId.value) {
       model.navigateToFolder(folderId).catch(() => {})
@@ -388,8 +392,7 @@ onMounted(async () => {
   await model.loadSides()
   sidesReady.value = true
   if (activeTab.value === 'files') {
-    const folderId = route.query.folder || null
-    await model.navigateToFolder(folderId).catch(() => {})
+    await openDeepLink(route.query, {reload: true})
   } else if (activeTab.value === 'attachments') {
     await attModel_.loadAttachments({reset: true}).catch(() => {})
   } else {
@@ -397,6 +400,33 @@ onMounted(async () => {
   }
   initialLoading.value = false
 })
+
+// ?side= picks the side, ?file= opens the file's preview; both are dropped from the URL once handled
+async function openDeepLink(query, {reload = false} = {}) {
+  const sideChanged = model.showSwitch.value && sideOptions.some(o => o.value === query.side) && query.side !== model.side.value
+  if (sideChanged) model.setSide(query.side)
+  const folderId = query.folder || null
+  if (reload || sideChanged || folderId !== model.currentFolderId.value) {
+    await model.navigateToFolder(folderId).catch(() => {})
+  }
+  if (query.file) await openFileFromLink(query.file)
+  if (query.side || query.file) router.replace({query: folderId ? {folder: folderId} : {}})
+}
+
+async function openFileFromLink(id) {
+  let file
+  try {
+    file = await getRefFile(id)
+  } catch (err) {
+    toaster.push(err.status === 404 ? 'This file was moved or deleted. Search again to find it.' : (err.message || 'Failed to load preview'))
+    return
+  }
+  if (file.provider === 'gdrive' && !model.driveConnected.value) {
+    toaster.push('Reconnect Google Drive to open this file')
+    return
+  }
+  model.openPreview(file)
+}
 
 function switchTab(tab) {
   activeTab.value = tab

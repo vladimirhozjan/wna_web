@@ -9371,16 +9371,16 @@
     "preconditions": "User is not logged in (or logged out). Browser is open.",
     "steps": [
       "Navigate to / (the root URL of the application).",
-      "Verify the landing page loads.",
-      "Verify a hero section is displayed at the top with a dark background.",
-      "Verify the hero heading reads: \"Capture. Clarify. Organize. Reflect. Engage.\" (or the exact configured heading text).",
-      "Verify a subtitle is displayed below the heading describing the product.",
-      "Verify two CTA (call-to-action) buttons are present: \"Start Free\" and \"Learn More\".",
-      "Click \"Start Free\" and verify it navigates to the registration or sign-up page.",
-      "Navigate back to /.",
-      "Click \"Learn More\" and verify it scrolls down to or navigates to a section with more information."
+      "Verify the hero section is displayed at the top with a dark background and the heading (h1) \"Stress-Free Productivity\".",
+      "Verify the subtitle below the heading reads: \"A Getting Things Done app that works with your Google Calendar, your Google Drive, your email and your team.\"",
+      "Verify two CTA buttons are present: \"Start Free\" and \"Learn More\".",
+      "Verify the trust line \"Made in the EU · Hosted in the EU · GDPR-compliant\" is displayed below the CTAs as plain text (not a link).",
+      "Verify a product screenshot of the Engage dashboard is displayed below the trust line, with the alt text \"WhatsNextAction dashboard with today's actions, next actions and waiting-for items\".",
+      "Verify the page's meta description reads: \"Stress-free productivity with a GTD app: two-way Google Calendar sync, Google Drive storage, email to inbox and team delegation. Start free, upgrade anytime.\"",
+      "Click \"Start Free\" and verify the registration dialog opens.",
+      "Navigate back to /, click \"Learn More\" and verify the page scrolls to the \"What Sets Us Apart\" section (`#features`)."
     ],
-    "expected": "The landing page hero section has a dark background, the heading \"Capture. Clarify. Organize. Reflect. Engage.\", a subtitle, and two CTA buttons (\"Start Free\" and \"Learn More\") that function correctly."
+    "expected": "The hero has a dark background, the heading \"Stress-Free Productivity\", the new subtitle, \"Start Free\" (opens the registration dialog) and \"Learn More\" (scrolls to What Sets Us Apart), the plain-text trust line and the Engage dashboard screenshot. The landing meta description is the text in step 7."
   },
   {
     "id": "TC-347",
@@ -9394,18 +9394,17 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
     "steps": [
-      "Navigate to / and scroll down to the \"How It Works\" section.",
-      "Verify a 3-step flow is displayed: Capture, Clarify, and Engage (or equivalent step names).",
-      "Verify each step has a numbered circle (1, 2, 3).",
-      "On desktop, verify the steps are arranged horizontally with a connector line between them.",
-      "On mobile (or narrow viewport), verify the steps are arranged vertically.",
-      "Verify each step has a brief description text."
+      "Navigate to / and scroll down to the \"How It Works\" section (`#how-it-works`).",
+      "Verify it comes after the \"What Sets Us Apart\" section and before the GTD strip.",
+      "Verify the subtitle reads \"Five simple steps to a clear mind.\"",
+      "Verify 5 numbered steps are displayed in this order: Capture, Clarify, Organize, Reflect, Engage.",
+      "Verify the steps form a vertical list with a connector line between them."
     ],
-    "expected": "The \"How It Works\" section displays a 3-step flow (Capture, Clarify, Engage) with numbered circles. On desktop, steps are horizontal with connector lines. On mobile, steps are vertical."
+    "expected": "The \"How It Works\" section, placed directly after What Sets Us Apart, shows the subtitle \"Five simple steps to a clear mind.\" and the 5 numbered steps Capture → Clarify → Organize → Reflect → Engage in a vertical list with a connector line."
   },
   {
     "id": "TC-348",
-    "name": "Landing Page - Features Section",
+    "name": "Landing Page - GTD Strip",
     "priority": "Medium",
     "area": "Public Pages",
     "areas": [
@@ -9415,14 +9414,14 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
     "steps": [
-      "Navigate to / and scroll down to the Features section.",
-      "Verify 9 feature cards are displayed.",
-      "Verify each feature card has an icon and a title/description.",
-      "On desktop (wide viewport), verify the cards are in a 3-column grid layout.",
-      "On tablet (medium viewport), verify the cards are in a 2-column grid layout.",
-      "On mobile (narrow viewport), verify the cards are in a single-column layout."
+      "Navigate to / and scroll down to the GTD strip (`#gtd-lists`), after How It Works.",
+      "Verify the heading reads \"Every GTD List, Built In\" with no subtitle.",
+      "Verify 9 items are displayed, each an icon above its name, in this order: Inbox, Next Actions, Projects, Waiting For, Someday / Maybe, Calendar, Weekly Review, Context Tags, Reference Files.",
+      "Verify no item has a description text.",
+      "Verify no item is a link (clicking a name does not navigate).",
+      "On mobile (narrow viewport), verify the items form a 3×3 grid; on tablet and desktop, one row of 9."
     ],
-    "expected": "Nine feature cards are displayed with icons in a responsive grid: 3 columns on desktop, 2 columns on tablet, and 1 column on mobile."
+    "expected": "The GTD strip shows the heading \"Every GTD List, Built In\" and the 9 GTD list names with icons, in the order of step 3, without descriptions and without links; 3×3 on mobile, one row of 9 on tablet/desktop. The former 9 feature cards are gone."
   },
   {
     "id": "TC-349",
@@ -9436,15 +9435,16 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
     "steps": [
-      "Navigate to / and scroll down to the \"Why Us\" section.",
-      "Verify 3 items are displayed: a. \"Pure GTD\" - emphasizing adherence to GTD methodology. b. \"Minimalist Design\" - emphasizing simplicity. c. \"Cross-Platform\" - emphasizing multi-device support.",
+      "Navigate to / and scroll down to the \"Why Us\" section (`#why-us`), after the GTD strip.",
+      "Verify the heading reads \"Designed for Clarity and Focus\".",
+      "Verify 3 items are displayed, in this order: \"Methodology-Driven\", \"Minimalist Design\", \"Cross-Platform\".",
       "Verify each item has a heading and a brief description."
     ],
-    "expected": "The \"Why Us\" section displays three value propositions: Pure GTD, Minimalist Design, and Cross-Platform, each with a heading and description."
+    "expected": "The \"Why Us\" section shows the heading \"Designed for Clarity and Focus\" and three items — Methodology-Driven, Minimalist Design and Cross-Platform — each with a heading and description."
   },
   {
     "id": "TC-350",
-    "name": "Landing Page - Testimonial Section",
+    "name": "Landing Page - Founder Section",
     "priority": "Low",
     "area": "Public Pages",
     "areas": [
@@ -9454,11 +9454,12 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
     "steps": [
-      "Navigate to / and scroll down to the testimonial or founder's quote section.",
-      "Verify a quote is displayed in a styled block (e.g., large quotation marks, italicized text, or a card).",
-      "Verify the quote is attributed to the founder (name and/or title displayed)."
+      "Navigate to / and scroll down to the founder section, after Why Us.",
+      "Verify the heading reads \"Why I Built This\".",
+      "Verify the founder's quote about building WhatsNextAction is displayed in a styled quote block.",
+      "Verify the quote is attributed to Dr. Vladimir Hozjan."
     ],
-    "expected": "A founder's quote section is displayed with a styled quote block and attribution."
+    "expected": "The founder section shows the heading \"Why I Built This\" and a styled quote attributed to Dr. Vladimir Hozjan."
   },
   {
     "id": "TC-351",
@@ -9472,13 +9473,14 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
     "steps": [
-      "Navigate to / and scroll down to the book section.",
-      "Verify an image of the GTD book cover is displayed.",
-      "Verify a link or button labeled \"Get the Book on Amazon\" (or similar) is present.",
-      "Click the \"Get the Book on Amazon\" link.",
-      "Verify it opens in a new tab and navigates to the Amazon product page for the GTD book."
+      "Navigate to / and scroll down to the book section, after the founder section.",
+      "Verify the heading reads \"Want to Know More About GTD?\".",
+      "Verify an image of the GTD book cover and a description are displayed.",
+      "Verify a link or button \"Get the Book on Amazon\" is present.",
+      "Click \"Get the Book on Amazon\".",
+      "Verify it opens in a new tab on the Amazon product page for the GTD book."
     ],
-    "expected": "The book section displays the GTD book cover image and a link to Amazon. Clicking the link opens the Amazon page in a new tab."
+    "expected": "The book section shows the heading \"Want to Know More About GTD?\", the GTD book cover, a description and \"Get the Book on Amazon\", which opens Amazon in a new tab."
   },
   {
     "id": "TC-352",
@@ -9492,14 +9494,58 @@
     "section": "23: Public Pages",
     "preconditions": "User is on the landing page /.",
     "steps": [
-      "Navigate to / and scroll to the bottom of the page (above the footer).",
-      "Verify a blue banner section is displayed.",
-      "Verify the banner contains the text \"Ready to Get Things Done?\" or similar call-to-action heading.",
+      "Navigate to / and scroll to the bottom of the page (above the footer), after the FAQ section.",
+      "Verify a banner with a gradient background is displayed.",
+      "Verify the banner heading reads \"Ready to Take Control?\" and the subtitle \"Start organizing your life for free today.\"",
       "Verify a \"Start Free\" button is present on the banner.",
       "Click the \"Start Free\" button.",
-      "Verify it navigates to the registration or sign-up page."
+      "Verify the registration dialog opens."
     ],
-    "expected": "A blue CTA banner is displayed near the bottom of the landing page with the heading \"Ready to Get Things Done?\" and a \"Start Free\" button that navigates to registration."
+    "expected": "The last section above the footer is the gradient CTA banner with \"Ready to Take Control?\", \"Start organizing your life for free today.\" and a \"Start Free\" button that opens the registration dialog."
+  },
+  {
+    "id": "TC-830",
+    "name": "Landing Page - What Sets Us Apart Section",
+    "priority": "High",
+    "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
+    "smoke": false,
+    "section": "23: Public Pages",
+    "preconditions": "User is on the landing page /.",
+    "steps": [
+      "Navigate to / and scroll down to the section directly after the hero (`#features`).",
+      "Verify the heading reads \"What Sets Us Apart\" and the subtitle \"Built on Getting Things Done, connected to the tools you already use.\"",
+      "Verify 4 cards are displayed in this order, each showing — top to bottom — a screenshot, a plan chip, a title and one line: a. Screenshot \"Calendar week view with scheduled actions\" · chip \"Pro & Team\" · \"Google Calendar Sync\" · \"Your scheduled actions sync both ways with Google Calendar.\" b. Screenshot \"Reference files on the Google Drive side\" · chip \"All plans\" · \"Google Drive Storage\" · \"Keep your reference files in your own Google Drive, organized right here.\" c. Screenshot \"Inbox with items captured from forwarded emails\" · chip \"Pro & Team\" · \"Email to Inbox\" · \"Forward any email to your private address and it lands in your Inbox.\" d. Screenshot \"Shared project with members and assigned actions\" · chip \"Team\" · \"Team Collaboration\" · \"Connect with colleagues, delegate actions and share projects.\"",
+      "On mobile (narrow viewport), verify the cards are in 1 column; on tablet and desktop, a 2×2 grid.",
+      "Verify the line \"Start free — upgrade when you need more → See pricing\" is displayed under the cards, and only \"See pricing\" is a link.",
+      "Click \"See pricing\" and verify the Pricing page (`/pricing`) opens.",
+      "Navigate to `/#features` and verify the page scrolls to this section (footer \"Features\" lands here)."
+    ],
+    "expected": "The \"What Sets Us Apart\" section follows the hero and shows the 4 cards of step 3 in that order, each screenshot → plan chip → title → line; 1 column on mobile, 2×2 on tablet/desktop. No card states a price or quota. The pricing pointer's \"See pricing\" link opens `/pricing`; `/#features` lands on this section."
+  },
+  {
+    "id": "TC-831",
+    "name": "Landing Page - FAQ Section",
+    "priority": "Medium",
+    "area": "Public Pages",
+    "areas": [
+      "Public Pages"
+    ],
+    "smoke": false,
+    "section": "23: Public Pages",
+    "preconditions": "User is on the landing page /.",
+    "steps": [
+      "Navigate to / and scroll down to the FAQ section (`#faq`), after the book section and before the CTA banner.",
+      "Verify the heading reads \"Frequently Asked Questions\".",
+      "Verify 4 collapsed questions are displayed, in this order: \"What plans are available?\", \"Can I use WhatsNextAction on my phone?\", \"Can I sign in with Google?\", \"How do I cancel my subscription?\".",
+      "Click \"Can I sign in with Google?\" and verify its answer expands; it is the same answer as on `/help/faq`.",
+      "Click the question again and verify the answer collapses.",
+      "Verify the link \"All questions →\" is displayed under the list.",
+      "Click \"All questions →\" and verify the Help FAQ page (`/help/faq`) opens."
+    ],
+    "expected": "The landing FAQ shows the heading \"Frequently Asked Questions\" and the 4 Help FAQ questions of step 3, collapsed; a question toggles its answer (the same text as on `/help/faq`). \"All questions →\" opens `/help/faq`."
   },
   {
     "id": "TC-353",
@@ -16581,5 +16627,177 @@
       "Open `/help/getting-started`."
     ],
     "expected": "FAQ: \"How does Google Calendar sync work?\" follows \"How does the Calendar work?\" and \"Can I keep my files in my Google Drive?\" follows the Reference entry. The Reference answer describes the Local | Google Drive switch, that every plan (Free included) can upload and organize files on the Google Drive side, and the Local per-file limits (20 MB Pro, 50 MB Team). The Drive entry starts \"Yes, on every plan.\"; the Calendar sync entry starts \"On the Pro and Team plans you can sync your scheduled actions with Google Calendar in both directions.\"; the plans entry has \"(reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too)\". \"Can I sign in with Google?\" has no \"If Google sign-in is not configured…\" sentence. Getting Started: \"Keeping a Reference Library\" is followed by \"Storing Files in Google Drive\" and \"Syncing With Google Calendar (Pro & Team)\"; the Reference card says \"On the Free plan your WhatsNextAction (Local) files are view-only…\" (no \"On the Free plan Reference is view-only\")."
+  },
+  {
+    "id": "TC-797",
+    "name": "TopNav Search Shows Top Hits After 2 Characters, Nothing at 1",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": true,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Logged in on desktop (≥ 769 px); an inbox item \"Kickoff notes\" and 9 more actions whose titles contain \"kick\".",
+    "steps": [
+      "On `/next`, click the search icon right of the notification bell.",
+      "Type `k`; wait 1 s.",
+      "Type `i` (field: `ki`); wait for the panel.",
+      "Clear the field; press Cmd+K (macOS) / Ctrl+K on another page."
+    ],
+    "expected": "Step 1: the icon expands in place into a focused field with placeholder \"Search everything...\". Step 2: no panel and no `GET /v1/search` request. Step 3: after the debounce one `GET /v1/search?q=ki&limit=8`; a right-aligned panel under the field lists 8 rows, each with its type icon and `ki` highlighted in the title, and the footer \"See all {total_count} results\". Step 4: the browser shortcut does not fire; the search field expands and is focused. Navigating to another page collapses the field back to the icon with the term cleared."
+  },
+  {
+    "id": "TC-798",
+    "name": "Enter Opens /search With the Full Paged List and Type Chips",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Logged in on desktop; 25 items whose titles contain \"plan\" — inbox items, actions, a project, a recurring template and a Reference file.",
+    "steps": [
+      "Open the TopNav search, type `plan`, press Enter.",
+      "Click **Load more**.",
+      "Click the **Projects** chip, then **All**.",
+      "Type `p` in the page field (clearing the rest)."
+    ],
+    "expected": "Step 1: `/search?q=plan` opens; title \"Search\"; the field holds `plan` and is focused; TopNav shows no search icon; chips All · Inbox · Actions · Projects · Recurring · Reference (no Completed); \"25 results\"; 20 rows. Step 2: 5 more rows appear and **Load more** disappears (no end message). Step 3: URL gains `&types=project`, only project rows remain; **All** restores the full list and removes `types`. Step 4: the \"Search everything\" empty state (\"Type a word from a title, description, project outcome or file name.\") shows; chips and count are hidden; `q` is removed from the URL."
+  },
+  {
+    "id": "TC-799",
+    "name": "Each Result Type Opens Its Detail Page",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Logged in; an inbox item, an action (with a due date and project), a project, a recurring template and a Local Reference file in a folder, all titled with \"zeta\"; an action whose description (not title) contains \"zeta\".",
+    "steps": [
+      "Open `/search?q=zeta`.",
+      "Click each row in turn, returning to `/search?q=zeta` after each."
+    ],
+    "expected": "The description hit shows a one-line snippet with `zeta` highlighted; the action row shows its due and project chips. Clicks open `/stuff/:id`, `/action/:id`, `/project/:id`, `/recurring/:id`; the Reference row opens `/reference` on that folder with the file's preview open, and the URL keeps only `?folder=`."
+  },
+  {
+    "id": "TC-800",
+    "name": "Another User's Items Never Appear",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "User A has an action \"Orchid budget\"; user B (no shared project with A) has none.",
+    "steps": [
+      "Log in as B; open `/search?q=orchid`."
+    ],
+    "expected": "`No results found for \"orchid\"` — \"Try a different search term.\"; the response `total_count` is 0."
+  },
+  {
+    "id": "TC-801",
+    "name": "Member Finds a Shared Project's Unassigned Action",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Team owner A shares project \"Harbor launch\" with member B; it holds an action \"Harbor signage\" assigned to nobody.",
+    "steps": [
+      "Log in as B; search `harbor` in the TopNav.",
+      "Repeat as A."
+    ],
+    "expected": "For B and for A the project and the unassigned action both appear, each with a \"Shared\" badge; a user who is neither owner nor member gets neither."
+  },
+  {
+    "id": "TC-802",
+    "name": "Trashed Item Absent, Completed Item Badged",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Actions \"Quartz trashed\" (in Trash), \"Quartz done\" (completed, with a past due date) and \"Quartz open\".",
+    "steps": [
+      "Open `/search?q=quartz`."
+    ],
+    "expected": "\"Quartz trashed\" is absent. \"Quartz done\" carries a \"Completed\" badge, shows no due/overdue chip and ranks after \"Quartz open\"; \"2 results\"."
+  },
+  {
+    "id": "TC-803",
+    "name": "`cas` Finds `čas`",
+    "priority": "Medium",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "An action titled \"Čas za sestanek\".",
+    "steps": [
+      "Search `cas` in the TopNav."
+    ],
+    "expected": "The action is listed with `Čas` highlighted."
+  },
+  {
+    "id": "TC-804",
+    "name": "Terms With `&` and `%` Work Through the Router",
+    "priority": "Medium",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Actions \"R&D review\", \"100% done\" and \"100 done\".",
+    "steps": [
+      "Open `/search?q=R%26D`.",
+      "Search `100%` from the page field."
+    ],
+    "expected": "Step 1: only \"R&D review\", with `R&D` highlighted. Step 2: only \"100% done\" — `%` matches literally, \"100 done\" is not listed."
+  },
+  {
+    "id": "TC-805",
+    "name": "Mobile Search Icon Opens /search",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Logged in; viewport ≤ 768 px.",
+    "steps": [
+      "On `/inbox`, tap the search icon between the notification bell and the hamburger."
+    ],
+    "expected": "`/search` opens with the field focused and the \"Search everything\" empty state; no dropdown is shown; TopNav shows no search icon on `/search`."
+  },
+  {
+    "id": "TC-806",
+    "name": "Reference Result Opens the Preview on the Right Side",
+    "priority": "High",
+    "area": "Search",
+    "areas": [
+      "Search"
+    ],
+    "smoke": false,
+    "section": "58: Global Search (FEAT-055)",
+    "preconditions": "Pro user; `drive` flag; Drive connected; Reference side set to **Local**; a Google Drive file \"gamma.pdf\" at the Google side's root.",
+    "steps": [
+      "Search `gamma` in the TopNav; click the row.",
+      "Close the preview; reload.",
+      "Delete the file in Reference; open `/reference?side=gdrive&file={its id}`.",
+      "Disconnect Drive; repeat step 1 for another Google file."
+    ],
+    "expected": "Step 1: `/reference` opens on the **Google Drive** side, Files tab, root, with the preview of gamma.pdf open; the URL has no `side` / `file`. Step 2: no preview reopens. Step 3: no preview; toast \"This file was moved or deleted. Search again to find it.\" Step 4: the Google Drive side with the \"Google Drive is not connected\" bar; no preview; toast \"Reconnect Google Drive to open this file\"."
   }
 ]

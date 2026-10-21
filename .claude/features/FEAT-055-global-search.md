@@ -41,30 +41,53 @@ blocked until it is locked; build everything else.
 
 ## Checklist
 ### Model + building blocks
-- [ ] W-1 `apiClient.searchItems({q, types, limit, cursor})` + `searchModel.js` (numbers from `limits.md` §Search; debounce =
+- [x] W-1 `apiClient.searchItems({q, types, limit, cursor})` + `searchModel.js` (numbers from `limits.md` §Search; debounce =
   Reference's; only the latest response renders; marking helper per §Screens "Result row" footnote).
-- [ ] W-2 `Item` optional `title` slot (existing lists render unchanged) + `ItemTypeIcon` `RECURRING` / `REFERENCE`.
+  → `scripts/core/apiClient.js:2076`; `scripts/models/searchModel.js:5-9` (min 2 / top 8 / page 20 / 300 ms), `:85,91,108`
+  (stale responses dropped via `requestId`), `:156` `markParts` (checked: `cas`→`[Čas]`, `R&D`, `100%`, `Ø` unmarked).
+- [x] W-2 `Item` optional `title` slot (existing lists render unchanged) + `ItemTypeIcon` `RECURRING` / `REFERENCE`.
+  → `components/Item.vue:38` (new branch only when the slot is passed; the old span is untouched); `components/ItemTypeIcon.vue:6-7`.
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [ ] W-3 Result row — `SearchResultRow.vue` per §Screens "Result row" (elements 1–5, incl. 3a "Shared").
-- [ ] W-4 §1 TopNav desktop — icon placement (D18), expand in place, every state + copy in the §1 table, Enter / "See all",
+- [x] W-3 Result row — `SearchResultRow.vue` per §Screens "Result row" (elements 1–5, incl. 3a "Shared").
+  → `components/SearchResultRow.vue:12` icon, `:14` marked title, `:21-22` Completed / Shared badges, `:25` snippet,
+  `:31` MetadataRow (completed rows pass no due date), `:6,9` no checkbox, click anywhere → `searchRoute`.
+- [x] W-4 §1 TopNav desktop — icon placement (D18), expand in place, every state + copy in the §1 table, Enter / "See all",
   Cmd/Ctrl+K (D19), no ↑/↓ (D20), hidden on `/search` + cleared/collapsed on navigation (D22), right-aligned panel.
-- [ ] W-5 §1 Esc / click outside / collapse back to the icon — **BLOCKED on owner D21** (open in parent §Screens). Do not
+  → `components/TopNav.vue:94-107` (after the bell, hidden on `/search`), `:365-371` Cmd/Ctrl+K, `:374` collapse on
+  navigation; `components/SearchBox.vue:10` placeholder, `:13` Enter, `:24` spinner, `:28` no results, `:39` See all,
+  `:65-66` error copy, `:75` term cleared on unmount, `:128-129` 400 px right-aligned panel. No ↑/↓ handler.
+- [~] W-5 §1 Esc / click outside / collapse back to the icon — **BLOCKED on owner D21** (open in parent §Screens). Do not
   implement until D21 is locked; if reached first, mark `[~] BLOCKED: D21 open`.
-- [ ] W-6 §2 Mobile TopNav — icon between the bell and the hamburger, tap → `/search` focused, hidden on `/search`.
-- [ ] W-7 §3 `/search` page + route `/search` — elements 1–6, chips → `types` (no Completed chip, D16), `?q=` / `?types=` synced,
+  → BLOCKED: D21 open. Nothing implemented; the field closes only on navigation (documented as such in §36.2).
+- [x] W-6 §2 Mobile TopNav — icon between the bell and the hamburger, tap → `/search` focused, hidden on `/search`.
+  → `components/TopNav.vue:94` (same button, sits before the hamburger), `:352` ≤ 768 px → `/search`;
+  `views/dashboard/SearchPage.vue` `onMounted` focuses the field.
+- [x] W-7 §3 `/search` page + route `/search` — elements 1–6, chips → `types` (no Completed chip, D16), `?q=` / `?types=` synced,
   "Load more" (D25), every state + copy in the §3 table.
-- [ ] W-8 Click targets per §3 "Click targets" — detail routes; reference → `ReferencePage` handles `?file=` on top of `?side=`
+  → `router/router.js:67`; `views/dashboard/SearchPage.vue:83` chips (no Completed), `:21` count, `:27` no query, `:33`
+  error page 1, `:41` loading, `:48`/`:102` no results, `:59` Load more, `:112` load-more toast, `:122` `?q=`/`?types=` sync.
+- [x] W-8 Click targets per §3 "Click targets" — detail routes; reference → `ReferencePage` handles `?file=` on top of `?side=`
   (preview opens; 404 and Drive-disconnected toasts as written).
+  → `scripts/models/searchModel.js:135` routes; `views/dashboard/ReferencePage.vue:405` `?side=` (owner 2026-10-21: added
+  here, `?side=` did not exist) + folder, `:416` file fetch + preview, `:421` 404 toast, `:425` Drive toast, `:413` `side` /
+  `file` stripped from the URL afterwards (owner 2026-10-21).
 ### Help
-- [ ] W-9 `content/help/faq.js` — new entry "How do I search?" covering every point in parent §Help impact.
+- [x] W-9 `content/help/faq.js` — new entry "How do I search?" covering every point in parent §Help impact.
+  → `content/help/faq.js:116`.
 ### Verify
-- [ ] W-10 `npm run build:main` passes.
-- [ ] W-11 Runtime check on the local stack (owner verifies at runtime): each §Screens state reached once; list what was seen.
+- [x] W-10 `npm run build:main` passes.
+  → 2026-10-21: `✓ built`, obfuscator + prerender OK (only the pre-existing >500 kB chunk warning).
+- [~] W-11 Runtime check on the local stack (owner verifies at runtime): each §Screens state reached once; list what was seen.
+  → DEFERRED TO OWNER / ui-tests: I don't run the app; needs the backend slice + migration 020 locally. States to reach are
+  TC-797–806 (W-13).
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-12 Update `../wna_orchestration/specs/features/wna-features.md` — §3.1 TopNav (search icon, Cmd/Ctrl+K), new §Search,
+- [x] W-12 Update `../wna_orchestration/specs/features/wna-features.md` — §3.1 TopNav (search icon, Cmd/Ctrl+K), new §Search,
   routes list (`/search`), §12 (`?file=`).
-- [ ] W-13 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-797–806 (IDs reserved by the parent,
+  → `wna-features.md:46` TOC, `:236` §3.1 search icon + Cmd/Ctrl+K, `:754` §12.1 File deep link (`?side=` + `?file=`),
+  `:2719` new §36 Search (`:2758` §36.3 `/search` route — the spec has no central routes list; routes live per section).
+- [x] W-13 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-797–806 (IDs reserved by the parent,
   §Work breakdown → ui-tests), expected results from §Screens.
+  → `wna-test-cases.md:18847` Section 58, TC-797–806 (`:18849`–`:19020`); `regression-ui-tests/update-tests.sh` re-run.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

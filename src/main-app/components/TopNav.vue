@@ -90,6 +90,21 @@
         </template>
       </Dropdown>
 
+      <!-- Search: desktop expands in place, mobile opens /search -->
+      <template v-if="context === 'dashboard' && route.name !== 'search'">
+        <SearchBox v-if="searchExpanded" ref="searchBoxRef" />
+        <button
+            v-else
+            type="button"
+            class="search-btn"
+            aria-label="Search"
+            data-testid="topnav-search-btn"
+            @click="onSearchClick"
+        >
+          <SearchIcon class="search-btn__icon" />
+        </button>
+      </template>
+
       <!-- Mobile hamburger (dashboard only) -->
       <button
         v-if="context === 'dashboard'"
@@ -123,14 +138,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import Btn from "./Btn.vue";
 import UserAvatar from "./UserAvatar.vue";
 import QuickAddBtn from "./QuickAddBtn.vue";
 import TopNavDropdown from "./TopNavDropdown.vue";
 import Dropdown from "./Dropdown.vue";
 import Spinner from "./Spinner.vue";
+import SearchBox from "./SearchBox.vue";
+import SearchIcon from "../assets/SearchIcon.vue";
 import AppIcon from "../assets/AppIcon.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
@@ -156,6 +173,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const route = useRoute();
 const showMobile = ref(false);
 const showDropdown = ref(false);
 const avatarContainerRef = ref(null);
@@ -325,6 +343,38 @@ watch(
     { immediate: false }
 );
 
+// Search
+const MOBILE_QUERY = "(max-width: 768px)";
+const searchExpanded = ref(false);
+const searchBoxRef = ref(null);
+
+function onSearchClick() {
+  if (window.matchMedia(MOBILE_QUERY).matches) {
+    router.push({ name: "search" });
+    return;
+  }
+  expandSearch();
+}
+
+async function expandSearch() {
+  searchExpanded.value = true;
+  await nextTick();
+  searchBoxRef.value?.focus();
+}
+
+function onSearchShortcut(e) {
+  if (e.key?.toLowerCase() !== "k" || !(e.metaKey || e.ctrlKey)) return;
+  if (!props.authenticated || props.context !== "dashboard" || route.name === "search") return;
+  if (window.matchMedia(MOBILE_QUERY).matches) return;
+  e.preventDefault();
+  expandSearch();
+}
+
+// Any navigation collapses to the icon; SearchBox clears the term on unmount
+watch(() => route.fullPath, () => {
+  searchExpanded.value = false;
+});
+
 async function onQuickAdd(title) {
   try {
     await addStuff(title);
@@ -341,6 +391,7 @@ function onClickOutside(e) {
 
 onMounted(() => {
   document.addEventListener("click", onClickOutside);
+  document.addEventListener("keydown", onSearchShortcut);
   if (props.authenticated) {
     notifModel.startPolling();
   }
@@ -348,6 +399,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", onClickOutside);
+  document.removeEventListener("keydown", onSearchShortcut);
   notifObserver?.disconnect();
   notifModel.flushRead();
   notifModel.stopPolling();
@@ -417,8 +469,9 @@ onBeforeUnmount(() => {
   position: relative;
 }
 
-/* Notifications bell */
-.notifications-btn {
+/* Notifications bell (the search button shares its look) */
+.notifications-btn,
+.search-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -435,13 +488,20 @@ onBeforeUnmount(() => {
   -webkit-tap-highlight-color: transparent;
 }
 
-.notifications-btn:hover {
+.notifications-btn:hover,
+.search-btn:hover {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
 }
 
 .notifications-icon {
   display: block;
+}
+
+.search-btn__icon {
+  display: block;
+  width: 18px;
+  height: 18px;
 }
 
 .notifications-badge {

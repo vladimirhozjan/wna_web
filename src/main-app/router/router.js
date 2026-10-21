@@ -64,6 +64,7 @@ const routes = [
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
+    {path: '/search', name: 'search', component: () => import('../views/dashboard/SearchPage.vue')},
     {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue'), meta: {seo: {
         title: 'Pricing — To-Do List & Task Manager App | WhatsNextAction',
         description: 'Start free, upgrade when you need more. Compare the Free, Pro and Team plans of a productivity app and task manager built on GTD.',
