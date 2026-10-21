@@ -56,9 +56,12 @@ blocked until it is locked; build everything else.
   → `components/TopNav.vue:94-107` (after the bell, hidden on `/search`), `:365-371` Cmd/Ctrl+K, `:374` collapse on
   navigation; `components/SearchBox.vue:10` placeholder, `:13` Enter, `:24` spinner, `:28` no results, `:39` See all,
   `:65-66` error copy, `:75` term cleared on unmount, `:128-129` 400 px right-aligned panel. No ↑/↓ handler.
-- [~] W-5 §1 Esc / click outside / collapse back to the icon — **BLOCKED on owner D21** (open in parent §Screens). Do not
+- [x] W-5 §1 Esc / click outside / collapse back to the icon — **BLOCKED on owner D21** (open in parent §Screens). Do not
   implement until D21 is locked; if reached first, mark `[~] BLOCKED: D21 open`.
-  → BLOCKED: D21 open. Nothing implemented; the field closes only on navigation (documented as such in §36.2).
+  → D21 locked by owner 2026-10-21 = designer recommendation. `components/SearchBox.vue` `onEsc` (clear + close +
+  collapse), `onPointerDownOutside` (panel closes, text kept, collapse only when empty; pointer not blur so row clicks
+  land), refocus / click / Cmd+K reopen the last rows with no request; `components/TopNav.vue:95` `@collapse`.
+  Spec `wna-features.md` §36.2, TC-797 steps 4–6.
 - [x] W-6 §2 Mobile TopNav — icon between the bell and the hamburger, tap → `/search` focused, hidden on `/search`.
   → `components/TopNav.vue:94` (same button, sits before the hamburger), `:352` ≤ 768 px → `/search`;
   `views/dashboard/SearchPage.vue` `onMounted` focuses the field.

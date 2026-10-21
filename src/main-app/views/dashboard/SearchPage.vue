@@ -198,6 +198,11 @@ onMounted(() => {
   .search-chips {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .search-chips::-webkit-scrollbar {
+    display: none;
   }
 }
 </style>
