@@ -92,7 +92,7 @@
 
       <!-- Search: desktop expands in place, mobile opens /search -->
       <template v-if="context === 'dashboard' && route.name !== 'search'">
-        <SearchBox v-if="searchExpanded" ref="searchBoxRef" />
+        <SearchBox v-if="searchExpanded" ref="searchBoxRef" @collapse="searchExpanded = false" />
         <button
             v-else
             type="button"

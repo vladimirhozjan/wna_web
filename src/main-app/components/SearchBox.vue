@@ -1,5 +1,5 @@
 <template>
-  <div class="search-box">
+  <div ref="rootRef" class="search-box">
     <div class="search-box__field">
       <SearchIcon class="search-box__icon" />
       <input
@@ -9,8 +9,11 @@
           class="text-body-s search-box__input"
           placeholder="Search everything..."
           data-testid="topnav-search-input"
+          @focus="open = true"
+          @click="open = true"
           @input="search.input(value)"
           @keydown.enter="seeAll"
+          @keydown.esc="onEsc"
       />
     </div>
 
@@ -44,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import Btn from './Btn.vue'
 import Spinner from './Spinner.vue'
@@ -52,13 +55,17 @@ import SearchResultRow from './SearchResultRow.vue'
 import SearchIcon from '../assets/SearchIcon.vue'
 import { searchModel, SEARCH_MIN_LENGTH } from '../scripts/models/searchModel.js'
 
+const emit = defineEmits(['collapse'])
+
 const router = useRouter()
 const search = searchModel().dropdown
 
 const value = ref('')
 const inputRef = ref(null)
+const rootRef = ref(null)
+const open = ref(true)
 
-const panelOpen = computed(() => value.value.trim().length >= SEARCH_MIN_LENGTH)
+const panelOpen = computed(() => open.value && value.value.trim().length >= SEARCH_MIN_LENGTH)
 
 const errorText = computed(() =>
     search.error.value?.status === 429
@@ -72,10 +79,29 @@ function seeAll() {
   router.push({ name: 'search', query: { q } })
 }
 
-onBeforeUnmount(() => search.reset())
+function onEsc() {
+  value.value = ''
+  search.reset()
+  emit('collapse')
+}
+
+// Pointer, not blur — a blur would close the panel before a row click lands
+function onPointerDownOutside(e) {
+  if (rootRef.value?.contains(e.target)) return
+  open.value = false
+  if (!value.value.trim()) emit('collapse')
+}
+
+onMounted(() => document.addEventListener('pointerdown', onPointerDownOutside))
+
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', onPointerDownOutside)
+  search.reset()
+})
 
 defineExpose({
   focus() {
+    open.value = true
     inputRef.value?.focus()
   },
 })

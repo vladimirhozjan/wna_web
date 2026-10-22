@@ -16643,9 +16643,12 @@
       "On `/next`, click the search icon right of the notification bell.",
       "Type `k`; wait 1 s.",
       "Type `i` (field: `ki`); wait for the panel.",
-      "Clear the field; press Cmd+K (macOS) / Ctrl+K on another page."
+      "Click **+ Quick Add**; then click back into the search field.",
+      "Press Esc.",
+      "Click the search icon, leave the field empty and click on the page outside it.",
+      "Press Cmd+K (macOS) / Ctrl+K on another page."
     ],
-    "expected": "Step 1: the icon expands in place into a focused field with placeholder \"Search everything...\". Step 2: no panel and no `GET /v1/search` request. Step 3: after the debounce one `GET /v1/search?q=ki&limit=8`; a right-aligned panel under the field lists 8 rows, each with its type icon and `ki` highlighted in the title, and the footer \"See all {total_count} results\". Step 4: the browser shortcut does not fire; the search field expands and is focused. Navigating to another page collapses the field back to the icon with the term cleared."
+    "expected": "Step 1: the icon expands in place into a focused field with placeholder \"Search everything...\". Step 2: no panel and no `GET /v1/search` request. Step 3: after the debounce one `GET /v1/search?q=ki&limit=8`; a right-aligned panel under the field lists 8 rows, each with its type icon and `ki` highlighted in the title, and the footer \"See all {total_count} results\". Step 4: the panel closes and the field keeps `ki`; clicking back into it reopens the same rows with no new request. Step 5: the field is cleared and collapses back to the icon. Step 6: the empty field collapses back to the icon. Step 7: the browser shortcut does not fire; the search field expands and is focused. Navigating to another page collapses the field back to the icon with the term cleared."
   },
   {
     "id": "TC-798",
