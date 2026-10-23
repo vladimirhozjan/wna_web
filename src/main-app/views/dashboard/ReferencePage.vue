@@ -43,15 +43,15 @@
         <RefUploadZone :disabled="writesDisabled" @upload="onUploadFiles" class="ref-content">
           <!-- Loading -->
           <div v-if="initialLoading || (model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0)" class="ref-loading">
-            <Spinner :size="28" />
+            <Spinner :size="28" delayed />
           </div>
 
           <!-- Empty state -->
           <div v-else-if="!model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0" class="ref-empty">
             <EmptyState
                 :icon="ReferenceIcon"
-                :title="model.searchQuery.value ? 'No results found' : 'No files yet'"
-                :text="model.searchQuery.value ? 'Try a different search term.' : 'Upload files or create folders to organize your reference material.'"
+                :title="model.searchQuery.value ? 'Nothing matches that search' : 'Your reference shelf is empty'"
+                :text="model.searchQuery.value ? 'Check the spelling or try a different word.' : 'Keep what you might need later — upload files or create folders to file them.'"
                 :buttonText="model.searchQuery.value ? '' : 'Upload File'"
                 :button-disabled="writesDisabled"
                 @action="triggerUpload"
@@ -135,15 +135,15 @@
 
         <!-- Loading -->
         <div v-if="initialLoading || (attModel_.loading.value && attModel_.items.value.length === 0)" class="ref-loading">
-          <Spinner :size="28" />
+          <Spinner :size="28" delayed />
         </div>
 
         <!-- Empty state -->
         <div v-else-if="!attModel_.loading.value && attModel_.items.value.length === 0" class="ref-empty">
           <EmptyState
               :icon="AttachmentIcon"
-              title="No attachments"
-              :text="isLocal ? 'Attachments added to your items will appear here.' : 'Attachments saved to Google Drive appear here. Choose where new attachments go in Settings → Storage.'"
+              title="No attachments yet"
+              :text="isLocal ? 'Files you attach to your items collect here.' : 'Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.'"
           />
         </div>
 
@@ -189,12 +189,12 @@
 
         <!-- Loading -->
         <div v-if="initialLoading || (trashModel_.loading.value && trashModel_.files.value.length === 0)" class="ref-loading">
-          <Spinner :size="28" />
+          <Spinner :size="28" delayed />
         </div>
 
         <!-- Empty trash -->
         <div v-else-if="!trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-empty">
-          <EmptyState :icon="TrashIcon" title="Trash is empty" text="Files you delete will appear here. You can restore them or permanently delete them." />
+          <EmptyState :icon="TrashIcon" title="Nothing in the trash" text="Deleted files wait here. Restore them, or delete them for good." />
         </div>
 
         <!-- Trash list view -->
@@ -813,11 +813,18 @@ async function onDeleteAttachment(att) {
   touch-action: pan-y;
 }
 
+/* Spinner sits on the centre of the empty-state coin */
 .ref-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 126px 20px 60px;
+}
+
+@media (max-width: 768px) {
+  .ref-loading {
+    padding-top: 106px;
+  }
 }
 
 

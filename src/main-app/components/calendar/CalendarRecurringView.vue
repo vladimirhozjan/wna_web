@@ -46,8 +46,8 @@
         <template #empty>
           <EmptyState
             :icon="RecurringIcon"
-            title="No recurring templates"
-            text="Create recurring templates to automatically schedule actions on a repeating basis."
+            title="Nothing on repeat"
+            text="Set up a template once, and its actions schedule themselves on a repeating basis."
             buttonText="Add Template"
             @action="openAdd"
           />

@@ -63,10 +63,10 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterEmptyState title="No projects for this context" :tags="effectiveTags" />
+              <FilterEmptyState title="No projects in this context" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :icon="ProjectsIcon" title="No projects" text="Projects are created when you clarify inbox items that require multiple actions." buttonText="Add Project" @action="openAdd" />
+              <EmptyState :icon="ProjectsIcon" title="No projects in motion" text="Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here." buttonText="Add Project" @action="openAdd" />
             </template>
           </template>
         </ItemList>

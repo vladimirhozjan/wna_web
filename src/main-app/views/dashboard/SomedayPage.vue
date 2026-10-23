@@ -62,10 +62,10 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterEmptyState title="No items for this context" :tags="effectiveTags" />
+              <FilterEmptyState title="No someday ideas in this context" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :icon="SomedayIcon" title="No someday items" text="Items you're not ready to act on yet will appear here. Clarify inbox items to someday or defer actions." buttonText="Add Item" @action="openAdd" />
+              <EmptyState :icon="SomedayIcon" title="Someday is wide open" text="Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review." buttonText="Add Item" @action="openAdd" />
             </template>
           </template>
         </ItemList>

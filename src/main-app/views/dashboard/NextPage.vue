@@ -54,10 +54,10 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
+              <FilterEmptyState title="This context is clear" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :icon="ActionIcon" title="No next actions" text="Clarify inbox items or create actions from projects to see them here." buttonText="Add Action" @action="openAdd" />
+              <EmptyState :icon="ActionIcon" title="Nothing to do next — yet" text="Clarify your inbox or plan a project, and each next physical step lands here." buttonText="Add Action" @action="openAdd" />
             </template>
           </template>
         </ItemList>

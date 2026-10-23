@@ -2,7 +2,7 @@
   <EmptyState
     :icon="FilterLargeIcon"
     :title="title"
-    :text="'Nothing tagged with \'' + tags.join(', ') + '\' needs attention right now.'"
+    :text="'Nothing tagged \'' + tags.join(', ') + '\' needs you right now. Clear the filter to see everything.'"
   />
 </template>
 
@@ -11,7 +11,7 @@ import EmptyState from './EmptyState.vue'
 import FilterLargeIcon from '../assets/FilterLargeIcon.vue'
 
 defineProps({
-  title: { type: String, default: 'No items for this context' },
+  title: { type: String, default: 'Nothing in this context' },
   tags: { type: Array, required: true },
 })
 </script>

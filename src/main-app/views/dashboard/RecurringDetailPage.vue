@@ -19,7 +19,7 @@
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
             :icon="RecurringIcon"
-            title="This recurring template is no longer available"
+            title="This recurring template is no longer here"
             text="It may have been deleted."
             buttonText="Go to Calendar"
             @action="goToCalendar"

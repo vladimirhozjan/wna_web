@@ -27,7 +27,7 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <EmptyState :icon="WarningIcon" title="No overdue items" text="You're all caught up. Overdue actions will appear here when they pass their due date." />
+            <EmptyState :icon="WarningIcon" title="All caught up" text="Nothing has slipped past its due date. If something does, it shows up here." />
           </template>
         </ItemList>
         </div>

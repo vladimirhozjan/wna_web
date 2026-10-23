@@ -24,28 +24,28 @@
 
       <div class="search-content">
         <div v-if="!hasQuery" class="search-empty">
-          <EmptyState :icon="SearchIcon" title="Search everything" text="Type a word from a title, description, project outcome or file name." />
+          <EmptyState :icon="SearchIcon" title="Find anything you've captured" text="Type a word from a title, description, project outcome or file name." />
         </div>
 
         <div v-else-if="search.error.value" class="search-empty">
           <EmptyState
               :icon="SearchIcon"
-              title="Search failed"
-              :text="search.error.value.status === 429 ? 'Too many searches. Wait a moment and try again.' : 'Check your connection and try again.'"
+              title="Search didn't go through"
+              :text="search.error.value.status === 429 ? 'Too many searches in a row. Wait a moment, then try again.' : 'Check your connection, then try again.'"
               button-text="Try again"
               @action="search.retry()"
           />
         </div>
 
         <div v-else-if="search.items.value.length === 0 && (search.loading.value || search.resultTerm.value === null)" class="search-loading">
-          <Spinner :size="32" />
+          <Spinner :size="32" delayed />
         </div>
 
         <div v-else-if="search.items.value.length === 0" class="search-empty">
           <EmptyState
               :icon="SearchIcon"
               :title="noResultsTitle"
-              :text="chip === 'all' ? 'Try a different search term.' : 'Try All or a different search term.'"
+              :text="chip === 'all' ? 'Check the spelling or try a different word.' : 'Try All, or a different word.'"
           />
         </div>
 
@@ -99,7 +99,7 @@ const inputRef = ref(null)
 
 const hasQuery = computed(() => value.value.trim().length >= SEARCH_MIN_LENGTH)
 const chip = computed(() => search.types.value[0] || 'all')
-const noResultsTitle = computed(() => `No results found for "${search.resultTerm.value}"`)
+const noResultsTitle = computed(() => `Nothing matches "${search.resultTerm.value}"`)
 
 function onChip(next) {
   search.setTypes(next === 'all' ? [] : [next])
@@ -171,11 +171,18 @@ onMounted(() => {
   touch-action: pan-y;
 }
 
+/* Spinner sits on the centre of the empty-state coin */
 .search-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 128px 24px 48px;
+}
+
+@media (max-width: 768px) {
+  .search-loading {
+    padding-top: 108px;
+  }
 }
 
 .search-empty {

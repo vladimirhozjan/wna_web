@@ -31,7 +31,7 @@
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
             :icon="InboxIcon"
-            title="This item is no longer available"
+            title="This item is no longer here"
             text="It may have been clarified, deleted, or moved to trash."
             buttonText="Go to Inbox"
             @action="goToInbox"

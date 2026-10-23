@@ -31,7 +31,7 @@
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
             :icon="NextIcon"
-            title="This action is no longer available"
+            title="This action is no longer here"
             text="It may have been completed, deleted, or moved."
             buttonText="Go to Next Actions"
             @action="goToNext"

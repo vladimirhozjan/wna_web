@@ -28,7 +28,7 @@
             <Btn variant="link" size="sm" @click="onRestoreOne(item)">Restore</Btn>
           </template>
           <template #empty>
-            <EmptyState :icon="TrashIcon" title="Trash is empty" text="Items you delete will appear here. You can restore them or empty the trash permanently." />
+            <EmptyState :icon="TrashIcon" title="Nothing in the trash" text="Deleted items wait here. Restore them, or empty the trash for good." />
           </template>
         </ItemList>
         </div>

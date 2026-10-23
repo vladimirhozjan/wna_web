@@ -46,8 +46,8 @@
               <div v-if="showUpgradeEmpty" class="connections-empty">
                 <EmptyState
                     :icon="ConnectionsIcon"
-                    title="Connect with your team"
-                    text="Connections let you collaborate with other WhatsNextAction users — delegate actions and share projects. Available on the Team plan."
+                    title="Get things done together"
+                    text="Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan."
                     :buttonText="upgradeLabel"
                     @action="openUpgrade"
                 />
@@ -57,8 +57,8 @@
               <div v-else-if="showTeamEmpty" class="connections-empty">
                 <EmptyState
                     :icon="ConnectionsIcon"
-                    title="No connections yet"
-                    text="Invite teammates by email above to start collaborating — delegate actions and share projects."
+                    title="Your team starts here"
+                    text="Invite a teammate by email above to delegate actions and share projects."
                 />
               </div>
 

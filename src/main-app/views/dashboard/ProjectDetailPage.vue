@@ -31,7 +31,7 @@
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
             :icon="ProjectsIcon"
-            title="This project is no longer available"
+            title="This project is no longer here"
             text="It may have been completed, deleted, or moved to trash."
             buttonText="Go to Projects"
             @action="goToProjects"

@@ -85,7 +85,7 @@
                 <p class="text-body-m celebration__subtitle">You're in control.</p>
               </div>
               <template v-else>
-                <EmptyState :icon="InboxIcon" title="Your inbox is empty" text="Capture everything on your mind. Add new stuff above to get started." />
+                <EmptyState :icon="InboxIcon" title="Inbox zero. Mind like water." text="Your head is for having ideas, not holding them. Capture the next one above." />
               </template>
             </template>
           </ItemList>

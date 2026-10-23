@@ -48,11 +48,11 @@
         <!-- Recency-grouped list. .card overflow relaxed so sticky headers anchor to .completed-scroll. -->
         <div class="card completed-list">
           <div v-if="loading && items.length === 0" class="completed-loading">
-            <Spinner :size="32" />
+            <Spinner :size="32" delayed />
           </div>
 
           <div v-else-if="!loading && items.length === 0" class="completed-empty">
-            <EmptyState :icon="CompletedIcon" title="No completed items" text="Items you complete will appear here. You can restore them by unchecking." />
+            <EmptyState :icon="CompletedIcon" title="Nothing finished yet" text="Every action you check off lands here. Uncheck one to bring it back." />
           </div>
 
           <template v-else>
@@ -391,11 +391,18 @@ async function onItemCheck(id, checked) {
   color: var(--color-text-tertiary);
 }
 
+/* Spinner sits on the centre of the empty-state coin */
 .completed-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 128px 24px 48px;
+}
+
+@media (max-width: 768px) {
+  .completed-loading {
+    padding-top: 108px;
+  }
 }
 
 .completed-empty {

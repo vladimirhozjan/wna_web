@@ -15,7 +15,7 @@
 
         <!-- Loading state -->
         <div v-if="!initialLoadDone" class="loading-state">
-          <Spinner :size="32" />
+          <Spinner :size="32" delayed />
         </div>
 
         <template v-else>
@@ -160,14 +160,14 @@
           <!-- Empty state: filtered -->
           <div v-if="noActionItems && (activeTag || filterTags.length)" class="card">
             <div class="empty-state">
-              <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
+              <FilterEmptyState title="This context is clear" :tags="effectiveTags" />
             </div>
           </div>
 
           <!-- Empty state: truly empty -->
           <div v-else-if="isEmpty" class="card">
             <div class="empty-state">
-              <EmptyState :icon="EngageIcon" title="Ready to get things done?" text="Capture what's on your mind and let your system take care of the rest." buttonText="Go to Inbox" @action="router.push({ name: 'inbox' })" />
+              <EmptyState :icon="EngageIcon" title="A blank slate" text="Get what's on your mind into your inbox, and your next moves line up here." buttonText="Go to Inbox" @action="router.push({ name: 'inbox' })" />
             </div>
           </div>
 
@@ -548,11 +548,18 @@ async function onDropToWaiting(data) {
 }
 
 /* Loading */
+/* Spinner sits on the centre of the empty-state coin */
 .loading-state {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 130px 24px 48px;
+}
+
+@media (max-width: 768px) {
+  .loading-state {
+    padding-top: 110px;
+  }
 }
 
 
@@ -661,12 +668,17 @@ async function onDropToWaiting(data) {
 }
 
 /* Empty state */
+/* Same frame as the ItemList empty state, so switching pages doesn't shift it */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 64px 24px;
   text-align: center;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-card);
 }
 </style>
