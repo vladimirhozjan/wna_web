@@ -27,7 +27,7 @@
             <ActionBtn @click="onTrash(item.id)" />
           </template>
           <template #empty>
-            <EmptyState :illustration="OverdueIllustration" title="All caught up" text="Nothing has slipped past its due date. If something does, it shows up here." />
+            <EmptyState :icon="WarningIcon" title="All caught up" text="Nothing has slipped past its due date. If something does, it shows up here." />
           </template>
         </ItemList>
         </div>
@@ -43,8 +43,8 @@ import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
+import WarningIcon from '../../assets/WarningIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import OverdueIllustration from '../../components/illustrations/OverdueIllustration.vue'
 import { overdueModel } from '../../scripts/models/overdueModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'

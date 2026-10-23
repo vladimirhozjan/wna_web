@@ -65,7 +65,7 @@
               <FilterEmptyState title="No someday ideas in this context" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :illustration="SomedayIllustration" title="Someday is wide open" text="Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review." buttonText="Add Item" @action="openAdd" />
+              <EmptyState :icon="SomedayIcon" title="Someday is wide open" text="Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review." buttonText="Add Item" @action="openAdd" />
             </template>
           </template>
         </ItemList>
@@ -84,8 +84,8 @@ import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
+import SomedayIcon from '../../assets/SomedayIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import SomedayIllustration from '../../components/illustrations/SomedayIllustration.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'

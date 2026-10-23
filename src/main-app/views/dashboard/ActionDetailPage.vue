@@ -30,7 +30,7 @@
       <!-- Not found state -->
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
-            :illustration="TrashIllustration"
+            :icon="NextIcon"
             title="This action is no longer here"
             text="It may have been completed, deleted, or moved."
             buttonText="Go to Next Actions"
@@ -490,7 +490,6 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { formatDate as toDateStr } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import TrashIllustration from '../../components/illustrations/TrashIllustration.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -1,6 +1,6 @@
 <template>
   <EmptyState
-    :illustration="FilterIllustration"
+    :icon="FilterLargeIcon"
     :title="title"
     :text="'Nothing tagged \'' + tags.join(', ') + '\' needs you right now. Clear the filter to see everything.'"
   />
@@ -8,7 +8,7 @@
 
 <script setup>
 import EmptyState from './EmptyState.vue'
-import FilterIllustration from './illustrations/FilterIllustration.vue'
+import FilterLargeIcon from '../assets/FilterLargeIcon.vue'
 
 defineProps({
   title: { type: String, default: 'Nothing in this context' },

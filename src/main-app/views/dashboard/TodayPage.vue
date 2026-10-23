@@ -57,7 +57,7 @@
               <FilterEmptyState title="This context is clear" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :illustration="TodayIllustration" title="A clear day ahead" text="Pick the few actions that matter most today and move them here." buttonText="Add Action" @action="openAdd" />
+              <EmptyState :icon="TodayIcon" title="A clear day ahead" text="Pick the few actions that matter most today and move them here." buttonText="Add Action" @action="openAdd" />
             </template>
           </template>
         </ItemList>
@@ -76,8 +76,8 @@ import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
+import TodayIcon from '../../assets/TodayIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import TodayIllustration from '../../components/illustrations/TodayIllustration.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { todayModel } from '../../scripts/models/todayModel.js'

@@ -52,7 +52,7 @@
           </div>
 
           <div v-else-if="!loading && items.length === 0" class="completed-empty">
-            <EmptyState :illustration="CompletedIllustration" title="Nothing finished yet" text="Every action you check off lands here. Uncheck one to bring it back." />
+            <EmptyState :icon="CompletedIcon" title="Nothing finished yet" text="Every action you check off lands here. Uncheck one to bring it back." />
           </div>
 
           <template v-else>
@@ -97,8 +97,8 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import CompletedBarChart from '../../components/CompletedBarChart.vue'
+import CompletedIcon from '../../assets/CompletedIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import CompletedIllustration from '../../components/illustrations/CompletedIllustration.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import Spinner from '../../components/Spinner.vue'
 import Btn from '../../components/Btn.vue'

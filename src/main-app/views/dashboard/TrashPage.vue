@@ -28,7 +28,7 @@
             <Btn variant="link" size="sm" @click="onRestoreOne(item)">Restore</Btn>
           </template>
           <template #empty>
-            <EmptyState :illustration="TrashIllustration" title="Nothing in the trash" text="Deleted items wait here. Restore them, or empty the trash for good." />
+            <EmptyState :icon="TrashIcon" title="Nothing in the trash" text="Deleted items wait here. Restore them, or empty the trash for good." />
           </template>
         </ItemList>
         </div>
@@ -42,8 +42,8 @@ import { watch, onMounted } from 'vue'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
+import TrashIcon from '../../assets/TrashIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import TrashIllustration from '../../components/illustrations/TrashIllustration.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { trashModel } from '../../scripts/models/trashModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'

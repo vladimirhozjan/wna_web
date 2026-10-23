@@ -1784,14 +1784,14 @@
     "steps": [
       "Ensure the inbox is completely empty (no items)",
       "Navigate to the Inbox page",
-      "Verify the Inbox illustration (empty tray with still-water ripples) is displayed",
+      "Verify an inbox icon is displayed",
       "Verify the title \"Inbox zero. Mind like water.\" is displayed",
       "Verify the text \"Your head is for having ideas, not holding them. Capture the next one above.\" is shown",
       "Verify no list items and no loading spinner are visible",
       "Add a new item via the input field",
       "Verify the empty state disappears and the item list appears with the new item"
     ],
-    "expected": "When the inbox has no items, an empty state is displayed featuring the Inbox illustration, the title \"Inbox zero. Mind like water.\" and the text \"Your head is for having ideas, not holding them. Capture the next one above.\" The empty state disappears as soon as an item is added."
+    "expected": "When the inbox has no items, an empty state is displayed featuring an inbox icon, the title \"Inbox zero. Mind like water.\" and the text \"Your head is for having ideas, not holding them. Capture the next one above.\" The empty state disappears as soon as an item is added."
   },
   {
     "id": "TC-067",
@@ -2646,12 +2646,12 @@
     "steps": [
       "Navigate to the Next Actions page (/next)",
       "Verify the page loads successfully with no action items displayed",
-      "Verify the Next illustration and the title \"Nothing to do next — yet\" are shown",
+      "Verify the title \"Nothing to do next — yet\" is shown",
       "Verify the text \"Clarify your inbox or plan a project, and each next physical step lands here.\" and an **Add Action** button are shown",
       "Verify the add action form (+) button is still accessible and functional",
       "Verify no tag filter chips are displayed"
     ],
-    "expected": "When no next actions exist and no filter is active, the page shows the Next illustration, \"Nothing to do next — yet\" and \"Clarify your inbox or plan a project, and each next physical step lands here.\" The add form remains accessible."
+    "expected": "When no next actions exist and no filter is active, the page shows \"Nothing to do next — yet\" and \"Clarify your inbox or plan a project, and each next physical step lands here.\" The add form remains accessible."
   },
   {
     "id": "TC-101",
@@ -2670,13 +2670,13 @@
       "Click the tag filter icon",
       "Select a tag that no actions are tagged with (e.g., \"urgent\")",
       "Verify the list becomes empty (no matching actions)",
-      "Verify the empty state shows the Filter illustration, the title \"This context is clear\" and the text \"Nothing tagged 'urgent' needs you right now. Clear the filter to see everything.\"",
+      "Verify the empty state shows the title \"This context is clear\" and the text \"Nothing tagged 'urgent' needs you right now. Clear the filter to see everything.\"",
       "Verify the filter chip for \"urgent\" is still displayed with an X button",
       "Verify the \"Clear all\" button is available",
       "Click \"Clear all\" or remove the filter chip",
       "Verify the list returns to showing all actions"
     ],
-    "expected": "When a tag filter is active but no actions match, the Filter illustration with \"This context is clear\" and \"Nothing tagged 'urgent' needs you right now. Clear the filter to see everything.\" is shown. The filter can be cleared to restore the full list."
+    "expected": "When a tag filter is active but no actions match, \"This context is clear\" and \"Nothing tagged 'urgent' needs you right now. Clear the filter to see everything.\" is shown. The filter can be cleared to restore the full list."
   },
   {
     "id": "TC-102",
@@ -2859,11 +2859,11 @@
     "steps": [
       "Navigate to the Today page (/today)",
       "Verify the page loads successfully with no action items displayed",
-      "Verify the Today illustration and the title \"A clear day ahead\" are shown",
+      "Verify the title \"A clear day ahead\" is shown",
       "Verify the text \"Pick the few actions that matter most today and move them here.\" is displayed",
       "Verify the add action form (+) button is still accessible"
     ],
-    "expected": "When no today actions exist, the page shows the Today illustration, \"A clear day ahead\" and \"Pick the few actions that matter most today and move them here.\" The add form remains accessible."
+    "expected": "When no today actions exist, the page shows \"A clear day ahead\" and \"Pick the few actions that matter most today and move them here.\" The add form remains accessible."
   },
   {
     "id": "TC-109",
@@ -5685,10 +5685,10 @@
       "Navigate to the Completed page (/completed)",
       "Verify no items are displayed in the list",
       "Observe the empty state UI",
-      "Verify the Completed illustration and the title \"Nothing finished yet\" are shown",
+      "Verify the title \"Nothing finished yet\" is shown",
       "Verify the text \"Every action you check off lands here. Uncheck one to bring it back.\" is shown"
     ],
-    "expected": "When there are no completed items, the page displays the Completed illustration, \"Nothing finished yet\" and \"Every action you check off lands here. Uncheck one to bring it back.\""
+    "expected": "When there are no completed items, the page displays \"Nothing finished yet\" and \"Every action you check off lands here. Uncheck one to bring it back.\""
   },
   {
     "id": "TC-213",
@@ -6014,11 +6014,11 @@
       "Navigate to the Trash page (/trash)",
       "Verify no items are displayed in the list",
       "Observe the empty state UI",
-      "Verify the Trash illustration and the title \"Nothing in the trash\" are shown",
+      "Verify the title \"Nothing in the trash\" is shown",
       "Verify the text \"Deleted items wait here. Restore them, or empty the trash for good.\" is shown",
       "Verify the \"Empty Trash\" button is disabled"
     ],
-    "expected": "When there are no trashed items, the page displays the Trash illustration, \"Nothing in the trash\" and \"Deleted items wait here. Restore them, or empty the trash for good.\" The \"Empty Trash\" button is disabled."
+    "expected": "When there are no trashed items, the page displays \"Nothing in the trash\" and \"Deleted items wait here. Restore them, or empty the trash for good.\" The \"Empty Trash\" button is disabled."
   },
   {
     "id": "TC-221",
@@ -6370,12 +6370,12 @@
       "Verify items are visible in the dashboard sections",
       "Set the global context filter to `@calls`",
       "Verify the Overdue, Today, Next Actions and Waiting For section cards are all hidden",
-      "Verify a single dashboard empty state is shown: the Filter illustration, \"This context is clear\" and \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\"",
+      "Verify a single dashboard empty state is shown: \"This context is clear\" and \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\"",
       "Verify no overdue banner is shown and no error messages or broken UI elements appear",
       "Clear the context filter",
       "Verify items reappear in all sections"
     ],
-    "expected": "When a context filter matches no items, the section cards are hidden and one \"This context is clear\" empty state (Filter illustration) is shown in their place. The UI remains clean and usable without errors; clearing the filter restores all sections."
+    "expected": "When a context filter matches no items, the section cards are hidden and one \"This context is clear\" empty state is shown in their place. The UI remains clean and usable without errors; clearing the filter restores all sections."
   },
   {
     "id": "TC-235",
@@ -6395,13 +6395,13 @@
       "Verify no Today, Next Actions, or Waiting For sections are displayed (or they are hidden)",
       "Verify no overdue alert is shown",
       "Verify no nudges are displayed (no inbox items, no stuck projects)",
-      "Verify the empty state shows the Engage illustration, \"A blank slate\" and \"Get what's on your mind into your inbox, and your next moves line up here.\"",
+      "Verify the empty state shows \"A blank slate\" and \"Get what's on your mind into your inbox, and your next moves line up here.\"",
       "Verify a \"Go to Inbox\" button is present",
       "Click the \"Go to Inbox\" button",
       "Verify the browser navigates to `/inbox`",
       "Verify the Inbox page loads correctly, ready for the user to add their first stuff item"
     ],
-    "expected": "A new account with no data sees the Engage illustration with \"A blank slate\" and a \"Go to Inbox\" button on the Engage dashboard. Clicking the button navigates to the Inbox to begin the GTD workflow."
+    "expected": "A new account with no data sees \"A blank slate\" and a \"Go to Inbox\" button on the Engage dashboard. Clicking the button navigates to the Inbox to begin the GTD workflow."
   },
   {
     "id": "TC-236",
@@ -9934,23 +9934,23 @@
     "preconditions": "User is logged in. Various lists are empty (no items in inbox, next, today, projects, etc.).",
     "steps": [
       "Navigate to /inbox with no items.",
-      "Verify an empty state is displayed with the Inbox illustration, the title \"Inbox zero. Mind like water.\" and its text.",
+      "Verify an empty state is displayed with an inbox icon, the title \"Inbox zero. Mind like water.\" and its text.",
       "Navigate to /next with no next actions.",
-      "Verify the Next illustration and \"Nothing to do next — yet\".",
+      "Verify \"Nothing to do next — yet\".",
       "Navigate to /today with no today items.",
-      "Verify the Today illustration and \"A clear day ahead\".",
+      "Verify \"A clear day ahead\".",
       "Navigate to /projects with no projects.",
-      "Verify the Projects illustration and \"No projects in motion\".",
+      "Verify \"No projects in motion\".",
       "Navigate to /someday with no someday items.",
-      "Verify the Someday illustration and \"Someday is wide open\".",
+      "Verify \"Someday is wide open\".",
       "Navigate to /reference with no reference items.",
-      "Verify the Reference illustration and \"Your reference shelf is empty\".",
+      "Verify \"Your reference shelf is empty\".",
       "Navigate to /completed with no completed items.",
-      "Verify the Completed illustration and \"Nothing finished yet\".",
+      "Verify \"Nothing finished yet\".",
       "Navigate to /trash with no trash items.",
-      "Verify the Trash illustration and \"Nothing in the trash\"."
+      "Verify \"Nothing in the trash\"."
     ],
-    "expected": "Each empty list page displays its own illustration, title and text (FEAT-057 copy). The content is relevant to the specific list type."
+    "expected": "Each empty list page displays an icon, its title and text (FEAT-057 copy). The content is relevant to the specific list type."
   },
   {
     "id": "TC-369",
@@ -10402,7 +10402,7 @@
       "Verify a celebration animation plays: a green circle blooms in, a checkmark icon appears inside it, followed by \"Inbox Zero\" title and \"You're in control.\" subtitle sliding up",
       "Wait approximately 3 seconds",
       "Verify the celebration fades out",
-      "Verify the normal empty state is shown (Inbox illustration + \"Inbox zero. Mind like water.\")"
+      "Verify the normal empty state is shown (inbox icon + \"Inbox zero. Mind like water.\")"
     ],
     "expected": "When the last inbox item is completed, a celebration animation with a green checkmark, \"Inbox Zero\" title, and \"You're in control.\" subtitle plays for approximately 3 seconds before fading to the normal empty state."
   },
@@ -10420,7 +10420,7 @@
     "steps": [
       "Navigate to the Inbox page",
       "Verify the inbox loads with no items",
-      "Verify the normal empty state is shown immediately (Inbox illustration + \"Inbox zero. Mind like water.\")",
+      "Verify the normal empty state is shown immediately (inbox icon + \"Inbox zero. Mind like water.\")",
       "Verify NO celebration animation plays"
     ],
     "expected": "When navigating to an already-empty inbox, the normal empty state is displayed without any celebration animation. The celebration only triggers when the user actively empties the inbox during the current session."
@@ -10828,7 +10828,7 @@
     "steps": [
       "Click **Connections** in the sidebar (or navigate to `/connections`)"
     ],
-    "expected": "No invite form, sent list, or accepted connections list is rendered. The page shows the Connections illustration, the title \"Get things done together\" and the text \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\", with an \"Upgrade to Team\" button. Clicking the upgrade button opens the upgrade modal."
+    "expected": "No invite form, sent list, or accepted connections list is rendered. The page shows the title \"Get things done together\" and the text \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\", with an \"Upgrade to Team\" button. Clicking the upgrade button opens the upgrade modal."
   },
   {
     "id": "TC-418",
@@ -16931,35 +16931,19 @@
   },
   {
     "id": "TC-844",
-    "name": "Every Empty Section Shows Its Illustration and Copy (Light Theme)",
+    "name": "Every Empty Section Shows Its Copy",
     "priority": "Medium",
     "area": "Empty States",
     "areas": [
       "Empty States"
     ],
     "smoke": false,
-    "section": "60: Empty-State Illustrations (FEAT-057)",
-    "preconditions": "Logged in; light theme; an account with no items, reference files, attachments or recurring templates, and a context tag `@calls` that no item carries (for the filter rows; set it in the context filter, clear it for every other row). A Free or Pro account and a Team account with no connections for the Connections rows. Ids of a trashed stuff item, action and project and of a deleted recurring template for the detail rows (empty the Trash before the Trash rows).",
+    "section": "60: Empty-State Copy (FEAT-057)",
+    "preconditions": "Logged in (run once in light and once in dark theme); an account with no items, reference files, attachments or recurring templates, and a context tag `@calls` that no item carries (for the filter rows; set it in the context filter, clear it for every other row). A Free or Pro account and a Team account with no connections for the Connections rows. Ids of a trashed stuff item, action and project and of a deleted recurring template for the detail rows (empty the Trash before the Trash rows).",
     "steps": [
       "On desktop (> 768 px) open each surface in the table below in the stated state.",
-      "Repeat step 1 at a viewport ≤ 768 px. | Where (state) | Illustration | Title / text | |---------------|--------------|--------------| | `/inbox` (empty) | Inbox | \"Inbox zero. Mind like water.\" / \"Your head is for having ideas, not holding them. Capture the next one above.\" | | `/today` | Today | \"A clear day ahead\" / \"Pick the few actions that matter most today and move them here.\" + **Add Action** | | `/next` | Next | \"Nothing to do next — yet\" / \"Clarify your inbox or plan a project, and each next physical step lands here.\" + **Add Action** | | `/waiting-for` | Waiting | \"Nobody owes you anything\" / \"When you hand something off or wait on a reply, park it here and stop tracking it in your head.\" + **Add Action** | | `/projects` | Projects | \"No projects in motion\" / \"Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here.\" + **Add Project** | | `/someday` | Someday | \"Someday is wide open\" / \"Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review.\" + **Add Item** | | `/completed` | Completed | \"Nothing finished yet\" / \"Every action you check off lands here. Uncheck one to bring it back.\" | | `/trash` | Trash | \"Nothing in the trash\" / \"Deleted items wait here. Restore them, or empty the trash for good.\" | | `/overdue` | Overdue | \"All caught up\" / \"Nothing has slipped past its due date. If something does, it shows up here.\" | | `/engage` (no data) | Engage | \"A blank slate\" / \"Get what's on your mind into your inbox, and your next moves line up here.\" + **Go to Inbox** | | `/reference` Files (no files) | Reference | \"Your reference shelf is empty\" / \"Keep what you might need later — upload files or create folders to file them.\" + **Upload File** | | `/reference` Files, search `zzqx` | Search | \"Nothing matches that search\" / \"Check the spelling or try a different word.\" | | `/reference` Attachments (Local) | Attachments | \"No attachments yet\" / \"Files you attach to your items collect here.\" | | `/reference` Attachments (Google Drive) | Attachments | \"No attachments yet\" / \"Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.\" | | `/reference` Trash | Trash | \"Nothing in the trash\" / \"Deleted files wait here. Restore them, or delete them for good.\" | | `/stuff/<trashed id>` | Trash | \"This item is no longer here\" / \"It may have been clarified, deleted, or moved to trash.\" + **Go to Inbox** | | `/action/<trashed id>` | Trash | \"This action is no longer here\" / \"It may have been completed, deleted, or moved.\" + **Go to Next Actions** | | `/project/<trashed id>` | Trash | \"This project is no longer here\" / \"It may have been completed, deleted, or moved to trash.\" + **Go to Projects** | | `/recurring/<deleted id>` | Trash | \"This recurring template is no longer here\" / \"It may have been deleted.\" + **Go to Calendar** | | `/search` (no term) | Search | \"Find anything you've captured\" / \"Type a word from a title, description, project outcome or file name.\" | | `/search?q=zzqx` (All; then the Projects chip) | Search | `Nothing matches \"zzqx\"` / All: \"Check the spelling or try a different word.\"; Projects chip: \"Try All, or a different word.\" | | `/search` error (offline; HTTP 429) | Search | \"Search didn't go through\" / \"Check your connection, then try again.\" (429: \"Too many searches in a row. Wait a moment, then try again.\") + **Try again** | | `/connections` (Free/Pro) | Connections | \"Get things done together\" / \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\" + upgrade button | | `/connections` (Team, no connections) | Connections | \"Your team starts here\" / \"Invite a teammate by email above to delegate actions and share projects.\" | | `/calendar` Recurring view | Recurring | \"Nothing on repeat\" / \"Set up a template once, and its actions schedule themselves on a repeating basis.\" + **Add Template** | | Context filter `@calls` on `/next`, `/today`, `/waiting-for`, `/engage` | Filter | \"This context is clear\" / \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\" | | Context filter `@calls` on `/projects` | Filter | \"No projects in this context\" / same text | | Context filter `@calls` on `/someday` | Filter | \"No someday ideas in this context\" / same text |"
+      "Repeat step 1 at a viewport ≤ 768 px. | Where (state) | Title / text | |---------------|--------------| | `/inbox` (empty) | \"Inbox zero. Mind like water.\" / \"Your head is for having ideas, not holding them. Capture the next one above.\" | | `/today` | \"A clear day ahead\" / \"Pick the few actions that matter most today and move them here.\" + **Add Action** | | `/next` | \"Nothing to do next — yet\" / \"Clarify your inbox or plan a project, and each next physical step lands here.\" + **Add Action** | | `/waiting-for` | \"Nobody owes you anything\" / \"When you hand something off or wait on a reply, park it here and stop tracking it in your head.\" + **Add Action** | | `/projects` | \"No projects in motion\" / \"Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here.\" + **Add Project** | | `/someday` | \"Someday is wide open\" / \"Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review.\" + **Add Item** | | `/completed` | \"Nothing finished yet\" / \"Every action you check off lands here. Uncheck one to bring it back.\" | | `/trash` | \"Nothing in the trash\" / \"Deleted items wait here. Restore them, or empty the trash for good.\" | | `/overdue` | \"All caught up\" / \"Nothing has slipped past its due date. If something does, it shows up here.\" | | `/engage` (no data) | \"A blank slate\" / \"Get what's on your mind into your inbox, and your next moves line up here.\" + **Go to Inbox** | | `/reference` Files (no files) | \"Your reference shelf is empty\" / \"Keep what you might need later — upload files or create folders to file them.\" + **Upload File** | | `/reference` Files, search `zzqx` | \"Nothing matches that search\" / \"Check the spelling or try a different word.\" | | `/reference` Attachments (Local) | \"No attachments yet\" / \"Files you attach to your items collect here.\" | | `/reference` Attachments (Google Drive) | \"No attachments yet\" / \"Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.\" | | `/reference` Trash | \"Nothing in the trash\" / \"Deleted files wait here. Restore them, or delete them for good.\" | | `/stuff/<trashed id>` | \"This item is no longer here\" / \"It may have been clarified, deleted, or moved to trash.\" + **Go to Inbox** | | `/action/<trashed id>` | \"This action is no longer here\" / \"It may have been completed, deleted, or moved.\" + **Go to Next Actions** | | `/project/<trashed id>` | \"This project is no longer here\" / \"It may have been completed, deleted, or moved to trash.\" + **Go to Projects** | | `/recurring/<deleted id>` | \"This recurring template is no longer here\" / \"It may have been deleted.\" + **Go to Calendar** | | `/search` (no term) | \"Find anything you've captured\" / \"Type a word from a title, description, project outcome or file name.\" | | `/search?q=zzqx` (All; then the Projects chip) | `Nothing matches \"zzqx\"` / All: \"Check the spelling or try a different word.\"; Projects chip: \"Try All, or a different word.\" | | `/search` error (offline; HTTP 429) | \"Search didn't go through\" / \"Check your connection, then try again.\" (429: \"Too many searches in a row. Wait a moment, then try again.\") + **Try again** | | `/connections` (Free/Pro) | \"Get things done together\" / \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\" + upgrade button | | `/connections` (Team, no connections) | \"Your team starts here\" / \"Invite a teammate by email above to delegate actions and share projects.\" | | `/calendar` Recurring view | \"Nothing on repeat\" / \"Set up a template once, and its actions schedule themselves on a repeating basis.\" + **Add Template** | | Context filter `@calls` on `/next`, `/today`, `/waiting-for`, `/engage` | \"This context is clear\" / \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\" | | Context filter `@calls` on `/projects` | \"No projects in this context\" / same text | | Context filter `@calls` on `/someday` | \"No someday ideas in this context\" / same text |"
     ],
-    "expected": "Each surface shows, top to bottom, the listed illustration (`data-testid=\"empty-illustration-<name>\"`, e.g. `empty-illustration-inbox`), the exact title and text, and the button where listed (its target unchanged). Desktop: the illustration is ~160 px; ≤ 768 px: ~120 px. Every illustration is drawn in theme colors with no broken or missing artwork. On `/inbox`, emptying the last item still plays the Inbox Zero celebration first, then shows this empty state."
-  },
-  {
-    "id": "TC-845",
-    "name": "Every Empty Section Shows Its Illustration and Copy (Dark Theme)",
-    "priority": "Medium",
-    "area": "Empty States",
-    "areas": [
-      "Empty States"
-    ],
-    "smoke": false,
-    "section": "60: Empty-State Illustrations (FEAT-057)",
-    "preconditions": "As TC-844, with Settings → theme set to Dark.",
-    "steps": [
-      "Open every surface listed in TC-844 on desktop and at a viewport ≤ 768 px."
-    ],
-    "expected": "Every surface shows the same illustration, title, text and button as in TC-844. The illustrations use the dark-theme colors (cyan line art, dark ground) — no light-theme colors, no white boxes, no invisible strokes; title and text are readable."
+    "expected": "Each surface shows its section icon on a raised round coin inside a soft halo with two fine orbit rings (~160 px on desktop, ~120 px at ≤ 768 px), drawn in the current theme's colors in both light and dark theme; then the exact title and text, and the button where listed (its target unchanged). On `/inbox`, emptying the last item still plays the Inbox Zero celebration first, then shows this empty state."
   }
 ]

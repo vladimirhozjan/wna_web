@@ -49,7 +49,7 @@
           <!-- Empty state -->
           <div v-else-if="!model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0" class="ref-empty">
             <EmptyState
-                :illustration="model.searchQuery.value ? SearchIllustration : ReferenceIllustration"
+                :icon="ReferenceIcon"
                 :title="model.searchQuery.value ? 'Nothing matches that search' : 'Your reference shelf is empty'"
                 :text="model.searchQuery.value ? 'Check the spelling or try a different word.' : 'Keep what you might need later — upload files or create folders to file them.'"
                 :buttonText="model.searchQuery.value ? '' : 'Upload File'"
@@ -141,7 +141,7 @@
         <!-- Empty state -->
         <div v-else-if="!attModel_.loading.value && attModel_.items.value.length === 0" class="ref-empty">
           <EmptyState
-              :illustration="AttachmentsIllustration"
+              :icon="AttachmentIcon"
               title="No attachments yet"
               :text="isLocal ? 'Files you attach to your items collect here.' : 'Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.'"
           />
@@ -194,7 +194,7 @@
 
         <!-- Empty trash -->
         <div v-else-if="!trashModel_.loading.value && trashModel_.files.value.length === 0" class="ref-empty">
-          <EmptyState :illustration="TrashIllustration" title="Nothing in the trash" text="Deleted files wait here. Restore them, or delete them for good." />
+          <EmptyState :icon="TrashIcon" title="Nothing in the trash" text="Deleted files wait here. Restore them, or delete them for good." />
         </div>
 
         <!-- Trash list view -->
@@ -249,11 +249,10 @@ import RefListView from '../../components/reference/RefListView.vue'
 import RefGridView from '../../components/reference/RefGridView.vue'
 import RefPreviewModal from '../../components/reference/RefPreviewModal.vue'
 import RefRenameModal from '../../components/reference/RefRenameModal.vue'
+import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import ReferenceIllustration from '../../components/illustrations/ReferenceIllustration.vue'
-import SearchIllustration from '../../components/illustrations/SearchIllustration.vue'
-import AttachmentsIllustration from '../../components/illustrations/AttachmentsIllustration.vue'
-import TrashIllustration from '../../components/illustrations/TrashIllustration.vue'
+import TrashIcon from '../../assets/TrashIcon.vue'
+import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 import {referenceModel} from '../../scripts/models/referenceModel.js'
 import {referenceTrashModel} from '../../scripts/models/referenceTrashModel.js'
 import {attachmentListModel} from '../../scripts/models/attachmentListModel.js'

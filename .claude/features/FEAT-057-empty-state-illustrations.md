@@ -35,20 +35,22 @@ parent §Screens "Every usage". Colors only from existing theme tokens (no new C
 
 ## Checklist
 ### Building blocks
-- [x] W-1 16 illustration components in `components/illustrations/` (Inbox, Today, Next, Waiting, Projects, Someday,
+- [NA] W-1 16 illustration components in `components/illustrations/` (Inbox, Today, Next, Waiting, Projects, Someday,
   Reference, Completed, Trash, Overdue, Engage, Connections, Search, Recurring, Attachments, Filter) — each per its parent
   sketch brief, tokens only from the brief, root `data-testid="empty-illustration-<name>"` (kebab-case name).
-  → `src/main-app/components/illustrations/*Illustration.vue:2` (16 files; svg root + testid); tokens checked present in
-  `styles/tokens/colors.css` + `styles/themes/dark.css`; rendered light + dark grid reviewed.
-- [x] W-2 `EmptyState.vue`: prop `icon` → `illustration` (required, DS3) + `size` `md` | `sm` (md ~160 px / mobile ~120 px,
+  OWNER REVERTED 2026-10-23: illustrations rejected; the 16 components were removed and the previous icons restored.
+- [NA] W-2 `EmptyState.vue`: prop `icon` → `illustration` (required, DS3) + `size` `md` | `sm` (md ~160 px / mobile ~120 px,
   sm ~80 px kept for onboarding, DS1) as local CSS constants; title/text/button classes unchanged. `FilterEmptyState.vue`
   passes `Filter` + the parent row 25 default title/text.
-  → `components/EmptyState.vue:2,13-14,25-38,58-63`; `components/FilterEmptyState.vue:3-5,14`.
-- [x] W-3 Grep confirms `0` remaining `:icon=` on `<EmptyState` / `FilterEmptyState` and no orphaned icon imports left by
+  OWNER REVERTED 2026-10-23: `EmptyState.vue` keeps its `icon` prop. Owner-approved replacement: the icon sits on a raised
+  coin inside a halo + two orbit rings, 160 px / 120 px mobile, tokens only (`components/EmptyState.vue:2-15`, styles +
+  `@media`). No `size` prop (no caller needs `sm`). `FilterEmptyState.vue` keeps the row 25 copy only
+  (`components/FilterEmptyState.vue:5,13`).
+- [NA] W-3 Grep confirms `0` remaining `:icon=` on `<EmptyState` / `FilterEmptyState` and no orphaned icon imports left by
   this change (icons still used elsewhere stay).
-  → grep `:icon=` on EmptyState/FilterEmptyState = 0; orphaned imports removed in 13 callers; `assets/FilterLargeIcon.vue`
-  had no other importer → deleted (`grep FilterLargeIcon src` = 0).
+  OWNER REVERTED 2026-10-23: every caller keeps its previous `:icon=`; `assets/FilterLargeIcon.vue` was restored.
 ### Screens (one box per parent §Screens surface — illustration + exact new copy + button unchanged)
+> Owner 2026-10-23: copy kept, illustrations reverted to the previous icons — each box below is ticked for the copy only.
 - [x] W-4 Inbox (row 1) — empty state after the Inbox Zero celebration; celebration itself unchanged. → `views/dashboard/InboxPage.vue:88`
 - [x] W-5 Today, Next, Waiting For (rows 2–4). → `TodayPage.vue:60`, `NextPage.vue:60`, `WaitingForPage.vue:69`
 - [x] W-6 Projects, Someday (rows 5–6). → `ProjectsPage.vue:69`, `SomedayPage.vue:68`
@@ -70,18 +72,19 @@ parent §Screens "Every usage". Colors only from existing theme tokens (no new C
 - [x] W-15 `npm run build:main` passes. → `✓ built`, obfuscator + prerender OK (only the pre-existing >500 kB chunk warning).
 - [~] W-16 Runtime check on the local stack (owner verifies at runtime): every row 1–31 reached once in light AND dark
   theme and on mobile width; list what was seen.
-  DEFERRED TO USER: I don't run apps. Static check done: all 16 SVGs rendered with the real light/dark token values and
-  reviewed. Runtime pass = TC-844 (light) + TC-845 (dark), desktop + ≤ 768 px.
+  DEFERRED TO USER: I don't run apps. Runtime pass = TC-844 in light and dark theme, desktop + ≤ 768 px (coin + orbit
+  composition and copy). Preview reviewed: https://claude.ai/artifact/N92o1x25s2r5Bgnz6RRPts
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
 - [x] W-17 Update `../wna_orchestration/specs/features/wna-features.md` — every "Empty state:" line for the surfaces in
   rows 1–31 (new copy + illustration).
   → `../wna_orchestration/specs/features/wna-features.md:330,344,444-445,451,492,553,616,622,701,734,839-841,845-847,866,920,948,996-997,1068,2233,2452-2455,2734,2795-2798`
-  (added lines where a surface had none: Stuff/Action/Project/Recurring not-found, Recurring view, Projects, Waiting
+  (illustration mentions removed after the owner revert; §25.5 `:2233` describes the coin/orbit composition; lines added where a surface had none: Stuff/Action/Project/Recurring not-found, Recurring view, Projects, Waiting
   For, Someday, Reference Trash tab, Connections)
-- [x] W-18 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-844 (every empty section shows its
+- [~] W-18 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-844 (every empty section shows its
   illustration + new copy, light theme) and TC-845 (same, dark theme), expected results from parent §Screens.
-  → `../wna_orchestration/specs/tests/wna-test-cases.md:19186` (TC-844), `:19236` (TC-845), new Section 60; `regression-ui-tests/update-tests.sh`
-  re-run.
+  → `../wna_orchestration/specs/tests/wna-test-cases.md:19186`: TC-844 checks the copy plus the icon coin/orbit composition,
+  run in light and dark (Section 60). TC-845 (dark
+  theme illustrations) was removed because the illustrations were reverted. `regression-ui-tests/update-tests.sh` re-run.
 - [x] W-19 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — rewrite the old empty-state copy in TC-066, TC-100,
   TC-101, TC-108, TC-212, TC-220, TC-234, TC-235, TC-356, TC-368, TC-386, TC-387, TC-417, TC-792, TC-798, TC-800, TC-805
   (grep the old titles again before closing; TC-797's "Search everything..." is the TopNav placeholder — not an empty state,

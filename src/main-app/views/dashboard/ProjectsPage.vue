@@ -66,7 +66,7 @@
               <FilterEmptyState title="No projects in this context" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :illustration="ProjectsIllustration" title="No projects in motion" text="Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here." buttonText="Add Project" @action="openAdd" />
+              <EmptyState :icon="ProjectsIcon" title="No projects in motion" text="Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here." buttonText="Add Project" @action="openAdd" />
             </template>
           </template>
         </ItemList>
@@ -85,8 +85,8 @@ import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
+import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import ProjectsIllustration from '../../components/illustrations/ProjectsIllustration.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { projectModel } from '../../scripts/models/projectModel.js'

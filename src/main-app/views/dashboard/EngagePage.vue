@@ -167,7 +167,7 @@
           <!-- Empty state: truly empty -->
           <div v-else-if="isEmpty" class="card">
             <div class="empty-state">
-              <EmptyState :illustration="EngageIllustration" title="A blank slate" text="Get what's on your mind into your inbox, and your next moves line up here." buttonText="Go to Inbox" @action="router.push({ name: 'inbox' })" />
+              <EmptyState :icon="EngageIcon" title="A blank slate" text="Get what's on your mind into your inbox, and your next moves line up here." buttonText="Go to Inbox" @action="router.push({ name: 'inbox' })" />
             </div>
           </div>
 
@@ -185,8 +185,8 @@ import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
+import EngageIcon from '../../assets/EngageIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import EngageIllustration from '../../components/illustrations/EngageIllustration.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'

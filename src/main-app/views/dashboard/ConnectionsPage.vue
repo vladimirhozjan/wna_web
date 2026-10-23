@@ -45,7 +45,7 @@
               <!-- Empty state: non-Team tier without received invitations -->
               <div v-if="showUpgradeEmpty" class="connections-empty">
                 <EmptyState
-                    :illustration="ConnectionsIllustration"
+                    :icon="ConnectionsIcon"
                     title="Get things done together"
                     text="Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan."
                     :buttonText="upgradeLabel"
@@ -56,7 +56,7 @@
               <!-- Empty state: Team tier with no connections or invitations -->
               <div v-else-if="showTeamEmpty" class="connections-empty">
                 <EmptyState
-                    :illustration="ConnectionsIllustration"
+                    :icon="ConnectionsIcon"
                     title="Your team starts here"
                     text="Invite a teammate by email above to delegate actions and share projects."
                 />
@@ -167,7 +167,7 @@ import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import ConnectionsIllustration from '../../components/illustrations/ConnectionsIllustration.vue'
+import ConnectionsIcon from '../../assets/ConnectionsIcon.vue'
 import { authModel } from '../../scripts/core/authModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'

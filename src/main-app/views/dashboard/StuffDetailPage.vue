@@ -30,7 +30,7 @@
       <!-- Not found state -->
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
-            :illustration="TrashIllustration"
+            :icon="InboxIcon"
             title="This item is no longer here"
             text="It may have been clarified, deleted, or moved to trash."
             buttonText="Go to Inbox"
@@ -265,7 +265,6 @@ import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import TrashIllustration from '../../components/illustrations/TrashIllustration.vue'
 
 const route = useRoute()
 const router = useRouter()

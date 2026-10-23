@@ -45,7 +45,7 @@
         </template>
         <template #empty>
           <EmptyState
-            :illustration="RecurringIllustration"
+            :icon="RecurringIcon"
             title="Nothing on repeat"
             text="Set up a template once, and its actions schedule themselves on a repeating basis."
             buttonText="Add Template"
@@ -67,7 +67,7 @@ import Btn from '../Btn.vue'
 import Inpt from '../Inpt.vue'
 import MetadataRow from '../MetadataRow.vue'
 import EmptyState from '../EmptyState.vue'
-import RecurringIllustration from '../illustrations/RecurringIllustration.vue'
+import RecurringIcon from '../../assets/RecurringIcon.vue'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
