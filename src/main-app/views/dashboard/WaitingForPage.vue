@@ -63,10 +63,10 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
+              <FilterEmptyState title="This context is clear" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :icon="WaitingIcon" title="Nothing waiting" text="Move actions here when you're waiting on someone or something." buttonText="Add Action" @action="openAdd" />
+              <EmptyState :illustration="WaitingIllustration" title="Nobody owes you anything" text="When you hand something off or wait on a reply, park it here and stop tracking it in your head." buttonText="Add Action" @action="openAdd" />
             </template>
           </template>
         </ItemList>
@@ -86,8 +86,8 @@ import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import ConnectionPicker from '../../components/ConnectionPicker.vue'
-import WaitingIcon from '../../assets/WaitingIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import WaitingIllustration from '../../components/illustrations/WaitingIllustration.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { waitingModel } from '../../scripts/models/waitingModel.js'

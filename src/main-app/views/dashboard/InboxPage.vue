@@ -85,7 +85,7 @@
                 <p class="text-body-m celebration__subtitle">You're in control.</p>
               </div>
               <template v-else>
-                <EmptyState :icon="InboxIcon" title="Your inbox is empty" text="Capture everything on your mind. Add new stuff above to get started." />
+                <EmptyState :illustration="InboxIllustration" title="Inbox zero. Mind like water." text="Your head is for having ideas, not holding them. Capture the next one above." />
               </template>
             </template>
           </ItemList>
@@ -137,8 +137,8 @@ import Inpt from '../../components/Inpt.vue'
 import ItemList from '../../components/ItemList.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
-import InboxIcon from '../../assets/InboxIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import InboxIllustration from '../../components/illustrations/InboxIllustration.vue'
 import CompletedIcon from '../../assets/CompletedIcon.vue'
 import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
 import { hapticFeedback } from '../../scripts/core/haptics.js'

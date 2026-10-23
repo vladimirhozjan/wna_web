@@ -1,5 +1,5 @@
 <template>
-  <component :is="icon" class="empty-state__icon" />
+  <component :is="illustration" class="empty-state__illustration" :class="'empty-state__illustration--' + size" />
   <h2 class="text-h3-italic empty-state__title">{{ title }}</h2>
   <p class="text-body-s empty-state__text">{{ text }}</p>
   <Btn v-if="buttonText" variant="primary" size="md" class="empty-state__btn" :disabled="buttonDisabled" @click="$emit('action')">{{ buttonText }}</Btn>
@@ -10,7 +10,8 @@
 import Btn from './Btn.vue'
 
 defineProps({
-  icon: { type: Object, required: true },
+  illustration: { type: Object, required: true },
+  size: { type: String, default: 'md' },
   title: { type: String, required: true },
   text: { type: String, required: true },
   buttonText: { type: String, default: '' },
@@ -21,12 +22,19 @@ defineEmits(['action'])
 </script>
 
 <style scoped>
-.empty-state__icon {
-  width: 50px;
-  height: 50px;
-  color: var(--color-action);
-  margin-bottom: 36px;
-  stroke-width: 1;
+.empty-state__illustration {
+  flex-shrink: 0;
+  margin-bottom: 24px;
+}
+
+.empty-state__illustration--md {
+  width: 160px;
+  height: 160px;
+}
+
+.empty-state__illustration--sm {
+  width: 80px;
+  height: 80px;
 }
 
 .empty-state__title {
@@ -43,5 +51,12 @@ defineEmits(['action'])
 
 .empty-state__btn {
   margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .empty-state__illustration--md {
+    width: 120px;
+    height: 120px;
+  }
 }
 </style>

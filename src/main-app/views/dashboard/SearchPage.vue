@@ -24,14 +24,14 @@
 
       <div class="search-content">
         <div v-if="!hasQuery" class="search-empty">
-          <EmptyState :icon="SearchIcon" title="Search everything" text="Type a word from a title, description, project outcome or file name." />
+          <EmptyState :illustration="SearchIllustration" title="Find anything you've captured" text="Type a word from a title, description, project outcome or file name." />
         </div>
 
         <div v-else-if="search.error.value" class="search-empty">
           <EmptyState
-              :icon="SearchIcon"
-              title="Search failed"
-              :text="search.error.value.status === 429 ? 'Too many searches. Wait a moment and try again.' : 'Check your connection and try again.'"
+              :illustration="SearchIllustration"
+              title="Search didn't go through"
+              :text="search.error.value.status === 429 ? 'Too many searches in a row. Wait a moment, then try again.' : 'Check your connection, then try again.'"
               button-text="Try again"
               @action="search.retry()"
           />
@@ -43,9 +43,9 @@
 
         <div v-else-if="search.items.value.length === 0" class="search-empty">
           <EmptyState
-              :icon="SearchIcon"
+              :illustration="SearchIllustration"
               :title="noResultsTitle"
-              :text="chip === 'all' ? 'Try a different search term.' : 'Try All or a different search term.'"
+              :text="chip === 'all' ? 'Check the spelling or try a different word.' : 'Try All, or a different word.'"
           />
         </div>
 
@@ -72,10 +72,10 @@ import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Inpt from '../../components/Inpt.vue'
 import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import SearchIllustration from '../../components/illustrations/SearchIllustration.vue'
 import Spinner from '../../components/Spinner.vue'
 import Btn from '../../components/Btn.vue'
 import SearchResultRow from '../../components/SearchResultRow.vue'
-import SearchIcon from '../../assets/SearchIcon.vue'
 import { searchModel, SEARCH_MIN_LENGTH } from '../../scripts/models/searchModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 
@@ -99,7 +99,7 @@ const inputRef = ref(null)
 
 const hasQuery = computed(() => value.value.trim().length >= SEARCH_MIN_LENGTH)
 const chip = computed(() => search.types.value[0] || 'all')
-const noResultsTitle = computed(() => `No results found for "${search.resultTerm.value}"`)
+const noResultsTitle = computed(() => `Nothing matches "${search.resultTerm.value}"`)
 
 function onChip(next) {
   search.setTypes(next === 'all' ? [] : [next])

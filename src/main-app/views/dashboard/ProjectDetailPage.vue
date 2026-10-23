@@ -30,8 +30,8 @@
       <!-- Not found state -->
       <div v-else-if="notFound" class="detail-not-found">
         <EmptyState
-            :icon="ProjectsIcon"
-            title="This project is no longer available"
+            :illustration="TrashIllustration"
+            title="This project is no longer here"
             text="It may have been completed, deleted, or moved to trash."
             buttonText="Go to Projects"
             @action="goToProjects"
@@ -667,6 +667,7 @@ import PersonRemoveIcon from '../../assets/PersonRemoveIcon.vue'
 import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import TrashIllustration from '../../components/illustrations/TrashIllustration.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 
 const route = useRoute()

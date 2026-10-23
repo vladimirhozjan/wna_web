@@ -54,10 +54,10 @@
           </template>
           <template #empty>
             <template v-if="filterTags.length || activeTag">
-              <FilterEmptyState title="No actions for this context" :tags="effectiveTags" />
+              <FilterEmptyState title="This context is clear" :tags="effectiveTags" />
             </template>
             <template v-else>
-              <EmptyState :icon="ActionIcon" title="No next actions" text="Clarify inbox items or create actions from projects to see them here." buttonText="Add Action" @action="openAdd" />
+              <EmptyState :illustration="NextIllustration" title="Nothing to do next — yet" text="Clarify your inbox or plan a project, and each next physical step lands here." buttonText="Add Action" @action="openAdd" />
             </template>
           </template>
         </ItemList>
@@ -76,8 +76,8 @@ import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
-import ActionIcon from '../../assets/ActionIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import NextIllustration from '../../components/illustrations/NextIllustration.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
