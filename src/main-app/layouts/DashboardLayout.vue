@@ -46,6 +46,9 @@
         <PlusIcon width="20" height="20" style="pointer-events: none;" />
       </button>
     </div>
+
+    <CommandPalette />
+    <ShortcutsDialog />
   </div>
 </template>
 
@@ -56,7 +59,10 @@ import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
 import Btn from "../components/Btn.vue";
 import ActionBtn from "../components/ActionBtn.vue";
+import CommandPalette from "../components/CommandPalette.vue";
+import ShortcutsDialog from "../components/ShortcutsDialog.vue";
 import { authModel } from "../scripts/core/authModel.js";
+import { shortcutModel } from "../scripts/core/shortcutModel.js";
 import PlusIcon from "../assets/PlusIcon.vue";
 import { settingsModel } from "../scripts/models/settingsModel.js";
 import { stuffModel } from "../scripts/models/stuffModel.js";
@@ -67,6 +73,7 @@ const auth = authModel();
 const settings = settingsModel();
 const { addStuff } = stuffModel();
 const toaster = errorModel();
+const shortcuts = shortcutModel();
 const isSidebarOpen = ref(false);
 
 // Mobile FAB quick add
@@ -145,9 +152,13 @@ watch(() => router.currentRoute.value.path, () => {
   isSidebarOpen.value = false;
 });
 
-onUnmounted(fabCollapse);
+onUnmounted(() => {
+  fabCollapse();
+  shortcuts.detach();
+});
 
 onMounted(() => {
+  shortcuts.attach();
   if (auth.isAuthenticated.value && !settings.state.loaded) {
     settings.load().catch(() => {
       // Settings will fall back to localStorage, no need to show error

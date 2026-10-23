@@ -16371,7 +16371,7 @@
       "Switch to Local → **New Folder** \"TC809 Local\".",
       "Switch back to Google Drive."
     ],
-    "expected": "The Google folder is listed only on the Google Drive side and exists in Drive at `WNA/reference/TC809 Google`. The Local folder is listed only on the Local side and is not created in Drive. `GET /v1/reference/folders?side=gdrive` / `?side=local` each return only their folder."
+    "expected": "Step 1 shows the \"Folder created\" toast. The Google folder is listed only on the Google Drive side and exists in Drive at `WNA/reference/TC809 Google`. The Local folder is listed only on the Local side and is not created in Drive. `GET /v1/reference/folders?side=gdrive` / `?side=local` each return only their folder."
   },
   {
     "id": "TC-810",
@@ -16646,9 +16646,9 @@
       "Click **+ Quick Add**; then click back into the search field.",
       "Press Esc.",
       "Click the search icon, leave the field empty and click on the page outside it.",
-      "Press Cmd+K (macOS) / Ctrl+K on another page."
+      "Press Cmd+K (macOS) / Ctrl+K on another page; press Esc."
     ],
-    "expected": "Step 1: the icon expands in place into a focused field with placeholder \"Search everything...\". Step 2: no panel and no `GET /v1/search` request. Step 3: after the debounce one `GET /v1/search?q=ki&limit=8`; a right-aligned panel under the field lists 8 rows, each with its type icon and `ki` highlighted in the title, and the footer \"See all {total_count} results\". Step 4: the panel closes and the field keeps `ki`; clicking back into it reopens the same rows with no new request. Step 5: the field is cleared and collapses back to the icon. Step 6: the empty field collapses back to the icon. Step 7: the browser shortcut does not fire; the search field expands and is focused. Navigating to another page collapses the field back to the icon with the term cleared."
+    "expected": "Step 1: the icon expands in place into a focused field with placeholder \"Search everything...\". Step 2: no panel and no `GET /v1/search` request. Step 3: after the debounce one `GET /v1/search?q=ki&limit=8`; a right-aligned panel under the field lists 8 rows, each with its type icon and `ki` highlighted in the title, and the footer \"See all {total_count} results\". Step 4: the panel closes and the field keeps `ki`; clicking back into it reopens the same rows with no new request. Step 5: the field is cleared and collapses back to the icon. Step 6: the empty field collapses back to the icon. Step 7: the browser shortcut does not fire; the search field stays collapsed and the command palette opens instead (TC-838); Esc closes it. Navigating to another page collapses the field back to the icon with the term cleared."
   },
   {
     "id": "TC-798",
@@ -16802,5 +16802,131 @@
       "Disconnect Drive; repeat step 1 for another Google file."
     ],
     "expected": "Step 1: `/reference` opens on the **Google Drive** side, Files tab, root, with the preview of gamma.pdf open; the URL has no `side` / `file`. Step 2: no preview reopens. Step 3: no preview; toast \"This file was moved or deleted. Search again to find it.\" Step 4: the Google Drive side with the \"Google Drive is not connected\" bar; no preview; toast \"Reconnect Google Drive to open this file\"."
+  },
+  {
+    "id": "TC-838",
+    "name": "Cmd/Ctrl+K Opens the Command Palette",
+    "priority": "High",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": true,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Logged in on desktop (≥ 769 px); Weekly Review on in Settings; an inbox item \"Call bank\".",
+    "steps": [
+      "On `/next`, press Cmd+K (macOS) / Ctrl+K.",
+      "Press Cmd/Ctrl+K again.",
+      "Press Esc.",
+      "Click the TopNav search icon, type `ab` in the field, press Cmd/Ctrl+K.",
+      "Type `xyz` in the palette; click the overlay; press Cmd/Ctrl+K again.",
+      "Open the detail page of \"Call bank\"; press Cmd/Ctrl+K.",
+      "Press ↓ until \"Go to Inbox\" is highlighted; press Enter."
+    ],
+    "expected": "Step 1: the browser shortcut does not fire; a centred dialog (max 560 px, no title, no buttons) opens with a focused field, placeholder \"Type to search or run a command\", one group **Go to** listing in order: Go to Engage `G E`, Inbox `G I`, Today `G T`, Next `G N`, Calendar `G C`, Waiting For `G W`, Projects `G P`, Someday / Maybe `G S`, Reference `G R`, Completed `G D`, Trash `G X`, Overdue `G O`, Weekly Review `G V`, Settings `G ,`, then Go to Connections and Go to Help (no key hint); the first row is highlighted. Step 2: nothing happens. Step 3: the palette closes and focus returns to where it was. Step 4: the palette opens over the expanded search field, which keeps `ab`. Step 5: the overlay click closes the palette; it reopens empty (query not remembered). Step 6: group **This item** (Clarify · Done · Move to Next Actions · Move to Today · Move to Calendar · Move to Waiting For · Move to Projects · Move to Someday · Move to Reference · Trash) above **Go to**. Step 7: the palette closes and `/inbox` opens."
+  },
+  {
+    "id": "TC-839",
+    "name": "G Navigation, C Capture and the Shortcuts Dialog",
+    "priority": "High",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": false,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Logged in on desktop (≥ 769 px).",
+    "steps": [
+      "On `/engage`, press G then I; then G then ,; then G then D.",
+      "Press G, then Q, then I.",
+      "Press C; type `Buy milk`; press Enter; press Esc.",
+      "Press ?.",
+      "Press Esc; press ?; click **Close**.",
+      "Click into an action's title field on a detail page and type `g`, `i`, `c`, `?`.",
+      "Open a delete confirmation (e.g. Trash on an action detail page); press G then I and Cmd/Ctrl+K; cancel.",
+      "Turn the Weekly Review off in Settings; press G then V; press ?; press Cmd/Ctrl+K and type `review`.",
+      "Press G, wait 2 seconds, then press I; press G, wait 2 seconds, then press C."
+    ],
+    "expected": "Step 1: `/inbox`, then `/settings`, then `/completed` open. Step 2: Q cancels the sequence silently; the following I does nothing (no cue is shown after G). Step 3: TopNav Quick Add expands with its input focused (placeholder \"Add new stuff\"); Enter shows toast `\"Buy milk\" added to Inbox`; Esc collapses it. Step 4: dialog \"Keyboard shortcuts\" with blocks **General** (`⌘K` on macOS / `Ctrl+K` elsewhere — Open the command palette · `C` — Add to Inbox · `?` — Show keyboard shortcuts), **Go to** (`G E` — Engage … `G V` — Weekly Review · `G ,` — Settings), **In the command palette** (`↑ ↓` — Move · `Enter` — Run · `Esc` — Close) and the footnote \"Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open.\"; **Close** button. Step 5: Esc closes it; **Close** closes it. Step 6: the characters are typed into the field; no navigation, no Quick Add, no dialog. Step 7: no navigation and no palette while the confirmation is open. Step 8: G V does nothing; the dialog has no `G V` row; the palette shows no \"Go to Weekly Review\" row. Step 9: I after the wait does nothing (no navigation); C after the wait expands TopNav Quick Add (the sequence lapsed after 1 second)."
+  },
+  {
+    "id": "TC-840",
+    "name": "Palette Search Results, Command Matches and Keyboard Navigation",
+    "priority": "High",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": false,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Logged in on desktop; 10 actions whose titles contain \"plan\"; no item contains \"zzqx\".",
+    "steps": [
+      "Open the palette (Cmd/Ctrl+K) on `/next`; type `t`.",
+      "Type `oday` (query `today`).",
+      "Clear and type `plan`; wait for the results.",
+      "Press ↑ once; press ↓ once; hover a result row; press Enter.",
+      "Open the palette, type `plan`, highlight \"See all {n} results\" and press Enter.",
+      "Open the palette and type `zzqx`.",
+      "With the search endpoint returning 429 (or offline: 5xx), type `plan` in the palette; press ↓ to the error row and press Enter."
+    ],
+    "expected": "Step 1: groups **Commands** (every Go to row containing \"t\", e.g. Go to Today, Go to Waiting For, Go to Settings…) and **Create** (Add to Inbox: **t** · New project: **t** · New next action: **t**, each with a + icon); no Results group and no search request (below 2 characters). Step 2: Commands shows only \"Go to Today\"; **Results** appears (spinner row while loading, then rows or the no-results message); Create stays last. Step 3: no Commands group (no command contains \"plan\"); **Results** lists 8 result rows (type icon, `plan` highlighted) then \"See all {total_count} results\"; **Create** below; typing reset the highlight to the first row. Step 4: ↑ from the first row wraps to the last row (\"New next action: plan\"); ↓ wraps back to the first; hover moves the highlight; Enter closes the palette and opens the hovered result's detail page. Step 5: `/search?q=plan` opens. Step 6: Results shows `No results found for \"zzqx\". Try a different search term.`; Create is still shown. Step 7: Results shows \"Too many searches. Wait a moment and try again.\" (429) or \"Search failed. Check your connection and try again.\" + **Try again**; Commands and Create stay; Enter on the highlighted error row retries without closing the palette."
+  },
+  {
+    "id": "TC-841",
+    "name": "Create Commands — Add to Inbox, New Next Action, New Project",
+    "priority": "High",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": false,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Logged in on desktop as a Free user below every limit; a second Free user at the project limit.",
+    "steps": [
+      "On `/today`, open the palette, type `Renew passport`, highlight \"Add to Inbox: Renew passport\", press Enter.",
+      "Open the palette, type `Draft agenda`, choose \"New next action: Draft agenda\".",
+      "Open the palette, type `Move house`, choose \"New project: Move house\"; click **Cancel**.",
+      "Repeat step 3; type outcome `Living in the new flat`; click **Create Project**.",
+      "As the user at the project limit, choose \"New project: Over limit\", enter an outcome, click **Create Project**."
+    ],
+    "expected": "Step 1: the palette closes; toast `\"Renew passport\" added to Inbox`; still on `/today`; the item is in the Inbox. Step 2: toast `\"Draft agenda\" added to Next`; its Action detail page opens; state Next, no project. Step 3: the palette closes and the prompt \"What does done look like?\" (placeholder \"Describe the successful outcome...\", **Cancel** / **Create Project**) opens; Cancel creates nothing and shows no toast. Step 4: toast `\"Move house\" added to Projects`; its Project detail page opens with that outcome. Step 5: the existing upgrade modal opens; no project is created; nothing navigates."
+  },
+  {
+    "id": "TC-842",
+    "name": "\"This Item\" Commands Mirror the Detail Page per Role",
+    "priority": "Medium",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": false,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Team users A (owner) and B; A shares a project with B (B role write) containing an action assigned to A; a completed personal action; a recurring template with an active instance.",
+    "steps": [
+      "As A, open the shared project's detail page and the palette.",
+      "As B, open the same project's detail page and the palette.",
+      "As B, open the action assigned to A and the palette.",
+      "Open the completed action and the palette.",
+      "Open the recurring template and the palette; choose \"Trash\".",
+      "Open an action detail page whose data is still loading (throttle the network) and press Cmd/Ctrl+K."
+    ],
+    "expected": "Every **This item** group lists exactly the page's rendered, enabled buttons in button order, labels verbatim, Move entries as \"Move to {entry}\". Step 1: Complete · Trash (no Move or Share… rows — the page hides them on a shared project). Step 2: Leave only. Step 3: no Trash row (the button is disabled while assigned to another member) and no Assign to me / Unassign rows. Step 4: Undo only. Step 5: rows Delete instance · Trash; choosing Trash closes the palette and shows the page's own confirmation dialog. Step 6: no **This item** group until the page has loaded."
+  },
+  {
+    "id": "TC-843",
+    "name": "No Palette or Shortcuts on Mobile and Public Pages",
+    "priority": "Medium",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": false,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Logged in.",
+    "steps": [
+      "With the viewport ≤ 768 px on `/inbox`, press Cmd/Ctrl+K, G then T, C and ?.",
+      "On desktop, go to `/help` and `/pricing` and press Cmd/Ctrl+K, G then T, C and ?."
+    ],
+    "expected": "Step 1: no palette, no shortcuts dialog, no navigation; Quick Add / FAB stay closed. Step 2: nothing happens on either public page (the browser's own Cmd/Ctrl+K behaviour is not blocked)."
   }
 ]

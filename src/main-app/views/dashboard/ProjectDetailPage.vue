@@ -649,6 +649,7 @@ import { authModel } from '../../scripts/core/authModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
+import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import NextIcon from '../../assets/NextIcon.vue'
 import TodayIcon from '../../assets/TodayIcon.vue'
@@ -819,6 +820,27 @@ const isOwner = computed(() => {
   if (project.value.my_role) return project.value.my_role === 'owner'
   return currentRole.value === 'owner'
 })
+
+// Command palette "This item" — mirrors the action buttons below the title
+const itemCommands = computed(() => {
+  if (pageLoading.value || notFound.value || !project.value) return []
+  if (isCompleted.value) return [{ label: 'Undo', run: onUndo }]
+  const commands = []
+  if (isSomeday.value) commands.push({ label: 'Activate', run: onActivate })
+  if (isSomeday.value || !isShared.value || isOwner.value) commands.push({ label: 'Complete', run: onComplete })
+  if (!isShared.value) {
+    commands.push(
+        { label: 'Move to Next Actions', run: () => onMoveTo('ACTION') },
+        { label: 'Move to Reference', run: () => onMoveTo('REFERENCE') },
+    )
+    if (!isSomeday.value) commands.push({ label: 'Move to Someday', run: () => onMoveTo('SOMEDAY') })
+    if (isOwner.value) commands.push({ label: 'Share…', run: () => openShareModal('share') })
+  }
+  if (isShared.value && !isOwner.value) commands.push({ label: 'Leave', run: onLeaveProject })
+  else commands.push({ label: 'Trash', run: onTrash })
+  return commands
+})
+shortcutModel().registerItemCommands(itemCommands)
 
 const myRole = computed(() => {
   if (!isShared.value) return 'owner'

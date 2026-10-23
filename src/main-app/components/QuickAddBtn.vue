@@ -43,6 +43,8 @@ function submit() {
   emit("add", t);
   title.value = "";
 }
+
+defineExpose({ expand });
 </script>
 
 <style scoped>

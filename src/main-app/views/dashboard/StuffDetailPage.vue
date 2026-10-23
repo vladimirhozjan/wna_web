@@ -249,6 +249,7 @@ import { clarifyModel } from '../../scripts/models/clarifyModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
+import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import InboxIcon from '../../assets/InboxIcon.vue'
 import NextIcon from '../../assets/NextIcon.vue'
 import TodayIcon from '../../assets/TodayIcon.vue'
@@ -357,6 +358,26 @@ const backLabel = computed(() => {
   if (isSomeday.value) return 'Someday / Maybe'
   return 'Inbox'
 })
+
+// Command palette "This item" — mirrors the action buttons below the title
+const itemCommands = computed(() => {
+  if (pageLoading.value || notFound.value || !item.value) return []
+  if (isCompleted.value) return [{ label: 'Undo', run: onUndo }]
+  if (isSomeday.value) return [{ label: 'Activate', run: onActivate }, { label: 'Trash', run: onTrash }]
+  return [
+    { label: 'Clarify', run: openClarify },
+    { label: 'Done', run: onMarkDone },
+    { label: 'Move to Next Actions', run: () => onMoveTo('action') },
+    { label: 'Move to Today', run: () => onMoveTo('today') },
+    { label: 'Move to Calendar', run: () => onMoveTo('calendar') },
+    { label: 'Move to Waiting For', run: () => onMoveTo('waiting') },
+    { label: 'Move to Projects', run: () => onMoveTo('project') },
+    { label: 'Move to Someday', run: () => onMoveTo('someday') },
+    { label: 'Move to Reference', run: () => onMoveTo('reference') },
+    { label: 'Trash', run: onTrash },
+  ]
+})
+shortcutModel().registerItemCommands(itemCommands)
 
 watch(error, (err) => {
   if (!err) return

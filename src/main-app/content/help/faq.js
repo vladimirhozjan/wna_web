@@ -115,7 +115,7 @@ export const faq = [
   {
     question: 'How do I search?',
     answer:
-      'Click the search icon in the top navigation bar, or press Cmd+K (Ctrl+K on Windows and Linux), and type at least 2 characters. The best matches appear below the field — click one to open it. Press Enter or click "See all" to open the Search page with the full list, where you can narrow the results to Inbox, Actions, Projects, Recurring or Reference. On a phone, tap the search icon to open the Search page. Search looks in titles, descriptions, project outcomes and Reference file names, ignoring upper/lower case and accents. It covers your Inbox, actions in every list including Someday/Maybe, projects, recurring actions, Reference files on both the Local and Google Drive sides, and completed items, which are marked "Completed". Items in Trash and archived items are not searched. On shared projects, you find the project and every action in it, whether or not it is assigned to you.',
+      'Click the search icon in the top navigation bar and type at least 2 characters. The best matches appear below the field — click one to open it. Press Enter or click "See all" to open the Search page with the full list, where you can narrow the results to Inbox, Actions, Projects, Recurring or Reference. You can also press Cmd/Ctrl+K to open the command palette, where search results appear as you type. On a phone, tap the search icon to open the Search page. Search looks in titles, descriptions, project outcomes and Reference file names, ignoring upper/lower case and accents. It covers your Inbox, actions in every list including Someday/Maybe, projects, recurring actions, Reference files on both the Local and Google Drive sides, and completed items, which are marked "Completed". Items in Trash and archived items are not searched. On shared projects, you find the project and every action in it, whether or not it is assigned to you.',
   },
 
   // --- Calendar & Dates ---
@@ -310,7 +310,7 @@ export const faq = [
   {
     question: 'Are there keyboard shortcuts?',
     answer:
-      'Yes. Press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
+      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, or add what you typed as a new Inbox item, project or next action. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
   },
 
   // --- Dashboard ---

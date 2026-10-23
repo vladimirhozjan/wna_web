@@ -468,6 +468,7 @@ import { authModel } from '../../scripts/core/authModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction } from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
+import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import ActionIcon from '../../assets/ActionIcon.vue'
 import NextIcon from '../../assets/NextIcon.vue'
@@ -617,6 +618,40 @@ const isUnassigned = computed(() =>
 const canAssign = computed(() =>
     isUnassigned.value && myTier.value === 'team' && (action.value?.my_role !== 'read_only')
 )
+
+// Command palette "This item" — mirrors the action buttons below the title
+const MOVE_COMMANDS = [
+  { state: 'NEXT', label: 'Move to Next Actions' },
+  { state: 'TODAY', label: 'Move to Today' },
+  { state: 'CALENDAR', label: 'Move to Calendar' },
+  { state: 'WAITING', label: 'Move to Waiting For' },
+  { state: 'SOMEDAY', label: 'Move to Someday' },
+  { state: 'PROJECT', label: 'Move to Projects' },
+  { state: 'REFERENCE', label: 'Move to Reference' },
+]
+const itemCommands = computed(() => {
+  if (pageLoading.value || notFound.value || !action.value) return []
+  const commands = []
+  if (isCompleted.value) {
+    commands.push({ label: 'Undo', run: onUndo })
+  } else if (isSomeday.value) {
+    commands.push({ label: 'Activate', run: onActivate }, { label: 'Trash', run: onTrash })
+  } else if (isWaiting.value) {
+    commands.push({ label: 'Got it', run: onGotIt }, { label: 'Done', run: onMarkDone })
+  } else {
+    commands.push({ label: 'Done', run: onMarkDone })
+  }
+  if (!isCompleted.value) {
+    for (const m of MOVE_COMMANDS) {
+      if (m.state !== action.value.state) commands.push({ label: m.label, run: () => onMoveTo(m.state) })
+    }
+  }
+  if (canAssign.value) commands.push({ label: 'Assign to me', run: onAssignToMe })
+  if (isAssignedToMe.value && !isCompleted.value) commands.push({ label: 'Unassign', run: onUnassignMine })
+  if (!isCompleted.value && !isSomeday.value && !isAssignedToOther.value) commands.push({ label: 'Trash', run: onTrash })
+  return commands
+})
+shortcutModel().registerItemCommands(itemCommands)
 const assigneeLabel = computed(() => {
   const a = action.value
   if (!a?.assigned_to) return ''
