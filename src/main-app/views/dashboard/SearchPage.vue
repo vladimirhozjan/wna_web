@@ -38,7 +38,7 @@
         </div>
 
         <div v-else-if="search.items.value.length === 0 && (search.loading.value || search.resultTerm.value === null)" class="search-loading">
-          <Spinner :size="32" />
+          <Spinner :size="32" delayed />
         </div>
 
         <div v-else-if="search.items.value.length === 0" class="search-empty">
@@ -171,11 +171,18 @@ onMounted(() => {
   touch-action: pan-y;
 }
 
+/* Spinner sits on the centre of the empty-state coin */
 .search-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 128px 24px 48px;
+}
+
+@media (max-width: 768px) {
+  .search-loading {
+    padding-top: 108px;
+  }
 }
 
 .search-empty {

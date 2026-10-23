@@ -74,6 +74,10 @@ parent §Screens "Every usage". Colors only from existing theme tokens (no new C
   theme and on mobile width; list what was seen.
   DEFERRED TO USER: I don't run apps. Runtime pass = TC-844 in light and dark theme, desktop + ≤ 768 px (coin + orbit
   composition and copy). Preview reviewed: https://claude.ai/artifact/N92o1x25s2r5Bgnz6RRPts
+  Owner follow-up 2026-10-23: list loaders now `<Spinner delayed>` (300 ms) and centred on the coin — `components/Spinner.vue`,
+  `ItemList.vue`, `CompletedPage.vue`, `ReferencePage.vue`, `EngagePage.vue`, `SearchPage.vue`; checked in TC-844.
+  Owner follow-up 2026-10-23: Engage empty state uses the ItemList frame (`EngagePage.vue:672`), so the coin no longer
+  shifts when switching Engage ↔ list pages; owner confirmed at runtime. Checked in TC-844.
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
 - [x] W-17 Update `../wna_orchestration/specs/features/wna-features.md` — every "Empty state:" line for the surfaces in
   rows 1–31 (new copy + illustration).

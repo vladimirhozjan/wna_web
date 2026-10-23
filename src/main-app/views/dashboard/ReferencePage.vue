@@ -43,7 +43,7 @@
         <RefUploadZone :disabled="writesDisabled" @upload="onUploadFiles" class="ref-content">
           <!-- Loading -->
           <div v-if="initialLoading || (model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0)" class="ref-loading">
-            <Spinner :size="28" />
+            <Spinner :size="28" delayed />
           </div>
 
           <!-- Empty state -->
@@ -135,7 +135,7 @@
 
         <!-- Loading -->
         <div v-if="initialLoading || (attModel_.loading.value && attModel_.items.value.length === 0)" class="ref-loading">
-          <Spinner :size="28" />
+          <Spinner :size="28" delayed />
         </div>
 
         <!-- Empty state -->
@@ -189,7 +189,7 @@
 
         <!-- Loading -->
         <div v-if="initialLoading || (trashModel_.loading.value && trashModel_.files.value.length === 0)" class="ref-loading">
-          <Spinner :size="28" />
+          <Spinner :size="28" delayed />
         </div>
 
         <!-- Empty trash -->
@@ -813,11 +813,18 @@ async function onDeleteAttachment(att) {
   touch-action: pan-y;
 }
 
+/* Spinner sits on the centre of the empty-state coin */
 .ref-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 126px 20px 60px;
+}
+
+@media (max-width: 768px) {
+  .ref-loading {
+    padding-top: 106px;
+  }
 }
 
 

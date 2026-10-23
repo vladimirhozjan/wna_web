@@ -1,12 +1,13 @@
 <template>
-  <span class="spinner" :style="style"></span>
+  <span class="spinner" :class="{ 'spinner--delayed': delayed }" :style="style"></span>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
-  size: { type: Number, default: 24 }
+  size: { type: Number, default: 24 },
+  delayed: { type: Boolean, default: false }
 })
 
 const style = computed(() => ({
@@ -27,7 +28,17 @@ const style = computed(() => ({
   flex-shrink: 0;
 }
 
+/* Fast loads finish before it shows, so the empty state doesn't flash a spinner first */
+.spinner--delayed {
+  animation: spin 0.8s linear infinite, spinner-appear 150ms 300ms both;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes spinner-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style>

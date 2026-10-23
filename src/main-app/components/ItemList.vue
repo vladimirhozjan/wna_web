@@ -9,7 +9,7 @@
   >
     <!-- Loading state -->
     <div v-if="loading && items.length === 0" class="loading-state">
-      <Spinner :size="32" />
+      <Spinner :size="32" delayed />
     </div>
 
     <!-- Empty state -->
@@ -346,11 +346,18 @@ function onExternalDrop(e) {
   box-shadow: var(--shadow-card);
 }
 
+/* Spinner sits on the centre of the empty-state coin */
 .loading-state {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 129px 24px 48px;
+}
+
+@media (max-width: 768px) {
+  .loading-state {
+    padding-top: 109px;
+  }
 }
 
 
