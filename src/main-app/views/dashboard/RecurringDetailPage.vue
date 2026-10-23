@@ -244,6 +244,7 @@ import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
+import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { formatShortDate } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
@@ -278,6 +279,18 @@ const editTitle = ref('')
 const detailBodyRef = ref(null)
 
 const dateType = computed(() => template.value.date_type || 'scheduled')
+
+// Command palette "This item" — mirrors the action buttons below the title
+const itemCommands = computed(() => {
+  if (pageLoading.value || notFound.value) return []
+  return [
+    template.value.active_instance_id
+        ? { label: 'Delete instance', run: onDeleteInstance }
+        : { label: 'Spawn next', run: onSpawn },
+    { label: 'Trash', run: onDelete },
+  ]
+})
+shortcutModel().registerItemCommands(itemCommands)
 
 // Auto-hiding scrollbar
 const bodyScrolling = ref(false)

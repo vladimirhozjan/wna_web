@@ -35,7 +35,7 @@
 
     <!-- AUTHENTICATED -->
     <div v-else class="topnav-auth-right">
-      <QuickAddBtn class="quick-add-desktop" @add="onQuickAdd" />
+      <QuickAddBtn ref="quickAddRef" class="quick-add-desktop" @add="onQuickAdd" />
 
       <!-- Notification bell + dropdown -->
       <Dropdown v-model="notifDropdownOpen" align="right" title="Notifications" class="notifications-dropdown">
@@ -152,6 +152,7 @@ import AppIcon from "../assets/AppIcon.vue";
 import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
 import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
+import { shortcutModel } from "../scripts/core/shortcutModel.js";
 
 const props = defineProps({
   authenticated: {
@@ -362,17 +363,17 @@ async function expandSearch() {
   searchBoxRef.value?.focus();
 }
 
-function onSearchShortcut(e) {
-  if (e.key?.toLowerCase() !== "k" || !(e.metaKey || e.ctrlKey)) return;
-  if (!props.authenticated || props.context !== "dashboard" || route.name === "search") return;
-  if (window.matchMedia(MOBILE_QUERY).matches) return;
-  e.preventDefault();
-  expandSearch();
-}
-
 // Any navigation collapses to the icon; SearchBox clears the term on unmount
 watch(() => route.fullPath, () => {
   searchExpanded.value = false;
+});
+
+// C shortcut
+const shortcuts = shortcutModel();
+const quickAddRef = ref(null);
+
+watch(() => shortcuts.state.captureRequest, () => {
+  quickAddRef.value?.expand();
 });
 
 async function onQuickAdd(title) {
@@ -391,7 +392,6 @@ function onClickOutside(e) {
 
 onMounted(() => {
   document.addEventListener("click", onClickOutside);
-  document.addEventListener("keydown", onSearchShortcut);
   if (props.authenticated) {
     notifModel.startPolling();
   }
@@ -399,7 +399,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", onClickOutside);
-  document.removeEventListener("keydown", onSearchShortcut);
   notifObserver?.disconnect();
   notifModel.flushRead();
   notifModel.stopPolling();

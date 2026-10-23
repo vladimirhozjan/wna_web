@@ -14,6 +14,8 @@ export function searchModel() {
     if (instance) return instance
     instance = {
         dropdown: createSearch(DROPDOWN_LIMIT),
+        // Own instance — the palette can open over a SearchBox that keeps its term
+        palette: createSearch(DROPDOWN_LIMIT),
         page: createSearch(PAGE_LIMIT),
     }
     return instance

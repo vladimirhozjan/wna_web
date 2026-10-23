@@ -3,9 +3,9 @@
     <Transition name="fade">
       <div v-if="visible" class="overlay" @click.self="$emit('close')">
         <div class="dialog" :style="dialogStyle">
-          <h3 class="text-h3 title">{{ title }}</h3>
+          <h3 v-if="title" class="text-h3 title">{{ title }}</h3>
           <slot />
-          <div class="actions">
+          <div v-if="$slots.actions" class="actions">
             <slot name="actions" />
           </div>
         </div>
