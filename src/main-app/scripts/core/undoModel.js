@@ -39,6 +39,8 @@ export function undoModel() {
     }
 
     function isUndoable({ op, item, to }) {
+        // The server refuses uncomplete / restore / moves for a read-only member
+        if (item.my_role === 'read_only') return false
         if (op !== 'move') {
             // D8: a recurring template's active instance respawns at once
             return !(item.recurring_parent_id && item.state !== 'COMPLETED')

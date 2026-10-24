@@ -149,17 +149,32 @@ DS20 on Someday list / Sidebar rows stays as noted in W-7: legacy data only, sin
   point); Sidebar drop toasts `wna-features.md:260` gain the DS9 / shelved variants.
 
 ### Acceptance round 2 (/conclude 2026-10-24 — not accepted)
-- [ ] W-23 D7 / DS15 from Next-list rows (Next page checkbox / × / swipe, Engage Next section, Sidebar drop of a Next row,
+- [x] W-23 D7 / DS15 from Next-list rows (Next page checkbox / × / swipe, Engage Next section, Sidebar drop of a Next row,
   Action detail reached from Next): after Undo the project's active action is active again, not left in the backlog.
   Data: `backlog_position` on `/v1/nextActions` + `pos/{n}` rows (backend B-19–B-22). No web change is expected, because the
   snapshot is the raw row; confirm `undoModel.js:150` re-promotes from these rows.
-- [ ] W-24 Read-only member (parent User flows "Team member", S1 last row): Done / Trash of their own claim (allowed by
+  — no web change: every Next-row entry point records the raw row — `NextPage.vue:234,252` (checkbox / × / swipe),
+  `EngagePage.vue:354-359` (`findItem` → `topActions`, rows = `/v1/nextActions` objects, `api.md:5327`), Sidebar `rowOf`
+  `Sidebar.vue:304-308` (full dragged row), Action detail `ActionDetailPage.vue:1557,1638` (`action.value` = Get Action /
+  `pos/{n}`, `api.md:2363`). With `backlog_position === 0` the re-promote fires at `undoModel.js:152` (`repromote`) →
+  `moveProjectAction(id, 0)` `:156`, independent of `reorder: false` (Engage). Rows carry it per `api.md:2191`, `:2363`
+  (backend B4). Runtime: TC-867 step 8.
+- [x] W-24 Read-only member (parent User flows "Team member", S1 last row): Done / Trash of their own claim (allowed by
   BUG-063) shows the toast WITHOUT Undo, because the server always 403s uncomplete / restore for read-only. `isUndoable` →
   false when `item.project_shared && item.my_role === 'read_only'`. Data: `my_role` is on every action row and on Get Action
   (`api.md` Get Action). Completed rows (Sidebar drop Completed → Trash) get it in backend B-19; the rest is web-only and can
   start now.
-- [ ] W-25 `npm run build:main` passes. `wna-test-cases.md`: TC-867 step 8 (Next-row active action → Undo → active again)
+  — `undoModel.js:43`: `isUndoable` → false when `item.my_role === 'read_only'`, for every op. Checked without
+  `project_shared` because Completed rows carry `shared`, not `project_shared` (`api.md:3095`), and `my_role` is only
+  present on a shared project (`api.md:2103`). Every Done / Trash path records a row or Get Action JSON that carries
+  `my_role` (sources as in W-23; Completed rows → Sidebar `rowOf`). Not undoable → plain `toaster.success`
+  (`undoModel.js:58-61`), so Cmd/Ctrl+Z has nothing to run. Runtime: TC-867 step 9.
+- [x] W-25 `npm run build:main` passes. `wna-test-cases.md`: TC-867 step 8 (Next-row active action → Undo → active again)
   and step 9 (read-only member Done on their own claim → toast without Undo). `wna-features.md` §25.1: read-only members get no Undo.
+  — build `✓ built in 4.16s` · `[obfuscator] Obfuscated 19 files` (only the known > 500 kB chunk warning). TC-867
+  preconditions `wna-test-cases.md:19980-19984` (project S, read-only C with claim Q-C), step 8 `:19994`, step 9 `:19996`,
+  expected `:20004-20006`; `update-tests.sh` run (`test-cases.json`, `test-data.js`). §25.1 no-Undo list
+  `wna-features.md:2346-2347`.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

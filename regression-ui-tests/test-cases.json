@@ -17510,7 +17510,7 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. Next with B1, B2, B3 (standalone); personal project P with active action P-A\nin Today and backlog P-B; personal project R with active action R-A in Waiting For (waiting for \"Tom\") and backlog\nR-B. For the shared step: Team users O (owner) and M (write member) share project Q; M holds the claimed action Q-A.",
+    "preconditions": "Common preconditions. Next with B1, B2, B3 (standalone); personal project P with active action P-A\nin Today and backlog P-B; personal project R with active action R-A in Waiting For (waiting for \"Tom\") and backlog\nR-B; personal project S with active action S-A in Next and backlog S-B. For the shared steps: Team users O (owner),\nM (write member) and C (read-only member) share project Q; M holds the claimed action Q-A, C holds the claimed action\nQ-C (claimed before C was made read-only).",
     "steps": [
       "Open B2 from Next; click **Done** (the page moves to B3); click **Undo**.",
       "Open B1; click **Done**; open Inbox; click **Undo**.",
@@ -17518,9 +17518,11 @@
       "As M, on Next tick Q-A; click **Undo**.",
       "Block `POST /v1/action/{id}/uncomplete`; tick B3; click **Undo**.",
       "On Today, tick P-A; click **Undo**.",
-      "On Waiting For, click × on R-A; click **Undo**."
+      "On Waiting For, click × on R-A; click **Undo**.",
+      "On Next, tick S-A; click **Undo**. Repeat with × on S-A, with a Sidebar drop of S-A onto Completed, and from the S-A detail page opened from Next (**Done**), clicking **Undo** each time.",
+      "As C, on Next tick Q-C; press Cmd/Ctrl+Z."
     ],
-    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted. Step 6: P-A is P's active action again and back in Today at its old place; P-B is back in the backlog.\nStep 7: R-A is R's active action again, back in Waiting For waiting for \"Tom\"; R-B is back in the backlog."
+    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted. Step 6: P-A is P's active action again and back in Today at its old place; P-B is back in the backlog.\nStep 7: R-A is R's active action again, back in Waiting For waiting for \"Tom\"; R-B is back in the backlog.\nStep 8: each time `\"S-A\" moved back`; S-A is S's active action again, back in Next at its old place; S-B is back in\nthe backlog (not left as the active action).\nStep 9: toast `\"Q-C\" completed` with no **Undo** button; Cmd/Ctrl+Z does nothing; Q-C stays in Completed."
   },
   {
     "id": "TC-868",
