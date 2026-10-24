@@ -338,14 +338,10 @@ export function settingsModel() {
     }
 
     async function setReviewInProgress(value) {
-        const oldValue = state.reviewInProgress
-        state.reviewInProgress = value
         state.saving.reviewInProgress = true
         try {
             await save('review', { in_progress: value })
-        } catch (err) {
-            state.reviewInProgress = oldValue
-            throw err
+            state.reviewInProgress = value
         } finally {
             state.saving.reviewInProgress = false
         }

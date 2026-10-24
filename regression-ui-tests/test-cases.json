@@ -17019,11 +17019,10 @@
     "steps": [
       "Bor opens `/completed` and unchecks \"Draft brief\".",
       "Bor opens `/next`.",
-      "Bor claims another backlog action on \"Launch\".",
       "Bor opens \"Call printer\" from `/completed` and clicks **Undo**.",
       "Bor opens \"Launch\"."
     ],
-    "expected": "Step 1: toast `\"Draft brief\" restored`; the row leaves Completed. Step 2: \"Draft brief\" is in\nBor's Next Actions, assigned to Bor. Step 4: toast `\"Call printer\" restored`. Step 5: \"Call printer\" is in the backlog,\nunassigned (Bor already holds a claim on the project)."
+    "expected": "Step 1: toast `\"Draft brief\" restored`; the row leaves Completed. Step 2: \"Draft brief\" is in\nBor's Next Actions, assigned to Bor. Step 3: toast `\"Call printer\" restored`. Step 4: \"Call printer\" is in the backlog,\nunassigned (Bor already holds the claim on \"Draft brief\" from step 1 — one active claim per project)."
   },
   {
     "id": "TC-835",
@@ -17238,9 +17237,10 @@
       "Click **Complete Review**.",
       "Wait ~3 seconds.",
       "Start a review again, tick all 6, Complete, and click the celebration right away.",
-      "Reload `/review`."
+      "Reload `/review`.",
+      "Make `PUT /v1/user/settings` slow and then fail (devtools); click **Start Review**."
     ],
-    "expected": "Step 2: the button shows a spinner while saving; then the steps card is replaced by a centered\ncelebration — green check bloom, \"Review Complete\", \"Your system is current.\" — with no toast; header \"Last reviewed:\ntoday\". Step 3: the celebration fades out; the steps card returns disabled, no progress row, \"Start Review\" shown.\nStep 4: the click dismisses it early. Step 5: still Idle (\"Start Review\", no ticks) — the saved progress was cleared."
+    "expected": "Step 2: the button shows a spinner while saving and the step checkboxes are disabled; then the\nsteps card is replaced by a centered celebration — green check bloom, \"Review Complete\", \"Your system is current.\" —\nwith no toast; header \"Last reviewed: today\". Step 3: the celebration fades out; the steps card returns disabled, no progress row, \"Start Review\" shown.\nStep 4: the click dismisses it early. Step 5: still Idle (\"Start Review\", no ticks) — the saved progress was cleared.\nStep 6: \"Start Review\" shows a spinner while saving; the page stays Idle the whole time — no \"Complete Review\", no\nprogress row, no step 6 lists, checkboxes disabled; then the toast \"Couldn't start the review. Try again.\"; a reload\nis still Idle."
   },
   {
     "id": "TC-854",
@@ -17259,9 +17259,10 @@
       "Open `/review` in the second browser.",
       "Tick step 5 in the second browser; reload `/review` in the first browser.",
       "Block `PUT /v1/user/settings` (offline / devtools); tick step 6.",
-      "With the block still on, open a fresh `/review` page where `GET /v1/user/settings` fails."
+      "With the block still on, open a fresh `/review` page where `GET /v1/user/settings` fails.",
+      "Unblock and Retry. Make the next `PUT /v1/user/settings` slow and then fail, the ones after it succeed; quickly untick step 1, then untick step 2; wait for both saves; reload."
     ],
-    "expected": "Step 2: still in review — \"Complete Review\" button, steps 1, 2, 4 ticked, \"3 of 6 complete\".\nStep 3: the same state. Step 4: steps 1, 2, 4, 5 ticked in the first browser. Step 5: step 6 and its segment revert\nto unticked and the toast \"Couldn't save this step. Try again.\" shows. Step 6: the actions row shows \"Couldn't load\nyour review progress.\" + **Retry** and no Start button; the steps card is disabled; Retry after unblocking restores\nthe in-review state."
+    "expected": "Step 2: still in review — \"Complete Review\" button, steps 1, 2, 4 ticked, \"3 of 6 complete\".\nStep 3: the same state. Step 4: steps 1, 2, 4, 5 ticked in the first browser. Step 5: step 6 and its segment revert\nto unticked and the toast \"Couldn't save this step. Try again.\" shows. Step 6: the actions row shows \"Couldn't load\nyour review progress.\" + **Retry** and no Start button; the steps card is disabled; Retry after unblocking restores\nthe in-review state. Step 7: both ticks clear at once; the first save fails → step 1 and its segment return to\nticked + the toast \"Couldn't save this step. Try again.\"; step 2 stays unticked; after the reload the page shows\nexactly the same ticks (1, 4, 5 ticked, 2 unticked)."
   },
   {
     "id": "TC-855",
