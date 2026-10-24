@@ -68,6 +68,11 @@ parent §Screens "Every usage". Colors only from existing theme tokens (no new C
   Someday (rows 26–31).
   → `FilterEmptyState.vue:5,14`; `NextPage.vue:57`, `TodayPage.vue:57`, `WaitingForPage.vue:66`, `EngagePage.vue:163`,
   `ProjectsPage.vue:66`, `SomedayPage.vue:65`
+- [ ] W-20 Search icon stroke in the coin (rows 20, 21a–21d; /conclude acceptance 2026-10-24). `assets/SearchIcon.vue`
+  sets `stroke-width="8"` on its `<path>` (viewBox 96), which overrides `EmptyState.vue`'s `stroke-width: 1.5`. The
+  Search glyph renders about 3.2 px against about 2.4 px for every other section icon. Make it match the parent Icon art
+  "Section icon … stroke 1.5" inside the empty state only. Other `SearchIcon` users (TopNav, SearchBox, CommandPalette,
+  Settings, Help) stay unchanged.
 ### Verify
 - [x] W-15 `npm run build:main` passes. → `✓ built`, obfuscator + prerender OK (only the pre-existing >500 kB chunk warning).
 - [~] W-16 Runtime check on the local stack (owner verifies at runtime): every row 1–31 reached once in light AND dark

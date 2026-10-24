@@ -54,6 +54,32 @@ untouched. Runtime checks need the local stack (FEAT-055 search endpoint).
   run/failure behaviour (DS9), "See all" row (DS7), every state + copy in the States table, keyboard/mouse (DS12, DS13).
   — `src/main-app/components/CommandPalette.vue:2` (Modal 560px), groups `:156`, error row `:119`, See all `:139`, New project
   `:229`, open/reset `:244`; own search instance `searchModel.js` `palette`; `Modal.vue` renders title/actions only when given (DS1).
+  — DS9 failure copy closed by W-13.
+- [x] W-13 DS9 create-failure toast — `CommandPalette.vue:208` `onCreateError` uses `err.message || <DS9 fallback>`, but
+  `apiClient.js` `normalizeError` always sets `message` (status fallbacks `:110–131`, no-response `:136`), so the parent DS9
+  fallback copy never shows. Fix: server message only when the backend sent one, else the DS9 fallback copy; suppress the
+  toast only for the tier-limit 403 that opened the upgrade modal (`upgrade_message` / `limit`, `apiClient.js:82`) — any
+  other 403 gets a toast. Then re-run W-9 and update `wna-features.md` §37.2 "Create" only if the built behaviour differs.
+  — `apiClient.js:88` (tier-limit → `upgrade: true`), `:104` (backend message → `fromServer: true`); `CommandPalette.vue:209`
+  toasts the server message only when `fromServer`, else the DS9 copy, and skips only `upgrade`. W-9 re-run `✓ built in 3.97s`
+  (2026-10-24). §37.2 unchanged — built behaviour matches `wna-features.md:2934`. TC-841 step 6 (offline → DS9 copy) + step 5
+  "no error toast" added (`wna-test-cases.md:19132`); `update-tests.sh` regenerated.
+- [x] W-14 Read-only member on a shared-project action — `ActionDetailPage.vue` renders Done, Move to and Trash for a
+  `my_role === 'read_only'` member on an unassigned backlog action (only Assign to me checks the role, `:620`), against
+  `../wna_orchestration/specs/features/p2-team-collaboration.md:127`/`:138` (view + comment only; cannot complete, trash or
+  move). Hide those buttons for that case; `itemCommands` (`:638`) must mirror the page, so the palette loses the rows too
+  (parent "Team member" flow). Keep T-45 (`p2-team-collaboration.md:353`): an action already assigned to the member stays
+  completable / unassignable. Mind the uncommitted BUG-062 edits in the same file. Owner chose this slice (2026-10-24). Then
+  re-run W-9, run `update-tests.sh` for the new TC-861 (`wna-test-cases.md` §59), and update `wna-features.md` only where
+  it describes Action detail buttons for members.
+  — The action response has no `my_role` (backend `db_action_entity.hpp` / `action_repository_impl.cpp` columns), so the old
+  `canAssign` role check never fired; owner chose (2026-10-24) to read the role from `GET /v1/project/{id}/members`
+  (`listProjectMembers`) for an unassigned shared action: `ActionDetailPage.vue:620` `myRole`, `:621` `isReadOnlyBacklog`,
+  fetch watch `:747`. Hidden: Done `:139`, Move (`canMove` `:627`), Trash `:186`, Assign to me (`canAssign` `:623`);
+  palette mirror `:650`/`:661`. Assigned actions unaffected (`isUnassigned` gate), so T-45 holds. Role only, no tier check
+  (owner, 2026-10-24). Until the role loads, or if the request fails, the buttons show and the backend still 403s.
+  W-9 re-run `✓ built in 3.97s` (2026-10-24). TC-861 already authored (`wna-test-cases.md:19186`); `update-tests.sh` run.
+  `wna-features.md:472` (§6.2 Shared-project actions). BUG-062 edits were already committed; nothing was uncommitted.
 - [x] W-5 S2 Shortcuts dialog — `ShortcutsDialog.vue` in `Modal.vue` per §Screens S2 (rows, platform key label DS11, Review row
   rule DS10).
   — `src/main-app/components/ShortcutsDialog.vue:2`, platform key `:27`, Go-to rows from `shortcutModel.navigation` (DS10),
@@ -67,7 +93,7 @@ untouched. Runtime checks need the local stack (FEAT-055 search endpoint).
 - [x] W-8 `content/help/faq.js:118` search entry — Cmd/Ctrl+K wording per parent §Help impact.
   — `faq.js:118`.
 ### Verify
-- [x] W-9 `npm run build:main` passes. — `✓ built in 3.69s` (2026-10-23), prerender OK.
+- [x] W-9 `npm run build:main` passes. — `✓ built in 3.97s` (2026-10-24, after W-13), prerender OK.
 - [~] W-10 Runtime check on the local stack (owner verifies at runtime): each §Screens S1–S3 state reached once on desktop;
   palette absent < 768 px; list what was seen.
   — DEFERRED TO USER / ui-tests: not run (no app runs by Claude); scenarios authored as TC-838–843.

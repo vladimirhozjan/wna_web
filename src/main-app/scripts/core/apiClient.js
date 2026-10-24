@@ -85,7 +85,7 @@ function normalizeError(error, {storageHint = null} = {}) {
                 message: friendlyUpgradeMessage(data.upgrade_message || backendMsg, {storageHint}),
                 limit: data.limit,
             })
-            return {status, message: backendMsg || 'Limit reached'}
+            return {status, message: backendMsg || 'Limit reached', upgrade: true}
         }
 
         // File/storage limit errors (413)
@@ -101,7 +101,7 @@ function normalizeError(error, {storageHint = null} = {}) {
 
         // Backend message → has priority
         if (backendMsg) {
-            const normalized = {status, message: backendMsg}
+            const normalized = {status, message: backendMsg, fromServer: true}
             if (data.user_id) normalized.user_id = data.user_id
             if (data.error === 'drive_file_not_found') normalized.code = data.error
             return normalized

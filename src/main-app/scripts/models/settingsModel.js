@@ -22,6 +22,7 @@ const DEFAULTS = {
         template_id: null,
         last_review_date: null,
         dismissed_tips: [],
+        in_progress: null,
     },
 }
 
@@ -52,6 +53,7 @@ export function settingsModel() {
         reviewEnabled: true,
         reviewTemplateId: null,
         reviewLastDate: null,
+        reviewInProgress: null,
         dismissedTips: [],
 
         // Loading state
@@ -72,6 +74,7 @@ export function settingsModel() {
             reviewEnabled: false,
             reviewTemplateId: false,
             reviewLastDate: false,
+            reviewInProgress: false,
             dismissedTips: false,
         },
     })
@@ -116,6 +119,7 @@ export function settingsModel() {
             state.reviewEnabled = settings.review.enabled ?? DEFAULTS.review.enabled
             state.reviewTemplateId = settings.review.template_id ?? DEFAULTS.review.template_id
             state.reviewLastDate = settings.review.last_review_date ?? DEFAULTS.review.last_review_date
+            state.reviewInProgress = settings.review.in_progress ?? DEFAULTS.review.in_progress
             state.dismissedTips = Array.isArray(settings.review.dismissed_tips) ? settings.review.dismissed_tips : []
         }
     }
@@ -333,15 +337,26 @@ export function settingsModel() {
         }
     }
 
-    async function setReviewLastDate(date) {
-        const oldValue = state.reviewLastDate
-        state.reviewLastDate = date
+    async function setReviewInProgress(value) {
+        const oldValue = state.reviewInProgress
+        state.reviewInProgress = value
+        state.saving.reviewInProgress = true
+        try {
+            await save('review', { in_progress: value })
+        } catch (err) {
+            state.reviewInProgress = oldValue
+            throw err
+        } finally {
+            state.saving.reviewInProgress = false
+        }
+    }
+
+    async function completeReview(date) {
         state.saving.reviewLastDate = true
         try {
-            await save('review', { last_review_date: date })
-        } catch (err) {
-            state.reviewLastDate = oldValue
-            throw err
+            await save('review', { last_review_date: date, in_progress: null })
+            state.reviewLastDate = date
+            state.reviewInProgress = null
         } finally {
             state.saving.reviewLastDate = false
         }
@@ -394,7 +409,8 @@ export function settingsModel() {
         setTagPresets,
         setReviewEnabled,
         setReviewTemplateId,
-        setReviewLastDate,
+        setReviewInProgress,
+        completeReview,
         dismissTip,
         isTipDismissed,
         getCalendarSettings,

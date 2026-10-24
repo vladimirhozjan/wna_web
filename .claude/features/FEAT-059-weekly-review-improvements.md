@@ -35,32 +35,43 @@ checks of the saved progress need the backend slice (`review.in_progress`) on th
 
 ## Checklist
 ### Model + building blocks
-- [ ] W-1 `reviewModel` / `settingsModel`: `review.in_progress` read on load (hydrates `inReview` + `steps`), written on Start,
+- [x] W-1 `reviewModel` / `settingsModel`: `review.in_progress` read on load (hydrates `inReview` + `steps`), written on Start,
   on every tick, and cleared together with `last_review_date` on Complete (one request) — parent D5 + §Screens "Data needs".
-- [ ] W-2 `components/Celebration.vue` — props `title` / `subtitle`, emit `dismiss`, animation + auto-dismiss + fade moved out
+  — `scripts/models/settingsModel.js:25,122` (default + hydrate), `:340` `setReviewInProgress`, `:354` `completeReview` (one PUT `{last_review_date, in_progress: null}`); `scripts/models/reviewModel.js:53-70` (inReview/steps derived from settings; Start/tick/Complete write). `setReviewLastDate` orphaned → removed (grep 0).
+- [x] W-2 `components/Celebration.vue` — props `title` / `subtitle`, emit `dismiss`, animation + auto-dismiss + fade moved out
   of `InboxPage.vue` (no copy-paste left behind: grep the old celebration markup/CSS in `InboxPage.vue` → 0).
-- [ ] W-3 `InboxPage.vue` uses `Celebration.vue` with "Inbox Zero" / "You're in control." — trigger rules and look unchanged.
+  — `components/Celebration.vue:1-41` (props, `dismiss`, 3 s timer + 300 ms fade, CSS moved verbatim). grep `celebrationPhase|dismissCelebration|check-bloom` in `InboxPage.vue` → 0.
+- [x] W-3 `InboxPage.vue` uses `Celebration.vue` with "Inbox Zero" / "You're in control." — trigger rules and look unchanged.
+  — `views/dashboard/InboxPage.vue:77` (same trigger watch/`?celebrate` paths, `:191`, `:209`).
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [ ] W-4 Progress row per §Screens "Progress row" + "Layout" #4 (segments, tokens, transition, counter moved into the row,
+- [x] W-4 Progress row per §Screens "Progress row" + "Layout" #4 (segments, tokens, transition, counter moved into the row,
   segment click → scroll, mobile one row).
-- [ ] W-5 Step 6 per §Screens "Step 6 — Review Calendar": new hint, both lists (windows per D3, read-only rows DS1, only while
+  — `views/dashboard/ReviewPage.vue:39-53` (row), `:238` scroll, styles `.review-progress*` (6px/3px/gap 4px, `--color-bg-secondary`/`--color-action`, 0.15s, counter `flex-shrink: 0`). Old counter beside the button removed.
+- [x] W-5 Step 6 per §Screens "Step 6 — Review Calendar": new hint, both lists (windows per D3, read-only rows DS1, only while
   in review DS2, both-window duplicates DS3, no cap DS8), each list's Loading / Error + Retry / Empty / Rows states with exact
   copy, re-fetch on mount while in review and on Start.
-- [ ] W-6 Page states per §Screens "Page states": Hydrating, Settings load failed + Retry (Start blocked, DS7), Idle, In review,
+  — hint `ReviewPage.vue:181`; lists `:94-120` (ItemList disabled/non-editable/no-checkbox, empty `#actions`, click → `action-detail?from=review`), copy `:196-210`; windows `reviewModel.js:7-8,79,84`; fetch on mount-while-in-review + Start via `watch(inReview, …, {immediate})` `ReviewPage.vue:272`.
+- [x] W-6 Page states per §Screens "Page states": Hydrating, Settings load failed + Retry (Start blocked, DS7), Idle, In review,
   Start / Tick / Complete save failures (revert + toast copy), Complete in flight, Completed (`Celebration.vue` in place of the
   steps card, "Review Complete" / "Your system is current.", old "Weekly review completed!" toast removed — DS5).
+  — Hydrating `ReviewPage.vue:31` (`:loading`), failed + Retry `:27-30,194`, Complete in flight `:34`, toasts `:246-270`, Completed `:55-61` (Celebration replaces the card). grep "Weekly review completed" in src → 0.
 ### Help
-- [ ] W-7 `content/help/bestPractices.js` "Do a Weekly Review" — the one sentence from parent §Help impact.
+- [x] W-7 `content/help/bestPractices.js` "Do a Weekly Review" — the one sentence from parent §Help impact.
+  — `content/help/bestPractices.js:25`.
 ### Verify
-- [ ] W-8 `npm run build:main` passes.
-- [ ] W-9 Runtime check on the local stack (owner verifies at runtime): each §Screens state reached once, reload mid-review keeps
+- [x] W-8 `npm run build:main` passes.
+  — `npm run build:main` ✓ (built in 4.18s, only the pre-existing chunk-size warning).
+- [x] W-9 Runtime check on the local stack (owner verifies at runtime): each §Screens state reached once, reload mid-review keeps
   the ticks, Inbox Zero still plays as before; list what was seen.
+  — Owner verified on the local stack 2026-10-24: all §Screens states, reload mid-review keeps the ticks, Inbox Zero unchanged — everything works.
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-10 Update `../wna_orchestration/specs/features/wna-features.md` — §16.1 Review Page (progress row, step 6 lists,
+- [x] W-10 Update `../wna_orchestration/specs/features/wna-features.md` — §16.1 Review Page (progress row, step 6 lists,
   celebration, saved progress) and §4.1 Inbox Zero celebration (shared component, no visual change).
-- [ ] W-11 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-851–854 (IDs reserved by the parent,
+  — `wna_orchestration/specs/features/wna-features.md:337` (§4.1), `:1048-1071` (§16.1).
+- [x] W-11 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-851–854 (IDs reserved by the parent,
   §Work breakdown → ui-tests; expected results from §Screens) and update the existing Weekly Review TCs whose expected results
   change (Section 15, e.g. TC-245 / TC-246 / TC-247 counter placement + no success toast).
+  — `wna_orchestration/specs/tests/wna-test-cases.md:7814` (TC-245), `:7834` (TC-246), `:7872-7881` (TC-247), `:19526-19636` (Section 63, TC-851–854); `regression-ui-tests/update-tests.sh` re-run.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
