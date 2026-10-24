@@ -883,9 +883,9 @@ async function saveField(field) {
   try {
     await updateAction(action.value.id, { title: action.value.title, description: action.value.description })
     editingField.value = null
-  } catch {
+  } catch (err) {
     action.value[field] = oldValue
-    toaster.push('Failed to save changes')
+    toaster.push(err.message || 'Failed to save changes')
     setTimeout(() => {
       if (field === 'title') {
         titleInput.value?.focus()
@@ -923,9 +923,9 @@ async function saveTags() {
     await updateAction(action.value.id, { title: action.value.title, tags: newTags })
     tagMdl.addToCache(newTags)
     editingField.value = null
-  } catch {
+  } catch (err) {
     action.value.tags = oldTags
-    toaster.push('Failed to save tags')
+    toaster.push(err.message || 'Failed to save tags')
   } finally {
     savingField.value = null
   }
@@ -1012,11 +1012,11 @@ async function onMoveTo(newState) {
       if (pick.kind === 'connection') toaster.success(message)
       else undo.record({ op: 'move', item: snapshot, title, to: 'WAITING', message })
       await navigateToNextOrPrev()
-    } catch {
+    } catch (err) {
       action.value.state = oldState
       action.value.waiting_for = oldWaitingFor
       action.value.waiting_for_user_id = oldWaitingForUserId
-      toaster.push('Failed to move action')
+      toaster.push(err.message || 'Failed to move action')
     } finally {
       actionLoading.value = null
     }
@@ -1049,12 +1049,12 @@ async function onMoveTo(newState) {
       const title = truncateTitle(action.value.title)
       undo.record({ op: 'move', item: snapshot, title, to: 'CALENDAR', message: `"${title}" moved to Calendar` })
       await navigateToNextOrPrev()
-    } catch {
+    } catch (err) {
       action.value.state = oldState
       action.value.scheduled_date = oldScheduledDate
       action.value.scheduled_time = oldScheduledTime
       action.value.scheduled_duration = oldScheduledDuration
-      toaster.push('Failed to move action')
+      toaster.push(err.message || 'Failed to move action')
     } finally {
       actionLoading.value = null
     }
@@ -1102,14 +1102,14 @@ async function onMoveTo(newState) {
     const title = truncateTitle(action.value.title)
     undo.record({ op: 'move', item: snapshot, title, to: newState, message: `"${title}" moved to ${stateLabels[newState]}` })
     await navigateToNextOrPrev()
-  } catch {
+  } catch (err) {
     action.value.state = oldState
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.start_date = oldStartDate
     action.value.start_time = oldStartTime
-    toaster.push('Failed to move action')
+    toaster.push(err.message || 'Failed to move action')
   } finally {
     actionLoading.value = null
   }
@@ -1133,11 +1133,11 @@ async function onGotIt() {
     undo.record({ op: 'move', item: snapshot, title, to: action.value.state, message: `"${title}" moved to ${stateLabel}` })
     // Navigate back to waiting list since item is no longer there
     router.push({ name: 'waiting-for' })
-  } catch {
+  } catch (err) {
     action.value.state = oldState
     action.value.waiting_for = oldWaitingFor
     action.value.waiting_since = oldWaitingSince
-    toaster.push('Failed to move action')
+    toaster.push(err.message || 'Failed to move action')
   } finally {
     actionLoading.value = null
   }
@@ -1174,8 +1174,8 @@ async function onUnassignMine() {
     action.value.assigned_to = null
     action.value.assigned_to_email = null
     toaster.success('Action returned to backlog')
-  } catch {
-    toaster.push('Failed to unassign action.')
+  } catch (err) {
+    toaster.push(err.message || 'Failed to unassign action.')
   } finally {
     unassignLoading.value = false
   }
@@ -1282,12 +1282,12 @@ async function saveScheduledField() {
     await deferAction(action.value.id, 'scheduled', newDate, newTime, duration)
     statsModel().refreshStats()
     editingField.value = null
-  } catch {
+  } catch (err) {
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
-    toaster.push('Failed to save scheduled date')
+    toaster.push(err.message || 'Failed to save scheduled date')
   } finally {
     savingField.value = null
   }
@@ -1313,12 +1313,12 @@ async function clearScheduledField() {
     statsModel().refreshStats()
     editingField.value = null
     dateEdit.value = { date: '', time: null, duration: null }
-  } catch {
+  } catch (err) {
     action.value.scheduled_date = oldScheduledDate
     action.value.scheduled_time = oldScheduledTime
     action.value.scheduled_duration = oldScheduledDuration
     action.value.state = oldState
-    toaster.push('Failed to clear scheduled date')
+    toaster.push(err.message || 'Failed to clear scheduled date')
   } finally {
     savingField.value = null
   }
@@ -1364,11 +1364,11 @@ async function saveStartField() {
     await deferAction(action.value.id, 'start', newDate, newTime)
     statsModel().refreshStats()
     editingField.value = null
-  } catch {
+  } catch (err) {
     action.value.start_date = oldStartDate
     action.value.start_time = oldStartTime
     action.value.state = oldState
-    toaster.push('Failed to save start date')
+    toaster.push(err.message || 'Failed to save start date')
   } finally {
     savingField.value = null
   }
@@ -1392,11 +1392,11 @@ async function clearStartField() {
     statsModel().refreshStats()
     editingField.value = null
     dateEdit.value = { date: '', time: null, duration: null }
-  } catch {
+  } catch (err) {
     action.value.start_date = oldStartDate
     action.value.start_time = oldStartTime
     action.value.state = oldState
-    toaster.push('Failed to clear start date')
+    toaster.push(err.message || 'Failed to clear start date')
   } finally {
     savingField.value = null
   }
@@ -1444,10 +1444,10 @@ async function saveDateField(field) {
     await setDueDate(action.value.id, newDate, newTime)
     statsModel().refreshStats()
     editingField.value = null
-  } catch {
+  } catch (err) {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
-    toaster.push('Failed to save due date')
+    toaster.push(err.message || 'Failed to save due date')
   } finally {
     savingField.value = null
   }
@@ -1472,10 +1472,10 @@ async function clearDateField(field) {
     statsModel().refreshStats()
     editingField.value = null
     dateEdit.value = { date: '', time: null, duration: null }
-  } catch {
+  } catch (err) {
     action.value.due_date = oldDate
     action.value.due_time = oldTime
-    toaster.push('Failed to clear due date')
+    toaster.push(err.message || 'Failed to clear due date')
   } finally {
     savingField.value = null
   }
