@@ -1429,13 +1429,12 @@ async function navigateToNextOrPrev() {
 }
 
 async function onTrash() {
-  const hasActions = orderedActions.value.length > 0
   const title = truncateTitle(project.value.title)
 
   actionLoading.value = 'trash'
   try {
-    await trashProject(project.value.id)
-    const message = hasActions ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
+    const result = await trashProject(project.value.id)
+    const message = result?.trashed_actions > 0 ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
     undo.record({ op: 'trash', item: project.value, title, message })
     if (isSomeday.value) {
       router.push({ name: 'someday' })

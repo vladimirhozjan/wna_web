@@ -503,7 +503,10 @@ async function onDropToSomeday(data) {
       return;
     }
     removeFromSource(data);
-    const message = `"${truncateTitle(data.title)}" moved to Someday`;
+    const title = truncateTitle(data.title);
+    const message = data.sourceType === 'project' && row.next_action_id
+      ? `"${title}" moved to Someday. Active actions shelved.`
+      : `"${title}" moved to Someday`;
     if (data.sourceType === 'completed') toaster.success(message);
     else recordDrop('move', row, message, 'SOMEDAY');
     refreshAfterDrop();
@@ -801,26 +804,29 @@ async function onDropToCompleted(data) {
 
 async function onDropToTrash(data) {
   const row = rowOf(data);
+  let result = null;
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.trashStuff(data.id);
     } else if (data.sourceType === 'action') {
       await apiClient.trashAction(data.id);
     } else if (data.sourceType === 'project') {
-      await apiClient.trashProject(data.id);
+      result = await apiClient.trashProject(data.id);
     } else if (data.sourceType === 'someday' || data.sourceType === 'completed') {
       if (data.type === 'STUFF') {
         await apiClient.trashStuff(data.id);
       } else if (data.type === 'ACTION') {
         await apiClient.trashAction(data.id);
       } else if (data.type === 'PROJECT') {
-        await apiClient.trashProject(data.id);
+        result = await apiClient.trashProject(data.id);
       } else return;
     } else {
       return;
     }
     removeFromSource(data);
-    recordDrop('trash', row, `"${truncateTitle(data.title)}" moved to trash`);
+    const title = truncateTitle(data.title);
+    const message = result?.trashed_actions > 0 ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`;
+    recordDrop('trash', row, message);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');

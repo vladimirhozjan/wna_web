@@ -78,6 +78,7 @@ import SearchResultRow from '../../components/SearchResultRow.vue'
 import SearchIcon from '../../assets/SearchIcon.vue'
 import { searchModel, SEARCH_MIN_LENGTH } from '../../scripts/models/searchModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 
 // No Completed chip — completed hits stay in All and their type, badged
 const CHIPS = [
@@ -93,6 +94,7 @@ const route = useRoute()
 const router = useRouter()
 const search = searchModel().page
 const toaster = errorModel()
+const undo = undoModel()
 
 const value = ref('')
 const inputRef = ref(null)
@@ -112,6 +114,7 @@ async function loadMore() {
     toaster.push("Couldn't load more results. Try again.")
   }
 }
+undo.registerRefresh(search.retry)
 
 watch(value, (v) => search.input(v))
 

@@ -134,7 +134,11 @@ export function undoModel() {
             return reorder(entry)
         }
 
-        if (op !== 'move' && item.state === 'COMPLETED') return apiClient.completeAction(id)
+        // DS11: restore puts a standalone action back in COMPLETED itself, a project action in its project
+        if (op !== 'move' && item.state === 'COMPLETED') {
+            if (item.project_id) await apiClient.completeAction(id)
+            return
+        }
         // DS19: the server places shared rows
         if (item.project_shared && op !== 'move') return
         if (op !== 'move' && item.backlog_position > 0) {

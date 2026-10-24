@@ -66,11 +66,13 @@ import CalendarYearView from '../../components/calendar/CalendarYearView.vue'
 import CalendarRecurringView from '../../components/calendar/CalendarRecurringView.vue'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 
 const router = useRouter()
 const calendar = calendarModel()
 const toaster = errorModel()
+const undo = undoModel()
 
 const { loading: recurringLoading } = recurringModel()
 
@@ -94,6 +96,7 @@ async function loadData() {
     toaster.push('Failed to load calendar items')
   }
 }
+undo.registerRefresh(loadData)
 
 onMounted(() => {
   loadData()

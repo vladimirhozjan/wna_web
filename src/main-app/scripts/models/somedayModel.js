@@ -100,6 +100,7 @@ export function somedayModel() {
 
     async function trashItem(item) {
         error.value = null
+        let result = null
 
         try {
             switch (item.type) {
@@ -110,7 +111,7 @@ export function somedayModel() {
                     await apiClient.trashAction(item.id)
                     break
                 case 'PROJECT':
-                    await apiClient.trashProject(item.id)
+                    result = await apiClient.trashProject(item.id)
                     break
                 default:
                     throwUnknownType(item.type)
@@ -123,6 +124,7 @@ export function somedayModel() {
                 cursor.value = last ? last.id : null
             }
             statsModel().refreshStats()
+            return result
         } catch (err) {
             error.value = err
             throw err

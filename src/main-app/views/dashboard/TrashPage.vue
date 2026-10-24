@@ -52,6 +52,7 @@ import EmptyState from '../../components/EmptyState.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import { trashModel } from '../../scripts/models/trashModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 
 const {
@@ -65,6 +66,7 @@ const {
 } = trashModel()
 
 const toaster = errorModel()
+const undo = undoModel()
 const confirm = confirmModel()
 
 watch(error, (err) => {
@@ -86,6 +88,7 @@ async function loadMore() {
 function onRefresh() {
   return loadTrash({ reset: true })
 }
+undo.registerRefresh(onRefresh)
 
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title
