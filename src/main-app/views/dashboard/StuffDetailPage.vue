@@ -219,14 +219,16 @@
         </div>
       </Teleport>
 
-      <!-- Clarify Fullscreen (Mobile) -->
+      <!-- Clarify Bottom sheet (Mobile) -->
       <Teleport to="body" v-if="showClarify && item && isMobile">
-        <ClarifyPanel
-            :stuff-item="item"
-            mode="fullscreen"
-            @done="onClarifyDone"
-            @cancel="closeClarify"
-        />
+        <BottomSheet :dismissible="clarifyModel().canDismiss()" @close="cancelClarify">
+          <ClarifyPanel
+              :stuff-item="item"
+              mode="sheet"
+              @done="onClarifyDone"
+              @cancel="closeClarify"
+          />
+        </BottomSheet>
       </Teleport>
 
     </div>
@@ -240,6 +242,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Dropdown from '../../components/Dropdown.vue'
 import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
+import BottomSheet from '../../components/BottomSheet.vue'
 import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
 import { stuffModel } from '../../scripts/models/stuffModel.js'
@@ -567,6 +570,11 @@ function closeClarify() {
   showClarify.value = false
 }
 
+function cancelClarify() {
+  clarifyModel().cancel()
+  closeClarify()
+}
+
 async function onClarifyDone() {
   // Navigate to next item and continue clarifying
   const newTotal = totalItems.value - 1
@@ -593,7 +601,7 @@ async function onClarifyDone() {
 
     // Restart clarify for the new item
     const clarify = clarifyModel()
-    clarify.start(item.value, isMobile.value ? 'fullscreen' : 'modal')
+    clarify.start(item.value, isMobile.value ? 'sheet' : 'modal')
   } catch {
     showClarify.value = false
     router.push({ name: 'inbox' })

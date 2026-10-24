@@ -44,7 +44,7 @@
       </div>
 
       <!-- Scrollable list area — only this scrolls; the charts stay fixed above. -->
-      <div class="completed-scroll">
+      <PullToRefresh class="completed-scroll" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <!-- Recency-grouped list. .card overflow relaxed so sticky headers anchor to .completed-scroll. -->
         <div class="card completed-list">
           <div v-if="loading && items.length === 0" class="completed-loading">
@@ -89,7 +89,7 @@
             </div>
           </template>
         </div>
-      </div>
+      </PullToRefresh>
     </div>
   </DashboardLayout>
 </template>
@@ -99,6 +99,7 @@ import { watch, onMounted, onUnmounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
+import PullToRefresh from '../../components/PullToRefresh.vue'
 import CompletedBarChart from '../../components/CompletedBarChart.vue'
 import CompletedIcon from '../../assets/CompletedIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
@@ -205,6 +206,10 @@ onUnmounted(() => {
 
 async function loadMore() {
   await loadCompleted()
+}
+
+function onRefresh() {
+  return Promise.all([loadCompleted({ reset: true }), loadStats()])
 }
 
 function truncateTitle(title, maxLen = 30) {

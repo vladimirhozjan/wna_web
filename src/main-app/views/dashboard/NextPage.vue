@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div class="next-content">
+      <PullToRefresh class="next-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -39,10 +39,14 @@
             :completing-ids="completingIds"
             :disabled="adding"
             source-type="action"
+            swipe-right="complete"
+            swipe-left="trash"
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
             @delete="onTrash"
+            @swipe-right="id => onItemCheck(id, true)"
+            @swipe-left="onTrash"
             @move="onMove"
             @load-more="loadMore"
         >
@@ -62,7 +66,7 @@
           </template>
         </ItemList>
         </div>
-      </div>
+      </PullToRefresh>
     </div>
   </DashboardLayout>
 </template>
@@ -72,6 +76,7 @@ import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
+import PullToRefresh from '../../components/PullToRefresh.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
@@ -152,6 +157,10 @@ onMounted(() => {
 
 async function loadMore() {
   await loadActions()
+}
+
+function onRefresh() {
+  return loadActions({ reset: true, tags: effectiveTags.value })
 }
 
 async function onAdd() {

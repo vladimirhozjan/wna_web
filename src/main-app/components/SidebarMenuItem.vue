@@ -168,4 +168,11 @@ function onDrop(e) {
 .badge-blue {
   color: var(--color-action);
 }
+
+@media (max-width: 768px) {
+  .menu-item {
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
+  }
+}
 </style>

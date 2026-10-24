@@ -198,4 +198,19 @@ function formatSize(bytes) {
   color: var(--color-text-primary);
 }
 
+@media (max-width: 768px) {
+  .file-card__menu-btn {
+    position: relative;
+  }
+
+  .file-card__menu-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
+}
 </style>

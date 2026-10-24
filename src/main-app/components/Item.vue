@@ -1,9 +1,22 @@
 <template>
   <div
+      ref="rootEl"
       class="item"
-      :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading, 'item--no-hover': noHover }"
+      :class="{ 'item--checked': checked, 'item--editing': isEditing, 'item--loading': loading, 'item--no-hover': noHover, 'item--swipeable': swipeRight || swipeLeft, 'item--swiping': swipeX !== 0 || snapping }"
   >
-    <div class="item__main-row">
+    <div
+        v-if="swipeAction"
+        class="item__swipe-reveal"
+        :class="[`item__swipe-reveal--${swipeAction}`, { 'item__swipe-reveal--armed': swipeArmed, 'item__swipe-reveal--right': swipeDir === 'left', 'item__swipe-reveal--snapping': snapping }]"
+        :style="{ width: Math.abs(swipeX) + 'px' }"
+        :data-armed="swipeArmed"
+        data-testid="swipe-reveal"
+    >
+      <component :is="SWIPE_ACTIONS[swipeAction].icon" class="item__swipe-icon" />
+      <span class="text-body-s fw-semibold">{{ SWIPE_ACTIONS[swipeAction].label }}</span>
+    </div>
+
+    <div class="item__main-row" :class="{ 'item__swipe-content--snapping': snapping }" :style="swipeStyle">
       <!-- Checkbox -->
       <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
         <AnimatedCheckbox
@@ -54,16 +67,20 @@
       <slot name="drag-handle" />
     </div>
 
-    <div v-if="$slots.subtitle" class="item__subtitle-row" :class="{ 'item__subtitle-row--no-checkbox': noCheckbox && !$slots.prefix, 'item__subtitle-row--prefix': noCheckbox && $slots.prefix }">
+    <div v-if="$slots.subtitle" class="item__subtitle-row" :class="{ 'item__subtitle-row--no-checkbox': noCheckbox && !$slots.prefix, 'item__subtitle-row--prefix': noCheckbox && $slots.prefix, 'item__swipe-content--snapping': snapping }" :style="swipeStyle">
       <slot name="subtitle" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue'
 import AnimatedCheckbox from './AnimatedCheckbox.vue'
 import Spinner from './Spinner.vue'
+import CompletedIcon from '../assets/CompletedIcon.vue'
+import ArrowRightSmallIcon from '../assets/ArrowRightSmallIcon.vue'
+import TrashIcon from '../assets/TrashIcon.vue'
+import { useSwipe, SNAP_MS } from '../scripts/core/swipe.js'
 
 const props = defineProps({
   id: {
@@ -101,16 +118,46 @@ const props = defineProps({
   noInitialAnimation: {
     type: Boolean,
     default: false
+  },
+  // 'complete' | 'clarify'
+  swipeRight: {
+    type: String,
+    default: null
+  },
+  // 'trash'
+  swipeLeft: {
+    type: String,
+    default: null
   }
 })
 
-const emit = defineEmits(['update', 'check'])
+const emit = defineEmits(['update', 'check', 'swipe-right', 'swipe-left'])
+
+const SWIPE_ACTIONS = {
+  complete: { icon: CompletedIcon, label: 'Complete' },
+  clarify: { icon: ArrowRightSmallIcon, label: 'Clarify' },
+  trash: { icon: TrashIcon, label: 'Trash' },
+}
+const SWIPE_ARM_RATIO = 0.4
 
 const isEditing = ref(false)
 const editValue = ref('')
 const editInput = ref(null)
 const inputMeasure = ref(null)
 const inputWidth = ref(50)
+const rootEl = ref(null)
+const swipeX = ref(0)
+const swipeDir = ref(null)
+const rowWidth = ref(0)
+const snapping = ref(false)
+
+const swipeAction = computed(() => {
+  if (swipeDir.value === 'right') return props.swipeRight
+  if (swipeDir.value === 'left') return props.swipeLeft
+  return null
+})
+const swipeArmed = computed(() => rowWidth.value > 0 && Math.abs(swipeX.value) >= rowWidth.value * SWIPE_ARM_RATIO)
+const swipeStyle = computed(() => (swipeX.value || snapping.value) ? { transform: `translateX(${swipeX.value}px)` } : null)
 
 watch(editValue, () => {
   nextTick(() => {
@@ -155,6 +202,35 @@ function onCancel() {
 function onCheck(checked) {
   emit('check', props.id, checked)
 }
+
+useSwipe(rootEl, {
+  canStart: () => (props.swipeRight || props.swipeLeft) && !isEditing.value && !props.loading && !props.checked && !snapping.value,
+  onMove(dx) {
+    const dir = dx > 0 ? 'right' : 'left'
+    const offered = dir === 'right' ? props.swipeRight : props.swipeLeft
+    if (!offered) {
+      swipeX.value = 0
+      return false
+    }
+    if (!rowWidth.value) rowWidth.value = rootEl.value.offsetWidth
+    swipeDir.value = dir
+    swipeX.value = dx
+    return true
+  },
+  onEnd() {
+    const armed = swipeArmed.value
+    const dir = swipeDir.value
+    if (!dir) return
+    snapping.value = true
+    swipeX.value = 0
+    setTimeout(() => {
+      snapping.value = false
+      swipeDir.value = null
+      rowWidth.value = 0
+      if (armed) emit(`swipe-${dir}`, props.id)
+    }, SNAP_MS)
+  },
+})
 </script>
 
 <style scoped>
@@ -189,14 +265,14 @@ function onCheck(checked) {
 
 /* Hit areas fill the row height; negative margins keep the row height and label/icon position unchanged. */
 .item__actions :deep(.action-btn) {
-  width: 44px;
-  height: 44px;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
   padding: 0;
   margin: -11px -7px -11px 0;
 }
 
 .item__actions :deep(.base-btn--link) {
-  height: 44px;
+  height: var(--touch-target-min);
   padding: 0 12px;
   margin: -11px -4px;
 }
@@ -345,6 +421,75 @@ function onCheck(checked) {
   user-select: text;
 }
 
+.item--swipeable {
+  touch-action: pan-y;
+}
+
+.item--swiping {
+  overflow: hidden;
+}
+
+.item__swipe-reveal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.item__swipe-reveal--right {
+  left: auto;
+  right: 0;
+  flex-direction: row-reverse;
+}
+
+.item__swipe-reveal--snapping,
+.item__swipe-content--snapping {
+  transition: width 0.15s ease, transform 0.15s ease;
+}
+
+.item__swipe-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.item__swipe-reveal--complete {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.item__swipe-reveal--clarify {
+  background: var(--color-action-bg-light);
+  color: var(--color-action);
+}
+
+.item__swipe-reveal--trash {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.item__swipe-reveal--complete.item__swipe-reveal--armed {
+  background: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+.item__swipe-reveal--clarify.item__swipe-reveal--armed {
+  background: var(--color-action);
+  color: var(--color-text-inverse);
+}
+
+.item__swipe-reveal--trash.item__swipe-reveal--armed {
+  background: var(--color-danger);
+  color: var(--color-text-inverse);
+}
+
 .item--loading {
   pointer-events: none;
   opacity: 0.7;
@@ -356,6 +501,28 @@ function onCheck(checked) {
   left: 50%;
   margin-top: -10px;
   margin-left: -10px;
+}
+
+@media (max-width: 768px) {
+  .item {
+    min-height: var(--touch-target-min);
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .item__checkbox :deep(.animated-checkbox) {
+    position: relative;
+  }
+
+  .item__checkbox :deep(.animated-checkbox)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
 }
 
 </style>

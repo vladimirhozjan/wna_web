@@ -11,7 +11,7 @@
         </div>
       </div>
 
-      <div class="engage-content">
+      <PullToRefresh class="engage-content" :refresh="onRefresh" :disabled="!initialLoadDone">
 
         <!-- Loading state -->
         <div v-if="!initialLoadDone" class="loading-state">
@@ -37,10 +37,14 @@
                 :disabled="true"
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
+                swipe-right="complete"
+                swipe-left="trash"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onOverdueClick"
                 @delete="onTrash"
+                @swipe-right="id => onCheck(id, true)"
+                @swipe-left="onTrash"
             >
               <template #subtitle="{ item }">
                 <MetadataRow :item="item" entity-type="action" />
@@ -63,12 +67,16 @@
                 :has-more="false"
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
+                swipe-right="complete"
+                swipe-left="trash"
                 source-type="action"
                 :accept-drop="['action']"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onTodayClick"
                 @delete="onTrash"
+                @swipe-right="id => onCheck(id, true)"
+                @swipe-left="onTrash"
                 @move="onTodayMove"
                 @external-drop="onDropToToday"
             >
@@ -93,12 +101,16 @@
                 :has-more="false"
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
+                swipe-right="complete"
+                swipe-left="trash"
                 source-type="action"
                 :accept-drop="['action']"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onNextClick"
                 @delete="onTrash"
+                @swipe-right="id => onCheck(id, true)"
+                @swipe-left="onTrash"
                 @move="onNextMove"
                 @external-drop="onDropToNext"
             >
@@ -123,12 +135,16 @@
                 :has-more="false"
                 :loading-ids="loadingIds"
                 :completing-ids="completingIds"
+                swipe-right="complete"
+                swipe-left="trash"
                 source-type="action"
                 :accept-drop="['action']"
                 @update="onUpdate"
                 @check="onCheck"
                 @click="onWaitingClick"
                 @delete="onTrash"
+                @swipe-right="id => onCheck(id, true)"
+                @swipe-left="onTrash"
                 @move="onWaitingMove"
                 @external-drop="onDropToWaiting"
             >
@@ -173,7 +189,7 @@
 
         </template>
 
-      </div>
+      </PullToRefresh>
 
     </div>
   </DashboardLayout>
@@ -184,6 +200,7 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
+import PullToRefresh from '../../components/PullToRefresh.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import EngageIcon from '../../assets/EngageIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
@@ -245,6 +262,14 @@ onMounted(async () => {
 watch(effectiveTags, (tags) => {
     loadDashboard({ tags })
 })
+
+async function onRefresh() {
+    try {
+        await loadDashboard({ tags: effectiveTags.value })
+    } catch (err) {
+        toaster.push(typeof err === 'string' ? err : err.message ?? 'Unknown error')
+    }
+}
 
 // Loading state tracking
 const movingId = ref(null)

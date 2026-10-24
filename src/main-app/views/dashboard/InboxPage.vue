@@ -48,7 +48,7 @@
         </div>
 
         <!-- Scrollable content -->
-        <div class="inbox-content">
+        <PullToRefresh class="inbox-content" :refresh="onRefresh" :disabled="clarifyMode || (loading && items.length === 0)">
           <div class="card">
           <ItemList
               v-model="items"
@@ -60,10 +60,14 @@
               :active-id="currentClarifyItem?.id ?? null"
               :editable="!clarifyMode"
               :source-type="clarifyMode ? null : 'stuff'"
+              :swipe-right="clarifyMode ? null : 'clarify'"
+              :swipe-left="clarifyMode ? null : 'trash'"
               @update="onItemUpdate"
               @check="onItemCheck"
               @click="onItemClick"
               @delete="onTrash"
+              @swipe-right="onSwipeClarify"
+              @swipe-left="onTrash"
               @move="onMove"
               @load-more="loadMore"
           >
@@ -81,7 +85,7 @@
             </template>
           </ItemList>
           </div>
-        </div>
+        </PullToRefresh>
       </div>
 
       <!-- Clarify Panel (Desktop - Slide-over) -->
@@ -99,15 +103,17 @@
         </div>
       </Teleport>
 
-      <!-- Clarify Panel (Mobile - Fullscreen) -->
+      <!-- Clarify Panel (Mobile - Bottom sheet) -->
       <Teleport to="body" v-if="clarifyMode && currentClarifyItem && isMobile">
-        <ClarifyPanel
-            :key="currentClarifyItem.id"
-            :stuff-item="currentClarifyItem"
-            mode="fullscreen"
-            @done="onClarifyDone"
-            @cancel="exitClarifyMode"
-        />
+        <BottomSheet :dismissible="clarify.canDismiss()" @close="cancelClarify">
+          <ClarifyPanel
+              :key="currentClarifyItem.id"
+              :stuff-item="currentClarifyItem"
+              mode="sheet"
+              @done="onClarifyDone"
+              @cancel="exitClarifyMode"
+          />
+        </BottomSheet>
       </Teleport>
 
     </div>
@@ -123,6 +129,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
+import { clarifyModel } from '../../scripts/models/clarifyModel.js'
 import Btn from "../../components/Btn.vue";
 import Inpt from '../../components/Inpt.vue'
 import ItemList from '../../components/ItemList.vue'
@@ -132,6 +139,8 @@ import InboxIcon from '../../assets/InboxIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import Celebration from '../../components/Celebration.vue'
 import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
+import BottomSheet from '../../components/BottomSheet.vue'
+import PullToRefresh from '../../components/PullToRefresh.vue'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 // model
@@ -152,6 +161,7 @@ const router = useRouter()
 const route = useRoute()
 const toaster = errorModel()
 const confirm = confirmModel()
+const clarify = clarifyModel()
 
 // local UI state
 const new_stuff_title = ref('')
@@ -177,6 +187,7 @@ const celebrating = ref(false)
 
 // Clarify mode state
 const clarifyMode = ref(false)
+const singleClarify = ref(false)
 const currentClarifyIndex = ref(0)
 const isMobile = ref(false)
 
@@ -262,6 +273,10 @@ async function onAdd() {
 
 async function loadMore() {
   await loadStuff()
+}
+
+function onRefresh() {
+  return loadStuff({ reset: true })
 }
 
 function onItemClick(item, index) {
@@ -368,9 +383,23 @@ function onClarify() {
   currentClarifyIndex.value = 0
 }
 
+function onSwipeClarify(id) {
+  const index = items.value.findIndex(i => i.id === id)
+  if (index === -1) return
+  clarifyMode.value = true
+  singleClarify.value = true
+  currentClarifyIndex.value = index
+}
+
 function exitClarifyMode() {
   clarifyMode.value = false
+  singleClarify.value = false
   currentClarifyIndex.value = 0
+}
+
+function cancelClarify() {
+  clarify.cancel()
+  exitClarifyMode()
 }
 
 function onClarifyDone(processedItem) {
@@ -379,7 +408,7 @@ function onClarifyDone(processedItem) {
     items.value.splice(idx, 1)
   }
 
-  if (items.value.length === 0) {
+  if (items.value.length === 0 || singleClarify.value) {
     exitClarifyMode()
   } else if (currentClarifyIndex.value >= items.value.length) {
     currentClarifyIndex.value = items.value.length - 1

@@ -222,5 +222,25 @@ function onClear(closeFn) {
     padding: 12px 16px;
     font-size: var(--font-size-md);
   }
+
+  .context-trigger,
+  .context-filter__item {
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
+  }
+
+  .context-filter__chip-remove {
+    position: relative;
+  }
+
+  .context-filter__chip-remove::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
 }
 </style>

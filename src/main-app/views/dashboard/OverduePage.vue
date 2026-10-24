@@ -5,7 +5,7 @@
         <h1 class="page-title">Overdue</h1>
       </div>
 
-      <div class="overdue-content">
+      <PullToRefresh class="overdue-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -14,10 +14,14 @@
             :loading-ids="loadingIds"
             :completing-ids="completingIds"
             source-type="action"
+            swipe-right="complete"
+            swipe-left="trash"
             @update="onItemUpdate"
             @check="onItemCheck"
             @click="onItemClick"
             @delete="onTrash"
+            @swipe-right="id => onItemCheck(id, true)"
+            @swipe-left="onTrash"
             @load-more="loadMore"
         >
           <template #subtitle="{ item }">
@@ -31,7 +35,7 @@
           </template>
         </ItemList>
         </div>
-      </div>
+      </PullToRefresh>
     </div>
   </DashboardLayout>
 </template>
@@ -41,6 +45,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
+import PullToRefresh from '../../components/PullToRefresh.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import WarningIcon from '../../assets/WarningIcon.vue'
@@ -91,6 +96,10 @@ onMounted(() => {
 
 async function loadMore() {
   await loadItems()
+}
+
+function onRefresh() {
+  return loadItems({ reset: true })
 }
 
 function onItemClick(item) {

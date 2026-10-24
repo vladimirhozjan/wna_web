@@ -153,4 +153,11 @@ function onMove(destination) {
 .dropdown-item--danger:hover {
   background: var(--color-danger-bg-subtle);
 }
+
+@media (max-width: 768px) {
+  .move-btn {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+  }
+}
 </style>

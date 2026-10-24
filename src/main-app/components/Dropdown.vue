@@ -263,6 +263,13 @@ onUnmounted(() => {
   padding: 8px 0;
   overflow-y: auto;
 }
+
+@media (max-width: 768px) {
+  .dropdown-sheet-close {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
+}
 </style>
 
 <style>
@@ -318,6 +325,8 @@ onUnmounted(() => {
   .dropdown-item {
     padding: 12px 16px;
     font-size: var(--font-size-md);
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
   }
 
   .dropdown-item-icon {

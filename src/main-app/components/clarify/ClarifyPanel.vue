@@ -91,8 +91,8 @@ const props = defineProps({
   },
   mode: {
     type: String,
-    default: 'inline', // 'inline' | 'modal' | 'fullscreen'
-    validator: (v) => ['inline', 'modal', 'fullscreen'].includes(v),
+    default: 'inline', // 'inline' | 'modal' | 'sheet'
+    validator: (v) => ['inline', 'modal', 'sheet'].includes(v),
   },
 })
 
@@ -158,8 +158,7 @@ onUnmounted(() => {
 })
 
 function handleKeydown(e) {
-  // Escape to cancel (except during loading or do-it-now)
-  if (e.key === 'Escape' && !state.loading && state.step !== ClarifyState.DO_IT_NOW) {
+  if (e.key === 'Escape' && clarify.canDismiss()) {
     e.preventDefault()
     onCancel()
     return
@@ -266,10 +265,9 @@ function onCancel() {
   border-left: 1px solid var(--color-border-light);
 }
 
-.clarify-panel--fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+.clarify-panel--sheet {
+  flex: 1;
+  min-height: 0;
 }
 
 /* Header */
@@ -384,6 +382,11 @@ function onCancel() {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .clarify-nav-btn {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+  }
+
   .clarify-context {
     padding: 10px 16px;
   }
