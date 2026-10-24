@@ -12192,7 +12192,7 @@
       "Send one mail with two files, in this order: `big.txt` (larger than the Pro Max attachment, sent as 7bit text so the whole mail stays under the max message size, `contracts/limits.md` §Email-to-inbox), then `small.txt`.",
       "Wait for the Stuff to appear; open it."
     ],
-    "expected": "The Stuff is created. Attachments lists `small.txt` only (a size skip does not stop later files).\nThe description ends with the note line `— 1 attachment(s) skipped: big.txt (exceeds <N> MB plan limit)`, N = the Pro\nMax attachment (FEAT-053 D1, D4; `specs/features/email-to-inbox.md` §4 Attachment handling)."
+    "expected": "The Stuff is created. Attachments lists `small.txt` only (a size skip does not stop later files).\nThe description ends with the note line `— 1 attachment(s) skipped: big.txt (exceeds <N> MB plan limit)`, N = the Pro\nMax attachment (FEAT-053 D1, D4; `specs/architecture/backend.md` §Email-to-Inbox processing)."
   },
   {
     "id": "TC-793",
@@ -12269,7 +12269,7 @@
       "Send a mail larger than the max message size (a body line plus one large file) to the address.",
       "Wait for the Stuff to appear; open it."
     ],
-    "expected": "A Stuff appears with **title = subject**; the description is the provenance line (`From:` the\nsender) + the too-large note `message too large (over 25 MB), content not imported` (`specs/features/email-to-inbox.md`\n§4 Attachment handling); the body line is **not** imported; the Attachments section is empty (FEAT-053 D3)."
+    "expected": "A Stuff appears with **title = subject**; the description is the provenance line (`From:` the\nsender) + the too-large note `message too large (over 25 MB), content not imported` (`specs/architecture/backend.md`\n§Email-to-Inbox processing); the body line is **not** imported; the Attachments section is empty (FEAT-053 D3)."
   },
   {
     "id": "TC-550",
@@ -12786,7 +12786,7 @@
       "Re-login; open Settings → Plan.",
       "Upgrade again through the checkout → signed `purchase.paid` → success return."
     ],
-    "expected": "After the sweep the user is non-destructively downgraded (**Current plan Free**, the\n**Update plan → Upgrade** row reappears, routing to `/upgrade`); the re-subscribe flow completes and\nrestores **Pro** with a fresh **\"Renews on\"** date (decision 8). This cancel → expiry → upgrade path is\nalso the canonical way to switch plans (no change-plan UI, owner decision 2026-07-07)."
+    "expected": "After the sweep the user is non-destructively downgraded (**Current plan Free**, the\n**Update plan → Upgrade** row reappears, routing to `/upgrade`); the re-subscribe flow completes and\nrestores **Pro** with a fresh **\"Renews on\"** date (FEAT-006 d8). This cancel → expiry → upgrade path is\nalso the canonical way to switch plans (no change-plan UI, owner decision 2026-07-07)."
   },
   {
     "id": "TC-577",
@@ -12806,7 +12806,7 @@
       "Seed + emit a recovery paid purchase (→ `subscription_extended`, back to active).",
       "Add a mock subscriber and emit `billing_template_client.subscription_billing_cancelled` (→ `subscription_cancelled`)."
     ],
-    "expected": "All four **urgent** events (decision 21) appear in the in-app bell (\"… subscription\nis active\", \"We couldn't process the payment …\", \"… subscription was renewed\", \"… subscription was\ncancelled; access continues until …\") AND as emails (\"Your WhatsNextAction pro subscription is active\",\n\"Payment failed for your WhatsNextAction subscription\", \"Your WhatsNextAction subscription was renewed\",\n\"Your WhatsNextAction subscription was cancelled\")."
+    "expected": "All four **urgent** events (FEAT-006 d21) appear in the in-app bell (\"… subscription\nis active\", \"We couldn't process the payment …\", \"… subscription was renewed\", \"… subscription was\ncancelled; access continues until …\") AND as emails (\"Your WhatsNextAction pro subscription is active\",\n\"Payment failed for your WhatsNextAction subscription\", \"Your WhatsNextAction subscription was renewed\",\n\"Your WhatsNextAction subscription was cancelled\")."
   },
   {
     "id": "TC-578",
@@ -12945,7 +12945,7 @@
       "`DELETE /v1/user/delete` (no main-app UI surface for deletion).",
       "Inspect the mock's vendor-request log; check the `app_user` row."
     ],
-    "expected": "The deletion hook **pauses the recurring subscriber** (PATCH\n`billing_templates/{tpl}/clients/{btc}` → inactive) and **deletes the Paywiser client** (DELETE\n`/clients/{id}`) — decision 12; the `app_user` row is gone; the (still-valid, short-lived) old JWT now\nsees a free-tier nothing."
+    "expected": "The deletion hook **pauses the recurring subscriber** (PATCH\n`billing_templates/{tpl}/clients/{btc}` → inactive) and **deletes the Paywiser client** (DELETE\n`/clients/{id}`) — FEAT-006 d12; the `app_user` row is gone; the (still-valid, short-lived) old JWT now\nsees a free-tier nothing."
   },
   {
     "id": "TC-583",
@@ -12980,7 +12980,7 @@
       "`DELETE /v1/user/delete`.",
       "Re-read both rows; fetch `GET /admin/payments/report?year=<current>`."
     ],
-    "expected": "The account/PII is erased (`app_user` row gone) but the `invoice` (+ backing\n`payment`) rows **survive with `user_id` NULL** (EU VAT retention — decisions 12/28, `ON DELETE SET\nNULL`); the invoice number is unchanged (immutable A3); the payment still appears in the admin\nPayments/VAT report."
+    "expected": "The account/PII is erased (`app_user` row gone) but the `invoice` (+ backing\n`payment`) rows **survive with `user_id` NULL** (EU VAT retention — FEAT-006 d12/d28, `ON DELETE SET\nNULL`); the invoice number is unchanged (immutable A3); the payment still appears in the admin\nPayments/VAT report."
   },
   {
     "id": "TC-585",
@@ -17441,15 +17441,17 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date; a project P5 on Projects with actions.",
+    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date; a project P5 on Projects with actions; a standalone action K1 in Calendar\nwith a start date of today at 09:00 and a due date of yesterday (it shows in both the Engage Overdue and Today sections).",
     "steps": [
       "Open C1; Move → Next Actions; click **Undo**; open C1.",
       "Open W1; click **Got it**; click **Undo**; open W1.",
       "Open N1; Move → Calendar, pick a date; click **Undo**; open N1.",
       "Drag N1 from Next onto **Today** in the sidebar; click **Undo**.",
-      "On Projects, drag P5 onto **Someday** in the sidebar; click **Undo**."
+      "On Projects, drag P5 onto **Someday** in the sidebar; click **Undo**.",
+      "On Engage, drag K1 from the Today section onto the Next drop zone; click **Undo**; open K1.",
+      "Open Overdue; try to drag K1 onto **Next Actions** in the sidebar, then above another row in the list."
     ],
-    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place.\nStep 5: toast `\"P5\" moved to Someday. Active actions shelved.` with Undo; after Undo P5 is back on Projects at its old\nplace with its active action."
+    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place.\nStep 5: toast `\"P5\" moved to Someday. Active actions shelved.` with Undo; after Undo P5 is back on Projects at its old\nplace with its active action. Step 6: toast `\"K1\" moved to Next Actions` with Undo; after Undo K1 is back in Calendar\nwith its start date today at 09:00 and its due date (no `Missing date` error). Step 7: the row can't be dragged —\nnothing moves, no toast."
   },
   {
     "id": "TC-865",
@@ -17485,7 +17487,7 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. Inbox item S1; standalone action A1 in Next; a weekly recurring template with\nits active instance R1 in Next; Next with N1, N2, N3. For steps 6–7: a Team user with two actions G1, G2 in Waiting\nFor delegated to a connection.",
+    "preconditions": "Common preconditions. Inbox item S1; standalone action A1 in Next; a weekly recurring template with\nits active instance R1 in Next; a second recurring template with its active instance R2 moved to Someday; Next with\nN1, N2, N3. For steps 6–7: a Team user with two actions G1, G2 in Waiting\nFor delegated to a connection.",
     "steps": [
       "Clarify S1 to Someday.",
       "Open A1; Move → Projects; enter an outcome.",
@@ -17493,9 +17495,10 @@
       "Drag N3 above N1 on Next.",
       "Open Completed; uncheck an item.",
       "Drag G1 from Waiting For onto **Next Actions** in the sidebar.",
-      "On Engage, drag G2 onto the Next drop zone."
+      "On Engage, drag G2 onto the Next drop zone.",
+      "On Someday, click × on R2."
     ],
-    "expected": "Each of steps 1, 2, 3 and 5 shows its usual success toast (`\"S1\" moved to Someday`, `\"A1\"\nconverted to project`, `\"R1\" completed`, `\"<title>\" restored`) with no Undo button, and Cmd/Ctrl+Z does nothing. Step 4:\nthe row moves and no toast appears. Steps 6 and 7: toast `\"G1\"` / `\"G2\" moved to Next Actions` with no Undo button."
+    "expected": "Each of steps 1, 2, 3 and 5 shows its usual success toast (`\"S1\" moved to Someday`, `\"A1\"\nconverted to project`, `\"R1\" completed`, `\"<title>\" restored`) with no Undo button, and Cmd/Ctrl+Z does nothing. Step 4:\nthe row moves and no toast appears. Steps 6 and 7: toast `\"G1\"` / `\"G2\" moved to Next Actions` with no Undo button.\nStep 8: toast `\"R2\" moved to trash` with no Undo button; Cmd/Ctrl+Z does nothing."
   },
   {
     "id": "TC-867",
@@ -17520,9 +17523,10 @@
       "On Today, tick P-A; click **Undo**.",
       "On Waiting For, click × on R-A; click **Undo**.",
       "On Next, tick S-A; click **Undo**. Repeat with × on S-A, with a Sidebar drop of S-A onto Completed, and from the S-A detail page opened from Next (**Done**), clicking **Undo** each time.",
-      "As C, on Next tick Q-C; press Cmd/Ctrl+Z."
+      "As C, on Next tick Q-C; press Cmd/Ctrl+Z.",
+      "As the common user, open S-A from Next; Move → Someday; click **Undo**."
     ],
-    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted. Step 6: P-A is P's active action again and back in Today at its old place; P-B is back in the backlog.\nStep 7: R-A is R's active action again, back in Waiting For waiting for \"Tom\"; R-B is back in the backlog.\nStep 8: each time `\"S-A\" moved back`; S-A is S's active action again, back in Next at its old place; S-B is back in\nthe backlog (not left as the active action).\nStep 9: toast `\"Q-C\" completed` with no **Undo** button; Cmd/Ctrl+Z does nothing; Q-C stays in Completed."
+    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted. Step 6: P-A is P's active action again and back in Today at its old place; P-B is back in the backlog.\nStep 7: R-A is R's active action again, back in Waiting For waiting for \"Tom\"; R-B is back in the backlog.\nStep 8: each time `\"S-A\" moved back`; S-A is S's active action again, back in Next at its old place; S-B is back in\nthe backlog (not left as the active action).\nStep 9: toast `\"Q-C\" completed` with no **Undo** button; Cmd/Ctrl+Z does nothing; Q-C stays in Completed.\nStep 10: `\"S-A\" moved back`; S-A is S's active action again in Next; S-B is back in the backlog; S has one action in Next."
   },
   {
     "id": "TC-868",
