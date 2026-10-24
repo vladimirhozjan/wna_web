@@ -1,0 +1,106 @@
+# BUG-063 — web slice: shared-project button rules on Action / Project detail from `my_role`
+
+**Parent (canonical):** `../wna_orchestration/features/BUG-063-action-detail-member-buttons.md` — §User flows, §Screens
+(S1 button matrix, S2, S3, fallback toasts), §Design (D2–D9, Web), §Help impact, §Work breakdown → web. Read it first.
+This file is only this repo's checklist; nothing from the parent is restated.
+
+**Scope:** main-app only — `views/dashboard/ActionDetailPage.vue` (buttons + `itemCommands`, remove the
+`listProjectMembers` watcher / `myRole` ref), `views/dashboard/ProjectDetailPage.vue` (Someday shared project, page +
+palette), `components/Sidebar.vue` (`onDropToSomeday` shared project), `content/help/faq.js`. No new component, model,
+CSS variable. Admin-app untouched.
+
+**Depends on:** backend slice Rule 6 (`my_role` on action JSON). Until it lands locally, verify against a mocked
+`my_role`; the close needs the real field.
+
+**Legal:** none — parent §Legal impact is n/a.
+
+## User flows (this project's part)
+- **Free user / Pro user** — n/a — no shared projects; personal-action buttons and Sidebar drops unchanged (check one
+  personal action per state).
+- **Team owner** — parent "Team owner": S1 rows for owner (claimed by other → none; backlog → Done / Assign to me /
+  Trash, no Move; own claim → Done / Move (Next / Today / Calendar / Waiting) / Unassign / Trash; legacy Someday →
+  Activate / Trash); S2 Activate + Complete; S3 shared project Sidebar drop → toast, no API call.
+- **Team member (write)** — parent row: S1 own claim incl. Waiting (Got it), backlog, claimed by other, completed Undo;
+  legacy Someday action and S2 → no buttons.
+- **Team member (read-only)** — parent row: S1 only own claim → Done / Unassign / Trash; everything else none; completed
+  → no Undo; correct on first paint (no role fetch).
+- **Downgraded member (non-Team)** — parent row: own claim → Done / Unassign / Trash, no Move / Got it; completed Undo
+  kept.
+- **Removed member / unshared** — parent row: `my_role` absent → completed Undo kept, backend toast as today.
+- **Every row** — palette "This item" mirrors the page exactly (same computeds).
+- **Admin (relevant role)** — n/a — admin app untouched.
+- **Unauthenticated / not-entitled** — n/a — authenticated dashboard pages only.
+
+## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
+- `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
+  a box, resolve it to one of the three below — do not leave it bare.
+- `[x]` — **Done & verified.** Work complete AND proven. Cite the `file:line` that proves it (for a
+  ui-tests TC box: cite the test `file:line` AND the passing run). A green CI/test run alone is NOT
+  proof — open the artifact.
+- `[~]` — **Partial / blocked / deferred.** Started or attempted but NOT closed. Write exactly what
+  remains and what it is blocked on / who owns it (e.g. "DEFERRED TO USER: needs a local
+  user_service rebuild + restart I cannot run"). Does NOT count as done — it **blocks closure**.
+- `[NA]` — **Not applicable / intentionally not done.** A precondition/gate was not met, or the item
+  does not apply to this project/role. State the reason (e.g. "GATE NOT MET — no live error reproduced,
+  so the hygiene edit is intentionally skipped"; "n/a — no admin surface"). Does NOT block closure.
+
+## Checklist
+### Screens (built per parent §Screens — every row / state + exact copy)
+- [ ] W-1 S1 — `ActionDetailPage.vue` buttons per the S1 matrix, every row, from `action.my_role` / `assigned_to` /
+  `state` / tier; Move never lists Someday / Projects / Reference on a shared action; Trash hidden (not `:disabled`) on a
+  claim of someone else.
+- [ ] W-2 S1 palette — `itemCommands` produce exactly the same set as the page for every S1 row (shared computeds, no
+  duplicated rule).
+- [ ] W-3 S1 role source — `listProjectMembers` watcher and `myRole` ref removed; grep `ActionDetailPage.vue` for
+  `listProjectMembers` / `myRole` → 0 matches (rule 3).
+- [ ] W-4 S2 — `ProjectDetailPage.vue` shared Someday project: Activate + Complete for the owner only, page + palette.
+- [ ] W-5 S3 — `Sidebar.vue` `onDropToSomeday`: project row with `shared: true` refused without an API call, toast copy
+  exactly as parent §Screens S3 (confirm the drop payload carries `shared`; add it at the drag source if not).
+- [ ] W-6 Fallback toasts — a Sidebar drop of a shared action the viewer may not move shows the backend 403 `detail`
+  (parent §Design strings) as the error toast.
+### Help
+- [ ] W-7 `content/help/faq.js` "What are shared projects?" — the two edits in parent §Help impact, verbatim.
+### Verification
+- [ ] W-8 `npm run build:main` passes.
+- [ ] W-9 Code walk of every parent §User flows row against W-1…W-5 (owner / write / read-only / non-Team / removed /
+  personal) — list each row with the `file:line` of the condition that renders it; ask the owner to verify at runtime.
+### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
+- [ ] W-10 Update `../wna_orchestration/specs/features/wna-features.md` — Action detail shared-project block (S1 matrix
+  replaces the members-fetch text, :463–476), Project detail Someday shared, Sidebar Someday drop toast.
+- [ ] W-11 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — new TC-862 (S1 matrix per role × assignment + S2
+  + S3); update TC-842 / TC-861 to the new rules.
+- [ ] W-12 Tick the parent's web Work breakdown boxes in `../wna_orchestration/features/BUG-063-action-detail-member-buttons.md`.
+
+## Hard rules for the implementer
+1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
+   cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.
+2. **Definition of done = observable end-user behavior**, not "code compiles" or "tests pass". State
+   the concrete artifact to inspect (the Action detail buttons + palette per S1 row, the S2 page, the S3 toast) and confirm it.
+3. **Leave zero references to anything you renamed/removed** — grep the source and confirm `0` matches
+   before claiming done.
+4. **Honor the parent's User flows for every role** (viewer-centric / entitlement rules etc.); don't
+   silently implement only the happy path.
+5. **No false "complete".** If a box is partial or blocked, mark `[~]` (NOT `[x]`) and write exactly
+   what's left; if it's intentionally not done or doesn't apply, mark `[NA]` with the reason. Never
+   leave a box you acted on as a bare `[ ]`, and never tick `[x]` to cover partial work. Overstating
+   completion is the worst failure — it ships broken work as done. (See the Checkbox legend.)
+6. **Read freely from orchestration; sync the shared specs you change there — never defer it.** You MAY
+   read any `wna_orchestration` file (the parent FEAT/BUG, specs, contracts, decisions) — pull the
+   authoritative form (exact predicate, response shape, DDL) from its home rather than guessing or asking.
+   Reading is unrestricted; only *writing* is scoped (to the spec homes this repo owns). If your work
+   changes a fact whose canonical home is a spec in `wna_orchestration` (response shapes →
+   `specs/api/*`; SQL DDL / CI → `specs/ci/*`; features → `specs/features/*`; test cases →
+   `specs/tests/*`; architecture → `specs/architecture/*`; numbers → `contracts/*`), you MUST update
+   that spec file in `wna_orchestration` as part of this work. Editing the spec's orchestration home is
+   the documented sibling sync requirement (see this repo's CLAUDE.md) — it is REQUIRED, never
+   forbidden, and never "deferred to the user." The local-slice rule forbids only *restating* shared
+   facts inside the slice, NOT updating their canonical home. Cite the orchestration `file:line` you
+   updated. (Find the home in the orchestration Fact Index.) This includes `/internal/*` routes, CronJobs
+   and their schedules, and new pages/routes. Specs describe what the code/config IS, never per-env rollout state: no "applied to dev", "not yet on prod", "to be applied" notes — the home for applied migration state is `wna_deploy/backend/db_tools/sql/*/MIGRATION_VERSION`, for deployed config `wna_deploy/backend/gce/config/<env>/` and `vm/wna/<env>/`.
+7. **Run only the NEW and directly-relevant tests — never the repo's full suite during slice work**
+   (owner directive 2026-08-19). This repo has no automated tests: verify with `npm run build:main` and code inspection;
+   Playwright coverage is the ui-tests slice. The full regression suite is run by the OWNER before deploy — never by the implementer.
+8. **Test and verify LOCALLY only — never on dev/prod** (owner directive). Every check targets the
+   local stack (local web dev server, local backend). Never deploy, never point at `dev.whatsnextaction.com` /
+   `api-dev` / the VM, never add a "verify on dev" step. A missing dev/prod run is never a reason for `[~]`.
+   A task closes on local verification alone — never wait for a dev or prod confirmation.

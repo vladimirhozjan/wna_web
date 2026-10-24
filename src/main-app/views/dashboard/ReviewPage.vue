@@ -28,7 +28,7 @@
             <span class="review-error text-body-s">Couldn't load your review progress.</span>
             <Btn variant="secondary" size="sm" @click="settings.load()">Retry</Btn>
           </template>
-          <Btn v-else-if="!inReview" variant="primary" size="md" :loading="!settings.state.loaded" @click="onStart">
+          <Btn v-else-if="!inReview" variant="primary" size="md" :loading="!settings.state.loaded || starting" @click="onStart">
             Start Review
           </Btn>
           <Btn v-else variant="primary" size="md" :disabled="!allStepsComplete" :loading="completing" @click="onComplete">
@@ -77,7 +77,7 @@
                 <input
                     type="checkbox"
                     :checked="steps[index]"
-                    :disabled="!inReview"
+                    :disabled="!inReview || completing"
                     @change="onToggle(index)"
                 />
               </label>
@@ -155,6 +155,7 @@ const {
   daysSinceReview,
   lastReviewDate,
   allStepsComplete,
+  starting,
   completing,
   lastWeek,
   upcoming,

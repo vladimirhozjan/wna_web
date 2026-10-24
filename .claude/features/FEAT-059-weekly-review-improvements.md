@@ -37,7 +37,7 @@ checks of the saved progress need the backend slice (`review.in_progress`) on th
 ### Model + building blocks
 - [x] W-1 `reviewModel` / `settingsModel`: `review.in_progress` read on load (hydrates `inReview` + `steps`), written on Start,
   on every tick, and cleared together with `last_review_date` on Complete (one request) — parent D5 + §Screens "Data needs".
-  — `scripts/models/settingsModel.js:25,122` (default + hydrate), `:340` `setReviewInProgress`, `:354` `completeReview` (one PUT `{last_review_date, in_progress: null}`); `scripts/models/reviewModel.js:53-70` (inReview/steps derived from settings; Start/tick/Complete write). `setReviewLastDate` orphaned → removed (grep 0).
+  — `scripts/models/settingsModel.js:25,122` (default + hydrate), `:340` `setReviewInProgress`, `:350` `completeReview` (one PUT `{last_review_date, in_progress: null}`); `scripts/models/reviewModel.js:53-70` (inReview/steps derived from settings; Start/tick/Complete write). `setReviewLastDate` orphaned → removed (grep 0).
 - [x] W-2 `components/Celebration.vue` — props `title` / `subtitle`, emit `dismiss`, animation + auto-dismiss + fade moved out
   of `InboxPage.vue` (no copy-paste left behind: grep the old celebration markup/CSS in `InboxPage.vue` → 0).
   — `components/Celebration.vue:1-41` (props, `dismiss`, 3 s timer + 300 ms fade, CSS moved verbatim). grep `celebrationPhase|dismissCelebration|check-bloom` in `InboxPage.vue` → 0.
@@ -72,6 +72,27 @@ checks of the saved progress need the backend slice (`review.in_progress`) on th
   §Work breakdown → ui-tests; expected results from §Screens) and update the existing Weekly Review TCs whose expected results
   change (Section 15, e.g. TC-245 / TC-246 / TC-247 counter placement + no success toast).
   — `wna_orchestration/specs/tests/wna-test-cases.md:7814` (TC-245), `:7834` (TC-246), `:7872-7881` (TC-247), `:19526-19636` (Section 63, TC-851–854); `regression-ui-tests/update-tests.sh` re-run.
+
+### Acceptance fix (`/conclude` 2026-10-24 — not accepted; parent §Screens "Page states")
+- [x] W-12 Start is not optimistic: `review.in_progress` is set in state only after the Start PUT succeeds; "Start Review"
+  shows `:loading` while it saves; on failure the page never left Idle (no "Complete Review", no progress row, no list fetch)
+  + the existing "Couldn't start the review. Try again." toast. Today `reviewModel.startReview` → `settingsModel.setReviewInProgress`
+  (`settingsModel.js:340-352`) sets state before the save. Covered by TC-853 step 6 (`wna-test-cases.md`, Section 63).
+  — `scripts/models/settingsModel.js:340-348` (state set only after `save` resolves, no pre-save assignment/rollback);
+  `scripts/models/reviewModel.js:63` `starting`; `views/dashboard/ReviewPage.vue:31` Start `:loading="… || starting"`.
+  `inReview` stays false until saved, so no Complete button / progress row / list fetch (`ReviewPage.vue:34,39,273` all gate on it).
+- [x] W-13 Progress writes are consistent with the server: tick saves run one at a time (a failed tick's rollback never wipes a
+  later tick that saved, and the shown ticks always equal the last accepted `steps[]`), and the step checkboxes are disabled
+  while Complete is in flight (no tick can re-write `in_progress` after Complete cleared it). "Tick save fails" behaviour stays
+  as §Screens (that tick + segment revert, existing toast).
+  — `scripts/models/reviewModel.js:12-13` queue + pending ticks, `:60-61` shown = saved `steps[]` + pending flips,
+  `:70-82` each save runs after the previous one and builds on the last accepted `steps[]`; a failure drops only its own
+  flip (`:77`) and rethrows → existing toast (`ReviewPage.vue:256-262`). `:62` Complete enabled only with no tick pending;
+  `ReviewPage.vue:80` checkboxes disabled while `completing`. TC-853 step 2 + TC-854 step 7 (`wna-test-cases.md:19618,19646,19653`).
+- [~] W-14 `npm run build:main` passes; owner re-checks at runtime on the local stack: Start with the settings PUT failing stays
+  Idle throughout; fast ticks with one failing leave page = server after reload; no tick possible during Complete.
+  — `npm run build:main` ✓ (built in 4.21s). DEFERRED TO USER: the runtime re-check on the local stack (TC-853 step 6,
+  TC-854 step 7, TC-853 step 2 checkboxes disabled).
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

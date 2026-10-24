@@ -9,9 +9,15 @@ const LOOKAHEAD_DAYS = 14
 
 const lastWeek = ref({ items: [], loading: false, error: null })
 const upcoming = ref({ items: [], loading: false, error: null })
+const pendingTicks = ref([])
+let tickQueue = Promise.resolve()
 
 function today() {
     return new Date().toISOString().split('T')[0]
+}
+
+function flipStep(steps, index) {
+    return steps.map((done, i) => i === index ? !done : done)
 }
 
 async function loadWindow(list, start, end) {
@@ -51,18 +57,28 @@ export function reviewModel() {
 
     const inProgress = computed(() => settings.state.reviewInProgress)
     const inReview = computed(() => !!inProgress.value)
-    const steps = computed(() => inProgress.value?.steps ?? Array(STEP_COUNT).fill(false))
-    const allStepsComplete = computed(() => steps.value.every(Boolean))
+    const savedSteps = computed(() => inProgress.value?.steps ?? Array(STEP_COUNT).fill(false))
+    const steps = computed(() => pendingTicks.value.reduce(flipStep, savedSteps.value))
+    const allStepsComplete = computed(() => pendingTicks.value.length === 0 && savedSteps.value.every(Boolean))
+    const starting = computed(() => !inReview.value && settings.state.saving.reviewInProgress)
     const completing = computed(() => settings.state.saving.reviewLastDate)
 
     function startReview() {
         return settings.setReviewInProgress({ started_at: today(), steps: Array(STEP_COUNT).fill(false) })
     }
 
+    // Ticks save one at a time, each on top of the last accepted steps[], so a failed one can't undo a later one
     function toggleStep(index) {
-        const next = [...steps.value]
-        next[index] = !next[index]
-        return settings.setReviewInProgress({ ...inProgress.value, steps: next })
+        pendingTicks.value = [...pendingTicks.value, index]
+        const run = tickQueue.then(async () => {
+            try {
+                await settings.setReviewInProgress({ ...inProgress.value, steps: flipStep(savedSteps.value, index) })
+            } finally {
+                pendingTicks.value = pendingTicks.value.slice(1)
+            }
+        })
+        tickQueue = run.catch(() => {})
+        return run
     }
 
     function completeReview() {
@@ -101,6 +117,7 @@ export function reviewModel() {
         daysSinceReview,
         isOverdue,
         allStepsComplete,
+        starting,
         completing,
         lastWeek,
         upcoming,
