@@ -247,7 +247,7 @@ import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
 import { stuffModel } from '../../scripts/models/stuffModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { clarifyModel } from '../../scripts/models/clarifyModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
@@ -272,7 +272,7 @@ import EmptyState from '../../components/EmptyState.vue'
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 const mover = moveModel()
 
 const {
@@ -389,6 +389,15 @@ watch(error, (err) => {
   toaster.push(msg)
 })
 
+async function loadItem() {
+  const data = await getStuff(route.params.id)
+  item.value = { ...data }
+
+  currentPosition.value = Number(route.query.position) || 0
+  totalItems.value = Number(route.query.total) || 1
+}
+undo.registerRefresh(loadItem)
+
 onMounted(async () => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
@@ -396,11 +405,8 @@ onMounted(async () => {
   try {
     fromSource.value = route.query.from || null
 
-    const data = await getStuff(route.params.id)
-    item.value = { ...data }
-
-    currentPosition.value = Number(route.query.position) || 0
-    totalItems.value = Number(route.query.total) || 1
+    await loadItem()
+    const data = item.value
 
     // Opened without list context (direct link, search, notification): look up its place in the inbox
     if (!route.query.total && data.state === 'INBOX') {
@@ -630,7 +636,7 @@ async function onMarkDone() {
   try {
     await apiClient.completeStuff(item.value.id)
     statsModel().refreshStats()
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item: item.value, title, message: `"${title}" completed` })
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item')
@@ -814,7 +820,10 @@ async function onMoveTo(destination) {
         break
     }
     statsModel().refreshStats()
-    toaster.success(`"${truncateTitle(item.value.title)}" moved to ${destinationLabels[destination]}`)
+    const title = truncateTitle(item.value.title)
+    const message = `"${title}" moved to ${destinationLabels[destination]}`
+    if (destination === 'someday') undo.record({ op: 'move', item: item.value, title, to: 'SOMEDAY', message })
+    else toaster.success(message)
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to move item')
@@ -824,19 +833,11 @@ async function onMoveTo(destination) {
 }
 
 async function onTrash() {
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: `Are you sure you want to move "${item.value.title}" to trash?`,
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (!confirmed) return
-
   actionLoading.value = 'trash'
   try {
     await trashStuff(item.value.id)
-    toaster.success(`"${truncateTitle(item.value.title)}" moved to trash`)
+    const title = truncateTitle(item.value.title)
+    undo.record({ op: 'trash', item: item.value, title, message: `"${title}" moved to trash` })
     if (isSomeday.value) {
       router.push({ name: 'someday' })
     } else {
@@ -870,7 +871,7 @@ async function onActivate() {
   try {
     await apiClient.activateStuff(item.value.id)
     statsModel().refreshStats()
-    toaster.success(`"${title}" moved to Inbox`)
+    undo.record({ op: 'move', item: item.value, title, to: 'INBOX', message: `"${title}" moved to Inbox` })
     router.push({ name: 'someday' })
   } catch (err) {
     toaster.push(err.message || 'Failed to activate item')

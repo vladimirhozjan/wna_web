@@ -1,15 +1,18 @@
 import { reactive } from 'vue';
 
+const UNDO_MS = 6000;
+
 let instance = null;
 
 export function errorModel() {
     if (instance) return instance;
 
     const state = reactive({
-        errors: []   // { id, message, type }
+        errors: []   // { id, message, type, undo?, undoing? }
     });
 
     let nextId = 1;
+    const timers = new Map();
 
     function push(message, type = 'error') {
         if (type === 'error') {
@@ -22,28 +25,59 @@ export function errorModel() {
 
         const id = nextId++;
 
+        add({ id, message, type }, type === 'success' ? 3000 : 5000);
+    }
+
+    function add(toast, timeout) {
         // Keep max 5
         if (state.errors.length >= 5) {
-            state.errors.splice(0, 1);
+            remove(state.errors[0].id);
         }
-
-        state.errors.push({ id, message, type });
-
-        const timeout = type === 'success' ? 3000 : 5000;
-        setTimeout(() => remove(id), timeout);
+        state.errors.push(toast);
+        timers.set(toast.id, setTimeout(() => remove(toast.id), timeout));
     }
 
     function success(message) {
         push(message, 'success');
     }
 
+    // Success toast with an Undo button; a new one replaces the previous, never deduped by message
+    function undoable(message, undo) {
+        const previous = undoToast();
+        if (previous) remove(previous.id);
+        add({ id: nextId++, message, type: 'undo', undo, undoing: false }, UNDO_MS);
+    }
+
+    function undoToast() {
+        return state.errors.find(e => e.type === 'undo') || null;
+    }
+
+    // The toast stays, timer stopped, until the undo settles
+    async function runUndo() {
+        const toast = undoToast();
+        if (!toast || toast.undoing) return;
+        toast.undoing = true;
+        clearTimeout(timers.get(toast.id));
+        try {
+            await toast.undo();
+        } finally {
+            remove(toast.id);
+        }
+    }
+
+    function dismiss(toast) {
+        if (!toast.undoing) remove(toast.id);
+    }
+
     function remove(id) {
+        clearTimeout(timers.get(id));
+        timers.delete(id);
         const idx = state.errors.findIndex(e => e.id === id);
         if (idx !== -1) {
             state.errors.splice(idx, 1);
         }
     }
 
-    instance = { state, push, success, remove };
+    instance = { state, push, success, undoable, undoToast, runUndo, dismiss, remove };
     return instance;
 }

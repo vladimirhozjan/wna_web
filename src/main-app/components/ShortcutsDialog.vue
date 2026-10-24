@@ -8,7 +8,7 @@
           <span class="text-body-s shortcuts__action">{{ row.action }}</span>
         </div>
       </div>
-      <p class="text-caption shortcuts__note">Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open.</p>
+      <p class="text-caption shortcuts__note">Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open. {{ undoKey }} works while the Undo toast shows.</p>
     </div>
     <template #actions>
       <Btn variant="secondary" size="sm" @click="shortcuts.closeShortcuts()">Close</Btn>
@@ -24,13 +24,16 @@ import { shortcutModel } from '../scripts/core/shortcutModel.js'
 
 const shortcuts = shortcutModel()
 
-const paletteKey = /mac/i.test(navigator.platform) ? '⌘K' : 'Ctrl+K'
+const isMac = /mac/i.test(navigator.platform)
+const paletteKey = isMac ? '⌘K' : 'Ctrl+K'
+const undoKey = isMac ? '⌘Z' : 'Ctrl+Z'
 
 const blocks = computed(() => [
   {
     title: 'General',
     rows: [
       { keys: paletteKey, action: 'Open the command palette' },
+      { keys: undoKey, action: 'Undo the last complete, trash or move' },
       { keys: 'C', action: 'Add to Inbox' },
       { keys: '?', action: 'Show keyboard shortcuts' },
     ],

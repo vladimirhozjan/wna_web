@@ -96,7 +96,7 @@ import MetadataRow from '../../components/MetadataRow.vue'
 import { projectModel } from '../../scripts/models/projectModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 
 const router = useRouter()
@@ -121,7 +121,7 @@ const {
 } = projectModel()
 
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 
 const showAdd = ref(false)
 const newTitle = ref('')
@@ -173,6 +173,7 @@ async function loadMore() {
 function onRefresh() {
   return loadProjects({ reset: true, tags: effectiveTags.value })
 }
+undo.registerRefresh(onRefresh)
 
 async function onAdd() {
   const t = newTitle.value.trim()
@@ -232,23 +233,15 @@ async function onTrash(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: 'Are you sure you want to move this project to trash?',
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (confirmed) {
-    deletingId.value = id
-    try {
-      await trashProject(id)
-      toaster.success(`"${title}" moved to trash`)
-      // Reload list to backfill removed item
-      loadProjects({ reset: true, tags: effectiveTags.value }).catch(() => {})
-    } finally {
-      deletingId.value = null
-    }
+  deletingId.value = id
+  try {
+    await trashProject(id)
+    const message = item?.next_action_id ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
+    undo.record({ op: 'trash', item, title, message })
+    // Reload list to backfill removed item
+    loadProjects({ reset: true, tags: effectiveTags.value }).catch(() => {})
+  } finally {
+    deletingId.value = null
   }
 }
 

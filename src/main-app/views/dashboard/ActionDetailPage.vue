@@ -464,7 +464,7 @@ import { todayModel } from '../../scripts/models/todayModel.js'
 import { waitingModel } from '../../scripts/models/waitingModel.js'
 import { projectModel } from '../../scripts/models/projectModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction, listProjectMembers } from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
@@ -495,7 +495,7 @@ import EmptyState from '../../components/EmptyState.vue'
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 const mover = moveModel()
 const tagMdl = tagModel()
 const { reviewTemplateId } = reviewModel()
@@ -763,16 +763,21 @@ watch(error, (err) => {
   toaster.push(msg)
 })
 
+async function loadAction() {
+  const data = await getAction(route.params.id)
+  action.value = { ...data }
+
+  currentPosition.value = Number(route.query.position) || 0
+  totalItems.value = Number(route.query.total) || 1
+}
+undo.registerRefresh(loadAction)
+
 onMounted(async () => {
   try {
     // Track source for navigation
     fromSource.value = route.query.from || null
 
-    const data = await getAction(route.params.id)
-    action.value = { ...data }
-
-    currentPosition.value = Number(route.query.position) || 0
-    totalItems.value = Number(route.query.total) || 1
+    await loadAction()
 
   } catch (err) {
     if (err?.status === 404) {
@@ -933,6 +938,7 @@ async function onMoveTo(newState) {
   showMoveDialog.value = false
   const currentState = action.value.state || 'NEXT'
   if (newState === currentState) return
+  const snapshot = { ...action.value }
 
   const stateLabels = {
     NEXT: 'Next Actions',
@@ -1003,7 +1009,11 @@ async function onMoveTo(newState) {
         await waitAction(action.value.id, pick.value)
       }
       statsModel().refreshStats()
-      toaster.success(`"${truncateTitle(action.value.title)}" moved to Waiting For`)
+      const title = truncateTitle(action.value.title)
+      const message = `"${title}" moved to Waiting For`
+      // DS12: delegating to a connection is not undoable
+      if (pick.kind === 'connection') toaster.success(message)
+      else undo.record({ op: 'move', item: snapshot, title, to: 'WAITING', message })
       await navigateToNextOrPrev()
     } catch {
       action.value.state = oldState
@@ -1039,7 +1049,8 @@ async function onMoveTo(newState) {
     try {
       await deferAction(action.value.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration)
       statsModel().refreshStats()
-      toaster.success(`"${truncateTitle(action.value.title)}" moved to Calendar`)
+      const title = truncateTitle(action.value.title)
+      undo.record({ op: 'move', item: snapshot, title, to: 'CALENDAR', message: `"${title}" moved to Calendar` })
       await navigateToNextOrPrev()
     } catch {
       action.value.state = oldState
@@ -1091,7 +1102,8 @@ async function onMoveTo(newState) {
       await changeActionState(action.value.id, newState, action.value.title)
     }
     statsModel().refreshStats()
-    toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabels[newState]}`)
+    const title = truncateTitle(action.value.title)
+    undo.record({ op: 'move', item: snapshot, title, to: newState, message: `"${title}" moved to ${stateLabels[newState]}` })
     await navigateToNextOrPrev()
   } catch {
     action.value.state = oldState
@@ -1108,6 +1120,7 @@ async function onMoveTo(newState) {
 
 async function onGotIt() {
   actionLoading.value = 'unwait'
+  const snapshot = { ...action.value }
   const oldState = action.value.state
   const oldWaitingFor = action.value.waiting_for
   const oldWaitingSince = action.value.waiting_since
@@ -1119,7 +1132,8 @@ async function onGotIt() {
     action.value.waiting_since = null
     statsModel().refreshStats()
     const stateLabel = action.value.state === 'CALENDAR' ? 'Calendar' : 'Next Actions'
-    toaster.success(`"${truncateTitle(action.value.title)}" moved to ${stateLabel}`)
+    const title = truncateTitle(action.value.title)
+    undo.record({ op: 'move', item: snapshot, title, to: action.value.state, message: `"${title}" moved to ${stateLabel}` })
     // Navigate back to waiting list since item is no longer there
     router.push({ name: 'waiting-for' })
   } catch {
@@ -1543,7 +1557,7 @@ async function onMarkDone() {
   const title = truncateTitle(action.value.title)
   try {
     await completeAction(action.value.id)
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item: action.value, title, message: `"${title}" completed` })
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to complete action')
@@ -1620,19 +1634,11 @@ async function navigateToNextOrPrev() {
 }
 
 async function onTrash() {
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: `Are you sure you want to move "${action.value.title}" to trash?`,
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (!confirmed) return
-
   actionLoading.value = 'trash'
   try {
     await trashAction(action.value.id)
-    toaster.success(`"${truncateTitle(action.value.title)}" moved to trash`)
+    const title = truncateTitle(action.value.title)
+    undo.record({ op: 'trash', item: action.value, title, message: `"${title}" moved to trash` })
     if (isSomeday.value) {
       router.push({ name: 'someday' })
     } else {
@@ -1666,7 +1672,8 @@ async function onActivate() {
   try {
     await apiClient.activateAction(action.value.id)
     statsModel().refreshStats()
-    toaster.success(isProjectShared.value ? `"${title}" moved to the project backlog` : `"${title}" moved to Next Actions`)
+    const message = isProjectShared.value ? `"${title}" moved to the project backlog` : `"${title}" moved to Next Actions`
+    undo.record({ op: 'move', item: action.value, title, to: 'NEXT', message })
     router.push({ name: 'someday' })
   } catch (err) {
     toaster.push(err.message || 'Failed to activate action')

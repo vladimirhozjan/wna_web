@@ -1668,17 +1668,13 @@
       "Navigate to the Inbox page on a desktop browser",
       "Locate the ✕ button on an item in the list",
       "Click the ✕ button",
-      "Verify a \"Move to Trash\" confirmation dialog appears asking for confirmation, with \"Cancel\" and \"Move to Trash\" buttons",
-      "Click \"Cancel\"",
-      "Verify the dialog closes and the item remains in the list",
-      "Click the ✕ button on the same item again",
-      "Click \"Move to Trash\" in the confirmation dialog",
-      "Verify the item is removed from the inbox list",
+      "Verify no confirmation dialog opens and the item is removed from the inbox list at once",
+      "Verify the toast `\"<title>\" moved to trash` with an **Undo** button appears",
       "Verify the Inbox sidebar badge decrements by 1",
       "Navigate to the Trash page and verify the deleted item appears there",
       "Test on a touch device (or emulated touch): verify the ✕ button is always visible (not only on hover)"
     ],
-    "expected": "Each item has a ✕ button. Clicking the ✕ button opens a \"Move to Trash\" confirmation dialog. Cancelling the dialog preserves the item. Confirming moves the item to Trash, removes it from the inbox, and decrements the sidebar badge."
+    "expected": "Each item has a ✕ button. Clicking it moves the item to Trash at once (no confirmation, FEAT-061), shows the Undo toast, removes it from the inbox, and decrements the sidebar badge."
   },
   {
     "id": "TC-062",
@@ -2519,18 +2515,12 @@
       "Locate the ✕ button on an action item in the list",
       "Note the title of the action",
       "Click the ✕ button",
-      "Verify a \"Move to Trash\" confirmation dialog appears asking for confirmation, with \"Cancel\" and \"Move to Trash\" buttons",
-      "Click \"Cancel\"",
-      "Verify the dialog closes and the action remains in the list",
-      "Click the ✕ button again",
-      "Verify the confirmation dialog appears again",
-      "Click \"Move to Trash\" (confirm)",
-      "Verify the action is removed from the Next Actions list",
-      "Verify a success toast appears confirming the move to trash",
+      "Verify no confirmation dialog opens and the action is removed from the Next Actions list at once",
+      "Verify the toast `\"<title>\" moved to trash` with an **Undo** button appears",
       "Navigate to the Trash page (/trash)",
       "Verify the deleted action appears in the trash"
     ],
-    "expected": "Each action has a ✕ button. Clicking it shows a \"Move to Trash\" confirmation dialog. Cancelling preserves the item. Confirming removes the item from the list, shows a success toast, and moves it to trash."
+    "expected": "Each action has a ✕ button. Clicking it removes the item from the list at once (no confirmation, FEAT-061), shows the Undo toast, and moves it to trash."
   },
   {
     "id": "TC-096",
@@ -2839,7 +2829,7 @@
       "Navigate to the Today page (/today)",
       "**Complete:** Click the checkbox on the first action. Verify it is removed from the list and a success toast appears. Check the Completed page to confirm.",
       "**Inline Edit:** Click the title of the second action. Verify it becomes editable. Change the text and press Enter. Verify the new title is saved. Click the title again, change text, press Escape. Verify the edit is cancelled. Click the title, change text, click elsewhere (blur). Verify the change is saved.",
-      "**Trash:** Click the ✕ button on an action. Verify a \"Move to Trash\" confirmation dialog appears. Click \"Move to Trash\". Verify the action is removed and a success toast appears. Check the Trash page to confirm.",
+      "**Trash:** Click the ✕ button on an action. Verify no confirmation dialog opens, the action is removed and the toast `\"<title>\" moved to trash` with **Undo** appears. Check the Trash page to confirm.",
       "**Drag Reorder:** Note the order of remaining actions. Drag an action to a different position. Verify the new order is reflected. Reload the page and verify the order persists.",
       "**Tag Filter:** Click the tag filter icon. Select a tag. Verify only matching actions are shown. Verify filter chips appear. Click X on a chip to remove it. Click \"Clear all\" to restore the full list."
     ],
@@ -4150,9 +4140,9 @@
       "**Tag Filter:** Click the tag filter icon. Select a tag. Verify only projects with that tag are shown. Verify filter chips appear with X buttons. Click \"Clear all\" to restore the full list.",
       "**Drag Reorder:** Note the order of projects. Drag a project to a different position. Verify the new order is reflected. Reload the page and verify the order persists.",
       "**Inline Title Edit:** Click on a project's title. Verify it becomes editable. Change the text and press Enter. Verify the new title is saved. Click the title again, change it, press Escape. Verify the edit is cancelled. Click the title, change it, click elsewhere (blur). Verify the change is saved.",
-      "**Trash:** Hover over a project and click the trash icon. Verify a confirmation dialog appears. Click \"Cancel\" and verify the project remains. Click trash again and confirm deletion. Verify the project is removed and a success toast appears. Navigate to the Trash page to confirm."
+      "**Trash:** Hover over a project and click the trash icon. Verify no confirmation dialog opens, the project is removed and the toast (`\"<title>\" and its actions moved to trash` for a project with actions, else `\"<title>\" moved to trash`) with **Undo** appears. Navigate to the Trash page to confirm."
     ],
-    "expected": "Tag filtering, drag reorder, inline title editing (Enter saves, Escape cancels, blur saves), and trash with confirmation all work correctly on the Projects list."
+    "expected": "Tag filtering, drag reorder, inline title editing (Enter saves, Escape cancels, blur saves), and trash without confirmation (Undo toast) all work correctly on the Projects list."
   },
   {
     "id": "TC-148",
@@ -4615,10 +4605,10 @@
     "steps": [
       "**Tag Filter:** Locate the tag filter control on the page. Select a specific tag. Verify only items with that tag are shown. Clear the filter and verify all items return.",
       "**Inline Title Edit:** Click directly on the title text of a waiting item. Verify the title becomes an editable input field. Change the text to \"Updated waiting title\". Press Enter. Verify the title saves and displays the updated text. Click another item's title, change text, then press Escape. Verify the edit is cancelled and original title is restored.",
-      "**Trash with Confirmation:** Hover over an item to reveal the action buttons (on touch devices, actions should always be visible). Click the trash/delete button on an item. Verify a confirmation dialog appears asking to confirm deletion. Click \"Cancel\" and verify the item remains. Click trash again, confirm the deletion. Verify the item is removed from the list and a toast confirms the action.",
+      "**Trash:** Hover over an item to reveal the action buttons (on touch devices, actions should always be visible). Click the trash/delete button on an item. Verify no confirmation dialog opens, the item is removed from the list and the toast `\"<title>\" moved to trash` with **Undo** appears.",
       "**Drag Reorder:** Click and hold on an item's drag handle. Drag it above or below another item. Release. Verify the new order is reflected in the list. Refresh the page and verify the new order persists."
     ],
-    "expected": "Tag filtering correctly narrows the list. Inline title editing saves on Enter and cancels on Escape. Trash shows a confirmation dialog before removing. Drag reorder changes item position and persists across page reloads."
+    "expected": "Tag filtering correctly narrows the list. Inline title editing saves on Enter and cancels on Escape. Trash removes the item at once with the Undo toast. Drag reorder changes item position and persists across page reloads."
   },
   {
     "id": "TC-166",
@@ -4902,7 +4892,7 @@
   },
   {
     "id": "TC-179",
-    "name": "Someday - Trash with Confirmation",
+    "name": "Someday - Trash Without Confirmation",
     "priority": "High",
     "area": "Someday / Maybe",
     "areas": [
@@ -4916,16 +4906,11 @@
       "Note the item's title",
       "Hover over the item to reveal action buttons",
       "Click the trash/delete button",
-      "Verify a confirmation dialog appears (ConfirmDialog component)",
-      "Verify the dialog message asks for confirmation to delete the item",
-      "Click \"Cancel\" in the confirmation dialog",
-      "Verify the item remains in the list",
-      "Click the trash button again on the same item",
-      "Click \"Confirm\" (or equivalent confirm button text) in the confirmation dialog",
-      "Verify the item is removed from the Someday/Maybe list",
+      "Verify no confirmation dialog opens",
+      "Verify the item is removed from the Someday/Maybe list and the toast `\"<title>\" moved to trash` with **Undo** appears",
       "Navigate to the Trash page (/trash) and verify the item appears there"
     ],
-    "expected": "Clicking trash triggers a confirmation dialog. Cancelling preserves the item. Confirming removes the item from the Someday/Maybe list and moves it to Trash. A success toast confirms the action."
+    "expected": "Clicking trash moves the item to Trash at once (no confirmation, FEAT-061) and shows the Undo toast."
   },
   {
     "id": "TC-180",
@@ -10439,7 +10424,7 @@
     "preconditions": "User is authenticated. Inbox contains exactly 1 stuff item.",
     "steps": [
       "Navigate to the Inbox page",
-      "Trash the single item (click trash icon, confirm)",
+      "Trash the single item (click trash icon)",
       "Verify the celebration animation starts playing",
       "Immediately click anywhere on the celebration area",
       "Verify the celebration fades out within 0.3 seconds (much faster than the normal 3-second duration)",
@@ -10514,7 +10499,7 @@
   },
   {
     "id": "TC-407",
-    "name": "Trash Project With Actions - Cascade Confirmation",
+    "name": "Trash Project With Actions - Cascade Toast",
     "priority": "High",
     "area": "Projects",
     "areas": [
@@ -10526,18 +10511,15 @@
     "steps": [
       "Navigate to the project detail page and verify it has actions",
       "Click \"Trash\"",
-      "Verify a confirmation dialog appears with the message: \"This will also move all actions in this project to trash. Are you sure?\"",
-      "Click \"Cancel\" and verify nothing happens",
-      "Click \"Trash\" again and confirm",
-      "Verify a success toast appears",
+      "Verify no confirmation dialog opens and the toast reads `\"<title>\" and its actions moved to trash` with **Undo**",
       "Navigate to the Trash page",
       "Verify both the project AND its actions appear in the Trash list"
     ],
-    "expected": "Trashing a project with actions shows a cascade warning. Both the project and its actions appear in Trash."
+    "expected": "Trashing a project with actions happens at once (no confirmation, FEAT-061); the toast names the cascade. Both the project and its actions appear in Trash."
   },
   {
     "id": "TC-408",
-    "name": "Trash Project Without Actions - Standard Confirmation",
+    "name": "Trash Project Without Actions - Plain Toast",
     "priority": "Medium",
     "area": "Projects",
     "areas": [
@@ -10549,10 +10531,9 @@
     "steps": [
       "Navigate to the project detail page for a project with no actions",
       "Click \"Trash\"",
-      "Verify the confirmation dialog shows the standard message (no mention of actions)",
-      "Confirm and verify the project is trashed"
+      "Verify no confirmation dialog opens, the project is trashed and the toast reads `\"<title>\" moved to trash` (no mention of actions) with **Undo**"
     ],
-    "expected": "Trashing a project without actions shows a standard confirmation without cascade warning."
+    "expected": "Trashing a project without actions happens at once with the plain trash toast."
   },
   {
     "id": "TC-409",
@@ -11480,7 +11461,7 @@
     "preconditions": "Logged-in user has an assigned action on a shared project (per TC-445).",
     "steps": [
       "Open the project detail",
-      "Click the trash (×) button on your assigned action row, confirm the dialog"
+      "Click the trash (×) button on your assigned action row (no confirmation dialog)"
     ],
     "expected": "The action is permanently trashed. It does NOT reappear in the project backlog (trash is final per spec). The user is now free to self-assign another backlog action."
   },
@@ -14564,7 +14545,7 @@
       "Click the title of an overdue row, change it and press Enter; verify the new title is shown",
       "Tick the checkbox of the overdue action that is also in Today",
       "Verify a \"completed\" toast appears and the row disappears from both the Overdue and Today sections",
-      "Click the trash button on another overdue row and confirm",
+      "Click the trash button on another overdue row (no confirmation dialog)",
       "Verify the row disappears and the Overdue count and sidebar badges refresh",
       "Click a remaining overdue row, then use back on the action detail page",
       "Try dragging an overdue row"
@@ -16844,11 +16825,11 @@
       "Press ?.",
       "Press Esc; press ?; click **Close**.",
       "Click into an action's title field on a detail page and type `g`, `i`, `c`, `?`.",
-      "Open a delete confirmation (e.g. Trash on an action detail page); press G then I and Cmd/Ctrl+K; cancel.",
+      "Open a confirmation dialog (e.g. Complete on a project detail page with actions); press G then I and Cmd/Ctrl+K; cancel.",
       "Turn the Weekly Review off in Settings; press G then V; press ?; press Cmd/Ctrl+K and type `review`.",
       "Press G, wait 2 seconds, then press I; press G, wait 2 seconds, then press C."
     ],
-    "expected": "Step 1: `/inbox`, then `/settings`, then `/completed` open. Step 2: Q cancels the sequence silently; the following I does nothing (no cue is shown after G). Step 3: TopNav Quick Add expands with its input focused (placeholder \"Add new stuff\"); Enter shows toast `\"Buy milk\" added to Inbox`; Esc collapses it. Step 4: dialog \"Keyboard shortcuts\" with blocks **General** (`⌘K` on macOS / `Ctrl+K` elsewhere — Open the command palette · `C` — Add to Inbox · `?` — Show keyboard shortcuts), **Go to** (`G E` — Engage … `G V` — Weekly Review · `G ,` — Settings), **In the command palette** (`↑ ↓` — Move · `Enter` — Run · `Esc` — Close) and the footnote \"Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open.\"; **Close** button. Step 5: Esc closes it; **Close** closes it. Step 6: the characters are typed into the field; no navigation, no Quick Add, no dialog. Step 7: no navigation and no palette while the confirmation is open. Step 8: G V does nothing; the dialog has no `G V` row; the palette shows no \"Go to Weekly Review\" row. Step 9: I after the wait does nothing (no navigation); C after the wait expands TopNav Quick Add (the sequence lapsed after 1 second)."
+    "expected": "Step 1: `/inbox`, then `/settings`, then `/completed` open. Step 2: Q cancels the sequence silently; the following I does nothing (no cue is shown after G). Step 3: TopNav Quick Add expands with its input focused (placeholder \"Add new stuff\"); Enter shows toast `\"Buy milk\" added to Inbox`; Esc collapses it. Step 4: dialog \"Keyboard shortcuts\" with blocks **General** (`⌘K` on macOS / `Ctrl+K` elsewhere — Open the command palette · `⌘Z` / `Ctrl+Z` — Undo the last complete, trash or move · `C` — Add to Inbox · `?` — Show keyboard shortcuts), **Go to** (`G E` — Engage … `G V` — Weekly Review · `G ,` — Settings), **In the command palette** (`↑ ↓` — Move · `Enter` — Run · `Esc` — Close) and the footnote \"Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open. ⌘Z works while the Undo toast shows.\" (`Ctrl+Z` off macOS); **Close** button. Step 5: Esc closes it; **Close** closes it. Step 6: the characters are typed into the field; no navigation, no Quick Add, no dialog. Step 7: no navigation and no palette while the confirmation is open. Step 8: G V does nothing; the dialog has no `G V` row; the palette shows no \"Go to Weekly Review\" row. Step 9: I after the wait does nothing (no navigation); C after the wait expands TopNav Quick Add (the sequence lapsed after 1 second)."
   },
   {
     "id": "TC-840",
@@ -16996,11 +16977,11 @@
     "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
     "preconditions": "Common preconditions; unassigned backlog actions \"Book venue\" and \"Order badges\" on \"Launch\".",
     "steps": [
-      "Bor opens \"Book venue\" and trashes it (confirm).",
+      "Bor opens \"Book venue\" and trashes it.",
       "Bor opens `/trash`; Ana opens `/trash`.",
       "Bor clicks **Restore** on \"Book venue\".",
       "Bor and Ana open \"Launch\".",
-      "Bor trashes \"Order badges\", opens `/trash`, clicks **Empty Trash** and confirms.",
+      "Bor trashes \"Order badges\", opens `/trash`, clicks **Empty Trash** and confirms (Empty Trash keeps its confirmation).",
       "Ana opens `/trash`."
     ],
     "expected": "Step 2: \"Book venue\" is in Bor's Trash with a \"Shared\" badge; it is not in Ana's Trash. Step 3:\ntoast `\"Book venue\" restored`; the row leaves Bor's Trash. Step 4: \"Book venue\" is back in the backlog, unassigned (no\nassignee chip), at the end. Step 5: toast \"Trash emptied\"; Bor's Trash shows \"Nothing in the trash\". Step 6: \"Order\nbadges\" never appears in Ana's Trash and is gone from the project."
@@ -17279,15 +17260,15 @@
     "preconditions": "Common preconditions. Actions in Next, Today, Waiting For, one overdue action, a personal project\nwith 2 actions. For the shared-project steps: owner O (Team) and member M (Team) share project P with actions U\n(unassigned), MO (assigned to M) and a read-only member R (Free) on P.",
     "steps": [
       "On Next, swipe right on a row slowly; watch the strip under it before and after ~40 %; release.",
-      "On Next, swipe left on another row past ~40 %; release; click **Cancel**; repeat and click **Move to Trash**.",
+      "On Next, swipe left on another row past ~40 %; release.",
       "Repeat steps 1–2 on Today, Waiting For, Overdue and on each Engage section (Overdue, Today, Next Actions, Waiting For).",
-      "Open the personal project; swipe right on one action and left on the other (confirm).",
+      "Open the personal project; swipe right on one action and left on the other.",
       "As O, open P; swipe right and left on MO. Swipe right on U.",
       "As M, open P; swipe right on MO. As R, open P; swipe right and left on U.",
       "Block `POST /v1/action/{id}/complete`; on Next swipe right on a row.",
       "On a desktop viewport (1280 px) open Next and drag a row sideways with the mouse."
     ],
-    "expected": "Step 1: the row follows the finger; a strip appears at the left edge with the check icon and\n\"Complete\" — tinted (success-light background, success text) before the threshold and solid (success background,\ninverse text) past it. On release the row snaps back, the checkbox ticks, the row animates out and the toast\n`\"<title>\" completed` shows. Step 2: the strip is on the right edge — trash icon after \"Trash\", danger tint then solid.\nAfter release the row snaps back and the \"Move to Trash\" confirm opens with \"Are you sure you want to move this action\nto trash?\"; Cancel keeps the row; Move to Trash removes it with the toast `\"<title>\" moved to trash`. Step 3: the same\non every page and section. Step 4: complete and trash work; the trash confirm reads `Are you sure you want to move\n\"<title>\" to trash?`. Step 5: MO does not move in either direction (O sees no checkbox / × on it); U completes. Step 6:\nM completes MO; R's rows do not move. Step 7: the row snaps back, ticks, then returns unchecked with the API error toast\n(else \"Failed to complete action\"). Step 8: no strip, the row does not slide."
+    "expected": "Step 1: the row follows the finger; a strip appears at the left edge with the check icon and\n\"Complete\" — tinted (success-light background, success text) before the threshold and solid (success background,\ninverse text) past it. On release the row snaps back, the checkbox ticks, the row animates out and the toast\n`\"<title>\" completed` shows. Step 2: the strip is on the right edge — trash icon after \"Trash\", danger tint then solid.\nAfter release the row snaps back and is trashed at once — no confirm (FEAT-061) — with the toast `\"<title>\" moved to\ntrash` and its **Undo** button. Step 3: the same on every page and section. Step 4: complete and trash work, no\nconfirm. Step 5: MO does not move in either direction (O sees no checkbox / × on it); U completes. Step 6:\nM completes MO; R's rows do not move. Step 7: the row snaps back, ticks, then returns unchecked with the API error toast\n(else \"Failed to complete action\"). Step 8: no strip, the row does not slide."
   },
   {
     "id": "TC-856",
@@ -17305,10 +17286,10 @@
     "steps": [
       "Swipe right on S2 past ~40 %; release.",
       "Clarify S2 as Someday (Not actionable → Someday).",
-      "Swipe left on S1; confirm **Move to Trash**.",
+      "Swipe left on S1.",
       "Click the header **Clarify** button; close the sheet with ×; swipe right on S3."
     ],
-    "expected": "Step 1: the strip at the left edge shows the arrow icon and \"Clarify\" (action-light tint, solid\naction colour when armed); after release the row snaps back and the Clarify bottom sheet opens with \"Processing:\" + S2.\nStep 2: toast `\"S2\" moved to Someday`; the sheet closes (it does not continue to S1 or S3); S2 is gone from the list.\nStep 3: confirm message \"Are you sure you want to move this item to trash?\"; S1 is removed with the toast\n`\"S1\" moved to trash`. Step 4: × closes the sheet and leaves Clarify mode; the swipe on S3 opens the sheet on S3."
+    "expected": "Step 1: the strip at the left edge shows the arrow icon and \"Clarify\" (action-light tint, solid\naction colour when armed); after release the row snaps back and the Clarify bottom sheet opens with \"Processing:\" + S2.\nStep 2: toast `\"S2\" moved to Someday`; the sheet closes (it does not continue to S1 or S3); S2 is gone from the list.\nStep 3: no confirm; S1 is removed with the toast `\"S1\" moved to trash` and **Undo**. Step 4: × closes the sheet and leaves Clarify mode; the swipe on S3 opens the sheet on S3."
   },
   {
     "id": "TC-857",
@@ -17323,11 +17304,11 @@
     "section": "64: Mobile-Web Polish",
     "preconditions": "Common preconditions. Items in Someday, a personal project, a shared project the user owns (S-own),\na shared project another user owns where the user is a member (S-member), items in Completed, Trash and Reference, a\nsearch with results, a recurring template.",
     "steps": [
-      "On Someday swipe right on a row, then left (cancel the confirm).",
-      "On Projects swipe right on the personal project, then left (cancel). Swipe left on S-own (cancel), then on S-member.",
+      "On Someday swipe right on a row, then left on it; click **Undo** in the toast.",
+      "On Projects swipe right on the personal project, then left (click **Undo**). Swipe left on S-own (click **Undo**), then on S-member.",
       "Swipe both ways on rows in Completed, Trash, Reference, Search results and Calendar → Recurring."
     ],
-    "expected": "Step 1: right — the row does not move; left — Trash strip, confirm \"Are you sure you want to move\nthis item to trash?\". Step 2: right — no movement; left — confirm \"Are you sure you want to move this project to\ntrash?\". S-own shows × and swipes left to the same confirm; S-member shows no × and does not move. Step 3: no row moves in any\ndirection."
+    "expected": "Step 1: right — the row does not move; left — Trash strip, the row is trashed at once (no confirm)\nwith the Undo toast; Undo brings it back. Step 2: right — no movement; left — trashed at once with the Undo toast, Undo\nbrings it back. S-own shows × and swipes left the same way; S-member shows no × and does not move. Step 3: no row moves in any\ndirection."
   },
   {
     "id": "TC-858",
@@ -17398,5 +17379,158 @@
       "With the sheet open, resize the window above 768 px."
     ],
     "expected": "Step 1: a sheet slides up over the dimmed page to ~70 % of the screen height, with a handle bar,\nthen the Clarify header (\"Clarify\", step \"1/3\", ×), progress bar, \"Processing:\" + title, and the step; the page behind\ndoes not scroll. Step 2: once the content (or keyboard) no longer fits, the sheet grows to full height and stays there.\nStep 3: the short drag snaps back; the long drag closes the sheet and leaves Clarify mode. Step 4: the backdrop closes\nit the same way. Step 5: drag and backdrop do nothing while saving and on \"Do it now\"; × still closes it. Step 6: each\nfinished item shows its success toast and the sheet moves to the next item; after the last one it closes and Inbox\nZero shows. Step 7: the detail page opens the same sheet and advances to the next item when done. Step 8: the sheet\nbecomes the desktop slide-over on the same step."
+  },
+  {
+    "id": "TC-862",
+    "name": "Complete From a List Row, Then Undo",
+    "priority": "High",
+    "area": "Undo, Next Actions, Inbox",
+    "areas": [
+      "Undo",
+      "Next Actions",
+      "Inbox"
+    ],
+    "smoke": true,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions. Next Actions with A1, A2, A3 (in that order); Inbox with S1, S2.",
+    "steps": [
+      "On Next, tick the checkbox of A2.",
+      "Click **Undo** in the toast.",
+      "Tick A2 again; wait 7 seconds without clicking.",
+      "On Inbox, tick S1; click the toast body (not the button).",
+      "Tick S2; then tick A1 on Next before the S2 toast expires."
+    ],
+    "expected": "Step 1: A2 animates out; the Undo toast reads `\"A2\" completed`. Step 2: the button reads\n`Undoing…` (disabled) while the call runs; then a plain success toast `\"A2\" moved back` replaces it, A2 is back between\nA1 and A3, and the Next / Completed counts in the sidebar update. Step 3: the toast leaves after 6 s; A2 stays in\nCompleted and nothing can be undone any more. Step 4: the click dismisses the toast; there is no Undo left. Step 5: the\nA1 Undo toast replaces the S2 one at once — only one Undo toast is ever shown."
+  },
+  {
+    "id": "TC-863",
+    "name": "Trash Without a Confirm, Then Undo",
+    "priority": "High",
+    "area": "Undo, Trash, Projects",
+    "areas": [
+      "Undo",
+      "Trash",
+      "Projects"
+    ],
+    "smoke": false,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions. Waiting For with W1, W2, W3; Someday with an item D1 (second in the list); a\nproject P1 with 2 actions and a project P2 with no actions; a stuff item S1 in Inbox.",
+    "steps": [
+      "On Waiting For, click × on W2.",
+      "Click **Undo**.",
+      "On Someday, click × on D1; click **Undo**.",
+      "Open S1's detail page; click **Trash**.",
+      "On Projects, click × on P1; then on P2.",
+      "Click **Undo** on the P2 toast; open Trash."
+    ],
+    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (which replaces the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash."
+  },
+  {
+    "id": "TC-864",
+    "name": "Move Undo Restores the List and the Cleared Fields",
+    "priority": "High",
+    "area": "Undo, Calendar, Waiting For",
+    "areas": [
+      "Undo",
+      "Calendar",
+      "Waiting For"
+    ],
+    "smoke": false,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date.",
+    "steps": [
+      "Open C1; Move → Next Actions; click **Undo**; open C1.",
+      "Open W1; click **Got it**; click **Undo**; open W1.",
+      "Open N1; Move → Calendar, pick a date; click **Undo**; open N1.",
+      "Drag N1 from Next onto **Today** in the sidebar; click **Undo**."
+    ],
+    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place."
+  },
+  {
+    "id": "TC-865",
+    "name": "Cmd/Ctrl+Z Runs the Undo Toast (Desktop)",
+    "priority": "High",
+    "area": "Undo, Keyboard Shortcuts",
+    "areas": [
+      "Undo",
+      "Keyboard Shortcuts"
+    ],
+    "smoke": false,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions, desktop (≥ 769 px). Next with A1, A2.",
+    "steps": [
+      "Tick A1; press Cmd/Ctrl+Z.",
+      "Tick A1; click into the TopNav search field, type `ab`, press Cmd/Ctrl+Z.",
+      "Tick A2; press ? (Keyboard shortcuts dialog opens); press Cmd/Ctrl+Z; close the dialog.",
+      "Tick A1; wait 7 seconds; press Cmd/Ctrl+Z.",
+      "Tick A2; press Cmd/Ctrl+Shift+Z.",
+      "Press ?."
+    ],
+    "expected": "Step 1: same as clicking Undo — `Undoing…`, then `\"A1\" moved back`, A1 back in place. Step 2: the\nfield's own text undo runs; the Undo toast stays and A1 stays completed. Step 3: nothing is undone while the dialog is\nopen. Step 4: nothing happens (the toast is gone). Step 5: nothing is undone (no redo / no shift variant). Step 6: the\n**General** block shows `⌘Z` (macOS) / `Ctrl+Z` — \"Undo the last complete, trash or move\" right after the palette key,\nand the footnote ends \"⌘Z works while the Undo toast shows.\" (`Ctrl+Z` off macOS)."
+  },
+  {
+    "id": "TC-866",
+    "name": "Operations Without Undo",
+    "priority": "Medium",
+    "area": "Undo, Clarify, Recurring",
+    "areas": [
+      "Undo",
+      "Clarify",
+      "Recurring"
+    ],
+    "smoke": false,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions. Inbox item S1; standalone action A1 in Next; a weekly recurring template with\nits active instance R1 in Next; Next with N1, N2, N3.",
+    "steps": [
+      "Clarify S1 to Someday.",
+      "Open A1; Move → Projects; enter an outcome.",
+      "Tick R1 on Next.",
+      "Drag N3 above N1 on Next.",
+      "Open Completed; uncheck an item."
+    ],
+    "expected": "Each of steps 1, 2, 3 and 5 shows its usual success toast (`\"S1\" moved to Someday`, `\"A1\"\nconverted to project`, `\"R1\" completed`, `\"<title>\" restored`) with no Undo button, and Cmd/Ctrl+Z does nothing. Step 4:\nthe row moves and no toast appears."
+  },
+  {
+    "id": "TC-867",
+    "name": "Detail-Page Undo, Project Active Action and Shared Rows",
+    "priority": "High",
+    "area": "Undo, Action Detail, Projects, Shared Projects",
+    "areas": [
+      "Undo",
+      "Action Detail",
+      "Projects",
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions. Next with B1, B2, B3 (standalone); personal project P with active action P-A\nin Today and backlog P-B. For the shared step: Team users O (owner) and M (write member) share project Q; M holds the\nclaimed action Q-A.",
+    "steps": [
+      "Open B2 from Next; click **Done** (the page moves to B3); click **Undo**.",
+      "Open B1; click **Done**; open Inbox; click **Undo**.",
+      "Open P; tick P-A; click **Undo**.",
+      "As M, on Next tick Q-A; click **Undo**.",
+      "Block `POST /v1/action/{id}/uncomplete`; tick B3; click **Undo**."
+    ],
+    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted."
+  },
+  {
+    "id": "TC-868",
+    "name": "Mobile Swipe-Left Trash and Undo Tap",
+    "priority": "High",
+    "area": "Undo, Mobile, Item Lists",
+    "areas": [
+      "Undo",
+      "Mobile",
+      "Item Lists"
+    ],
+    "smoke": false,
+    "section": "65: Global Undo (FEAT-061)",
+    "preconditions": "Common preconditions, touch phone viewport (≤ 768 px). Today with T1, T2, T3 (manual).",
+    "steps": [
+      "Swipe left on T2 past ~40 %; release.",
+      "Tap **Undo** in the toast.",
+      "Swipe left on T1 with a long title (> 30 characters); look at the toast."
+    ],
+    "expected": "Step 1: no confirm; T2 is trashed with the Undo toast `\"T2\" moved to trash`. Step 2: `\"T2\" moved\nback`; T2 is back between T1 and T3. Step 3: the toast wraps inside the screen (16 px from each side) and **Undo** stays\nat the end of its last line with a touch-sized target."
   }
 ]

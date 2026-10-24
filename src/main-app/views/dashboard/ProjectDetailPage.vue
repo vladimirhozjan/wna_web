@@ -655,6 +655,7 @@ import { projectModel } from '../../scripts/models/projectModel.js'
 import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
@@ -685,6 +686,7 @@ const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+const undo = undoModel()
 const tagMdl = tagModel()
 const auth = authModel()
 const proj = projectModel()
@@ -1115,17 +1117,22 @@ watch(error, (err) => {
   toaster.push(msg)
 })
 
+async function loadProject() {
+  const data = await getProject(route.params.id)
+  project.value = { ...data }
+
+  currentPosition.value = Number(route.query.position) || 0
+  totalItems.value = Number(route.query.total) || 1
+
+  await loadProjectActions()
+}
+undo.registerRefresh(loadProject)
+
 onMounted(async () => {
   try {
     fromSource.value = route.query.from || null
 
-    const data = await getProject(route.params.id)
-    project.value = { ...data }
-
-    currentPosition.value = Number(route.query.position) || 0
-    totalItems.value = Number(route.query.total) || 1
-
-    await loadProjectActions()
+    await loadProject()
 
   } catch (err) {
     if (err?.status === 404) {
@@ -1359,7 +1366,7 @@ async function onComplete() {
   const title = truncateTitle(project.value.title)
   try {
     await completeProject(project.value.id)
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item: project.value, title, message: `"${title}" completed` })
     await navigateToNextOrPrev()
   } catch (err) {
     toaster.push(err.message || 'Failed to complete project')
@@ -1419,23 +1426,13 @@ async function navigateToNextOrPrev() {
 
 async function onTrash() {
   const hasActions = orderedActions.value.length > 0
-  const message = hasActions
-    ? `This will also move all actions in this project to trash. Are you sure?`
-    : `Are you sure you want to move "${project.value.title}" to trash?`
-
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message,
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (!confirmed) return
+  const title = truncateTitle(project.value.title)
 
   actionLoading.value = 'trash'
   try {
     await trashProject(project.value.id)
-    toaster.success(`"${truncateTitle(project.value.title)}" moved to trash`)
+    const message = hasActions ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
+    undo.record({ op: 'trash', item: project.value, title, message })
     if (isSomeday.value) {
       router.push({ name: 'someday' })
     } else {
@@ -1469,7 +1466,7 @@ async function onActivate() {
   try {
     await apiClient.activateProject(project.value.id)
     statsModel().refreshStats()
-    toaster.success(`"${title}" moved to Projects`)
+    undo.record({ op: 'move', item: project.value, title, to: 'ACTIVE', message: `"${title}" moved to Projects` })
     router.push({ name: 'someday' })
   } catch (err) {
     toaster.push(err.message || 'Failed to activate project')
@@ -1533,6 +1530,7 @@ async function onMoveTo(target) {
 
   if (target === 'SOMEDAY') {
     actionLoading.value = 'move'
+    const snapshot = { ...project.value }
     const oldState = project.value.state
     project.value.state = 'SOMEDAY'
     const hasActions = orderedActions.value.length > 0
@@ -1540,10 +1538,11 @@ async function onMoveTo(target) {
     try {
       await apiClient.somedayProject(project.value.id)
       statsModel().refreshStats()
+      const title = truncateTitle(snapshot.title)
       const msg = hasActions
-        ? `"${truncateTitle(project.value.title)}" moved to Someday. Active actions shelved.`
-        : `"${truncateTitle(project.value.title)}" moved to Someday`
-      toaster.success(msg)
+        ? `"${title}" moved to Someday. Active actions shelved.`
+        : `"${title}" moved to Someday`
+      undo.record({ op: 'move', item: snapshot, title, to: 'SOMEDAY', message: msg })
       await navigateToNextOrPrev()
     } catch (err) {
       project.value.state = oldState
@@ -1715,7 +1714,7 @@ async function onCompleteAction(action) {
   try {
     await apiClient.completeAction(action.id)
     statsModel().refreshStats()
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item: action, title, message: `"${title}" completed` })
     await loadProjectActions()
   } catch {
     toaster.push('Failed to complete action')
@@ -1733,20 +1732,12 @@ function goToActionDetail(act) {
 }
 
 async function onTrashAction(action) {
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: `Are you sure you want to move "${action.title}" to trash?`,
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (!confirmed) return
-
   trashingActionId.value = action.id
   try {
     await apiClient.trashAction(action.id)
     statsModel().refreshStats()
-    toaster.success(`"${truncateTitle(action.title)}" moved to trash`)
+    const title = truncateTitle(action.title)
+    undo.record({ op: 'trash', item: action, title, message: `"${title}" moved to trash` })
     if (action.id === orderedActions.value[0]?.id) {
       await loadProjectActions()
     } else {
