@@ -16893,7 +16893,7 @@
       "Open the recurring template and the palette; choose \"Trash\".",
       "Open an action detail page whose data is still loading (throttle the network) and press Cmd/Ctrl+K."
     ],
-    "expected": "Every **This item** group lists exactly the page's rendered, enabled buttons in button order, labels verbatim, Move entries as \"Move to {entry}\". Step 1: Complete · Trash (no Move or Share… rows — the page hides them on a shared project). Step 2: Leave only. Step 3: no Trash row (the button is disabled while assigned to another member) and no Assign to me / Unassign rows. Step 4: Undo only. Step 5: rows Delete instance · Trash; choosing Trash closes the palette and shows the page's own confirmation dialog. Step 6: no **This item** group until the page has loaded."
+    "expected": "Every **This item** group lists exactly the page's rendered, enabled buttons in button order, labels verbatim, Move entries as \"Move to {entry}\". Step 1: Complete · Trash (no Move or Share… rows — the page hides them on a shared project). Step 2: Leave only. Step 3: the page shows no Done, Move, Got it, Assign to me, Unassign or Trash button (claimed by another member — view and comment only) and the palette has no **This item** group. Step 4: Undo only. Step 5: rows Delete instance · Trash; choosing Trash closes the palette and shows the page's own confirmation dialog. Step 6: no **This item** group until the page has loaded."
   },
   {
     "id": "TC-843",
@@ -16927,7 +16927,7 @@
       "As C, open the shared project's detail page and the palette.",
       "As C, open the unassigned backlog action's detail page and the palette."
     ],
-    "expected": "Step 1: **This item** lists Leave only. Step 2: the page shows no Done, Move, Assign to me or Trash button (a read-only member views and comments only); the palette has no **This item** group — **Go to** only."
+    "expected": "Step 1: **This item** lists Leave only. Step 2: the page shows no Done, Move, Assign to me or Trash button from the first paint (the role comes from the action's `my_role`; no members request is made); the palette has no **This item** group — **Go to** only."
   },
   {
     "id": "TC-844",
@@ -17635,5 +17635,28 @@
       "Go through the slides with **Next**; on slide 4 type an item and tap **Add to Inbox**."
     ],
     "expected": "Step 1: the tour fills the screen (no rounded corners, no dimmed backdrop); `1/4` and × at the top,\nart and copy centred (120 px art), footer pinned to the bottom; every control is at least 44 px tall; the + FAB is not\nvisible over it. Step 2: same as TC-870 — the modal closes, the app is on Inbox with the item, and the tour does not\nreopen."
+  },
+  {
+    "id": "TC-874",
+    "name": "Action and Project Detail Buttons per Role on a Shared Project",
+    "priority": "High",
+    "area": "Shared Projects, Action Detail",
+    "areas": [
+      "Shared Projects",
+      "Action Detail"
+    ],
+    "smoke": false,
+    "section": "67: Shared-Project Action Buttons (BUG-063)",
+    "preconditions": "Team users A (owner), B (write) and C (read-only), plus D (write, on Free or Pro); A shares project P\nwith B, C and D. In P: action N1 claimed by B (Next), N2 claimed by B (Waiting), N3 claimed by C (Next, claimed\nbefore C was made read-only), N4 claimed by D (Next), N5 unassigned backlog, N6 completed by B, N7 a legacy SOMEDAY\naction. A second shared project S of A in SOMEDAY (legacy) with B as a member. A personal action of A in Next.",
+    "steps": [
+      "As B open N1, then N2, opening the **Move** dropdown and the palette on each.",
+      "As A open N1, N5 and N7, and the palette on each.",
+      "As B open N5, N6 and N7; as C open N3, N5 and N6; as D open N4 and N6. Open the palette on each.",
+      "As B, on N1 choose **Move** → **Today**; then open B's Today list.",
+      "As A open project S, then as B open S; open the palette on each.",
+      "As A, drag project P from Projects onto **Someday/Maybe** in the sidebar.",
+      "As A open the personal action."
+    ],
+    "expected": "On every page the **This item** palette rows list exactly the rendered buttons (labels verbatim,\nMove entries as \"Move to {entry}\"); blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move · Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar) · Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Done · Assign to me · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Done · Assign to me · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave only (no Activate or Complete).\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before."
   }
 ]

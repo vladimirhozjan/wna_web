@@ -82,22 +82,24 @@
             </Btn>
           </template>
           <template v-else-if="isSomeday">
-            <Btn
-                variant="primary"
-                size="sm"
-                :loading="actionLoading === 'activate'"
-                @click="onActivate"
-            >
-              Activate
-            </Btn>
-            <Btn
-                variant="secondary"
-                size="sm"
-                :loading="actionLoading === 'complete'"
-                @click="onComplete"
-            >
-              Complete
-            </Btn>
+            <template v-if="!isShared || isOwner">
+              <Btn
+                  variant="primary"
+                  size="sm"
+                  :loading="actionLoading === 'activate'"
+                  @click="onActivate"
+              >
+                Activate
+              </Btn>
+              <Btn
+                  variant="secondary"
+                  size="sm"
+                  :loading="actionLoading === 'complete'"
+                  @click="onComplete"
+              >
+                Complete
+              </Btn>
+            </template>
           </template>
           <template v-else>
             <Btn
@@ -841,8 +843,10 @@ const itemCommands = computed(() => {
   if (pageLoading.value || notFound.value || !project.value) return []
   if (isCompleted.value) return [{ label: 'Undo', run: onUndo }]
   const commands = []
-  if (isSomeday.value) commands.push({ label: 'Activate', run: onActivate })
-  if (isSomeday.value || !isShared.value || isOwner.value) commands.push({ label: 'Complete', run: onComplete })
+  if (!isShared.value || isOwner.value) {
+    if (isSomeday.value) commands.push({ label: 'Activate', run: onActivate })
+    commands.push({ label: 'Complete', run: onComplete })
+  }
   if (!isShared.value) {
     commands.push(
         { label: 'Move to Next Actions', run: () => onMoveTo('ACTION') },

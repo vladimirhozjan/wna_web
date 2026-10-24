@@ -46,30 +46,67 @@ CSS variable. Admin-app untouched.
 
 ## Checklist
 ### Screens (built per parent §Screens — every row / state + exact copy)
-- [ ] W-1 S1 — `ActionDetailPage.vue` buttons per the S1 matrix, every row, from `action.my_role` / `assigned_to` /
+- [x] W-1 S1 — `ActionDetailPage.vue` buttons per the S1 matrix, every row, from `action.my_role` / `assigned_to` /
   `state` / tier; Move never lists Someday / Projects / Reference on a shared action; Trash hidden (not `:disabled`) on a
-  claim of someone else.
-- [ ] W-2 S1 palette — `itemCommands` produce exactly the same set as the page for every S1 row (shared computeds, no
-  duplicated rule).
-- [ ] W-3 S1 role source — `listProjectMembers` watcher and `myRole` ref removed; grep `ActionDetailPage.vue` for
-  `listProjectMembers` / `myRole` → 0 matches (rule 3).
-- [ ] W-4 S2 — `ProjectDetailPage.vue` shared Someday project: Activate + Complete for the owner only, page + palette.
-- [ ] W-5 S3 — `Sidebar.vue` `onDropToSomeday`: project row with `shared: true` refused without an API call, toast copy
-  exactly as parent §Screens S3 (confirm the drop payload carries `shared`; add it at the drag source if not).
-- [ ] W-6 Fallback toasts — a Sidebar drop of a shared action the viewer may not move shows the backend 403 `detail`
-  (parent §Design strings) as the error toast.
+  claim of someone else. — rules `views/dashboard/ActionDetailPage.vue:613-638` (`viewerRole`, `canFinish`, `canMove`,
+  `canManageSomeday`, `canAssign`, `canUnassign`, `canUndo`); template Undo `:94`, Someday `:104`, Got it `:125`, Done
+  `:134`, Move `:143` (Someday / Projects / Reference only when `!isProjectShared` `:157`), Assign `:164`, Unassign
+  `:173`, Trash `v-if="canFinish"` `:182` (no `:disabled`).
+- [x] W-2 S1 palette — `itemCommands` produce exactly the same set as the page for every S1 row (shared computeds, no
+  duplicated rule). — `ActionDetailPage.vue:651-672` uses the same computeds in page order; shared Move filter
+  `SHARED_HIDDEN_MOVES` `:650`, `:664`.
+- [x] W-3 S1 role source — `listProjectMembers` watcher and `myRole` ref removed; grep `ActionDetailPage.vue` for
+  `listProjectMembers` / `myRole` → 0 matches (rule 3). — `grep -c "listProjectMembers\|myRole"` → `0`; also removed
+  `isAssignedToOther` / `isReadOnlyBacklog` (0 matches). `apiClient.listProjectMembers` kept (still used by
+  `projectModel.js:277`).
+- [x] W-4 S2 — `ProjectDetailPage.vue` shared Someday project: Activate + Complete for the owner only, page + palette. —
+  page `views/dashboard/ProjectDetailPage.vue:85` (`!isShared || isOwner`), palette `:846`.
+- [x] W-5 S3 — `Sidebar.vue` `onDropToSomeday`: project row with `shared: true` refused without an API call, toast copy
+  exactly as parent §Screens S3 (confirm the drop payload carries `shared`; add it at the drag source if not). —
+  `components/Sidebar.vue:479-482` (project row, and Completed `type: PROJECT` row so it isn't uncompleted first); the
+  payload already carries `shared` (`components/ItemList.vue:206`, `:251`); project / completed rows send it (api.md
+  :1628, :3088).
+- [x] W-6 Fallback toasts — a Sidebar drop of a shared action the viewer may not move shows the backend 403 `detail`
+  (parent §Design strings) as the error toast. — no change needed: `scripts/core/apiClient.js:71` (`detail` →
+  `message`, `:103-107`), every Sidebar drop catch `toaster.push(err.message …)` (e.g. `Sidebar.vue:347`, `:405`).
 ### Help
-- [ ] W-7 `content/help/faq.js` "What are shared projects?" — the two edits in parent §Help impact, verbatim.
+- [x] W-7 `content/help/faq.js` "What are shared projects?" — the two edits in parent §Help impact, verbatim. —
+  `content/help/faq.js:210` (new sentence after "can comment."; "shared projects and their actions can't be moved to
+  Someday/Maybe.").
 ### Verification
-- [ ] W-8 `npm run build:main` passes.
-- [ ] W-9 Code walk of every parent §User flows row against W-1…W-5 (owner / write / read-only / non-Team / removed /
+- [x] W-8 `npm run build:main` passes. — `✓ built in 4.07s` · `[obfuscator] Obfuscated 19 files` (only the
+  pre-existing > 500 kB chunk warning).
+- [x] W-9 Code walk of every parent §User flows row against W-1…W-5 (owner / write / read-only / non-Team / removed /
   personal) — list each row with the `file:line` of the condition that renders it; ask the owner to verify at runtime.
+  (`ActionDetailPage.vue` unless noted)
+  - Owner · claimed by other → none: `canFinish` `:620` false (not mine), `canMove` `:627`, `canUnassign` `:634`,
+    `canAssign` `:631` (not unassigned).
+  - Owner / write · backlog → Done / Assign (Team) / Trash, no Move: `:621`, `:631`, `:627` (not assignee).
+  - Full member · own claim → Done / Move (Next/Today/Calendar/Waiting) / Unassign / Trash; Waiting + Got it: `:620`,
+    `:627`, `:634`, `:125`, `:157`.
+  - Owner · legacy Someday action → Activate / Trash; write / read-only → none: `:630`.
+  - Read-only · own claim → Done / Unassign / Trash, no Move / Got it: `:620`, `:634`, `:627` (`canEditBacklog`
+    false); backlog → none `:621`; completed → no Undo `:636-638`; first paint — role from `action.my_role` `:613`, no
+    fetch.
+  - Non-Team · own claim → Done / Unassign / Trash, no Move / Got it: `:627` (`myTier === 'team'`); completed Undo
+    kept `:636-638`.
+  - Removed / unshared (`my_role` absent) → completed Undo kept `:636-638`; everything else hidden (`viewerRole` null
+    `:620`, `:621`, `:630`, `:634`).
+  - Personal action → unchanged: `!isProjectShared` branches `:619`, `:626`, `:630`; full Move list `:157`.
+  - S2 owner / member: `ProjectDetailPage.vue:85`, `:846`. S3: `Sidebar.vue:479`.
+  - Every row, palette = page: `:651-672`.
+  Runtime check requested from the owner (local, against the real backend `my_role`); automated in TC-874 (ui-tests).
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-10 Update `../wna_orchestration/specs/features/wna-features.md` — Action detail shared-project block (S1 matrix
-  replaces the members-fetch text, :463–476), Project detail Someday shared, Sidebar Someday drop toast.
-- [ ] W-11 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — new TC-862 (S1 matrix per role × assignment + S2
-  + S3); update TC-842 / TC-861 to the new rules.
-- [ ] W-12 Tick the parent's web Work breakdown boxes in `../wna_orchestration/features/BUG-063-action-detail-member-buttons.md`.
+- [x] W-10 Update `../wna_orchestration/specs/features/wna-features.md` — Action detail shared-project block (S1 matrix
+  replaces the members-fetch text, :463–476), Project detail Someday shared, Sidebar Someday drop toast. —
+  `wna-features.md:484` (S1 matrix, replaces the members-fetch text), `:680` (Project detail shared Someday), `:258`
+  (Sidebar shared-project drop toast), `:259` (backend 403 fallback toast).
+- [x] W-11 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — new TC-862 (S1 matrix per role × assignment + S2
+  + S3); update TC-842 / TC-861 to the new rules. — TC-862 was already FEAT-061's, so owner chose **TC-874**:
+  `wna-test-cases.md:20155` (Section 67), `:20157` (TC-874); TC-842 `:19125` (step 3: no buttons on a claim of another
+  member), TC-861 `:19167` (first paint, no members request); `regression-ui-tests/update-tests.sh` run.
+- [x] W-12 Tick the parent's web Work breakdown boxes in `../wna_orchestration/features/BUG-063-action-detail-member-buttons.md`.
+  — `BUG-063-action-detail-member-buttons.md:181-186` (5 web boxes ticked, TC-874 renumbering noted).
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
