@@ -64,7 +64,7 @@ untouched. Runtime checks need the local stack (FEAT-055 search endpoint).
   toasts the server message only when `fromServer`, else the DS9 copy, and skips only `upgrade`. W-9 re-run `✓ built in 3.97s`
   (2026-10-24). §37.2 unchanged — built behaviour matches `wna-features.md:2934`. TC-841 step 6 (offline → DS9 copy) + step 5
   "no error toast" added (`wna-test-cases.md:19132`); `update-tests.sh` regenerated.
-- [ ] W-14 Read-only member on a shared-project action — `ActionDetailPage.vue` renders Done, Move to and Trash for a
+- [x] W-14 Read-only member on a shared-project action — `ActionDetailPage.vue` renders Done, Move to and Trash for a
   `my_role === 'read_only'` member on an unassigned backlog action (only Assign to me checks the role, `:620`), against
   `../wna_orchestration/specs/features/p2-team-collaboration.md:127`/`:138` (view + comment only; cannot complete, trash or
   move). Hide those buttons for that case; `itemCommands` (`:638`) must mirror the page, so the palette loses the rows too
@@ -72,6 +72,14 @@ untouched. Runtime checks need the local stack (FEAT-055 search endpoint).
   completable / unassignable. Mind the uncommitted BUG-062 edits in the same file. Owner chose this slice (2026-10-24). Then
   re-run W-9, run `update-tests.sh` for the new TC-861 (`wna-test-cases.md` §59), and update `wna-features.md` only where
   it describes Action detail buttons for members.
+  — The action response has no `my_role` (backend `db_action_entity.hpp` / `action_repository_impl.cpp` columns), so the old
+  `canAssign` role check never fired; owner chose (2026-10-24) to read the role from `GET /v1/project/{id}/members`
+  (`listProjectMembers`) for an unassigned shared action: `ActionDetailPage.vue:620` `myRole`, `:621` `isReadOnlyBacklog`,
+  fetch watch `:747`. Hidden: Done `:139`, Move (`canMove` `:627`), Trash `:186`, Assign to me (`canAssign` `:623`);
+  palette mirror `:650`/`:661`. Assigned actions unaffected (`isUnassigned` gate), so T-45 holds. Role only, no tier check
+  (owner, 2026-10-24). Until the role loads, or if the request fails, the buttons show and the backend still 403s.
+  W-9 re-run `✓ built in 3.97s` (2026-10-24). TC-861 already authored (`wna-test-cases.md:19186`); `update-tests.sh` run.
+  `wna-features.md:472` (§6.2 Shared-project actions). BUG-062 edits were already committed; nothing was uncommitted.
 - [x] W-5 S2 Shortcuts dialog — `ShortcutsDialog.vue` in `Modal.vue` per §Screens S2 (rows, platform key label DS11, Review row
   rule DS10).
   — `src/main-app/components/ShortcutsDialog.vue:2`, platform key `:27`, Go-to rows from `shortcutModel.navigation` (DS10),

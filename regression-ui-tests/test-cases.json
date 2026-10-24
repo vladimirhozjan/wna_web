@@ -16932,6 +16932,23 @@
     "expected": "Step 1: no palette, no shortcuts dialog, no navigation; Quick Add / FAB stay closed. Step 2: nothing happens on either public page (the browser's own Cmd/Ctrl+K behaviour is not blocked)."
   },
   {
+    "id": "TC-861",
+    "name": "\"This Item\" Commands for a Read-Only Member",
+    "priority": "Medium",
+    "area": "Command Palette",
+    "areas": [
+      "Command Palette"
+    ],
+    "smoke": false,
+    "section": "59: Command Palette & Keyboard Shortcuts (FEAT-056)",
+    "preconditions": "Team users A (owner) and C; A shares a project with C (C role read-only) containing an unassigned backlog action.",
+    "steps": [
+      "As C, open the shared project's detail page and the palette.",
+      "As C, open the unassigned backlog action's detail page and the palette."
+    ],
+    "expected": "Step 1: **This item** lists Leave only. Step 2: the page shows no Done, Move to, Assign to me or Trash button (a read-only member views and comments only); the palette has no **This item** group — **Go to** only."
+  },
+  {
     "id": "TC-844",
     "name": "Every Empty Section Shows Its Copy",
     "priority": "Medium",

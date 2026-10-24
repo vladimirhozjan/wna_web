@@ -136,7 +136,7 @@
               Done
             </Btn>
           </template>
-          <template v-else>
+          <template v-else-if="!isReadOnlyBacklog">
             <Btn
                 variant="secondary"
                 size="sm"
@@ -183,7 +183,7 @@
             Unassign
           </Btn>
           <Btn
-              v-if="!isCompleted && !isSomeday"
+              v-if="!isCompleted && !isSomeday && !isReadOnlyBacklog"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -466,7 +466,7 @@ import { projectModel } from '../../scripts/models/projectModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
-import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction } from '../../scripts/core/apiClient.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction, listProjectMembers } from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
@@ -616,12 +616,15 @@ const isAssignedToOther = computed(() =>
 const isUnassigned = computed(() =>
     isSharedAction.value && !action.value?.assigned_to
 )
+// The action payload carries no viewer role; it comes from the project's member list
+const myRole = ref(null)
+const isReadOnlyBacklog = computed(() => isUnassigned.value && myRole.value === 'read_only')
 const canAssign = computed(() =>
-    isUnassigned.value && myTier.value === 'team' && (action.value?.my_role !== 'read_only')
+    isUnassigned.value && myTier.value === 'team' && myRole.value !== 'read_only'
 )
 // Shared-project actions can't go to Someday; legacy shared Someday rows only allow Activate + Trash
 const isProjectShared = computed(() => action.value?.project_shared === true)
-const canMove = computed(() => !isCompleted.value && !(isSomeday.value && isProjectShared.value))
+const canMove = computed(() => !isCompleted.value && !(isSomeday.value && isProjectShared.value) && !isReadOnlyBacklog.value)
 // Only the completer may uncomplete; legacy rows without completed_by keep Undo
 const canUndo = computed(() => !action.value?.completed_by || action.value.completed_by === myUserId.value)
 
@@ -644,7 +647,7 @@ const itemCommands = computed(() => {
     commands.push({ label: 'Activate', run: onActivate }, { label: 'Trash', run: onTrash })
   } else if (isWaiting.value) {
     commands.push({ label: 'Got it', run: onGotIt }, { label: 'Done', run: onMarkDone })
-  } else {
+  } else if (!isReadOnlyBacklog.value) {
     commands.push({ label: 'Done', run: onMarkDone })
   }
   if (canMove.value) {
@@ -655,7 +658,7 @@ const itemCommands = computed(() => {
   }
   if (canAssign.value) commands.push({ label: 'Assign to me', run: onAssignToMe })
   if (isAssignedToMe.value && !isCompleted.value) commands.push({ label: 'Unassign', run: onUnassignMine })
-  if (!isCompleted.value && !isSomeday.value && !isAssignedToOther.value) commands.push({ label: 'Trash', run: onTrash })
+  if (!isCompleted.value && !isSomeday.value && !isAssignedToOther.value && !isReadOnlyBacklog.value) commands.push({ label: 'Trash', run: onTrash })
   return commands
 })
 shortcutModel().registerItemCommands(itemCommands)
@@ -739,6 +742,18 @@ const datesSummary = computed(() => {
     parts.push(`Due: ${s}`)
   }
   return parts.join(' · ')
+})
+
+watch(() => (isProjectShared.value && isUnassigned.value ? action.value.project?.id : null), async (projectId) => {
+  myRole.value = null
+  if (!projectId) return
+  try {
+    const data = await listProjectMembers(projectId)
+    if (action.value?.project?.id !== projectId) return
+    myRole.value = (data.members || []).find(m => m.user_id === myUserId.value)?.role || null
+  } catch {
+    // Role unknown → buttons stay; the backend still enforces read-only
+  }
 })
 
 watch(error, (err) => {
