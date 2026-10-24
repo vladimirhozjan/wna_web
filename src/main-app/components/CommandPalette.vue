@@ -206,7 +206,7 @@ function close() {
 }
 
 function onCreateError(err, title) {
-  if (err.status !== 403) toaster.push(err.message || `Couldn't add "${title}". Check your connection and try again.`)
+  if (!err.upgrade) toaster.push(err.fromServer ? err.message : `Couldn't add "${title}". Check your connection and try again.`)
 }
 
 async function createStuff(title) {

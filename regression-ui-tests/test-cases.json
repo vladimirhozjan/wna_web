@@ -16888,9 +16888,10 @@
       "Open the palette, type `Draft agenda`, choose \"New next action: Draft agenda\".",
       "Open the palette, type `Move house`, choose \"New project: Move house\"; click **Cancel**.",
       "Repeat step 3; type outcome `Living in the new flat`; click **Create Project**.",
-      "As the user at the project limit, choose \"New project: Over limit\", enter an outcome, click **Create Project**."
+      "As the user at the project limit, choose \"New project: Over limit\", enter an outcome, click **Create Project**.",
+      "Take the browser offline, open the palette, type `Offline item`, choose \"Add to Inbox: Offline item\"."
     ],
-    "expected": "Step 1: the palette closes; toast `\"Renew passport\" added to Inbox`; still on `/today`; the item is in the Inbox. Step 2: toast `\"Draft agenda\" added to Next`; its Action detail page opens; state Next, no project. Step 3: the palette closes and the prompt \"What does done look like?\" (placeholder \"Describe the successful outcome...\", **Cancel** / **Create Project**) opens; Cancel creates nothing and shows no toast. Step 4: toast `\"Move house\" added to Projects`; its Project detail page opens with that outcome. Step 5: the existing upgrade modal opens; no project is created; nothing navigates."
+    "expected": "Step 1: the palette closes; toast `\"Renew passport\" added to Inbox`; still on `/today`; the item is in the Inbox. Step 2: toast `\"Draft agenda\" added to Next`; its Action detail page opens; state Next, no project. Step 3: the palette closes and the prompt \"What does done look like?\" (placeholder \"Describe the successful outcome...\", **Cancel** / **Create Project**) opens; Cancel creates nothing and shows no toast. Step 4: toast `\"Move house\" added to Projects`; its Project detail page opens with that outcome. Step 5: the existing upgrade modal opens with no error toast; no project is created; nothing navigates. Step 6: the palette closes; error toast `Couldn't add \"Offline item\". Check your connection and try again.`; nothing is added."
   },
   {
     "id": "TC-842",
