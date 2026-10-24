@@ -109,6 +109,7 @@ import Btn from '../../components/Btn.vue'
 import Badge from '../../components/Badge.vue'
 import { completedModel } from '../../scripts/models/completedModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
@@ -130,6 +131,7 @@ const {
 } = completedModel()
 
 const toaster = errorModel()
+const undo = undoModel()
 
 const undoingId = ref(null)
 const completingIds = ref([])
@@ -211,6 +213,7 @@ async function loadMore() {
 function onRefresh() {
   return Promise.all([loadCompleted({ reset: true }), loadStats()])
 }
+undo.registerRefresh(onRefresh)
 
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title

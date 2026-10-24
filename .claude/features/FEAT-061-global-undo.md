@@ -105,6 +105,48 @@ Engage rows) and FEAT-060's `--touch-target-min` token (DS3). Legal: n/a (parent
 - [x] W-16 Update `../wna_orchestration/specs/api/api.md` — Update Action documents `waiting_since` if it is missing (DS13
   relies on it; behaviour verified at `wna_backend/core_service/src/services/action/action_service_impl.cpp:161`). —
   `api.md:2029` (merge semantics + `waiting_since` after `/wait`; merge confirmed at `action_service_impl.cpp:154-169`).
+### Acceptance gaps (/conclude 2026-10-24 — not accepted)
+DS20 on Someday list / Sidebar rows stays as noted in W-7: legacy data only, since a shared project can't go to Someday
+(`api.md:1737`). Owner, 2026-10-24: not fixed.
+- [x] W-17 DS11, standalone action: Sidebar drop Completed → Trash, then Undo. `restore` already returns it to COMPLETED
+  (`previous_state`), so the extra `completeAction` at `undoModel.js:137` fails and shows a false DS6 toast. Re-complete only
+  where the restore does not land it in COMPLETED (stuff, project, project action). Expected: `"<title>" moved back`, item in Completed.
+  — `undoModel.js:137-141` re-completes an action only when the row carries `project_id` (stuff / project keep
+  `:126-127`, `:132-133`). `project_id` on Completed rows = `api.md` List Completed (backend `completed_repository_impl.cpp:98`);
+  the Sidebar drop snapshots the full ItemList row (`Sidebar.vue:304-308`, `ItemList.vue:197`). Runtime: TC-863 steps 7–8.
+  Data: Completed rows carry `project_id` for a project action (backend B-11–B-14). Standalone = no `project_id`.
+- [x] W-18 S1 "Undo succeeded": the current page reloads. `registerRefresh` is missing on `CompletedPage.vue`, `TrashPage.vue`,
+  `CalendarPage.vue`, `SearchPage.vue` and `ReviewPage.vue`. Undo pressed while one is open → its list reloads.
+  — `CompletedPage.vue:216`, `TrashPage.vue:91`, `CalendarPage.vue:99` (`loadData`; recurring view has no undoable rows),
+  `SearchPage.vue:117` (`search.retry` re-runs the current term), `ReviewPage.vue:274-278` (calendar lists while in review).
+- [x] W-19 D7 / DS15 + DS12 from Today / Waiting / Overdue / Engage rows and Sidebar drops from them (after backend B-7–B-10):
+  the snapshot carries `backlog_position` / `waiting_for_user_id`, so the re-promote (`undoModel.js:140-152`) and the DS12
+  check (`:49`) fire. Check the Sidebar row snapshot (`Sidebar.vue:303-315`) and the Engage rows pass them through.
+  — backend B3 in `api.md` (List Today / Waiting / Overdue / Engage rows carry `backlog_position`, `waiting_for_user_id`).
+  No web change: every snapshot is the raw row — `TodayPage.vue:220,245`, `WaitingForPage.vue:266,291`,
+  `OverduePage.vue:140,165`, `EngagePage.vue:354-359` (`findItem`, used by rows and drop zones), Sidebar `rowOf`
+  `Sidebar.vue:304-308` (full dragged row). Runtime: TC-867 steps 6–7, TC-866 steps 6–7.
+- [x] W-20 DS9: a project with actions trashed from the Someday × (`SomedayPage.vue:279`) or a Sidebar drop (`Sidebar.vue:823`)
+  → `"<title>" and its actions moved to trash`.
+  — owner 2026-10-24: backend reports it — Trash Project returns `trashed_actions` (`api.md` Trash Project). Someday ×
+  `SomedayPage.vue:278-279` (`somedayModel.js:114,127` returns the response); Sidebar `Sidebar.vue:810-829` (Projects and
+  Someday sources); Projects × `ProjectsPage.vue:238-239` and Project detail `Trash` (palette runs the same handler)
+  `ProjectDetailPage.vue:1436-1437` (`projectModel.js:160,171` returns the response) — `next_action_id` /
+  `orderedActions.length` no longer used for this copy. Build `✓ built in 8.76s`. Runtime: TC-863 steps 5, 9–10.
+  Data: `POST /v1/project/{id}/trash` returns `trashed_actions` (backend B-15–B-18). Use it on every project-trash surface
+  (Projects, Project detail, Someday, Sidebar, palette) instead of `next_action_id` / `orderedActions.length`.
+- [x] W-21 S3a Move project: a Sidebar drop onto Someday of a project with actions (`Sidebar.vue:506-508`) →
+  `"<title>" moved to Someday. Active actions shelved.`
+  — `Sidebar.vue:506-510`: Projects-row source with `next_action_id` (same predicate as `ProjectsPage.vue:239`).
+  Runtime: TC-864 step 5.
+  Data: web only. The dragged Projects row already carries `next_action_id`; use the same rule as Project detail.
+- [x] W-22 `npm run build:main` passes. `wna-test-cases.md` gets the gap steps: D7 from Today / Waiting → TC-867, DS12 via
+  Sidebar / Engage drop → TC-866, DS11 action + reload on Completed / Trash → TC-863, DS9 Someday / Sidebar → TC-863,
+  shelved copy → TC-864. Update `wna-features.md` §25.1 if its copy list changes.
+  — build `✓ built in 7.95s` · `[obfuscator] Obfuscated 19 files` · prerender through `/legal/privacy`. TCs:
+  `wna-test-cases.md` TC-863 steps 7–10 `:19871`, TC-864 step 5 `:19905`, TC-866 steps 6–7 `:19962`, TC-867 steps 6–7
+  `:19990`; `update-tests.sh` run (`test-cases.json`, `test-data.js`). §25.1 copy list unchanged (already per op, every entry
+  point); Sidebar drop toasts `wna-features.md:260` gain the DS9 / shelved variants.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

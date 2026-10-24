@@ -275,8 +275,9 @@ async function onTrash(id) {
 
   deletingId.value = id
   try {
-    await trashItem(item)
-    undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash` })
+    const result = await trashItem(item)
+    const message = result?.trashed_actions > 0 ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
+    undo.record({ op: 'trash', item, title, message })
     // Reload list to backfill removed item
     loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
   } catch (err) {

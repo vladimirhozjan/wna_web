@@ -157,7 +157,7 @@ export function projectModel() {
         error.value = null
 
         try {
-            await apiClient.trashProject(projectId)
+            const result = await apiClient.trashProject(projectId)
             items.value = items.value.filter(i => i.id !== projectId)
 
             if (cursor.value === projectId) {
@@ -169,6 +169,7 @@ export function projectModel() {
                 current.value = null
             }
             statsModel().refreshStats()
+            return result
         } catch (err) {
             error.value = err
             throw err

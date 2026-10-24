@@ -17414,16 +17414,20 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. Waiting For with W1, W2, W3; Someday with an item D1 (second in the list); a\nproject P1 with 2 actions and a project P2 with no actions; a stuff item S1 in Inbox.",
+    "preconditions": "Common preconditions. Waiting For with W1, W2, W3; Someday with an item D1 (second in the list); a\nproject P1 with 2 actions and a project P2 with no actions; a stuff item S1 in Inbox. Completed with a standalone action\nK1 and an action K2 of an active personal project; a project P3 in Someday with actions; a project P4 with actions.",
     "steps": [
       "On Waiting For, click × on W2.",
       "Click **Undo**.",
       "On Someday, click × on D1; click **Undo**.",
       "Open S1's detail page; click **Trash**.",
       "On Projects, click × on P1; then on P2.",
-      "Click **Undo** on the P2 toast; open Trash."
+      "Click **Undo** on the P2 toast; open Trash.",
+      "Open Completed; drag K1 onto **Trash** in the sidebar; click **Undo**.",
+      "Drag K2 onto **Trash** in the sidebar; open Trash; click **Undo**.",
+      "On Someday, click × on P3.",
+      "On Projects, drag P4 onto **Trash** in the sidebar."
     ],
-    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (which replaces the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash."
+    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (which replaces the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash. Step 7: toast `\"K1\" moved to trash`; after Undo `\"K1\" moved back`\nand K1 shows again in the open Completed list without a manual reload. Step 8: `\"K2\" moved back`; K2 leaves the open\nTrash list and is in Completed. Step 9: `\"P3\" and its actions moved to trash`. Step 10: `\"P4\" and its actions moved to\ntrash`."
   },
   {
     "id": "TC-864",
@@ -17437,14 +17441,15 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date.",
+    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date; a project P5 on Projects with actions.",
     "steps": [
       "Open C1; Move → Next Actions; click **Undo**; open C1.",
       "Open W1; click **Got it**; click **Undo**; open W1.",
       "Open N1; Move → Calendar, pick a date; click **Undo**; open N1.",
-      "Drag N1 from Next onto **Today** in the sidebar; click **Undo**."
+      "Drag N1 from Next onto **Today** in the sidebar; click **Undo**.",
+      "On Projects, drag P5 onto **Someday** in the sidebar; click **Undo**."
     ],
-    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place."
+    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place.\nStep 5: toast `\"P5\" moved to Someday. Active actions shelved.` with Undo; after Undo P5 is back on Projects at its old\nplace with its active action."
   },
   {
     "id": "TC-865",
@@ -17480,15 +17485,17 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. Inbox item S1; standalone action A1 in Next; a weekly recurring template with\nits active instance R1 in Next; Next with N1, N2, N3.",
+    "preconditions": "Common preconditions. Inbox item S1; standalone action A1 in Next; a weekly recurring template with\nits active instance R1 in Next; Next with N1, N2, N3. For steps 6–7: a Team user with two actions G1, G2 in Waiting\nFor delegated to a connection.",
     "steps": [
       "Clarify S1 to Someday.",
       "Open A1; Move → Projects; enter an outcome.",
       "Tick R1 on Next.",
       "Drag N3 above N1 on Next.",
-      "Open Completed; uncheck an item."
+      "Open Completed; uncheck an item.",
+      "Drag G1 from Waiting For onto **Next Actions** in the sidebar.",
+      "On Engage, drag G2 onto the Next drop zone."
     ],
-    "expected": "Each of steps 1, 2, 3 and 5 shows its usual success toast (`\"S1\" moved to Someday`, `\"A1\"\nconverted to project`, `\"R1\" completed`, `\"<title>\" restored`) with no Undo button, and Cmd/Ctrl+Z does nothing. Step 4:\nthe row moves and no toast appears."
+    "expected": "Each of steps 1, 2, 3 and 5 shows its usual success toast (`\"S1\" moved to Someday`, `\"A1\"\nconverted to project`, `\"R1\" completed`, `\"<title>\" restored`) with no Undo button, and Cmd/Ctrl+Z does nothing. Step 4:\nthe row moves and no toast appears. Steps 6 and 7: toast `\"G1\"` / `\"G2\" moved to Next Actions` with no Undo button."
   },
   {
     "id": "TC-867",
@@ -17503,15 +17510,17 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. Next with B1, B2, B3 (standalone); personal project P with active action P-A\nin Today and backlog P-B. For the shared step: Team users O (owner) and M (write member) share project Q; M holds the\nclaimed action Q-A.",
+    "preconditions": "Common preconditions. Next with B1, B2, B3 (standalone); personal project P with active action P-A\nin Today and backlog P-B; personal project R with active action R-A in Waiting For (waiting for \"Tom\") and backlog\nR-B. For the shared step: Team users O (owner) and M (write member) share project Q; M holds the claimed action Q-A.",
     "steps": [
       "Open B2 from Next; click **Done** (the page moves to B3); click **Undo**.",
       "Open B1; click **Done**; open Inbox; click **Undo**.",
       "Open P; tick P-A; click **Undo**.",
       "As M, on Next tick Q-A; click **Undo**.",
-      "Block `POST /v1/action/{id}/uncomplete`; tick B3; click **Undo**."
+      "Block `POST /v1/action/{id}/uncomplete`; tick B3; click **Undo**.",
+      "On Today, tick P-A; click **Undo**.",
+      "On Waiting For, click × on R-A; click **Undo**."
     ],
-    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted."
+    "expected": "Step 1: after Undo the B2 detail page opens again; B2 is back in Next between B1 and B3. Step 2:\nUndo restores B1 but stays on Inbox. Step 3: P-A is P's active action again and back in Today; P-B is back in the\nbacklog. Step 4: `\"Q-A\" moved back`; Q-A is active again where the server puts it (claimed by M), no reorder. Step 5:\nerror toast with the server message (else `Couldn't undo \"B3\". Find it in Completed to restore it.`); B3 stays in\nCompleted. Step 6: P-A is P's active action again and back in Today at its old place; P-B is back in the backlog.\nStep 7: R-A is R's active action again, back in Waiting For waiting for \"Tom\"; R-B is back in the backlog."
   },
   {
     "id": "TC-868",
@@ -17647,16 +17656,16 @@
     ],
     "smoke": false,
     "section": "67: Shared-Project Action Buttons (BUG-063)",
-    "preconditions": "Team users A (owner), B (write) and C (read-only), plus D (write, on Free or Pro); A shares project P\nwith B, C and D. In P: action N1 claimed by B (Next), N2 claimed by B (Waiting), N3 claimed by C (Next, claimed\nbefore C was made read-only), N4 claimed by D (Next), N5 unassigned backlog, N6 completed by B, N7 a legacy SOMEDAY\naction. A second shared project S of A in SOMEDAY (legacy) with B as a member. A personal action of A in Next.",
+    "preconditions": "Team users A (owner), B (write) and C (read-only), plus D (write, on Free or Pro); A shares project P\nwith B, C and D. In P: action N1 (Next, claimed by B in step 1), N2 claimed by B (Waiting), N3 claimed by C (Next, claimed\nbefore C was made read-only), N4 claimed by D (Next), N5 unassigned backlog, N6 completed by B, N7 a legacy SOMEDAY\naction, N8 completed by D, N9 completed by C (before C was made read-only). A member holds one claim per project (Assign → `409`), so B claims N1 only after\nunassigning N2 in step 1, and C / D complete N9 / N8 before claiming N3 / N4. A second shared project S of A in SOMEDAY (legacy) with B as a member. A personal action of A in Next.",
     "steps": [
-      "As B open N1, then N2, opening the **Move** dropdown and the palette on each.",
+      "As B open N2, opening the **Move** dropdown and the palette; unassign N2 and claim N1; open N1 the same way.",
       "As A open N1, N5 and N7, and the palette on each.",
-      "As B open N5, N6 and N7; as C open N3, N5 and N6; as D open N4 and N6. Open the palette on each.",
+      "As B open N5, N6 and N7; as C open N3, N5, N6, N1 and N9; as D open N4, N6 and N8. Open the palette on each.",
       "As B, on N1 choose **Move** → **Today**; then open B's Today list.",
       "As A open project S, then as B open S; open the palette on each.",
       "As A, drag project P from Projects onto **Someday/Maybe** in the sidebar.",
       "As A open the personal action."
     ],
-    "expected": "On every page the **This item** palette rows list exactly the rendered buttons (labels verbatim,\nMove entries as \"Move to {entry}\"); blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move · Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar) · Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Done · Assign to me · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Done · Assign to me · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave only (no Activate or Complete).\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before."
+    "expected": "On every page the **This item** palette rows list exactly the rendered buttons (labels verbatim,\nMove entries as \"Move to {entry}\"); blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move · Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar) · Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Done · Assign to me · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Done · Assign to me · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo; C on N1 — no buttons; C on N9 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — no Undo; D on N8 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave only (no Activate or Complete).\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before."
   }
 ]

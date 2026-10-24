@@ -142,9 +142,11 @@ import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 
 const router = useRouter()
 const toaster = errorModel()
+const undo = undoModel()
 const settings = settingsModel()
 const { stats } = statsModel()
 const { createRecurring } = recurringModel()
@@ -269,6 +271,11 @@ async function onComplete() {
     toaster.push('Couldn\'t complete the review. Try again.')
   }
 }
+
+function onRefresh() {
+  if (inReview.value) loadCalendarLists()
+}
+undo.registerRefresh(onRefresh)
 
 watch(inReview, (active) => {
   if (active) loadCalendarLists()
