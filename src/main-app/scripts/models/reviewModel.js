@@ -1,8 +1,31 @@
 import { ref, computed } from 'vue'
 import { settingsModel } from './settingsModel.js'
+import { listCalendar } from '../core/apiClient.js'
+import { formatDate, subDays, addDays } from '../core/dateUtils.js'
 
-const steps = ref([false, false, false, false, false, false])
-const inReview = ref(false)
+const STEP_COUNT = 6
+const LOOKBACK_DAYS = 7
+const LOOKAHEAD_DAYS = 14
+
+const lastWeek = ref({ items: [], loading: false, error: null })
+const upcoming = ref({ items: [], loading: false, error: null })
+
+function today() {
+    return new Date().toISOString().split('T')[0]
+}
+
+async function loadWindow(list, start, end) {
+    list.value.loading = true
+    list.value.error = null
+    try {
+        const data = await listCalendar({ start: formatDate(start), end: formatDate(end) })
+        list.value.items = data.items || []
+    } catch (err) {
+        list.value.error = err
+    } finally {
+        list.value.loading = false
+    }
+}
 
 export function reviewModel() {
 
@@ -26,21 +49,39 @@ export function reviewModel() {
         return daysSinceReview.value > 7
     })
 
+    const inProgress = computed(() => settings.state.reviewInProgress)
+    const inReview = computed(() => !!inProgress.value)
+    const steps = computed(() => inProgress.value?.steps ?? Array(STEP_COUNT).fill(false))
     const allStepsComplete = computed(() => steps.value.every(Boolean))
+    const completing = computed(() => settings.state.saving.reviewLastDate)
 
     function startReview() {
-        inReview.value = true
-        steps.value = [false, false, false, false, false, false]
+        return settings.setReviewInProgress({ started_at: today(), steps: Array(STEP_COUNT).fill(false) })
     }
 
     function toggleStep(index) {
-        steps.value[index] = !steps.value[index]
+        const next = [...steps.value]
+        next[index] = !next[index]
+        return settings.setReviewInProgress({ ...inProgress.value, steps: next })
     }
 
     function completeReview() {
-        const now = new Date().toISOString().split('T')[0]
-        settings.setReviewLastDate(now)
-        inReview.value = false
+        return settings.completeReview(today())
+    }
+
+    function loadCalendarLists() {
+        loadLastWeek()
+        loadUpcoming()
+    }
+
+    function loadLastWeek() {
+        const now = new Date()
+        return loadWindow(lastWeek, subDays(now, LOOKBACK_DAYS), subDays(now, 1))
+    }
+
+    function loadUpcoming() {
+        const now = new Date()
+        return loadWindow(upcoming, now, addDays(now, LOOKAHEAD_DAYS - 1))
     }
 
     function setTemplateId(id) {
@@ -60,9 +101,15 @@ export function reviewModel() {
         daysSinceReview,
         isOverdue,
         allStepsComplete,
+        completing,
+        lastWeek,
+        upcoming,
         startReview,
         toggleStep,
         completeReview,
+        loadCalendarLists,
+        loadLastWeek,
+        loadUpcoming,
         setTemplateId,
         clearTemplateId,
     }

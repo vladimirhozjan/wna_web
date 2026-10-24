@@ -6694,9 +6694,10 @@
       "Verify the checkboxes next to each step become enabled and interactive",
       "Click the checkbox for \"Empty Inbox\"",
       "Verify the checkbox is checked and a visual indicator (e.g., checkmark, strikethrough, or highlight) confirms the step is marked as done",
-      "Verify the other 5 checkboxes remain unchecked but are still enabled"
+      "Verify the other 5 checkboxes remain unchecked but are still enabled",
+      "Verify a progress row appears above the steps card: 6 segments, the first one filled, and \"1 of 6 complete\" right of the segments"
     ],
-    "expected": "Before clicking \"Start Review,\" the step checkboxes are disabled. After clicking \"Start Review,\" all checkboxes become enabled and interactive, allowing the user to check off steps as they complete them."
+    "expected": "Before clicking \"Start Review,\" the step checkboxes are disabled and no progress row is shown. After clicking \"Start Review,\" all checkboxes become enabled and interactive, allowing the user to check off steps as they complete them, and the progress row appears."
   },
   {
     "id": "TC-246",
@@ -6712,7 +6713,7 @@
     "steps": [
       "Navigate to `/review`",
       "Click \"Start Review\"",
-      "Verify the progress counter displays \"0 of 6 complete\"",
+      "Verify the progress counter in the progress row (right of the 6 segments, not beside the \"Complete Review\" button) displays \"0 of 6 complete\"",
       "Check the \"Empty Inbox\" checkbox",
       "Verify the progress counter updates to \"1 of 6 complete\"",
       "Check the \"Review Next Actions\" checkbox",
@@ -6729,7 +6730,7 @@
       "Check the \"Review Calendar\" checkbox",
       "Verify the progress counter updates to \"6 of 6 complete\""
     ],
-    "expected": "The progress counter accurately reflects the number of checked steps out of 6 total. It increments when a step is checked and decrements when a step is unchecked. It updates in real time without requiring a page refresh."
+    "expected": "The progress counter in the progress row accurately reflects the number of checked steps out of 6 total, and the matching segments fill/empty with it. It increments when a step is checked and decrements when a step is unchecked. It updates in real time without requiring a page refresh."
   },
   {
     "id": "TC-247",
@@ -6748,15 +6749,15 @@
       "Check all 6 step checkboxes",
       "Verify the \"Complete Review\" button is now enabled",
       "Click \"Complete Review\"",
-      "Verify a success message or toast is displayed confirming the review is complete (e.g., \"Weekly review completed\")",
-      "Verify the review date is saved (the last reviewed indicator updates to show today's date)",
-      "Verify the page resets to its initial state (checkboxes unchecked and disabled, \"Start Review\" button visible again)",
+      "Verify the steps card is replaced by the \"Review Complete\" / \"Your system is current.\" celebration and no success toast is shown",
+      "Verify the review date is saved (the header shows \"Last reviewed: today\")",
+      "Wait for the celebration to fade out; verify the page resets to its initial state (steps card back, checkboxes unchecked and disabled, no progress row, \"Start Review\" button visible again)",
       "Navigate away from `/review` to `/engage`",
       "Verify the review nudge on the Engage dashboard reflects the updated review date (e.g., \"Last reviewed: today\")",
       "Navigate back to `/review`",
       "Verify the header shows the updated last review date"
     ],
-    "expected": "After checking all 6 steps and clicking \"Complete Review,\" the review date is saved and persisted. A success confirmation is shown. The page resets for the next review session. The last reviewed date updates across the application."
+    "expected": "After checking all 6 steps and clicking \"Complete Review,\" the review date is saved and persisted. The celebration is shown in place of the steps card (no toast). The page resets for the next review session. The last reviewed date updates across the application."
   },
   {
     "id": "TC-248",
@@ -16939,10 +16940,10 @@
     ],
     "smoke": false,
     "section": "60: Empty-State Copy (FEAT-057)",
-    "preconditions": "Logged in (run once in light and once in dark theme); an account with no items, reference files, attachments or recurring templates, and a context tag `@calls` that no item carries (for the filter rows; set it in the context filter, clear it for every other row). A Free or Pro account and a Team account with no connections for the Connections rows. Ids of a trashed stuff item, action and project and of a deleted recurring template for the detail rows (empty the Trash before the Trash rows).",
+    "preconditions": "Logged in (run once in light and once in dark theme); an account with no items, reference files, attachments or recurring templates, and a context tag `@calls` that no item carries (for the filter rows; set it in the context filter, clear it for every other row). A Free or Pro account and a Team account with no connections for the Connections rows. Ids of a stuff item, action and project that were trashed and then purged with Empty Trash (a trashed item still opens until the Trash is emptied), and of a deleted recurring template, for the detail rows.",
     "steps": [
       "On desktop (> 768 px) open each surface in the table below in the stated state.",
-      "Repeat step 1 at a viewport ≤ 768 px. | Where (state) | Title / text | |---------------|--------------| | `/inbox` (empty) | \"Inbox zero. Mind like water.\" / \"Your head is for having ideas, not holding them. Capture the next one above.\" | | `/today` | \"A clear day ahead\" / \"Pick the few actions that matter most today and move them here.\" + **Add Action** | | `/next` | \"Nothing to do next — yet\" / \"Clarify your inbox or plan a project, and each next physical step lands here.\" + **Add Action** | | `/waiting-for` | \"Nobody owes you anything\" / \"When you hand something off or wait on a reply, park it here and stop tracking it in your head.\" + **Add Action** | | `/projects` | \"No projects in motion\" / \"Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here.\" + **Add Project** | | `/someday` | \"Someday is wide open\" / \"Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review.\" + **Add Item** | | `/completed` | \"Nothing finished yet\" / \"Every action you check off lands here. Uncheck one to bring it back.\" | | `/trash` | \"Nothing in the trash\" / \"Deleted items wait here. Restore them, or empty the trash for good.\" | | `/overdue` | \"All caught up\" / \"Nothing has slipped past its due date. If something does, it shows up here.\" | | `/engage` (no data) | \"A blank slate\" / \"Get what's on your mind into your inbox, and your next moves line up here.\" + **Go to Inbox** | | `/reference` Files (no files) | \"Your reference shelf is empty\" / \"Keep what you might need later — upload files or create folders to file them.\" + **Upload File** | | `/reference` Files, search `zzqx` | \"Nothing matches that search\" / \"Check the spelling or try a different word.\" | | `/reference` Attachments (Local) | \"No attachments yet\" / \"Files you attach to your items collect here.\" | | `/reference` Attachments (Google Drive) | \"No attachments yet\" / \"Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.\" | | `/reference` Trash | \"Nothing in the trash\" / \"Deleted files wait here. Restore them, or delete them for good.\" | | `/stuff/<trashed id>` | \"This item is no longer here\" / \"It may have been clarified, deleted, or moved to trash.\" + **Go to Inbox** | | `/action/<trashed id>` | \"This action is no longer here\" / \"It may have been completed, deleted, or moved.\" + **Go to Next Actions** | | `/project/<trashed id>` | \"This project is no longer here\" / \"It may have been completed, deleted, or moved to trash.\" + **Go to Projects** | | `/recurring/<deleted id>` | \"This recurring template is no longer here\" / \"It may have been deleted.\" + **Go to Calendar** | | `/search` (no term) | \"Find anything you've captured\" / \"Type a word from a title, description, project outcome or file name.\" | | `/search?q=zzqx` (All; then the Projects chip) | `Nothing matches \"zzqx\"` / All: \"Check the spelling or try a different word.\"; Projects chip: \"Try All, or a different word.\" | | `/search` error (offline; HTTP 429) | \"Search didn't go through\" / \"Check your connection, then try again.\" (429: \"Too many searches in a row. Wait a moment, then try again.\") + **Try again** | | `/connections` (Free/Pro) | \"Get things done together\" / \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\" + upgrade button | | `/connections` (Team, no connections) | \"Your team starts here\" / \"Invite a teammate by email above to delegate actions and share projects.\" | | `/calendar` Recurring view | \"Nothing on repeat\" / \"Set up a template once, and its actions schedule themselves on a repeating basis.\" + **Add Template** | | Context filter `@calls` on `/next`, `/today`, `/waiting-for`, `/engage` | \"This context is clear\" / \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\" | | Context filter `@calls` on `/projects` | \"No projects in this context\" / same text | | Context filter `@calls` on `/someday` | \"No someday ideas in this context\" / same text |"
+      "Repeat step 1 at a viewport ≤ 768 px. | Where (state) | Title / text | |---------------|--------------| | `/inbox` (empty) | \"Inbox zero. Mind like water.\" / \"Your head is for having ideas, not holding them. Capture the next one above.\" | | `/today` | \"A clear day ahead\" / \"Pick the few actions that matter most today and move them here.\" + **Add Action** | | `/next` | \"Nothing to do next — yet\" / \"Clarify your inbox or plan a project, and each next physical step lands here.\" + **Add Action** | | `/waiting-for` | \"Nobody owes you anything\" / \"When you hand something off or wait on a reply, park it here and stop tracking it in your head.\" + **Add Action** | | `/projects` | \"No projects in motion\" / \"Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here.\" + **Add Project** | | `/someday` | \"Someday is wide open\" / \"Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review.\" + **Add Item** | | `/completed` | \"Nothing finished yet\" / \"Every action you check off lands here. Uncheck one to bring it back.\" | | `/trash` | \"Nothing in the trash\" / \"Deleted items wait here. Restore them, or empty the trash for good.\" | | `/overdue` | \"All caught up\" / \"Nothing has slipped past its due date. If something does, it shows up here.\" | | `/engage` (no data) | \"A blank slate\" / \"Get what's on your mind into your inbox, and your next moves line up here.\" + **Go to Inbox** | | `/reference` Files (no files) | \"Your reference shelf is empty\" / \"Keep what you might need later — upload files or create folders to file them.\" + **Upload File** | | `/reference` Files, search `zzqx` | \"Nothing matches that search\" / \"Check the spelling or try a different word.\" | | `/reference` Attachments (Local) | \"No attachments yet\" / \"Files you attach to your items collect here.\" | | `/reference` Attachments (Google Drive) | \"No attachments yet\" / \"Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.\" | | `/reference` Trash | \"Nothing in the trash\" / \"Deleted files wait here. Restore them, or delete them for good.\" | | `/stuff/<purged id>` | \"This item is no longer here\" / \"It may have been clarified, deleted, or moved to trash.\" + **Go to Inbox** | | `/action/<purged id>` | \"This action is no longer here\" / \"It may have been completed, deleted, or moved.\" + **Go to Next Actions** | | `/project/<purged id>` | \"This project is no longer here\" / \"It may have been completed, deleted, or moved to trash.\" + **Go to Projects** | | `/recurring/<deleted id>` | \"This recurring template is no longer here\" / \"It may have been deleted.\" + **Go to Calendar** | | `/search` (no term) | \"Find anything you've captured\" / \"Type a word from a title, description, project outcome or file name.\" | | `/search?q=zzqx` (All; then the Projects chip) | `Nothing matches \"zzqx\"` / All: \"Check the spelling or try a different word.\"; Projects chip: \"Try All, or a different word.\" | | `/search` error (offline; HTTP 429) | \"Search didn't go through\" / \"Check your connection, then try again.\" (429: \"Too many searches in a row. Wait a moment, then try again.\") + **Try again** | | `/connections` (Free/Pro) | \"Get things done together\" / \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\" + upgrade button | | `/connections` (Team, no connections) | \"Your team starts here\" / \"Invite a teammate by email above to delegate actions and share projects.\" | | `/calendar` Recurring view | \"Nothing on repeat\" / \"Set up a template once, and its actions schedule themselves on a repeating basis.\" + **Add Template** | | Context filter `@calls` on `/next`, `/today`, `/waiting-for`, `/engage` | \"This context is clear\" / \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\" | | Context filter `@calls` on `/projects` | \"No projects in this context\" / same text | | Context filter `@calls` on `/someday` | \"No someday ideas in this context\" / same text |"
     ],
     "expected": "Each surface shows its section icon on a raised round coin inside a soft halo with two fine orbit rings (~160 px on desktop, ~120 px at ≤ 768 px), drawn in the current theme's colors in both light and dark theme; then the exact title and text, and the button where listed (its target unchanged). On `/inbox`, emptying the last item still plays the Inbox Zero celebration first, then shows this empty state. While a list loads, a fast load shows no spinner; with a throttled network (DevTools \"Slow 4G\") the spinner appears after ~300 ms on the centre of where the coin then appears, with no jump when the empty state replaces it. Switching between the empty `/engage` and an empty `/next` (no review nudge shown) keeps the card frame and the coin in the same place."
   },
@@ -17161,5 +17162,87 @@
       "Open the all-users announcement draft; click **Send to all**; cancel."
     ],
     "expected": "Step 1: toast \"Copied to a new draft\"; the copy opens as a draft with Audience \"Subscribers of WNA\nPro (Paywiser) — 2 right now\", Kind locked on \"Service notice\", the same subject/body and **Send to subscribers**.\nStep 2: Audience \"All users\"; the Kind select is editable with the usual hint; the button reads **Send to all** and\nthe dialog is the usual \"Send to all users\" confirm with the live recipient count."
+  },
+  {
+    "id": "TC-851",
+    "name": "Review Progress Row — Segments, Counter, Jump to Step",
+    "priority": "Medium",
+    "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
+    "smoke": false,
+    "section": "63: Weekly Review Improvements (FEAT-059)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Open `/review`; verify no progress row is shown.",
+      "Click **Start Review**.",
+      "Tick steps 1 and 3.",
+      "Hover segment 6; click it.",
+      "Resize to a mobile width (375px)."
+    ],
+    "expected": "Step 1: only the \"Start Review\" button above the steps card. Step 2: a progress row appears\nbetween the button and the steps card — 6 equal empty segments and \"0 of 6 complete\" right of them; nothing beside\n\"Complete Review\". Step 3: segments 1 and 3 fill (accent colour, short transition), counter \"2 of 6 complete\".\nStep 4: tooltip \"Review Calendar\"; the \"Review Calendar\" step scrolls into view. Step 5: segments and counter stay on\none row; the counter text is not wrapped or cut."
+  },
+  {
+    "id": "TC-852",
+    "name": "Step 6 Lists Last Week's Open and Next 14 Days' Actions",
+    "priority": "High",
+    "area": "Weekly Review, Calendar",
+    "areas": [
+      "Weekly Review",
+      "Calendar"
+    ],
+    "smoke": false,
+    "section": "63: Weekly Review Improvements (FEAT-059)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Open `/review`; look at the \"Review Calendar\" step.",
+      "Click **Start Review**.",
+      "Click A1 in \"Last 7 days — still open\"; then press browser Back.",
+      "Delete A1, A3 and A4 (so both windows are empty); reopen `/review`.",
+      "Stop the backend calendar service (or block `GET /v1/calendar`); reload `/review`; restore it and click each **Retry**."
+    ],
+    "expected": "Step 1: hint \"Anything left from last week? Any prep needed for what's coming?\"; no lists before\nStart. Step 2: two lists under the step — \"Last 7 days — still open\" with A1 and A4 (not completed A2), and \"Next 14\ndays\" with A3 and A4 (A4 in both); A5 is in neither. Rows show title + metadata, no checkbox, no trash, no inline\nedit. Step 3: the action detail opens with back link \"Review\"; Back returns to `/review`, still in review with the\nsame ticks. Step 4: \"Nothing left open from last week.\" and \"Nothing scheduled for the next 14 days.\". Step 5:\n\"Couldn't load last week's actions.\" and \"Couldn't load upcoming actions.\", each with **Retry**; step 6 can still be\nticked; Retry loads each list on its own."
+  },
+  {
+    "id": "TC-853",
+    "name": "Complete Review Shows the Celebration and Clears Progress",
+    "priority": "High",
+    "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
+    "smoke": true,
+    "section": "63: Weekly Review Improvements (FEAT-059)",
+    "preconditions": "Common preconditions; last review 10 days ago.",
+    "steps": [
+      "Open `/review`; click **Start Review**; tick all 6 steps.",
+      "Click **Complete Review**.",
+      "Wait ~3 seconds.",
+      "Start a review again, tick all 6, Complete, and click the celebration right away.",
+      "Reload `/review`."
+    ],
+    "expected": "Step 2: the button shows a spinner while saving; then the steps card is replaced by a centered\ncelebration — green check bloom, \"Review Complete\", \"Your system is current.\" — with no toast; header \"Last reviewed:\ntoday\". Step 3: the celebration fades out; the steps card returns disabled, no progress row, \"Start Review\" shown.\nStep 4: the click dismisses it early. Step 5: still Idle (\"Start Review\", no ticks) — the saved progress was cleared."
+  },
+  {
+    "id": "TC-854",
+    "name": "Review Progress Survives Reload and Another Device",
+    "priority": "High",
+    "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
+    "smoke": false,
+    "section": "63: Weekly Review Improvements (FEAT-059)",
+    "preconditions": "Common preconditions; a second browser (or device) logged in as the same user.",
+    "steps": [
+      "Open `/review`; click **Start Review**; tick steps 1, 2 and 4.",
+      "Reload the page.",
+      "Open `/review` in the second browser.",
+      "Tick step 5 in the second browser; reload `/review` in the first browser.",
+      "Block `PUT /v1/user/settings` (offline / devtools); tick step 6.",
+      "With the block still on, open a fresh `/review` page where `GET /v1/user/settings` fails."
+    ],
+    "expected": "Step 2: still in review — \"Complete Review\" button, steps 1, 2, 4 ticked, \"3 of 6 complete\".\nStep 3: the same state. Step 4: steps 1, 2, 4, 5 ticked in the first browser. Step 5: step 6 and its segment revert\nto unticked and the toast \"Couldn't save this step. Try again.\" shows. Step 6: the actions row shows \"Couldn't load\nyour review progress.\" + **Retry** and no Start button; the steps card is disabled; Retry after unblocking restores\nthe in-review state."
   }
 ]

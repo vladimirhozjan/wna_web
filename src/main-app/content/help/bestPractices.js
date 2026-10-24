@@ -22,7 +22,7 @@ export const bestPractices = [
   {
     title: 'Do a Weekly Review',
     description:
-      'The Weekly Review is what makes your system work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. Enable it in Settings and create a recurring reminder so you never skip it.',
+      'The Weekly Review is what makes your system work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. The Calendar step lists last week\'s still-open actions and everything dated in the next two weeks, and your progress is saved until you complete the review. Enable it in Settings and create a recurring reminder so you never skip it.',
   },
   {
     title: 'Write Clear Next Actions',

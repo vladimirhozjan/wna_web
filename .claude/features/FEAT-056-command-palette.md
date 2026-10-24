@@ -49,11 +49,17 @@ untouched. Runtime checks need the local stack (FEAT-055 search endpoint).
   — `StuffDetailPage.vue:363`, `ActionDetailPage.vue:632` (disabled Trash → no row), `ProjectDetailPage.vue:825`,
   `RecurringDetailPage.vue:284`; each computed mirrors its template `v-if`s; lifecycle in `shortcutModel.js` `registerItemCommands`.
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [x] W-4 S1 Command palette — `CommandPalette.vue` per §Screens S1: container (DS1), elements, groups by query, row kinds
+- [~] W-4 S1 Command palette — `CommandPalette.vue` per §Screens S1: container (DS1), elements, groups by query, row kinds
   (DS5), navigation labels + order (DS2), item commands, create commands incl. New project → existing outcome prompt (DS8) and
   run/failure behaviour (DS9), "See all" row (DS7), every state + copy in the States table, keyboard/mouse (DS12, DS13).
   — `src/main-app/components/CommandPalette.vue:2` (Modal 560px), groups `:156`, error row `:119`, See all `:139`, New project
   `:229`, open/reset `:244`; own search instance `searchModel.js` `palette`; `Modal.vue` renders title/actions only when given (DS1).
+  — Open: DS9 failure copy → W-13 (/conclude acceptance review 2026-10-24).
+- [ ] W-13 DS9 create-failure toast — `CommandPalette.vue:208` `onCreateError` uses `err.message || <DS9 fallback>`, but
+  `apiClient.js` `normalizeError` always sets `message` (status fallbacks `:110–131`, no-response `:136`), so the parent DS9
+  fallback copy never shows. Fix: server message only when the backend sent one, else the DS9 fallback copy; suppress the
+  toast only for the tier-limit 403 that opened the upgrade modal (`upgrade_message` / `limit`, `apiClient.js:82`) — any
+  other 403 gets a toast. Then re-run W-9 and update `wna-features.md` §37.2 "Create" only if the built behaviour differs.
 - [x] W-5 S2 Shortcuts dialog — `ShortcutsDialog.vue` in `Modal.vue` per §Screens S2 (rows, platform key label DS11, Review row
   rule DS10).
   — `src/main-app/components/ShortcutsDialog.vue:2`, platform key `:27`, Go-to rows from `shortcutModel.navigation` (DS10),
