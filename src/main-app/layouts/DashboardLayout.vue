@@ -49,6 +49,7 @@
 
     <CommandPalette />
     <ShortcutsDialog />
+    <WelcomeModal :visible="welcomeOpen" @close="closeWelcome" @added="onWelcomeAdded" />
   </div>
 </template>
 
@@ -61,6 +62,7 @@ import Btn from "../components/Btn.vue";
 import ActionBtn from "../components/ActionBtn.vue";
 import CommandPalette from "../components/CommandPalette.vue";
 import ShortcutsDialog from "../components/ShortcutsDialog.vue";
+import WelcomeModal from "../components/WelcomeModal.vue";
 import { authModel } from "../scripts/core/authModel.js";
 import { shortcutModel } from "../scripts/core/shortcutModel.js";
 import PlusIcon from "../assets/PlusIcon.vue";
@@ -75,6 +77,7 @@ const { addStuff } = stuffModel();
 const toaster = errorModel();
 const shortcuts = shortcutModel();
 const isSidebarOpen = ref(false);
+const welcomeOpen = ref(false);
 
 // Mobile FAB quick add
 const fabExpanded = ref(false);
@@ -136,6 +139,44 @@ async function fabSubmit() {
     toaster.push(e.message || "Failed to add item");
   }
 }
+
+// These routes are mid-flow (checkout, OAuth callback) — the first-run tour waits for the next dashboard route
+function isWelcomeBlockedRoute(route) {
+  if (route.name === "upgrade" || route.name === "google-connect") return true;
+  return route.name === "settings" && !!route.query.status;
+}
+let welcomeWaitPath = null;
+
+async function closeWelcome() {
+  welcomeOpen.value = false;
+  if (settings.state.onboardingCompleted) return;
+  try {
+    await settings.completeOnboarding();
+  } catch {
+    toaster.push("Couldn't save that you've seen the welcome tour, so it will open again next time — just skip it.");
+  }
+}
+
+function onWelcomeAdded() {
+  closeWelcome();
+  router.push({ name: "inbox" });
+}
+
+watch(
+    () => [router.currentRoute.value, settings.state.loaded, settings.state.onboardingCompleted],
+    ([route, loaded, completed]) => {
+      if (route.query.welcome === "1") {
+        welcomeOpen.value = true;
+        const { welcome, ...query } = route.query;
+        router.replace({ query });
+        return;
+      }
+      if (isWelcomeBlockedRoute(route)) welcomeWaitPath = route.path;
+      if (route.path === welcomeWaitPath) return;
+      if (loaded && !completed) welcomeOpen.value = true;
+    },
+    { immediate: true }
+);
 
 watch(
     () => auth.isAuthenticated.value,

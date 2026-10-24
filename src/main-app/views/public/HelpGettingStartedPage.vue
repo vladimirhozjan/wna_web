@@ -10,6 +10,14 @@
 
         <h1 class="text-h1 heading">Getting Started</h1>
 
+        <Btn
+          v-if="auth.isAuthenticated.value"
+          variant="link"
+          class="welcome-link"
+          data-testid="help-welcome-tour-link"
+          @click="router.push({ name: 'engage', query: { welcome: '1' } })"
+        >Show the welcome tour</Btn>
+
         <div class="card-grid">
           <div v-for="item in gettingStarted" :key="item.title" class="card">
             <h3 class="text-h4">{{ item.title }}</h3>
@@ -34,10 +42,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
+import Btn from '../../components/Btn.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import { gettingStarted } from '../../content/help/gettingStarted.js'
+import { authModel } from '../../scripts/core/authModel.js'
 
 const router = useRouter()
+const auth = authModel()
 const authMode = ref(null)
 
 function openAuth(mode) { authMode.value = mode }
@@ -89,6 +100,10 @@ function onSuccessPasswordReset() { authMode.value = null; router.push({ name: '
 .heading {
   color: var(--color-text-primary);
   margin-top: 16px;
+}
+
+.welcome-link {
+  margin-top: 8px;
 }
 
 .card-grid {

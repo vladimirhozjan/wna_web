@@ -1,5 +1,6 @@
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { getSettings, updateSettings, liveTz } from '../core/apiClient.js'
+import { authModel } from '../core/authModel.js'
 
 // Default settings matching backend defaults
 const DEFAULTS = {
@@ -55,6 +56,9 @@ export function settingsModel() {
         reviewLastDate: null,
         reviewInProgress: null,
         dismissedTips: [],
+
+        // Onboarding — unknown counts as seen
+        onboardingCompleted: true,
 
         // Loading state
         loading: false,
@@ -122,6 +126,7 @@ export function settingsModel() {
             state.reviewInProgress = settings.review.in_progress ?? DEFAULTS.review.in_progress
             state.dismissedTips = Array.isArray(settings.review.dismissed_tips) ? settings.review.dismissed_tips : []
         }
+        state.onboardingCompleted = settings.onboarding?.completed !== false
     }
 
     // Load settings from localStorage as fallback
@@ -373,6 +378,12 @@ export function settingsModel() {
         }
     }
 
+    // Set locally first and kept on failure, so the tour doesn't reopen this session; the server copy retries next load
+    async function completeOnboarding() {
+        state.onboardingCompleted = true
+        await save('onboarding', { completed: true })
+    }
+
     function isTipDismissed(key) {
         return state.dismissedTips.includes(key)
     }
@@ -391,6 +402,12 @@ export function settingsModel() {
     // Initialize from localStorage immediately (for components that mount before API load completes)
     loadFromLocalStorage()
 
+    // Another user may sign in in this tab — drop the previous user's server settings so the next dashboard mount reloads them
+    watch(authModel().isAuthenticated, () => {
+        state.loaded = false
+        state.onboardingCompleted = true
+    })
+
     instance = {
         state,
         load,
@@ -408,6 +425,7 @@ export function settingsModel() {
         setReviewInProgress,
         completeReview,
         dismissTip,
+        completeOnboarding,
         isTipDismissed,
         getCalendarSettings,
     }

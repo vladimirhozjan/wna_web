@@ -1,8 +1,8 @@
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="visible" class="overlay" @click.self="$emit('close')">
-        <div class="dialog" :style="dialogStyle">
+      <div v-if="visible" class="overlay" :class="{ 'overlay--fullscreen-mobile': fullscreenMobile }" @click.self="$emit('close')">
+        <div class="dialog" :class="{ 'dialog--fullscreen-mobile': fullscreenMobile }" :style="dialogStyle">
           <h3 v-if="title" class="text-h3 title">{{ title }}</h3>
           <slot />
           <div v-if="$slots.actions" class="actions">
@@ -29,6 +29,10 @@ const props = defineProps({
   maxWidth: {
     type: String,
     default: '400px',
+  },
+  fullscreenMobile: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -73,6 +77,30 @@ const dialogStyle = computed(() => ({
   justify-content: flex-end;
   gap: 8px;
   margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .overlay--fullscreen-mobile {
+    padding-bottom: 0;
+    background: var(--color-bg-primary);
+  }
+
+  .dialog--fullscreen-mobile {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none !important;
+    height: 100%;
+    min-width: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .dialog--fullscreen-mobile .actions {
+    margin-top: auto;
+    padding-top: 20px;
+  }
 }
 
 /* Transitions */
