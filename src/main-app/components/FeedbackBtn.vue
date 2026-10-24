@@ -128,5 +128,19 @@ onUnmounted(() => document.removeEventListener('pointerdown', onClickOutside))
     right: 0;
     transform: translateY(-50%);
   }
+
+  body:has(.dashboard) .feedback-btn {
+    position: relative;
+  }
+
+  body:has(.dashboard) .feedback-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translateY(-50%);
+  }
 }
 </style>

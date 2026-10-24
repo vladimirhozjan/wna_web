@@ -66,4 +66,10 @@ defineEmits(['update:modelValue'])
   font-weight: var(--font-weight-semibold);
   box-shadow: 0 1px 3px var(--color-action-shadow);
 }
+
+@media (max-width: 768px) {
+  .segment-switch__option {
+    min-height: var(--touch-target-min);
+  }
+}
 </style>

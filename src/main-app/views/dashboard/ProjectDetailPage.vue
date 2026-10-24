@@ -237,12 +237,13 @@
               <div v-if="orderedActions.length > 0" ref="actionsScrollRef" class="actions-list-scroll" :class="{ scrolling: listScrolling }">
                 <VueDraggable
                     v-model="orderedActions"
-                    :delay="150"
+                    :delay="LONG_PRESS_MS"
                     :delay-on-touch-only="true"
                     :animation="150"
                     chosen-class="action-wrapper--chosen"
                     ghost-class="action-wrapper--ghost"
-                    @end="onBacklogReorder"
+                    @start="onActionDragStart"
+                    @end="onActionDragEnd"
                 >
                   <div
                       v-for="action in orderedActions"
@@ -254,9 +255,13 @@
                           :id="action.id"
                           :title="action.title"
                           :loading="completingActionId === action.id"
+                          :swipe-right="draggingAction ? null : 'complete'"
+                          :swipe-left="draggingAction ? null : 'trash'"
                           @update="onActionUpdate"
                           @check="() => onCompleteAction(action)"
                           @click="goToActionDetail(action)"
+                          @swipe-right="onCompleteAction(action)"
+                          @swipe-left="onTrashAction(action)"
                       >
                         <template v-if="ACTION_STATE_ICONS[action.state]" #prefix>
                           <span class="action-state-icon" :title="actionStateLabel(action.state)" role="img" :aria-label="actionStateLabel(action.state)">
@@ -323,13 +328,14 @@
               <div v-if="orderedActions.length > 0" class="actions-list-scroll">
                 <VueDraggable
                     v-model="orderedActions"
-                    :delay="150"
+                    :delay="LONG_PRESS_MS"
                     :delay-on-touch-only="true"
                     :animation="150"
                     :disabled="!canWrite"
                     chosen-class="action-wrapper--chosen"
                     ghost-class="action-wrapper--ghost"
-                    @end="onBacklogReorder"
+                    @start="onActionDragStart"
+                    @end="onActionDragEnd"
                 >
                   <div
                       v-for="action in orderedActions"
@@ -344,9 +350,13 @@
                           :no-checkbox="!canCompleteAction(action)"
                           :reserve-checkbox="true"
                           :editable="canWrite && (!action.assigned_to || isAssignedToMe(action))"
+                          :swipe-right="!draggingAction && canCompleteAction(action) ? 'complete' : null"
+                          :swipe-left="!draggingAction && canDeleteAction(action) ? 'trash' : null"
                           @update="onActionUpdate"
                           @check="() => onCompleteAction(action)"
                           @click="goToActionDetail(action)"
+                          @swipe-right="onCompleteAction(action)"
+                          @swipe-left="onTrashAction(action)"
                       >
                         <template #actions>
                           <span v-if="action.assigned_to && !isAssignedToMe(action)" class="text-body-s action-assignee-right">
@@ -628,6 +638,8 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
+import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
+import { hapticFeedback } from '../../scripts/core/haptics.js'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Dropdown from '../../components/Dropdown.vue'
@@ -719,6 +731,7 @@ const orderedActions = ref([])
 const addInputVisible = ref(false)
 const completingActionId = ref(null)
 const trashingActionId = ref(null)
+const draggingAction = ref(false)
 const newActionTitle = ref('')
 const addingAction = ref(false)
 const actionsScrollRef = ref(null)
@@ -1746,6 +1759,16 @@ async function onTrashAction(action) {
   }
 }
 
+function onActionDragStart() {
+  draggingAction.value = true
+  hapticFeedback()
+}
+
+function onActionDragEnd(evt) {
+  draggingAction.value = false
+  onBacklogReorder(evt)
+}
+
 async function onBacklogReorder(evt) {
   if (evt.oldIndex === evt.newIndex) return
 
@@ -2701,8 +2724,8 @@ async function onAddAction() {
 /* Assign / Unassign icon buttons — same scale as ActionBtn (16px icon, 4px 8px padding) */
 .action-assign-btn,
 .action-unassign-btn {
-  width: 44px;
-  height: 44px;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
   margin: -7px -3px;
   padding: 0;
   border: none;

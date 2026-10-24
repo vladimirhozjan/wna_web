@@ -693,6 +693,22 @@ onBeforeUnmount(() => {
     padding: 0 10px;
   }
 
+  .dashboard .hamburger-menu {
+    position: relative;
+  }
+
+  .dashboard .search-btn::after,
+  .dashboard .notifications-btn::after,
+  .dashboard .hamburger-menu::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
+
 }
 
 .topnav-center {

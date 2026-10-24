@@ -103,4 +103,11 @@ input.input-success {
   background: var(--color-input-background-success);
 }
 
+@media (max-width: 768px) {
+  .dashboard input,
+  .bottom-sheet input {
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
+  }
+}
 </style>

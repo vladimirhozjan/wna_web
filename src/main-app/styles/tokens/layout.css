@@ -22,4 +22,7 @@
     --section-py-mobile: 40px;
     --section-max-width: 900px;
     --section-px: 20px;
+
+    /* Touch */
+    --touch-target-min: 44px;
 }

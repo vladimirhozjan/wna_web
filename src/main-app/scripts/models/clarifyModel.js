@@ -29,7 +29,7 @@ export function clarifyModel() {
     const state = reactive({
         step: ClarifyState.IDLE,
         stuffItem: null,
-        mode: 'inline', // 'inline' | 'modal' | 'fullscreen'
+        mode: 'inline', // 'inline' | 'modal' | 'sheet'
 
         // Decision tracking
         isActionable: null,
@@ -256,6 +256,10 @@ export function clarifyModel() {
         reset()
     }
 
+    function canDismiss() {
+        return !state.loading && state.step !== ClarifyState.DO_IT_NOW
+    }
+
     function getConfirmSummary() {
         if (!state.isActionable) {
             switch (state.nonActionableTarget) {
@@ -306,6 +310,7 @@ export function clarifyModel() {
         confirm,
         doItNow,
         cancel,
+        canDismiss,
         reset,
         getConfirmSummary,
     }

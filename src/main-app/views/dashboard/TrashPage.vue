@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <div class="trash-content">
+      <PullToRefresh class="trash-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -35,7 +35,7 @@
           </template>
         </ItemList>
         </div>
-      </div>
+      </PullToRefresh>
     </div>
   </DashboardLayout>
 </template>
@@ -44,6 +44,7 @@
 import { watch, onMounted } from 'vue'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
+import PullToRefresh from '../../components/PullToRefresh.vue'
 import Btn from '../../components/Btn.vue'
 import Badge from '../../components/Badge.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
@@ -80,6 +81,10 @@ onMounted(() => {
 
 async function loadMore() {
   await loadTrash()
+}
+
+function onRefresh() {
+  return loadTrash({ reset: true })
 }
 
 function truncateTitle(title, maxLen = 30) {

@@ -47,7 +47,7 @@ export const gettingStarted = [
   {
     title: 'Moving Items Between Lists',
     description:
-      'There are two ways to move items. From any detail page, use the "Move" dropdown to pick a destination — Next Actions, Today, Calendar, Waiting For, Projects, Someday, or Reference. Some destinations ask for extra information (a date for Calendar, a name for Waiting For). You can also drag items from a list directly onto sidebar menu items to move them in one gesture.',
+      'There are two ways to move items. From any detail page, use the "Move" dropdown to pick a destination — Next Actions, Today, Calendar, Waiting For, Projects, Someday, or Reference. Some destinations ask for extra information (a date for Calendar, a name for Waiting For). You can also drag items from a list directly onto sidebar menu items to move them in one gesture. On a phone, swipe a row right to complete it (in the Inbox, to clarify it), swipe left to move it to Trash, and pull down at the top of a list to refresh it.',
   },
   {
     title: 'Working With Detail Pages',

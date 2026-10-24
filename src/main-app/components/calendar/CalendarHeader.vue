@@ -235,4 +235,16 @@ const title = computed(() => {
     text-align: center;
   }
 }
+
+@media (max-width: 768px) {
+  .calendar-header__nav-btn {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+  }
+
+  .calendar-header__today-btn,
+  .calendar-header__view-btn {
+    min-height: var(--touch-target-min);
+  }
+}
 </style>

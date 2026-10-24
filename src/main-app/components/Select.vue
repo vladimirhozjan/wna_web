@@ -575,4 +575,17 @@ onUnmounted(() => {
   color: var(--color-action);
   font-weight: var(--font-weight-semibold);
 }
+
+@media (max-width: 768px) {
+  .select-trigger,
+  .select-sheet-option,
+  .select-sheet-close {
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
+  }
+
+  .select-sheet-close {
+    min-width: var(--touch-target-min);
+  }
+}
 </style>

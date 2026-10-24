@@ -237,4 +237,17 @@ const classes = computed(() => ([
   opacity: 0.8;
 }
 
+@media (max-width: 768px) {
+  .dashboard .base-btn:is(.base-btn--sm, .base-btn--md, .base-btn--icon, .base-btn--link)::after,
+  .bottom-sheet .base-btn:is(.base-btn--sm, .base-btn--md, .base-btn--icon, .base-btn--link)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--touch-target-min));
+    height: max(100%, var(--touch-target-min));
+    transform: translate(-50%, -50%);
+  }
+}
+
 </style>

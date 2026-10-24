@@ -373,4 +373,20 @@ function formatDate(dateStr) {
     display: none;
   }
 }
+
+@media (max-width: 768px) {
+  .row-menu-btn {
+    position: relative;
+  }
+
+  .row-menu-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
+}
 </style>

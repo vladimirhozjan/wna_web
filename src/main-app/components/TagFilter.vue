@@ -218,6 +218,27 @@ function clearAll(closeFn) {
   .tag-filter__item {
     padding: 12px 16px;
     font-size: var(--font-size-md);
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
+  }
+
+  .tag-filter :deep(.base-btn--icon) {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
+
+  .tag-filter__chip-remove {
+    position: relative;
+  }
+
+  .tag-filter__chip-remove::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
   }
 }
 </style>

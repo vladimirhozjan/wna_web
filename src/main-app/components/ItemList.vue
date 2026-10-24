@@ -21,7 +21,7 @@
     <!-- Draggable list -->
     <VueDraggable
         v-model="items"
-        :delay="150"
+        :delay="LONG_PRESS_MS"
         :delay-on-touch-only="true"
         :animation="150"
         :chosen-class="'item-wrapper-chosen'"
@@ -56,8 +56,12 @@
             :no-hover="isDragging"
             :no-checkbox="noCheckbox"
             :no-initial-animation="noInitialAnimation"
+            :swipe-right="swipeFor(item, swipeRight)"
+            :swipe-left="swipeFor(item, swipeLeft)"
             @update="(id, data) => emit('update', id, data)"
             @check="(id, checked) => emit('check', id, checked)"
+            @swipe-right="id => emit('swipe-right', id)"
+            @swipe-left="id => emit('swipe-left', id)"
             @click="onItemClick(item, index)"
         >
           <template v-if="$slots.prefix" #prefix>
@@ -82,7 +86,7 @@
     <!-- Drag hint (centered overlay) -->
     <div v-if="showHint && items.length >= 3" class="text-body-m drag-hint">
       <span class="drag-hint__icon">↕</span>
-      <span>Drag to reorder</span>
+      <span>{{ isTouch ? 'Hold to reorder' : 'Drag to reorder' }}</span>
     </div>
 
     <!-- Load more -->
@@ -109,6 +113,8 @@ import ActionBtn from './ActionBtn.vue'
 import { dragModel } from '../scripts/models/dragModel.js'
 import { isOverdue, isScheduledOverdue } from '../scripts/core/dateUtils.js'
 import Spinner from './Spinner.vue'
+import { hapticFeedback } from '../scripts/core/haptics.js'
+import { LONG_PRESS_MS } from '../scripts/core/swipe.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -124,12 +130,15 @@ const props = defineProps({
   completingIds: { type: Array, default: () => [] },
   acceptDrop: { type: Array, default: () => [] },
   noInitialAnimation: { type: Boolean, default: false },
+  swipeRight: { type: String, default: null },
+  swipeLeft: { type: String, default: null },
+  swipeFilter: { type: Function, default: null },
 })
 
 const drag = dragModel()
 const nativeDraggingId = ref(null)
 
-const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-more', 'external-drop'])
+const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-more', 'external-drop', 'swipe-right', 'swipe-left'])
 
 const items = defineModel({ type: Array, required: true })
 
@@ -139,6 +148,7 @@ const completingIdSet = computed(() => new Set(props.completingIds))
 // Drag discoverability hint
 const HINT_KEY = 'drag_hint_dismissed'
 const showHint = ref(false)
+const isTouch = window.matchMedia('(pointer: coarse)').matches
 
 onMounted(() => {
   if (!props.disabled && !localStorage.getItem(HINT_KEY)) {
@@ -162,6 +172,12 @@ const isDragging = ref(false)
 let draggedItemId = null
 let originalIndex = null
 
+function swipeFor(item, action) {
+  if (!action || isDragging.value) return null
+  if (props.swipeFilter && !props.swipeFilter(item)) return null
+  return action
+}
+
 function onItemClick(item, index) {
   if (isDragging.value) return
   emit('click', item, index)
@@ -172,6 +188,7 @@ function onDragStart(evt) {
   draggedItemId = items.value[evt.oldIndex]?.id
   isDragging.value = true
   if (showHint.value) dismissHint()
+  hapticFeedback()
 
   // Set native drag data for cross-component drops
   const item = items.value[evt.oldIndex]

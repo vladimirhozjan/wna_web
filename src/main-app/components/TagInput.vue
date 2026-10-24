@@ -320,4 +320,27 @@ defineExpose({ focus: focusInput })
   color: var(--color-action);
   background: var(--color-bg-accent-light);
 }
+
+@media (max-width: 768px) {
+  .tag-input-container {
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
+  }
+
+  .tag-chip-remove,
+  .tag-preset-chip {
+    position: relative;
+  }
+
+  .tag-chip-remove::after,
+  .tag-preset-chip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--touch-target-min));
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
+}
 </style>
