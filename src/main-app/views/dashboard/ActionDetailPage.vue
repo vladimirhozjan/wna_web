@@ -101,25 +101,28 @@
             </Btn>
           </template>
           <template v-else-if="isSomeday">
-            <Btn
-                variant="primary"
-                size="sm"
-                :loading="actionLoading === 'activate'"
-                @click="onActivate"
-            >
-              Activate
-            </Btn>
-            <Btn
-                variant="ghost-danger"
-                size="sm"
-                :loading="actionLoading === 'trash'"
-                @click="onTrash"
-            >
-              Trash
-            </Btn>
+            <template v-if="canManageSomeday">
+              <Btn
+                  variant="primary"
+                  size="sm"
+                  :loading="actionLoading === 'activate'"
+                  @click="onActivate"
+              >
+                Activate
+              </Btn>
+              <Btn
+                  variant="ghost-danger"
+                  size="sm"
+                  :loading="actionLoading === 'trash'"
+                  @click="onTrash"
+              >
+                Trash
+              </Btn>
+            </template>
           </template>
-          <template v-else-if="isWaiting">
+          <template v-else>
             <Btn
+                v-if="isWaiting && canMove"
                 variant="primary"
                 size="sm"
                 :loading="actionLoading === 'unwait'"
@@ -128,16 +131,7 @@
               Got it
             </Btn>
             <Btn
-                variant="secondary"
-                size="sm"
-                :loading="actionLoading === 'done'"
-                @click="onMarkDone"
-            >
-              Done
-            </Btn>
-          </template>
-          <template v-else-if="!isReadOnlyBacklog">
-            <Btn
+                v-if="canFinish"
                 variant="secondary"
                 size="sm"
                 :loading="actionLoading === 'done'"
@@ -160,9 +154,11 @@
             <button v-if="action.state !== 'TODAY'" class="dropdown-item" @click="onMoveTo('TODAY')"><TodayIcon class="dropdown-item-icon" /> Today</button>
             <button v-if="action.state !== 'CALENDAR'" class="dropdown-item" @click="onMoveTo('CALENDAR')"><CalendarIcon class="dropdown-item-icon" /> Calendar</button>
             <button v-if="action.state !== 'WAITING'" class="dropdown-item" @click="onMoveTo('WAITING')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
-            <button v-if="action.state !== 'SOMEDAY' && !isProjectShared" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
-            <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
-            <button class="dropdown-item" @click="onMoveTo('REFERENCE')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
+            <template v-if="!isProjectShared">
+              <button v-if="action.state !== 'SOMEDAY'" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+              <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
+              <button class="dropdown-item" @click="onMoveTo('REFERENCE')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
+            </template>
           </Dropdown>
           <Btn
               v-if="canAssign"
@@ -174,7 +170,7 @@
             Assign to me
           </Btn>
           <Btn
-              v-if="isAssignedToMe && !isCompleted"
+              v-if="canUnassign"
               variant="ghost"
               size="sm"
               :loading="unassignLoading"
@@ -183,11 +179,10 @@
             Unassign
           </Btn>
           <Btn
-              v-if="!isCompleted && !isSomeday && !isReadOnlyBacklog"
+              v-if="canFinish"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
-              :disabled="isAssignedToOther"
               @click="onTrash"
           >
             Trash
@@ -466,7 +461,7 @@ import { projectModel } from '../../scripts/models/projectModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
-import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction, listProjectMembers } from '../../scripts/core/apiClient.js'
+import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction } from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
@@ -610,23 +605,37 @@ const isSharedAction = computed(() => {
 const isAssignedToMe = computed(() =>
     isSharedAction.value && action.value?.assigned_to && action.value.assigned_to === myUserId.value
 )
-const isAssignedToOther = computed(() =>
-    isSharedAction.value && action.value?.assigned_to && action.value.assigned_to !== myUserId.value
-)
 const isUnassigned = computed(() =>
     isSharedAction.value && !action.value?.assigned_to
 )
-// The action payload carries no viewer role; it comes from the project's member list
-const myRole = ref(null)
-const isReadOnlyBacklog = computed(() => isUnassigned.value && myRole.value === 'read_only')
-const canAssign = computed(() =>
-    isUnassigned.value && myTier.value === 'team' && myRole.value !== 'read_only'
-)
-// Shared-project actions can't go to Someday; legacy shared Someday rows only allow Activate + Trash
+// Shared-action buttons follow the viewer's role on the project; no my_role = no longer a member
 const isProjectShared = computed(() => action.value?.project_shared === true)
-const canMove = computed(() => !isCompleted.value && !(isSomeday.value && isProjectShared.value) && !isReadOnlyBacklog.value)
-// Only the completer may uncomplete; legacy rows without completed_by keep Undo
-const canUndo = computed(() => !action.value?.completed_by || action.value.completed_by === myUserId.value)
+const viewerRole = computed(() => (isProjectShared.value ? action.value.my_role || null : null))
+const canEditBacklog = computed(() => viewerRole.value === 'owner' || viewerRole.value === 'write')
+const isActive = computed(() => !isCompleted.value && !isSomeday.value)
+// Done / Trash on a shared action: own claim (any role), or an unassigned backlog action for owner / write
+const canFinish = computed(() => {
+  if (!isActive.value) return false
+  if (!isProjectShared.value) return true
+  if (isAssignedToMe.value) return !!viewerRole.value
+  return isUnassigned.value && canEditBacklog.value
+})
+// Move / Got it on a shared action: only the assignee, as a Team owner / write member
+const canMove = computed(() => {
+  if (isCompleted.value) return false
+  if (!isProjectShared.value) return true
+  return isActive.value && isAssignedToMe.value && canEditBacklog.value && myTier.value === 'team'
+})
+// Legacy shared Someday rows: Activate + Trash for the owner only
+const canManageSomeday = computed(() => isSomeday.value && (!isProjectShared.value || viewerRole.value === 'owner'))
+const canAssign = computed(() =>
+    isActive.value && isUnassigned.value && myTier.value === 'team' && canEditBacklog.value
+)
+const canUnassign = computed(() => isActive.value && isAssignedToMe.value && !!viewerRole.value)
+// Only the completer may uncomplete, never a read-only member; legacy rows without completed_by keep Undo
+const canUndo = computed(() =>
+    (!action.value?.completed_by || action.value.completed_by === myUserId.value) && action.value?.my_role !== 'read_only'
+)
 
 // Command palette "This item" — mirrors the action buttons below the title
 const MOVE_COMMANDS = [
@@ -638,27 +647,27 @@ const MOVE_COMMANDS = [
   { state: 'PROJECT', label: 'Move to Projects' },
   { state: 'REFERENCE', label: 'Move to Reference' },
 ]
+const SHARED_HIDDEN_MOVES = ['SOMEDAY', 'PROJECT', 'REFERENCE']
 const itemCommands = computed(() => {
   if (pageLoading.value || notFound.value || !action.value) return []
   const commands = []
   if (isCompleted.value) {
     if (canUndo.value) commands.push({ label: 'Undo', run: onUndo })
   } else if (isSomeday.value) {
-    commands.push({ label: 'Activate', run: onActivate }, { label: 'Trash', run: onTrash })
-  } else if (isWaiting.value) {
-    commands.push({ label: 'Got it', run: onGotIt }, { label: 'Done', run: onMarkDone })
-  } else if (!isReadOnlyBacklog.value) {
-    commands.push({ label: 'Done', run: onMarkDone })
+    if (canManageSomeday.value) commands.push({ label: 'Activate', run: onActivate }, { label: 'Trash', run: onTrash })
+  } else {
+    if (isWaiting.value && canMove.value) commands.push({ label: 'Got it', run: onGotIt })
+    if (canFinish.value) commands.push({ label: 'Done', run: onMarkDone })
   }
   if (canMove.value) {
     for (const m of MOVE_COMMANDS) {
-      if (m.state === 'SOMEDAY' && isProjectShared.value) continue
+      if (isProjectShared.value && SHARED_HIDDEN_MOVES.includes(m.state)) continue
       if (m.state !== action.value.state) commands.push({ label: m.label, run: () => onMoveTo(m.state) })
     }
   }
   if (canAssign.value) commands.push({ label: 'Assign to me', run: onAssignToMe })
-  if (isAssignedToMe.value && !isCompleted.value) commands.push({ label: 'Unassign', run: onUnassignMine })
-  if (!isCompleted.value && !isSomeday.value && !isAssignedToOther.value && !isReadOnlyBacklog.value) commands.push({ label: 'Trash', run: onTrash })
+  if (canUnassign.value) commands.push({ label: 'Unassign', run: onUnassignMine })
+  if (canFinish.value) commands.push({ label: 'Trash', run: onTrash })
   return commands
 })
 shortcutModel().registerItemCommands(itemCommands)
@@ -742,18 +751,6 @@ const datesSummary = computed(() => {
     parts.push(`Due: ${s}`)
   }
   return parts.join(' · ')
-})
-
-watch(() => (isProjectShared.value && isUnassigned.value ? action.value.project?.id : null), async (projectId) => {
-  myRole.value = null
-  if (!projectId) return
-  try {
-    const data = await listProjectMembers(projectId)
-    if (action.value?.project?.id !== projectId) return
-    myRole.value = (data.members || []).find(m => m.user_id === myUserId.value)?.role || null
-  } catch {
-    // Role unknown → buttons stay; the backend still enforces read-only
-  }
 })
 
 watch(error, (err) => {
