@@ -68,17 +68,22 @@ parent §Screens "Every usage". Colors only from existing theme tokens (no new C
   Someday (rows 26–31).
   → `FilterEmptyState.vue:5,14`; `NextPage.vue:57`, `TodayPage.vue:57`, `WaitingForPage.vue:66`, `EngagePage.vue:163`,
   `ProjectsPage.vue:66`, `SomedayPage.vue:65`
-- [ ] W-20 Search icon stroke in the coin (rows 20, 21a–21d; /conclude acceptance 2026-10-24). `assets/SearchIcon.vue`
+- [x] W-20 Search icon stroke in the coin (rows 20, 21a–21d; /conclude acceptance 2026-10-24). `assets/SearchIcon.vue`
   sets `stroke-width="8"` on its `<path>` (viewBox 96), which overrides `EmptyState.vue`'s `stroke-width: 1.5`. The
   Search glyph renders about 3.2 px against about 2.4 px for every other section icon. Make it match the parent Icon art
   "Section icon … stroke 1.5" inside the empty state only. Other `SearchIcon` users (TopNav, SearchBox, CommandPalette,
   Settings, Help) stay unchanged.
+  → `assets/SearchIcon.vue:2-3` redrawn on the 24 grid like the other section icons (path coordinates ÷ 4, stroke attributes
+  moved to the root `<svg>`, `stroke-width="2"`), so `EmptyState.vue` `.empty-state__icon` `stroke-width: 1.5` now applies
+  (~2.4 px, same as the others). Elsewhere it renders as before: 2 on 24 = 8 on 96, and no other user sets a CSS
+  `stroke-width` on it (grep of the 5 other users + global CSS = 0). Build `✓ built in 4.06s` (2026-10-24).
+  Spec: `wna-features.md:2306`, TC-844 expected result (`wna-test-cases.md:19247`); `update-tests.sh` run.
 ### Verify
 - [x] W-15 `npm run build:main` passes. → `✓ built`, obfuscator + prerender OK (only the pre-existing >500 kB chunk warning).
 - [~] W-16 Runtime check on the local stack (owner verifies at runtime): every row 1–31 reached once in light AND dark
   theme and on mobile width; list what was seen.
-  DEFERRED TO USER: I don't run apps. Runtime pass = TC-844 in light and dark theme, desktop + ≤ 768 px (coin + orbit
-  composition and copy). Preview reviewed: https://claude.ai/artifact/N92o1x25s2r5Bgnz6RRPts
+  DEFERRED TO wna-ui-tests: automate TC-844 (owner 2026-10-24) — light and dark theme, desktop + ≤ 768 px (coin + orbit
+  composition, copy, equal icon line weight incl. Search). Preview reviewed: https://claude.ai/artifact/N92o1x25s2r5Bgnz6RRPts
   Owner follow-up 2026-10-23: list loaders now `<Spinner delayed>` (300 ms) and centred on the coin — `components/Spinner.vue`,
   `ItemList.vue`, `CompletedPage.vue`, `ReferencePage.vue`, `EngagePage.vue`, `SearchPage.vue`; checked in TC-844.
   Owner follow-up 2026-10-23: Engage empty state uses the ItemList frame (`EngagePage.vue:672`), so the coin no longer
@@ -91,9 +96,10 @@ parent §Screens "Every usage". Colors only from existing theme tokens (no new C
   For, Someday, Reference Trash tab, Connections)
 - [~] W-18 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-844 (every empty section shows its
   illustration + new copy, light theme) and TC-845 (same, dark theme), expected results from parent §Screens.
-  → `../wna_orchestration/specs/tests/wna-test-cases.md:19186`: TC-844 checks the copy plus the icon coin/orbit composition,
+  → `../wna_orchestration/specs/tests/wna-test-cases.md:19207`: TC-844 checks the copy plus the icon coin/orbit composition,
   run in light and dark (Section 60). TC-845 (dark
   theme illustrations) was removed because the illustrations were reverted. `regression-ui-tests/update-tests.sh` re-run.
+  DEFERRED TO wna-ui-tests: automate TC-844 (owner 2026-10-24); TC authoring done, the passing run closes this box.
 - [x] W-19 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — rewrite the old empty-state copy in TC-066, TC-100,
   TC-101, TC-108, TC-212, TC-220, TC-234, TC-235, TC-356, TC-368, TC-386, TC-387, TC-417, TC-792, TC-798, TC-800, TC-805
   (grep the old titles again before closing; TC-797's "Search everything..." is the TopNav placeholder — not an empty state,
