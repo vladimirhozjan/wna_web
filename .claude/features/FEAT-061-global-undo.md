@@ -148,6 +148,19 @@ DS20 on Someday list / Sidebar rows stays as noted in W-7: legacy data only, sin
   `:19990`; `update-tests.sh` run (`test-cases.json`, `test-data.js`). §25.1 copy list unchanged (already per op, every entry
   point); Sidebar drop toasts `wna-features.md:260` gain the DS9 / shelved variants.
 
+### Acceptance round 2 (/conclude 2026-10-24 — not accepted)
+- [ ] W-23 D7 / DS15 from Next-list rows (Next page checkbox / × / swipe, Engage Next section, Sidebar drop of a Next row,
+  Action detail reached from Next): after Undo the project's active action is active again, not left in the backlog.
+  Data: `backlog_position` on `/v1/nextActions` + `pos/{n}` rows (backend B-19–B-22). No web change is expected, because the
+  snapshot is the raw row; confirm `undoModel.js:150` re-promotes from these rows.
+- [ ] W-24 Read-only member (parent User flows "Team member", S1 last row): Done / Trash of their own claim (allowed by
+  BUG-063) shows the toast WITHOUT Undo, because the server always 403s uncomplete / restore for read-only. `isUndoable` →
+  false when `item.project_shared && item.my_role === 'read_only'`. Data: `my_role` is on every action row and on Get Action
+  (`api.md` Get Action). Completed rows (Sidebar drop Completed → Trash) get it in backend B-19; the rest is web-only and can
+  start now.
+- [ ] W-25 `npm run build:main` passes. `wna-test-cases.md`: TC-867 step 8 (Next-row active action → Undo → active again)
+  and step 9 (read-only member Done on their own claim → toast without Undo). `wna-features.md` §25.1: read-only members get no Undo.
+
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
    cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.
