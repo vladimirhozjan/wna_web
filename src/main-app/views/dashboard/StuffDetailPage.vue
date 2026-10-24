@@ -402,6 +402,15 @@ onMounted(async () => {
     currentPosition.value = Number(route.query.position) || 0
     totalItems.value = Number(route.query.total) || 1
 
+    // Opened without list context (direct link, search, notification): look up its place in the inbox
+    if (!route.query.total && data.state === 'INBOX') {
+      const inInbox = await getStuffByPosition(data.position).catch(() => null)
+      if (inInbox?.id === data.id) {
+        currentPosition.value = inInbox.position
+        totalItems.value = inInbox.total_items
+      }
+    }
+
   } catch (err) {
     if (err?.status === 404) {
       notFound.value = true

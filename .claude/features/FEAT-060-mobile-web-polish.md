@@ -61,6 +61,10 @@ Read it first. This file is only this repo's checklist; nothing from the parent 
 - [x] W-9 S3 Clarify sheet — open height, auto-expand (DS9), drag-down / backdrop = Cancel, ignored while saving and on
   "Do it now" (DS8), keyboard behaviour, per §Screens S3.
   — `components/BottomSheet.vue` (visualViewport height/offset tracking → keyboard shrinks the sheet, overflow → full height, one-way); DS8 guard `scripts/models/clarifyModel.js:259` `canDismiss()` shared with Escape `ClarifyPanel.vue:161`, passed as `:dismissible`; backdrop / drag = `cancelClarify` (`clarify.cancel()` + close) in Inbox and Stuff detail.
+  — Fix 2026-10-24 (S3 "Done" row, TC-860 step 7): Stuff detail opened by URL had no `position`/`total` query → `totalItems`
+  fell back to 1 → Done took the "last item → /inbox" branch. `views/dashboard/StuffDetailPage.vue:405-412` now looks up the
+  inbox position + `total_items` (`GET /v1/inbox/pos/{position}` from `GET /v1/stuff/{id}`'s `position`) when the query is
+  missing, so the sheet advances to the next item. Not sheet-specific (desktop direct opens had the same fault).
 - [x] W-10 S4 touch targets — every element listed in §Screens S4 gets ≥ `--touch-target-min` hit area under 768 px;
   data-encoding elements excluded (DS11).
   — Item row/checkbox/× `components/Item.vue` (media block + token literals); Btn `components/Btn.vue` (`.dashboard` / `.bottom-sheet` scoped hit area); Assign/Unassign `ProjectDetailPage.vue` token; ClarifyPanel `<`/`×`; SidebarMenuItem; Inpt (`.dashboard` / `.bottom-sheet` only, public forms untouched); Select trigger/options/sheet ×; Dropdown items + sheet ×; ItemMoveDropdown; TagFilter / ContextFilter trigger, options, chip ×; TagInput field, chip ×, presets; SegmentSwitch; CalendarHeader; TopNav search/bell/menu (dashboard only); FeedbackBtn (`body:has(.dashboard)` only); Reference row/card menu buttons. Compiled CSS checked in `dist/`. Notes: `UserAvatar` in TopNav renders only when `context !== 'dashboard'` (public pages), so it has no authenticated-page target — untouched; the mobile Quick Add FAB is `DashboardLayout.vue` `.mobile-fab` (64 px, already above the token) — untouched. Calendar events / heat-map / chart bars untouched (DS11).
@@ -85,6 +89,10 @@ Read it first. This file is only this repo's checklist; nothing from the parent 
 - [x] W-16 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-855–860 (IDs reserved by the parent;
   scope per the ui-tests slice), mobile viewports.
   — `wna_orchestration/specs/tests/wna-test-cases.md:19658` Section 64, TC-855 (High, Smoke) … TC-860. Stale TCs updated to the new behaviour: TC-068 :2357, TC-070, the Stuff detail clarify TC and the ClarifyPanel modes TC (fullscreen → sheet), TC-262b :8340 and the touch reorder TC :10355 (150 ms → ~400 ms), TC-343 :10654 (hint copy). `regression-ui-tests/update-tests.sh` run → `test-cases.json` / `test-data.js` regenerated (TC-855–860 parsed with priority/area, TC-855 smoke).
+
+## Log
+- 2026-10-24 · Fixed: Clarify from a Stuff detail page opened by URL went to /inbox instead of advancing (TC-860 step 7) —
+  see W-9. `npm run build:main` ✓. Owner runs `mobile-polish.spec.ts -g "TC-860"` (mobile-chrome + mobile-safari).
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
