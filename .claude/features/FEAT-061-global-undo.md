@@ -176,6 +176,41 @@ DS20 on Someday list / Sidebar rows stays as noted in W-7: legacy data only, sin
   expected `:20004-20006`; `update-tests.sh` run (`test-cases.json`, `test-data.js`). §25.1 no-Undo list
   `wna-features.md:2346-2347`.
 
+### Acceptance round 3 (/conclude 2026-10-24 — owner: fix T1, T2, T3; context-filter index = known limit)
+- [x] W-26 T2: Overdue page rows are not draggable. `wna-features.md` §23.2 does not list Overdue as a drag source; owner
+  2026-10-24: "ne sme biti". Remove `source-type="action"` from the `ItemList` at `OverduePage.vue:16`; checkbox, ×,
+  swipe and row click stay. Data: none.
+  — `source-type` removed from `OverduePage.vue:10` `ItemList` (0 matches left), so `ItemList.vue:46` sets
+  `draggable=false` and `:195` / `:239` start no cross-list drag. Owner 2026-10-24 (asked in this round): also
+  `:reorderable="false"` `OverduePage.vue:16` → `ItemList.vue:30` `:sort` off, so there is no in-list reorder either (Overdue has
+  no move handler). Checkbox / × / swipe / row click handlers unchanged `OverduePage.vue:19-24`. Runtime: TC-864 step 7.
+- [x] W-27 T2: Engage drop zones snapshot the row of the section it was dragged from. Today `findItem`
+  (`EngagePage.vue:355`) returns the Overdue row first, which has no `start_date` / `start_time`, so Undo of a move of a
+  start-dated Calendar action that is also overdue fails with `Missing date`. Search the dragged section (Today /
+  Next / Waiting) before Overdue. Data: `/v1/nextActions` / `/v1/today` / `/v1/waiting` rows carry
+  `start_date` / `start_time` (`api.md`, same shape as Get Action).
+  — `findDraggedItem` `EngagePage.vue:359-363` searches Today → Next → Waiting only (the Engage Overdue list is not a
+  drag source: no `source-type`, `:disabled="true"` `EngagePage.vue:37`); used by `onDropToToday` `:496`,
+  `onDropToNext` `:510`, `onDropToWaiting` `:526`. `findItem` `:354-356` (checkbox / ×) keeps Overdue first and reuses
+  it. The Today row carries `start_date` / `start_time`, so `undoModel.js:176-179` `deferAction(..., 'start', ...)` gets
+  its date. Runtime: TC-864 step 6.
+- [x] W-28 T1 + T3: no web change expected. T1: after backend B-24, Someday rows carry `recurring_parent_id`, so
+  `undoModel.js:46` (D8) withholds Undo from the Someday ×/swipe, Sidebar drops from Someday and Action detail reached
+  from Someday. T3: after backend B-23, `activateAction` + `moveProjectAction(id, 0)` (`undoModel.js:152-157`)
+  re-promotes. Verify both from the code; cite lines. Data: B-23, B-24.
+  — no web change. T1: `isUndoable` `undoModel.js:44-47` → false for complete / trash when `recurring_parent_id` is set
+  on a non-COMPLETED item; Someday × records the raw row `SomedayPage.vue:280`, Sidebar drops record the full dragged
+  row via `rowOf` `Sidebar.vue:304-308`, Action detail records Get Action `ActionDetailPage.vue:1557,1638`; Someday rows
+  carry the field per `api.md:2855` (B-24). Not undoable → plain toast `undoModel.js:58-61`. T3: Someday move of the
+  active action → inverse `activateAction` `undoModel.js:119`, then `repromote` `:152` → `moveProjectAction(id, 0)`
+  `:156`, which B-23 now promotes a NEXT bp > 0 action with (backend B-25 sequence). Runtime: TC-866 step 8, TC-867 step 10.
+- [x] W-29 `npm run build:main` passes. `wna-test-cases.md`: TC-867 step 10 (T3), TC-866 step 8 (T1), TC-864 step 6
+  (T2 via Engage) + Overdue rows not draggable. `wna-features.md` §35.1: Overdue rows are not draggable.
+  — build `✓ built in 3.83s` · `[obfuscator] Obfuscated 19 files`. `wna-test-cases.md`: TC-864 precondition K1 `:19896`,
+  step 6 `:19905`, step 7 (Overdue not draggable) `:19906`, expected `:19913-19915`; TC-866 precondition R2, step 8
+  `:19968`, expected `:19973`; TC-867 step 10 `:20003`, expected `:20014`; `update-tests.sh` run (`test-cases.json`,
+  `test-data.js`). §35.1 `wna-features.md:2894-2895`.
+
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
    cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.

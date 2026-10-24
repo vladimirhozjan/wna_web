@@ -13,7 +13,7 @@
             :has-more="hasMore"
             :loading-ids="loadingIds"
             :completing-ids="completingIds"
-            source-type="action"
+            :reorderable="false"
             swipe-right="complete"
             swipe-left="trash"
             @update="onItemUpdate"

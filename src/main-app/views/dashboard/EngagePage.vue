@@ -352,8 +352,12 @@ const completingIds = ref([])
 const ANIM_MS = 800
 
 function findItem(id) {
-    return topOverdue.value.find(i => i.id === id)
-        || topToday.value.find(i => i.id === id)
+    return topOverdue.value.find(i => i.id === id) || findDraggedItem(id)
+}
+
+// Overdue rows lack start_date / start_time; a drag always comes from Today / Next / Waiting
+function findDraggedItem(id) {
+    return topToday.value.find(i => i.id === id)
         || topActions.value.find(i => i.id === id)
         || topWaiting.value.find(i => i.id === id)
 }
@@ -486,7 +490,7 @@ function removeFromAllLists(id) {
 
 async function onDropToToday(data) {
     if (data.state === 'TODAY') return
-    const item = findItem(data.id) || data
+    const item = findDraggedItem(data.id) || data
     try {
         await apiClient.todayAction(data.id)
         await loadDashboard({ tags: effectiveTags.value })
@@ -500,7 +504,7 @@ async function onDropToToday(data) {
 
 async function onDropToNext(data) {
     if (data.state === 'NEXT') return
-    const item = findItem(data.id) || data
+    const item = findDraggedItem(data.id) || data
     try {
         await apiClient.undeferAction(data.id)
         await loadDashboard({ tags: effectiveTags.value })
@@ -516,7 +520,7 @@ async function onDropToWaiting(data) {
     if (data.state === 'WAITING') return
     const pick = await mover.showWaiting({ waitingFor: '' })
     if (!pick) return
-    const item = findItem(data.id) || data
+    const item = findDraggedItem(data.id) || data
     try {
         if (pick.kind === 'connection') {
             await apiClient.delegateAction(data.id, pick.userId, pick.email)
