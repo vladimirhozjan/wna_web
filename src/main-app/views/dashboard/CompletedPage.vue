@@ -77,6 +77,9 @@
                 <template #prefix="{ item }">
                   <ItemTypeIcon :type="item.type" />
                 </template>
+                <template #title-suffix="{ item }">
+                  <Badge v-if="item.shared" type="primary" label="Shared" />
+                </template>
                 <template #actions><span></span></template>
               </ItemList>
             </div>
@@ -102,6 +105,7 @@ import EmptyState from '../../components/EmptyState.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'
 import Spinner from '../../components/Spinner.vue'
 import Btn from '../../components/Btn.vue'
+import Badge from '../../components/Badge.vue'
 import { completedModel } from '../../scripts/models/completedModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'

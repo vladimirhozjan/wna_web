@@ -32,24 +32,45 @@ backend slice running locally for the end-to-end check.
 
 ## Checklist
 ### API client
-- [ ] W-1 admin `apiClient`: `notifyBillingTemplate(id)`; broadcast responses read `audience` (no client-side formatting of
-  price/period — the server builds the prefill).
+- [x] W-1 admin `apiClient`: `notifyBillingTemplate(id)`; broadcast responses read `audience` (no client-side formatting of
+  price/period — the server builds the prefill). `src/admin-app/scripts/core/apiClient.js:919` (+ export `:1238`);
+  `audience` read as returned; label helper `audienceLabel()` (owner-approved 2026-10-24)
+  `src/admin-app/scripts/models/broadcastModel.js:18` (`<title> (<Gateway>)`, "Untitled" when empty). No price/period
+  formatting client-side.
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [ ] W-2 S1 Billing Templates — "Notify subscribers" row action per §Screens S1 (roles, states, intro sentence, navigation).
-- [ ] W-3 S2 Broadcasts list — Audience column per §Screens S2 (no N, DS2).
-- [ ] W-4 S3 Broadcast detail / editor — audience line with live N, kind lock, placeholder Send guard, every S3 state.
-- [ ] W-5 S4 Send confirm — audience + N copy, empty-audience toast (no dialog), 409 handling per §Screens S4.
+- [x] W-2 S1 Billing Templates — "Notify subscribers" row action per §Screens S1 (roles, states, intro sentence, navigation).
+  `src/admin-app/views/BillingTemplatesPage.vue:20-21` intro sentence, `:121-128` last row action (every row; page is
+  already `minRole: admin`), `:360-375` `onNotify` (row `:loading`, all actions disabled via `actionLoading`, toast
+  "Notice draft created" → `/broadcasts/<id>`, error = API message else "Couldn't create the notice draft. Try
+  again."), actions column widened `:251`.
+- [x] W-3 S2 Broadcasts list — Audience column per §Screens S2 (no N, DS2). `src/admin-app/views/BroadcastsPage.vue:27-29`
+  cell, `:101` column after Subject (all roles). Copy unchanged (server keeps the audience).
+- [x] W-4 S3 Broadcast detail / editor — audience line with live N, kind lock, placeholder Send guard, every S3 state.
+  `src/admin-app/views/BroadcastDetailPage.vue:90-93` Audience line (every role), `:170-175` copy per status
+  ("All users" / "… — N right now" on drafts / no N otherwise), `:97` kind select disabled on a template audience,
+  `:100,138` template hint, `:30` "Send to subscribers" label, `:301-306` placeholder guard (Send only; Send test
+  untouched). Loading / not found / error / sending states unchanged.
+- [x] W-5 S4 Send confirm — audience + N copy, empty-audience toast (no dialog), 409 handling per §Screens S4.
+  `src/admin-app/views/BroadcastDetailPage.vue:272-299` `confirmSendToSubscribers` (draft re-reads `GET /{id}` for the
+  live N; read failure → "Couldn't count …" toast; N = 0 → "Nobody is subscribed …" toast; confirm title/message/button
+  per S4; Resume on a failed template broadcast uses `recipient_count`, owner 2026-10-24); all-users confirm unchanged
+  `:256-270`; 409 → existing `err.message` toast `:315-317`.
 ### Help / Legal
 - [NA] W-6 Help — parent §Help impact: n/a (admin-only). Legal — parent §Legal impact: none to change; no ToS/PP edit.
 ### Verify
-- [ ] W-7 `npm run build:admin` passes.
-- [ ] W-8 Local run against the backend slice: walk S1 → S3 → S4 for a Paywiser and a Stripe template and an empty template;
-  state what was seen per state (screens, toasts, navigation).
+- [x] W-7 `npm run build:admin` passes. Green 2026-10-24 (`✓ built`); renamed `handleSendAll` → `handleSend`,
+  `grep -rn handleSendAll src/admin-app` = 0.
+- [~] W-8 Local run against the backend slice: walk S1 → S3 → S4 for a Paywiser and a Stripe template and an empty template;
+  state what was seen per state (screens, toasts, navigation). DEFERRED TO wna-ui-tests: automate TC-846–850
+  (runtime checks go to ui-tests per owner directive); needs the backend slice on the local stack.
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-9 Update `../wna_orchestration/specs/features/wna-features.md` — admin Billing templates (Notify subscribers) and
-  Broadcasts (§21.3 section + §26.5: template audience, kind lock, Copy, empty audience).
-- [ ] W-10 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-846–850 (IDs reserved by the parent;
-  expected results from §Screens).
+- [x] W-9 Update `../wna_orchestration/specs/features/wna-features.md` — admin Billing templates (Notify subscribers) and
+  Broadcasts (§21.3 section + §26.5: template audience, kind lock, Copy, empty audience). `wna-features.md:1400-1409`
+  (Billing Templates), `:1618-1622` (list Audience column + Copy), `:1643-1659` (template audience on the detail page),
+  `:2371-2375` (§26.5).
+- [x] W-10 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-846–850 (IDs reserved by the parent;
+  expected results from §Screens). `wna-test-cases.md:19394` Section 62, TC-846 `:19401` … TC-850 `:19502`;
+  `regression-ui-tests/update-tests.sh` re-run.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

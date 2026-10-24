@@ -37,24 +37,40 @@ is running. Legal: n/a per parent (no box).
 
 ## Checklist
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [ ] W-1 S1 Action detail — Someday hidden when `project_shared`; legacy shared Someday row → Move hidden; Undo
+- [x] W-1 S1 Action detail — Someday hidden when `project_shared`; legacy shared Someday row → Move hidden; Undo
   hidden when `completed_by` ≠ me; success toasts + 403 toast exactly per S1 / Error copy.
-- [ ] W-2 S2 Sidebar Someday drop — no API call for a `project_shared` row; error toast per S2.
-- [ ] W-3 S3 Completed page — "Shared" `Badge` in the title suffix on `shared: true` rows (ItemList forwards
-  `title-suffix`).
-- [ ] W-4 S4 Trash page — same badge; Restore toast per S4.
-- [ ] W-5 S5 Project detail Completed section — confirm unchanged; row → S1 behaves per W-1.
+  `src/main-app/views/dashboard/ActionDetailPage.vue:623-626` (`isProjectShared`/`canMove`/`canUndo`), `:94` Undo
+  `v-if`, `:149` Move dropdown `v-if="canMove"`, `:163` Someday item, `:642,650-652` command palette mirrors it,
+  `:1639` Undo toast `"<title>" restored`, `:1654` Activate toast `"<title>" moved to the project backlog`; 403 →
+  existing `toaster.push(err.message)` (`apiClient.normalizeError` takes `data.detail`).
+- [x] W-2 S2 Sidebar Someday drop — no API call for a `project_shared` row; error toast per S2.
+  `src/main-app/components/Sidebar.vue:439-443` (action row `project_shared`, Completed `ACTION` row `shared`; returns
+  before any API call). Drag payload carries the flags: `src/main-app/components/ItemList.vue:189-190,234-235`.
+- [x] W-3 S3 Completed page — "Shared" `Badge` in the title suffix on `shared: true` rows (ItemList forwards
+  `title-suffix`). `src/main-app/views/dashboard/CompletedPage.vue:80-82`; pass-through
+  `src/main-app/components/ItemList.vue:66-68`. Uncheck toast / 403 toast already per S3 (`CompletedPage.vue` `onItemCheck`).
+- [x] W-4 S4 Trash page — same badge; Restore toast per S4. `src/main-app/views/dashboard/TrashPage.vue:27-29`;
+  Restore toast `"<title>" restored` and 403 `err.message` toast unchanged (`TrashPage.vue` `onRestoreOne`).
+- [x] W-5 S5 Project detail Completed section — confirm unchanged; row → S1 behaves per W-1. No diff in
+  `ProjectDetailPage.vue`; "completed by" label `:1680-1682`, row → `action-detail` `:1716` (S1 rules from W-1 apply).
 ### Help
-- [ ] W-6 `content/help/faq.js` "What are shared projects?" — the parent §Help impact sentence.
+- [x] W-6 `content/help/faq.js` "What are shared projects?" — the parent §Help impact sentence.
+  `src/main-app/content/help/faq.js:210`.
 ### Verify
-- [ ] W-7 `npm run build:main` passes; grep confirms no remaining reference to any removed Someday path for shared
-  actions.
-- [ ] W-8 Local run with two users (Ana owner, Bor member) on the local stack: screenshots/notes of S1–S4 per role.
+- [x] W-7 `npm run build:main` passes; grep confirms no remaining reference to any removed Someday path for shared
+  actions. Build green (2026-10-23, `✓ built`). Nothing was removed — the only action→Someday callers
+  (`grep -rn somedayAction src/main-app`) are `Sidebar.vue:449,458` (guarded at `:439`) and
+  `ActionDetailPage.vue:1074` (reached only from the `:163` item, hidden when `project_shared`).
+- [~] W-8 Local run with two users (Ana owner, Bor member) on the local stack: screenshots/notes of S1–S4 per role.
+  DEFERRED TO wna-ui-tests: automate TC-832–837 (runtime checks go to ui-tests per owner directive); needs the
+  backend slice (`project_shared`, `shared`, `completed_by`, 403 `detail`s) on the local stack.
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-9 Update `../wna_orchestration/specs/features/wna-features.md` — Completed, Trash, shared actions (Someday
-  hidden, "Shared" badge).
-- [ ] W-10 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-832–837 (IDs reserved by the
-  parent; one-liners in the ui-tests slice "Tests that must pass").
+- [x] W-9 Update `../wna_orchestration/specs/features/wna-features.md` — Completed, Trash, shared actions (Someday
+  hidden, "Shared" badge). `wna-features.md:256` (Sidebar Someday drop), `:462-472` (§6.2 Action Detail shared
+  rules), `:920-924` (§13.1 Completed), `:953-955,960,966-968` (§14.1 Trash).
+- [x] W-10 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-832–837 (IDs reserved by the
+  parent; one-liners in the ui-tests slice "Tests that must pass"). `wna-test-cases.md:19237` Section 61, TC-832
+  `:19242` … TC-837 `:19370`; `regression-ui-tests/update-tests.sh` re-run.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

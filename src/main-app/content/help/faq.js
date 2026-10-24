@@ -207,7 +207,7 @@ export const faq = [
   {
     question: 'What are shared projects?',
     answer:
-      'On the Team plan, a project owner can tap "Share…" to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project.',
+      'On the Team plan, a project owner can tap "Share…" to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Actions you complete or trash on a shared project appear in your own Completed and Trash, and shared-project actions can\'t be moved to Someday/Maybe. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project.',
   },
 
   // --- Account & Security ---

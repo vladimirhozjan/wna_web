@@ -26,14 +26,14 @@
             <Btn variant="secondary" size="sm" :loading="testing" :disabled="busy" @click="handleSendTest">
               Send test to me
             </Btn>
-            <Btn variant="primary" size="sm" :loading="sending" :disabled="busy" @click="handleSendAll">
-              Send to all
+            <Btn variant="primary" size="sm" :loading="sending" :disabled="busy" @click="handleSend">
+              {{ audience ? 'Send to subscribers' : 'Send to all' }}
             </Btn>
           </template>
           <Btn
               v-else-if="broadcast.status === 'failed'"
               variant="primary" size="sm" :loading="sending" :disabled="busy"
-              @click="handleSendAll"
+              @click="handleSend"
           >
             Resume send
           </Btn>
@@ -87,13 +87,17 @@
       <!-- Content -->
       <div class="info-card card">
         <h3 class="text-label color-text-secondary section-title">Content</h3>
+        <div class="info-row audience-row">
+          <span class="text-label color-text-secondary">Audience</span>
+          <span class="text-body-s">{{ audienceText }}</span>
+        </div>
         <div class="form-row">
           <label class="field">
             <span class="text-label color-text-primary">Kind</span>
-            <select v-model="form.kind" class="text-body-m kind-select" :disabled="!editable">
+            <select v-model="form.kind" class="text-body-m kind-select" :disabled="!editable || !!audience">
               <option v-for="(label, value) in KIND_LABELS" :key="value" :value="value">{{ label }}</option>
             </select>
-            <span class="text-footnote color-text-secondary">{{ KIND_HINTS[form.kind] }}</span>
+            <span class="text-footnote color-text-secondary">{{ audience ? TEMPLATE_KIND_HINT : KIND_HINTS[form.kind] }}</span>
           </label>
           <Inpt
               v-model="form.subject"
@@ -125,12 +129,15 @@ import BroadcastEditor from '../components/BroadcastEditor.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
-import { broadcastModel, KIND_LABELS, STATUS_BADGE } from '../scripts/models/broadcastModel.js'
+import { broadcastModel, audienceLabel, KIND_LABELS, STATUS_BADGE } from '../scripts/models/broadcastModel.js'
 
 const KIND_HINTS = {
   announcement: 'Product news. Users can opt out in Settings → Notifications.',
   service_notice: 'Terms, maintenance, security. Reaches every user — cannot be disabled.',
 }
+const TEMPLATE_KIND_HINT = 'Price notices always go out as service notices. They reach every subscriber in this audience, '
+    + 'even those who opted out of announcements.'
+const PRICE_PLACEHOLDERS = ['[NEW PRICE]', '[EFFECTIVE DATE]']
 
 const route = useRoute()
 const router = useRouter()
@@ -159,6 +166,13 @@ const busy = computed(() => saving.value || testing.value || sending.value || re
 const dirty = computed(() =>
     form.kind !== saved.kind || form.subject !== saved.subject || form.bodyHtml !== saved.bodyHtml
 )
+const audience = computed(() => broadcast.value?.audience || null)
+const audienceText = computed(() => {
+  const a = audience.value
+  if (!a) return 'All users'
+  const text = `Subscribers of ${audienceLabel(a)}`
+  return isDraft.value && a.count != null ? `${text} — ${a.count} right now` : text
+})
 
 function applyRow(row) {
   broadcast.value = row
@@ -239,22 +253,61 @@ async function handleSendTest() {
   }
 }
 
-async function handleSendAll() {
+async function confirmSendToAll(row) {
+  const { recipient_count } = await broadcasts.loadRecipientCount()
+  const kindLabel = KIND_LABELS[row.kind] || row.kind
+  return confirm.show({
+    title: 'Send to all users',
+    message: `Send this ${kindLabel.toLowerCase()} "${row.subject}" to ${recipient_count} recipient${recipient_count === 1 ? '' : 's'}? `
+        + (row.kind === 'service_notice'
+            ? 'Service notices reach every user, including those who opted out of announcements. '
+            : 'Users who opted out of announcements are skipped. ')
+        + 'This cannot be undone.',
+    confirmText: 'Send to all',
+    cancelText: 'Cancel',
+  })
+}
+
+// A draft re-reads its live audience size; a failed send resumes on its stored snapshot
+async function confirmSendToSubscribers(row) {
+  const label = audienceLabel(row.audience)
+  let count = row.recipient_count
+  if (row.status === 'draft') {
+    try {
+      const fresh = await broadcasts.get(row.id)
+      applyRow(fresh)
+      count = fresh.audience?.count
+    } catch {
+      count = null
+    }
+    if (count == null) {
+      toaster.push(`Couldn't count the subscribers of ${label}. Try again.`)
+      return false
+    }
+    if (count === 0) {
+      toaster.push(`Nobody is subscribed to ${label} right now, so there is no one to notify.`)
+      return false
+    }
+  }
+  return confirm.show({
+    title: 'Send to subscribers',
+    message: `Send this service notice "${row.subject}" to ${count} subscriber${count === 1 ? '' : 's'} of ${label}? `
+        + 'Service notices reach them even if they opted out of announcements. This cannot be undone.',
+    confirmText: 'Send to subscribers',
+    cancelText: 'Cancel',
+  })
+}
+
+async function handleSend() {
+  if (audience.value && isDraft.value
+      && PRICE_PLACEHOLDERS.some(p => form.subject.includes(p) || form.bodyHtml.includes(p))) {
+    toaster.push('Replace [NEW PRICE] and [EFFECTIVE DATE] in the message before sending.')
+    return
+  }
   sending.value = true
   try {
     const row = await ensureSaved()
-    const { recipient_count } = await broadcasts.loadRecipientCount()
-    const kindLabel = KIND_LABELS[row.kind] || row.kind
-    const confirmed = await confirm.show({
-      title: 'Send to all users',
-      message: `Send this ${kindLabel.toLowerCase()} "${row.subject}" to ${recipient_count} recipient${recipient_count === 1 ? '' : 's'}? `
-          + (row.kind === 'service_notice'
-              ? 'Service notices reach every user, including those who opted out of announcements. '
-              : 'Users who opted out of announcements are skipped. ')
-          + 'This cannot be undone.',
-      confirmText: 'Send to all',
-      cancelText: 'Cancel',
-    })
+    const confirmed = await (row.audience ? confirmSendToSubscribers(row) : confirmSendToAll(row))
     if (!confirmed) return
 
     const res = await broadcasts.send(row.id)
@@ -372,6 +425,10 @@ onUnmounted(() => clearInterval(pollTimer))
   margin: 16px 0 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.audience-row {
+  margin-bottom: 12px;
 }
 
 .form-row {

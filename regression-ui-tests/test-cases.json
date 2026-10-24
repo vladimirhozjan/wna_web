@@ -16945,5 +16945,221 @@
       "Repeat step 1 at a viewport ≤ 768 px. | Where (state) | Title / text | |---------------|--------------| | `/inbox` (empty) | \"Inbox zero. Mind like water.\" / \"Your head is for having ideas, not holding them. Capture the next one above.\" | | `/today` | \"A clear day ahead\" / \"Pick the few actions that matter most today and move them here.\" + **Add Action** | | `/next` | \"Nothing to do next — yet\" / \"Clarify your inbox or plan a project, and each next physical step lands here.\" + **Add Action** | | `/waiting-for` | \"Nobody owes you anything\" / \"When you hand something off or wait on a reply, park it here and stop tracking it in your head.\" + **Add Action** | | `/projects` | \"No projects in motion\" / \"Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here.\" + **Add Project** | | `/someday` | \"Someday is wide open\" / \"Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review.\" + **Add Item** | | `/completed` | \"Nothing finished yet\" / \"Every action you check off lands here. Uncheck one to bring it back.\" | | `/trash` | \"Nothing in the trash\" / \"Deleted items wait here. Restore them, or empty the trash for good.\" | | `/overdue` | \"All caught up\" / \"Nothing has slipped past its due date. If something does, it shows up here.\" | | `/engage` (no data) | \"A blank slate\" / \"Get what's on your mind into your inbox, and your next moves line up here.\" + **Go to Inbox** | | `/reference` Files (no files) | \"Your reference shelf is empty\" / \"Keep what you might need later — upload files or create folders to file them.\" + **Upload File** | | `/reference` Files, search `zzqx` | \"Nothing matches that search\" / \"Check the spelling or try a different word.\" | | `/reference` Attachments (Local) | \"No attachments yet\" / \"Files you attach to your items collect here.\" | | `/reference` Attachments (Google Drive) | \"No attachments yet\" / \"Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.\" | | `/reference` Trash | \"Nothing in the trash\" / \"Deleted files wait here. Restore them, or delete them for good.\" | | `/stuff/<trashed id>` | \"This item is no longer here\" / \"It may have been clarified, deleted, or moved to trash.\" + **Go to Inbox** | | `/action/<trashed id>` | \"This action is no longer here\" / \"It may have been completed, deleted, or moved.\" + **Go to Next Actions** | | `/project/<trashed id>` | \"This project is no longer here\" / \"It may have been completed, deleted, or moved to trash.\" + **Go to Projects** | | `/recurring/<deleted id>` | \"This recurring template is no longer here\" / \"It may have been deleted.\" + **Go to Calendar** | | `/search` (no term) | \"Find anything you've captured\" / \"Type a word from a title, description, project outcome or file name.\" | | `/search?q=zzqx` (All; then the Projects chip) | `Nothing matches \"zzqx\"` / All: \"Check the spelling or try a different word.\"; Projects chip: \"Try All, or a different word.\" | | `/search` error (offline; HTTP 429) | \"Search didn't go through\" / \"Check your connection, then try again.\" (429: \"Too many searches in a row. Wait a moment, then try again.\") + **Try again** | | `/connections` (Free/Pro) | \"Get things done together\" / \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\" + upgrade button | | `/connections` (Team, no connections) | \"Your team starts here\" / \"Invite a teammate by email above to delegate actions and share projects.\" | | `/calendar` Recurring view | \"Nothing on repeat\" / \"Set up a template once, and its actions schedule themselves on a repeating basis.\" + **Add Template** | | Context filter `@calls` on `/next`, `/today`, `/waiting-for`, `/engage` | \"This context is clear\" / \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\" | | Context filter `@calls` on `/projects` | \"No projects in this context\" / same text | | Context filter `@calls` on `/someday` | \"No someday ideas in this context\" / same text |"
     ],
     "expected": "Each surface shows its section icon on a raised round coin inside a soft halo with two fine orbit rings (~160 px on desktop, ~120 px at ≤ 768 px), drawn in the current theme's colors in both light and dark theme; then the exact title and text, and the button where listed (its target unchanged). On `/inbox`, emptying the last item still plays the Inbox Zero celebration first, then shows this empty state. While a list loads, a fast load shows no spinner; with a throttled network (DevTools \"Slow 4G\") the spinner appears after ~300 ms on the centre of where the coin then appears, with no jump when the empty state replaces it. Switching between the empty `/engage` and an empty `/next` (no review nudge shown) keeps the card frame and the coin in the same place."
+  },
+  {
+    "id": "TC-832",
+    "name": "Member's Completed Shared Action Lands in Their Completed With a \"Shared\" Badge",
+    "priority": "High",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": true,
+    "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
+    "preconditions": "Common preconditions; Bor has claimed the backlog action \"Draft brief\" on \"Launch\".",
+    "steps": [
+      "Bor completes \"Draft brief\" (checkbox on `/next`).",
+      "Bor opens `/completed`.",
+      "Ana opens `/completed`.",
+      "Ana opens \"Launch\" and expands the Completed section."
+    ],
+    "expected": "Step 2: \"Draft brief\" is in Bor's Today group with a \"Shared\" badge after the title; the charts\nand section counts include it. Step 3: \"Draft brief\" is not in Ana's Completed and Ana's counts do not include it.\nStep 4: the row shows \"completed by <Bor's email> · <date>\"."
+  },
+  {
+    "id": "TC-833",
+    "name": "Member Trashes a Shared Action — Their Trash, Restore to Backlog, Empty Trash Purges",
+    "priority": "High",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
+    "preconditions": "Common preconditions; unassigned backlog actions \"Book venue\" and \"Order badges\" on \"Launch\".",
+    "steps": [
+      "Bor opens \"Book venue\" and trashes it (confirm).",
+      "Bor opens `/trash`; Ana opens `/trash`.",
+      "Bor clicks **Restore** on \"Book venue\".",
+      "Bor and Ana open \"Launch\".",
+      "Bor trashes \"Order badges\", opens `/trash`, clicks **Empty Trash** and confirms.",
+      "Ana opens `/trash`."
+    ],
+    "expected": "Step 2: \"Book venue\" is in Bor's Trash with a \"Shared\" badge; it is not in Ana's Trash. Step 3:\ntoast `\"Book venue\" restored`; the row leaves Bor's Trash. Step 4: \"Book venue\" is back in the backlog, unassigned (no\nassignee chip), at the end. Step 5: toast \"Trash emptied\"; Bor's Trash shows \"Nothing in the trash\". Step 6: \"Order\nbadges\" never appears in Ana's Trash and is gone from the project."
+  },
+  {
+    "id": "TC-834",
+    "name": "Member Uncompletes Their Completed Shared Action",
+    "priority": "High",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
+    "preconditions": "Common preconditions; Bor completed the shared actions \"Draft brief\" and \"Call printer\" on \"Launch\"\nand currently holds no claim on \"Launch\".",
+    "steps": [
+      "Bor opens `/completed` and unchecks \"Draft brief\".",
+      "Bor opens `/next`.",
+      "Bor claims another backlog action on \"Launch\".",
+      "Bor opens \"Call printer\" from `/completed` and clicks **Undo**.",
+      "Bor opens \"Launch\"."
+    ],
+    "expected": "Step 1: toast `\"Draft brief\" restored`; the row leaves Completed. Step 2: \"Draft brief\" is in\nBor's Next Actions, assigned to Bor. Step 4: toast `\"Call printer\" restored`. Step 5: \"Call printer\" is in the backlog,\nunassigned (Bor already holds a claim on the project)."
+  },
+  {
+    "id": "TC-835",
+    "name": "Someday Is Not Offered on Shared-Project Actions",
+    "priority": "High",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
+    "preconditions": "Common preconditions; Bor has claimed \"Draft brief\" on \"Launch\"; Bor has completed \"Call printer\"\non \"Launch\"; Ana has a personal action \"Water plants\" in Next; before sharing \"Launch\", Ana had moved its action\n\"Print flyers\" to Someday (it is still in Ana's Someday).",
+    "steps": [
+      "Bor opens \"Draft brief\" and opens the **Move** dropdown; opens the command palette (Cmd/Ctrl+K).",
+      "Ana opens an unassigned \"Launch\" backlog action and opens **Move**.",
+      "Bor drags \"Draft brief\" from `/next` onto the sidebar \"Someday / Maybe\".",
+      "Bor drags \"Call printer\" from `/completed` onto the sidebar \"Someday / Maybe\".",
+      "Ana opens \"Water plants\" and opens **Move**.",
+      "Ana opens \"Print flyers\" from `/someday`; then clicks **Activate**.",
+      "Ana opens \"Launch\"."
+    ],
+    "expected": "Steps 1–2: the Move dropdown has no \"Someday\" entry and the palette has no \"Move to Someday\" row.\nSteps 3–4: no request is sent; error toast \"Shared-project actions can't go to Someday/Maybe. Keep it in the project\nbacklog instead.\"; \"Draft brief\" stays in Next and \"Call printer\" stays in Completed. Step 5: \"Someday\" is offered\n(personal actions unchanged). Step 6: only **Activate** and **Trash** are shown (no **Move**); Activate shows the toast\n`\"Print flyers\" moved to the project backlog`. Step 7: \"Print flyers\" is in the backlog, unassigned."
+  },
+  {
+    "id": "TC-836",
+    "name": "Others Cannot Undo or Restore a Member's Completed / Trashed Row",
+    "priority": "High",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
+    "preconditions": "Common preconditions; Bor completed \"Draft brief\" and trashed \"Book venue\" on \"Launch\".",
+    "steps": [
+      "Ana opens \"Launch\", expands Completed and opens \"Draft brief\"; opens the command palette.",
+      "Cene does the same.",
+      "Ana and Cene open `/trash`.",
+      "As Ana, call `POST /v1/action/{Draft brief id}/uncomplete` and `POST /v1/action/{Book venue id}/restore`."
+    ],
+    "expected": "Steps 1–2: the detail page opens with no **Undo** button and no \"Undo\" palette row. Step 3:\n\"Book venue\" is in neither Trash. Step 4: both return 403 with `detail` \"Only the person who completed this action can\nrestore it. Ask them to restore it.\" and \"Only the person who trashed this action can restore it. Ask them to\nrestore it.\" respectively; a UI attempt shows that `detail` as an error toast."
+  },
+  {
+    "id": "TC-837",
+    "name": "Removed Member Keeps Their Rows, Opens Them Read-Only, Undo Is Refused",
+    "priority": "Medium",
+    "area": "Shared Projects",
+    "areas": [
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "61: Shared-Project Actions in Completed / Trash / Someday (BUG-062)",
+    "preconditions": "Common preconditions; Bor completed \"Draft brief\" and trashed \"Book venue\" on \"Launch\".",
+    "steps": [
+      "Ana removes Bor from \"Launch\".",
+      "Bor opens `/completed` and `/trash`.",
+      "Bor opens \"Draft brief\" from `/completed` and clicks **Undo**.",
+      "Bor clicks **Restore** on \"Book venue\" in `/trash`."
+    ],
+    "expected": "Step 2: both rows are still there with the \"Shared\" badge. Step 3: the detail page opens (not\n\"This action is no longer here\"); Undo shows the error toast \"You're no longer a member of this shared project. Ask\nthe owner to add you again to restore this action.\" and the action stays completed. Step 4: the same error toast; the\nrow stays in Trash."
+  },
+  {
+    "id": "TC-846",
+    "name": "Notify Subscribers Opens a Locked, Prefilled Notice Draft",
+    "priority": "High",
+    "area": "Admin-app, Billing, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Billing",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "62: Price-Change Notices (FEAT-058)",
+    "preconditions": "Common preconditions; logged in as admin.",
+    "steps": [
+      "Open `/billing-templates`.",
+      "On the Paywiser \"WNA Pro\" catalog row click **Notify subscribers**.",
+      "Back on `/billing-templates`, click **Notify subscribers** on the Stripe \"WNA Pro\" row.",
+      "Open `/broadcasts`.",
+      "Log in as support, open `/broadcasts` and one of the new drafts; log in as viewer and try `/billing-templates`."
+    ],
+    "expected": "Step 1: the intro ends with \"Before you change a price, use Notify subscribers to email that\ntemplate's renewing subscribers — Terms §5.6 sets the minimum notice.\"; every catalog row shows Edit · Hide/Unhide ·\n**Notify subscribers**. Step 2: toast \"Notice draft created\"; `/broadcasts/<id>` opens as a draft: Audience\n\"Subscribers of WNA Pro (Paywiser) — 2 right now\"; Kind \"Service notice\", disabled, hint \"Price notices always go out\nas service notices. They reach every subscriber in this audience, even those who opted out of announcements.\";\nsubject \"Change to your WNA Pro price\"; body heading \"Your WNA Pro price is changing\" and paragraph \"You are\nsubscribed to WNA Pro at 11.00 EUR per month, VAT included. From [EFFECTIVE DATE], the price will be [NEW PRICE] EUR\nper month, …cancel your subscription in Settings → Plan before then.\"; buttons Save draft · Send test to me · **Send\nto subscribers**. Step 3: a second draft with Audience \"Subscribers of WNA Pro (Stripe) — 1 right now\". Step 4: both\ndrafts show Audience \"Subscribers of WNA Pro (Paywiser)\" / \"(Stripe)\" with no count. Step 5: support sees the Audience\ncolumn and line, no Copy/Delete and no action buttons; Billing Templates is not reachable for support or viewer."
+  },
+  {
+    "id": "TC-847",
+    "name": "Send Confirm Names Audience and N; Only Renewing Subscribers Are Mailed",
+    "priority": "High",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": true,
+    "section": "62: Price-Change Notices (FEAT-058)",
+    "preconditions": "Common preconditions; logged in as admin; the Paywiser \"WNA Pro\" notice draft from TC-846 with\n`[NEW PRICE]` replaced by `12.00` and `[EFFECTIVE DATE]` by `1 December 2026`.",
+    "steps": [
+      "Click **Send to subscribers**.",
+      "Click **Send to subscribers** in the dialog.",
+      "Wait for the broadcast to finish; check Mailpit."
+    ],
+    "expected": "Step 1: the draft saves and a dialog \"Send to subscribers\" reads `Send this service notice\n\"Change to your WNA Pro price\" to 2 subscribers of WNA Pro (Paywiser)? Service notices reach them even if they opted\nout of announcements. This cannot be undone.` with **Send to subscribers** / **Cancel**. Step 2: toast \"Sending to 2\nrecipients\"; the page turns read-only with the Delivery card; Audience \"Subscribers of WNA Pro (Paywiser)\" (no count).\nStep 3: Delivery shows Recipients 2, Sent 2; Mailpit holds the notice for U1 and U2 only — none for U3, U4 or F."
+  },
+  {
+    "id": "TC-848",
+    "name": "Empty Template Audience — Toast, No Dialog, Nothing Sent",
+    "priority": "Medium",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "62: Price-Change Notices (FEAT-058)",
+    "preconditions": "Common preconditions; logged in as admin.",
+    "steps": [
+      "On `/billing-templates` click **Notify subscribers** on \"WNA Legacy\".",
+      "Replace `[NEW PRICE]` and `[EFFECTIVE DATE]` in the body; click **Send to subscribers**."
+    ],
+    "expected": "Step 1: Audience \"Subscribers of WNA Legacy (Paywiser) — 0 right now\". Step 2: toast \"Nobody is\nsubscribed to WNA Legacy (Paywiser) right now, so there is no one to notify.\"; no confirm dialog; the broadcast stays a\ndraft; Mailpit stays empty."
+  },
+  {
+    "id": "TC-849",
+    "name": "Unreplaced Placeholders Block Send, Not Send Test",
+    "priority": "Medium",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "62: Price-Change Notices (FEAT-058)",
+    "preconditions": "Common preconditions; logged in as admin; a fresh Paywiser \"WNA Pro\" notice draft (placeholders\nuntouched).",
+    "steps": [
+      "Click **Send to subscribers**.",
+      "Replace only `[NEW PRICE]`; click **Send to subscribers**.",
+      "Click **Send test to me**."
+    ],
+    "expected": "Steps 1–2: toast \"Replace [NEW PRICE] and [EFFECTIVE DATE] in the message before sending.\"; no\ndialog; nothing sent. Step 3: toast \"Test email sent to <admin email>\"; Mailpit holds one \"[TEST] Change to your WNA\nPro price\" mail for the admin only."
+  },
+  {
+    "id": "TC-850",
+    "name": "Copy Keeps the Template Audience; All-Users Broadcasts Unchanged",
+    "priority": "Medium",
+    "area": "Admin-app, Broadcasts",
+    "areas": [
+      "Admin-app",
+      "Broadcasts"
+    ],
+    "smoke": false,
+    "section": "62: Price-Change Notices (FEAT-058)",
+    "preconditions": "Common preconditions; logged in as admin; the sent Paywiser \"WNA Pro\" notice from TC-847 and an\nall-users announcement draft.",
+    "steps": [
+      "On `/broadcasts` click **Copy** on the sent notice.",
+      "Open the all-users announcement draft; click **Send to all**; cancel."
+    ],
+    "expected": "Step 1: toast \"Copied to a new draft\"; the copy opens as a draft with Audience \"Subscribers of WNA\nPro (Paywiser) — 2 right now\", Kind locked on \"Service notice\", the same subject/body and **Send to subscribers**.\nStep 2: Audience \"All users\"; the Kind select is editable with the usual hint; the button reads **Send to all** and\nthe dialog is the usual \"Send to all users\" confirm with the live recipient count."
   }
 ]
