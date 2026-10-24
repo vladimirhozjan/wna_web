@@ -436,6 +436,11 @@ async function onDropToProjects(data) {
 }
 
 async function onDropToSomeday(data) {
+  if ((data.sourceType === 'action' && data.project_shared)
+    || (data.sourceType === 'completed' && data.type === 'ACTION' && data.shared)) {
+    toaster.push("Shared-project actions can't go to Someday/Maybe. Keep it in the project backlog instead.");
+    return;
+  }
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.clarifyToSomeday(data.id);

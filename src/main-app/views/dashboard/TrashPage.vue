@@ -24,6 +24,9 @@
           <template #prefix="{ item }">
             <ItemTypeIcon :type="item.type" />
           </template>
+          <template #title-suffix="{ item }">
+            <Badge v-if="item.shared" type="primary" label="Shared" />
+          </template>
           <template #actions="{ item }">
             <Btn variant="link" size="sm" @click="onRestoreOne(item)">Restore</Btn>
           </template>
@@ -42,6 +45,7 @@ import { watch, onMounted } from 'vue'
 import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import Btn from '../../components/Btn.vue'
+import Badge from '../../components/Badge.vue'
 import TrashIcon from '../../assets/TrashIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import ItemTypeIcon from '../../components/ItemTypeIcon.vue'

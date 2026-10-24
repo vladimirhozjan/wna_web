@@ -91,6 +91,7 @@
         <div class="detail-actions">
           <template v-if="isCompleted">
             <Btn
+                v-if="canUndo"
                 variant="primary"
                 size="sm"
                 :loading="actionLoading === 'undo'"
@@ -145,7 +146,7 @@
               Done
             </Btn>
           </template>
-          <Dropdown v-if="!isCompleted" v-model="showMoveDialog" title="Move to">
+          <Dropdown v-if="canMove" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="secondary"
@@ -159,7 +160,7 @@
             <button v-if="action.state !== 'TODAY'" class="dropdown-item" @click="onMoveTo('TODAY')"><TodayIcon class="dropdown-item-icon" /> Today</button>
             <button v-if="action.state !== 'CALENDAR'" class="dropdown-item" @click="onMoveTo('CALENDAR')"><CalendarIcon class="dropdown-item-icon" /> Calendar</button>
             <button v-if="action.state !== 'WAITING'" class="dropdown-item" @click="onMoveTo('WAITING')"><WaitingIcon class="dropdown-item-icon" /> Waiting For</button>
-            <button v-if="action.state !== 'SOMEDAY'" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
+            <button v-if="action.state !== 'SOMEDAY' && !isProjectShared" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
             <button class="dropdown-item" @click="onMoveTo('PROJECT')"><ProjectsIcon class="dropdown-item-icon" /> Projects</button>
             <button class="dropdown-item" @click="onMoveTo('REFERENCE')"><ReferenceIcon class="dropdown-item-icon" /> Reference</button>
           </Dropdown>
@@ -618,6 +619,11 @@ const isUnassigned = computed(() =>
 const canAssign = computed(() =>
     isUnassigned.value && myTier.value === 'team' && (action.value?.my_role !== 'read_only')
 )
+// Shared-project actions can't go to Someday; legacy shared Someday rows only allow Activate + Trash
+const isProjectShared = computed(() => action.value?.project_shared === true)
+const canMove = computed(() => !isCompleted.value && !(isSomeday.value && isProjectShared.value))
+// Only the completer may uncomplete; legacy rows without completed_by keep Undo
+const canUndo = computed(() => !action.value?.completed_by || action.value.completed_by === myUserId.value)
 
 // Command palette "This item" — mirrors the action buttons below the title
 const MOVE_COMMANDS = [
@@ -633,7 +639,7 @@ const itemCommands = computed(() => {
   if (pageLoading.value || notFound.value || !action.value) return []
   const commands = []
   if (isCompleted.value) {
-    commands.push({ label: 'Undo', run: onUndo })
+    if (canUndo.value) commands.push({ label: 'Undo', run: onUndo })
   } else if (isSomeday.value) {
     commands.push({ label: 'Activate', run: onActivate }, { label: 'Trash', run: onTrash })
   } else if (isWaiting.value) {
@@ -641,8 +647,9 @@ const itemCommands = computed(() => {
   } else {
     commands.push({ label: 'Done', run: onMarkDone })
   }
-  if (!isCompleted.value) {
+  if (canMove.value) {
     for (const m of MOVE_COMMANDS) {
+      if (m.state === 'SOMEDAY' && isProjectShared.value) continue
       if (m.state !== action.value.state) commands.push({ label: m.label, run: () => onMoveTo(m.state) })
     }
   }
@@ -1629,7 +1636,7 @@ async function onUndo() {
   try {
     await apiClient.uncompleteAction(action.value.id)
     statsModel().refreshStats()
-    toaster.success(`"${title}" restored to next actions`)
+    toaster.success(isProjectShared.value ? `"${title}" restored` : `"${title}" restored to next actions`)
     router.push({ name: 'completed' })
   } catch (err) {
     toaster.push(err.message || 'Failed to restore action')
@@ -1644,7 +1651,7 @@ async function onActivate() {
   try {
     await apiClient.activateAction(action.value.id)
     statsModel().refreshStats()
-    toaster.success(`"${title}" moved to Next Actions`)
+    toaster.success(isProjectShared.value ? `"${title}" moved to the project backlog` : `"${title}" moved to Next Actions`)
     router.push({ name: 'someday' })
   } catch (err) {
     toaster.push(err.message || 'Failed to activate action')

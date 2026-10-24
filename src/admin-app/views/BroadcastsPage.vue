@@ -24,6 +24,9 @@
       <template #cell-subject="{ value }">
         <span class="fw-medium">{{ value || '—' }}</span>
       </template>
+      <template #cell-audience="{ value }">
+        {{ value ? `Subscribers of ${audienceLabel(value)}` : 'All users' }}
+      </template>
       <template #cell-sent_at="{ row }">
         {{ formatDate(row.send_finished_at || row.send_started_at) }}
       </template>
@@ -80,7 +83,7 @@ import Btn from '../components/Btn.vue'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
-import { broadcastModel, KIND_LABELS, STATUS_BADGE } from '../scripts/models/broadcastModel.js'
+import { broadcastModel, audienceLabel, KIND_LABELS, STATUS_BADGE } from '../scripts/models/broadcastModel.js'
 
 const router = useRouter()
 const auth = authModel()
@@ -95,6 +98,7 @@ const columns = computed(() => {
     { key: 'status', label: 'Status', width: '110px' },
     { key: 'kind', label: 'Kind', width: '130px' },
     { key: 'subject', label: 'Subject' },
+    { key: 'audience', label: 'Audience', width: '220px' },
     { key: 'created_by', label: 'Created By', width: '200px' },
     { key: 'sent_at', label: 'Sent At', width: '150px' },
     { key: 'counts', label: 'Sent / Skipped / Failed', width: '170px' },

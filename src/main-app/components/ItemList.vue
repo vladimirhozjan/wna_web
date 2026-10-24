@@ -63,6 +63,9 @@
           <template v-if="$slots.prefix" #prefix>
             <slot name="prefix" :item="item" />
           </template>
+          <template v-if="$slots['title-suffix']" #title-suffix>
+            <slot name="title-suffix" :item="item" />
+          </template>
           <template v-if="$slots.subtitle" #subtitle>
             <slot name="subtitle" :item="item" />
           </template>
@@ -182,7 +185,9 @@ function onDragStart(evt) {
       description: item.description || '',
       sourceType: props.sourceType,
       state: item.state || null,
-      type: item.type || null
+      type: item.type || null,
+      project_shared: !!item.project_shared,
+      shared: !!item.shared
     }))
   }
 }
@@ -225,7 +230,9 @@ function onNativeDragStart(evt, item) {
     description: item.description || '',
     sourceType: props.sourceType,
     state: item.state || null,
-    type: item.type || null
+    type: item.type || null,
+    project_shared: !!item.project_shared,
+    shared: !!item.shared
   }))
 }
 

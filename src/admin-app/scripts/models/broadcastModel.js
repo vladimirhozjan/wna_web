@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import apiClient from '../core/apiClient.js'
+import apiClient, { gatewayLabel } from '../core/apiClient.js'
 
 let instance = null
 
@@ -13,6 +13,10 @@ export const STATUS_BADGE = {
     sending: 'pending',
     sent: 'active',
     failed: 'failed',
+}
+
+export function audienceLabel(audience) {
+    return `${audience.title || 'Untitled'} (${gatewayLabel(audience.provider)})`
 }
 
 export function broadcastModel() {

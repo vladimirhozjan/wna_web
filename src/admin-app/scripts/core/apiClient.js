@@ -916,6 +916,15 @@ export async function updateBillingTemplate(id, data) {
     }
 }
 
+export async function notifyBillingTemplate(id) {
+    try {
+        const res = await httpApi.post(`/admin/billing-templates/${id}/notify`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function listBillingPlans() {
     try {
         const res = await httpApi.get('/admin/billing-plans')
@@ -1226,6 +1235,7 @@ export default {
     createBillingTemplate,
     setBillingTemplateHidden,
     updateBillingTemplate,
+    notifyBillingTemplate,
     listBillingPlans,
     setBillingPlan,
     listVatRates,

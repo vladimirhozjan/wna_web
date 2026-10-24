@@ -17,7 +17,8 @@
       existing subscriptions keep their price. Currency and period are immutable — create a new template
       when those change, and hide retired ones. The 4 pricing slots below decide which template each
       plan option sells on each gateway; the active gateway's assignment is what checkout sells, and a
-      slot without an active assignment is not offered.
+      slot without an active assignment is not offered. Before you change a price, use Notify subscribers to
+      email that template's renewing subscribers — Terms §5.6 sets the minimum notice.
     </p>
 
     <h3 class="text-label color-text-secondary section-title">Pricing Slots</h3>
@@ -118,6 +119,13 @@
               :disabled="actionLoading"
               @click="onToggleHidden(row)"
           >{{ row.hidden ? 'Unhide' : 'Hide' }}</Btn>
+          <Btn
+              variant="ghost"
+              size="sm"
+              :loading="notifyingId === row.id"
+              :disabled="actionLoading"
+              @click="onNotify(row)"
+          >Notify subscribers</Btn>
         </div>
       </template>
     </DataTable>
@@ -203,6 +211,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { format, parseISO } from 'date-fns'
 import DataTable from '../components/DataTable.vue'
 import Badge from '../components/Badge.vue'
@@ -213,6 +222,7 @@ import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import apiClient, { GATEWAYS, gatewayLabel } from '../scripts/core/apiClient.js'
 
+const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
 
@@ -238,7 +248,7 @@ const catalogColumns = [
   { key: 'gateway_price_id', label: 'Gateway ref' },
   { key: 'assigned_to', label: 'Assigned Slot', width: '140px' },
   { key: 'created_at', label: 'Created', width: '120px' },
-  { key: 'actions', label: '', width: '150px' },
+  { key: 'actions', label: '', width: '300px' },
 ]
 
 const templates = ref([])
@@ -342,6 +352,24 @@ async function onToggleHidden(row) {
     toaster.push(err.message || 'Failed to update template')
   } finally {
     hidingId.value = null
+    actionLoading.value = false
+  }
+}
+
+// Price-change notice draft
+const notifyingId = ref(null)
+
+async function onNotify(row) {
+  notifyingId.value = row.id
+  actionLoading.value = true
+  try {
+    const draft = await apiClient.notifyBillingTemplate(row.id)
+    toaster.success('Notice draft created')
+    router.push(`/broadcasts/${draft.id}`)
+  } catch (err) {
+    toaster.push(err.message || "Couldn't create the notice draft. Try again.")
+  } finally {
+    notifyingId.value = null
     actionLoading.value = false
   }
 }
