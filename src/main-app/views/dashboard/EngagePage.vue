@@ -209,7 +209,7 @@ import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
@@ -218,7 +218,7 @@ import Spinner from '../../components/Spinner.vue'
 
 const router = useRouter()
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 const mover = moveModel()
 const { refreshStats } = statsModel()
 const { activeTag } = contextModel()
@@ -270,6 +270,7 @@ async function onRefresh() {
         toaster.push(typeof err === 'string' ? err : err.message ?? 'Unknown error')
     }
 }
+undo.registerRefresh(onRefresh)
 
 // Loading state tracking
 const movingId = ref(null)
@@ -350,13 +351,17 @@ function removeFromList(list, id) {
 const completingIds = ref([])
 const ANIM_MS = 800
 
-async function onCheck(id, checked) {
-    if (!checked) return
-
-    const item = topOverdue.value.find(i => i.id === id)
+function findItem(id) {
+    return topOverdue.value.find(i => i.id === id)
         || topToday.value.find(i => i.id === id)
         || topActions.value.find(i => i.id === id)
         || topWaiting.value.find(i => i.id === id)
+}
+
+async function onCheck(id, checked) {
+    if (!checked) return
+
+    const item = findItem(id)
     const title = truncateTitle(item?.title)
 
     if (item) item.checked = true
@@ -373,7 +378,7 @@ async function onCheck(id, checked) {
         removeFromList(topActions, id)
         removeFromList(topWaiting, id)
         refreshStats()
-        toaster.success(`"${title}" completed`)
+        undo.record({ op: 'complete', item, title, message: `"${title}" completed`, reorder: false })
         // Reload dashboard to backfill removed item
         loadDashboard({ tags: effectiveTags.value }).catch(() => {})
     } catch (err) {
@@ -384,36 +389,24 @@ async function onCheck(id, checked) {
 }
 
 async function onTrash(id) {
-    const item = topOverdue.value.find(i => i.id === id)
-        || topToday.value.find(i => i.id === id)
-        || topActions.value.find(i => i.id === id)
-        || topWaiting.value.find(i => i.id === id)
+    const item = findItem(id)
     const title = truncateTitle(item?.title)
 
-    const confirmed = await confirm.show({
-        title: 'Move to Trash',
-        message: 'Are you sure you want to move this action to trash?',
-        confirmText: 'Move to Trash',
-        cancelText: 'Cancel'
-    })
-
-    if (confirmed) {
-        deletingId.value = id
-        try {
-            await apiClient.trashAction(id)
-            removeFromList(topOverdue, id)
-            removeFromList(topToday, id)
-            removeFromList(topActions, id)
-            removeFromList(topWaiting, id)
-            refreshStats()
-            toaster.success(`"${title}" moved to trash`)
-            // Reload dashboard to backfill removed item
-            loadDashboard({ tags: effectiveTags.value }).catch(() => {})
-        } catch (err) {
-            toaster.push(err.message || 'Failed to trash action')
-        } finally {
-            deletingId.value = null
-        }
+    deletingId.value = id
+    try {
+        await apiClient.trashAction(id)
+        removeFromList(topOverdue, id)
+        removeFromList(topToday, id)
+        removeFromList(topActions, id)
+        removeFromList(topWaiting, id)
+        refreshStats()
+        undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash`, reorder: false })
+        // Reload dashboard to backfill removed item
+        loadDashboard({ tags: effectiveTags.value }).catch(() => {})
+    } catch (err) {
+        toaster.push(err.message || 'Failed to trash action')
+    } finally {
+        deletingId.value = null
     }
 }
 
@@ -492,11 +485,13 @@ function removeFromAllLists(id) {
 
 async function onDropToToday(data) {
     if (data.state === 'TODAY') return
+    const item = findItem(data.id) || data
     try {
         await apiClient.todayAction(data.id)
         await loadDashboard({ tags: effectiveTags.value })
         refreshStats()
-        toaster.success(`"${truncateTitle(data.title)}" moved to Today`)
+        const title = truncateTitle(data.title)
+        undo.record({ op: 'move', item, title, to: 'TODAY', message: `"${title}" moved to Today`, reorder: false })
     } catch (err) {
         toaster.push(err.message || 'Failed to move item')
     }
@@ -504,11 +499,13 @@ async function onDropToToday(data) {
 
 async function onDropToNext(data) {
     if (data.state === 'NEXT') return
+    const item = findItem(data.id) || data
     try {
         await apiClient.undeferAction(data.id)
         await loadDashboard({ tags: effectiveTags.value })
         refreshStats()
-        toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`)
+        const title = truncateTitle(data.title)
+        undo.record({ op: 'move', item, title, to: 'NEXT', message: `"${title}" moved to Next Actions`, reorder: false })
     } catch (err) {
         toaster.push(err.message || 'Failed to move item')
     }
@@ -518,6 +515,7 @@ async function onDropToWaiting(data) {
     if (data.state === 'WAITING') return
     const pick = await mover.showWaiting({ waitingFor: '' })
     if (!pick) return
+    const item = findItem(data.id) || data
     try {
         if (pick.kind === 'connection') {
             await apiClient.delegateAction(data.id, pick.userId, pick.email)
@@ -526,7 +524,11 @@ async function onDropToWaiting(data) {
         }
         await loadDashboard({ tags: effectiveTags.value })
         refreshStats()
-        toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`)
+        const title = truncateTitle(data.title)
+        const message = `"${title}" moved to Waiting For`
+        // DS12: delegating to a connection is not undoable
+        if (pick.kind === 'connection') toaster.success(message)
+        else undo.record({ op: 'move', item, title, to: 'WAITING', message, reorder: false })
     } catch (err) {
         toaster.push(err.message || 'Failed to move item')
     }

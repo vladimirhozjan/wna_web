@@ -6,10 +6,21 @@
           :key="e.id"
           class="text-body-s toast"
           :class="`toast--${e.type || 'error'}`"
-          @click="error.remove(e.id)"
+          :data-testid="e.type === 'undo' ? 'undo-toast' : null"
+          @click="error.dismiss(e)"
       >
-        <SuccessCircleIcon v-if="e.type === 'success'" class="toast__icon" />
+        <SuccessCircleIcon v-if="e.type === 'success' || e.type === 'undo'" class="toast__icon" />
         {{ e.message }}
+        <button
+            v-if="e.type === 'undo'"
+            type="button"
+            class="text-label fw-semibold toast__undo"
+            :disabled="e.undoing"
+            data-testid="undo-toast-button"
+            @click.stop="error.runUndo()"
+        >
+          {{ e.undoing ? 'Undoing…' : 'Undo' }}
+        </button>
       </div>
     </TransitionGroup>
   </div>
@@ -69,9 +80,40 @@ const error = errorModel()
 }
 
 /* noinspection CssUnusedSymbol - used via dynamic :class binding */
-.toast--success {
+.toast--success,
+.toast--undo {
   background: var(--color-toast-success-bg);
   color: var(--color-toast-success-text);
+}
+
+.toast__undo {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-toast-success-text);
+  cursor: pointer;
+}
+
+.toast__undo:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.toast__undo:disabled {
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .toast {
+    white-space: normal;
+    max-width: calc(100vw - 32px);
+  }
+
+  .toast__undo {
+    align-self: flex-end;
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
 }
 
 /* noinspection CssUnusedSymbol - used via dynamic :class binding */

@@ -88,7 +88,7 @@ import MetadataRow from '../../components/MetadataRow.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
@@ -109,7 +109,7 @@ const {
 } = nextActionModel()
 
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 
 const showAdd = ref(false)
 const newTitle = ref('')
@@ -162,6 +162,7 @@ async function loadMore() {
 function onRefresh() {
   return loadActions({ reset: true, tags: effectiveTags.value })
 }
+undo.registerRefresh(onRefresh)
 
 async function onAdd() {
   const t = newTitle.value.trim()
@@ -230,7 +231,7 @@ async function onItemCheck(id, checked) {
       new Promise(r => setTimeout(r, ANIM_MS))
     ])
     removeItem(id)
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item, title, message: `"${title}" completed` })
     // Reload list to pick up any auto-promoted project actions
     loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
   } catch (err) {
@@ -244,23 +245,14 @@ async function onTrash(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: 'Are you sure you want to move this action to trash?',
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (confirmed) {
-    deletingId.value = id
-    try {
-      await trashAction(id)
-      toaster.success(`"${title}" moved to trash`)
-      // Reload list to backfill removed item
-      loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
-    } finally {
-      deletingId.value = null
-    }
+  deletingId.value = id
+  try {
+    await trashAction(id)
+    undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash` })
+    // Reload list to backfill removed item
+    loadActions({ reset: true, tags: effectiveTags.value }).catch(() => {})
+  } finally {
+    deletingId.value = null
   }
 }
 

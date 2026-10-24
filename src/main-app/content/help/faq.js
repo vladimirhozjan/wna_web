@@ -95,7 +95,7 @@ export const faq = [
   {
     question: 'How do I complete an item?',
     answer:
-      'In any list view, tap the checkbox next to an item to mark it as complete. You can also tap "Done" on the detail page. Completed items move to the Completed page. If you complete something by mistake, go to the Completed page and uncheck the checkbox — or tap "Undo" on the detail page — to restore it to its original list.',
+      'In any list view, tap the checkbox next to an item to mark it as complete. You can also tap "Done" on the detail page. Completed items move to the Completed page. If you complete something by mistake, tap "Undo" in the message that appears at the bottom of the screen, or press Cmd/Ctrl+Z on a computer while it shows — the item goes back to its list, in the same place. Once the message is gone, go to the Completed page and uncheck the checkbox — or tap "Undo" on the detail page — to restore it to its original list.',
   },
   {
     question: 'Can I reorder my lists?',
@@ -185,7 +185,7 @@ export const faq = [
   {
     question: 'How do I recover deleted items?',
     answer:
-      'When you delete an item, it moves to the Trash instead of being permanently removed. Visit the Trash page to restore individual items back to their original list. If you want to permanently remove everything, use the "Empty Trash" button — be careful, this action cannot be undone. The Reference file manager has its own separate trash with the same restore and permanent delete options.',
+      'When you delete an item, it moves to the Trash right away, without asking first, instead of being permanently removed. To bring it back at once, tap "Undo" in the message that appears at the bottom of the screen, or press Cmd/Ctrl+Z on a computer while it shows. Later, visit the Trash page to restore individual items back to their original list. If you want to permanently remove everything, use the "Empty Trash" button — be careful, this action cannot be undone. The Reference file manager has its own separate trash with the same restore and permanent delete options.',
   },
 
   // --- Team & Collaboration ---
@@ -310,7 +310,7 @@ export const faq = [
   {
     question: 'Are there keyboard shortcuts?',
     answer:
-      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, or add what you typed as a new Inbox item, project or next action. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
+      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, or add what you typed as a new Inbox item, project or next action. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. Press Cmd/Ctrl+Z while the Undo message shows to undo your last complete, trash or move. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
   },
 
   // --- Dashboard ---

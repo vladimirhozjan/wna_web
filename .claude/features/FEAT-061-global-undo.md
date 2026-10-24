@@ -34,36 +34,77 @@ Engage rows) and FEAT-060's `--touch-target-min` token (DS3). Legal: n/a (parent
 
 ## Checklist
 ### Building blocks
-- [ ] W-1 `errorModel` / `ErrorToaster` undo variant per §Screens S1 (6 s, no dedupe, single slot, `Undoing…`, button look
-  + ≤ 768 px wrap, DS1 / DS3).
-- [ ] W-2 `scripts/core/undoModel.js` — record / undo / clear on expiry, page-refresh signal, sidebar counts reload (DS2).
+- [x] W-1 `errorModel` / `ErrorToaster` undo variant per §Screens S1 (6 s, no dedupe, single slot, `Undoing…`, button look
+  + ≤ 768 px wrap, DS1 / DS3). — `scripts/core/errorModel.js:3` (6 s), `:45-49` (single slot, no dedupe), `:56-66`
+  (in flight, timer stopped), `:68-70` (body click dismisses, not while undoing); `components/ErrorToaster.vue:9-23`
+  (icon, `Undo` / `Undoing…` button), `:79-117` (text-label fw-semibold, toast text colour, hover underline, ≤ 768 px wrap
+  `calc(100vw - 32px)` + `--touch-target-min` hit area).
+- [x] W-2 `scripts/core/undoModel.js` — record / undo / clear on expiry, page-refresh signal, sidebar counts reload (DS2).
+  — `undoModel.js:54-66` record (non-undoable → plain toast), `:34-39` `registerRefresh` (page-refresh signal, used by
+  every list / detail page), `:88` `refreshStats`, expiry = the toast leaving (`errorModel.js:48`; no toast → nothing to run).
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [ ] W-3 S1 Undo toast — every state (shown, in flight, success DS4, failure DS5 / DS6, expiry, replaced DS2) with exact copy.
-- [ ] W-4 S2 Ctrl/⌘+Z in `shortcutModel.js` (pause rules) + `ShortcutsDialog.vue` row + note (DS16).
-- [ ] W-5 S3 toast copy per op — every undoable op wired at every entry point (list rows, detail pages, CommandPalette,
+- [x] W-3 S1 Undo toast — every state (shown, in flight, success DS4, failure DS5 / DS6, expiry, replaced DS2) with exact copy.
+  — shown / in flight / expiry / replaced: `errorModel.js:45-66`; success `"<title>" moved back` `undoModel.js:82`;
+  partial (DS6) `:84`; server text / upgrade-modal pass-through `:71`; DS5 fallback copy `:96-100`; position-only failure
+  silent `:182-195`.
+- [x] W-4 S2 Ctrl/⌘+Z in `shortcutModel.js` (pause rules) + `ShortcutsDialog.vue` row + note (DS16). —
+  `scripts/core/shortcutModel.js:92-99` (no Shift/Alt, repeat / in-flight / field / dialog / ≤ 768 px ignored);
+  `components/ShortcutsDialog.vue:29,36` (row after the palette key), `:11` (note).
+- [x] W-5 S3 toast copy per op — every undoable op wired at every entry point (list rows, detail pages, CommandPalette,
   Sidebar drops, Move menus / MoveModal, FEAT-060 swipe); non-undoable ops toast without Undo; Sidebar copy unified (DS8);
-  project trash copy (DS9).
-- [ ] W-6 S4 Trash confirm removed at all 12 call sites + the swipe-left path (D5); Complete Project confirm kept (DS10);
+  project trash copy (DS9). — rows (checkbox / × / swipe share the handler): `InboxPage.vue:335,353`,
+  `NextPage.vue:234,251`, `TodayPage.vue:233,250`, `WaitingForPage.vue:279,296`, `OverduePage.vue:153,170`,
+  `EngagePage.vue:381,403`, `SomedayPage.vue:260,279`, `ProjectsPage.vue:240` (DS9), `ProjectDetailPage.vue:1717,1740`;
+  detail buttons (palette "This item" runs the same handlers): `StuffDetailPage.vue:639,825,840,874`,
+  `ActionDetailPage.vue:1016,1053,1106,1136,1560,1641,1676`, `ProjectDetailPage.vue:1369,1435` (DS9),`1469,1545`;
+  Engage drop zones `EngagePage.vue:494,508,531`; Sidebar `Sidebar.vue:333,401,435,504,559,647,733,791,819`
+  (`:791` / `:819` DS8 copy). Not undoable: connection Waiting (DS12) `ActionDetailPage.vue:1015`, `EngagePage.vue:530`,
+  `Sidebar.vue:732`; moves out of Completed (DS11) `Sidebar.vue:434,503`; conversions / Clarify keep `toaster.success`.
+- [x] W-6 S4 Trash confirm removed at all 12 call sites + the swipe-left path (D5); Complete Project confirm kept (DS10);
   Reference-file trash untouched. `grep -rn "title: 'Move to Trash'" src/main-app` → only the Reference-file one left.
-- [ ] W-7 S5 snapshot + inverse per op — field restore (DS13 `/wait` + `PUT waiting_since`, DS14), reorder to the old index
+  — grep → `views/dashboard/ReferencePage.vue:559` only; swipe-left emits into the same page handlers (no own confirm);
+  Complete Project confirm kept `ProjectDetailPage.vue:1357`.
+- [x] W-7 S5 snapshot + inverse per op — field restore (DS13 `/wait` + `PUT waiting_since`, DS14), reorder to the old index
   except DS17 rows, re-promote + return to Today / Calendar / Waiting (D7, DS15), shared rows server placement (DS19),
-  recurring active instance → no Undo using `recurring_parent_id` (D8).
-- [ ] W-8 Detail pages: Undo returns to the restored item when still on the page the op left (DS7).
+  recurring active instance → no Undo using `recurring_parent_id` (D8). — `undoModel.js:41-52` (D8, DS12, DS20),
+  `:103-118` inverse, `:121-158` restore (DS11 re-complete `:126,132,138`; DS19 `:140`; backlog bp `:141-144`; D7/DS15
+  re-promote `:146-152`; DS13 `:153-155`; DS14 `:156`), `:161-180` state calls, `:182-195` reorder (DS17 `:186`;
+  Overdue / Engage / Sidebar-from-those pass `reorder: false`). Sidebar drops snapshot the full dragged row
+  (`Sidebar.vue:303-315`). Known limits (owner-approved 2026-10-24): Someday rows carry no `project_shared` /
+  `backlog_position` → list/Sidebar Activate of a legacy shared Someday action shows Undo and the 403 passes through;
+  Complete/Trash of a project action from Someday comes back where the server places it. TODAY snapshots without a
+  Today-list `source` (Get Action position ≠ Today combined position) skip the reorder.
+- [x] W-8 Detail pages: Undo returns to the restored item when still on the page the op left (DS7). —
+  `undoModel.js:29-31` (landing path), `:60-62` (detail origin), `:90-93` (return + reload); detail reloads
+  `StuffDetailPage.vue:399`, `ActionDetailPage.vue:773`, `ProjectDetailPage.vue:1129`.
 ### Help (parent §Help impact — one box each)
-- [ ] W-9 `content/help/faq.js:98` — Undo toast + Ctrl/⌘+Z.
-- [ ] W-10 `content/help/faq.js:188` — Trash no longer asks first; Undo brings it back.
-- [ ] W-11 `content/help/gettingStarted.js` keyboard-shortcuts entry — Ctrl/⌘+Z.
+- [x] W-9 `content/help/faq.js:98` — Undo toast + Ctrl/⌘+Z. — `content/help/faq.js:98`.
+- [x] W-10 `content/help/faq.js:188` — Trash no longer asks first; Undo brings it back. — `content/help/faq.js:188`.
+- [x] W-11 `content/help/gettingStarted.js` keyboard-shortcuts entry — Ctrl/⌘+Z. — `gettingStarted.js` has no
+  keyboard-shortcuts entry; the app's keyboard-shortcuts Help entry is `content/help/faq.js:311` ("Are there keyboard
+  shortcuts?") → Cmd/Ctrl+Z added at `faq.js:313`.
 ### Verify
-- [ ] W-12 `npm run build:main` passes (paste the tail).
-- [ ] W-13 `data-testid`s for ui-tests on the toast and its Undo button; list them here for the ui-tests slice.
+- [x] W-12 `npm run build:main` passes (paste the tail). — `✓ built in 3.87s` · `[obfuscator] Obfuscated 19 files` ·
+  `[prerender] / … /legal/privacy → dist/main-app/_prerender/legal/privacy/index.html` (only the known >500 kB chunk
+  warning). No other CI gate in `package.json` (no lint / tests).
+- [x] W-13 `data-testid`s for ui-tests on the toast and its Undo button; list them here for the ui-tests slice. —
+  `undo-toast` (`ErrorToaster.vue:9`), `undo-toast-button` (`ErrorToaster.vue:19`).
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-14 Update `../wna_orchestration/specs/features/wna-features.md` — undo toast + Ctrl/⌘+Z (§37), every section whose
-  Trash confirm goes away, Sidebar toast copy.
-- [ ] W-15 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-862–868 (IDs reserved by the parent; scope
+- [x] W-14 Update `../wna_orchestration/specs/features/wna-features.md` — undo toast + Ctrl/⌘+Z (§37), every section whose
+  Trash confirm goes away, Sidebar toast copy. — §25.1 Undo toast `wna-features.md:2285-2311`; §37.1 row `:2949`;
+  §37.3 `:3001-3006`; Trash confirm gone `:318` (Inbox), `:445` (Next), `:631` (Projects), `:651` (Project detail),
+  `:716` (Waiting), `:757` (Someday), `:2371` (swipe), `:2860` (Overdue); Sidebar drop toasts `:257`.
+- [x] W-15 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-862–868 (IDs reserved by the parent; scope
   per the ui-tests slice) + update every existing Trash TC that has the confirm step; regenerate via
-  `regression-ui-tests/update-tests.sh` if that is the repo's practice.
-- [ ] W-16 Update `../wna_orchestration/specs/api/api.md` — Update Action documents `waiting_since` if it is missing (DS13
-  relies on it; behaviour verified at `wna_backend/core_service/src/services/action/action_service_impl.cpp:161`).
+  `regression-ui-tests/update-tests.sh` if that is the repo's practice. — Section 65 TC-862–868
+  `wna-test-cases.md:19825-20011`; Trash TCs changed: TC-061 `:2179`, TC-095 `:3132`, Next combined TC step 4 `:3480`,
+  Projects list TC step 5 `:4913`, Waiting list TC step 3 `:5435`, TC-179 `:5758`, TC-388 step 2 `:11920`, TC-407 `:12007`,
+  TC-408 `:12027`, shared assigned-action trash step 2 `:13024`, Engage overdue step 5 `:16499`, TC-839 `:19052` (step 7 + dialog row),
+  BUG-062 Bor/Ana TC steps 1/5 `:19273`, TC-855 `:19652`, TC-856 `:19687`, TC-857 `:19711`. `update-tests.sh` run → Section 65:
+  7 TCs; `regression-ui-tests/test-cases.json` + `test-data.js` regenerated.
+- [x] W-16 Update `../wna_orchestration/specs/api/api.md` — Update Action documents `waiting_since` if it is missing (DS13
+  relies on it; behaviour verified at `wna_backend/core_service/src/services/action/action_service_impl.cpp:161`). —
+  `api.md:2029` (merge semantics + `waiting_since` after `/wait`; merge confirmed at `action_service_impl.cpp:154-169`).
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

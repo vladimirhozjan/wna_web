@@ -95,7 +95,7 @@ import MetadataRow from '../../components/MetadataRow.vue'
 import { somedayModel } from '../../scripts/models/somedayModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 
 const router = useRouter()
 
@@ -113,7 +113,7 @@ const {
 } = somedayModel()
 
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 
 const showAdd = ref(false)
 const newTitle = ref('')
@@ -166,6 +166,7 @@ async function loadMore() {
 function onRefresh() {
   return loadSomeday({ reset: true, tags: effectiveTags.value })
 }
+undo.registerRefresh(onRefresh)
 
 async function onAdd() {
   const t = newTitle.value.trim()
@@ -251,15 +252,12 @@ async function onActivate(id) {
     ACTION: 'Next Actions',
     PROJECT: 'Projects'
   }
+  const targetStates = { STUFF: 'INBOX', ACTION: 'NEXT', PROJECT: 'ACTIVE' }
 
   activatingId.value = id
   try {
     await activateItem(item)
-    if (item.type === 'PROJECT') {
-      toaster.success(`"${title}" moved to Projects`)
-    } else {
-      toaster.success(`"${title}" moved to ${typeLabels[item.type]}`)
-    }
+    undo.record({ op: 'move', item, title, to: targetStates[item.type], message: `"${title}" moved to ${typeLabels[item.type]}` })
     // Reload list to backfill removed item
     loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
   } catch (err) {
@@ -275,25 +273,16 @@ async function onTrash(id) {
 
   const title = truncateTitle(item.title)
 
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: 'Are you sure you want to move this item to trash?',
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (confirmed) {
-    deletingId.value = id
-    try {
-      await trashItem(item)
-      toaster.success(`"${title}" moved to trash`)
-      // Reload list to backfill removed item
-      loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
-    } catch (err) {
-      toaster.push(err.message || 'Failed to trash item')
-    } finally {
-      deletingId.value = null
-    }
+  deletingId.value = id
+  try {
+    await trashItem(item)
+    undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash` })
+    // Reload list to backfill removed item
+    loadSomeday({ reset: true, tags: effectiveTags.value }).catch(() => {})
+  } catch (err) {
+    toaster.push(err.message || 'Failed to trash item')
+  } finally {
+    deletingId.value = null
   }
 }
 </script>

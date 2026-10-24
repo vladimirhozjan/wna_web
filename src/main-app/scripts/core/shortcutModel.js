@@ -1,6 +1,7 @@
 import { reactive, computed, shallowRef, onMounted, onBeforeUnmount } from 'vue'
 import router from '../../router/router.js'
 import { settingsModel } from '../models/settingsModel.js'
+import { errorModel } from './errorModel.js'
 
 const MOBILE_QUERY = '(max-width: 768px)'
 // Every open modal / Clarify slide-over renders one of these overlays
@@ -34,6 +35,7 @@ export function shortcutModel() {
     if (instance) return instance
 
     const settings = settingsModel()
+    const toaster = errorModel()
 
     const state = reactive({
         paletteOpen: false,
@@ -83,6 +85,16 @@ export function shortcutModel() {
             if (isBlocked()) return
             e.preventDefault()
             state.paletteOpen = true
+            return
+        }
+
+        // Ctrl/Cmd+Z runs the visible Undo toast; native text undo stays in fields; no redo
+        if (key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey) {
+            gPressedAt = 0
+            const toast = toaster.undoToast()
+            if (!toast || toast.undoing || e.repeat || isTyping(e.target) || isBlocked()) return
+            e.preventDefault()
+            toaster.runUndo()
             return
         }
 

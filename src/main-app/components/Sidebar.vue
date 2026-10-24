@@ -179,6 +179,8 @@ import { waitingModel } from "../scripts/models/waitingModel.js";
 import { somedayModel } from "../scripts/models/somedayModel.js";
 import { calendarModel } from "../scripts/models/calendarModel.js";
 import { moveModel } from "../scripts/models/moveModel.js";
+import { dragModel } from "../scripts/models/dragModel.js";
+import { undoModel } from "../scripts/core/undoModel.js";
 import { statsModel } from "../scripts/models/statsModel.js";
 import { projectModel } from "../scripts/models/projectModel.js";
 import { completedModel } from "../scripts/models/completedModel.js";
@@ -214,6 +216,8 @@ const auth = authModel();
 const toaster = errorModel();
 const confirm = confirmModel();
 const mover = moveModel();
+const drag = dragModel();
+const undo = undoModel();
 const { items: stuffItems, loadStuff } = stuffModel();
 const { items: actionItems, loadActions: loadNextActions } = nextActionModel();
 const { items: todayItems, loadActions: loadTodayActions } = todayModel();
@@ -294,6 +298,21 @@ function truncateTitle(title, maxLen = 30) {
   return title.slice(0, maxLen).trim() + '…';
 }
 
+const SOURCE_TYPES = { stuff: 'STUFF', action: 'ACTION', project: 'PROJECT' };
+
+// The drag payload is trimmed; Undo needs the full row (position, dates, waiting details)
+function rowOf(data) {
+  const dragged = drag.state.draggedItem;
+  const row = dragged?.id === data.id ? dragged : data;
+  return { ...row, type: row.type || SOURCE_TYPES[data.sourceType] };
+}
+
+function recordDrop(op, row, message, to = null) {
+  // DS17: Overdue / Engage rows don't carry their own list's position
+  const reorder = !['overdue', 'engage'].includes(router.currentRoute.value.name);
+  undo.record({ op, item: row, title: truncateTitle(row.title), message, to, reorder });
+}
+
 async function confirmAndTransformProjectToAction(id) {
   const confirmed = await confirm.show({
     title: 'Convert to Action',
@@ -306,9 +325,14 @@ async function confirmAndTransformProjectToAction(id) {
 }
 
 async function onDropToInbox(data) {
+  const row = rowOf(data);
   try {
     if (data.sourceType === 'someday' && data.type === 'STUFF') {
       await apiClient.activateStuff(data.id);
+      removeFromSource(data);
+      recordDrop('move', row, `"${truncateTitle(data.title)}" moved to Inbox`, 'INBOX');
+      refreshAfterDrop();
+      return;
     } else if (data.sourceType === 'completed' && data.type === 'STUFF') {
       await apiClient.uncompleteStuff(data.id);
     } else if (data.sourceType === 'reference' && data.source_type === 1) {
@@ -325,6 +349,8 @@ async function onDropToInbox(data) {
 }
 
 async function onDropToNextAction(data) {
+  const row = rowOf(data);
+  let undoable = false;
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.clarifyToAction(data.id, {
@@ -334,6 +360,7 @@ async function onDropToNextAction(data) {
     } else if (data.sourceType === 'action') {
       if (data.state === 'NEXT') return;
       await apiClient.undeferAction(data.id);
+      undoable = true;
     } else if (data.sourceType === 'project') {
       const result = await confirmAndTransformProjectToAction(data.id);
       if (!result) return;
@@ -346,6 +373,7 @@ async function onDropToNextAction(data) {
         return;
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
+        undoable = true;
       } else if (data.type === 'PROJECT') {
         const result = await confirmAndTransformProjectToAction(data.id);
         if (!result) return;
@@ -369,7 +397,9 @@ async function onDropToNextAction(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" moved to Next Actions`);
+    const message = `"${truncateTitle(data.title)}" moved to Next Actions`;
+    if (undoable) recordDrop('move', row, message, 'NEXT');
+    else toaster.success(message);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
@@ -377,6 +407,7 @@ async function onDropToNextAction(data) {
 }
 
 async function onDropToProjects(data) {
+  const row = rowOf(data);
   // Reference file with source_type=3 → transform back to project
   if (data.sourceType === 'reference' && data.source_type === 3) {
     try {
@@ -399,7 +430,10 @@ async function onDropToProjects(data) {
         await apiClient.uncompleteProject(data.id);
       }
       removeFromSource(data);
-      toaster.success(`"${truncateTitle(data.title)}" moved to Projects`);
+      const message = `"${truncateTitle(data.title)}" moved to Projects`;
+      // DS11: moves out of Completed are not undoable
+      if (data.sourceType === 'someday') recordDrop('move', row, message, 'ACTIVE');
+      else toaster.success(message);
       refreshAfterDrop();
     } catch (err) {
       toaster.push(err.message || 'Failed to move item');
@@ -436,6 +470,7 @@ async function onDropToProjects(data) {
 }
 
 async function onDropToSomeday(data) {
+  const row = rowOf(data);
   if ((data.sourceType === 'action' && data.project_shared)
     || (data.sourceType === 'completed' && data.type === 'ACTION' && data.shared)) {
     toaster.push("Shared-project actions can't go to Someday/Maybe. Keep it in the project backlog instead.");
@@ -464,7 +499,9 @@ async function onDropToSomeday(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" moved to Someday`);
+    const message = `"${truncateTitle(data.title)}" moved to Someday`;
+    if (data.sourceType === 'completed') toaster.success(message);
+    else recordDrop('move', row, message, 'SOMEDAY');
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
@@ -472,6 +509,8 @@ async function onDropToSomeday(data) {
 }
 
 async function onDropToToday(data) {
+  const row = rowOf(data);
+  let undoable = false;
   try {
     if (data.sourceType === 'stuff') {
       const result = await apiClient.clarifyToAction(data.id, {
@@ -482,6 +521,7 @@ async function onDropToToday(data) {
     } else if (data.sourceType === 'action') {
       if (data.state === 'TODAY') return;
       await apiClient.todayAction(data.id);
+      undoable = true;
     } else if (data.sourceType === 'project') {
       const result = await confirmAndTransformProjectToAction(data.id);
       if (!result) return;
@@ -493,6 +533,7 @@ async function onDropToToday(data) {
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
         await apiClient.todayAction(data.id);
+        undoable = true;
       } else if (data.type === 'PROJECT') {
         const result = await confirmAndTransformProjectToAction(data.id);
         if (!result) return;
@@ -514,7 +555,9 @@ async function onDropToToday(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" moved to Today`);
+    const message = `"${truncateTitle(data.title)}" moved to Today`;
+    if (undoable) recordDrop('move', row, message, 'TODAY');
+    else toaster.success(message);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
@@ -523,6 +566,8 @@ async function onDropToToday(data) {
 
 async function onDropToCalendar(data) {
   if (data.sourceType === 'action' && data.state === 'CALENDAR') return;
+  const row = rowOf(data);
+  let undoable = false;
 
   // Confirm project-to-action conversion before asking for schedule details
   const isProjectConvert = data.sourceType === 'project'
@@ -558,6 +603,7 @@ async function onDropToCalendar(data) {
       });
     } else if (data.sourceType === 'action') {
       await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+      undoable = true;
     } else if (data.sourceType === 'project') {
       // Confirmation already shown above
       const result = await apiClient.transformProjectToAction(data.id);
@@ -572,6 +618,7 @@ async function onDropToCalendar(data) {
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
         await apiClient.deferAction(data.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration);
+        undoable = true;
       } else if (data.type === 'PROJECT') {
         // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
@@ -596,7 +643,9 @@ async function onDropToCalendar(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" moved to Calendar`);
+    const message = `"${truncateTitle(data.title)}" moved to Calendar`;
+    if (undoable) recordDrop('move', row, message, 'CALENDAR');
+    else toaster.success(message);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
@@ -605,6 +654,8 @@ async function onDropToCalendar(data) {
 
 async function onDropToWaitingFor(data) {
   if (data.sourceType === 'action' && data.state === 'WAITING') return;
+  const row = rowOf(data);
+  let undoable = false;
 
   // Confirm project-to-action conversion before asking for waiting details
   const isProjectConvert = data.sourceType === 'project'
@@ -643,6 +694,7 @@ async function onDropToWaitingFor(data) {
       await applyWait(result.id);
     } else if (data.sourceType === 'action') {
       await applyWait(data.id);
+      undoable = true;
     } else if (data.sourceType === 'project') {
       // Confirmation already shown above
       const result = await apiClient.transformProjectToAction(data.id);
@@ -654,6 +706,7 @@ async function onDropToWaitingFor(data) {
       } else if (data.type === 'ACTION') {
         await apiClient.activateAction(data.id);
         await applyWait(data.id);
+        undoable = true;
       } else if (data.type === 'PROJECT') {
         // Confirmation already shown above
         const result = await apiClient.transformProjectToAction(data.id);
@@ -675,7 +728,10 @@ async function onDropToWaitingFor(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" moved to Waiting For`);
+    const message = `"${truncateTitle(data.title)}" moved to Waiting For`;
+    // DS12: delegating to a connection is not undoable
+    if (undoable && pick.kind !== 'connection') recordDrop('move', row, message, 'WAITING');
+    else toaster.success(message);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
@@ -712,6 +768,7 @@ async function onDropToReference(data) {
 }
 
 async function onDropToCompleted(data) {
+  const row = rowOf(data);
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.completeStuff(data.id);
@@ -731,7 +788,7 @@ async function onDropToCompleted(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" marked as completed`);
+    recordDrop('complete', row, `"${truncateTitle(data.title)}" completed`);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item');
@@ -739,6 +796,7 @@ async function onDropToCompleted(data) {
 }
 
 async function onDropToTrash(data) {
+  const row = rowOf(data);
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.trashStuff(data.id);
@@ -758,7 +816,7 @@ async function onDropToTrash(data) {
       return;
     }
     removeFromSource(data);
-    toaster.success(`"${truncateTitle(data.title)}" moved to Trash`);
+    recordDrop('trash', row, `"${truncateTitle(data.title)}" moved to trash`);
     refreshAfterDrop();
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');

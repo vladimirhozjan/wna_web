@@ -126,7 +126,7 @@ import {ref, onMounted, nextTick, watch, computed, onUnmounted} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { stuffModel } from '../../scripts/models/stuffModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { clarifyModel } from '../../scripts/models/clarifyModel.js'
@@ -160,7 +160,7 @@ const {
 const router = useRouter()
 const route = useRoute()
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 const clarify = clarifyModel()
 
 // local UI state
@@ -278,6 +278,7 @@ async function loadMore() {
 function onRefresh() {
   return loadStuff({ reset: true })
 }
+undo.registerRefresh(onRefresh)
 
 function onItemClick(item, index) {
   if (clarifyMode.value) {
@@ -331,7 +332,7 @@ async function onItemCheck(id, checked) {
     if (idx !== -1) {
       items.value.splice(idx, 1)
     }
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item, title, message: `"${title}" completed` })
     statsModel().refreshStats()
     // Reload list to backfill removed item
     loadStuff({ reset: true }).catch(() => {})
@@ -346,23 +347,14 @@ async function onTrash(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: 'Are you sure you want to move this item to trash?',
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (confirmed) {
-    deletingId.value = id
-    try {
-      await trashStuff(id)
-      toaster.success(`"${title}" moved to trash`)
-      // Reload list to backfill removed item
-      loadStuff({ reset: true }).catch(() => {})
-    } finally {
-      deletingId.value = null
-    }
+  deletingId.value = id
+  try {
+    await trashStuff(id)
+    undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash` })
+    // Reload list to backfill removed item
+    loadStuff({ reset: true }).catch(() => {})
+  } finally {
+    deletingId.value = null
   }
 }
 

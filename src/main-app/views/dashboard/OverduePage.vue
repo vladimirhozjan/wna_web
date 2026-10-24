@@ -52,7 +52,7 @@ import WarningIcon from '../../assets/WarningIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import { overdueModel } from '../../scripts/models/overdueModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 
 const router = useRouter()
@@ -71,7 +71,7 @@ const {
 } = overdueModel()
 
 const toaster = errorModel()
-const confirm = confirmModel()
+const undo = undoModel()
 
 const updatingId = ref(null)
 const deletingId = ref(null)
@@ -101,6 +101,7 @@ async function loadMore() {
 function onRefresh() {
   return loadItems({ reset: true })
 }
+undo.registerRefresh(onRefresh)
 
 function onItemClick(item) {
   router.push({
@@ -149,7 +150,7 @@ async function onItemCheck(id, checked) {
       new Promise(r => setTimeout(r, ANIM_MS))
     ])
     removeItem(id)
-    toaster.success(`"${title}" completed`)
+    undo.record({ op: 'complete', item, title, message: `"${title}" completed`, reorder: false })
     // Reload list to backfill removed item
     loadItems({ reset: true }).catch(() => {})
   } catch (err) {
@@ -163,23 +164,14 @@ async function onTrash(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
-  const confirmed = await confirm.show({
-    title: 'Move to Trash',
-    message: 'Are you sure you want to move this action to trash?',
-    confirmText: 'Move to Trash',
-    cancelText: 'Cancel'
-  })
-
-  if (confirmed) {
-    deletingId.value = id
-    try {
-      await trashAction(id)
-      toaster.success(`"${title}" moved to trash`)
-      // Reload list to backfill removed item
-      loadItems({ reset: true }).catch(() => {})
-    } finally {
-      deletingId.value = null
-    }
+  deletingId.value = id
+  try {
+    await trashAction(id)
+    undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash`, reorder: false })
+    // Reload list to backfill removed item
+    loadItems({ reset: true }).catch(() => {})
+  } finally {
+    deletingId.value = null
   }
 }
 </script>
