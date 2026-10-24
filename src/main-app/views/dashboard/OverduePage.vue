@@ -155,8 +155,9 @@ async function onItemCheck(id, checked) {
     loadItems({ reset: true }).catch(() => {})
   } catch (err) {
     if (item) item.checked = false
-    completingIds.value = completingIds.value.filter(x => x !== id)
     toaster.push(err.message || 'Failed to complete action')
+  } finally {
+    completingIds.value = completingIds.value.filter(x => x !== id)
   }
 }
 
