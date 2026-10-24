@@ -35,26 +35,45 @@ impact) — the replay link is W-6.
 
 ## Checklist
 ### Building blocks
-- [ ] W-1 `Modal.vue` `fullscreenMobile` prop (DS1) — other modals unchanged.
-- [ ] W-2 `components/WelcomeModal.vue` (DS2) — slides, `1/4` indicator (DS5), Back / Next / Skip, slide-4 `Skip for now`
-  (DS6), backdrop ignored (DS4).
-- [ ] W-3 `settingsModel` — `onboardingCompleted` + setter that PUTs; reset on logout, reload on every login (DS11).
+- [x] W-1 `Modal.vue` `fullscreenMobile` prop (DS1) — other modals unchanged. — `components/Modal.vue:33` (default
+  `false`), classes only when set `:4-5`, ≤ 768 px rules scoped to those classes `:82-104`; no other caller passes it.
+- [x] W-2 `components/WelcomeModal.vue` (DS2) — slides, `1/4` indicator (DS5), Back / Next / Skip, slide-4 `Skip for now`
+  (DS6), backdrop ignored (DS4). — `components/WelcomeModal.vue:5` (indicator), `:26-31` (footer, `Skip for now` `:27`),
+  `:2` (Modal's `close` not listened → backdrop ignored), Escape `:108`.
+- [x] W-3 `settingsModel` — `onboardingCompleted` + setter that PUTs; reset on logout, reload on every login (DS11). —
+  `scripts/models/settingsModel.js:61` (default `true`), `:129` (missing → `true`), `completeOnboarding` `:382-385`
+  (local `true` first, PUT `{"onboarding":{"completed":true}}`), `:406-409` (any auth change → `loaded=false`, so
+  `DashboardLayout.vue` `onMounted` reloads on the next dashboard page after login).
 ### Screens (one box per parent §Screens surface — every state + exact copy)
-- [ ] W-4 Welcome modal — slides 1–4 exact copy + coin art (FEAT-057 `EmptyState` art), desktop + ≤ 768 px full screen.
-- [ ] W-5 Modal-level rules — DashboardLayout open rules (DS3 exceptions), settings load fails → not opened, flag PUT fails
+- [~] W-4 Welcome modal — slides 1–4 exact copy + coin art (FEAT-057 `EmptyState` art), desktop + ≤ 768 px full screen.
+  — code done: copy `components/WelcomeModal.vue:48-69` (checked against parent §Screens), `EmptyState` `:9`, full
+  screen via `fullscreen-mobile` `:2`, 44 px targets `:173-185`. DEFERRED TO wna-ui-tests: automate TC-869, TC-873
+  (runtime, desktop + phone width).
+- [~] W-5 Modal-level rules — DashboardLayout open rules (DS3 exceptions), settings load fails → not opened, flag PUT fails
   → toast + reopen next load, `?welcome=1` replay (query dropped, no PUT when already `true`, DS9), slide-4 capture states
-  (empty / submitting with controls inert DS8 / success → Inbox / inline error DS7).
-- [ ] W-6 Help → Getting Started replay link (DS10) in `views/public/HelpGettingStartedPage.vue` — logged in only →
-  `/engage?welcome=1`.
+  (empty / submitting with controls inert DS8 / success → Inbox / inline error DS7). — code done:
+  `layouts/DashboardLayout.vue:144-148` (DS3 routes; `welcomeWaitPath` keeps it shut on that path even after Settings
+  drops `status`), `:165-179` (replay + auto-open; load fail → `loaded` false → not opened), `:150-158` (PUT only while
+  flag `false`, failure toast `:156`), `:160-163` (success → `/inbox`); capture `components/WelcomeModal.vue:93-106`
+  (blank no-op, inert `:88-91`/`:26,29`, inline error `:101`). DEFERRED TO wna-ui-tests: automate TC-869–872.
+- [~] W-6 Help → Getting Started replay link (DS10) in `views/public/HelpGettingStartedPage.vue` — logged in only →
+  `/engage?welcome=1`. — code done: `views/public/HelpGettingStartedPage.vue:13-19` (`v-if` on
+  `auth.isAuthenticated`). DEFERRED TO wna-ui-tests: automate TC-872.
 ### Verify
-- [ ] W-7 `npm run build:main` passes (paste the tail).
-- [ ] W-8 `data-testid`s for ui-tests (modal, step indicator, Next / Back / Skip, capture field + button, Help link); list
-  them here for the ui-tests slice.
+- [x] W-7 `npm run build:main` passes (paste the tail). — `✓ built in 4.87s` · `[obfuscator] Obfuscated 19 files` ·
+  `[prerender] /help/getting-started → dist/main-app/_prerender/help/getting-started/index.html` (8 routes prerendered,
+  only the pre-existing > 500 kB chunk warning).
+- [x] W-8 `data-testid`s for ui-tests (modal, step indicator, Next / Back / Skip, capture field + button, Help link); list
+  them here for the ui-tests slice. — `welcome-modal`, `welcome-step`, `welcome-close`, `welcome-skip` (also `Skip for
+  now`), `welcome-back`, `welcome-next`, `welcome-capture-submit` (`components/WelcomeModal.vue:3-31`);
+  `welcome-capture-input` is on the `Inpt` `<label>` — target `[data-testid="welcome-capture-input"] input`;
+  `help-welcome-tour-link` (`views/public/HelpGettingStartedPage.vue:17`).
 ### Spec sync (wna_orchestration — required, never deferred; cite `file:line`)
-- [ ] W-9 Update `../wna_orchestration/specs/features/wna-features.md` — welcome flow, Help replay link, settings reload on
-  login.
-- [ ] W-10 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-869–873 (IDs reserved by the parent; scope
-  per the ui-tests slice).
+- [x] W-9 Update `../wna_orchestration/specs/features/wna-features.md` — welcome flow, Help replay link, settings reload on
+  login. — `wna-features.md:293` (§3.6 Welcome Tour), `:2227` (§24.3 replay link), `:202` (§2.8 settings reload).
+- [x] W-10 Update `../wna_orchestration/specs/tests/wna-test-cases.md` — author TC-869–873 (IDs reserved by the parent; scope
+  per the ui-tests slice). — `wna-test-cases.md:20013` (Section 66), TC-869 `:20021` … TC-873 `:20133`;
+  `regression-ui-tests/update-tests.sh` run (test-cases.json / test-data.js regenerated).
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
