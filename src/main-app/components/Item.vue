@@ -49,7 +49,7 @@
           />
         </span>
         <span v-else-if="$slots.title" class="item__title"><slot name="title" /></span>
-        <span v-else class="item__title" @click.stop="onClick">{{ title }}</span>
+        <span v-else class="item__title" @click="onClick">{{ title }}</span>
         <slot name="title-suffix" />
       </div>
 
@@ -167,9 +167,10 @@ watch(editValue, () => {
   })
 })
 
-function onClick() {
-  if (isEditing.value) return
-  if (!props.editable) return
+// A read-only title lets the click reach the row, so the row's own click handler runs
+function onClick(e) {
+  if (isEditing.value || !props.editable) return
+  e.stopPropagation()
 
   isEditing.value = true
   editValue.value = props.title
