@@ -108,6 +108,23 @@ CSS variable. Admin-app untouched.
 - [x] W-12 Tick the parent's web Work breakdown boxes in `../wna_orchestration/features/BUG-063-action-detail-member-buttons.md`.
   — `BUG-063-action-detail-member-buttons.md:181-186` (5 web boxes ticked, TC-874 renumbering noted).
 
+### Reopened at close 2026-10-24 (acceptance ✘ — parent §Screens "Fallback toasts")
+- [x] W-13 `ActionDetailPage.vue` Move (Next / Today / Calendar / Waiting) and Got it catch blocks (today a fixed
+  `'Failed to move action'`, ~`:1019`, `:1057`, `:1112`, `:1140`) toast `err.message` with the old text as fallback, like
+  Done / Trash / Undo; grep the page for any other bare-`catch` mutation toast and fix it the same way. —
+  `views/dashboard/ActionDetailPage.vue:1019`, `:1057`, `:1112`, `:1140` (`err.message || 'Failed to move action'`); same
+  fix on the other bare-catch mutations: title / description `:888`, tags `:928`, Unassign `:1178`, scheduled date
+  `:1290` / `:1321`, start date `:1371` / `:1399`, due date `:1450` / `:1478`. Remaining bare `catch {` (`:1524`,
+  `:1628`) are prev/next navigation loads, not mutations. Assign `:1159` left as is (status-specific copy, not bare).
+- [x] W-14 `npm run build:main` passes. — `✓ built in 3.96s` · `[obfuscator] Obfuscated 19 files` (only the
+  pre-existing > 500 kB chunk warning).
+- [x] W-15 Update `../wna_orchestration/specs/features/wna-features.md` (fallback toast on Action detail) and TC-874 in
+  `../wna_orchestration/specs/tests/wna-test-cases.md`: add the parent Rule 7 steps (assignee Today → Unassign → in the
+  project backlog; removed member's Calendar claim → backlog) and a stale-tab Move → 403 `detail` toast step. —
+  `wna-features.md:509` (stale-page refused mutation → backend `detail` toast); TC-874 steps 8–10
+  `wna-test-cases.md:20191-20195`, expected `:20211-20214`; `regression-ui-tests/update-tests.sh` run.
+- [x] W-16 Tick the parent's new web box. — `BUG-063-action-detail-member-buttons.md:206`.
+
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
    cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.
