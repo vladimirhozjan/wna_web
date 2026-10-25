@@ -20,27 +20,27 @@
 
       <!-- Dashboard content -->
       <main class="dashboard-content">
-        <slot />
+        <Alert
+            v-if="isOffline"
+            type="info"
+            title="You're offline"
+            message="What you capture is saved and sent when you're back."
+            class="offline-banner"
+            data-testid="offline-banner"
+        />
+        <div class="dashboard-page">
+          <slot />
+        </div>
       </main>
     </div>
 
     <!-- Mobile FAB — quick add -->
     <div v-if="fabExpanded" class="fab-overlay" @click="fabCollapse" @touchmove.prevent @wheel.prevent></div>
-    <div class="mobile-fab-area">
-      <div v-if="fabExpanded" class="fab-input-bar">
-        <div class="fab-input-wrap">
-          <input
-            ref="fabInputRef"
-            v-model="fabTitle"
-            class="fab-input"
-            type="text"
-            placeholder="Add new stuff"
-            @keydown.enter="fabSubmit"
-            @keydown.esc="fabCollapse"
-          />
-          <ActionBtn v-if="fabTitle" variant="default" class="fab-input-clear" @mousedown.prevent @click="fabClear" />
-        </div>
-        <Btn variant="primary" size="sm" @mousedown.prevent @click="fabSubmit">Add</Btn>
+    <!-- Hidden on /share (the page is itself the capture) and on the canvas (it has its own +) -->
+    <div v-show="!FAB_HIDDEN_ROUTES.has(router.currentRoute.value.name)" class="mobile-fab-area">
+      <!-- Kept mounted while closed: an overlay tap closes the bar but keeps its text and files -->
+      <div v-show="fabExpanded" class="fab-input-bar">
+        <CaptureBar ref="fabBarRef" variant="fab" class="fab-capture" @saved="fabCollapse" @close="fabCollapse" />
       </div>
       <button v-if="!fabExpanded" class="mobile-fab" @click="fabExpand">
         <PlusIcon width="20" height="20" style="pointer-events: none;" />
@@ -58,8 +58,8 @@ import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
 import TopNav from "../components/TopNav.vue";
 import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
-import Btn from "../components/Btn.vue";
-import ActionBtn from "../components/ActionBtn.vue";
+import CaptureBar from "../components/CaptureBar.vue";
+import Alert from "../components/Alert.vue";
 import CommandPalette from "../components/CommandPalette.vue";
 import ShortcutsDialog from "../components/ShortcutsDialog.vue";
 import WelcomeModal from "../components/WelcomeModal.vue";
@@ -67,22 +67,25 @@ import { authModel } from "../scripts/core/authModel.js";
 import { shortcutModel } from "../scripts/core/shortcutModel.js";
 import PlusIcon from "../assets/PlusIcon.vue";
 import { settingsModel } from "../scripts/models/settingsModel.js";
-import { stuffModel } from "../scripts/models/stuffModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
+import { offlineModel } from "../scripts/core/offlineModel.js";
+import { statsModel } from "../scripts/models/statsModel.js";
+import { connectionModel } from "../scripts/models/connectionModel.js";
 import router from "../router/router.js";
+
+const FAB_HIDDEN_ROUTES = new Set(["share", "project-canvas"]);
 
 const auth = authModel();
 const settings = settingsModel();
-const { addStuff } = stuffModel();
 const toaster = errorModel();
 const shortcuts = shortcutModel();
+const { isOffline } = offlineModel();
 const isSidebarOpen = ref(false);
 const welcomeOpen = ref(false);
 
 // Mobile FAB quick add
 const fabExpanded = ref(false);
-const fabTitle = ref("");
-const fabInputRef = ref(null);
+const fabBarRef = ref(null);
 
 function fabExpand() {
   fabExpanded.value = true;
@@ -91,7 +94,7 @@ function fabExpand() {
   window.visualViewport?.addEventListener("scroll", updateKeyboardOffset);
   window.addEventListener("scroll", resetWindowScroll);
   nextTick(() => {
-    const input = fabInputRef.value;
+    const input = fabBarRef.value?.input();
     if (!input) return;
     // iOS scrolls the page to reveal a focused input near the bottom; focusing it while shifted off-screen prevents that.
     input.style.transform = "translateY(-2000px)";
@@ -101,7 +104,8 @@ function fabExpand() {
 }
 
 function fabCollapse() {
-  fabInputRef.value?.blur();
+  fabBarRef.value?.input()?.blur();
+  fabBarRef.value?.stopRecording();
   fabExpanded.value = false;
   delete document.documentElement.dataset.fabOpen;
   window.visualViewport?.removeEventListener("resize", updateKeyboardOffset);
@@ -109,11 +113,6 @@ function fabCollapse() {
   window.removeEventListener("scroll", resetWindowScroll);
   document.documentElement.style.removeProperty("--fab-kb-offset");
   document.documentElement.style.removeProperty("--fab-vv-height");
-}
-
-function fabClear() {
-  fabTitle.value = "";
-  fabInputRef.value?.focus();
 }
 
 // The on-screen keyboard shrinks only the visual viewport; keep the bar pinned just above it.
@@ -128,21 +127,9 @@ function resetWindowScroll() {
   if (window.scrollY) window.scrollTo(0, 0);
 }
 
-async function fabSubmit() {
-  const t = fabTitle.value.trim();
-  if (!t) return;
-  try {
-    await addStuff(t);
-    fabTitle.value = "";
-    fabCollapse();
-  } catch (e) {
-    toaster.push(e.message || "Failed to add item");
-  }
-}
-
-// These routes are mid-flow (checkout, OAuth callback) — the first-run tour waits for the next dashboard route
+// These routes are mid-flow (checkout, OAuth callback, a share) — the first-run tour waits for the next dashboard route
 function isWelcomeBlockedRoute(route) {
-  if (route.name === "upgrade" || route.name === "google-connect") return true;
+  if (route.name === "upgrade" || route.name === "google-connect" || route.name === "share") return true;
   return route.name === "settings" && !!route.query.status;
 }
 let welcomeWaitPath = null;
@@ -188,9 +175,21 @@ watch(
     }
 );
 
-// Auto-close sidebar on route change (mobile navigation)
+// Start-up requests that failed offline run again once the connection is back
+watch(isOffline, (offline) => {
+  if (offline || !auth.isAuthenticated.value) return;
+  statsModel().loadStats();
+  if (!settings.state.loaded) settings.load().catch(() => {});
+  const connections = connectionModel();
+  if (!connections.loaded.value) connections.loadAll().catch(() => {});
+});
+
+// Auto-close sidebar on route change (mobile navigation). The layout stays mounted across pages (App.vue), so what
+// used to happen on every page mount — fresh Sidebar counts, a closed FAB — happens here
 watch(() => router.currentRoute.value.path, () => {
   isSidebarOpen.value = false;
+  if (fabExpanded.value) fabCollapse();
+  statsModel().loadStats();
 });
 
 onUnmounted(() => {
@@ -237,6 +236,19 @@ onMounted(() => {
   min-height: 0;
   overflow: hidden;
   padding: 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.offline-banner {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.dashboard-page {
+  flex: 1;
+  min-height: 0;
 }
 
 @media (min-width: 769px) {
@@ -315,40 +327,9 @@ onMounted(() => {
     padding: 14px 20px 26px 16px;
   }
 
-  .fab-input-wrap {
-    flex: 1;
-    display: flex;
-    position: relative;
-  }
-
-  .fab-input {
+  .fab-capture {
     flex: 1;
     min-width: 0;
-    padding: 10px 32px 10px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--color-input-border);
-    background: var(--color-input-background);
-    color: var(--color-text-primary);
-    font-family: inherit;
-    font-size: var(--font-size-body);
-    outline: none;
-  }
-
-  .fab-input:focus {
-    border-color: var(--color-input-border-focus);
-    box-shadow: 0 0 0 1px var(--color-action-ring);
-  }
-
-  .fab-input-clear {
-    position: absolute;
-    top: 50%;
-    right: 4px;
-    transform: translateY(-50%);
-    color: var(--color-text-tertiary);
-  }
-
-  .fab-input::placeholder {
-    color: var(--color-text-prefill);
   }
 }
 </style>

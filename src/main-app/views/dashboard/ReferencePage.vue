@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="ref-page">
       <!-- Header with title and tabs -->
       <div class="ref-header">
@@ -236,13 +235,11 @@
           @cancel="model.closeRename()"
       />
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import {ref, computed, watch, onMounted} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import RefToolbar from '../../components/reference/RefToolbar.vue'
 import RefUploadZone from '../../components/reference/RefUploadZone.vue'
 import RefListView from '../../components/reference/RefListView.vue'

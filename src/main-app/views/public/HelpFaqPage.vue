@@ -39,12 +39,13 @@ import AuthDialog from '../../components/AuthDialog.vue'
 import FaqItem from '../../components/public/FaqItem.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import { faq } from '../../content/help/faq.js'
+import { pendingShare } from '../../scripts/core/pendingShare.js'
 
 const router = useRouter()
 const authMode = ref(null)
 
 function openAuth(mode) { authMode.value = mode }
-function onSuccess() { authMode.value = null; router.push({ name: 'engage' }) }
+async function onSuccess() { authMode.value = null; router.push(await pendingShare().afterLogin({ name: 'engage' })) }
 function onSuccessPasswordReset() { authMode.value = null; router.push({ name: 'login' }) }
 </script>
 

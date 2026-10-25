@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="overdue-page">
       <div class="overdue-header">
         <h1 class="page-title">Overdue</h1>
@@ -37,13 +36,11 @@
         </div>
       </PullToRefresh>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import ActionBtn from '../../components/ActionBtn.vue'

@@ -44,6 +44,7 @@ import Btn from '../../components/Btn.vue'
 import Spinner from '../../components/Spinner.vue'
 import {authModel} from '../../scripts/core/authModel.js'
 import {takeGoogleSsoVerifier} from '../../scripts/core/googleSso.js'
+import {pendingShare} from '../../scripts/core/pendingShare.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
 import ExclamationIcon from '../../assets/ExclamationIcon.vue'
 import CrossIcon from '../../assets/CrossIcon.vue'
@@ -74,7 +75,7 @@ async function exchangeCode(code, verifier) {
   try {
     await auth.googleSsoLogin(code, verifier)
     await auth.loadUser()
-    router.push({name: 'engage'})
+    router.push(await pendingShare().afterLogin({name: 'engage'}))
   } catch (err) {
     const mapped = mapApiError(err, ErrorScenario.GOOGLE_LOGIN)
     status.value = 'error'

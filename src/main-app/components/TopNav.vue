@@ -35,7 +35,7 @@
 
     <!-- AUTHENTICATED -->
     <div v-else class="topnav-auth-right">
-      <QuickAddBtn ref="quickAddRef" class="quick-add-desktop" @add="onQuickAdd" />
+      <QuickAddBtn ref="quickAddRef" class="quick-add-desktop" />
 
       <!-- Notification bell + dropdown -->
       <Dropdown v-model="notifDropdownOpen" align="right" title="Notifications" class="notifications-dropdown">
@@ -149,8 +149,6 @@ import Spinner from "./Spinner.vue";
 import SearchBox from "./SearchBox.vue";
 import SearchIcon from "../assets/SearchIcon.vue";
 import AppIcon from "../assets/AppIcon.vue";
-import { stuffModel } from "../scripts/models/stuffModel.js";
-import { errorModel } from "../scripts/core/errorModel.js";
 import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
 import { shortcutModel } from "../scripts/core/shortcutModel.js";
 
@@ -214,8 +212,6 @@ function onAvatarClick() {
   showDropdown.value = !showDropdown.value;
 }
 
-const { addStuff } = stuffModel();
-const toaster = errorModel();
 
 // Notifications
 const notifModel = notificationInAppModel();
@@ -375,14 +371,6 @@ const quickAddRef = ref(null);
 watch(() => shortcuts.state.captureRequest, () => {
   quickAddRef.value?.expand();
 });
-
-async function onQuickAdd(title) {
-  try {
-    await addStuff(title);
-  } catch (e) {
-    toaster.push(e.message || "Failed to add item");
-  }
-}
 
 function onClickOutside(e) {
   if (avatarContainerRef.value && !avatarContainerRef.value.contains(e.target)) {

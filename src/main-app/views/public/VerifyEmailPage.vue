@@ -72,6 +72,7 @@ import Inpt from '../../components/Inpt.vue'
 import Spinner from '../../components/Spinner.vue'
 import { authModel } from '../../scripts/core/authModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { pendingShare } from '../../scripts/core/pendingShare.js'
 import CheckmarkIcon from '../../assets/CheckmarkIcon.vue'
 import ExclamationIcon from '../../assets/ExclamationIcon.vue'
 import CrossIcon from '../../assets/CrossIcon.vue'
@@ -116,13 +117,14 @@ async function doVerify() {
   try {
     await auth.verifyEmail(token)
     await auth.loadUser()
+    const target = await pendingShare().afterLogin({ name: 'engage' })
     status.value = 'success'
     countdown.value = 3
     redirectTimer = setInterval(() => {
       countdown.value--
       if (countdown.value <= 0) {
         clearInterval(redirectTimer)
-        router.push({ name: 'engage' })
+        router.push(target)
       }
     }, 1000)
   } catch (err) {

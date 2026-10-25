@@ -116,6 +116,7 @@ import { useRouter } from 'vue-router'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import { PLAN_OPTIONS, loadPlanCatalog } from '../../scripts/models/paymentModel.js'
+import { pendingShare } from '../../scripts/core/pendingShare.js'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import PricingTier from '../../components/public/PricingTier.vue'
@@ -137,14 +138,11 @@ function closeAuth() {
   authMode.value = null
 }
 
-function onSuccess() {
+async function onSuccess() {
   closeAuth()
-  if (pendingUpgrade && paymentsEnabled.value) {
-    pendingUpgrade = false
-    router.push({ name: 'upgrade' })
-    return
-  }
-  router.push({ name: 'engage' })
+  const upgrade = pendingUpgrade && paymentsEnabled.value
+  pendingUpgrade = false
+  router.push(await pendingShare().afterLogin({ name: upgrade ? 'upgrade' : 'engage' }))
 }
 
 function tierCta(tier) {
@@ -207,6 +205,7 @@ const tiers = computed(() => [
       'Recurring actions',
       'Full reference files',
       'Email to Inbox',
+      'Photo, voice & file capture',
       'Google Calendar sync',
       'Google Drive storage',
       '250 MB storage',
@@ -228,6 +227,7 @@ const tiers = computed(() => [
       'Recurring actions',
       'Full reference files',
       'Email to Inbox',
+      'Photo, voice & file capture',
       'Google Calendar sync',
       'Connections & delegation',
       'Shared projects',
@@ -250,6 +250,7 @@ const comparisonRows = [
   { feature: 'Max attachment size', free: '5 MB',        pro: '20 MB',      team: '50 MB' },
   { group: 'Integrations' },
   { feature: 'Email to Inbox',       free: false,         pro: '50 / day',   team: '100 / day' },
+  { feature: 'Photo, voice & file capture', free: false,  pro: true,         team: true },
   { feature: 'Google Calendar sync', free: false,         pro: true,         team: true },
   { feature: 'Google Drive storage', free: true,          pro: true,         team: true },
   { group: 'Collaboration' },

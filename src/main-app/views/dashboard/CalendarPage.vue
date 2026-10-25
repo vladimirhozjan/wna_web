@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="calendar-page">
       <CalendarHeader
           :current-date="currentDate"
@@ -51,13 +50,11 @@
           />
       </div>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import CalendarHeader from '../../components/calendar/CalendarHeader.vue'
 import CalendarDayView from '../../components/calendar/CalendarDayView.vue'
 import CalendarWeekView from '../../components/calendar/CalendarWeekView.vue'

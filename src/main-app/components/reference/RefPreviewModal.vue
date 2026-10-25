@@ -26,6 +26,7 @@
                 :src="preview.url"
                 class="preview-iframe"
             ></iframe>
+            <audio v-else-if="isAudio" :src="preview.url" controls class="preview-audio"></audio>
             <pre v-else-if="isText" class="text-body-s preview-text">{{ preview.text }}</pre>
             <div v-else class="text-body-m preview-unsupported">
               <FileIcon class="preview-unsupported-icon" />
@@ -78,6 +79,7 @@ const restoreLabel = computed(() => {
 
 const isImage = computed(() => mime.value.startsWith('image/'))
 const isPdf = computed(() => mime.value === 'application/pdf')
+const isAudio = computed(() => mime.value.startsWith('audio/'))
 const isText = computed(() =>
     mime.value.startsWith('text/') || mime.value === 'application/json'
 )
@@ -152,6 +154,11 @@ const isText = computed(() =>
   border: none;
   border-radius: 4px;
   background: #fff;
+}
+
+.preview-audio {
+  width: 100%;
+  max-width: 480px;
 }
 
 .preview-text {

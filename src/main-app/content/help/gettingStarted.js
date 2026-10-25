@@ -32,12 +32,12 @@ export const gettingStarted = [
   {
     title: 'Quick Add — Capture From Anywhere',
     description:
-      'The Quick Add button (+) in the top navigation bar lets you capture a thought without leaving whatever page you\'re on. Tap it, type your item, and press Enter. It goes straight to your Inbox as unprocessed stuff. The input stays open so you can rapid-fire multiple items — press Escape when you\'re done. On mobile, a floating + button in the bottom-right corner does the same thing.',
+      'The Quick Add button (+) in the top navigation bar lets you capture a thought without leaving whatever page you\'re on. Tap it, type your item, and press Enter. It goes straight to your Inbox as unprocessed stuff. The input stays open so you can rapid-fire multiple items — press Escape when you\'re done. On mobile, a floating + button in the bottom-right corner does the same thing. It works offline too — what you capture waits on your device and is sent when you\'re back online. Links you type or paste go to the item\'s description, and so do further lines of pasted text. On Pro and Team plans the paperclip next to the field opens Photo, Voice and File: take or pick a photo, record a voice memo of up to 5 minutes, or attach files. On a computer you can also drop files onto the Inbox page or paste a screenshot into the field. Several files in one capture become one Inbox item, and with no title typed the item gets one automatically (for example "Photo · 25 Oct 14:32"). Your plan\'s attachment limits apply — a file that doesn\'t fit is marked red and isn\'t added.',
   },
   {
     title: 'Capture by Email (Pro & Team)',
     description:
-      'On Pro and Team plans you can send things straight to your Inbox by email. Open Settings and generate your personal inbox address, then copy it and email or forward anything to it — the subject becomes the item title and the body becomes its description. Attached files are imported up to your plan\'s limits — any file that doesn\'t fit is listed at the end of the item\'s description, and an email over 25 MB arrives as a note only (subject and sender, without its content). Use the toggle to pause and resume capture, and reset the address at any time if you ever want to retire the old one. Each plan has a daily limit on inbound emails (50 per day on Pro, 100 per day on Team). On the Free plan this feature is locked — upgrade to unlock it.',
+      'On Pro and Team plans you can send things straight to your Inbox by email. Open Settings and generate your personal inbox address, then copy it and email or forward anything to it — the subject becomes the item title and the body becomes its description. Attached files are imported up to your plan\'s limits — any file that doesn\'t fit is listed at the end of the item\'s description, and an email over 25 MB arrives as a note only (subject and sender, without its content). Every item that arrives by email ends with the line "Captured by email" in its description. Use the toggle to pause and resume capture, and reset the address at any time if you ever want to retire the old one. Each plan has a daily limit on inbound emails (50 per day on Pro, 100 per day on Team). On the Free plan this feature is locked — upgrade to unlock it.',
   },
   {
     title: 'From Stuff to Action',
@@ -57,7 +57,12 @@ export const gettingStarted = [
   {
     title: 'Setting Up Your First Project',
     description:
-      'A project is any outcome that needs more than one action to complete. Go to Projects and add one with a title and an outcome — "What does done look like?" Then add action steps from the project detail page. The first action becomes your Next Action automatically, and when you complete it, the next one in the backlog promotes to take its place. On the Free plan you can keep up to 7 active projects at once; Pro and Team plans are unlimited.',
+      'A project is any outcome that needs more than one action to complete. Go to Projects and add one with a title and an outcome that answers two questions: why does this project matter, and what does done look like? Then add action steps from the project detail page. The first action becomes your Next Action automatically, and when you complete it, the next one in the backlog promotes to take its place. On the Free plan you can keep up to 7 active projects at once; Pro and Team plans are unlimited.',
+  },
+  {
+    title: 'Brainstorming a Project',
+    description:
+      'Before you plan the steps, get every idea about a project out of your head. Open the project and tap Brainstorm: the project sits in the middle of a mind map and its outcome stays in view at the top. On a computer, press Tab to add an idea under the selected one and Enter for the next one; drag ideas anywhere, drop one on another idea to put it under that one, and fold a branch to hide its ideas. Arrow keys move between ideas, Space edits and Delete removes an idea with its branch. On a phone you see one idea at a time with the ideas under it: tap an idea to go deeper, swipe left or right to the next idea on the same level, tap the path at the top to go back up, tap + to add ideas and Move to to put an idea somewhere else. Everything saves on its own, and Undo / Redo (Ctrl/⌘ Z and Ctrl/⌘ Shift Z) take back changes while the brainstorm is open. When you are ready, tap Convert to backlog: every idea with no ideas under it is listed and ticked — untick anything that isn\'t an action, and the rest are added to the end of the project backlog. Converted ideas get a check mark, so the next round lists only new ideas; remove the mark with Mark as not converted to convert an idea again. In the backlog, tap Do next on the action you want to do first. Download saves the brainstorm as a file. On a shared project only the project owner edits the brainstorm — members can view it.',
   },
   {
     title: 'Attaching Files and Adding Comments',
@@ -92,7 +97,7 @@ export const gettingStarted = [
   {
     title: 'Upgrading Your Plan',
     description:
-      'Open Settings and use Update plan → Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, agree to the Terms of Service, and tap Subscribe and pay to continue to our payment provider\'s secure checkout, where you enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period.',
+      'Open Settings and use Update plan → Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, agree to the Terms of Service, and tap Subscribe and pay to continue to our payment provider\'s secure checkout, where you enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period. Upgrading also lifts the Free limits — a project brainstorm, for example, holds up to 50 ideas on Free and up to 1000 on Pro and Team.',
   },
   {
     title: 'Customizing Your Settings',

@@ -25,6 +25,7 @@ import AuthDialog from '../../components/AuthDialog.vue'
 import LegalSidebar from '../../components/public/LegalSidebar.vue'
 import termsRaw from '../../content/legal/terms.md?raw'
 import privacyRaw from '../../content/legal/privacy.md?raw'
+import { pendingShare } from '../../scripts/core/pendingShare.js'
 
 const props = defineProps({
   doc: {
@@ -49,9 +50,9 @@ function closeAuth() {
   authMode.value = null
 }
 
-function onSuccess() {
+async function onSuccess() {
   closeAuth()
-  router.push({ name: 'engage' })
+  router.push(await pendingShare().afterLogin({ name: 'engage' }))
 }
 
 function onSuccessPasswordReset() {

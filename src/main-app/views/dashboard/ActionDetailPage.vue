@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="detail-page">
 
       <!-- Header -->
@@ -440,13 +439,11 @@
 
     </div>
 
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Dropdown from '../../components/Dropdown.vue'
 import TagInput from '../../components/TagInput.vue'

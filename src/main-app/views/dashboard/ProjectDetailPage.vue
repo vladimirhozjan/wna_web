@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="detail-page">
 
       <!-- Header -->
@@ -71,6 +70,7 @@
 
         <!-- Action buttons -->
         <div class="detail-actions">
+          <Btn variant="secondary" size="sm" @click="openCanvas">Brainstorm</Btn>
           <template v-if="isCompleted">
             <Btn
                 variant="primary"
@@ -158,6 +158,7 @@
         <!-- Outcome area -->
         <div class="detail-section-area detail-section-area--no-border">
           <label class="text-body-s fw-semibold detail-section-label">Outcome</label>
+          <p v-if="editingField === 'outcome'" class="text-footnote color-text-secondary outcome-helper">Why does this project matter? What does done look like?</p>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'outcome'"
@@ -170,6 +171,7 @@
                 ref="outcomeInput"
                 v-model="editValue"
                 class="text-body-m detail-section-textarea"
+                placeholder="e.g. New website live, so clients can book online"
                 :disabled="savingField === 'outcome'"
                 @keyup.esc="cancelEdit"
                 @blur="saveField('outcome')"
@@ -271,7 +273,18 @@
                           </span>
                         </template>
                         <template #actions>
-                          <ActionBtn variant="danger" :loading="trashingActionId === action.id" @click="onTrashAction(action)" />
+                          <button
+                              v-if="action.state === 'BACKLOG' && action.id !== orderedActions[0]?.id"
+                              type="button"
+                              class="action-assign-btn"
+                              :disabled="doingNextId === action.id"
+                              title="Do next"
+                              @click.stop="onDoNext(action)"
+                          >
+                            <Spinner v-if="doingNextId === action.id" :size="16" />
+                            <NextIcon v-else />
+                          </button>
+                          <ActionBtn variant="danger" :disabled="doingNextId === action.id" :loading="trashingActionId === action.id" @click="onTrashAction(action)" />
                         </template>
                       </Item>
                     </div>
@@ -372,11 +385,11 @@
                                 type="button"
                                 class="action-assign-btn"
                                 :disabled="assigningId === action.id"
-                                title="Assign to me"
+                                title="Do next"
                                 @click.stop="onAssignToMe(action)"
                             >
                               <Spinner v-if="assigningId === action.id" :size="16" />
-                              <PersonAddIcon v-else />
+                              <NextIcon v-else />
                             </button>
                             <button
                                 v-else-if="isAssignedToMe(action)"
@@ -633,7 +646,6 @@
         >{{ shareModalMode === 'share' ? 'Share' : 'Add' }}</Btn>
       </template>
     </Modal>
-  </DashboardLayout>
 </template>
 
 <script setup>
@@ -642,7 +654,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { VueDraggable } from 'vue-draggable-plus'
 import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Dropdown from '../../components/Dropdown.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
@@ -677,7 +688,6 @@ import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
-import PersonAddIcon from '../../assets/PersonAddIcon.vue'
 import PersonRemoveIcon from '../../assets/PersonRemoveIcon.vue'
 import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
@@ -815,6 +825,7 @@ const completedLoading = ref(false)
 const completedLoaded = ref(false)
 const assigningId = ref(null)
 const unassigningId = ref(null)
+const doingNextId = ref(null)
 
 // Share / Add-member modal state
 const shareModalOpen = ref(false)
@@ -841,8 +852,9 @@ const isOwner = computed(() => {
 // Command palette "This item" — mirrors the action buttons below the title
 const itemCommands = computed(() => {
   if (pageLoading.value || notFound.value || !project.value) return []
-  if (isCompleted.value) return [{ label: 'Undo', run: onUndo }]
-  const commands = []
+  const brainstorm = { label: 'Brainstorm', run: openCanvas }
+  if (isCompleted.value) return [brainstorm, { label: 'Undo', run: onUndo }]
+  const commands = [brainstorm]
   if (!isShared.value || isOwner.value) {
     if (isSomeday.value) commands.push({ label: 'Activate', run: onActivate })
     commands.push({ label: 'Complete', run: onComplete })
@@ -1165,6 +1177,10 @@ function goBack() {
 
 function goToProjects() {
   router.push({ name: 'projects' })
+}
+
+function openCanvas() {
+  router.push({ name: 'project-canvas', params: { id: project.value.id } })
 }
 
 function startEdit(field, value) {
@@ -1653,6 +1669,19 @@ async function onAssignToMe(action) {
   }
 }
 
+// Same as dragging the action to the top of the backlog
+async function onDoNext(action) {
+  doingNextId.value = action.id
+  try {
+    await apiClient.moveProjectAction(action.id, 0)
+  } catch {
+    toaster.push('Couldn\'t make this the next action. Try again.')
+  } finally {
+    await loadProjectActions()
+    doingNextId.value = null
+  }
+}
+
 async function onUnassignMine(action) {
   if (!action) return
   unassigningId.value = action.id
@@ -2050,6 +2079,10 @@ async function onAddAction() {
 }
 
 /* ── Section areas (outcome, description) ── */
+.outcome-helper {
+  margin: 0 0 4px;
+}
+
 .detail-section-area {
   padding: 12px 24px 12px 32px;
   border-bottom: 1px solid var(--color-border-light);

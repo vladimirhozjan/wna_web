@@ -1,6 +1,7 @@
 import axios from 'axios'
 import apiClient from './apiClient.js'
 import {getDomains} from './domains.js'
+import {offlineModel} from './offlineModel.js'
 
 const { base_url } = getDomains()
 
@@ -57,6 +58,11 @@ export function refreshSession() {
     return doRefresh()
 }
 
+// Only a refresh the server answered 401/403 (or no refresh token at all) ends the session; offline keeps it
+function sessionRejected(err) {
+    return err?.status === 401 || err?.status === 403 || !localStorage.getItem('refresh_token')
+}
+
 httpApi.interceptors.request.use(async (req) => {
     const access_token = localStorage.getItem('auth_token')
     if (!access_token) return req
@@ -69,6 +75,7 @@ httpApi.interceptors.request.use(async (req) => {
         return req
     }
 
+    let refreshFailure = null
     try {
         const payload = JSON.parse(atob(access_token.split('.')[1]))
         const now = Math.floor(Date.now() / 1000)
@@ -89,22 +96,32 @@ httpApi.interceptors.request.use(async (req) => {
                 }
 
                 return req
-            } catch {
-                logout()
-                throw new axios.Cancel('Session expired')
+            } catch (e) {
+                if (sessionRejected(e)) {
+                    logout()
+                    throw new axios.Cancel('Session expired')
+                }
+                refreshFailure = e
             }
         }
     } catch (e) {
         if (axios.isCancel(e)) throw e
     }
+    if (refreshFailure) throw refreshFailure
 
     req.headers.Authorization = `Bearer ${access_token}`
     return req
 })
 
 httpApi.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        offlineModel().markResponse()
+        return response
+    },
     async (error) => {
+        if (error.response) offlineModel().markResponse()
+        // Only the network failing marks the app offline; a timeout (ECONNABORTED — slow server) does not
+        else if (error.code === axios.AxiosError.ERR_NETWORK) offlineModel().markNoResponse()
         const originalReq = error.config
         if (
             error.response?.status === 401
@@ -117,7 +134,8 @@ httpApi.interceptors.response.use(
                 const newToken = localStorage.getItem('auth_token')
                 originalReq.headers.Authorization = `Bearer ${newToken}`
                 return httpApi(originalReq)
-            } catch {
+            } catch (e) {
+                if (!sessionRejected(e)) return Promise.reject(e)
                 logout()
             }
         }

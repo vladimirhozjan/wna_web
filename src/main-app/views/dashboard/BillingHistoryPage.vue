@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="billing-page">
 
       <div class="billing-header">
@@ -84,13 +83,11 @@
       </Modal>
 
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { format, parseISO } from 'date-fns'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Modal from '../../components/Modal.vue'
 import Spinner from '../../components/Spinner.vue'

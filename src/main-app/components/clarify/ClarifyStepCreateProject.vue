@@ -19,11 +19,12 @@
 
       <div class="clarify-field">
         <label class="text-body-s fw-semibold clarify-label" for="project-outcome">Outcome *</label>
+        <p class="text-footnote color-text-secondary clarify-helper">Why does this project matter? What does done look like?</p>
         <textarea
             id="project-outcome"
             v-model="form.outcome"
             class="text-body-m clarify-textarea"
-            placeholder="What does done look like?"
+            placeholder="e.g. New website live, so clients can book online"
             rows="2"
             required
         ></textarea>
@@ -134,6 +135,10 @@ function onSubmit() {
 
 .clarify-label {
   color: var(--color-text-primary);
+}
+
+.clarify-helper {
+  margin: 0;
 }
 
 .clarify-field-hint {

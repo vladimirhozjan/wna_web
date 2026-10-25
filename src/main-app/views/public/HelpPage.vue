@@ -145,6 +145,7 @@ import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
 import { gettingStarted } from '../../content/help/gettingStarted.js'
 import { bestPractices } from '../../content/help/bestPractices.js'
 import { faq } from '../../content/help/faq.js'
+import { pendingShare } from '../../scripts/core/pendingShare.js'
 
 const STARTED_LIMIT = 3
 const FAQ_LIMIT = 5
@@ -182,9 +183,9 @@ function closeAuth() {
   authMode.value = null
 }
 
-function onSuccess() {
+async function onSuccess() {
   closeAuth()
-  router.push({ name: 'engage' })
+  router.push(await pendingShare().afterLogin({ name: 'engage' }))
 }
 
 function onSuccessPasswordReset() {

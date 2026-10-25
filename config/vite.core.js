@@ -1,7 +1,8 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import JavaScriptObfuscator from 'javascript-obfuscator'
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = path.dirname(__filename)
@@ -37,6 +38,8 @@ function postBuildObfuscator() {
         closeBundle() {
             if (!outDir) return
             obfuscateDir(outDir)
+            // After obfuscation, so the precached files are the final ones
+            writeServiceWorker(outDir)
         },
     }
 }
@@ -101,6 +104,33 @@ function obfuscateDir(dir) {
     console.log(`[obfuscator] Obfuscated ${count} files in ${assetsDir}`)
 }
 
+const SW_SHELL_FILES = ['index.html', 'config.js', 'manifest.webmanifest', 'favicon.svg',
+    'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png']
+
+// Only main-app ships a sw.js; the version is a hash of every precached file, so any change installs a new worker
+function writeServiceWorker(dir) {
+    const swPath = path.join(dir, 'sw.js')
+    if (!existsSync(swPath)) return
+
+    const files = [
+        ...SW_SHELL_FILES,
+        ...readdirSync(path.join(dir, 'assets')).sort().map(file => `assets/${file}`),
+    ]
+    const hash = createHash('sha256')
+    for (const file of files) hash.update(file).update(readFileSync(path.join(dir, file)))
+    // Set only by the local wnapm production build, so each local rebuild is a new worker; CI and production never set it
+    if (process.env.WNA_BUILD_ID) hash.update(process.env.WNA_BUILD_ID)
+    const version = hash.digest('hex').slice(0, 16)
+
+    const sw = readFileSync(swPath, 'utf-8')
+    const out = sw
+        .replace("const VERSION = 'dev'", `const VERSION = '${version}'`)
+        .replace('const PRECACHE = []', `const PRECACHE = ${JSON.stringify(files.map(file => `/${file}`))}`)
+    if (!out.includes(version) || out.includes('const PRECACHE = []')) throw new Error('sw.js: VERSION / PRECACHE placeholders not found')
+    writeFileSync(swPath, out)
+    console.log(`[sw] ${files.length} files precached, version ${version}`)
+}
+
 // ToS version of record = the "Last updated" date of terms.md, as YYYY-MM-DD (checked by the backend at subscribe)
 function readTermsVersion() {
     const md = readFileSync(path.resolve(__dirname, '..', 'src/main-app/content/legal/terms.md'), 'utf-8')
@@ -138,7 +168,8 @@ export function createViteConfig(mode, envVars, appConfig) {
         plugins,
 
         preview: {
-            port: appConfig.port
+            port: appConfig.port,
+            proxy: appConfig.proxy || {}
         },
 
         build: {

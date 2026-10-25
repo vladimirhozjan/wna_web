@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 21, 2026
+**Last updated:** October 25, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -31,10 +31,14 @@ When you use the Service, you create and store content including:
 - Inbox items (stuff), actions, and projects
 - Descriptions, comments, and tags
 - File attachments (stored in the Reference file manager)
+- Photos, voice recordings and files you capture to your Inbox (stored as attachments)
 - Recurring action templates
 - Calendar entries and scheduling data
+- Project brainstorm canvases (the ideas you write on a project's mind map) — stored on our servers, never in your Google Drive, and deleted with the project or your account
 
 You control what content you create. We process this content solely to provide the Service to you.
+
+The camera and microphone are used only when you choose Photo or Voice, through your browser's permission prompt. Nothing is recorded in the background. Voice recordings are stored as files and are not transcribed.
 
 ### 2.3 Inbound Email Content (Email-to-Inbox)
 
@@ -298,9 +302,15 @@ We use your browser's **localStorage** to store:
 - User preferences (calendar settings, view modes, display options)
 - Session state (dismissed tips, drag-and-drop hints)
 
+We use your browser's **IndexedDB** and **cache** to store:
+
+- Items you capture while offline (their text and attached files) — kept in your browser on this device only until they are sent to your account or you discard them. Logging out deletes them; if your session expires instead, they stay on this device for your next sign-in and are sent then. Another account signing in on the same browser never sees or sends them
+- Content you share to WhatsNextAction from another app (its text, links and files) — kept in your browser on this device only until you add it to your Inbox, cancel it, or log out
+- The app's own files, so WhatsNextAction can open without a network connection
+
 These storage mechanisms are **strictly necessary** for the Service to function and fall under the exemption in Article 5(3) of the ePrivacy Directive (2002/58/EC). No consent is required for strictly necessary storage.
 
-You can clear this data at any time through your browser settings. Doing so will log you out and reset your preferences.
+You can clear this data at any time through your browser settings. Doing so will log you out, reset your preferences and delete any offline captures that have not been sent yet.
 
 ## 11. Children's Privacy
 

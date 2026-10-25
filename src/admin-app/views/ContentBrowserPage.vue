@@ -54,6 +54,9 @@
         <template #cell-type="{ value }">
           <Badge type="role" :value="typeLabel(value)" />
         </template>
+        <template #cell-input_type="{ value }">
+          <span class="text-caption">{{ captureLabel(value) }}</span>
+        </template>
         <template #cell-state="{ value }">
           <span class="text-caption">{{ stateLabel(value) }}</span>
         </template>
@@ -203,11 +206,13 @@ const STATE_LABELS = {
   1002: 'Archived',
   1003: 'Trash',
 }
+const CAPTURE_LABELS = { text: 'Text', photo: 'Photo', audio: 'Voice', file: 'File' }
 
 const stateOptions = Object.entries(STATE_LABELS).map(([value, label]) => ({ value: Number(value), label }))
 
 function typeLabel(t) { return TYPE_LABELS[t] || String(t) }
 function stateLabel(s) { return STATE_LABELS[s] || String(s) }
+function captureLabel(c) { return CAPTURE_LABELS[c] || '—' }
 
 // --- Data stats ---
 const stats = ref(null)
@@ -240,6 +245,7 @@ async function loadStats() {
 const itemColumns = [
   { key: 'title', label: 'Title', sortable: false },
   { key: 'type', label: 'Type', sortable: false, width: '90px' },
+  { key: 'input_type', label: 'Capture', sortable: false, width: '90px' },
   { key: 'state', label: 'State', sortable: false, width: '100px' },
   { key: 'tags', label: 'Tags', sortable: false, width: '150px' },
   { key: 'created_at', label: 'Created', sortable: false, width: '150px' },

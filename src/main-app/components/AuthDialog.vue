@@ -50,8 +50,8 @@
           <section v-else-if="props.mode === 'login'">
             <div>
               <h2 class="text-h2 color-text-primary">Welcome Back</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                Let's get you organized.
+              <p class="subtitle text-body-s color-text-primary" data-testid="login-subtitle">
+                {{ shareWaiting ? 'Sign in to add what you shared to your Inbox.' : 'Let\'s get you organized.' }}
               </p>
             </div>
             <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
@@ -161,6 +161,7 @@ import {authModel} from '../scripts/core/authModel.js'
 import {errorModel} from '../scripts/core/errorModel.js'
 import {mapApiError, ErrorScenario} from '../scripts/core/errorMapper.js'
 import {isGoogleSsoEnabled, redirectToGoogle} from '../scripts/core/googleSso.js'
+import {pendingShare} from '../scripts/core/pendingShare.js'
 import GoogleIcon from '../assets/GoogleIcon.vue'
 
 const auth = authModel()
@@ -201,6 +202,11 @@ const agreeError = ref('')
 
 const resetToken = ref(props.token || '')
 const userId = ref(null)
+const shareWaiting = ref(false)
+
+watch(() => props.mode, async (m) => {
+  if (m === 'login') shareWaiting.value = await pendingShare().exists()
+}, { immediate: true })
 
 watch(() => props.token, (t) => {
   if (t) resetToken.value = t

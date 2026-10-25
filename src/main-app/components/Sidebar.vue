@@ -211,6 +211,7 @@ import { reviewModel } from "../scripts/models/reviewModel.js";
 import { settingsModel } from "../scripts/models/settingsModel.js";
 import { engageModel } from "../scripts/models/engageModel.js";
 import { connectionModel } from "../scripts/models/connectionModel.js";
+import { truncateTitle } from "../scripts/core/textUtils.js";
 
 const auth = authModel();
 const toaster = errorModel();
@@ -291,11 +292,6 @@ const referenceLabel = computed(() => {
 async function logout() {
   const confirmed = await auth.logoutWithConfirm();
   if (confirmed) router.push({ name: "landing" });
-}
-
-function truncateTitle(title, maxLen = 30) {
-  if (!title || title.length <= maxLen) return title;
-  return title.slice(0, maxLen).trim() + '…';
 }
 
 const SOURCE_TYPES = { stuff: 'STUFF', action: 'ACTION', project: 'PROJECT' };

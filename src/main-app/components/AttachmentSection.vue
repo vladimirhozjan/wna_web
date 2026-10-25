@@ -41,6 +41,8 @@
     </div>
 
     <template v-else>
+      <AttachmentPreviewStrip v-if="entityType === 'stuff'" :item-id="itemId" :attachments="attachments" />
+
       <!-- Empty state (drop target) -->
       <div v-if="attachments.length === 0 && !uploading" class="detail-section-wrapper">
         <p
@@ -113,6 +115,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import RefFileIcon from './reference/RefFileIcon.vue'
 import RefPreviewModal from './reference/RefPreviewModal.vue'
+import AttachmentPreviewStrip from './AttachmentPreviewStrip.vue'
 import DownloadIcon from '../assets/DownloadIcon.vue'
 import ListViewIcon from '../assets/ListViewIcon.vue'
 import GridViewIcon from '../assets/GridViewIcon.vue'

@@ -1,16 +1,13 @@
 <template>
-  <DashboardLayout>
     <div class="connect-state">
       <Spinner :size="16" />
       <span>Connecting Google...</span>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import {onMounted} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Spinner from '../../components/Spinner.vue'
 import {errorModel} from '../../scripts/core/errorModel.js'
 import {authModel} from '../../scripts/core/authModel.js'

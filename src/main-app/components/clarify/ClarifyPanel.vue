@@ -23,7 +23,10 @@
     <!-- Context -->
     <div class="clarify-context" v-if="stuffItem">
       <span class="text-body-s clarify-context-label">Processing:</span>
-      <span class="text-h3 clarify-context-title">{{ stuffItem.title }}</span>
+      <span class="text-h3 clarify-context-title">
+        <component :is="captureIcon" v-if="captureIcon" class="clarify-context-icon" />{{ stuffItem.title }}
+      </span>
+      <AttachmentPreviewStrip v-if="stuffItem.attachment_count > 0" :item-id="stuffItem.id" layout="row" class="clarify-context-preview" />
     </div>
 
     <!-- Step Content -->
@@ -83,6 +86,10 @@ import ClarifyStepTwoMinute from './ClarifyStepTwoMinute.vue'
 import ClarifyStepCreateAction from './ClarifyStepCreateAction.vue'
 import ClarifyStepCreateProject from './ClarifyStepCreateProject.vue'
 import ClarifyStepDoItNow from './ClarifyStepDoItNow.vue'
+import AttachmentPreviewStrip from '../AttachmentPreviewStrip.vue'
+import CameraIcon from '../../assets/CameraIcon.vue'
+import MicIcon from '../../assets/MicIcon.vue'
+import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 
 const props = defineProps({
   stuffItem: {
@@ -108,6 +115,15 @@ watch(() => state.error, (err) => {
 })
 
 const progress = computed(() => clarify.getProgress())
+
+const captureIcon = computed(() => {
+  switch (props.stuffItem?.input_type) {
+    case 'photo': return CameraIcon
+    case 'audio': return MicIcon
+    case 'file': return AttachmentIcon
+    default: return null
+  }
+})
 
 const canGoBack = computed(() => {
   return ![
@@ -344,6 +360,18 @@ function onCancel() {
 
 .clarify-context-title {
   color: var(--color-text-primary);
+}
+
+.clarify-context-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  vertical-align: -3px;
+  color: var(--color-text-tertiary);
+}
+
+.clarify-context-preview {
+  text-align: left;
 }
 
 /* Content */

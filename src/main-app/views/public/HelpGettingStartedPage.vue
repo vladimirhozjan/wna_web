@@ -19,7 +19,7 @@
         >Show the welcome tour</Btn>
 
         <div class="card-grid">
-          <div v-for="item in gettingStarted" :key="item.title" class="card">
+          <div v-for="item in gettingStarted" :id="cardId(item.title)" :key="item.title" class="card">
             <h3 class="text-h4">{{ item.title }}</h3>
             <p class="text-body-s card-desc">{{ item.description }}</p>
           </div>
@@ -46,13 +46,16 @@ import Btn from '../../components/Btn.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import { gettingStarted } from '../../content/help/gettingStarted.js'
 import { authModel } from '../../scripts/core/authModel.js'
+import { pendingShare } from '../../scripts/core/pendingShare.js'
 
 const router = useRouter()
 const auth = authModel()
 const authMode = ref(null)
 
+// Deep-link anchor, e.g. "Brainstorming a Project" → #brainstorming-a-project
+function cardId(title) { return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }
 function openAuth(mode) { authMode.value = mode }
-function onSuccess() { authMode.value = null; router.push({ name: 'engage' }) }
+async function onSuccess() { authMode.value = null; router.push(await pendingShare().afterLogin({ name: 'engage' })) }
 function onSuccessPasswordReset() { authMode.value = null; router.push({ name: 'login' }) }
 </script>
 

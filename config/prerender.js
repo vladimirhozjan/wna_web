@@ -37,6 +37,8 @@ const browser = await puppeteer.launch({args: ['--no-sandbox']})
 
 try {
     const page = await browser.newPage()
+    // The production build registers a service worker; its fetches would slip past the request interception
+    await page.setBypassServiceWorker(true)
     await page.setRequestInterception(true)
     page.on('request', (req) => {
         const url = new URL(req.url())

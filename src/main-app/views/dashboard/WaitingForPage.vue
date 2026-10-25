@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="waiting-page">
       <div class="waiting-header">
         <div class="header-row">
@@ -77,13 +76,11 @@
         </div>
       </PullToRefresh>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import ActionBtn from '../../components/ActionBtn.vue'

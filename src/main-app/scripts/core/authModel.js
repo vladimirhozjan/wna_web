@@ -1,7 +1,11 @@
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import apiClient from './apiClient.js'
 import { refreshSession } from './httpApi.js'
 import { confirmModel } from './confirmModel.js'
+import { captureQueue } from './captureQueue.js'
+import { pendingShare } from './pendingShare.js'
+import { stuffModel } from '../models/stuffModel.js'
+import { statsModel } from '../models/statsModel.js'
 
 window.addEventListener('storage', (event) => {
     if (event.key === 'logout') {
@@ -26,6 +30,14 @@ const currentUser = ref(null)
 const loading = ref(false)
 const error = ref(null)
 const isAuthenticated = ref(false)
+
+// Inbox rows and counts loaded this session belong to the user who loaded them: clear them on logout (any kind) and
+// when another user signs in without a page reload — the offline Inbox and Sidebar show what is kept
+watch(() => currentUser.value?.id, (id, previous) => {
+    if (previous == null || id === previous) return
+    stuffModel().reset()
+    statsModel().setStats(null)
+})
 
 
 export function authModel() {
@@ -256,15 +268,27 @@ export function authModel() {
         }
     }
 
-    async function logoutWithConfirm() {
-        const confirm = confirmModel()
-        const confirmed = await confirm.show({
+    // Unsent captures of this user and a pending share are deleted on a confirmed manual logout; a forced logout keeps them
+    async function confirmLogout() {
+        const queue = captureQueue()
+        const pending = await queue.pendingCount()
+        const confirmed = await confirmModel().show({
             title: 'Log out',
-            message: 'Are you sure you want to log out?',
-            confirmText: 'Log out',
+            message: pending === 0
+                ? 'Are you sure you want to log out?'
+                : pending === 1
+                    ? '1 captured item hasn\'t synced yet. Logging out deletes it from this device.'
+                    : `${pending} captured items haven't synced yet. Logging out deletes them from this device.`,
+            confirmText: pending ? 'Delete and log out' : 'Log out',
             cancelText: 'Cancel',
         })
-        if (!confirmed) return false
+        if (confirmed && pending) await queue.clearUser()
+        if (confirmed) await pendingShare().remove()
+        return confirmed
+    }
+
+    async function logoutWithConfirm() {
+        if (!await confirmLogout()) return false
         await logoutUser()
         return true
     }
@@ -286,6 +310,7 @@ export function authModel() {
         loadUser,
         refreshToken,
         logoutUser,
+        confirmLogout,
         logoutWithConfirm,
         forgotPassword,
         resetPassword,

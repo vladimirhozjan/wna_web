@@ -36,12 +36,13 @@
 
           <!-- Outcome Modal -->
           <template v-else-if="move.state.type === 'outcome'">
+            <p class="text-footnote color-text-secondary outcome-helper">Why does this project matter? What does done look like?</p>
             <div class="form-group">
               <textarea
                   ref="outcomeInput"
                   v-model="move.state.outcome"
                   class="text-body-m input input--textarea"
-                  placeholder="Describe the successful outcome..."
+                  placeholder="e.g. New website live, so clients can book online"
                   rows="3"
               ></textarea>
             </div>
@@ -157,6 +158,10 @@ watch(() => move.state.visible, (visible) => {
 
 .form-group {
   margin-bottom: 16px;
+}
+
+.outcome-helper {
+  margin: -8px 0 12px;
 }
 
 @media (max-width: 768px) {

@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="trash-page">
       <div class="trash-header">
         <h1 class="page-title">Trash</h1>
@@ -37,12 +36,10 @@
         </div>
       </PullToRefresh>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { watch, onMounted } from 'vue'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import Btn from '../../components/Btn.vue'

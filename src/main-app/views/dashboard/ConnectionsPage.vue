@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="connections-page">
       <div class="connections-header">
         <div class="header-row">
@@ -157,12 +156,10 @@
         </div>
       </div>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import Spinner from '../../components/Spinner.vue'

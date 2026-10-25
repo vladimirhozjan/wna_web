@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="engage-page">
 
       <div class="engage-header">
@@ -192,13 +191,11 @@
       </PullToRefresh>
 
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { computed, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import ItemList from '../../components/ItemList.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import MetadataRow from '../../components/MetadataRow.vue'

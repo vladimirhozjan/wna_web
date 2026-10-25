@@ -185,7 +185,8 @@ When adding features, fixing bugs, or changing behavior — with or without a sl
 **in `wna_orchestration`** (this repo keeps no spec copies):
 - `wna_orchestration/specs/features/wna-features.md` — if a user-facing feature is added, changed, or removed,
   and for every new/removed route in either app's router (main-app AND admin-app)
-- `wna_orchestration/specs/tests/wna-test-cases.md` — add/update test cases for new or changed functionality
+- Test cases (`wna_orchestration/specs/tests/wna-test-cases.md`) are authored by `wna-ui-tests` only (owner, 2026-10-25) —
+  never edit them; list the TCs your change makes new/stale in your output for ui-tests
 - `wna_orchestration/specs/ci/frontend-ci.md` — if build config, Docker, K8s manifests, or deployment changes
 - `README.md` — update if dev setup, build commands, project structure, or tooling changes (stays local)
 
@@ -233,7 +234,7 @@ Define success criteria. Loop until verified.
 
 Transform tasks into verifiable goals. This project has no automated tests and Claude does not run apps or dev servers, so verify with what exists — production builds, code inspection, and the manual test cases spec:
 
-- "Add validation" → "List the invalid inputs to handle, implement, confirm `npm run build:main`/`build:admin` passes, add the cases to `wna-test-cases.md`"
+- "Add validation" → "List the invalid inputs to handle, implement, confirm `npm run build:main`/`build:admin` passes, list the cases ui-tests must cover"
 - "Fix the bug" → "State the reproduction steps, trace the cause in code, fix it, confirm the build passes, ask the user to verify at runtime"
 - "Refactor X" → "Confirm the build passes before and after; behavior must be unchanged"
 

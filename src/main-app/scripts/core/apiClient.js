@@ -55,7 +55,7 @@ async function parseBlobError(err) {
     return err
 }
 
-function normalizeError(error, {storageHint = null} = {}) {
+function normalizeError(error, {storageHint = null, quiet = false} = {}) {
     if (error.response) {
         const cfg = error.config || {}
         console.error(`[api] ${cfg.method?.toUpperCase() || 'REQ'} ${cfg.url || ''} → ${error.response.status}`, error.response.data)
@@ -80,6 +80,7 @@ function normalizeError(error, {storageHint = null} = {}) {
 
         // Tier limit errors (403 with upgrade_message or limit field)
         if (status === 403 && (data.upgrade_message || data.limit != null)) {
+            if (quiet) return {status, message: backendMsg || 'Limit reached', upgrade: true}
             const upgrade = upgradeModel()
             upgrade.show({
                 message: friendlyUpgradeMessage(data.upgrade_message || backendMsg, {storageHint}),
@@ -90,6 +91,7 @@ function normalizeError(error, {storageHint = null} = {}) {
 
         // File/storage limit errors (413)
         if (status === 413) {
+            if (quiet) return {status, message: backendMsg || 'File too large or storage quota exceeded.'}
             const upgrade = upgradeModel()
             upgrade.show({
                 message: friendlyUpgradeMessage(data.upgrade_message || backendMsg || 'storage', {storageHint}),
@@ -403,13 +405,15 @@ export async function revokeAllSessions() {
     }
 }
 
-export async function addStuff({title, description = "", state = "INBOX"}) {
+export async function addStuff({title, description = "", state = "INBOX", client_key = null, input_type = null}, {quiet = false} = {}) {
     try {
         const body = {title, description, state, add_to_top: addToTop()}
+        if (client_key) body.client_key = client_key
+        if (input_type) body.input_type = input_type
         const res = await httpApi.post('/v1/stuff', body, {headers: authHeaders()})
         return res.data
     } catch (err) {
-        throw normalizeError(err)
+        throw normalizeError(err, {quiet})
     }
 }
 
@@ -668,7 +672,7 @@ export async function addAction(data) {
         if (data.scheduled_duration) body.scheduled_duration = data.scheduled_duration
         if (data.delegate_to_user_id) body.delegate_to_user_id = data.delegate_to_user_id
         if (data.delegate_to_email) body.delegate_to_email = data.delegate_to_email
-        body.add_to_top = addToTop()
+        body.add_to_top = data.add_to_top ?? addToTop()
 
         const res = await httpApi.post('/v1/action', body, {headers: authHeaders()})
         return res.data
@@ -1010,6 +1014,44 @@ export async function listProjectActions(projectId, {limit = 100, cursor = null}
         return res.data
     } catch (err) {
         throw normalizeError(err)
+    }
+}
+
+// ── Brainstorm canvas API ──
+
+export async function getProjectCanvas(projectId) {
+    try {
+        const res = await httpApi.get(`/v1/project/${projectId}/canvas`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// keepalive goes through fetch — axios cannot keep a request alive past page unload
+export async function saveProjectCanvas(projectId, body, {keepalive = false} = {}) {
+    const url = `/v1/project/${projectId}/canvas`
+    if (keepalive) {
+        let res
+        try {
+            res = await fetch(`${httpApi.defaults.baseURL || ''}${url}`, {
+                method: 'PUT',
+                keepalive: true,
+                headers: {...authHeaders(), 'Content-Type': 'application/json'},
+                body: JSON.stringify(body),
+            })
+        } catch {
+            throw {status: null, message: "No response from server. Check your connection."}
+        }
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) throw {status: res.status, code: data.error, message: data.detail || data.error || `Server error (${res.status}).`}
+        return data
+    }
+    try {
+        const res = await httpApi.put(url, body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw {...normalizeError(err, {quiet: true}), code: err.response?.data?.error}
     }
 }
 
@@ -1428,6 +1470,13 @@ export async function previewRefFile(id) {
 export async function getRefQuota() {
     try {
         const res = await httpApi.get('/v1/reference/quota', {headers: authHeaders()})
+        // Kept for the offline capture pre-check
+        if (res.data?.attachment_limits) {
+            localStorage.setItem('attachment_limits', JSON.stringify({
+                user_id: authModel().currentUser.value?.id,
+                limits: res.data.attachment_limits,
+            }))
+        }
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1544,7 +1593,7 @@ export async function listAttachments(entityType, itemId) {
     }
 }
 
-export async function uploadAttachment(entityType, itemId, file, onProgress = null) {
+export async function uploadAttachment(entityType, itemId, file, onProgress = null, {quiet = false} = {}) {
     try {
         const formData = new FormData()
         formData.append('file', file)
@@ -1557,7 +1606,7 @@ export async function uploadAttachment(entityType, itemId, file, onProgress = nu
         })
         return res.data
     } catch (err) {
-        throw normalizeError(err)
+        throw normalizeError(err, {quiet})
     }
 }
 
@@ -2233,6 +2282,8 @@ const apiClient = {
     getProjectByPosition,
     completeProject,
     listProjectActions,
+    getProjectCanvas,
+    saveProjectCanvas,
     listSomeday,
     moveSomeday,
     getSomedayByPosition,

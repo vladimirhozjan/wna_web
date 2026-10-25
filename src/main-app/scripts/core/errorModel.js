@@ -1,6 +1,7 @@
 import { reactive } from 'vue';
 
 const UNDO_MS = 6000;
+export const SUCCESS_TOAST_MS = 3000;
 
 let instance = null;
 
@@ -25,7 +26,7 @@ export function errorModel() {
 
         const id = nextId++;
 
-        add({ id, message, type }, type === 'success' ? 3000 : 5000);
+        add({ id, message, type }, type === 'success' ? SUCCESS_TOAST_MS : 5000);
     }
 
     function add(toast, timeout) {

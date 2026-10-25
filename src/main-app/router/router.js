@@ -44,6 +44,7 @@ const routes = [
     {path: '/next', name: 'next', component: NextPage},
     {path: '/calendar', name: 'calendar', component: CalendarPage},
     {path: '/inbox', name: 'inbox', component: InboxPage},
+    {path: '/share', name: 'share', component: () => import('../views/dashboard/SharePage.vue')},
     {path: '/projects', name: 'projects', component: ProjectsPage},
     {path: '/reference', name: 'reference', component: ReferencePage},
     {path: '/settings', name: 'settings', component: SettingsPage},
@@ -63,6 +64,7 @@ const routes = [
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
     {path: '/project/:id', name: 'project-detail', component: ProjectDetailPage},
+    {path: '/project/:id/canvas', name: 'project-canvas', component: () => import('../views/dashboard/ProjectCanvasPage.vue')},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
     {path: '/search', name: 'search', component: () => import('../views/dashboard/SearchPage.vue')},
     {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue'), meta: {seo: {
@@ -113,7 +115,7 @@ export default router
 
 const auth = authModel()
 
-const PUBLIC_ROUTE_NAMES = new Set([
+export const PUBLIC_ROUTE_NAMES = new Set([
     'landing', 'login', 'register', 'forgot', 'reset-password',
     'verify-email', 'google-sso', 'pricing',
     'help', 'help-getting-started', 'help-faq', 'help-best-practices',

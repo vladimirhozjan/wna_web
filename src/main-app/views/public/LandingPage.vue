@@ -34,6 +34,7 @@ import TestimonySection from '../../components/public/TestimonySection.vue'
 import BookSection from '../../components/public/BookSection.vue'
 import LandingFaqSection from '../../components/public/LandingFaqSection.vue'
 import CtaBanner from '../../components/public/CtaBanner.vue'
+import {pendingShare} from '../../scripts/core/pendingShare.js'
 
 const props = defineProps({
   mode: {
@@ -78,11 +79,9 @@ function closeAuth() {
   authMode.value = null
 }
 
-function onSuccess() {
+async function onSuccess() {
   closeAuth()
-  const redirect = resolveRedirect()
-  if (redirect) router.push(redirect)
-  else router.push({name: 'engage'})
+  router.push(await pendingShare().afterLogin(resolveRedirect() ?? {name: 'engage'}))
 }
 
 function onSuccessPasswordReset() {

@@ -77,7 +77,7 @@ export function moveModel() {
     function showOutcome(options = {}) {
         return new Promise((resolve) => {
             state.type = 'outcome'
-            state.title = options.title || 'What does done look like?'
+            state.title = options.title || 'Project outcome'
             state.outcome = options.outcome || ''
             state.visible = true
 

@@ -172,6 +172,18 @@ export function stuffModel() {
         }
     }
 
+    // Another user's rows must never show, not even offline; an in-flight load is dropped
+    function reset() {
+        loadVersion++
+        items.value = []
+        current.value = null
+        loading.value = false
+        error.value = null
+        cursor.value = null
+        hasMore.value = true
+        totalItems.value = 0
+    }
+
     return {
         // state
         items,
@@ -191,5 +203,6 @@ export function stuffModel() {
         updateStuff,
         trashStuff,
         moveStuff,
+        reset,
     }
 }

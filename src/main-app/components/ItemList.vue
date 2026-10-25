@@ -56,6 +56,7 @@
             :no-hover="isDragging"
             :no-checkbox="noCheckbox"
             :no-initial-animation="noInitialAnimation"
+            :checkbox-disabled="checkboxDisabled"
             :swipe-right="swipeFor(item, swipeRight)"
             :swipe-left="swipeFor(item, swipeLeft)"
             @update="(id, data) => emit('update', id, data)"
@@ -75,7 +76,7 @@
           </template>
           <template #actions>
             <slot name="actions" :item="item">
-              <ActionBtn @click="emit('delete', item.id)" />
+              <ActionBtn v-if="!noDefaultAction" @click="emit('delete', item.id)" />
             </slot>
           </template>
         </Item>
@@ -130,6 +131,10 @@ const props = defineProps({
   completingIds: { type: Array, default: () => [] },
   acceptDrop: { type: Array, default: () => [] },
   noInitialAnimation: { type: Boolean, default: false },
+  // Independent of disabled (drag): rows whose checkbox can't be ticked
+  checkboxDisabled: { type: Boolean, default: false },
+  // No default × when the page's actions slot renders nothing (read-only rows)
+  noDefaultAction: { type: Boolean, default: false },
   swipeRight: { type: String, default: null },
   swipeLeft: { type: String, default: null },
   swipeFilter: { type: Function, default: null },

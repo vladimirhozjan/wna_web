@@ -69,7 +69,7 @@
 
       <!-- Attachments -->
       <span v-if="item.attachment_count > 0" class="chip">
-        <AttachmentIcon class="chip__icon chip__icon--tertiary" />
+        <component :is="attachmentIcon" class="chip__icon chip__icon--tertiary" />
         <span class="chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
       </span>
 
@@ -98,6 +98,8 @@ import HourglassIcon from '../assets/HourglassIcon.vue'
 import CalendarIcon from '../assets/CalendarIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import AttachmentIcon from '../assets/AttachmentIcon.vue'
+import CameraIcon from '../assets/CameraIcon.vue'
+import MicIcon from '../assets/MicIcon.vue'
 import CommentIcon from '../assets/CommentIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
 import WarningIcon from '../assets/WarningIcon.vue'
@@ -110,6 +112,14 @@ import { authModel } from '../scripts/core/authModel.js'
 const props = defineProps({
   item: { type: Object, required: true },
   entityType: { type: String, required: true },
+})
+
+// The capture form replaces the paperclip on Stuff, so a row never shows two attachment chips
+const attachmentIcon = computed(() => {
+  if (props.entityType !== 'stuff') return AttachmentIcon
+  if (props.item.input_type === 'photo') return CameraIcon
+  if (props.item.input_type === 'audio') return MicIcon
+  return AttachmentIcon
 })
 
 const isItemOverdue = computed(() =>

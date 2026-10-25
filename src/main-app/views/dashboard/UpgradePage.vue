@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="upgrade-page">
 
       <div class="upgrade-header">
@@ -183,13 +182,11 @@
         </div>
       </div>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import Select from '../../components/Select.vue'

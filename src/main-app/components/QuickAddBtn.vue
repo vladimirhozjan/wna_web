@@ -4,44 +4,24 @@
       <span class="quick-add-icon">+</span>
       <span class="quick-add-label">Quick Add</span>
     </button>
-    <input
-      v-else
-      ref="inputRef"
-      v-model="title"
-      class="text-body-s quick-add-input"
-      type="text"
-      placeholder="Add new stuff"
-      @keydown.enter="submit"
-      @keydown.esc="collapse"
-      @blur="collapse"
-    />
+    <CaptureBar v-else ref="barRef" variant="quick" @close="collapse" />
   </div>
 </template>
 
 <script setup>
 import { ref, nextTick } from "vue";
-
-const emit = defineEmits(["add"]);
+import CaptureBar from "./CaptureBar.vue";
 
 const expanded = ref(false);
-const title = ref("");
-const inputRef = ref(null);
+const barRef = ref(null);
 
 function expand() {
   expanded.value = true;
-  nextTick(() => inputRef.value?.focus());
+  nextTick(() => barRef.value?.focus());
 }
 
 function collapse() {
   expanded.value = false;
-  title.value = "";
-}
-
-function submit() {
-  const t = title.value.trim();
-  if (!t) return;
-  emit("add", t);
-  title.value = "";
 }
 
 defineExpose({ expand });
@@ -76,22 +56,6 @@ defineExpose({ expand });
   color: var(--color-action);
 }
 
-.quick-add-input {
-  padding: 6px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--color-btn-secondary-border);
-  background: var(--color-bg-accent-light);
-  color: var(--color-text-primary);
-  outline: none;
-  width: 200px;
-  font-size: 13px;
-  font-family: inherit;
-}
-
-.quick-add-input:focus {
-  border-color: var(--color-action);
-}
-
 @media (max-width: 768px) {
   .quick-add-label {
     display: none;
@@ -103,16 +67,6 @@ defineExpose({ expand });
 
   .quick-add {
     position: static;
-  }
-
-  .quick-add-input {
-    position: fixed;
-    top: 10px;
-    left: 54px;
-    right: 50px;
-    width: auto;
-    z-index: 10;
-    background: var(--color-bg-primary);
   }
 }
 </style>

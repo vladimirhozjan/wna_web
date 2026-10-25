@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="review-page">
 
       <div class="review-header">
@@ -125,13 +124,11 @@
       </div>
 
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import TipTricks from '../../components/TipTricks.vue'
 import ItemList from '../../components/ItemList.vue'

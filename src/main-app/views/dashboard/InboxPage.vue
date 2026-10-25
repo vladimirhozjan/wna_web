@@ -1,15 +1,23 @@
 <template>
-  <DashboardLayout>
     <div class="inbox-page">
 
       <!-- List Panel -->
-      <div class="inbox-list-panel">
+      <div
+          class="inbox-list-panel"
+          @dragenter="onPanelDragEnter"
+          @dragover="onPanelDragOver"
+          @dragleave="onPanelDragLeave"
+          @drop="onPanelDrop"
+      >
+        <div v-if="dropActive" class="text-body-m inbox-drop-overlay" data-testid="inbox-drop-overlay">
+          {{ isProOrTeam ? 'Drop files to capture them to Inbox' : '🔒 Photo, voice and file capture is available on Pro and Team plans.' }}
+        </div>
         <!-- Fixed header -->
         <div class="inbox-header">
           <div class="title">
             <h1 class="page-title">Inbox</h1>
             <Btn
-                v-if="items.length > 0 && !clarifyMode"
+                v-if="serverRows.length > 0 && !clarifyMode && !isOffline"
                 variant="primary"
                 size="sm"
                 @click="onClarify"
@@ -28,40 +36,57 @@
 
           <!-- Add Stuff -->
           <div class="inbox-input" v-if="!clarifyMode">
-            <Inpt
-                ref="add_input"
-                v-model="new_stuff_title"
-                type="text"
-                placeholder="Add new stuff"
-                @keyup.enter="onAdd"
-            />
-            <Btn @mousedown.prevent
-                 @click="onAdd"
-                 :disabled="adding || !new_stuff_title.trim()"
-                 :loading="adding"
-                 class="add-button"
-                 variant="primary"
-                 size="sm">
-              Add
-            </Btn>
+            <CaptureBar ref="add_input" variant="inbox" @saved="hadItems = true" />
           </div>
         </div>
 
         <!-- Scrollable content -->
-        <PullToRefresh class="inbox-content" :refresh="onRefresh" :disabled="clarifyMode || (loading && items.length === 0)">
+        <PullToRefresh class="inbox-content" :refresh="onRefresh" :disabled="clarifyMode || isOffline || (loading && items.length === 0)">
           <div class="card">
+          <Item
+              v-for="entry in queuedRows"
+              :key="entry.client_key"
+              :id="entry.client_key"
+              :title="entry.title"
+              :editable="false"
+              no-checkbox
+              reserve-checkbox
+              class="queued-row"
+              data-testid="queued-row"
+          >
+            <template #subtitle>
+              <div class="queued-row__meta">
+                <Badge v-if="entry.client_key === sendingKey" type="pending" label="Syncing…" />
+                <Badge v-else-if="entry.status === 'failed'" type="failed" label="Couldn't sync" />
+                <Badge v-else type="pending" label="Waiting to sync" />
+                <MetadataRow v-if="entry.files.length" :item="{ attachment_count: entry.files.length, input_type: entry.input_type }" entity-type="stuff" />
+              </div>
+              <div v-if="entry.status === 'failed' && entry.client_key !== sendingKey" class="text-footnote color-text-danger queued-row__reason">
+                {{ failureCopy(entry.error) }}
+              </div>
+            </template>
+            <template #actions>
+              <template v-if="entry.client_key !== sendingKey">
+                <Btn v-if="entry.status === 'failed'" variant="ghost" size="sm" @click="queue.retry(entry.client_key)">Retry</Btn>
+                <ActionBtn @click="onDiscard(entry)" />
+              </template>
+            </template>
+          </Item>
           <ItemList
-              v-model="items"
-              :loading="loading && !adding"
-              :has-more="(adding ? hasMoreSnapshot : hasMore) && !clarifyMode"
+              v-if="queuedRows.length === 0 || serverRows.length > 0"
+              v-model="serverRows"
+              :loading="loading"
+              :has-more="hasMore && !clarifyMode"
               :loading-ids="loadingIds"
               :completing-ids="completingIds"
-              :disabled="clarifyMode || adding"
+              :disabled="clarifyMode || isOffline"
+              :checkbox-disabled="isOffline"
+              :no-default-action="clarifyMode || isOffline"
               :active-id="currentClarifyItem?.id ?? null"
-              :editable="!clarifyMode"
-              :source-type="clarifyMode ? null : 'stuff'"
-              :swipe-right="clarifyMode ? null : 'clarify'"
-              :swipe-left="clarifyMode ? null : 'trash'"
+              :editable="!clarifyMode && !isOffline"
+              :source-type="clarifyMode || isOffline ? null : 'stuff'"
+              :swipe-right="clarifyMode || isOffline ? null : 'clarify'"
+              :swipe-left="clarifyMode || isOffline ? null : 'trash'"
               @update="onItemUpdate"
               @check="onItemCheck"
               @click="onItemClick"
@@ -75,15 +100,19 @@
               <MetadataRow :item="item" entity-type="stuff" />
             </template>
             <template #actions="{ item }">
-              <ActionBtn v-if="!clarifyMode" @click="onTrash(item.id)" />
+              <ActionBtn v-if="!clarifyMode && !isOffline" @click="onTrash(item.id)" />
             </template>
             <template #empty>
-              <Celebration v-if="celebrating" title="Inbox Zero" subtitle="You're in control." @dismiss="celebrating = false" />
+              <EmptyState v-if="isOffline && hasMore" :icon="InboxIcon" title="You're offline" text="Your Inbox loads when you're back online. Capture above — it's sent automatically." />
+              <Celebration v-else-if="celebrating" title="Inbox Zero" subtitle="You're in control." @dismiss="celebrating = false" />
               <template v-else>
                 <EmptyState :icon="InboxIcon" title="Inbox zero. Mind like water." text="Your head is for having ideas, not holding them. Capture the next one above." />
               </template>
             </template>
           </ItemList>
+          <p v-if="isOffline && hasMore && (queuedRows.length > 0 || serverRows.length > 0)" class="text-body-s color-text-tertiary inbox-offline-footer">
+            The rest of your Inbox loads when you're back online.
+          </p>
           </div>
         </PullToRefresh>
       </div>
@@ -117,11 +146,9 @@
       </Teleport>
 
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
-import DashboardLayout from "../../layouts/DashboardLayout.vue";
 import {ref, onMounted, nextTick, watch, computed, onUnmounted} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { stuffModel } from '../../scripts/models/stuffModel.js'
@@ -130,9 +157,16 @@ import { undoModel } from '../../scripts/core/undoModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { clarifyModel } from '../../scripts/models/clarifyModel.js'
+import { captureQueue } from '../../scripts/core/captureQueue.js'
+import { offlineModel } from '../../scripts/core/offlineModel.js'
+import { truncateTitle } from '../../scripts/core/textUtils.js'
+import { authModel } from '../../scripts/core/authModel.js'
+import { confirmModel } from '../../scripts/core/confirmModel.js'
 import Btn from "../../components/Btn.vue";
-import Inpt from '../../components/Inpt.vue'
+import CaptureBar from '../../components/CaptureBar.vue'
 import ItemList from '../../components/ItemList.vue'
+import Item from '../../components/Item.vue'
+import Badge from '../../components/Badge.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import InboxIcon from '../../assets/InboxIcon.vue'
@@ -150,7 +184,6 @@ const {
   error,
   hasMore,
   loadStuff,
-  addStuff,
   updateStuff,
   trashStuff,
   moveStuff,
@@ -162,12 +195,14 @@ const route = useRoute()
 const toaster = errorModel()
 const undo = undoModel()
 const clarify = clarifyModel()
+const queue = captureQueue()
+const { entries, sendingKey } = queue
+const { isOffline } = offlineModel()
+const auth = authModel()
+const confirm = confirmModel()
 
 // local UI state
-const new_stuff_title = ref('')
 const add_input = ref(null)
-const adding = ref(false)
-const hasMoreSnapshot = ref(false)
 const updatingId = ref(null)
 const deletingId = ref(null)
 const movingId = ref(null)
@@ -179,6 +214,15 @@ const loadingIds = computed(() => {
   if (deletingId.value) ids.push(deletingId.value)
   if (movingId.value) ids.push(movingId.value)
   return ids
+})
+
+// Device-queued captures sit above the server rows, newest first; a queued entry already created on the
+// server hides that server row so each capture shows once
+const queuedRows = computed(() => [...entries.value].sort((a, b) => b.captured_at.localeCompare(a.captured_at)))
+const hiddenIds = computed(() => new Set(entries.value.map(e => e.server_id).filter(Boolean)))
+const serverRows = computed({
+  get: () => items.value.filter(i => !hiddenIds.value.has(i.id)),
+  set: (rows) => { items.value = [...rows, ...items.value.filter(i => hiddenIds.value.has(i.id))] },
 })
 
 // Inbox Zero celebration state
@@ -193,7 +237,7 @@ const isMobile = ref(false)
 
 const currentClarifyItem = computed(() => {
   if (!clarifyMode.value) return null
-  return items.value[currentClarifyIndex.value] || null
+  return serverRows.value[currentClarifyIndex.value] || null
 })
 
 // Trigger celebration when items list empties (covers all removal paths including drag-to-sidebar)
@@ -206,14 +250,18 @@ watch(() => items.value.length, (newLen, oldLen) => {
 // show errors in toaster
 watch(error, (err) => {
   if (!err) return
+  if (err.status === null && isOffline.value) return
   const msg = typeof err === 'string' ? err : err.message ?? 'Unknown error'
   toaster.push(msg)
 })
 
 // lifecycle
 onMounted(async () => {
-  items.value = []
-  await loadStuff({ reset: true })
+  // Offline the rows already loaded this session stay
+  if (!isOffline.value) {
+    items.value = []
+    await loadStuff({ reset: true }).catch(() => {})
+  }
   if (items.value.length > 0) hadItems.value = true
   if (route.query.celebrate && items.value.length === 0) {
     hadItems.value = true
@@ -257,22 +305,81 @@ function startCelebration() {
   celebrating.value = true
 }
 
-// actions
-async function onAdd() {
-  const t = (new_stuff_title.value ?? '').toString().trim()
-  if (!t || adding.value) return
+// Desktop drop: files become chips in the Inbox capture bar, never added on their own.
+// Only drags carrying files count, so row reorder and drag-to-sidebar are unaffected.
+const dropActive = ref(false)
+const isProOrTeam = computed(() => ['pro', 'team'].includes(auth.currentUser.value?.subscription_tier))
+let dropDepth = 0
 
-  hadItems.value = true
-  hasMoreSnapshot.value = hasMore.value
-  adding.value = true
-  try { await addStuff(t) } catch { /* error watcher handles it */ }
-  finally { adding.value = false }
-  new_stuff_title.value = ''
-  focusAddInput()
+function carriesFiles(e) {
+  return !clarifyMode.value && !!e.dataTransfer?.types?.includes('Files')
+}
+
+function onPanelDragEnter(e) {
+  if (!carriesFiles(e)) return
+  e.preventDefault()
+  dropDepth++
+  dropActive.value = true
+}
+
+function onPanelDragOver(e) {
+  if (carriesFiles(e)) e.preventDefault()
+}
+
+function onPanelDragLeave(e) {
+  if (!carriesFiles(e)) return
+  dropDepth = Math.max(0, dropDepth - 1)
+  if (dropDepth === 0) dropActive.value = false
+}
+
+function onPanelDrop(e) {
+  if (!carriesFiles(e)) return
+  e.preventDefault()
+  dropDepth = 0
+  dropActive.value = false
+  add_input.value?.addFiles(e.dataTransfer.files)
 }
 
 async function loadMore() {
+  if (isOffline.value) return
   await loadStuff()
+}
+
+watch(isOffline, (offline) => {
+  if (!offline) loadStuff({ reset: true }).catch(() => {})
+})
+
+function failureCopy(error) {
+  const file = truncateTitle(error?.file)
+  switch (error?.code) {
+    case 'too_large':
+      return `${file} is over your plan's file size limit — discard to keep the item without it`
+    case 'drive_too_large':
+      return `${file} is too large to upload — discard to keep the item without it`
+    case 'storage':
+      return auth.currentUser.value?.subscription_tier === 'team'
+          ? 'Not enough storage — delete files you no longer need, then retry'
+          : 'Not enough storage — upgrade for more space, then retry'
+    case 'count':
+      return 'Over the files-per-item limit — discard to keep the item with the files that fit'
+    case 'drive_reconnect':
+      return 'Google Drive is disconnected — reconnect it in Settings, then retry'
+    default:
+      return 'This item couldn\'t be saved — retry, or discard it'
+  }
+}
+
+async function onDiscard(entry) {
+  const title = truncateTitle(entry.title)
+  const confirmed = await confirm.show({
+    title: 'Discard item',
+    message: entry.server_id
+        ? `"${title}" is already in your Inbox. Discarding keeps it with the files saved so far and deletes the rest from this device.`
+        : `"${title}" hasn't synced yet. Discarding deletes it from this device for good.`,
+    confirmText: 'Discard',
+    cancelText: 'Cancel',
+  })
+  if (confirmed) await queue.discard(entry.client_key)
 }
 
 function onRefresh() {
@@ -285,6 +392,7 @@ function onItemClick(item, index) {
     currentClarifyIndex.value = index
     return
   }
+  if (isOffline.value) return
 
   router.push({ name: 'stuff-detail', params: { id: item.id }, query: { total: totalItems.value, position: item.position, from: 'inbox' } })
 }
@@ -304,11 +412,6 @@ async function onItemUpdate(id, { title }) {
   } finally {
     updatingId.value = null
   }
-}
-
-function truncateTitle(title, maxLen = 30) {
-  if (!title || title.length <= maxLen) return title
-  return title.slice(0, maxLen).trim() + '…'
 }
 
 const ANIM_MS = 800
@@ -345,6 +448,7 @@ async function onItemCheck(id, checked) {
 }
 
 async function onTrash(id) {
+  if (isOffline.value) return
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
@@ -371,13 +475,13 @@ async function onMove(id, newIndex) {
 }
 
 function onClarify() {
-  if (items.value.length === 0) return
+  if (serverRows.value.length === 0) return
   clarifyMode.value = true
   currentClarifyIndex.value = 0
 }
 
 function onSwipeClarify(id) {
-  const index = items.value.findIndex(i => i.id === id)
+  const index = serverRows.value.findIndex(i => i.id === id)
   if (index === -1) return
   clarifyMode.value = true
   singleClarify.value = true
@@ -401,10 +505,10 @@ function onClarifyDone(processedItem) {
     items.value.splice(idx, 1)
   }
 
-  if (items.value.length === 0 || singleClarify.value) {
+  if (serverRows.value.length === 0 || singleClarify.value) {
     exitClarifyMode()
-  } else if (currentClarifyIndex.value >= items.value.length) {
-    currentClarifyIndex.value = items.value.length - 1
+  } else if (currentClarifyIndex.value >= serverRows.value.length) {
+    currentClarifyIndex.value = serverRows.value.length - 1
   }
 }
 
@@ -419,6 +523,7 @@ function onClarifyDone(processedItem) {
 }
 
 .inbox-list-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -459,9 +564,48 @@ h1 {
   margin-bottom: 5px;
 }
 
-.add-button {
-  margin-top: 8px;
-  margin-bottom: 4px;
+.inbox-input > .capture-bar {
+  flex: 1;
+  min-width: 0;
+}
+
+.inbox-drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  border: 2px dashed var(--color-action);
+  border-radius: 8px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* Matches the border ItemList rows reserve for the active marker */
+.queued-row {
+  border-left: 3px solid transparent;
+}
+
+.queued-row__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.queued-row__reason {
+  margin-top: 4px;
+}
+
+.inbox-offline-footer {
+  margin: 0;
+  padding: 16px;
+  text-align: center;
 }
 
 

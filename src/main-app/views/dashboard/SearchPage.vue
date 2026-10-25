@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="search-page">
       <div class="search-header">
         <h1 class="page-title">Search</h1>
@@ -62,13 +61,11 @@
         </div>
       </div>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Inpt from '../../components/Inpt.vue'
 import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import EmptyState from '../../components/EmptyState.vue'

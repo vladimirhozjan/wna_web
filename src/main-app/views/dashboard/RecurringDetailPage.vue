@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="detail-page">
 
       <!-- Header -->
@@ -227,13 +226,11 @@
 
       </div>
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import Btn from '../../components/Btn.vue'
 import TagInput from '../../components/TagInput.vue'
 import RecurrenceInput from '../../components/RecurrenceInput.vue'

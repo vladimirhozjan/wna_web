@@ -1,5 +1,4 @@
 <template>
-  <DashboardLayout>
     <div class="settings-page">
 
       <!-- Header -->
@@ -743,13 +742,11 @@
       </Teleport>
 
     </div>
-  </DashboardLayout>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import DashboardLayout from '../../layouts/DashboardLayout.vue'
 import SearchIcon from '../../assets/SearchIcon.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
@@ -1678,14 +1675,14 @@ async function onRevokeSession(sessionId) {
   const session = sessions.value.find(s => s.id === sessionId)
   const isCurrent = session?.is_current
 
-  const confirmed = await confirm.show({
-    title: isCurrent ? 'Log out' : 'End Session',
-    message: isCurrent
-        ? 'Are you sure you want to log out?'
-        : 'Are you sure you want to end this session? The device will be signed out within the next hour.',
-    confirmText: isCurrent ? 'Log out' : 'End Session',
-    cancelText: 'Cancel'
-  })
+  const confirmed = isCurrent
+      ? await auth.confirmLogout()
+      : await confirm.show({
+        title: 'End Session',
+        message: 'Are you sure you want to end this session? The device will be signed out within the next hour.',
+        confirmText: 'End Session',
+        cancelText: 'Cancel'
+      })
 
   if (!confirmed) return
 
@@ -1789,13 +1786,7 @@ async function onChangePassword() {
 
 // Account actions
 async function onLogout() {
-  const confirmed = await confirm.show({
-    title: 'Log out',
-    message: 'Are you sure you want to log out?',
-    confirmText: 'Log out',
-    cancelText: 'Cancel',
-  })
-  if (!confirmed) return
+  if (!await auth.confirmLogout()) return
 
   loggingOut.value = true
   await auth.logoutUser()

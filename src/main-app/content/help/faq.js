@@ -28,7 +28,7 @@ export const faq = [
   {
     question: 'How do I log out?',
     answer:
-      'You can log out from three places: the avatar dropdown in the top navigation bar, the Sidebar footer, or the Settings page under Sessions by ending your current session. A confirmation dialog will appear before you are signed out. Logging out in one tab logs you out of all open tabs automatically.',
+      'You can log out from three places: the avatar dropdown in the top navigation bar, the Sidebar footer, or the Settings page under Sessions by ending your current session. A confirmation dialog will appear before you are signed out; if items you captured offline haven\'t synced yet, it tells you how many, and logging out deletes them from this device. Logging out in one tab logs you out of all open tabs automatically.',
   },
   {
     question: 'What are sessions and how do I manage them?',
@@ -84,6 +84,16 @@ export const faq = [
     question: 'Can I send items to my Inbox by email?',
     answer:
       'Yes, on the Pro and Team plans. Go to Settings and find the "Email to Inbox" section, then generate your unique inbox address. Tap Copy to copy it, then email or forward anything to that address — the subject becomes the item title and the body becomes its description, and it lands in your Inbox as new stuff. Attached files are imported up to your plan\'s limits — any file that doesn\'t fit is listed at the end of the item\'s description, and an email over 25 MB arrives as a note only (subject and sender, without its content). You can pause capture with the toggle, or reset the address (the old one stops working immediately). Daily limits apply: 50 emails per day on Pro and 100 per day on Team. This feature is not available on the Free plan.',
+  },
+  {
+    question: 'Can I capture while offline?',
+    answer:
+      'Yes, on every plan. Once you have opened WhatsNextAction online — in the browser or as the installed app — it also opens without a network connection. Offline, Quick Add and your Inbox keep working; other pages show that they load when you\'re back online. Each item you capture appears at the top of your Inbox marked "Waiting to sync" and is sent to your account automatically when the connection returns while WhatsNextAction is open (if it is closed, the next time you open it). On Free you capture text; on Pro and Team you can also attach photos, voice memos and files — up to 50 MB of waiting files per device, and a file that doesn\'t fit stays in the bar so you can attach it when you\'re back online. If the server can\'t save an item, it is marked "Couldn\'t sync" with Retry and Discard. Waiting items are kept on this device only, and logging out deletes them — you are asked first.',
+  },
+  {
+    question: 'Can I share to WhatsNextAction from other apps?',
+    answer:
+      'Yes, on Android with the installed app. In any app — your browser, Photos, WhatsApp, Files — tap Share and choose WNA. A short Add to Inbox form opens already filled in: the shared title or first line becomes the title, and the rest of the text and the link go to the description. Edit anything you like, then tap Add to Inbox and you are taken back to the app you shared from. It works offline too — the item is saved on your device and sent when you\'re back online. If you aren\'t signed in, sign in first and the form opens with what you shared. On Free you share text and links; on Pro and Team you can also share photos and files, within your plan\'s attachment limits. Sharing isn\'t available on iPhone/iPad — Safari doesn\'t support it; it will come with the iOS app.',
   },
 
   // --- Moving & Organizing ---
@@ -226,7 +236,7 @@ export const faq = [
   {
     question: 'What are the limits on each plan?',
     answer:
-      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Actions and inbox items are unlimited on every plan, including Free.',
+      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Ideas in a project brainstorm: 50 on Free, up to 1000 on Pro and Team, each up to 500 characters. Actions and inbox items are unlimited on every plan, including Free.',
   },
   {
     question: 'What are the limits on attachments and comments?',
@@ -305,7 +315,7 @@ export const faq = [
   {
     question: 'Can I use WhatsNextAction on my phone?',
     answer:
-      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover. You can also install WhatsNextAction on your home screen so it opens like an app: on Android (Chrome) use ⋮ → Install app or Add to Home screen, on iPhone/iPad (Safari) use Share → Add to Home Screen, on a Mac (Safari) use File → Add to Dock, and in desktop Chrome or Edge use the install icon in the address bar.',
+      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover. You can also install WhatsNextAction on your home screen so it opens like an app: on Android (Chrome) use ⋮ → Install app or Add to Home screen, on iPhone/iPad (Safari) use Share → Add to Home Screen, on a Mac (Safari) use File → Add to Dock, and in desktop Chrome or Edge use the install icon in the address bar. The installed app also opens without a network connection, so you can keep capturing into your Inbox offline. On Android the installed app also appears in the Share menu of other apps, so you can share into your Inbox from any app.',
   },
   {
     question: 'Are there keyboard shortcuts?',

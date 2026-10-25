@@ -21,6 +21,7 @@
       <div v-if="!noCheckbox" class="item__checkbox" @click.stop>
         <AnimatedCheckbox
             :checked="checked"
+            :disabled="checkboxDisabled"
             :no-initial-animation="noInitialAnimation"
             @change="onCheck"
         />
@@ -67,7 +68,7 @@
       <slot name="drag-handle" />
     </div>
 
-    <div v-if="$slots.subtitle" class="item__subtitle-row" :class="{ 'item__subtitle-row--no-checkbox': noCheckbox && !$slots.prefix, 'item__subtitle-row--prefix': noCheckbox && $slots.prefix, 'item__swipe-content--snapping': snapping }" :style="swipeStyle">
+    <div v-if="$slots.subtitle" class="item__subtitle-row" :class="{ 'item__subtitle-row--no-checkbox': noCheckbox && !reserveCheckbox && !$slots.prefix, 'item__subtitle-row--prefix': noCheckbox && $slots.prefix, 'item__swipe-content--snapping': snapping }" :style="swipeStyle">
       <slot name="subtitle" />
     </div>
   </div>
@@ -116,6 +117,11 @@ const props = defineProps({
     default: false
   },
   noInitialAnimation: {
+    type: Boolean,
+    default: false
+  },
+  // Shows the checkbox but it can't be ticked (read-only rows)
+  checkboxDisabled: {
     type: Boolean,
     default: false
   },

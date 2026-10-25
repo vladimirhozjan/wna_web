@@ -27,6 +27,8 @@ const shortcuts = shortcutModel()
 const isMac = /mac/i.test(navigator.platform)
 const paletteKey = isMac ? '⌘K' : 'Ctrl+K'
 const undoKey = isMac ? '⌘Z' : 'Ctrl+Z'
+const modKey = isMac ? '⌘' : 'Ctrl'
+const redoKey = isMac ? '⌘⇧Z' : 'Ctrl+Shift+Z'
 
 const blocks = computed(() => [
   {
@@ -41,6 +43,20 @@ const blocks = computed(() => [
   {
     title: 'Go to',
     rows: shortcuts.navigation.value.filter(n => n.hint).map(n => ({ keys: n.hint, action: n.page })),
+  },
+  {
+    title: 'On the brainstorm canvas',
+    rows: [
+      { keys: 'Tab', action: 'Add an idea under the selected one' },
+      { keys: 'Enter', action: 'Add the next idea' },
+      { keys: 'Space', action: 'Edit the selected idea' },
+      { keys: 'Del', action: 'Delete the idea and its branch' },
+      { keys: '← ↑ ↓ →', action: 'Move between ideas' },
+      { keys: `${modKey} ↑ ↓`, action: 'Fold / unfold' },
+      { keys: undoKey, action: 'Undo a canvas change' },
+      { keys: redoKey, action: 'Redo' },
+      { keys: 'Esc', action: 'Stop editing' },
+    ],
   },
   {
     title: 'In the command palette',
@@ -76,7 +92,7 @@ const blocks = computed(() => [
 }
 
 .shortcuts__key {
-  flex: 0 0 64px;
+  flex: 0 0 88px;
   color: var(--color-text-tertiary);
 }
 
