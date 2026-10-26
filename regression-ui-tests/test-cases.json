@@ -1183,7 +1183,7 @@
   },
   {
     "id": "TC-615",
-    "name": "Concurrent token refresh — one rotation across tabs, loser adopts, no spurious logout",
+    "name": "Concurrent token refresh — one refresh across tabs, loser adopts, no spurious logout",
     "priority": "High",
     "area": "Authentication, Session",
     "areas": [
@@ -1199,7 +1199,7 @@
       "Repeat over 2–3 consecutive ticks.",
       "Continue using both tabs (navigate, create an item) after each tick."
     ],
-    "expected": "- Exactly ONE `/v1/user/refresh` request per tick across both tabs (Web Locks serializes rotation; the waiting tab adopts the rotated tokens from localStorage instead of firing its own call).\n- The backend log shows no stale-rotation errors for the user.\n- Neither tab is logged out; both keep working with the new token.\n- A genuinely invalid refresh token (e.g. cleared server-side) still logs out and redirects — the failure path is unchanged."
+    "expected": "- Exactly ONE `/v1/user/refresh` request per tick across both tabs (Web Locks serializes the refresh; the waiting tab adopts the refreshed tokens from localStorage instead of firing its own call). The refresh token stays the same until its rotation threshold (BUG-064 D1); only the access token is new.\n- The user_service log shows no `Session refresh refused` line for the user.\n- Neither tab is logged out; both keep working with the new access token.\n- A genuinely invalid refresh token (e.g. cleared server-side) still logs out and redirects — the failure path is unchanged."
   },
   {
     "id": "TC-616",
@@ -1219,6 +1219,64 @@
       "Observe `POST /auth/refresh` across both tabs at the refresh tick, over 2 ticks."
     ],
     "expected": "Exactly ONE `/auth/refresh` per tick across both tabs; the waiting tab adopts the rotated access token; neither tab logs out or errors."
+  },
+  {
+    "id": "TC-975",
+    "name": "Refresh Keeps One Session With the Same Refresh Token (BUG-064)",
+    "priority": "High",
+    "area": "Authentication, Session",
+    "areas": [
+      "Authentication",
+      "Session"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Fresh user logged in on one device (the only session).",
+    "steps": [
+      "Read `refresh_token` from localStorage; `GET /v1/user/sessions?refresh_token_hash=<its hash>`; note the row `id` and `last_active`.",
+      "`POST /v1/user/refresh` twice (Bearer = refresh token, body `{refresh_token}`).",
+      "`GET /v1/user/sessions` again.",
+      "Open Settings → Sessions."
+    ],
+    "expected": "Both refreshes answer `200` with the identical `refresh_token` (byte-identical to the one sent) and its hash. The session list still has one row, with the same `id`, `is_current`, and `last_active` not earlier than before. Settings → Sessions lists that row once, marked Current."
+  },
+  {
+    "id": "TC-976",
+    "name": "Logout After Idle Removes the Device's Session (BUG-064)",
+    "priority": "High",
+    "area": "Authentication, Session",
+    "areas": [
+      "Authentication",
+      "Session"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Fresh user logged in on device A; note A's session id (`is_current` row).",
+    "steps": [
+      "Leave A idle past the access-token refresh point (> 4 min), so the web refreshes right before the logout call.",
+      "On A, click Logout and confirm.",
+      "From device B (same user) `GET /v1/user/sessions`.",
+      "`POST /v1/user/refresh` with A's old refresh token."
+    ],
+    "expected": "A `POST /v1/user/refresh` runs before `POST /v1/user/logout`. A lands on the landing page. B's list has no row with A's session id. A's old refresh token is refused with `401`."
+  },
+  {
+    "id": "TC-977",
+    "name": "Session Ended From Another Device Lands on the Landing Page (BUG-064)",
+    "priority": "High",
+    "area": "Authentication, Session",
+    "areas": [
+      "Authentication",
+      "Session"
+    ],
+    "smoke": false,
+    "section": "1: Authentication & Account",
+    "preconditions": "Same fresh user logged in on device A and device B.",
+    "steps": [
+      "On B, open Settings → Sessions; it lists two sessions. End A's (the non-current) session and confirm.",
+      "On A, keep using the app until its next refresh tick (access token < 60 s left)."
+    ],
+    "expected": "B's list drops to one session. A's next refresh is refused; A is logged out and lands on the landing page with `refresh_token` cleared (BUG-043 still holds)."
   },
   {
     "id": "TC-044",
@@ -2007,14 +2065,14 @@
       "Activate clarify mode by clicking the \"Clarify\" button (or navigate to a stuff item's detail and click \"Clarify\")",
       "Verify the ClarifyPanel opens with \"Clarify\" as the h2 heading and displays the first step of the workflow",
       "Verify the question \"Is it actionable?\" is prominently displayed",
-      "Verify the item's title is shown as context (e.g., \"Processing: [item title]\")",
-      "Verify two options are presented: \"Yes Y\" and \"No N\" (with keyboard shortcut hints)",
+      "Verify the item's title is shown as context (e.g., \"Processing: [item title]\"), centred",
+      "Verify two options are presented: \"Yes\" and \"No\" (desktop: with the `Y` / `N` key hints; mobile ≤ 768 px: no key hints)",
       "Verify no other workflow steps are visible (step 1 of the multi-step flow)",
       "Verify a step counter is displayed (e.g., \"1/3\")",
-      "Verify a close (×) button is available in the panel header",
+      "Verify a close button (ghost `×`, label `Close`) is available in the panel header",
       "Verify a progress bar shows the current progress"
     ],
-    "expected": "The first step of the clarify workflow displays the heading \"Clarify\", the question \"Is it actionable?\" with \"Yes Y\" and \"No N\" buttons. The item being processed is identified by its title in the panel. A step counter (e.g., \"1/3\") and progress bar indicate the user is at step 1 of the workflow."
+    "expected": "The first step of the clarify workflow displays the heading \"Clarify\", the question \"Is it actionable?\" with \"Yes\" and \"No\" buttons (key hints `Y` / `N` on desktop only, S4). The item being processed is identified by its title in the panel. A step counter (e.g., \"1/3\") and progress bar indicate the user is at step 1 of the workflow. Updated by BUG-065."
   },
   {
     "id": "TC-076",
@@ -4642,13 +4700,13 @@
     "preconditions": "User is logged in and viewing the detail page of an action with WAITING state (navigated from the Waiting For list)",
     "steps": [
       "Verify the action detail page shows the item with WAITING state",
-      "Locate the \"Got it\" button on the detail page",
+      "Locate the \"Got it\" button — the first (primary) button of the detail action row, followed by Done · Move; Trash sits behind ⋯ (`detail-more-menu`) (BUG-065 S11)",
       "Click \"Got it\"",
       "Observe the system response",
       "Navigate to the Next Actions page (/next)",
       "Search for the item that was previously waiting"
     ],
-    "expected": "Clicking \"Got it\" removes the waiting_for status from the action. The action's state changes to NEXT. A success toast appears. The action now appears in the Next Actions list instead of the Waiting For list."
+    "expected": "Clicking \"Got it\" removes the waiting_for status from the action. The action's state changes to NEXT. A success toast appears. The action now appears in the Next Actions list instead of the Waiting For list. Updated by BUG-065."
   },
   {
     "id": "TC-168",
@@ -6536,19 +6594,16 @@
     "preconditions": "User is logged in. Weekly Review is enabled in settings.",
     "steps": [
       "Navigate to `/review` without having ever completed a review",
-      "Verify the page heading displays \"Weekly Review\"",
-      "Verify a last review date indicator is displayed showing \"Never reviewed\"",
+      "Verify the page heading (`h1.page-title`) displays \"Weekly Review\" with **Start Review** at the right of the same header row",
+      "Verify the last review line under the title shows \"Never reviewed\"",
       "Complete a full weekly review (all 6 steps checked, click \"Complete Review\")",
       "Navigate away from `/review` and then return to `/review`",
-      "Verify the last review date indicator now shows \"Last reviewed: today\" or \"Last reviewed: 0 days ago\"",
+      "Verify the last review line now shows \"Last reviewed: today\"",
       "Wait 1 day (or simulate the passage of time if possible)",
       "Navigate to `/review`",
-      "Verify the indicator shows \"Last reviewed: 1 day ago\"",
-      "Wait until 7 days have passed since the review",
-      "Navigate to `/review`",
-      "Verify the indicator shows \"Last reviewed: 7 days ago\""
+      "Verify the line shows \"Last reviewed: 1 day ago\""
     ],
-    "expected": "The Review page displays \"Weekly Review\" as its heading. The last review date is shown, displaying \"Never reviewed\" for users who have not completed a review, and \"Last reviewed: N days ago\" for users who have. The day count updates accurately."
+    "expected": "The Review page displays \"Weekly Review\" as its heading. The last review line (`text-body-s`, secondary) sits under the title: \"Never reviewed\" for users who have not completed a review, \"Last reviewed: today\" / \"Last reviewed: N days ago\" for users who have (copy unchanged, BUG-065 S5 row 2). Updated by BUG-065."
   },
   {
     "id": "TC-241",
@@ -6617,18 +6672,15 @@
     "preconditions": "User is logged in. Weekly Review is enabled. Items exist in Inbox (3 items), Next Actions (5 items), Waiting For (2 items), Projects (4 projects), Someday/Maybe (6 items), and Calendar (8 items).",
     "steps": [
       "Navigate to `/review`",
-      "Verify 6 review steps are displayed in order: - Step 1: \"Empty Inbox\" - Step 2: \"Review Next Actions\" - Step 3: \"Review Waiting For\" - Step 4: \"Review Projects\" - Step 5: \"Review Someday/Maybe\" - Step 6: \"Review Calendar\"",
-      "For each step, verify the following elements are present: a. A title matching the step name b. A hint or description explaining what to do in this step c. A count badge showing the number of items in that bucket (3, 5, 2, 4, 6, 8 respectively) d. A \"Go\" link or button",
-      "Verify the count badges accurately reflect the current item counts in each bucket",
-      "Add a new stuff item to the Inbox",
-      "Refresh the Review page",
-      "Verify the Inbox step count badge updates to 4"
+      "Verify 6 review steps are displayed in order: \"Empty your Inbox\", \"Review Next Actions\", \"Review Waiting For\", \"Review Projects\", \"Review Someday/Maybe\", \"Review Calendar\"",
+      "For each step, verify: a checkbox, the title, the hint text, and a chevron at the right end",
+      "Verify the steps card has no \"Review Steps\" header strip and is shown in full colour before Start (not dimmed, clickable)"
     ],
-    "expected": "All 6 review steps are displayed with their title, descriptive hint, accurate count badge, and a \"Go\" link. Count badges dynamically reflect the current number of items in each respective bucket."
+    "expected": "All 6 review steps are displayed in a card without a header strip, each with checkbox, title, hint and chevron, in full colour before Start. There is no count pill and no `Go` button on any step (BUG-065 S5 rows 5–5c). Updated by BUG-065."
   },
   {
     "id": "TC-244",
-    "name": "Review Step Go Links Navigate to Correct Pages",
+    "name": "Review Step Rows Navigate to Correct Pages",
     "priority": "High",
     "area": "Weekly Review",
     "areas": [
@@ -6638,26 +6690,12 @@
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. Items exist in all 6 buckets.",
     "steps": [
-      "Navigate to `/review`",
-      "Click the \"Go\" link on the \"Empty Inbox\" step",
-      "Verify the browser navigates to `/inbox`",
-      "Navigate back to `/review`",
-      "Click the \"Go\" link on the \"Review Next Actions\" step",
-      "Verify the browser navigates to `/next`",
-      "Navigate back to `/review`",
-      "Click the \"Go\" link on the \"Review Waiting For\" step",
-      "Verify the browser navigates to `/waiting-for`",
-      "Navigate back to `/review`",
-      "Click the \"Go\" link on the \"Review Projects\" step",
-      "Verify the browser navigates to `/projects`",
-      "Navigate back to `/review`",
-      "Click the \"Go\" link on the \"Review Someday/Maybe\" step",
-      "Verify the browser navigates to `/someday`",
-      "Navigate back to `/review`",
-      "Click the \"Go\" link on the \"Review Calendar\" step",
-      "Verify the browser navigates to `/calendar`"
+      "Navigate to `/review` (do not click Start Review)",
+      "Click the \"Empty your Inbox\" row (`review-step-1`, not its checkbox)",
+      "Verify the browser navigates to `/inbox`; go back to `/review`",
+      "Repeat for rows 2–6"
     ],
-    "expected": "Each \"Go\" link on the review steps navigates to the correct corresponding page: Inbox -> `/inbox`, Next Actions -> `/next`, Waiting For -> `/waiting-for`, Projects -> `/projects`, Someday/Maybe -> `/someday`, Calendar -> `/calendar`."
+    "expected": "Each whole step row (except the checkbox) opens its list, also before Start (the checkboxes stay disabled): Inbox → `/inbox`, Next Actions → `/next`, Waiting For → `/waiting-for`, Projects → `/projects`, Someday/Maybe → `/someday`, Calendar → `/calendar`. There are no `Go` buttons (BUG-065 S5 row 5c; see TC-997). Updated by BUG-065."
   },
   {
     "id": "TC-245",
@@ -6673,16 +6711,15 @@
     "steps": [
       "Navigate to `/review`",
       "Observe the 6 review steps",
-      "Verify that the checkboxes next to each step are disabled or not interactive (greyed out)",
-      "Locate the \"Start Review\" button",
-      "Click \"Start Review\"",
-      "Verify the checkboxes next to each step become enabled and interactive",
-      "Click the checkbox for \"Empty Inbox\"",
-      "Verify the checkbox is checked and a visual indicator (e.g., checkmark, strikethrough, or highlight) confirms the step is marked as done",
+      "Verify that the checkboxes next to each step are disabled",
+      "Click **Start Review** (right of the page title)",
+      "Verify the checkboxes next to each step become enabled",
+      "Click the checkbox for \"Empty your Inbox\"",
+      "Verify the checkbox is checked",
       "Verify the other 5 checkboxes remain unchecked but are still enabled",
       "Verify a progress row appears above the steps card: 6 segments, the first one filled, and \"1 of 6 complete\" right of the segments"
     ],
-    "expected": "Before clicking \"Start Review,\" the step checkboxes are disabled and no progress row is shown. After clicking \"Start Review,\" all checkboxes become enabled and interactive, allowing the user to check off steps as they complete them, and the progress row appears."
+    "expected": "Before clicking \"Start Review,\" the step checkboxes are disabled and no progress row is shown (the rows themselves stay in full colour and open their lists). After clicking \"Start Review,\" all checkboxes become enabled, allowing the user to check off steps, and the progress row appears. Updated by BUG-065."
   },
   {
     "id": "TC-246",
@@ -6699,7 +6736,7 @@
       "Navigate to `/review`",
       "Click \"Start Review\"",
       "Verify the progress counter in the progress row (right of the 6 segments, not beside the \"Complete Review\" button) displays \"0 of 6 complete\"",
-      "Check the \"Empty Inbox\" checkbox",
+      "Check the \"Empty your Inbox\" checkbox",
       "Verify the progress counter updates to \"1 of 6 complete\"",
       "Check the \"Review Next Actions\" checkbox",
       "Verify the progress counter updates to \"2 of 6 complete\"",
@@ -6715,7 +6752,7 @@
       "Check the \"Review Calendar\" checkbox",
       "Verify the progress counter updates to \"6 of 6 complete\""
     ],
-    "expected": "The progress counter in the progress row accurately reflects the number of checked steps out of 6 total, and the matching segments fill/empty with it. It increments when a step is checked and decrements when a step is unchecked. It updates in real time without requiring a page refresh."
+    "expected": "The progress counter in the progress row accurately reflects the number of checked steps out of 6 total, and the matching segments fill/empty with it. It increments when a step is checked and decrements when a step is unchecked. It updates in real time without requiring a page refresh. Updated by BUG-065."
   },
   {
     "id": "TC-247",
@@ -6732,17 +6769,17 @@
       "Navigate to `/review`",
       "Click \"Start Review\"",
       "Check all 6 step checkboxes",
-      "Verify the \"Complete Review\" button is now enabled",
+      "Verify the \"Complete Review\" button (in the header row) is now enabled",
       "Click \"Complete Review\"",
-      "Verify the steps card is replaced by the \"Review Complete\" / \"Your system is current.\" celebration and no success toast is shown",
-      "Verify the review date is saved (the header shows \"Last reviewed: today\")",
+      "Verify the celebration \"Review complete\" / \"Your system is current.\" (FEAT-057 EmptyState art) is shown and no success toast is shown",
+      "Verify the review date is saved (the line under the title shows \"Last reviewed: today\")",
       "Wait for the celebration to fade out; verify the page resets to its initial state (steps card back, checkboxes unchecked and disabled, no progress row, \"Start Review\" button visible again)",
       "Navigate away from `/review` to `/engage`",
-      "Verify the review nudge on the Engage dashboard reflects the updated review date (e.g., \"Last reviewed: today\")",
+      "Verify the review nudge on the Engage dashboard reflects the updated review date",
       "Navigate back to `/review`",
-      "Verify the header shows the updated last review date"
+      "Verify the line under the title shows the updated last review date"
     ],
-    "expected": "After checking all 6 steps and clicking \"Complete Review,\" the review date is saved and persisted. The celebration is shown in place of the steps card (no toast). The page resets for the next review session. The last reviewed date updates across the application."
+    "expected": "After checking all 6 steps and clicking \"Complete Review,\" the review date is saved and persisted. The celebration is shown in place of the steps card (no toast). The page resets for the next review session. The last reviewed date updates across the application. Updated by BUG-065."
   },
   {
     "id": "TC-248",
@@ -6770,11 +6807,11 @@
       "Re-check step 3",
       "Verify the \"Complete Review\" button is enabled again"
     ],
-    "expected": "The \"Complete Review\" button is disabled unless all 6 review steps are checked. It dynamically enables and disables as steps are checked and unchecked. Clicking the disabled button has no effect."
+    "expected": "The \"Complete Review\" button is disabled unless all 6 review steps are checked. It dynamically enables and disables as steps are checked and unchecked. Clicking the disabled button has no effect. The button sits in the header row right of the \"Weekly Review\" title; while disabled its title reads `Check all 6 steps to complete the review` (BUG-065 S5 row 1). Updated by BUG-065."
   },
   {
     "id": "TC-249",
-    "name": "Review Page Mobile Layout Hides Hint Text",
+    "name": "Review Page Mobile Layout Shows Each Hint in at Most 2 Lines",
     "priority": "Low",
     "area": "Weekly Review",
     "areas": [
@@ -6786,18 +6823,12 @@
     "steps": [
       "Resize the browser to a mobile viewport width (e.g., 375px wide) or use a mobile device",
       "Navigate to `/review`",
-      "Verify the page loads correctly and is usable on the smaller screen",
       "Observe the 6 review steps",
-      "Verify that the hint/description text for each step is hidden on mobile",
-      "Verify the step titles are still visible",
-      "Verify the count badges are still visible",
-      "Verify the \"Go\" links are still accessible",
-      "Verify the \"Start Review\" button is visible and clickable",
-      "Verify the checkboxes are large enough to tap on mobile",
-      "Resize the browser to a desktop viewport width (e.g., 1280px)",
-      "Verify the hint text reappears for each step"
+      "Verify each step shows its title and its hint text, the hint at most 2 lines (ellipsis when longer)",
+      "Verify the \"Start Review\" button sits beside the \"Weekly Review\" title and is clickable",
+      "Verify nothing on a step row is covered by the floating \"?\" button (there is no `Go` button)"
     ],
-    "expected": "On mobile viewports, the review step hint text is hidden to conserve space while all other functional elements (titles, count badges, Go links, checkboxes, buttons) remain visible and usable. On desktop viewports, the hint text is visible."
+    "expected": "On mobile viewports the step hints stay visible as a caption of at most 2 lines (GTD guidance kept on mobile, BUG-065 S5 row 5b); titles, checkboxes and the header button remain usable. Updated by BUG-065."
   },
   {
     "id": "TC-250",
@@ -9568,7 +9599,7 @@
       "Navigate to /pricing.",
       "Check the Free, Pro and Team cards: title, description, badge, CTA and bullets."
     ],
-    "expected": "Three cards Free, Pro and Team (descriptions \"Get started with GTD for free.\", \"For the individual power user.\", \"For teams that delegate work together.\"); Pro is marked \"Most Popular\". CTAs: Free \"Start for Free\"; Pro and Team \"Contact Us\" (or \"Upgrade\" with the `payments` flag). Bullets in order (values from `contracts/limits.md`), each with a check icon:\n- Free: Unlimited stuff & actions · Up to 7 projects · Up to 10 tags · Reference files: view-only, full in Google Drive · Google Drive storage · 50 MB storage\n- Pro: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Google Calendar sync · Google Drive storage · 250 MB storage\n- Team: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Google Calendar sync · Connections & delegation · Shared projects · Google Drive storage · 1 GB/user storage\n\nDrive and Calendar sync are shown regardless of the `drive` / `calendar` flags."
+    "expected": "Three cards Free, Pro and Team (descriptions \"Get started with GTD for free.\", \"For the individual power user.\", \"For teams that delegate work together.\"); Pro is marked \"Most Popular\". CTAs: Free \"Start for Free\"; Pro and Team \"Contact Us\" (or \"Upgrade\" with the `payments` flag). Bullets in order (values from `contracts/limits.md`), each with a check icon:\n- Free: Unlimited stuff & actions · Up to 7 projects · Up to 10 tags · Reference files: view-only, full in Google Drive · Google Drive storage · 50 MB storage\n- Pro: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Photo, voice & file capture · Google Calendar sync · Google Drive storage · 250 MB storage\n- Team: Unlimited stuff & actions · Unlimited projects & tags · Recurring actions · Full reference files · Email to Inbox · Photo, voice & file capture · Google Calendar sync · Connections & delegation · Shared projects · Google Drive storage · 1 GB/user storage\n\nDrive and Calendar sync are shown regardless of the `drive` / `calendar` flags."
   },
   {
     "id": "TC-355",
@@ -9585,7 +9616,7 @@
       "Navigate to /pricing and scroll to \"Compare Features\".",
       "On desktop, check the table; on mobile (or a narrow viewport), check the per-feature cards."
     ],
-    "expected": "12 feature rows in 4 groups, in order, and no Support group (✓ = check icon, — = dash):\n- **Core** — Stuff & Actions (Unlimited / Unlimited / Unlimited), Projects (7 / Unlimited / Unlimited), Tags (10 / Unlimited / Unlimited), Recurring actions (— / ✓ / ✓), Reference files (View only · Full in Google Drive / Full / Full)\n- **Storage** — WNA hosted storage (50 MB / 250 MB / 1 GB/user), Max attachment size (5 MB / 20 MB / 50 MB)\n- **Integrations** — Email to Inbox (— / 50 / day / 100 / day), Google Calendar sync (— / ✓ / ✓), Google Drive storage (✓ / ✓ / ✓)\n- **Collaboration** — Connections & delegation (— / — / ✓), Shared projects (— / — / ✓)\n\nDesktop: a table with columns Feature / Free / Pro / Team. Mobile: one card per feature with the three tiers."
+    "expected": "13 feature rows in 4 groups, in order, and no Support group (✓ = check icon, — = dash):\n- **Core** — Stuff & Actions (Unlimited / Unlimited / Unlimited), Projects (7 / Unlimited / Unlimited), Tags (10 / Unlimited / Unlimited), Recurring actions (— / ✓ / ✓), Reference files (View only · Full in Google Drive / Full / Full)\n- **Storage** — WNA hosted storage (50 MB / 250 MB / 1 GB/user), Max attachment size (5 MB / 20 MB / 50 MB)\n- **Integrations** — Email to Inbox (— / 50 / day / 100 / day), Photo, voice & file capture (— / ✓ / ✓), Google Calendar sync (— / ✓ / ✓), Google Drive storage (✓ / ✓ / ✓)\n- **Collaboration** — Connections & delegation (— / — / ✓), Shared projects (— / — / ✓)\n\nDesktop: a table with columns Feature / Free / Pro / Team. Mobile: one card per feature with the three tiers."
   },
   {
     "id": "TC-356",
@@ -10100,6 +10131,33 @@
     "expected": "Keyboard shortcuts function as follows: Enter submits, Escape cancels/closes, Backspace navigates back in clarify flow, Arrow keys navigate autocomplete suggestions, Comma commits a tag in tag inputs."
   },
   {
+    "id": "TC-519",
+    "name": "Server and Network Error Toasts",
+    "priority": "High",
+    "area": "Shared UI Behaviors",
+    "areas": [
+      "Shared UI Behaviors"
+    ],
+    "smoke": false,
+    "section": "24: Shared UI Behaviors",
+    "preconditions": "User is logged in and online.",
+    "steps": [
+      "Navigate to /next and open the add form.",
+      "Make the create request (`POST /v1/action`) answer 500, then add a next action.",
+      "Verify a red toast \"Internal server error. Please try again later.\" appears; dismiss it.",
+      "Make the create request answer 503, then add a next action.",
+      "Verify a red toast \"Service unavailable. Please try again later.\" appears; dismiss it.",
+      "Make the create request fail with no response (network aborted), then add a next action.",
+      "Verify the page switches to the offline page \"Offline for now\" (`offline-state`).",
+      "Wait at least 1 second and verify **no** error toast shows.",
+      "Reload online, add a next action, then drop the network as its complete request is sent and tick the row → verify the offline page shows and, after at least 1 second, **no** error toast.",
+      "Reload online, add a next action, then drag the row onto **Someday** in the Sidebar with the move request (`POST /v1/action/{id}/someday`) aborted → verify the offline page shows and **no** error toast.",
+      "Open /settings, then toggle **Weekly Review** with the save (`PUT /v1/user/settings`) aborted → verify the offline page shows and **no** \"Failed to save setting\" or other error toast.",
+      "Open /inbox online with a synced item, then trash it with the trash request (`POST /v1/stuff/{id}/trash`) aborted → verify the offline banner (`offline-banner`) shows, Inbox stays, and **no** error toast."
+    ],
+    "expected": "A server error (500 / 503) leaves the page as it was and shows its Appendix C toast (`wna-features.md` Appendix C). A request that fails with no response on a signed-in page — a change (add, complete, drag, setting, trash) — shows the offline banner / page and never an error toast: the offline content shows the failure (`wna-features.md` §38 *Offline pages*)."
+  },
+  {
     "id": "TC-375",
     "name": "Footer Content",
     "priority": "Medium",
@@ -10385,12 +10443,12 @@
       "Verify 1 item is shown in the inbox list",
       "Check the checkbox on the item to mark it as completed",
       "Verify the item is removed from the list",
-      "Verify a celebration animation plays: a green circle blooms in, a checkmark icon appears inside it, followed by \"Inbox Zero\" title and \"You're in control.\" subtitle sliding up",
+      "Verify the celebration plays with the FEAT-057 EmptyState art (rings + coin with the completed icon), \"Inbox Zero\" title and \"You're in control.\" subtitle",
       "Wait approximately 3 seconds",
       "Verify the celebration fades out",
       "Verify the normal empty state is shown (inbox icon + \"Inbox zero. Mind like water.\")"
     ],
-    "expected": "When the last inbox item is completed, a celebration animation with a green checkmark, \"Inbox Zero\" title, and \"You're in control.\" subtitle plays for approximately 3 seconds before fading to the normal empty state."
+    "expected": "When the last inbox item is completed, the celebration — the shared `Celebration` component with the EmptyState art (BUG-065 S5 row 6), \"Inbox Zero\" title and \"You're in control.\" subtitle — plays for approximately 3 seconds before fading to the normal empty state. Updated by BUG-065."
   },
   {
     "id": "TC-387",
@@ -11279,11 +11337,11 @@
     "preconditions": "Logged-in user is on Team tier, owns a personal project (active, not completed), and has at least one accepted connection.",
     "steps": [
       "Open Project Detail for the personal project",
-      "Click the **Share…** button in the action button row",
+      "Open ⋯ (`detail-more-menu`) in the action row and choose **Share…** (the row shows Complete · Move; Share… and Trash live behind ⋯, BUG-065 S6.2)",
       "In the share modal, search for and select one or more connections",
       "Click **Share**"
     ],
-    "expected": "A `POST /v1/project/{id}/share` request is sent with the selected `members` (default role `write`). On success the modal closes, a success toast appears (\"Project shared\"), the **Shared** badge appears beside the project title, and a \"Shared with\" section is rendered listing the new members + the owner. The project layout switches from the personal \"Next Action\" section to the shared \"Backlog\" section."
+    "expected": "A `POST /v1/project/{id}/share` request is sent with the selected `members` (default role `write`). On success the modal closes, a success toast appears (\"Project shared\"), the **Shared** badge appears beside the project title, and a \"Shared with\" section is rendered listing the new members + the owner. The project layout switches from the personal \"Next Action\" section to the shared \"Backlog\" section; the action row becomes Complete · Trash. Updated by BUG-065."
   },
   {
     "id": "TC-438",
@@ -11298,9 +11356,9 @@
     "preconditions": "Logged-in user on Free or Pro tier owns a personal project.",
     "steps": [
       "Open Project Detail",
-      "Click the **Share…** button (visible because user owns a personal project)"
+      "Open ⋯ (`detail-more-menu`) and choose **Share…** (shown because the user owns a personal project)"
     ],
-    "expected": "The share modal does NOT open. Instead the standard upgrade modal appears with a message indicating sharing is a Team plan feature. No backend request is made."
+    "expected": "The share modal does NOT open. Instead the standard upgrade modal appears with a message indicating sharing is a Team plan feature. No backend request is made. Updated by BUG-065."
   },
   {
     "id": "TC-439",
@@ -11426,10 +11484,10 @@
     "preconditions": "Logged-in user is a write member with no currently assigned action on a shared project that has multiple unassigned backlog items.",
     "steps": [
       "Open the project detail",
-      "Click the **Assign to me** (PersonAddIcon) button on an unassigned action row",
-      "After the assign succeeds, attempt to click **Assign to me** on a second unassigned action"
+      "Click **Do next** on an unassigned action row (desktop: text button on row hover; mobile: arrow-up-to-top icon, title \"Do next\")",
+      "After the assign succeeds, attempt to click **Do next** on a second unassigned action"
     ],
-    "expected": "- First call fires `POST /v1/action/{id}/assign`. The row updates to show the green \"You\" badge and a PersonRemoveIcon (Unassign) button. The action also appears in the user's personal Next Actions list.\n- The \"Assign to me\" button on every other unassigned row in the same project is now hidden (the per-row `hasActionButtons` check requires `!myAssignedAction`). The user must complete, trash, or unassign before claiming another action."
+    "expected": "- First call fires `POST /v1/action/{id}/assign`. The row updates to show the green \"You\" badge and a PersonRemoveIcon (Unassign) button. The action also appears in the user's personal Next Actions list.\n- The **Do next** button on every other unassigned row in the same project is now hidden. The user must complete, trash, or unassign before claiming another action. Updated by BUG-065 (S6.3 desktop text button)."
   },
   {
     "id": "TC-446",
@@ -11444,9 +11502,9 @@
     "preconditions": "Logged-in user has one assigned action on a shared project (per TC-445).",
     "steps": [
       "Open the project detail",
-      "Click the **Unassign** (PersonRemoveIcon) button on the assigned action"
+      "Click the **Unassign** (PersonRemoveIcon) button on the assigned action (Do next on the other rows: desktop text button, mobile icon)"
     ],
-    "expected": "`POST /v1/action/{id}/unassign` fires. The \"You\" badge is removed and the row reverts to unassigned. The action no longer appears in the user's personal Next Actions. The user can now self-assign another backlog action (Assign to me buttons reappear on other rows)."
+    "expected": "`POST /v1/action/{id}/unassign` fires. The \"You\" badge is removed and the row reverts to unassigned. The action no longer appears in the user's personal Next Actions. The user can now self-assign another backlog action (**Do next** buttons reappear on other rows). Updated by BUG-065."
   },
   {
     "id": "TC-447",
@@ -11480,7 +11538,7 @@
       "Open the project detail",
       "Inspect the per-row buttons on unassigned and assigned actions"
     ],
-    "expected": "No \"Assign to me\" icon button appears on any unassigned row (gated by `canWrite`). For actions assigned to other members, the assignee chip is shown but no controls. No checkbox is rendered on any row. No inline title edit is allowed. No quick-add input is shown."
+    "expected": "No **Do next** button (text or icon) appears on any unassigned row. For actions assigned to other members, the assignee chip is shown but no controls. No checkbox is rendered on any row. No inline title edit is allowed. No quick-add input is shown. Updated by BUG-065."
   },
   {
     "id": "TC-449",
@@ -11497,7 +11555,7 @@
       "Open the project detail",
       "Inspect the action button row at the top"
     ],
-    "expected": "- \"Trash\" button is NOT visible.\n- \"Leave\" button (ghost-danger variant) is visible in its place.\n- \"Complete\" button is NOT visible (owner only).\n- \"Share…\" button is NOT visible (owner only)."
+    "expected": "- The row is exactly **Leave** (ghost-danger); there is no ⋯ (`detail-more-menu`) (BUG-065 S6.2 \"Active, shared, member\").\n- \"Trash\", \"Complete\" and \"Share…\" are NOT shown (owner only). Updated by BUG-065."
   },
   {
     "id": "TC-450",
@@ -11748,11 +11806,11 @@
     "steps": [
       "Log in as the non-Team member and open the shared project's detail page",
       "Observe the top of the Backlog section",
-      "Confirm the write controls are absent (no \"Add action\" input, no \"Assign to me\" buttons, backlog not reorderable)",
+      "Confirm the write controls are absent (no \"Add action\" input, no **Do next** buttons, backlog not reorderable)",
       "Click the \"Upgrade to Team\" button in the notice",
       "(Comparison) Log in as a Team-plan member of the same project and open it"
     ],
-    "expected": "- Steps 1–2: a notice appears at the top of the Backlog reading: \"You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit.\" with an \"Upgrade to Team\" button.\n- Step 3: all write controls are hidden (gated by `canWrite`), consistent with read-only access; comments and attachment download remain available.\n- Step 4: the upgrade modal opens with a message about working on shared projects.\n- Step 5: the Team-plan member does NOT see the notice; their write controls render normally."
+    "expected": "- Steps 1–2: a notice appears at the top of the Backlog reading: \"You're not on the Team plan, so you have read-only access to this shared project. Upgrade to Team to assign actions and edit.\" with an \"Upgrade to Team\" button.\n- Step 3: all write controls are hidden (gated by `canWrite`), consistent with read-only access; comments and attachment download remain available.\n- Step 4: the upgrade modal opens with a message about working on shared projects.\n- Step 5: the Team-plan member does NOT see the notice; their write controls render normally. The project action row follows BUG-065 S6.2 (a non-owner member sees only **Leave**). Updated by BUG-065."
   },
   {
     "id": "TC-462",
@@ -16829,7 +16887,7 @@
       "Turn the Weekly Review off in Settings; press G then V; press ?; press Cmd/Ctrl+K and type `review`.",
       "Press G, wait 2 seconds, then press I; press G, wait 2 seconds, then press C."
     ],
-    "expected": "Step 1: `/inbox`, then `/settings`, then `/completed` open. Step 2: Q cancels the sequence silently; the following I does nothing (no cue is shown after G). Step 3: TopNav Quick Add expands with its input focused (placeholder \"Add new stuff\"); Enter shows toast `\"Buy milk\" added to Inbox`; Esc collapses it. Step 4: dialog \"Keyboard shortcuts\" with blocks **General** (`⌘K` on macOS / `Ctrl+K` elsewhere — Open the command palette · `⌘Z` / `Ctrl+Z` — Undo the last complete, trash or move · `C` — Add to Inbox · `?` — Show keyboard shortcuts), **Go to** (`G E` — Engage … `G V` — Weekly Review · `G ,` — Settings), **In the command palette** (`↑ ↓` — Move · `Enter` — Run · `Esc` — Close) and the footnote \"Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open. ⌘Z works while the Undo toast shows.\" (`Ctrl+Z` off macOS); **Close** button. Step 5: Esc closes it; **Close** closes it. Step 6: the characters are typed into the field; no navigation, no Quick Add, no dialog. Step 7: no navigation and no palette while the confirmation is open. Step 8: G V does nothing; the dialog has no `G V` row; the palette shows no \"Go to Weekly Review\" row. Step 9: I after the wait does nothing (no navigation); C after the wait expands TopNav Quick Add (the sequence lapsed after 1 second)."
+    "expected": "Step 1: `/inbox`, then `/settings`, then `/completed` open. Step 2: Q cancels the sequence silently; the following I does nothing (no cue is shown after G). Step 3: TopNav Quick Add expands with its input focused (placeholder \"Add new stuff\"); Enter shows toast `\"Buy milk\" added to Inbox`; Esc collapses it. Step 4: dialog \"Keyboard shortcuts\" with blocks **General** (`⌘K` on macOS / `Ctrl+K` elsewhere — Open the command palette · `⌘Z` / `Ctrl+Z` — Undo the last complete, trash or move · `C` — Add to Inbox · `?` — Show keyboard shortcuts), **Go to** (`G E` — Engage … `G V` — Weekly Review · `G ,` — Settings), **In the command palette** (`↑ ↓` — Move · `Enter` — Run · `Esc` — Close), **On the brainstorm canvas** (`Tab` — Add an idea under the selected one · `Enter` — Add the next idea · `Space` — Edit the selected idea · `Del` — Delete the idea and its branch · `← ↑ ↓ →` — Move between ideas · `⌘ ↑ ↓` / `Ctrl ↑ ↓` — Fold / unfold · `⌘Z` / `Ctrl+Z` — Undo a canvas change · `⌘⇧Z` — Redo · `Esc` — Stop editing) and the footnote \"Press G, then the letter. Shortcuts pause while you type in a field or a dialog is open. ⌘Z works while the Undo toast shows.\" (`Ctrl+Z` off macOS); **Close** button. Step 5: Esc closes it; **Close** closes it. Step 6: the characters are typed into the field; no navigation, no Quick Add, no dialog. Step 7: no navigation and no palette while the confirmation is open. Step 8: G V does nothing; the dialog has no `G V` row; the palette shows no \"Go to Weekly Review\" row. Step 9: I after the wait does nothing (no navigation); C after the wait expands TopNav Quick Add (the sequence lapsed after 1 second)."
   },
   {
     "id": "TC-840",
@@ -16872,7 +16930,7 @@
       "As the user at the project limit, choose \"New project: Over limit\", enter an outcome, click **Create Project**.",
       "Take the browser offline, open the palette, type `Offline item`, choose \"Add to Inbox: Offline item\"."
     ],
-    "expected": "Step 1: the palette closes; toast `\"Renew passport\" added to Inbox`; still on `/today`; the item is in the Inbox. Step 2: toast `\"Draft agenda\" added to Next`; its Action detail page opens; state Next, no project. Step 3: the palette closes and the prompt \"What does done look like?\" (placeholder \"Describe the successful outcome...\", **Cancel** / **Create Project**) opens; Cancel creates nothing and shows no toast. Step 4: toast `\"Move house\" added to Projects`; its Project detail page opens with that outcome. Step 5: the existing upgrade modal opens with no error toast; no project is created; nothing navigates. Step 6: the palette closes; error toast `Couldn't add \"Offline item\". Check your connection and try again.`; nothing is added."
+    "expected": "Step 1: the palette closes; toast `\"Renew passport\" added to Inbox`; still on `/today`; the item is in the Inbox. Step 2: toast `\"Draft agenda\" added to Next`; its Action detail page opens; state Next, no project. Step 3: the palette closes and the prompt \"Project outcome\" (helper line \"Why does this project matter? What does done look like?\", placeholder \"e.g. New website live, so clients can book online\", **Cancel** / **Create Project**) opens; Cancel creates nothing and shows no toast. Step 4: toast `\"Move house\" added to Projects`; its Project detail page opens with that outcome. Step 5: the existing upgrade modal opens with no error toast; no project is created; nothing navigates. Step 6: the palette closes; error toast `Couldn't add \"Offline item\". Check your connection and try again.`; nothing is added."
   },
   {
     "id": "TC-842",
@@ -16893,7 +16951,7 @@
       "Open the recurring template and the palette; choose \"Trash\".",
       "Open an action detail page whose data is still loading (throttle the network) and press Cmd/Ctrl+K."
     ],
-    "expected": "Every **This item** group lists exactly the page's rendered, enabled buttons in button order, labels verbatim, Move entries as \"Move to {entry}\". Step 1: Complete · Trash (no Move or Share… rows — the page hides them on a shared project). Step 2: Leave only. Step 3: the page shows no Done, Move, Got it, Assign to me, Unassign or Trash button (claimed by another member — view and comment only) and the palette has no **This item** group. Step 4: Undo only. Step 5: rows Delete instance · Trash; choosing Trash closes the palette and shows the page's own confirmation dialog. Step 6: no **This item** group until the page has loaded."
+    "expected": "Every **This item** group lists exactly the page's rendered, enabled actions — the row buttons plus the items behind ⋯ (`detail-more-menu`), and on a project page also **Brainstorm** (now the Brainstorm section row) — labels verbatim, Move entries as \"Move to {entry}\"; the order is not specified. Step 1: Brainstorm · Complete · Trash. Step 2: Brainstorm · Leave. Step 3: the page shows no action row (claimed by another member — view and comment only, no empty band) and the palette has no **This item** group. Step 4: Undo only. Step 5: rows Delete instance · Trash; choosing Trash closes the palette and shows the page's own confirmation dialog. Step 6: no **This item** group until the page has loaded. Updated by BUG-065."
   },
   {
     "id": "TC-843",
@@ -16927,7 +16985,7 @@
       "As C, open the shared project's detail page and the palette.",
       "As C, open the unassigned backlog action's detail page and the palette."
     ],
-    "expected": "Step 1: **This item** lists Leave only. Step 2: the page shows no Done, Move, Assign to me or Trash button from the first paint (the role comes from the action's `my_role`; no members request is made); the palette has no **This item** group — **Go to** only."
+    "expected": "Step 1: **This item** lists Brainstorm · Leave. Step 2: the page shows no action row from the first paint — in its place the `View only` Alert `You can view this shared project but not change it.` (BUG-065 S11; the role comes from the action's `my_role`; no members request is made); the palette has no **This item** group — **Go to** only. Updated by BUG-065."
   },
   {
     "id": "TC-844",
@@ -16944,7 +17002,7 @@
       "On desktop (> 768 px) open each surface in the table below in the stated state.",
       "Repeat step 1 at a viewport ≤ 768 px. | Where (state) | Title / text | |---------------|--------------| | `/inbox` (empty) | \"Inbox zero. Mind like water.\" / \"Your head is for having ideas, not holding them. Capture the next one above.\" | | `/today` | \"A clear day ahead\" / \"Pick the few actions that matter most today and move them here.\" + **Add Action** | | `/next` | \"Nothing to do next — yet\" / \"Clarify your inbox or plan a project, and each next physical step lands here.\" + **Add Action** | | `/waiting-for` | \"Nobody owes you anything\" / \"When you hand something off or wait on a reply, park it here and stop tracking it in your head.\" + **Add Action** | | `/projects` | \"No projects in motion\" / \"Anything that takes more than one action is a project. Clarify an inbox item into one, or add it here.\" + **Add Project** | | `/someday` | \"Someday is wide open\" / \"Park the ideas you're not ready to commit to — clarify them here from your inbox, or defer an action. They'll wait for your weekly review.\" + **Add Item** | | `/completed` | \"Nothing finished yet\" / \"Every action you check off lands here. Uncheck one to bring it back.\" | | `/trash` | \"Nothing in the trash\" / \"Deleted items wait here. Restore them, or empty the trash for good.\" | | `/overdue` | \"All caught up\" / \"Nothing has slipped past its due date. If something does, it shows up here.\" | | `/engage` (no data) | \"A blank slate\" / \"Get what's on your mind into your inbox, and your next moves line up here.\" + **Go to Inbox** | | `/reference` Files (no files) | \"Your reference shelf is empty\" / \"Keep what you might need later — upload files or create folders to file them.\" + **Upload File** | | `/reference` Files, search `zzqx` | \"Nothing matches that search\" / \"Check the spelling or try a different word.\" | | `/reference` Attachments (Local) | \"No attachments yet\" / \"Files you attach to your items collect here.\" | | `/reference` Attachments (Google Drive) | \"No attachments yet\" / \"Attachments you save to Google Drive collect here. Choose where new ones go in Settings → Storage.\" | | `/reference` Trash | \"Nothing in the trash\" / \"Deleted files wait here. Restore them, or delete them for good.\" | | `/stuff/<purged id>` | \"This item is no longer here\" / \"It may have been clarified, deleted, or moved to trash.\" + **Go to Inbox** | | `/action/<purged id>` | \"This action is no longer here\" / \"It may have been completed, deleted, or moved.\" + **Go to Next Actions** | | `/project/<purged id>` | \"This project is no longer here\" / \"It may have been completed, deleted, or moved to trash.\" + **Go to Projects** | | `/recurring/<deleted id>` | \"This recurring template is no longer here\" / \"It may have been deleted.\" + **Go to Calendar** | | `/search` (no term) | \"Find anything you've captured\" / \"Type a word from a title, description, project outcome or file name.\" | | `/search?q=zzqx` (All; then the Projects chip) | `Nothing matches \"zzqx\"` / All: \"Check the spelling or try a different word.\"; Projects chip: \"Try All, or a different word.\" | | `/search` error (offline; HTTP 429) | \"Search didn't go through\" / \"Check your connection, then try again.\" (429: \"Too many searches in a row. Wait a moment, then try again.\") + **Try again** | | `/connections` (Free/Pro) | \"Get things done together\" / \"Connections let you delegate actions and share projects with other WhatsNextAction users. Available on the Team plan.\" + upgrade button | | `/connections` (Team, no connections) | \"Your team starts here\" / \"Invite a teammate by email above to delegate actions and share projects.\" | | `/calendar` Recurring view | \"Nothing on repeat\" / \"Set up a template once, and its actions schedule themselves on a repeating basis.\" + **Add Template** | | Context filter `@calls` on `/next`, `/today`, `/waiting-for`, `/engage` | \"This context is clear\" / \"Nothing tagged '@calls' needs you right now. Clear the filter to see everything.\" | | Context filter `@calls` on `/projects` | \"No projects in this context\" / same text | | Context filter `@calls` on `/someday` | \"No someday ideas in this context\" / same text |"
     ],
-    "expected": "Each surface shows its section icon on a raised round coin inside a soft halo with two fine orbit rings (~160 px on desktop, ~120 px at ≤ 768 px), every icon at the same line weight (the Search magnifier on `/search` no heavier than the Inbox icon), drawn in the current theme's colors in both light and dark theme; then the exact title and text, and the button where listed (its target unchanged). On `/inbox`, emptying the last item still plays the Inbox Zero celebration first, then shows this empty state. While a list loads, a fast load shows no spinner; with a throttled network (DevTools \"Slow 4G\") the spinner appears after ~300 ms on the centre of where the coin then appears, with no jump when the empty state replaces it. Switching between the empty `/engage` and an empty `/next` (no review nudge shown) keeps the card frame and the coin in the same place."
+    "expected": "Each surface shows its section icon on a raised round coin inside a soft halo with two fine orbit rings (~160 px on desktop, ~120 px at ≤ 768 px), every icon at the same line weight (the Search magnifier on `/search` no heavier than the Inbox icon), drawn in the current theme's colors in both light and dark theme; then the exact title and text, and the button where listed (its target unchanged). On `/inbox`, emptying the last item still plays the Inbox Zero celebration first — with the same EmptyState art (BUG-065 S5 row 6) — then shows this empty state. While a list loads, a fast load shows no spinner; with a throttled network (DevTools \"Slow 4G\") the spinner appears after ~300 ms on the centre of where the coin then appears, with no jump when the empty state replaces it. Switching between the empty `/engage` and an empty `/next` (no review nudge shown) keeps the card frame and the coin in the same place. Updated by BUG-065."
   },
   {
     "id": "TC-832",
@@ -17179,11 +17237,11 @@
       "Hover segment 6; click it.",
       "Resize to a mobile width (375px)."
     ],
-    "expected": "Step 1: only the \"Start Review\" button above the steps card. Step 2: a progress row appears\nbetween the button and the steps card — 6 equal empty segments and \"0 of 6 complete\" right of them; nothing beside\n\"Complete Review\". Step 3: segments 1 and 3 fill (accent colour, short transition), counter \"2 of 6 complete\".\nStep 4: tooltip \"Review Calendar\"; the \"Review Calendar\" step scrolls into view. Step 5: segments and counter stay on\none row; the counter text is not wrapped or cut."
+    "expected": "Step 1: only the \"Start Review\" button (header row, right of the title) — no progress row. Step 2: a progress row appears\nbetween the header and the steps card — 6 equal empty segments and \"0 of 6 complete\" right of them; nothing beside\n\"Complete Review\". Step 3: segments 1 and 3 fill (accent colour, short transition), counter \"2 of 6 complete\".\nStep 4: tooltip \"Review Calendar\"; the \"Review Calendar\" step scrolls into view. Step 5: segments and counter stay on\none row; the counter text is not wrapped or cut. Updated by BUG-065 (S5 rows 1, 4)."
   },
   {
     "id": "TC-852",
-    "name": "Step 6 Lists Last Week's Open and Next 14 Days' Actions",
+    "name": "Step 6 Is a Normal Row — No Lists, Go Buttons or Count Pills",
     "priority": "High",
     "area": "Weekly Review, Calendar",
     "areas": [
@@ -17194,13 +17252,11 @@
     "section": "63: Weekly Review Improvements (FEAT-059)",
     "preconditions": "Common preconditions.",
     "steps": [
-      "Open `/review`; look at the \"Review Calendar\" step.",
+      "Open `/review`; look at the steps and the header.",
       "Click **Start Review**.",
-      "Click A1 in \"Last 7 days — still open\"; then press browser Back.",
-      "Delete A1, A3 and A4 (so both windows are empty); reopen `/review`.",
-      "Stop the backend calendar service (or block `GET /v1/calendar`); reload `/review`; restore it and click each **Retry**."
+      "Click the \"Review Calendar\" row (`review-step-6`)."
     ],
-    "expected": "Step 1: hint \"Anything left from last week? Any prep needed for what's coming?\"; no lists before\nStart. Step 2: two lists under the step — \"Last 7 days — still open\" with A1 and A4 (not completed A2), and \"Next 14\ndays\" with A3 and A4 (A4 in both); A5 is in neither. Rows show title + metadata, no checkbox, no trash, no inline\nedit. Step 3: the action detail opens with back link \"Review\"; Back returns to `/review`, still in review with the\nsame ticks. Step 4: \"Nothing left open from last week.\" and \"Nothing scheduled for the next 14 days.\". Step 5:\n\"Couldn't load last week's actions.\" and \"Couldn't load upcoming actions.\", each with **Retry**; step 6 can still be\nticked; Retry loads each list on its own."
+    "expected": "Step 1: no `Go` button, no count pill (no number on any step row) and no \"Last 7 days — still open\" /\n\"Next 14 days\" lists, even with dated actions; **Start Review** sits right of the \"Weekly Review\" title in the header\nrow. Step 2: **Complete Review** takes its place (disabled, title `Check all 6 steps to complete the review`); still no\nlists and no seeded action titles on the page. Step 3: `/calendar` opens — step 6 is a normal row (BUG-065 O9, S5; see\nTC-998). Updated by BUG-065."
   },
   {
     "id": "TC-853",
@@ -17221,7 +17277,7 @@
       "Reload `/review`.",
       "Make `PUT /v1/user/settings` slow and then fail (devtools); click **Start Review**."
     ],
-    "expected": "Step 2: the button shows a spinner while saving and the step checkboxes are disabled; then the\nsteps card is replaced by a centered celebration — green check bloom, \"Review Complete\", \"Your system is current.\" —\nwith no toast; header \"Last reviewed: today\". Step 3: the celebration fades out; the steps card returns disabled, no progress row, \"Start Review\" shown.\nStep 4: the click dismisses it early. Step 5: still Idle (\"Start Review\", no ticks) — the saved progress was cleared.\nStep 6: \"Start Review\" shows a spinner while saving; the page stays Idle the whole time — no \"Complete Review\", no\nprogress row, no step 6 lists, checkboxes disabled; then the toast \"Couldn't start the review. Try again.\"; a reload\nis still Idle."
+    "expected": "Step 2: the button shows a spinner while saving and the step checkboxes are disabled; then the\nsteps card is replaced by a centered celebration — the FEAT-057 EmptyState art (rings + coin), \"Review complete\",\n\"Your system is current.\" — with no toast; \"Last reviewed: today\" under the title. Step 3: the celebration fades out; the steps card returns (checkboxes disabled), no progress row, \"Start Review\" shown, and \"Last reviewed: today\" stays under the title.\nStep 4: the click dismisses it early. Step 5: still Idle (\"Start Review\", no ticks) — the saved progress was cleared.\nStep 6: \"Start Review\" shows a spinner while saving; the page stays Idle the whole time — no \"Complete Review\", no\nprogress row, no step 6 lists, checkboxes disabled; then the toast \"Couldn't start the review. Try again.\"; a reload\nis still Idle. Updated by BUG-065."
   },
   {
     "id": "TC-854",
@@ -17268,7 +17324,7 @@
       "Block `POST /v1/action/{id}/complete`; on Next swipe right on a row.",
       "On a desktop viewport (1280 px) open Next and drag a row sideways with the mouse."
     ],
-    "expected": "Step 1: the row follows the finger; a strip appears at the left edge with the check icon and\n\"Complete\" — tinted (success-light background, success text) before the threshold and solid (success background,\ninverse text) past it. On release the row snaps back, the checkbox ticks, the row animates out and the toast\n`\"<title>\" completed` shows. Step 2: the strip is on the right edge — trash icon after \"Trash\", danger tint then solid.\nAfter release the row snaps back and is trashed at once — no confirm (FEAT-061) — with the toast `\"<title>\" moved to\ntrash` and its **Undo** button. Step 3: the same on every page and section. Step 4: complete and trash work, no\nconfirm. Step 5: MO does not move in either direction (O sees no checkbox / × on it); U completes. Step 6:\nM completes MO; R's rows do not move. Step 7: the row snaps back, ticks, then returns unchecked with the API error toast\n(else \"Failed to complete action\"). Step 8: no strip, the row does not slide."
+    "expected": "Step 1: the row follows the finger; a strip appears from the row's outer left edge (no white gap, BUG-065 S15) with the check icon and\n\"Complete\" — tinted (success-light background, success text) before the threshold and solid (success background,\ninverse text) past it. On release the row snaps back, the checkbox ticks, the row animates out and the toast\n`\"<title>\" completed` shows. Step 2: the strip is on the right edge — trash icon after \"Trash\", danger tint then solid.\nAfter release the row snaps back and is trashed at once — no confirm (FEAT-061) — with the toast `\"<title>\" moved to\ntrash` and its **Undo** button. Step 3: the same on every page and section. Step 4: complete and trash work, no\nconfirm. Step 5: MO does not move in either direction (O sees no checkbox / × on it); U completes. Step 6:\nM completes MO; R's rows do not move. Step 7: the row snaps back, ticks, then returns unchecked with the API error toast\n(else \"Failed to complete action\"). Step 8: no strip, the row does not slide. Updated by BUG-065."
   },
   {
     "id": "TC-856",
@@ -17354,7 +17410,7 @@
       "Block `GET /v1/nextActions`; pull to refresh on Next. Block `GET /v1/engage`; pull to refresh on Engage.",
       "Scroll Next down, then pull down; open Reference, Calendar, Search and an action detail and pull down at the top."
     ],
-    "expected": "Step 2: \"Pull to refresh\" (small, tertiary text) at the top of the list under the page header,\ncontent moving down with the finger; past the threshold \"Release to refresh\"; on release a 20 px spinner holds, then\ncollapses — the new action is in the list and the sidebar Next count is updated; no toast, the browser does not reload\nthe page. Step 3: the indicator collapses, nothing reloads. Step 4: same on every page (Engage reloads every section).\nStep 5: the indicator collapses, the list stays as it was, and an error toast with the API message shows (e.g. \"No\nresponse from server. Check your connection.\") on both pages. Step 6: pulling while scrolled down just scrolls; the\nother pages show no indicator."
+    "expected": "Step 2: a 16 px chevron before \"Pull to refresh\" (small, tertiary text) at the top of the list under the page header,\ncontent moving down with the finger; past the threshold \"Release to refresh\" and the chevron turns 180°; on release a 20 px spinner holds, then\ncollapses — the new action is in the list and the sidebar Next count is updated; no toast, the browser does not reload\nthe page. Step 3: the indicator collapses, nothing reloads. Step 4: same on every page (Engage reloads every section).\nStep 5: the indicator collapses, the list stays as it was, and an error toast with the API message shows (e.g. \"No\nresponse from server. Check your connection.\") on both pages. Step 6: pulling while scrolled down just scrolls; the\nother pages show no indicator. Updated by BUG-065."
   },
   {
     "id": "TC-860",
@@ -17378,7 +17434,7 @@
       "Open an Inbox item's detail page and click **Clarify**; finish it.",
       "With the sheet open, resize the window above 768 px."
     ],
-    "expected": "Step 1: a sheet slides up over the dimmed page to ~70 % of the screen height, with a handle bar,\nthen the Clarify header (\"Clarify\", step \"1/3\", ×), progress bar, \"Processing:\" + title, and the step; the page behind\ndoes not scroll. Step 2: once the content (or keyboard) no longer fits, the sheet grows to full height and stays there.\nStep 3: the short drag snaps back; the long drag closes the sheet and leaves Clarify mode. Step 4: the backdrop closes\nit the same way. Step 5: drag and backdrop do nothing while saving and on \"Do it now\"; × still closes it. Step 6: each\nfinished item shows its success toast and the sheet moves to the next item; after the last one it closes and Inbox\nZero shows. Step 7: the detail page opens the same sheet and advances to the next item when done. Step 8: the sheet\nbecomes the desktop slide-over on the same step."
+    "expected": "Step 1: a sheet slides up over the dimmed page to ~70 % of the screen height, with a handle bar,\nthen the Clarify header (\"Clarify\", step \"1/3\", ×), progress bar, \"Processing:\" + title, and the step; the page behind\ndoes not scroll. Step 2: once the content (or keyboard) no longer fits, the sheet grows to the viewport height minus 44 px (the backdrop stays visible above it) and stays there; the × is a ghost icon button, the option cards show no key hints.\nStep 3: the short drag snaps back; the long drag closes the sheet and leaves Clarify mode. Step 4: the backdrop closes\nit the same way. Step 5: drag and backdrop do nothing while saving and on \"Do it now\"; × still closes it. Step 6: each\nfinished item shows its success toast and the sheet moves to the next item; after the last one it closes and Inbox\nZero shows. Step 7: the detail page opens the same sheet and advances to the next item when done. Step 8: the sheet\nbecomes the desktop slide-over on the same step. Updated by BUG-065."
   },
   {
     "id": "TC-862",
@@ -17397,10 +17453,10 @@
       "On Next, tick the checkbox of A2.",
       "Click **Undo** in the toast.",
       "Tick A2 again; wait 7 seconds without clicking.",
-      "On Inbox, tick S1; click the toast body (not the button).",
+      "On Inbox, tick S1; click the toast message (not the button); then click **Undo**.",
       "Tick S2; then tick A1 on Next before the S2 toast expires."
     ],
-    "expected": "Step 1: A2 animates out; the Undo toast reads `\"A2\" completed`. Step 2: the button reads\n`Undoing…` (disabled) while the call runs; then a plain success toast `\"A2\" moved back` replaces it, A2 is back between\nA1 and A3, and the Next / Completed counts in the sidebar update. Step 3: the toast leaves after 6 s; A2 stays in\nCompleted and nothing can be undone any more. Step 4: the click dismisses the toast; there is no Undo left. Step 5: the\nA1 Undo toast replaces the S2 one at once — only one Undo toast is ever shown."
+    "expected": "Step 1: A2 animates out; the Undo toast — a dark snackbar with no icon, the message on one line, **Undo** as a separate button at the right — reads `\"A2\" completed`. Step 2: the button reads\n`Undoing…` (disabled) while the call runs; then a plain success toast `\"A2\" moved back` replaces it, A2 is back between\nA1 and A3, and the Next / Completed counts in the sidebar update. Step 3: the toast leaves after 6 s; A2 stays in\nCompleted and nothing can be undone any more. Step 4: the toast stays (a body click does not dismiss an Undo toast, BUG-065 S1); **Undo** brings S1 back with `\"S1\" moved back`. Step 5: the\nA1 Undo toast replaces the S2 one at once — only one Undo toast is ever shown. Updated by BUG-065."
   },
   {
     "id": "TC-863",
@@ -17427,7 +17483,7 @@
       "On Someday, click × on P3.",
       "On Projects, drag P4 onto **Trash** in the sidebar."
     ],
-    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (which replaces the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash. Step 7: toast `\"K1\" moved to trash`; after Undo `\"K1\" moved back`\nand K1 shows again in the open Completed list without a manual reload. Step 8: `\"K2\" moved back`; K2 leaves the open\nTrash list and is in Completed. Step 9: `\"P3\" and its actions moved to trash`. Step 10: `\"P4\" and its actions moved to\ntrash`."
+    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (which replaces the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash. Step 7: toast `\"K1\" moved to trash`; after Undo `\"K1\" moved back`\nand K1 shows again in the open Completed list without a manual reload. Step 8: `\"K2\" moved back`; K2 leaves the open\nTrash list and is in Completed. Step 9: `\"P3\" and its actions moved to trash`. Step 10: `\"P4\" and its actions moved to\ntrash`. Every Undo toast is the dark snackbar without an icon (BUG-065 S1). Updated by BUG-065."
   },
   {
     "id": "TC-864",
@@ -17441,17 +17497,17 @@
     ],
     "smoke": false,
     "section": "65: Global Undo (FEAT-061)",
-    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date; a project P5 on Projects with actions; a standalone action K1 in Calendar\nwith a start date of today at 09:00 and a due date of yesterday (it shows in both the Engage Overdue and Today sections).",
+    "preconditions": "Common preconditions. A standalone action C1 in Calendar scheduled for a future date at 10:00 for 90\nminutes; a standalone action W1 in Waiting For, waiting for \"Sarah\", Waiting date 5 days ago (second in the list); a\nstandalone action N1 in Next with a due date; a project P5 on Projects with actions; a standalone action K1 in Calendar\nwith a start date of today at 09:00 and a due date of yesterday (it shows in both the Engage Overdue and Next Actions\nsections); a standalone action T1 in Today.",
     "steps": [
       "Open C1; Move → Next Actions; click **Undo**; open C1.",
       "Open W1; click **Got it**; click **Undo**; open W1.",
       "Open N1; Move → Calendar, pick a date; click **Undo**; open N1.",
       "Drag N1 from Next onto **Today** in the sidebar; click **Undo**.",
       "On Projects, drag P5 onto **Someday** in the sidebar; click **Undo**.",
-      "On Engage, drag K1 from the Today section onto the Next drop zone; click **Undo**; open K1.",
+      "On Engage, drag K1 from the Next Actions section onto the Today drop zone; click **Undo**; open K1.",
       "Open Overdue; try to drag K1 onto **Next Actions** in the sidebar, then above another row in the list."
     ],
-    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place.\nStep 5: toast `\"P5\" moved to Someday. Active actions shelved.` with Undo; after Undo P5 is back on Projects at its old\nplace with its active action. Step 6: toast `\"K1\" moved to Next Actions` with Undo; after Undo K1 is back in Calendar\nwith its start date today at 09:00 and its due date (no `Missing date` error). Step 7: the row can't be dragged —\nnothing moves, no toast."
+    "expected": "Step 1: toast `\"C1\" moved to Next Actions` with Undo; after Undo C1 is back in Calendar with the\nsame date, 10:00 and 90 minutes. Step 2: toast `\"W1\" moved to Next Actions`; after Undo W1 is back in Waiting For at\nits old place, waiting for \"Sarah\", with the Waiting date 5 days ago (not today). Step 3: after Undo N1 is back in Next\nwith its due date. Step 4: toast `\"N1\" moved to Today` with Undo; after Undo N1 is back in Next at its old place.\nStep 5: toast `\"P5\" moved to Someday. Active actions shelved.` with Undo; after Undo P5 is back on Projects at its old\nplace with its active action. Step 6: toast `\"K1\" moved to Today` with Undo; after Undo K1 is back in Calendar\nwith its start date today at 09:00 and its due date (no `Missing date` error). Step 7: the row can't be dragged —\nnothing moves, no toast."
   },
   {
     "id": "TC-865",
@@ -17473,7 +17529,7 @@
       "Tick A2; press Cmd/Ctrl+Shift+Z.",
       "Press ?."
     ],
-    "expected": "Step 1: same as clicking Undo — `Undoing…`, then `\"A1\" moved back`, A1 back in place. Step 2: the\nfield's own text undo runs; the Undo toast stays and A1 stays completed. Step 3: nothing is undone while the dialog is\nopen. Step 4: nothing happens (the toast is gone). Step 5: nothing is undone (no redo / no shift variant). Step 6: the\n**General** block shows `⌘Z` (macOS) / `Ctrl+Z` — \"Undo the last complete, trash or move\" right after the palette key,\nand the footnote ends \"⌘Z works while the Undo toast shows.\" (`Ctrl+Z` off macOS)."
+    "expected": "Step 1: same as clicking Undo — `Undoing…`, then `\"A1\" moved back`, A1 back in place. Step 2: the\nfield's own text undo runs; the Undo toast stays and A1 stays completed. Step 3: nothing is undone while the dialog is\nopen. Step 4: nothing happens (the toast is gone). Step 5: nothing is undone (no redo / no shift variant). Step 6: the\n**General** block shows `⌘Z` (macOS) / `Ctrl+Z` — \"Undo the last complete, trash or move\" right after the palette key,\nand the footnote ends \"⌘Z works while the Undo toast shows.\" (`Ctrl+Z` off macOS). The Undo toast is the dark snackbar without an icon (BUG-065 S1). Updated by BUG-065."
   },
   {
     "id": "TC-866",
@@ -17546,7 +17602,7 @@
       "Tap **Undo** in the toast.",
       "Swipe left on T1 with a long title (> 30 characters); look at the toast."
     ],
-    "expected": "Step 1: no confirm; T2 is trashed with the Undo toast `\"T2\" moved to trash`. Step 2: `\"T2\" moved\nback`; T2 is back between T1 and T3. Step 3: the toast wraps inside the screen (16 px from each side) and **Undo** stays\nat the end of its last line with a touch-sized target."
+    "expected": "Step 1: no confirm; T2 is trashed with the Undo toast `\"T2\" moved to trash`. Step 2: `\"T2\" moved\nback`; T2 is back between T1 and T3. Step 3: the toast is one line (the title truncated to 30 characters + `…`), full width 16 px from each side,\n**Undo** at its right end; its bottom edge sits 12 px above the FAB (BUG-065 S1; see TC-990). Updated by BUG-065."
   },
   {
     "id": "TC-869",
@@ -17568,7 +17624,7 @@
       "On slide 4 look at the field and the footer; type only spaces and press Enter.",
       "Log in with the second account by opening `/upgrade` first (deep link through login); then click **Dashboard** in the sidebar."
     ],
-    "expected": "Step 1: the welcome modal opens over Engage on slide 1: `1/4` (left), × (right), Inbox icon on the\ncoin + orbit art, title \"Capture everything\", body \"Your mind is for having ideas, not holding them. Whatever has your\nattention — a task, an idea, an errand — drop it into your Inbox with the + button, from any page.\"; footer **Skip** ·\n**Next** (no Back). Step 2: nothing happens — the modal stays open. Step 3: `2/4` \"Decide what it means\" (Next icon),\n`3/4` \"Work from a list you trust\" (Engage icon), `4/4` \"What's on your mind?\" (Inbox icon), each with the body copy from\n`wna-features.md` §3.6; **Back** shows from slide 2. Step 4: Back returns to `3/4`, Next to `4/4`. Step 5: the field is\nfocused with placeholder `e.g. Call the dentist`; the footer reads **Skip for now** · **Back** · **Add to Inbox**; Add to\nInbox stays disabled and Enter does nothing. Step 6: no modal on `/upgrade`; it opens on slide 1 as soon as Engage loads."
+    "expected": "Step 1: the welcome modal opens over Engage on slide 1: `1 of 4` (left), no × (Skip and Escape remain),\nInbox icon on the coin + orbit art, title \"Capture everything\", body \"Whatever has your attention, drop it into your Inbox —\nwith Quick Add, or + on your phone.\"; footer **Skip** · **Next** (no Back). Step 2: nothing happens — the modal stays\nopen. Step 3: `2 of 4` \"Decide what it means\" — \"Clarify asks one question per item: is it actionable? Then it becomes an\naction, a project or a date — or goes.\"; `3 of 4` \"Work from a list you trust\" — \"Your Dashboard shows what's due and\nwhat's next. A Weekly Review keeps it current.\"; `4 of 4` \"What's on your mind?\" — \"Add one thing you've been meaning to\ndo. It lands in your Inbox, ready to clarify.\"; **Back** shows from slide 2; **Next** does not move between slides (fixed\nbody height). Step 4: Back returns to `3 of 4`, Next to `4 of 4`. Step 5: the field is focused with placeholder\n`e.g. Call the dentist`; the footer reads **Skip for now** · **Back** · **Add to Inbox**; Add to Inbox stays disabled\nand Enter does nothing. Step 6: no modal on `/upgrade`; it opens on slide 1 as soon as Engage loads. Updated by BUG-065\n(S12; see TC-1000)."
   },
   {
     "id": "TC-870",
@@ -17593,7 +17649,7 @@
   },
   {
     "id": "TC-871",
-    "name": "Skip, × and Escape Finish the Tour",
+    "name": "Skip, Escape and Skip for Now Finish the Tour",
     "priority": "High",
     "area": "Onboarding, Settings",
     "areas": [
@@ -17606,11 +17662,11 @@
     "steps": [
       "A: on slide 1 click **Skip**; navigate to Next and back to Engage; reload.",
       "B: go to slide 3 and press Escape; reload.",
-      "C: go to slide 4 and click × (or **Skip for now**); reload.",
+      "C: go to slide 4 (there is no ×) and click **Skip for now**; reload.",
       "In the same tab log out of C and log in as a fresh new account D.",
       "Repeat step 1 on another fresh account with `PUT /v1/user/settings` failing (API blocked for that call); navigate to another page; then reload."
     ],
-    "expected": "Steps 1–3: the modal closes without creating an item, `PUT /v1/user/settings\n{\"onboarding\":{\"completed\":true}}` is sent, and the tour does not reopen on route changes or after the reload. Step 4:\nthe tour opens for D (the previous user's settings are not reused). Step 5: the modal closes and the error toast reads\n\"Couldn't save that you've seen the welcome tour, so it will open again next time — just skip it.\"; it does not reopen\non the page change, but opens again after the reload."
+    "expected": "Steps 1–3: the modal closes without creating an item, `PUT /v1/user/settings\n{\"onboarding\":{\"completed\":true}}` is sent, and the tour does not reopen on route changes or after the reload. Step 4:\nthe tour opens for D (the previous user's settings are not reused). Step 5: the modal closes and the error toast reads\n\"Couldn't save that you've seen the welcome tour, so it will open again next time — just skip it.\"; it does not reopen\non the page change, but opens again after the reload. Updated by BUG-065."
   },
   {
     "id": "TC-872",
@@ -17631,7 +17687,7 @@
       "Click **Skip**.",
       "Log out; open `/help/getting-started`; then open `/engage?welcome=1` directly and log in."
     ],
-    "expected": "Step 1: no tour. Step 2: a \"Show the welcome tour\" link sits under the \"Getting Started\" heading,\nabove the cards. Step 3: Engage opens with the tour on `1/4`, same copy and controls; the URL no longer carries\n`?welcome=1`. Step 4: the modal closes and no `PUT /v1/user/settings` is sent. Step 5: the link is not shown logged out;\n`/engage?welcome=1` goes to the login dialog and, after sign-in, opens Engage with the tour."
+    "expected": "Step 1: no tour. Step 2: a \"Show the welcome tour\" link sits under the \"Getting Started\" heading,\nabove the cards. Step 3: Engage opens with the tour on `1 of 4`, same copy and controls; the URL no longer carries\n`?welcome=1`. Step 4: the modal closes and no `PUT /v1/user/settings` is sent. Step 5: the link is not shown logged out;\n`/engage?welcome=1` goes to the login dialog and, after sign-in, opens Engage with the tour. Updated by BUG-065."
   },
   {
     "id": "TC-873",
@@ -17671,10 +17727,2364 @@
       "As A open project S, then as B open S; open the palette on each.",
       "As A, drag project P from Projects onto **Someday/Maybe** in the sidebar.",
       "As A open the personal action.",
-      "As B, on N1 (in Today since step 4) click **Unassign**; open B's Today list, then project P.",
-      "As B claim N5 and open its detail in two tabs; in the second tab click **Unassign**; in the first tab choose **Move** → **Today**.",
+      "As B, on N1 (in Today since step 4) click ⋯ → **Unassign**; open B's Today list, then project P.",
+      "As B claim N5 and open its detail in two tabs; in the second tab click ⋯ → **Unassign**; in the first tab choose **Move** → **Today**.",
       "As B claim N5 again and choose **Move** → **Calendar** (any date); as A remove B from P (C and D stay, so P stays shared); open P as A and B's Calendar as B."
     ],
-    "expected": "On every page the **This item** palette rows list exactly the rendered buttons (labels verbatim,\nMove entries as \"Move to {entry}\"); blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move · Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar) · Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Done · Assign to me · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Done · Assign to me · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo; C on N1 — no buttons; C on N9 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — no Undo; D on N8 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave only (no Activate or Complete).\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before.\nStep 8: toast \"Action returned to backlog\"; N1 is gone from B's Today and is in P's backlog, unassigned.\nStep 9: error toast \"Assign this action to yourself before moving it.\" (the backend 403 `detail`, not \"Failed to move\naction\"); N5 stays in P's backlog, unassigned.\nStep 10: N5 is in P's backlog, unassigned, with no scheduled date; it is gone from B's Calendar."
+    "expected": "On every page the action row shows at most 3 text buttons and the rest behind ⋯ (`detail-more-menu`), per\nBUG-065 S11 / S6.2; the **This item** palette rows list exactly the row buttons plus the ⋯ items (and Brainstorm on a project\npage), labels verbatim, Move entries as \"Move to {entry}\", order not specified; blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move, ⋯ Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar), ⋯ Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Assign to me · Done · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Assign to me · Done · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo; C on N1 — no buttons; C on N9 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — no Undo; D on N8 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave (no Activate or Complete); Brainstorm is the section row, not a button.\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before.\nStep 8: toast \"Action returned to backlog\"; N1 is gone from B's Today and is in P's backlog, unassigned.\nStep 9: error toast \"Assign this action to yourself before moving it.\" (the backend 403 `detail`, not \"Failed to move\naction\"); N5 stays in P's backlog, unassigned.\nStep 10: N5 is in P's backlog, unassigned, with no scheduled date; it is gone from B's Calendar. Updated by BUG-065."
+  },
+  {
+    "id": "TC-899",
+    "name": "Photo From the Attach Menu",
+    "priority": "High",
+    "area": "Capture, Inbox",
+    "areas": [
+      "Capture",
+      "Inbox"
+    ],
+    "smoke": true,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; empty Inbox.",
+    "steps": [
+      "On Inbox click the attach icon (tooltip `Attach photo, voice or file`).",
+      "Choose **Photo**, pick one image; look at the bar.",
+      "Click **Add** without typing a title."
+    ],
+    "expected": "Step 1: menu rows in order **Photo** · **Voice** · **File**. Step 2: one chip with the image\nthumbnail; placeholder `Add a title (optional)`; **Add** enabled. Step 3: one new Inbox item titled `Photo · <stamp>`,\n`input_type` `photo`, one attachment; its row shows the camera icon with count 1."
+  },
+  {
+    "id": "TC-900",
+    "name": "Photo Is Resized, File Keeps the Original Image",
+    "priority": "Medium",
+    "area": "Capture, Attachments",
+    "areas": [
+      "Capture",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; a PNG image larger than 2048 px on its long edge.",
+    "steps": [
+      "Attach the image with **Photo**, type a title, **Add**; download the stored attachment.",
+      "Attach the same image with **File**, click **Add** without a title; download the stored attachment."
+    ],
+    "expected": "Step 1: the stored file is `image/jpeg`, named `photo-YYYYMMDD-HHmm.jpg`, long edge exactly 2048 px.\nStep 2: item `Photo · <stamp>`, `input_type` `photo`, camera row icon (an image is a photo whichever menu row picked it);\nthe stored file keeps its name and `image/png`, byte-identical to the original."
+  },
+  {
+    "id": "TC-901",
+    "name": "Voice Memo",
+    "priority": "High",
+    "area": "Capture, Voice",
+    "areas": [
+      "Capture",
+      "Voice"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; a working microphone, permission granted.",
+    "steps": [
+      "Attach → **Voice**; watch the bar for two seconds.",
+      "Click **Stop**.",
+      "Click the chip's play button, then the same button again.",
+      "Click **Add**.",
+      "Record again, **Stop**, then remove the voice chip."
+    ],
+    "expected": "Step 1: recording row with a red dot, `Recording` and a running `m:ss` timer plus **Stop**; the\nattach icon and **Add** are disabled. Step 2: the recording row goes; chip `Voice memo · m:ss` with play and remove.\nStep 3: playing shows the stop icon on the button; the second click stops and shows play again. Step 4: one item titled\nexactly as the chip, `input_type` `audio`, one attachment `voice-YYYYMMDD-HHmm.m4a` or `.webm` (`audio/*`); the row shows\nthe mic icon. Step 5: no chip left; **Add** disabled."
+  },
+  {
+    "id": "TC-902",
+    "name": "Voice Without Microphone Access",
+    "priority": "Medium",
+    "area": "Capture, Voice",
+    "areas": [
+      "Capture",
+      "Voice"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions. Run 1: microphone permission denied for the site. Run 2: no input device.",
+    "steps": [
+      "Run 1: attach → **Voice**.",
+      "Run 2: attach → **Voice**."
+    ],
+    "expected": "Step 1: error toast `Microphone access is blocked. Allow it for this site in your browser settings,\nthen choose Voice again.` Step 2: error toast `No microphone found. Connect one, then choose Voice again.` In both runs no\nrecording row, no chip, nothing added to Inbox."
+  },
+  {
+    "id": "TC-903",
+    "name": "Voice Countdown and Auto-Stop",
+    "priority": "Medium",
+    "area": "Capture, Voice",
+    "areas": [
+      "Capture",
+      "Voice"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "As TC-901 (a fake clock may speed up the wait).",
+    "steps": [
+      "Start a voice recording and let it run to just before the countdown (`contracts/limits.md` §Voice memo).",
+      "Let it run into the countdown.",
+      "Let it run to the maximum length."
+    ],
+    "expected": "Step 1: plain timer (e.g. `4:29`), no countdown. Step 2: the timer reads `Stops in m:ss` (e.g.\n`Stops in 0:29`) in the danger colour. Step 3: recording stops by itself; the recording row goes and the chip\n`Voice memo · 5:00` appears, as after **Stop**."
+  },
+  {
+    "id": "TC-904",
+    "name": "Several Files → One Item",
+    "priority": "High",
+    "area": "Capture, Attachments",
+    "areas": [
+      "Capture",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; empty Inbox; three files `test.pdf`, `test.txt`, `test.json`.",
+    "steps": [
+      "Attach → **File**, pick all three; look at the bar.",
+      "Click **Add** without a title."
+    ],
+    "expected": "Step 1: three chips (file icon + name). Step 2: exactly one new item titled `test.pdf + 2 files`,\n`input_type` `file`, with all three attachments; its row shows the attachment icon (redrawn paperclip, `--color-text-secondary`) with count 3. Updated by BUG-065."
+  },
+  {
+    "id": "TC-905",
+    "name": "Typed Title With a Photo",
+    "priority": "Medium",
+    "area": "Capture",
+    "areas": [
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Type `Lunch receipt`, then attach one image with **Photo**.",
+      "Click **Add**."
+    ],
+    "expected": "Step 1: the typed text stays in the field. Step 2: item `Lunch receipt` (no auto-title), empty\ndescription, `input_type` `photo`, one attachment; camera row icon."
+  },
+  {
+    "id": "TC-906",
+    "name": "Text With a Link",
+    "priority": "High",
+    "area": "Capture",
+    "areas": [
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions (any tier).",
+    "steps": [
+      "Type `Read this article https://example.com/a` and click **Add**.",
+      "Type `https://example.com/b` and press Enter."
+    ],
+    "expected": "Step 1: item `Read this article`, the URL in its description, `input_type` `text`. Step 2: item\n`Link · <stamp>` whose description is the URL."
+  },
+  {
+    "id": "TC-907",
+    "name": "Multi-Line Paste",
+    "priority": "Medium",
+    "area": "Capture",
+    "areas": [
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions (any tier); clipboard text with three lines.",
+    "steps": [
+      "Paste `Plan the offsite` / `Book the venue` / `Invite the team` (three lines) into the capture field.",
+      "Click **Add**."
+    ],
+    "expected": "Step 1: the field holds `Plan the offsite`; chip `Pasted text — goes to the description`. Step 2:\nitem `Plan the offsite` whose description holds the other two lines."
+  },
+  {
+    "id": "TC-908",
+    "name": "File Over the Max Attachment Size",
+    "priority": "High",
+    "area": "Capture, Limits",
+    "areas": [
+      "Capture",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; one file of `max_file_bytes` + 1 byte and one small `test.txt`.",
+    "steps": [
+      "Attach both with **File**.",
+      "Click **Add**."
+    ],
+    "expected": "Step 1: the big file's chip is red with `Larger than {max} — choose a smaller file` (`{max}` = the\nAPI value, formatted like Attachments sizes); `test.txt` is a normal chip. Step 2: item `test.txt` with only `test.txt`\nattached; the big file is not uploaded."
+  },
+  {
+    "id": "TC-909",
+    "name": "More Files Than Attachments per Item",
+    "priority": "Medium",
+    "area": "Capture, Limits",
+    "areas": [
+      "Capture",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; `max_per_item` + 1 small files.",
+    "steps": [
+      "Type a title; attach all files with **File**.",
+      "Click **Add**."
+    ],
+    "expected": "Step 1: one chip per file; the last one is red with `Over the files-per-item limit — capture it\nseparately`. Step 2: the item has exactly `max_per_item` attachments; the red file is not among them."
+  },
+  {
+    "id": "TC-910",
+    "name": "Files Over the Free Storage (Pro)",
+    "priority": "High",
+    "area": "Capture, Limits",
+    "areas": [
+      "Capture",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; attachments destination Local; storage nearly full so that `available_bytes`\nfits the first of two equal files but not both.",
+    "steps": [
+      "Type a title; attach both files with **File**.",
+      "Click **Add**."
+    ],
+    "expected": "Step 1: the second chip is red with `Not enough storage — upgrade for more space`; the first is\nnormal. Step 2: the item has only the first file; nothing over the limit is stored."
+  },
+  {
+    "id": "TC-911",
+    "name": "Attachments Destination Google Drive",
+    "priority": "Medium",
+    "area": "Capture, Limits, Google Drive",
+    "areas": [
+      "Capture",
+      "Limits",
+      "Google Drive"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; Google Drive connected (local Google mock) and Settings → Attachments\ndestination **Google Drive**; Local storage full; a file larger than the Local tier `max_file_bytes` but under the\nrequest body limit, plus a small file.",
+    "steps": [
+      "Read `GET /v1/reference/quota`.",
+      "Type a title, attach both files with **File**, click **Add**."
+    ],
+    "expected": "Step 1: `attachment_limits.available_bytes` is `null` and `max_file_bytes` is larger than the Local\ntier max. Step 2: no red chip (no size or storage reason); the item has both files, stored on Google Drive (provider\n`gdrive`, same size in Drive)."
+  },
+  {
+    "id": "TC-912",
+    "name": "Drop Files on the Inbox Page",
+    "priority": "High",
+    "area": "Capture, Inbox",
+    "areas": [
+      "Capture",
+      "Inbox"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; empty Inbox; files `test.pdf` and `test.txt`.",
+    "steps": [
+      "Drag the two files over the Inbox list panel.",
+      "Drop them.",
+      "Click **Add**."
+    ],
+    "expected": "Step 1: dashed overlay `Drop files to capture them to Inbox`. Step 2: overlay goes; two chips in the\nInbox input, the field focused; nothing is added yet. Step 3: one item `test.pdf + 1 file`, `input_type` `file`, two\nattachments."
+  },
+  {
+    "id": "TC-913",
+    "name": "Paste a Screenshot",
+    "priority": "Medium",
+    "area": "Capture",
+    "areas": [
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; an image (no text) on the clipboard.",
+    "steps": [
+      "Focus the Inbox capture field and paste.",
+      "Press Enter."
+    ],
+    "expected": "Step 1: one photo chip with a thumbnail; the field stays empty. Step 2: item `Photo · <stamp>`,\n`input_type` `photo`, one attachment."
+  },
+  {
+    "id": "TC-914",
+    "name": "Quick Add With a File",
+    "priority": "High",
+    "area": "Capture, Quick Add",
+    "areas": [
+      "Capture",
+      "Quick Add"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions; on Engage.",
+    "steps": [
+      "Press **C**.",
+      "Click the attach icon.",
+      "Choose **File**, pick `test.pdf`; type `Quick Add with a file`; press Enter."
+    ],
+    "expected": "Step 1: Quick Add opens with the field focused. Step 2: the same menu **Photo** · **Voice** ·\n**File**. Step 3: a chip, then item `Quick Add with a file` in Inbox with `test.pdf` attached, `input_type` `file`."
+  },
+  {
+    "id": "TC-915",
+    "name": "Mobile FAB Capture",
+    "priority": "High",
+    "area": "Capture, Mobile",
+    "areas": [
+      "Capture",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions on a phone (≤ 768 px; Pixel 7 / iPhone 14).",
+    "steps": [
+      "Tap the **+** FAB, then the attach icon.",
+      "Tap **Photo**, pick an image.",
+      "Tap **Add**."
+    ],
+    "expected": "Step 1: an action sheet titled `Attach` with **Photo** · **Voice** · **File**. Step 2: a photo chip\nabove the field. Step 3: item `Photo · <stamp>`, `input_type` `photo`, one attachment."
+  },
+  {
+    "id": "TC-916",
+    "name": "Free — Locked Capture",
+    "priority": "High",
+    "area": "Capture, Plans",
+    "areas": [
+      "Capture",
+      "Plans"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions with a Free account.",
+    "steps": [
+      "Click the attach icon.",
+      "Click the button under the locked line (**Upgrade** with the `payments` flag; **Contact Us** without).",
+      "Type `typed before drop`; drop a file on the Inbox list.",
+      "Clear the field; paste an image (no text) into it."
+    ],
+    "expected": "Step 1: **Photo**, **Voice**, **File** disabled; locked line `Photo, voice and file capture is\navailable on Pro and Team plans.` and the button. Step 2: **Upgrade** opens the upgrade dialog with `Photo, voice and file\ncapture is available on Pro and Team plans. Upgrade to snap a receipt, record a thought or drop a file straight into your\nInbox.`; **Contact Us** opens the support mail as on Settings. Step 3: the same upgrade dialog; no chip; the typed text\nkept. Step 4: the same dialog; field unchanged; no chip. Nothing is added to Inbox."
+  },
+  {
+    "id": "TC-917",
+    "name": "Free — Text Capture and Stuff Detail Upload",
+    "priority": "Medium",
+    "area": "Capture, Plans",
+    "areas": [
+      "Capture",
+      "Plans"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions with a Free account.",
+    "steps": [
+      "Type `Free capture https://example.com/x`; press Enter.",
+      "Open the item; upload `test.txt` in its Attachments section."
+    ],
+    "expected": "Step 1: item `Free capture` with the URL in the description. Step 2: `test.txt` is listed and stored\non the item (upload on Stuff detail is not gated)."
+  },
+  {
+    "id": "TC-918",
+    "name": "Clarify Preview Strip",
+    "priority": "High",
+    "area": "Clarify, Attachments",
+    "areas": [
+      "Clarify",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions (any tier); an Inbox item with an image and a voice memo (`.webm` / `.m4a`)\nattached.",
+    "steps": [
+      "On Inbox click **Clarify**; look under the `Processing:` row."
+    ],
+    "expected": "Under the centred `Processing:` + title the preview strip is centred too: the image as one loaded\nthumbnail tile, and for the voice memo one line with a **Play** icon button and the file name — no native audio player\n(BUG-065 S4). Updated by BUG-065."
+  },
+  {
+    "id": "TC-919",
+    "name": "Stuff Detail Shows Media Once, in the Attachment List",
+    "priority": "Medium",
+    "area": "Stuff Detail, Attachments",
+    "areas": [
+      "Stuff Detail",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions (any tier); an Inbox item without attachments.",
+    "steps": [
+      "Open the item.",
+      "Upload an image, then a voice memo, in Attachments.",
+      "Click the image's thumbnail; close the preview.",
+      "Delete the image."
+    ],
+    "expected": "No preview strip at any point (`attachment-preview-strip` absent on Stuff detail). Step 2: the image row\nshows a 40 px rounded thumbnail instead of the file icon (the image is shown once); the voice memo row shows a **Play**\nbutton. Step 3: the existing preview modal shows the image. Step 4: the row goes. Updated by BUG-065 (S3; see TC-994)."
+  },
+  {
+    "id": "TC-920",
+    "name": "Voice Memo Plays Inline With Play / Stop",
+    "priority": "Medium",
+    "area": "Attachments, Preview",
+    "areas": [
+      "Attachments",
+      "Preview"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions (any tier); an item with a voice memo attached.",
+    "steps": [
+      "Open the item; look at the voice memo row in the Attachments list.",
+      "Click **Play**; then click **Stop**."
+    ],
+    "expected": "Step 1: the row shows a **Play** icon button in the icon slot, the file name and size; no native\n`<audio controls>` player. Step 2: the memo plays and the button turns into **Stop**; Stop pauses it and the button is\n**Play** again. Updated by BUG-065 (S3; see TC-995)."
+  },
+  {
+    "id": "TC-921",
+    "name": "Email-to-Inbox Item Says Where It Came From",
+    "priority": "Medium",
+    "area": "Email to Inbox, Capture",
+    "areas": [
+      "Email to Inbox",
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions (Pro or Team) with an Email-to-Inbox address (local GreenMail).",
+    "steps": [
+      "Send a mail with one image attachment to the address; wait for the item.",
+      "Open the item and look at the Inbox row."
+    ],
+    "expected": "The item's description ends with the line `Captured by email`; `input_type` `photo`; the row shows\nthe camera icon."
+  },
+  {
+    "id": "TC-922",
+    "name": "admin-app Items Capture Column",
+    "priority": "Low",
+    "area": "admin-app, Content Browser",
+    "areas": [
+      "admin-app",
+      "Content Browser"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "admin-app signed in; a platform user with captured items of each form (text, photo, voice, file) and\none created before FEAT-063.",
+    "steps": [
+      "Open Content browser → the user's Items."
+    ],
+    "expected": "A `Capture` column right after `Type`: `Text`, `Photo`, `Voice`, `File` per item, `—` when missing.\nLoading, empty (`No items found.`) and error (`Failed to load items`) states unchanged."
+  },
+  {
+    "id": "TC-923",
+    "name": "Pricing Lists Rich Capture",
+    "priority": "Low",
+    "area": "Public Pages, Plans",
+    "areas": [
+      "Public Pages",
+      "Plans"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Not logged in; `/pricing`.",
+    "steps": [
+      "Look at the Pro and Team card bullets and the Free card.",
+      "Look at the Integrations group of \"Compare Features\"."
+    ],
+    "expected": "Step 1: `Photo, voice & file capture` right after `Email to Inbox` on Pro and Team; not on Free.\nStep 2: row `Photo, voice & file capture` right after `Email to Inbox`: Free — · Pro ✓ · Team ✓."
+  },
+  {
+    "id": "TC-924",
+    "name": "Team Limits on Capture",
+    "priority": "Medium",
+    "area": "Capture, Limits",
+    "areas": [
+      "Capture",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "68: Rich Capture to Inbox (FEAT-063)",
+    "preconditions": "Common preconditions with a Team account; attachments destination Local; storage nearly full so that\n`available_bytes` fits the first of two equal small files but not both; one file of `max_file_bytes` + 1 byte.",
+    "steps": [
+      "Type a title; attach the big file with **File**.",
+      "Attach the two small files with **File**; click **Add**."
+    ],
+    "expected": "Step 1: red chip `Larger than {max} — choose a smaller file` with the Team `max_file_bytes` from the\nAPI. Step 2: the second small file's chip is red with `Not enough storage — delete files you no longer need`; the item\nhas only the first small file."
+  },
+  {
+    "id": "TC-875",
+    "name": "Offline Banner Only on Inbox (and /share)",
+    "priority": "High",
+    "area": "Offline, Layout",
+    "areas": [
+      "Offline",
+      "Layout"
+    ],
+    "smoke": true,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; desktop and mobile.",
+    "steps": [
+      "Open `/pricing` while signed in; go offline.",
+      "Back online, open `/engage`; go offline; open Inbox from the Sidebar; then Next; then Inbox again.",
+      "Go back online."
+    ],
+    "expected": "Step 1: no banner on the public page. Step 2: no banner on Engage; on Inbox the banner\n`offline-banner` (Alert info) at the top: title `You're offline` and message `What you capture is saved and sent when\nyou're back.` on one line (desktop); title only on mobile; no close button. On Next no banner — the page keeps its\n`h1.page-title` `Next` above the offline state. Back on Inbox the banner shows again. Step 3: the banner goes; no \"back\nonline\" message. Updated by BUG-065 (S13; see TC-1001)."
+  },
+  {
+    "id": "TC-876",
+    "name": "Offline Text Capture From Every Host",
+    "priority": "High",
+    "area": "Offline, Capture",
+    "areas": [
+      "Offline",
+      "Capture"
+    ],
+    "smoke": true,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; desktop and mobile.",
+    "steps": [
+      "On Inbox go offline; type a title in the Inbox input, press Enter.",
+      "Open Projects (Sidebar); capture another title with Quick Add (desktop) / the FAB (mobile).",
+      "Open Inbox."
+    ],
+    "expected": "Steps 1–2: the bar clears at once (Inbox input stays focused, desktop Quick Add stays open and focused, the FAB closes); success toast `\"{title}\" saved offline`; on Projects the page title `Projects` stays above the offline state. Step 3: both entries on top of Inbox, newest first, each with the `Waiting to sync` badge (Badge type `draft`); nothing in `GET /v1/inbox` yet. Updated by BUG-065."
+  },
+  {
+    "id": "TC-877",
+    "name": "Reconnect Sends Oldest First, One Count Toast",
+    "priority": "High",
+    "area": "Offline, Sync",
+    "areas": [
+      "Offline",
+      "Sync"
+    ],
+    "smoke": true,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Offline, capture three titles on Inbox in order A, B, C.",
+      "Go back online.",
+      "Pro account: offline, capture a text entry and an entry with a file; go online while the upload is slow.",
+      "Pro account, online: a photo capture is uploading slowly; capture a title X; the network drops before X is sent (the photo's upload finishes); capture a title Z offline; go online."
+    ],
+    "expected": "Step 3: while the entries sync (also during the upload) a capture never shows its queued row and its server row at once; afterwards exactly one row each. Step 4: exactly one count toast, `2 captured items synced`; no `\"X\" added to Inbox` toast; one server row each. Step 2: success toast `3 captured items synced` (exactly one); the queued rows are replaced by server rows, each title once (3 rows, no duplicate); `GET /v1/inbox` has three items with `created` A ≤ B ≤ C."
+  },
+  {
+    "id": "TC-878",
+    "name": "Waiting Row Is Read-Only; Discard",
+    "priority": "High",
+    "area": "Offline, Inbox",
+    "areas": [
+      "Offline",
+      "Inbox"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Offline, capture a title; look at its row; click its title; click the row.",
+      "Click × on the row; **Cancel**.",
+      "Click × again; **Discard**.",
+      "Go back online; wait a few seconds."
+    ],
+    "expected": "Step 1: no checkbox (empty slot), no drag handle, no Retry; title click opens no editor; row click does not leave Inbox. Step 2: confirm `Discard item` / `\"{title}\" hasn't synced yet. Discarding deletes it from this device for good.`; Cancel keeps the row. Step 3: the row goes, no toast. Step 4: the item never reaches `GET /v1/inbox`; the device queue is empty."
+  },
+  {
+    "id": "TC-879",
+    "name": "Online Capture Uses the Per-Item Toast",
+    "priority": "Medium",
+    "area": "Capture, Sync",
+    "areas": [
+      "Capture",
+      "Sync"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; online.",
+    "steps": [
+      "On Inbox capture a title.",
+      "Capture another title while sending is held; close the tab before it is sent; open Inbox in a new tab."
+    ],
+    "expected": "Step 2: the entry is sent on the new open with `1 captured item synced`, not the per-item toast. Step 1: Toast `\"{title}\" added to Inbox`; no `captured items synced` toast; no `Waiting to sync` row remains; one server row."
+  },
+  {
+    "id": "TC-880",
+    "name": "Pro Offline File Capture Syncs",
+    "priority": "High",
+    "area": "Offline, Attachments",
+    "areas": [
+      "Offline",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions with a Pro account.",
+    "steps": [
+      "On Inbox go offline; attach a small file with **File**, type a title, press Enter.",
+      "Go back online."
+    ],
+    "expected": "Step 1: Waiting row with the files chip (count 1). Step 2: the row becomes the server row; the item has the file (same name)."
+  },
+  {
+    "id": "TC-881",
+    "name": "Couldn't Sync — File Over the Plan Limit",
+    "priority": "High",
+    "area": "Offline, Sync, Limits",
+    "areas": [
+      "Offline",
+      "Sync",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Pro account; the device does not know the real `max_file_bytes` (quota response altered in the test), so the file passes the pre-check; a file of `max_file_bytes` + 1.",
+    "steps": [
+      "Offline, attach the file, type a title, press Enter.",
+      "Go back online; look at the row."
+    ],
+    "expected": "Step 2: badge `Couldn't sync`; reason `{file} is over your plan's file size limit — discard to keep the item without it`; **Retry** and × visible; no upgrade dialog and no failure toast (user is on Inbox); one row for the capture (the server row with the entry's `server_id` stays hidden)."
+  },
+  {
+    "id": "TC-882",
+    "name": "Retry: Waiting Offline, Synced After the Fix",
+    "priority": "High",
+    "area": "Offline, Sync",
+    "areas": [
+      "Offline",
+      "Sync"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Pro account; Inbox opened online, then storage set nearly full on the server.",
+    "steps": [
+      "Offline, capture a title with a 1 KB file; go online.",
+      "Go offline; click **Retry**.",
+      "Free the storage; go online."
+    ],
+    "expected": "Step 1: `Couldn't sync`, reason `Not enough storage — upgrade for more space, then retry`. Step 2: badge back to `Waiting to sync`, reason gone. Step 3: the row becomes the server row with the file; still one item."
+  },
+  {
+    "id": "TC-883",
+    "name": "Discard a Couldn't-Sync Item Already on the Server (Team)",
+    "priority": "High",
+    "area": "Offline, Sync",
+    "areas": [
+      "Offline",
+      "Sync"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Team account; Inbox opened online, then free storage set to fit one of two 1 KB files.",
+    "steps": [
+      "Offline, capture a title with the two files; go online.",
+      "Click × → **Discard**."
+    ],
+    "expected": "Step 1: `Couldn't sync`, Team reason `Not enough storage — delete files you no longer need, then retry`; the server row stays hidden. Step 2: confirm text `\"{title}\" is already in your Inbox. Discarding keeps it with the files saved so far and deletes the rest from this device.`; the queued row goes and the server row shows with the first file only; the device queue is empty."
+  },
+  {
+    "id": "TC-884",
+    "name": "Free Offline: Text Only, Upgrade Path",
+    "priority": "High",
+    "area": "Offline, Tiers",
+    "areas": [
+      "Offline",
+      "Tiers"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Free account with the payment surface on (locked menu offers **Upgrade**); on the dev server (no service worker) the `/upgrade` page is opened once online first.",
+    "steps": [
+      "Offline, capture a title on Inbox.",
+      "Open the attach menu.",
+      "Click **Upgrade** → **View plans**."
+    ],
+    "expected": "Step 1: Waiting row. Step 2: Photo · Voice · File disabled; locked line `Photo, voice and file capture is available on Pro and Team plans.`. Step 3: `/upgrade` shows the offline state `Offline for now`."
+  },
+  {
+    "id": "TC-885",
+    "name": "Offline Queue Cap",
+    "priority": "High",
+    "area": "Offline, Limits",
+    "areas": [
+      "Offline",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Pro account; two files that together stay under the device queue cap (`contracts/limits.md` §Offline capture queue) and a third that would exceed it; each under `max_file_bytes`.",
+    "steps": [
+      "Offline, capture a title with the two files.",
+      "Type another title, attach the third file, click **Add**."
+    ],
+    "expected": "Step 2: the third file's chip is red: `No offline space left on this device — attach it when you're back online`; the new title is queued without files; the device queue has two entries."
+  },
+  {
+    "id": "TC-886",
+    "name": "Queue Cap Not Applied Online",
+    "priority": "Medium",
+    "area": "Capture, Limits",
+    "areas": [
+      "Capture",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Pro account; online; three files whose total exceeds the queue cap, each under `max_file_bytes`.",
+    "steps": [
+      "Attach the three files, type a title, press Enter."
+    ],
+    "expected": "No queue-full chip; the item is created with all three files."
+  },
+  {
+    "id": "TC-887",
+    "name": "Logout With Unsynced Items (Sidebar + TopNav)",
+    "priority": "High",
+    "area": "Offline, Auth",
+    "areas": [
+      "Offline",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; two Waiting entries (captured offline, server create held with `503` so they stay Waiting online).",
+    "steps": [
+      "Sidebar **Logout**.",
+      "**Cancel**.",
+      "On a public page open the TopNav avatar menu → **Logout** → **Delete and log out**.",
+      "Sign in again (sending no longer held); open Inbox; Sidebar **Logout**.",
+      "New entry offline; go online and, while its create request is in flight, **Logout** → **Delete and log out**; sign in again."
+    ],
+    "expected": "Step 1: confirm title `Log out`, message `2 captured items haven't synced yet. Logging out deletes them from this device.`, buttons `Cancel` · `Delete and log out`. Step 2: entries kept. Step 3: same copy; signed out; device queue empty. Step 4: no queued rows and no items on the server; the confirm is the plain `Are you sure you want to log out?` with `Cancel` · `Log out`. Step 5: the deleted entry does not come back (no queued row, empty device queue, at most one server item)."
+  },
+  {
+    "id": "TC-888",
+    "name": "Settings → End Current Session With an Unsynced Item",
+    "priority": "Medium",
+    "area": "Offline, Auth",
+    "areas": [
+      "Offline",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; one Waiting entry (held as in TC-887).",
+    "steps": [
+      "Settings → Sessions → end the current session.",
+      "**Delete and log out**."
+    ],
+    "expected": "Step 1: `Log out` / `1 captured item hasn't synced yet. Logging out deletes it from this device.`. Step 2: signed out; device queue empty."
+  },
+  {
+    "id": "TC-889",
+    "name": "Expired Session Keeps the Queue",
+    "priority": "High",
+    "area": "Offline, Auth",
+    "areas": [
+      "Offline",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Offline, capture a title.",
+      "Make the session expire (access token past its lifetime, refresh rejected); go online.",
+      "Sign in again as the same user."
+    ],
+    "expected": "Step 2: the app signs the user out (forced logout, no confirm); the entry stays on the device. Step 3: the entry is sent; the item is in `GET /v1/inbox`; the queue is empty."
+  },
+  {
+    "id": "TC-890",
+    "name": "Another User Never Sees or Sends the Entries",
+    "priority": "High",
+    "area": "Offline, Auth, Privacy",
+    "areas": [
+      "Offline",
+      "Auth",
+      "Privacy"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "User A and a second account B on the same browser.",
+    "steps": [
+      "As A, offline, capture a title; let the session expire (as TC-889).",
+      "Sign in as B; open Inbox; wait a few seconds.",
+      "B: Sidebar **Logout**; sign in as A.",
+      "A with Inbox rows loaded logs out (no reload); B signs in on the same page, goes offline, opens Inbox."
+    ],
+    "expected": "Step 2: no queued row; B's server Inbox does not get the item; the entry stays on the device. Step 3: B's confirm is the plain one (B has no entries); after A signs in the item reaches A's Inbox. Step 4: B's offline Inbox shows none of A's rows (offline EmptyState) and no Sidebar Inbox count."
+  },
+  {
+    "id": "TC-891",
+    "name": "Lost Create Response → Exactly One Item",
+    "priority": "High",
+    "area": "Offline, Sync",
+    "areas": [
+      "Offline",
+      "Sync"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; the first `POST /v1/stuff` reaches the server but its response is dropped.",
+    "steps": [
+      "Online, capture a title.",
+      "Go offline and back online."
+    ],
+    "expected": "Step 1: the item exists on the server; the row stays `Waiting to sync`. Step 2: the resend (same `client_key`) creates nothing new; one row and exactly one item with that title."
+  },
+  {
+    "id": "TC-892",
+    "name": "Old Access Token Offline Keeps the User Signed In",
+    "priority": "High",
+    "area": "Offline, Auth",
+    "areas": [
+      "Offline",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "On Inbox go offline; make the access token past its lifetime.",
+      "Navigate Projects → Inbox; capture a title.",
+      "Go back online."
+    ],
+    "expected": "Step 2: still signed in (tokens kept, still on Inbox); the entry is Waiting. Step 3: the session refreshes, the entry syncs, the user stays signed in."
+  },
+  {
+    "id": "TC-893",
+    "name": "Offline Inbox",
+    "priority": "High",
+    "area": "Offline, Inbox",
+    "areas": [
+      "Offline",
+      "Inbox"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; two items on the server.",
+    "steps": [
+      "Open Inbox online, go offline; click a row's title, the row, its checkbox (desktop click / mobile tap); hover the row (desktop) / touch it (mobile); on mobile swipe it left.",
+      "Go online.",
+      "Open `/engage`, go offline, open Inbox from the Sidebar.",
+      "Capture a title.",
+      "Go online."
+    ],
+    "expected": "Step 1: `Clarify` hidden; no editor, no navigation; the checkbox shows its disabled look and stays unchecked after the click — no `No response from server…` toast, no complete request is sent, the item is still open on the server; no × on hover / touch and the swipe-left trash stays off — no trash request, the item is still in Inbox on the server; no footer line (list fully loaded). Step 2: `Clarify` back. Step 3: EmptyState `You're offline` / `Your Inbox loads when you're back online. Capture above — it's sent automatically.` (not Inbox zero). Step 4: the queued row shows with the footer `The rest of your Inbox loads when you're back online.`; the EmptyState goes. Step 5: the list loads (three rows); footer gone. The offline banner shows on Inbox only (BUG-065 S13). Updated by BUG-065."
+  },
+  {
+    "id": "TC-894",
+    "name": "Other Pages Offline",
+    "priority": "High",
+    "area": "Offline, Layout",
+    "areas": [
+      "Offline",
+      "Layout"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Open Projects, go offline.",
+      "Click **Go to Inbox**.",
+      "Open Next Action (Sidebar); go online.",
+      "A page whose requests answer slower than the app's request timeout; then lose the network."
+    ],
+    "expected": "Step 1: content replaced by `Offline for now` / `This page loads when you're back online. Your Inbox and Quick Add work offline.` with **Go to Inbox**; banner above. Step 2: Inbox opens. Step 3: offline state, then the page loads itself on reconnect without a page reload. Step 4: the timeout shows neither the offline state nor the banner; the real network loss shows both."
+  },
+  {
+    "id": "TC-895",
+    "name": "Failure Toast Off Inbox",
+    "priority": "Medium",
+    "area": "Offline, Sync",
+    "areas": [
+      "Offline",
+      "Sync"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Pro account, desktop; Inbox opened online, then storage set nearly full.",
+    "steps": [
+      "Open Projects; go offline; Quick Add a title with a 1 KB file.",
+      "Go online."
+    ],
+    "expected": "Step 2: error toast `1 captured item couldn't sync — open Inbox to retry or discard it`."
+  },
+  {
+    "id": "TC-896",
+    "name": "Two Tabs",
+    "priority": "Medium",
+    "area": "Offline, Sync",
+    "areas": [
+      "Offline",
+      "Sync"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; Inbox open in two tabs (steps 3–4: Pro account).",
+    "steps": [
+      "Offline, capture a title in tab 1.",
+      "Go online.",
+      "In tab 1 capture a title with a photo while its upload is slow; while tab 2 shows `Syncing…` for that row, close tab 1.",
+      "Again two tabs: tab 1's sync run gets a `5xx` once; close tab 1 within 30 s.",
+      "Pro, two tabs: in tab 1 capture a photo with a slow upload; during the upload capture a second title in tab 1.",
+      "As step 5, but with a `Couldn't sync` entry in tab 1 whose cause is fixed: press **Retry** during tab 1's run.",
+      "Pro, two tabs, online: a photo is uploading slowly in tab 1; capture X in tab 1 and Y in tab 2.",
+      "As step 7, but with a `Couldn't sync` entry whose cause is fixed: press **Retry** in tab 2 during tab 1's run."
+    ],
+    "expected": "Step 1: the queued row also appears in tab 2. Step 2: both tabs show one server row; exactly one item on the server. Step 3: tab 2's row stops showing `Syncing…` — it is `Waiting to sync` with × visible, or already synced; tab 2 sends it: exactly one server item, its photo stored once. Step 4: tab 2 sends the entry on its retry; exactly one server item. Step 5: tab 1 shows `\"{title}\" added to Inbox` for each capture; tab 2 shows no `captured item(s) synced` toast; exactly one server item per capture. Step 6: the retried entry syncs with its per-item toast in tab 1; tab 2 shows no count toast; one server item per capture. Step 7: tab 1 shows `\"X\" added to Inbox`, tab 2 shows `\"Y\" added to Inbox`; neither tab shows a `captured item(s) synced` toast; one server item each. Step 8: the retried entry's per-item toast shows in tab 2; neither tab shows a count toast; one server item each."
+  },
+  {
+    "id": "TC-897",
+    "name": "Production Build Opens Offline",
+    "priority": "High",
+    "area": "Offline, PWA",
+    "areas": [
+      "Offline",
+      "PWA"
+    ],
+    "smoke": true,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Local production build `fe.main.pwa` (wnapm, `:4173`, target `PWA_BASE_URL`); signed in once online so the service worker is installed.",
+    "steps": [
+      "Go offline; open `/engage` in a new tab.",
+      "Click **Go to Inbox**; capture a title.",
+      "Go online."
+    ],
+    "expected": "Step 1: the app starts; banner + `Offline for now`. Step 2: offline Inbox EmptyState, then a Waiting row. Step 3: the entry syncs to the server."
+  },
+  {
+    "id": "TC-898",
+    "name": "New Build Applies on the Next Online Open",
+    "priority": "High",
+    "area": "Offline, PWA",
+    "areas": [
+      "Offline",
+      "PWA"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "As TC-897; note the `wna-shell-*` cache name.",
+    "steps": [
+      "Make a new production build (`wnapm restart fe.main.pwa` — every build gets a new version).",
+      "Open the app online."
+    ],
+    "expected": "Step 2: the new service worker activates, the only `wna-shell-*` cache is the new version, the page's scripts are served from the new cache."
+  },
+  {
+    "id": "TC-941",
+    "name": "Quick Add / FAB Text Survives Offline and Back",
+    "priority": "Medium",
+    "area": "Offline, Capture",
+    "areas": [
+      "Offline",
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; desktop and mobile.",
+    "steps": [
+      "On Projects open Quick Add (desktop) / the FAB (mobile), type text, do not add.",
+      "Go offline.",
+      "Go online."
+    ],
+    "expected": "Step 2: the page shows the offline state; the bar keeps the text. Step 3: Projects loads itself; the text is still there."
+  },
+  {
+    "id": "TC-942",
+    "name": "Quick Add / FAB Text Survives Navigation; Sidebar Counts Refresh",
+    "priority": "Medium",
+    "area": "Capture, Layout",
+    "areas": [
+      "Capture",
+      "Layout"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Common preconditions; desktop and mobile; empty Inbox.",
+    "steps": [
+      "Projects → Next Action; open Quick Add / the FAB, type text.",
+      "Create an Inbox item elsewhere (API); browser Back to Projects.",
+      "Open Quick Add / the FAB."
+    ],
+    "expected": "Step 2: Sidebar `Inbox` count shows 1. Step 3: the typed text is still in the bar."
+  },
+  {
+    "id": "TC-943",
+    "name": "Production Build Offline: Icons",
+    "priority": "Medium",
+    "area": "Offline, PWA",
+    "areas": [
+      "Offline",
+      "PWA"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "As TC-897.",
+    "steps": [
+      "Go offline; reload; load the favicon, apple-touch icon and every manifest icon."
+    ],
+    "expected": "Every icon loads (served by the service worker)."
+  },
+  {
+    "id": "TC-944",
+    "name": "Files Only, All Over the Cap → Nothing Added",
+    "priority": "Medium",
+    "area": "Offline, Limits",
+    "areas": [
+      "Offline",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "As TC-885; the queue already holds the first two files.",
+    "steps": [
+      "Attach the third file only (no text); click **Add**.",
+      "Go online."
+    ],
+    "expected": "Step 1: red queue-full chip; no new entry (no auto-titled empty item); the chip stays in the bar. Step 2: the red reason clears; only the first item reaches the server."
+  },
+  {
+    "id": "TC-945",
+    "name": "Offline Pre-Check Uses the Last Known Limits",
+    "priority": "Medium",
+    "area": "Offline, Limits",
+    "areas": [
+      "Offline",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "69: Offline Capture Queue (FEAT-064)",
+    "preconditions": "Pro account; a file of `max_file_bytes` + 1.",
+    "steps": [
+      "Limits never loaded (quota request fails); offline, attach the file, capture a title.",
+      "Go online.",
+      "Open Inbox again online (limits load), go offline, attach the file."
+    ],
+    "expected": "Step 1: no red chip; queued. Step 2: `Couldn't sync` (server decides). Step 3: red chip `Larger than {max} — choose a smaller file`."
+  },
+  {
+    "id": "TC-925",
+    "name": "Manifest Declares the Share Target",
+    "priority": "High",
+    "area": "Share, PWA",
+    "areas": [
+      "Share",
+      "PWA"
+    ],
+    "smoke": true,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Fetch `/manifest.webmanifest`."
+    ],
+    "expected": "`share_target`: `action` `/share-target`, `method` `POST`, `enctype` `multipart/form-data`, `params` `title` → `title`, `text` → `text`, `url` → `url`, `files` → one entry named `files` accepting `*/*`."
+  },
+  {
+    "id": "TC-926",
+    "name": "Share Title + URL → Prefilled Page → Inbox",
+    "priority": "High",
+    "area": "Share, Capture",
+    "areas": [
+      "Share",
+      "Capture"
+    ],
+    "smoke": true,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; Pro account.",
+    "steps": [
+      "Share title `Read later` and URL `https://example.com/article`.",
+      "Click **Add to Inbox**.",
+      "Open the item's Stuff detail."
+    ],
+    "expected": "Step 1: `/share`, heading `Add to Inbox`; Title `Read later`; Description holds `https://example.com/article`; no Attachments block. Step 2: toast `\"Read later\" added to Inbox`; the Inbox has the row. Step 3: description `https://example.com/article`, a blank line, then `Captured by share` as the last line."
+  },
+  {
+    "id": "TC-927",
+    "name": "Share Multi-Line Text Only",
+    "priority": "Medium",
+    "area": "Share, Capture",
+    "areas": [
+      "Share",
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Share text only: `Buy milk` / `2 litres` / `semi-skimmed` (three lines), no title, no URL.",
+      "Click **Add to Inbox**."
+    ],
+    "expected": "Step 1: Title `Buy milk`; Description `2 litres` and `semi-skimmed`; no Attachments block. Step 2: item `Buy milk` whose description is the two lines followed by `Captured by share`."
+  },
+  {
+    "id": "TC-928",
+    "name": "Share a Link Only → Link Auto-Title",
+    "priority": "Medium",
+    "area": "Share, Capture",
+    "areas": [
+      "Share",
+      "Capture"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Share a URL only (no title, no text).",
+      "Click **Add to Inbox**."
+    ],
+    "expected": "Step 1: Title empty, placeholder `Link · {d Mon HH:MM}`; Description holds the URL; **Add to Inbox** enabled. Step 2: the item's title is that `Link · …` auto-title."
+  },
+  {
+    "id": "TC-929",
+    "name": "Pro Shares an Image → Photo Item",
+    "priority": "High",
+    "area": "Share, Attachments",
+    "areas": [
+      "Share",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; Pro account.",
+    "steps": [
+      "Share one PNG image, no title.",
+      "Click **Add to Inbox**."
+    ],
+    "expected": "Step 1: Attachments block with one photo chip; Title placeholder `Photo · {d Mon HH:MM}`. Step 2: one item with the `Photo · …` title, one attachment; its Inbox row shows the photo (camera) type icon."
+  },
+  {
+    "id": "TC-930",
+    "name": "Free Shares Text + a File",
+    "priority": "High",
+    "area": "Share, Tiers",
+    "areas": [
+      "Share",
+      "Tiers"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; Free account; payments flag on for the user.",
+    "steps": [
+      "Share title `Invoice note` and a text file.",
+      "Click **Upgrade**; close the dialog.",
+      "Click **Add to Inbox**."
+    ],
+    "expected": "Step 1: the file chip in the disabled look with no remove; line `Photo, voice and file capture is available on Pro and Team plans.` (no emoji, BUG-065 S14) and an `Upgrade` button. Step 2: the upgrade dialog with the FEAT-063 S2 capture message. Step 3: item `Invoice note` with no attachment. Updated by BUG-065."
+  },
+  {
+    "id": "TC-931",
+    "name": "Pro Shares a File Over the Plan's Max Attachment",
+    "priority": "High",
+    "area": "Share, Limits",
+    "areas": [
+      "Share",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; Pro account; a file of `max_file_bytes` + 1 (`GET /v1/reference/quota`) and a small text file.",
+    "steps": [
+      "Share title `Two files`, the big file and the small file.",
+      "Click **Add to Inbox**."
+    ],
+    "expected": "Step 1: the big file's chip is red: `Larger than {max} — choose a smaller file`; the small file's chip is not. Step 2: item `Two files` with only the small file attached."
+  },
+  {
+    "id": "TC-932",
+    "name": "Cancel Discards the Share",
+    "priority": "Medium",
+    "area": "Share",
+    "areas": [
+      "Share"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Share title `Discard me`; click **Cancel**.",
+      "Open `/share` again."
+    ],
+    "expected": "Step 1: Inbox; no toast; nothing named `Discard me` on the server. Step 2: Inbox + toast `The share didn't come through. Share it again from the other app.`"
+  },
+  {
+    "id": "TC-933",
+    "name": "A Second Share Replaces the First",
+    "priority": "Medium",
+    "area": "Share",
+    "areas": [
+      "Share"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Share title `First share`; without adding, share title `Second share`.",
+      "Click **Add to Inbox**; open `/share` again."
+    ],
+    "expected": "Step 1: the page shows `Second share` only. Step 2: only `Second share` is added; `/share` again → Inbox + no-pending toast (`First share` is gone)."
+  },
+  {
+    "id": "TC-934",
+    "name": "/share With Nothing Pending",
+    "priority": "Medium",
+    "area": "Share",
+    "areas": [
+      "Share"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; no share pending.",
+    "steps": [
+      "Open `/share` directly."
+    ],
+    "expected": "Inbox (`/inbox`) + error toast `The share didn't come through. Share it again from the other app.`"
+  },
+  {
+    "id": "TC-935",
+    "name": "Offline Share → Waiting → Synced",
+    "priority": "High",
+    "area": "Share, Offline",
+    "areas": [
+      "Share",
+      "Offline"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; service worker installed.",
+    "steps": [
+      "Go offline; share title `Offline share`.",
+      "Click **Add to Inbox**.",
+      "Go online."
+    ],
+    "expected": "Step 1: `/share` prefilled, with the offline banner `You're offline` above the form. Step 2: toast `\"Offline share\" saved offline`; the Inbox shows a `Waiting to sync` row. Step 3: the row syncs; the item is on the server and ends with `Captured by share`. Updated by BUG-065."
+  },
+  {
+    "id": "TC-936",
+    "name": "Not Signed In → Password Login → Share Resumes",
+    "priority": "High",
+    "area": "Share, Auth",
+    "areas": [
+      "Share",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; signed out; service worker installed.",
+    "steps": [
+      "Share title `After login`.",
+      "Sign in with email + password.",
+      "Click **Add to Inbox**."
+    ],
+    "expected": "Step 1: the login dialog; under `Welcome Back` the subtitle `Sign in to add what you shared to your Inbox.` Step 2: `/share` prefilled with `After login`. Step 3: the item is added."
+  },
+  {
+    "id": "TC-937",
+    "name": "Not Signed In → Google SSO → Share Resumes",
+    "priority": "Medium",
+    "area": "Share, Auth",
+    "areas": [
+      "Share",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; signed out; Google SSO through the local mock (`:10000`).",
+    "steps": [
+      "Share title `After Google`.",
+      "Sign in with Google."
+    ],
+    "expected": "Step 2: after the Google round trip, `/share` prefilled with `After Google` (not `/engage`)."
+  },
+  {
+    "id": "TC-938",
+    "name": "Mobile: No FAB; No Welcome Tour on /share",
+    "priority": "Medium",
+    "area": "Share, Layout",
+    "areas": [
+      "Share",
+      "Layout"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; mobile (≤ 768 px); a new account that has not seen the welcome tour; signed out.",
+    "steps": [
+      "Share title `From my phone`; sign in."
+    ],
+    "expected": "`/share` prefilled; no mobile capture FAB; the welcome tour is not shown over the page; **Cancel** and **Add to Inbox** are pinned at the bottom (see TC-1002). Updated by BUG-065."
+  },
+  {
+    "id": "TC-939",
+    "name": "Manual Logout Deletes the Pending Share",
+    "priority": "Medium",
+    "area": "Share, Auth",
+    "areas": [
+      "Share",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions.",
+    "steps": [
+      "Share title `Before logout`; leave `/share` via the Sidebar (Inbox).",
+      "Log out from the Sidebar and confirm.",
+      "Sign in again."
+    ],
+    "expected": "Step 3: the app opens `/engage`, not `/share`; opening `/share` → Inbox + no-pending toast."
+  },
+  {
+    "id": "TC-940",
+    "name": "Server Answers 429 / 5xx → Saved Offline Once",
+    "priority": "Medium",
+    "area": "Share, Offline",
+    "areas": [
+      "Share",
+      "Offline"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; `POST /v1/stuff` answered `429` (run 1) or `503` (run 2) by a route mock.",
+    "steps": [
+      "Share title `Busy server`; click **Add to Inbox**."
+    ],
+    "expected": "Toast `\"Busy server\" saved offline` exactly once; then Inbox with the waiting row. Updated by BUG-065."
+  },
+  {
+    "id": "TC-972",
+    "name": "Pending Share Survives the Public Pages → Sign In",
+    "priority": "High",
+    "area": "Share, Auth",
+    "areas": [
+      "Share",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; signed out; service worker installed; an existing account.",
+    "steps": [
+      "Share title `From a public page`.",
+      "Open `/help` (run 2: `/help/faq`, run 3: `/pricing`, run 4: `/legal`); click **Sign In** in the header.",
+      "Sign in with email + password."
+    ],
+    "expected": "Step 2: the login dialog subtitle under `Welcome Back` reads `Sign in to add what you shared to your Inbox.` Step 3: `/share` opens prefilled with `From a public page` (not `/engage`)."
+  },
+  {
+    "id": "TC-973",
+    "name": "Pending Share Wins After Pricing → Register + Verify",
+    "priority": "Medium",
+    "area": "Share, Auth",
+    "areas": [
+      "Share",
+      "Auth"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; signed out; service worker installed; a new email address.",
+    "steps": [
+      "Share title `After register`.",
+      "Open `/pricing`; click **Start for Free** (run 2: payments on platform-wide — `GET /v1/flags/public` lists `payments` — click **Upgrade** on Pro); register a new account.",
+      "Open the verification link from the email."
+    ],
+    "expected": "Step 3: after verification the app opens `/share` prefilled with `After register` (the pending share wins over the default landing)."
+  },
+  {
+    "id": "TC-974",
+    "name": "Offline Queue Full: Red Chip Before Add, Not in the Auto-Title",
+    "priority": "High",
+    "area": "Share, Offline, Limits",
+    "areas": [
+      "Share",
+      "Offline",
+      "Limits"
+    ],
+    "smoke": false,
+    "section": "70: Share → WNA (FEAT-065)",
+    "preconditions": "Common preconditions; Pro account; offline; the device queue already holds files close to the cap (`contracts/limits.md` §Offline capture queue) — e.g. one queued Inbox capture with two 18 MB files.",
+    "steps": [
+      "Share a URL as text, a small text file and an 18 MB file (no title).",
+      "Click **Add to Inbox**.",
+      "Go online."
+    ],
+    "expected": "Step 1 (before Add): the 18 MB file's chip is red `No offline space left on this device — attach it when you're back online`; the small file's chip is not; the Title placeholder (auto-title) does not count or name the red file. Step 2: saved-offline toast; the item is queued with the placeholder title. Step 3: it syncs with only the small file attached."
+  },
+  {
+    "id": "TC-946",
+    "name": "Brainstorm Row Opens the Canvas — Project as Root, Outcome in View",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": true,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project \"Summer party\" with outcome \"Fifty friends had a great evening\".",
+    "steps": [
+      "Open the project's detail page.",
+      "Click the **Brainstorm** section row (`project-brainstorm-row`).",
+      "Click the back link `<` **Project**."
+    ],
+    "expected": "Step 1: there is no **Brainstorm** button in the action row; the Brainstorm section sits between Outcome and Next Action. Step 2: `/project/{id}/canvas` opens; the root idea shows the project title; the outcome strip below the header shows `Outcome` and the outcome text. Step 3: the project detail page opens. Updated by BUG-065 (S6.1)."
+  },
+  {
+    "id": "TC-947",
+    "name": "Empty Canvas Hint, Help Links",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project with no canvas yet.",
+    "steps": [
+      "Open the canvas.",
+      "Click **Help** (`canvas-help`).",
+      "Press Tab, type `First idea`, press Esc.",
+      "Select `First idea`, press Delete.",
+      "Click **How brainstorming works** in the hint."
+    ],
+    "expected": "Step 1: under the root the EmptyState `Brainstorm this project` / `Get every idea out of your head — no order, no judging.` + link **How brainstorming works** (no keyboard keys in the hint); header buttons Undo · Redo · Help · Turn into actions, no Download. Step 2: a new tab opens `/help/getting-started#brainstorming-a-project` showing \"Brainstorming a Project\"; the canvas stays. Step 3: the hint is gone. Step 4: the idea is removed and the hint is back. Step 5: as step 2. Updated by BUG-065 (S8; see TC-979)."
+  },
+  {
+    "id": "TC-948",
+    "name": "Desktop Keyboard Entry Persists After Reload",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": true,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project with no canvas yet; desktop.",
+    "steps": [
+      "Open the canvas; press Tab, type `Venue`; Enter, type `Budget`; Tab, type `Deposit`; Enter, type `Scratch`; Esc.",
+      "Click `Venue`, press Space, type ` hall`, press Esc.",
+      "Click `Scratch`, press Delete.",
+      "Wait for `Saved`; reload."
+    ],
+    "expected": "Step 1: `Venue` and `Budget` are root ideas, `Deposit` and `Scratch` are under `Budget`; the save status shows `Saving…` then `Saved`. Step 2: the idea reads `Venue hall`. Step 3: `Scratch` is removed. Step 4: `Venue hall`, `Budget`, `Deposit` are shown, `Scratch` is not; the right-click menu of `Budget` offers `Delete with 1 sub-ideas`."
+  },
+  {
+    "id": "TC-949",
+    "name": "Desktop Drag Keeps the Position; Drop on an Idea Re-parents",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a canvas with root ideas `Alpha`, `Bravo`, `Charlie`; desktop.",
+    "steps": [
+      "Drag `Alpha` to an empty spot about 120 px up and right; wait for `Saved`.",
+      "Drag `Charlie` onto `Bravo`; wait for `Saved`.",
+      "Reload."
+    ],
+    "expected": "Step 1: `Alpha` stays where it was dropped. Step 2: `Charlie` becomes `Bravo`'s child. Step 3: `Alpha` is at the dropped position; `Bravo`'s right-click menu offers `Delete with 1 sub-ideas`."
+  },
+  {
+    "id": "TC-950",
+    "name": "Desktop Fold / Unfold Persists, Hidden Count Shown",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a canvas: `Venue` → `Hall`, `Garden` → `Tent`; desktop.",
+    "steps": [
+      "Select `Venue`, press Ctrl/⌘ ↑; wait for `Saved`; reload.",
+      "Click the fold pill; wait for `Saved`; reload."
+    ],
+    "expected": "Step 1: `Hall`, `Garden`, `Tent` are hidden; `Venue` shows a pill `3` titled `3 hidden ideas — click to unfold`; after reload still folded. Step 2: the branch shows again, the pill is gone; after reload still unfolded."
+  },
+  {
+    "id": "TC-951",
+    "name": "Mobile Drill-Down — Drill In, Back Label Up, Counts, Converted Mark",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Mobile",
+    "areas": [
+      "Brainstorm Canvas",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; mobile (≤ 768 px); a project \"Drill project\" whose canvas has `Venue` → `Catering` → `Menu` and a converted root idea `Budget`.",
+    "steps": [
+      "Open the canvas.",
+      "Tap `Venue`, then `Catering`.",
+      "Tap the back link twice.",
+      "Tap `Budget`."
+    ],
+    "expected": "Step 1: the title is the project title, back label `< Project`; rows `Venue` (sub-idea count `2`) and `Budget` (check mark). Step 2: title `Venue`, row `Catering` with count `1`; then title `Catering`, back label `< Venue` (no path line). Step 3: `Venue` with back label `< Drill project`, then the root with `< Project`. Step 4: title `Budget` with `In the backlog`. Updated by BUG-065 (S9)."
+  },
+  {
+    "id": "TC-952",
+    "name": "Mobile Sibling Nav — Swipe and Arrows With {i} of {n}",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas, Mobile",
+    "areas": [
+      "Brainstorm Canvas",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; mobile; root ideas `Alpha`, `Bravo`, `Charlie`.",
+    "steps": [
+      "Open the canvas; tap `Alpha`.",
+      "Swipe left; tap **Next** (header); swipe right; tap **Previous**."
+    ],
+    "expected": "Step 1: no sibling nav at the root; on `Alpha` the header shows `1 of 3` between the triangle arrows — no position dots. Step 2: `Bravo` (`2 of 3`), `Charlie` (`3 of 3`, Next disabled), `Bravo`, `Alpha` (Previous disabled). Updated by BUG-065 (S9 row 1b)."
+  },
+  {
+    "id": "TC-953",
+    "name": "Mobile FAB + Adds Ideas, Tap Edits, Persists",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Mobile",
+    "areas": [
+      "Brainstorm Canvas",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; mobile; a project with no canvas yet.",
+    "steps": [
+      "Tap the FAB **+** (`canvas-fab`), type `Venue`, Enter, type `Budget`, Enter; tap outside.",
+      "Tap `Venue`; tap the title, type ` hall` at the end, Enter.",
+      "Wait for the save; reload."
+    ],
+    "expected": "Step 1: a `New idea` row opens in the Ideas card with the keyboard focused; Enter saves and opens the next row; the empty last row is dropped; rows `Venue`, `Budget`. Step 2: the title reads `Venue hall`. Step 3: no save status while all is well; the root rows are `Venue hall`, `Budget`. Updated by BUG-065 (S9 rows 4b, 5)."
+  },
+  {
+    "id": "TC-954",
+    "name": "Move to Re-parents an Idea with Its Branch",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project \"Move project\" with canvas `Venue` → `Catering` → `Menu` and root idea `Budget`.",
+    "steps": [
+      "Mobile: on the root open ⋯; close it; drill to `Catering`; ⋯ → **Move to…**.",
+      "Tap `Budget`; wait for the save; reload and tap `Budget`.",
+      "Desktop: right-click the root; right-click `Catering` → **Move to…** → `Budget`; reload; right-click `Budget`."
+    ],
+    "expected": "Step 1: the root ⋯ has no **Move to…**; the picker reads `Pick the new place for “Catering”.`, lists the project title and `Budget`, marks `Venue` `Current`, and lists neither `Catering` nor `Menu`. Step 2: the Undo toast `\"Catering\" moved`; the view stays on `Catering`, back label `< Budget`; after reload `Catering` (count `1`) is under `Budget`. Step 3: the root menu has `Add idea` only; toast `Moved to “Budget”.`; after reload `Budget` offers `Delete with 1 sub-ideas`. Updated by BUG-065 (S9, F3)."
+  },
+  {
+    "id": "TC-955",
+    "name": "Undo / Redo Within the Session",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project with no canvas yet.",
+    "steps": [
+      "Desktop: Undo and Redo are disabled; add idea `Undo me`; press Ctrl/⌘ Z; press Ctrl/⌘ Shift Z; click **Undo**; click **Redo**; wait for `Saved`; reload."
+    ],
+    "expected": "Each undo removes `Undo me`, each redo restores it; after reload `Undo me` is there and Undo / Redo are disabled again. Desktop only — the mobile Undo / Redo bar is removed; a deleted or moved idea on mobile comes back through the Undo toast (TC-981). Updated by BUG-065 (S9)."
+  },
+  {
+    "id": "TC-956",
+    "name": "Free User at the Idea Cap → Upgrade Modal, Nothing Added",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Tier Limits",
+    "areas": [
+      "Brainstorm Canvas",
+      "Tier Limits"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "A Free user; a canvas one idea under the Free cap (`contracts/limits.md` §Subscription tier limits; every idea counts, root included); desktop.",
+    "steps": [
+      "Add idea `Last one`; wait for `Saved`.",
+      "Select `Last one`, press Enter.",
+      "Click **Got it**; reload."
+    ],
+    "expected": "Step 1: the idea is added (the canvas is at the cap). Step 2: no idea is added; the upgrade modal `Upgrade Your Plan` opens with `You've reached the idea limit for a brainstorm on the Free plan. Upgrade to Pro for bigger brainstorms.` Step 3: the modal closes; the canvas still holds exactly the cap number of ideas, `Last one` included."
+  },
+  {
+    "id": "TC-957",
+    "name": "Pro User Adds Past the Free Cap",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Tier Limits",
+    "areas": [
+      "Brainstorm Canvas",
+      "Tier Limits"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "A Pro user; a canvas exactly at the Free cap; desktop.",
+    "steps": [
+      "Add idea `Beyond free`; wait for `Saved`; reload."
+    ],
+    "expected": "No upgrade modal; `Beyond free` is saved and shown after reload (Free cap + 1 ideas)."
+  },
+  {
+    "id": "TC-958",
+    "name": "Idea Text Stops at the Text Cap",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; desktop.",
+    "steps": [
+      "Press Tab; paste 510 characters.",
+      "Press Esc; wait for `Saved`; reload."
+    ],
+    "expected": "Step 1: the editor holds the first 500 characters (the text cap, `contracts/limits.md`); the caption `Ideas can be up to 500 characters.` shows. Step 2: the idea keeps the 500 characters."
+  },
+  {
+    "id": "TC-959",
+    "name": "Turn Into Actions → Backlog Actions, Converted Marks",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": true,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project with action `Existing top`; canvas: `Venue` → `Catering`, `Music`; root ideas `Budget`, a blank idea, converted `Flowers`.",
+    "steps": [
+      "Click **Turn into actions** (`canvas-turn-into-actions`).",
+      "Click **Untick all**; click **Tick all**.",
+      "Untick `Music`; click **Add 2 actions**.",
+      "Open the project detail page."
+    ],
+    "expected": "Step 1: modal `Turn ideas into actions`, intro `Each ticked idea becomes an action at the end of the project's backlog. Untick anything that isn't an action.`; ticked rows `Catering`, `Music` (path `Venue`), `Budget` in that order — no `Venue`, blank or `Flowers` row; button `Add 3 actions`. Step 2: button `Add actions` disabled, link flips to **Tick all**; then `Add 3 actions`. Step 3: button `Add 2 actions`; modal closes, toast `2 actions added to the project`; `Catering` and `Budget` show the check mark (`In the backlog`), `Music` does not; Undo is disabled. Step 4: the backlog reads `Existing top` (next action), `Catering`, `Budget`. Updated by BUG-065 (S10)."
+  },
+  {
+    "id": "TC-960",
+    "name": "Second Turn Into Actions Round; Removing a Mark",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; canvas: `Venue` → `Catering`; root idea `Budget`.",
+    "steps": [
+      "Turn both ideas into actions (`Add 2 actions`).",
+      "Add `Lighting` under `Venue`; click **Turn into actions**; Cancel.",
+      "Right-click `Budget` → **Mark as not converted**; click **Turn into actions**."
+    ],
+    "expected": "Step 1: toast `2 actions added to the project`. Step 2: the review lists only `Lighting` (`Add 1 action`). Step 3: `Budget` loses its check mark; the review lists `Lighting` and `Budget` (`Add 2 actions`). Updated by BUG-065 (S10)."
+  },
+  {
+    "id": "TC-961",
+    "name": "Converting Without a Next Action Sets the First",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project with no actions; root ideas `Book venue`, `Send invites`.",
+    "steps": [
+      "**Turn into actions** → **Add 2 actions**.",
+      "Open the project detail page."
+    ],
+    "expected": "Step 1: toast `2 actions added to the project`. Step 2: the backlog reads `Book venue` (with the Next Action icon), `Send invites` (no icon). Updated by BUG-065."
+  },
+  {
+    "id": "TC-962",
+    "name": "Nothing to Turn Into Actions — Entry Disabled With the Reason",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; one root-only canvas; one canvas whose only idea is converted.",
+    "steps": [
+      "On each, hover **Turn into actions**."
+    ],
+    "expected": "**Turn into actions** is disabled; its tooltip reads `Add ideas first — ideas without sub-ideas become actions.` on the root-only canvas and `Every idea is already an action.` on the all-converted one. The old `Nothing to convert yet…` dialog is gone. Updated by BUG-065 (S8, S10; see TC-978)."
+  },
+  {
+    "id": "TC-963",
+    "name": "Do Next on a Personal Backlog Action",
+    "priority": "High",
+    "area": "Projects, Do Next",
+    "areas": [
+      "Projects",
+      "Do Next"
+    ],
+    "smoke": true,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a personal project with actions `First up` (next action), `Second`, `Third`.",
+    "steps": [
+      "Hover `Third`; click **Do next** (desktop: text button `Do next`, no icon; mobile: the arrow-up-to-top icon titled `Do next`, not the bolt).",
+      "Hover `Third`."
+    ],
+    "expected": "Before step 1 all backlog titles start at the same x (every row reserves the state-icon column). Step 1: no confirm and no toast; the backlog reads `Third` (Next Action icon), `First up`, `Second`. Step 2: the top row offers no **Do next**. Updated by BUG-065 (S6.3)."
+  },
+  {
+    "id": "TC-964",
+    "name": "Do Next While the Next Action Is in Today",
+    "priority": "High",
+    "area": "Projects, Do Next",
+    "areas": [
+      "Projects",
+      "Do Next"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a personal project with `In today` (next action, moved to Today) and `Promote me`.",
+    "steps": [
+      "Open the project; hover `Promote me`; click **Do next**.",
+      "Open Today."
+    ],
+    "expected": "Step 1: no confirm; the backlog reads `Promote me` (Next Action icon), `In today` (empty state-icon column) — same as dragging to the top (`specs/api/api.md` §Move Action, BUG-042). Step 2: `In today` is not in Today. Updated by BUG-065."
+  },
+  {
+    "id": "TC-965",
+    "name": "Do Next on a Shared Project Claims the Action",
+    "priority": "High",
+    "area": "Shared Projects, Do Next",
+    "areas": [
+      "Shared Projects",
+      "Do Next"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Team owner shares a project (write) with Team member B; backlog `Shared top`, `Claim me`; B holds no claim.",
+    "steps": [
+      "As B, open the project; hover `Claim me`; click **Do next**."
+    ],
+    "expected": "The row shows **Do next** (desktop text button, mobile icon; no `Assign to me`); after the click `Claim me` shows the \"You\" badge and no other row offers **Do next** (TC-445 rule). Updated by BUG-065."
+  },
+  {
+    "id": "TC-966",
+    "name": "Shared Member Sees the Canvas Read-Only",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Shared Projects",
+    "areas": [
+      "Brainstorm Canvas",
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Team owner shares a project (write) with Team member B; desktop.",
+    "steps": [
+      "As B, open the project detail page, then the canvas from the Brainstorm row (no ideas yet).",
+      "The owner adds `Venue`; B reloads.",
+      "As B click `Venue`, press Tab, double-click `Venue`.",
+      "As B send `PUT /v1/project/{id}/canvas` with an extra idea."
+    ],
+    "expected": "Step 1: the canvas reads `The project owner hasn't added any ideas yet.` Step 2: `Venue` shows; banner `View only` — `Only the project owner can edit this brainstorm.`; the header has only **Help** (no Undo, Redo, Turn into actions, no save status); no **+**. Step 3: nothing is added or edited. Step 4: `403`. Updated by BUG-065 (S8)."
+  },
+  {
+    "id": "TC-967",
+    "name": "Owner Download Saves the Canvas JSON (Retired)",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "",
+    "steps": [
+      "—"
+    ],
+    "expected": "Retired by BUG-065 (O3): Download removed; see TC-979."
+  },
+  {
+    "id": "TC-968",
+    "name": "Canvas Is Not an Attachment",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Attachments",
+    "areas": [
+      "Brainstorm Canvas",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a project with one attachment `plan.txt`.",
+    "steps": [
+      "Save a canvas on the project.",
+      "`GET /v1/project/{id}/attachments`; `GET /v1/project/{id}`."
+    ],
+    "expected": "The list holds `plan.txt` only (`total` 1); `attachment_count` stays 1."
+  },
+  {
+    "id": "TC-969",
+    "name": "Changed in Another Tab → Loaded the Latest Version",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a canvas with `Venue` open in tabs A and B; desktop.",
+    "steps": [
+      "In B add `From B` under `Venue`; wait for `Saved`.",
+      "In A add `From A` under `Venue`.",
+      "Click **Got it**."
+    ],
+    "expected": "Step 2: A's save is refused (`409`); A reloads the canvas: `From B` shows, `From A` does not, Undo is disabled; banner `Loaded the latest version` — `This brainstorm was changed in another tab or on another device. Your latest changes weren't saved — please add them again.` Step 3: the banner closes."
+  },
+  {
+    "id": "TC-970",
+    "name": "Owner on a Non-ACTIVE Project — Read-Only, Help Only",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; a completed project with idea `Venue`; a Someday project with no canvas; desktop.",
+    "steps": [
+      "Open the completed project's canvas; click `Venue`, press Tab.",
+      "Open the Someday project's canvas."
+    ],
+    "expected": "Step 1: banner `View only` — `This project is completed. Undo the completion on the project page to edit its brainstorm.`; header button **Help** only; nothing is added; no **+**. Step 2: `This project is in Someday. Activate it to edit its brainstorm.` and `No ideas were added to this brainstorm.` (no empty hint). Updated by BUG-065."
+  },
+  {
+    "id": "TC-971",
+    "name": "Outcome Helper Line on Project Create / Edit Forms",
+    "priority": "Medium",
+    "area": "Projects",
+    "areas": [
+      "Projects"
+    ],
+    "smoke": false,
+    "section": "71: Brainstorm Canvas, Do Next, Outcome Helper (FEAT-066)",
+    "preconditions": "Common preconditions; desktop.",
+    "steps": [
+      "Open Projects; open the add panel.",
+      "Clarify an Inbox item → Actionable → Project.",
+      "Command palette → `New project: New flat`.",
+      "On a project detail page click the outcome to edit it."
+    ],
+    "expected": "The helper `Why does this project matter? What does done look like?` shows in every form (not on Projects before the panel opens, not on the detail page before editing). Steps 2–3: the outcome placeholder is `e.g. New website live, so clients can book online`; the step 3 dialog title is `Project outcome`. The Projects add form keeps **Add** beside the first field (BUG-065 S7); the helper copy is one shared constant (S6.4). Updated by BUG-065."
+  },
+  {
+    "id": "TC-978",
+    "name": "Turn Into Actions — Disabled Reasons, Modal Copy, Success Toast",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; desktop. A root-only canvas; a canvas whose only idea is converted; a canvas `Venue` → `Catering`.",
+    "steps": [
+      "On the root-only and the all-converted canvas look at **Turn into actions**.",
+      "On the `Venue` → `Catering` canvas click **Turn into actions**.",
+      "Click **Add 1 action**."
+    ],
+    "expected": "Step 1: the button (`canvas-turn-into-actions`, `P sm`, last in the header) is disabled; tooltip `Add ideas first — ideas without sub-ideas become actions.` / `Every idea is already an action.`. Step 2: modal `Turn ideas into actions`, intro `Each ticked idea becomes an action at the end of the project's backlog. Untick anything that isn't an action.`; **Untick all** left-aligned at the checkbox column; row `Catering` with its path `Venue` on one line below; buttons **Cancel** · **Add 1 action**; no `Nothing to convert yet…`. Step 3: toast `1 action added to the project` (`{n} actions added to the project` for more); the button is now disabled with `Every idea is already an action.` (S8, S10). BUG-065."
+  },
+  {
+    "id": "TC-979",
+    "name": "No Download; Help Opens Help",
+    "priority": "High",
+    "area": "Brainstorm Canvas",
+    "areas": [
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; desktop; an owner canvas.",
+    "steps": [
+      "Open the canvas; read the header buttons.",
+      "Click **Help** (`canvas-help`)."
+    ],
+    "expected": "Step 1: header buttons Undo · Redo · Help · Turn into actions, all on one baseline; no **Download**, no `?` icon button. Step 2: `/help/getting-started#brainstorming-a-project` opens in a new tab (O3, O4, S8). BUG-065."
+  },
+  {
+    "id": "TC-980",
+    "name": "Mobile Drill-Down per S9 — Back Label, {i} of {n}, ⋯ Items, FAB",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Mobile",
+    "areas": [
+      "Brainstorm Canvas",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile (≤ 768 px). Canvas: `Venue` → `Catering`, `Hall`; root ideas `Budget` (converted), `Extra`.",
+    "steps": [
+      "Open the canvas; open ⋯; close it.",
+      "Tap `Venue`; open ⋯; close it; tap **Next** (header); open ⋯.",
+      "Go back; tap `Venue`, then `Catering`; tap the FAB **+**, type `Tasting`, Enter, tap outside."
+    ],
+    "expected": "Step 1: back label `< Project`, no `{i} of {n}`, section label `Ideas`, FAB `canvas-fab` visible, no bottom bar; ⋯ (sheet) lists `Turn into actions…` · `Help`. Step 2: back label `< {project title}`, `1 of 3`; ⋯ lists `Move to…` · `Delete with 2 sub-ideas` · `Turn into actions…` · `Help`; on `Budget` ⋯ lists `Move to…` · `Mark as not converted` · `Delete` · `Turn into actions…` · `Help`. Step 3: on `Catering` back label `< Venue`, `1 of 2`, muted row `No ideas under this one yet. Tap + to add one.`; the FAB hides while the `New idea` row is edited and returns after; the card lists `Tasting`; it is saved (S9). BUG-065."
+  },
+  {
+    "id": "TC-981",
+    "name": "Mobile Delete → Undo Restores; an Edit After a Delete Closes the Toast",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Mobile, Undo",
+    "areas": [
+      "Brainstorm Canvas",
+      "Mobile",
+      "Undo"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile. Canvas: `Venue` → `Catering`; root ideas `Budget`, `Extra`.",
+    "steps": [
+      "Tap `Venue`; ⋯ → **Delete with 1 sub-ideas**.",
+      "Tap **Undo** in the toast.",
+      "Tap `Extra`; ⋯ → **Delete**; then tap `Budget`, tap its title, type ` plan`, Enter.",
+      "Reload."
+    ],
+    "expected": "Step 1: no confirm; the view goes to the root with rows `Budget`, `Extra`; Undo toast `\"Venue\" deleted`. Step 2: rows `Venue` (count `1`), `Budget`, `Extra`. Step 3: toast `\"Extra\" deleted`; after the edit the title reads `Budget plan` and the Undo toast is gone (the toast undoes exactly one change, F3). Step 4: rows `Venue`, `Budget plan` (S9, F3). BUG-065."
+  },
+  {
+    "id": "TC-982",
+    "name": "View-Only Member Brainstorm",
+    "priority": "High",
+    "area": "Brainstorm Canvas, Shared Projects",
+    "areas": [
+      "Brainstorm Canvas",
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Team owner shares a project (write) with Team member B; desktop and mobile.",
+    "steps": [
+      "As B open the canvas (no ideas yet).",
+      "The owner adds `Venue`; B reloads; on mobile tap `Venue`, then its title."
+    ],
+    "expected": "Step 1: EmptyState `No ideas yet` / `The project owner hasn't added any ideas yet.`; **Help** (`canvas-help`) is the only header control (desktop: the only header button; mobile: a `Help` text button instead of ⋯); no Turn into actions, no ⋯, no FAB. Step 2: desktop shows `Venue` without **+**; mobile lists `Venue`, then `No ideas under this one.` (no \"Tap +\"), the title is not editable, still no FAB or ⋯ (S8, S9). BUG-065."
+  },
+  {
+    "id": "TC-983",
+    "name": "Brainstorm Row — Owner Copy, {n} Ideas, +1 After Adding",
+    "priority": "High",
+    "area": "Projects, Brainstorm Canvas",
+    "areas": [
+      "Projects",
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions (owner); projects with 0, 1 and 3 ideas; a completed project with no canvas.",
+    "steps": [
+      "Open the 0-idea project.",
+      "Open the 1-idea project.",
+      "Open the 3-idea project; tap the Brainstorm row; add one idea; go back with `< Project`.",
+      "Open the completed project."
+    ],
+    "expected": "Step 1: `project-brainstorm-row` reads `Get every idea out of your head` (empty-placeholder style), between Outcome and Next Action. Step 2: `1 idea`. Step 3: `3 ideas`; the row opens `/project/{id}/canvas`; back on the project the row reads `4 ideas`. Step 4: `No ideas yet` (view-only) (S6.1, C3 `idea_count`). BUG-065."
+  },
+  {
+    "id": "TC-984",
+    "name": "Member Sees \"No Ideas Yet\", Then the Count",
+    "priority": "Medium",
+    "area": "Shared Projects, Brainstorm Canvas",
+    "areas": [
+      "Shared Projects",
+      "Brainstorm Canvas"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Team owner shares a project (write) with Team member B.",
+    "steps": [
+      "As B open the project.",
+      "The owner saves 2 ideas; B reloads; B taps the row."
+    ],
+    "expected": "Step 1: the row reads `No ideas yet`. Step 2: `2 ideas`; the canvas opens view-only (`Help`, no `Turn into actions`) (S6.1). BUG-065."
+  },
+  {
+    "id": "TC-985",
+    "name": "Count Follows the Project Reached With the Arrows",
+    "priority": "Medium",
+    "area": "Projects, Someday",
+    "areas": [
+      "Projects",
+      "Someday"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; Projects `Arrow A` (2 ideas), `Arrow B` (0), `Arrow C` (5); Someday projects `Someday X` (3 ideas) and `Someday Y` (0).",
+    "steps": [
+      "Open the first project; step through the other two with the header arrows.",
+      "Open `Someday Y` from Someday; step to `Someday X` with the arrow."
+    ],
+    "expected": "Step 1: each project shows its own row copy — `2 ideas`, `Get every idea out of your head`, `5 ideas` — without a reload (C3 on `GET /v1/projects/pos/{n}`). Step 2: `No ideas yet`, then `3 ideas` (C3 on `GET /v1/someday/pos/{n}`) (S6.1, F2). BUG-065."
+  },
+  {
+    "id": "TC-986",
+    "name": "Project Detail Rows per State × Role at 375 px",
+    "priority": "High",
+    "area": "Projects, Shared Projects, Mobile",
+    "areas": [
+      "Projects",
+      "Shared Projects",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Team owner A and Team member B (write), viewport 375 × 812: an active personal project, an active shared project, a Someday personal project, a Someday shared project, a completed project.",
+    "steps": [
+      "Open each project as A, and the active shared project as B; open ⋯ where shown.",
+      "As A on the personal project choose ⋯ → **Trash**."
+    ],
+    "expected": "Rows (visible · ⋯): active personal — Complete · Move · ⋯ Share… · Trash; active shared, owner — Complete · Trash; active shared, member — Leave; Someday personal — Activate · Complete · Move · ⋯ Share… · Trash; Someday shared, owner — Activate · Complete · Trash; completed — Undo. Each row is one line inside 375 px, never wraps or scrolls (`detail-more-menu` holds the listed items). Step 2: the project is trashed (`state` `TRASH`) and the page moves on (S0 X2, S6.2). BUG-065."
+  },
+  {
+    "id": "TC-987",
+    "name": "Action Detail Rows per State × Role at 375 px",
+    "priority": "High",
+    "area": "Action Detail, Shared Projects, Mobile",
+    "areas": [
+      "Action Detail",
+      "Shared Projects",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Team owner A, members B (write) and C (read_only, claimed before becoming read-only), viewport 375 × 812; personal actions in Next, Waiting, Someday and Completed; shared actions claimed by B (Next and Waiting), unassigned, and claimed by C.",
+    "steps": [
+      "Open each action as the listed user; open ⋯ where shown."
+    ],
+    "expected": "Personal active — Done · Move · Trash; personal waiting — Got it · Done · Move · ⋯ Trash; personal Someday — Activate · Move · Trash; completed — Undo; B on own claim — Done · Move · ⋯ Unassign · Trash; B on own waiting claim — Got it · Done · Move · ⋯ Unassign · Trash; A on unassigned — Assign to me · Done · Trash; C (read_only) on own claim — Done · Unassign · Trash; A on B's claim — no row (no empty band, no `View only`), the `Assigned to …` chip says why. Each row is one line inside 375 px (S0 X2/X2b, S11). BUG-065."
+  },
+  {
+    "id": "TC-988",
+    "name": "Read-Only Member Sees \"View Only\" Instead of a Row",
+    "priority": "High",
+    "area": "Action Detail, Shared Projects",
+    "areas": [
+      "Action Detail",
+      "Shared Projects"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "As TC-987; C is `read_only`.",
+    "steps": [
+      "As C open the unassigned shared action."
+    ],
+    "expected": "No action row is rendered; in its place `Alert` info `View only` — `You can view this shared project but not change it.` (S11). BUG-065."
+  },
+  {
+    "id": "TC-989",
+    "name": "Tapping the Undo Toast Message Keeps It; Undo Restores",
+    "priority": "High",
+    "area": "Undo",
+    "areas": [
+      "Undo"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; an action in Next; desktop and mobile.",
+    "steps": [
+      "Tick the action.",
+      "Click / tap the toast message (not the button).",
+      "Click **Undo**."
+    ],
+    "expected": "Step 1: Undo toast — dark snackbar, no icon. Step 2: the toast stays. Step 3: `\"{title}\" moved back`; the action is back in Next (S1). BUG-065."
+  },
+  {
+    "id": "TC-990",
+    "name": "Mobile Undo Toast Full Width Above the FAB",
+    "priority": "High",
+    "area": "Undo, Mobile",
+    "areas": [
+      "Undo",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile; an action whose title is longer than 30 characters.",
+    "steps": [
+      "Tick it on Next; look at the toast."
+    ],
+    "expected": "The toast `\"{first 30 characters}…\" completed` sits 16 px from each screen edge, on one line, **Undo** at its right end; its bottom edge is 12 px above the top of the FAB (S1). BUG-065."
+  },
+  {
+    "id": "TC-991",
+    "name": "Free and Pro Capture Rows Are Identical; Circled Plus Inside the Field",
+    "priority": "High",
+    "area": "Capture, Tiers",
+    "areas": [
+      "Capture",
+      "Tiers"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; the same account on Team/Pro, then on Free; Inbox; desktop and mobile.",
+    "steps": [
+      "On Inbox measure the field, the attach button and **Add**.",
+      "Switch the account to Free; measure again."
+    ],
+    "expected": "Step 1: the attach button (`capture-attach`) sits inside the field's right edge, vertically centred; it is a 22 px circle with a 1.5 px border and a plus (no paperclip); **Add** has the field's height and top. Step 2: the same geometry as step 1 (O6, S2). BUG-065."
+  },
+  {
+    "id": "TC-992",
+    "name": "Free Attach Menu and Drop Overlay Copy Without Emoji",
+    "priority": "Medium",
+    "area": "Capture, Tiers",
+    "areas": [
+      "Capture",
+      "Tiers"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; Free account; Inbox.",
+    "steps": [
+      "Open the attach menu.",
+      "Drag a file over the Inbox."
+    ],
+    "expected": "Step 1: Photo · Voice · File disabled, then `Photo, voice and file capture is available on Pro and Team plans.` — no emoji, no icon — and **Upgrade** (or **Contact Us** when payments are off). Step 2: the drop overlay shows the same line without emoji (S2). BUG-065."
+  },
+  {
+    "id": "TC-993",
+    "name": "Cancel While Waiting for the Microphone",
+    "priority": "Medium",
+    "area": "Capture, Voice",
+    "areas": [
+      "Capture",
+      "Voice"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; Pro/Team; the browser's microphone prompt not answered.",
+    "steps": [
+      "Attach → **Voice**.",
+      "Click **Cancel**."
+    ],
+    "expected": "Step 1: the recording line reads `Waiting for microphone access…` with **Cancel**. Step 2: the line goes; no chip, **Add** disabled, nothing added (S2). BUG-065."
+  },
+  {
+    "id": "TC-994",
+    "name": "Stuff Detail — No Preview Strip; Image Thumbnail Row",
+    "priority": "High",
+    "area": "Stuff Detail, Attachments",
+    "areas": [
+      "Stuff Detail",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; an Inbox item; an image and a voice memo.",
+    "steps": [
+      "Upload the image, then the voice memo.",
+      "Click the image thumbnail."
+    ],
+    "expected": "No `attachment-preview-strip`; the image row shows a 40 px thumbnail (loaded) instead of the file icon and the image appears once; the voice memo row shows **Play**. Step 2: the preview modal shows the image (S3). BUG-065."
+  },
+  {
+    "id": "TC-995",
+    "name": "Stuff Detail Audio Play / Stop",
+    "priority": "High",
+    "area": "Stuff Detail, Attachments",
+    "areas": [
+      "Stuff Detail",
+      "Attachments"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; an item with a voice memo.",
+    "steps": [
+      "Click **Play** on the voice memo row; then **Stop**."
+    ],
+    "expected": "No native `<audio controls>`; name and size unchanged; Play plays the memo and turns into **Stop**; Stop pauses it and shows **Play** again (S3). BUG-065."
+  },
+  {
+    "id": "TC-996",
+    "name": "Clarify on Mobile — No Y/N Key Hints, Compact Cards, Ghost ×",
+    "priority": "Medium",
+    "area": "Clarify, Mobile",
+    "areas": [
+      "Clarify",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile; an Inbox item.",
+    "steps": [
+      "Open Clarify; look at step 1."
+    ],
+    "expected": "The **Yes** / **No** cards show no `Y` / `N` hints and are each at least 64 px (under 100 px) tall; the sheet's close button is a ghost icon button with no fill (S4). BUG-065."
+  },
+  {
+    "id": "TC-997",
+    "name": "Review Step Rows Open Their List Before Start",
+    "priority": "High",
+    "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions (Weekly Review on).",
+    "steps": [
+      "Without starting the review click each `review-step-{n}` row (not its checkbox)."
+    ],
+    "expected": "Each row opens its list (`/inbox`, `/next`, `/waiting-for`, `/projects`, `/someday`, `/calendar`); the checkboxes stay disabled (S5 row 5c). BUG-065."
+  },
+  {
+    "id": "TC-998",
+    "name": "Review — No Go / Count Pill / Step-6 Lists; Start / Complete in the Header",
+    "priority": "High",
+    "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; dated actions in the last 7 and next 14 days.",
+    "steps": [
+      "Open `/review`.",
+      "Click **Start Review**."
+    ],
+    "expected": "Step 1: no `Go` button, no number on any step row, no `Last 7 days — still open` / `Next 14 days` lists; **Start Review** right of the `Weekly Review` title on the same row. Step 2: **Complete Review** in the same place, disabled with title `Check all 6 steps to complete the review`; still no lists (O9, S5). BUG-065."
+  },
+  {
+    "id": "TC-999",
+    "name": "Complete Review → Celebration → \"Last reviewed: today\"",
+    "priority": "High",
+    "area": "Weekly Review",
+    "areas": [
+      "Weekly Review"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; last review 10 days ago.",
+    "steps": [
+      "Start the review, tick all 6, **Complete Review**.",
+      "Wait ~3 s."
+    ],
+    "expected": "Step 1: the celebration with the EmptyState art, `Review complete`, `Your system is current.`, no toast. Step 2: it fades to the idle page; `Last reviewed: today` stays under the title (S5 row 6). BUG-065."
+  },
+  {
+    "id": "TC-1000",
+    "name": "WelcomeModal — No ×, \"1 of 4\", Copy",
+    "priority": "High",
+    "area": "Onboarding",
+    "areas": [
+      "Onboarding"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "A fresh account; desktop.",
+    "steps": [
+      "Log in; read slide 1; Next through slides 2–4."
+    ],
+    "expected": "No × (Skip and Escape remain); position `1 of 4` … `4 of 4`; **Next** does not move between slides; copy per S12: `Whatever has your attention, drop it into your Inbox — with Quick Add, or + on your phone.` · `Clarify asks one question per item: is it actionable? Then it becomes an action, a project or a date — or goes.` · `Your Dashboard shows what's due and what's next. A Weekly Review keeps it current.` · `Add one thing you've been meaning to do. It lands in your Inbox, ready to clarify.` On mobile the primary button is full width right of Skip (S12). BUG-065."
+  },
+  {
+    "id": "TC-1001",
+    "name": "Offline — Banner Only on Inbox, Draft Badge, Toast Copy",
+    "priority": "High",
+    "area": "Offline",
+    "areas": [
+      "Offline"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; desktop and mobile.",
+    "steps": [
+      "Go offline on Engage; open Inbox; open Next.",
+      "On Inbox capture a title."
+    ],
+    "expected": "Step 1: no banner on Engage or Next (Next keeps `h1` `Next` + the offline state); on Inbox the banner `You're offline` + message on one line (desktop) / title only (mobile). Step 2: toast `\"{title}\" saved offline`; the row badge `Waiting to sync` is Badge type `draft` (S13). BUG-065."
+  },
+  {
+    "id": "TC-1002",
+    "name": "/share Layout — Labels and Buttons",
+    "priority": "Medium",
+    "area": "Share",
+    "areas": [
+      "Share"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; production build; Pro account; a share with title, text and a file; desktop, then mobile.",
+    "steps": [
+      "Look at `/share` on desktop.",
+      "Look at `/share` on mobile."
+    ],
+    "expected": "Step 1: `h1.page-title` `Add to Inbox`, the form in a `.card` ≤ 520 px left-aligned under it; labels Title · Description · Attachments in one style; the description has the `Inpt` field look; **Cancel** · **Add to Inbox** right-aligned at the card bottom. Step 2: both buttons ≥ 44 px pinned at the bottom of the page, **Cancel** left, **Add to Inbox** wider and reaching the right edge (S14). BUG-065."
+  },
+  {
+    "id": "TC-1003",
+    "name": "Mobile — Detail Buttons 44 px High",
+    "priority": "Medium",
+    "area": "Mobile, Action Detail, Project Detail",
+    "areas": [
+      "Mobile",
+      "Action Detail",
+      "Project Detail"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile; an action and a project.",
+    "steps": [
+      "Open the action detail and the project detail."
+    ],
+    "expected": "Every `.detail-actions` button is at least 44 px high (S0 X4). BUG-065."
+  },
+  {
+    "id": "TC-1004",
+    "name": "Mobile — Pull-to-Refresh Chevron",
+    "priority": "Low",
+    "area": "Mobile, Item Lists",
+    "areas": [
+      "Mobile",
+      "Item Lists"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile; Next.",
+    "steps": [
+      "Pull the list down a little; then past the threshold."
+    ],
+    "expected": "A chevron sits before `Pull to refresh`; past the threshold (`Release to refresh`) it turns 180° (S15). BUG-065."
+  },
+  {
+    "id": "TC-1005",
+    "name": "Help — Turn Into Actions; No Download or Still-Open Lists",
+    "priority": "Medium",
+    "area": "Help",
+    "areas": [
+      "Help"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "None (public pages).",
+    "steps": [
+      "Open `/help/getting-started`, `/help/best-practices` and `/help/faq` with every answer expanded."
+    ],
+    "expected": "Getting Started contains `Turn into actions` and `attach button at the right end of the field`, and no `Convert to backlog`, `Download saves` or `paperclip next to the field`. Best Practices has no `last week's still-open actions` and keeps `your progress is saved until you complete the review`. FAQ: `… ⋯ menu on the project page and taps Share…` (Help impact). BUG-065."
+  },
+  {
+    "id": "TC-1006",
+    "name": "Mobile Drill-Down — Idea Rows Wrap Full Width, Tap Text Edits In Place",
+    "priority": "Medium",
+    "area": "Brainstorm Canvas, Mobile",
+    "areas": [
+      "Brainstorm Canvas",
+      "Mobile"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; mobile (≤ 768 px); editor of a project whose canvas has a root idea with a long text (3+ lines at full width) and 3 sub-ideas, and a short root idea `Venue` with sub-ideas.",
+    "steps": [
+      "Open the canvas.",
+      "Tap the long idea's text.",
+      "Type ` x`, press Enter.",
+      "Tap `Venue` row to the right of its text (blank area, not the chevron).",
+      "Go back; tap `Venue`'s text, then Esc."
+    ],
+    "expected": "Step 1: the long text wraps across the full row width, only the count / check / chevron column stays free on the right. Step 2: the text becomes an editor in the same place — the row doesn't jump or change height, and the count `3` and chevron stay visible. Step 3: the edit is saved and the row shows the new text. Step 4: drills into `Venue`. Step 5: editing opens without drilling in; Esc restores the text. View-only: tapping the text drills in."
   }
 ]

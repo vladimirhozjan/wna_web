@@ -154,6 +154,7 @@ import {
   buildCapture,
   lateUploadReason,
   CAPTURE_LOCKED_LINE as LOCKED_LINE,
+  audioPlayer,
 } from '../scripts/core/captureRules.js'
 
 const props = defineProps({
@@ -170,6 +171,7 @@ const auth = authModel()
 const queue = captureQueue()
 const { isOffline } = offlineModel()
 const { paymentsEnabled } = flagsModel()
+const { playingId, toggle: toggleAudio, stop: stopPlayback } = audioPlayer()
 const toaster = errorModel()
 
 const inptRef = ref(null)
@@ -186,14 +188,12 @@ const menuOpen = ref(false)
 const picking = ref(false)
 const recState = ref(null) // null, waiting, recording
 const recElapsed = ref(0)
-const playingId = ref(null)
 
 let recorder = null
 let recStream = null
 let recTimer = null
 let recStartedAt = 0
 let recCancelled = false
-let player = null
 
 const tier = computed(() => auth.currentUser.value?.subscription_tier)
 const isProOrTeam = computed(() => tier.value === 'pro' || tier.value === 'team')
@@ -394,23 +394,10 @@ function stopRecording(keep = true) {
   focus()
 }
 
-function stopPlayback() {
-  player?.pause()
-  player = null
-  playingId.value = null
-}
 
 function togglePlay(chip) {
-  if (playingId.value === chip.id) {
-    stopPlayback()
-    return
-  }
-  stopPlayback()
   if (!chip.url) chip.url = URL.createObjectURL(chip.file)
-  player = new Audio(chip.url)
-  player.onended = stopPlayback
-  playingId.value = chip.id
-  player.play().catch(stopPlayback)
+  toggleAudio(chip.id, chip.url)
 }
 
 // ── Add ──

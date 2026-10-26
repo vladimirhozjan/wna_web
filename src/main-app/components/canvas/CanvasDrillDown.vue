@@ -52,49 +52,49 @@
       <div v-else class="dd-section">
         <label class="text-body-s fw-semibold dd-section-label">Ideas</label>
         <div class="card dd-card">
-          <template v-for="child in listChildren" :key="child.id">
-            <div v-if="editingId === child.id" class="dd-row-edit">
-              <textarea
-                  ref="editorRef"
-                  v-model="draft"
-                  class="text-body-s dd-editor"
-                  :maxlength="NODE_TEXT_LIMIT"
-                  rows="1"
-                  enterkeyhint="done"
-                  @input="onEditorInput"
-                  @keydown.enter.prevent="endEdit"
-                  @keydown.esc.prevent="cancelEdit"
-                  @blur="onEditorBlur(child.id)"
-              ></textarea>
-              <p v-if="draft.length >= NODE_TEXT_LIMIT" class="text-caption color-text-secondary dd-cap">
-                Ideas can be up to {{ NODE_TEXT_LIMIT }} characters.
-              </p>
-            </div>
-            <Item
-                v-else
-                :id="child.id"
-                :title="canvas.displayText(child)"
-                no-checkbox
-                :editable="false"
-                class="dd-row"
-                @click="goTo(child.id)"
-                @touchstart.passive="onRowTouchStart($event, child)"
-                @touchmove.passive="onRowTouchMove"
-                @touchend="onRowTouchEnd"
-                @contextmenu.prevent="openRowMenu(child)"
-            >
-              <template #title>
-                <span class="dd-row-text" :class="{ 'dd-blank': isBlank(child) }">{{ canvas.displayText(child) }}</span>
+          <Item
+              v-for="child in listChildren"
+              :key="child.id"
+              :id="child.id"
+              :title="canvas.displayText(child)"
+              no-checkbox
+              :editable="false"
+              class="dd-row"
+              @click="goTo(child.id)"
+              @touchstart.passive="onRowTouchStart($event, child)"
+              @touchmove.passive="onRowTouchMove"
+              @touchend="onRowTouchEnd"
+              @contextmenu.prevent="openRowMenu(child)"
+          >
+            <template #title>
+              <template v-if="editingId === child.id">
+                <textarea
+                    ref="editorRef"
+                    v-model="draft"
+                    class="dd-editor dd-editor--inline"
+                    :maxlength="NODE_TEXT_LIMIT"
+                    rows="1"
+                    enterkeyhint="done"
+                    @click.stop
+                    @input="onEditorInput"
+                    @keydown.enter.prevent="endEdit"
+                    @keydown.esc.prevent="cancelEdit"
+                    @blur="onEditorBlur(child.id)"
+                ></textarea>
+                <p v-if="draft.length >= NODE_TEXT_LIMIT" class="text-caption color-text-secondary dd-cap">
+                  Ideas can be up to {{ NODE_TEXT_LIMIT }} characters.
+                </p>
               </template>
-              <template #actions>
-                <span class="dd-row-meta">
-                  <CheckIcon v-if="child.converted" class="dd-check" />
-                  <span v-if="canvas.descendantCount(child.id) > 0" class="text-footnote color-text-secondary">{{ canvas.descendantCount(child.id) }}</span>
-                  <ChevronRightIcon class="dd-chevron" />
-                </span>
-              </template>
-            </Item>
-          </template>
+              <span v-else class="dd-row-text" :class="{ 'dd-blank': isBlank(child) }" @click="onRowTextClick($event, child.id)">{{ canvas.displayText(child) }}</span>
+            </template>
+            <template #actions>
+              <span class="dd-row-meta">
+                <CheckIcon v-if="child.converted" class="dd-check" />
+                <span v-if="canvas.descendantCount(child.id) > 0" class="text-footnote color-text-secondary">{{ canvas.descendantCount(child.id) }}</span>
+                <ChevronRightIcon class="dd-chevron" />
+              </span>
+            </template>
+          </Item>
 
           <!-- New-idea row -->
           <div v-if="newRowId" class="dd-row-edit">
@@ -222,6 +222,13 @@ function startEdit(id) {
   draft.value = node.text
   editingId.value = id
   focusEditor()
+}
+
+// Like other lists: tapping the text edits, the rest of the row drills in
+function onRowTextClick(e, id) {
+  if (!canvas.canEdit.value) return
+  e.stopPropagation()
+  startEdit(id)
 }
 
 function onEditorInput(e) {
@@ -462,6 +469,10 @@ watch(() => canvas.nodes.value, () => {
   flex: 1;
 }
 
+.dd-card :deep(.item__separator) {
+  display: none;
+}
+
 /* The meta is a display: a tap anywhere on the row drills in */
 .dd-card :deep(.item__actions) {
   pointer-events: none;
@@ -509,6 +520,12 @@ watch(() => canvas.nodes.value, () => {
   background: transparent;
   color: var(--color-text-primary);
   field-sizing: content;
+}
+
+/* Editing in place keeps the row's text metrics, so nothing shifts */
+.dd-editor--inline {
+  font: inherit;
+  line-height: inherit;
 }
 
 .dd-card-empty {

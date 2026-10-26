@@ -1,8 +1,12 @@
+import { ref } from 'vue'
 import apiClient from './apiClient.js'
 import { captureQueue } from './captureQueue.js'
 import { offlineModel } from './offlineModel.js'
 import { upgradeModel } from './upgradeModel.js'
 import { formatDate } from './dateUtils.js'
+import CameraIcon from '../../assets/CameraIcon.vue'
+import MicIcon from '../../assets/MicIcon.vue'
+import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 
 const PHOTO_MAX_EDGE = 2048
 const PHOTO_QUALITY = 0.85
@@ -12,6 +16,36 @@ const UPGRADE_MESSAGE = `${CAPTURE_LOCKED_LINE} Upgrade to snap a receipt, recor
 const QUEUE_FULL = 'No offline space left on this device — attach it when you\'re back online'
 
 let chipSeq = 0
+
+const CAPTURE_ICONS = { photo: CameraIcon, audio: MicIcon, file: AttachmentIcon }
+
+export function captureIcon(type, fallback = null) {
+    return CAPTURE_ICONS[type] || fallback
+}
+
+// One Play / Stop player per view: starting a clip stops the previous one
+export function audioPlayer() {
+    const playingId = ref(null)
+    let player = null
+
+    function stop() {
+        player?.pause()
+        player = null
+        playingId.value = null
+    }
+
+    function toggle(id, url) {
+        const wasPlaying = playingId.value === id
+        stop()
+        if (wasPlaying) return
+        player = new Audio(url)
+        player.onended = stop
+        playingId.value = id
+        player.play().catch(stop)
+    }
+
+    return { playingId, toggle, stop }
+}
 
 // Photo chips show a thumbnail of the file itself
 export function createChip(kind, file, extra = {}) {

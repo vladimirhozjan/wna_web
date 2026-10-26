@@ -147,6 +147,7 @@ import { listAttachments, uploadAttachment, downloadAttachment, deleteAttachment
 import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import Spinner from './Spinner.vue'
+import { audioPlayer } from '../scripts/core/captureRules.js'
 
 const props = defineProps({
   entityType: { type: String, required: true },
@@ -156,6 +157,7 @@ const props = defineProps({
 
 const toaster = errorModel()
 const confirm = confirmModel()
+const { playingId, toggle: toggleAudio, stop: stopPlayback } = audioPlayer()
 
 const attachments = ref([])
 const loading = ref(true)
@@ -185,8 +187,6 @@ const atLimit = computed(() => attachments.value.length >= 10)
 
 // Stuff list rows show images as thumbnails and voice memos with Play/Stop instead of the type icon
 const blobs = reactive({})
-const playingId = ref(null)
-let player = null
 let previewOwnsUrl = true
 
 const isImage = (att) => !!att.mime_type?.startsWith('image/')
@@ -340,22 +340,9 @@ function syncMedia() {
   }
 }
 
-function stopPlayback() {
-  player?.pause()
-  player = null
-  playingId.value = null
-}
 
 function togglePlay(att) {
-  if (playingId.value === att.id) {
-    stopPlayback()
-    return
-  }
-  stopPlayback()
-  player = new Audio(blobs[att.id].url)
-  player.onended = stopPlayback
-  playingId.value = att.id
-  player.play().catch(stopPlayback)
+  toggleAudio(att.id, blobs[att.id].url)
 }
 
 function onRowClick(att) {

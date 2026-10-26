@@ -47,14 +47,15 @@ import RefPreviewModal from './reference/RefPreviewModal.vue'
 import StopIcon from '../assets/StopIcon.vue'
 import TriangleRightIcon from '../assets/TriangleRightIcon.vue'
 import { listAttachments, downloadAttachment } from '../scripts/core/apiClient.js'
+import { audioPlayer } from '../scripts/core/captureRules.js'
 
 const props = defineProps({
   itemId: { type: String, required: true },
 })
 
 const list = ref([])
+const { playingId, toggle: toggleAudio, stop: stopPlayback } = audioPlayer()
 const blobs = reactive({})
-const playingId = ref(null)
 const preview = reactive({
   visible: false,
   file: null,
@@ -63,7 +64,6 @@ const preview = reactive({
   loading: false,
 })
 
-let player = null
 
 const images = computed(() => list.value.filter(a => a.mime_type?.startsWith('image/')))
 const audios = computed(() => list.value.filter(a => a.mime_type?.startsWith('audio/')))
@@ -110,22 +110,9 @@ async function loadList() {
   }
 }
 
-function stopPlayback() {
-  player?.pause()
-  player = null
-  playingId.value = null
-}
 
 function togglePlay(att) {
-  if (playingId.value === att.id) {
-    stopPlayback()
-    return
-  }
-  stopPlayback()
-  player = new Audio(blobs[att.id].url)
-  player.onended = stopPlayback
-  playingId.value = att.id
-  player.play().catch(stopPlayback)
+  toggleAudio(att.id, blobs[att.id].url)
 }
 
 function onTile(att) {

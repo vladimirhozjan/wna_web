@@ -26,7 +26,7 @@
     <div class="clarify-context" v-if="stuffItem">
       <span class="text-body-s clarify-context-label">Processing:</span>
       <span class="text-h3 clarify-context-title">
-        <component :is="captureIcon" v-if="captureIcon" class="clarify-context-icon" />{{ stuffItem.title }}
+        <component :is="contextIcon" v-if="contextIcon" class="clarify-context-icon" />{{ stuffItem.title }}
       </span>
       <AttachmentPreviewStrip v-if="stuffItem.attachment_count > 0" :item-id="stuffItem.id" />
     </div>
@@ -91,9 +91,7 @@ import ClarifyStepDoItNow from './ClarifyStepDoItNow.vue'
 import AttachmentPreviewStrip from '../AttachmentPreviewStrip.vue'
 import Btn from '../Btn.vue'
 import CloseIcon from '../../assets/CloseIcon.vue'
-import CameraIcon from '../../assets/CameraIcon.vue'
-import MicIcon from '../../assets/MicIcon.vue'
-import AttachmentIcon from '../../assets/AttachmentIcon.vue'
+import { captureIcon } from '../../scripts/core/captureRules.js'
 
 const props = defineProps({
   stuffItem: {
@@ -120,14 +118,7 @@ watch(() => state.error, (err) => {
 
 const progress = computed(() => clarify.getProgress())
 
-const captureIcon = computed(() => {
-  switch (props.stuffItem?.input_type) {
-    case 'photo': return CameraIcon
-    case 'audio': return MicIcon
-    case 'file': return AttachmentIcon
-    default: return null
-  }
-})
+const contextIcon = computed(() => captureIcon(props.stuffItem?.input_type))
 
 const canGoBack = computed(() => {
   return ![

@@ -152,7 +152,6 @@
         <!-- Outcome area -->
         <div class="detail-section-area detail-section-area--no-border">
           <label class="text-body-s fw-semibold detail-section-label">Outcome</label>
-          <p v-if="editingField === 'outcome'" class="text-footnote color-text-secondary outcome-helper">{{ OUTCOME_HELPER }}</p>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'outcome'"
@@ -171,6 +170,7 @@
                 @blur="saveField('outcome')"
                 rows="1"
             ></textarea>
+            <p v-if="editingField === 'outcome'" class="text-footnote color-text-secondary outcome-helper">{{ OUTCOME_HELPER }}</p>
             <div v-if="editingField === 'outcome'" class="detail-section-actions">
               <Btn
                   variant="primary"
@@ -296,7 +296,7 @@
                                 @click.stop="onDoNext(action)"
                             >
                               <Spinner v-if="doingNextId === action.id" :size="16" />
-                              <NextIcon v-else />
+                              <ArrowUpToTopIcon v-else />
                             </button>
                           </template>
                           <ActionBtn variant="danger" :disabled="doingNextId === action.id" :loading="trashingActionId === action.id" @click="onTrashAction(action)" />
@@ -411,7 +411,7 @@
                                   @click.stop="onAssignToMe(action)"
                               >
                                 <Spinner v-if="assigningId === action.id" :size="16" />
-                                <NextIcon v-else />
+                                <ArrowUpToTopIcon v-else />
                               </button>
                             </template>
                             <button
@@ -714,6 +714,7 @@ import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import PersonRemoveIcon from '../../assets/PersonRemoveIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
+import ArrowUpToTopIcon from '../../assets/ArrowUpToTopIcon.vue'
 import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
@@ -2177,7 +2178,7 @@ async function onAddAction() {
 
 /* ── Section areas (outcome, description) ── */
 .outcome-helper {
-  margin: 0 0 4px;
+  margin: 0;
 }
 
 .detail-section-area {
@@ -2498,8 +2499,10 @@ async function onAddAction() {
     display: none;
   }
 
+  /* Same hit-area margins as the × ActionBtn so both sit on one line, side by side */
   .action-assign-btn.action-do-next-icon {
     display: inline-flex;
+    margin: -11px -8px -11px 0;
   }
 }
 

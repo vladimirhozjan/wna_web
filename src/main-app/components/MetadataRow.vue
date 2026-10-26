@@ -98,8 +98,6 @@ import HourglassIcon from '../assets/HourglassIcon.vue'
 import CalendarIcon from '../assets/CalendarIcon.vue'
 import ProjectsIcon from '../assets/ProjectsIcon.vue'
 import AttachmentIcon from '../assets/AttachmentIcon.vue'
-import CameraIcon from '../assets/CameraIcon.vue'
-import MicIcon from '../assets/MicIcon.vue'
 import CommentIcon from '../assets/CommentIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
 import WarningIcon from '../assets/WarningIcon.vue'
@@ -108,6 +106,7 @@ import SharedIcon from '../assets/SharedIcon.vue'
 import { isOverdue, isScheduledOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
 import { describeRRule } from '../scripts/core/rruleUtils.js'
 import { authModel } from '../scripts/core/authModel.js'
+import { captureIcon } from '../scripts/core/captureRules.js'
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -117,9 +116,7 @@ const props = defineProps({
 // The capture form replaces the paperclip on Stuff, so a row never shows two attachment chips
 const attachmentIcon = computed(() => {
   if (props.entityType !== 'stuff') return AttachmentIcon
-  if (props.item.input_type === 'photo') return CameraIcon
-  if (props.item.input_type === 'audio') return MicIcon
-  return AttachmentIcon
+  return captureIcon(props.item.input_type, AttachmentIcon)
 })
 
 const isItemOverdue = computed(() =>
