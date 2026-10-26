@@ -92,6 +92,7 @@ const classes = computed(() => ([
 /* VARIANTS */
 .base-btn--primary {
   background: var(--color-btn-primary-bg);
+  border: 1px solid transparent;
   font-weight: var(--font-weight-semibold);
   color: var(--color-btn-primary-text);
 }
@@ -144,6 +145,7 @@ const classes = computed(() => ([
 
 .base-btn--ghost {
   background: transparent;
+  border: 1px solid transparent;
   color: var(--color-btn-ghost-text);
   font-weight: var(--font-weight-medium);
 }
@@ -159,6 +161,7 @@ const classes = computed(() => ([
 
 .base-btn--danger {
   background: var(--color-btn-danger-bg);
+  border: 1px solid transparent;
   color: var(--color-btn-danger-text);
   font-weight: var(--font-weight-bold);
 }
