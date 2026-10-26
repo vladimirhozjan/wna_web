@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 25, 2026
+**Last updated:** October 26, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -224,6 +224,10 @@ This is governed by Google's own privacy policy. WhatsNextAction's use and trans
 
 We may disclose your data if required to do so by law, court order, or a binding request from a competent authority.
 
+### 5.10 Operational Alerts
+
+- **Slack Technologies Limited**, Dublin, Ireland, a Salesforce company - receives our internal security and operations alerts, which can contain your user identifier, a session identifier, device name and IP address.
+
 ## 6. International Data Transfers
 
 We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres.
@@ -236,6 +240,8 @@ If you connect Google Calendar sync, the events we create for you, and the Whats
 
 If you connect Google Drive storage, the files we store for you are held by Google in your own Google Drive under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the storage you requested (Art. 49(1)(b) GDPR).
 
+Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
+
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
 
 ## 7. Data Retention
@@ -247,7 +253,8 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, WhatsNextAction calendar identifier, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar, the WhatsNextAction calendar identifier and the event identifiers are kept after you disconnect Google Calendar, so that reconnecting continues where you left off, and are deleted when you delete your account. On account deletion we also revoke our access at Google. Your WhatsNextAction calendar and the events already in your Google Calendar are yours and stay there |
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
-| Session data | Sessions expire after 14 days without activity; session records (IP address, device, login times) are deleted 30 days after the session expires |
+| Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
+| Operational alerts | Kept until the alert is resolved; deleted 90 days after it is resolved |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
 

@@ -3,6 +3,8 @@ import { ref, computed } from 'vue'
 const browserOffline = ref(!navigator.onLine)
 const noResponse = ref(false)
 const isOffline = computed(() => browserOffline.value || noResponse.value)
+const dashboardShown = ref(false)
+const offlineContentShown = computed(() => isOffline.value && dashboardShown.value)
 
 window.addEventListener('online', () => {
     browserOffline.value = false
@@ -25,5 +27,9 @@ export function offlineModel() {
         noResponse.value = false
     }
 
-    return { isOffline, markNoResponse, markResponse }
+    function setDashboardShown(v) {
+        dashboardShown.value = v
+    }
+
+    return { isOffline, offlineContentShown, markNoResponse, markResponse, setDashboardShown }
 }

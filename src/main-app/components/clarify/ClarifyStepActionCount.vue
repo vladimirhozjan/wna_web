@@ -134,14 +134,21 @@ onUnmounted(() => {
   }
 
   .clarify-option {
+    flex: none;
+    box-sizing: border-box;
+    min-height: 64px;
     flex-direction: row;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 12px 20px;
     min-width: unset;
   }
 
   .clarify-option-content {
     text-align: left;
+  }
+
+  .clarify-option-key {
+    display: none;
   }
 }
 </style>

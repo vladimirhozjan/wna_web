@@ -69,7 +69,7 @@
 
       <!-- Attachments -->
       <span v-if="item.attachment_count > 0" class="chip">
-        <component :is="attachmentIcon" class="chip__icon chip__icon--tertiary" />
+        <component :is="attachmentIcon" class="chip__icon" :class="entityType === 'stuff' ? 'chip__icon--secondary' : 'chip__icon--tertiary'" />
         <span class="chip__text chip__text--tertiary">{{ item.attachment_count }}</span>
       </span>
 
@@ -314,6 +314,11 @@ const hasAnyMetadata = computed(() => {
 .chip__icon--tertiary {
   color: var(--color-text-tertiary);
   opacity: 0.5;
+}
+
+.chip__icon--secondary {
+  color: var(--color-text-secondary);
+  opacity: 1;
 }
 
 .chip__icon--due {

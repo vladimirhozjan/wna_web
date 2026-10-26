@@ -32,7 +32,7 @@ defineExpose({ expand });
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--color-btn-secondary-border);
   background: var(--color-bg-accent-light);
@@ -40,9 +40,7 @@ defineExpose({ expand });
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
-  font-size: 13px;
   font-weight: 600;
-  line-height: 16px;
 }
 
 .quick-add-btn:hover {
@@ -50,7 +48,7 @@ defineExpose({ expand });
 }
 
 .quick-add-icon {
-  font-size: 15px;
+  font-size: var(--font-size-body);
   font-weight: 600;
   line-height: 1;
   color: var(--color-action);
@@ -62,7 +60,7 @@ defineExpose({ expand });
   }
 
   .quick-add-btn {
-    padding: 6px 10px;
+    padding: 8px 10px;
   }
 
   .quick-add {

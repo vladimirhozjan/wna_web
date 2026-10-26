@@ -1,25 +1,30 @@
 <template>
-  <Modal :visible="visible" fullscreen-mobile>
+  <Modal :visible="visible" max-width="520px" fullscreen-mobile>
     <div class="welcome" data-testid="welcome-modal">
-      <div class="welcome__header">
-        <span class="text-body-s welcome__step" data-testid="welcome-step">{{ step + 1 }}/{{ SLIDES.length }}</span>
-        <ActionBtn variant="default" class="welcome__close" title="Close" data-testid="welcome-close" @click="skip" />
-      </div>
+      <span class="text-body-s welcome__step" data-testid="welcome-step">{{ step + 1 }} of {{ SLIDES.length }}</span>
       <div class="welcome__body">
-        <EmptyState :icon="slide.icon" :title="slide.title" :text="slide.text">
-          <Inpt
-            v-if="isLast"
-            ref="inputRef"
-            v-model="title"
-            v-model:error="error"
-            type="text"
-            placeholder="e.g. Call the dentist"
-            :disabled="submitting"
-            class="welcome__input"
-            data-testid="welcome-capture-input"
-            @enter="submit"
-          />
-        </EmptyState>
+        <div
+          v-for="(s, i) in SLIDES"
+          :key="s.title"
+          class="welcome__slide"
+          :class="{ 'welcome__slide--hidden': i !== step }"
+          :aria-hidden="i !== step"
+        >
+          <EmptyState :icon="s.icon" :title="s.title" :text="s.text">
+            <Inpt
+              v-if="i === SLIDES.length - 1"
+              :ref="setInputRef"
+              v-model="title"
+              v-model:error="error"
+              type="text"
+              placeholder="e.g. Call the dentist"
+              :disabled="submitting"
+              class="welcome__input"
+              data-testid="welcome-capture-input"
+              @enter="submit"
+            />
+          </EmptyState>
+        </div>
       </div>
     </div>
     <template #actions>
@@ -27,8 +32,8 @@
         {{ isLast ? 'Skip for now' : 'Skip' }}
       </Btn>
       <Btn v-if="step > 0" variant="secondary" size="md" class="welcome__btn" :disabled="submitting" data-testid="welcome-back" @click="step--">Back</Btn>
-      <Btn v-if="!isLast" variant="primary" size="md" class="welcome__btn" data-testid="welcome-next" @click="step++">Next</Btn>
-      <Btn v-else variant="primary" size="md" class="welcome__btn" :disabled="!title.trim()" :loading="submitting" data-testid="welcome-capture-submit" @click="submit">Add to Inbox</Btn>
+      <Btn v-if="!isLast" variant="primary" size="md" class="welcome__btn welcome__primary" data-testid="welcome-next" @click="step++">Next</Btn>
+      <Btn v-else variant="primary" size="md" class="welcome__btn welcome__primary" :disabled="!title.trim()" :loading="submitting" data-testid="welcome-capture-submit" @click="submit">Add to Inbox</Btn>
     </template>
   </Modal>
 </template>
@@ -36,35 +41,35 @@
 <script setup>
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import Modal from './Modal.vue'
-import ActionBtn from './ActionBtn.vue'
 import Btn from './Btn.vue'
 import Inpt from './Inpt.vue'
 import EmptyState from './EmptyState.vue'
 import InboxIcon from '../assets/InboxIcon.vue'
 import NextIcon from '../assets/NextIcon.vue'
 import EngageIcon from '../assets/EngageIcon.vue'
+import PlusIcon from '../assets/PlusIcon.vue'
 import { stuffModel } from '../scripts/models/stuffModel.js'
 
 const SLIDES = [
   {
     icon: InboxIcon,
     title: 'Capture everything',
-    text: 'Your mind is for having ideas, not holding them. Whatever has your attention — a task, an idea, an errand — drop it into your Inbox with the + button, from any page.',
+    text: 'Whatever has your attention, drop it into your Inbox — with Quick Add, or + on your phone.',
   },
   {
     icon: NextIcon,
     title: 'Decide what it means',
-    text: 'Clarify asks one question per Inbox item: is it actionable? If it takes less than two minutes, do it now. Otherwise it becomes a next action, a project or a date on your calendar — or goes to Someday, Reference or Trash.',
+    text: 'Clarify asks one question per item: is it actionable? Then it becomes an action, a project or a date — or goes.',
   },
   {
     icon: EngageIcon,
     title: 'Work from a list you trust',
-    text: "Your Dashboard shows what's due, what's next and what you're waiting for, so you can choose your next action with confidence. A Weekly Review keeps it all current.",
+    text: "Your Dashboard shows what's due and what's next. A Weekly Review keeps it current.",
   },
   {
-    icon: InboxIcon,
+    icon: PlusIcon,
     title: "What's on your mind?",
-    text: "Start with one thing you've been meaning to do. It lands in your Inbox, ready to clarify whenever you are.",
+    text: "Add one thing you've been meaning to do. It lands in your Inbox, ready to clarify.",
   },
 ]
 
@@ -82,8 +87,11 @@ const error = ref('')
 const submitting = ref(false)
 const inputRef = ref(null)
 
-const slide = computed(() => SLIDES[step.value])
 const isLast = computed(() => step.value === SLIDES.length - 1)
+
+function setInputRef(el) {
+  inputRef.value = el
+}
 
 function skip() {
   if (submitting.value) return
@@ -136,28 +144,28 @@ onUnmounted(() => {
   flex: 1;
 }
 
-.welcome__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .welcome__step {
   color: var(--color-text-tertiary);
 }
 
-.welcome__close {
-  color: var(--color-text-tertiary);
+/* All slides share one grid cell, so the body is as tall as the tallest slide and the actions never move */
+.welcome__body {
+  display: grid;
+  flex: 1;
+  padding-top: 16px;
+  text-align: center;
 }
 
-.welcome__body {
+.welcome__slide {
+  grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  padding-top: 16px;
-  text-align: center;
+}
+
+.welcome__slide--hidden {
+  visibility: hidden;
 }
 
 .welcome__input {
@@ -171,15 +179,14 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-  .welcome__close {
-    min-width: var(--touch-target-min);
-    min-height: var(--touch-target-min);
-  }
-
   .welcome__input :deep(input),
   .welcome__btn {
     min-height: var(--touch-target-min);
     box-sizing: border-box;
+  }
+
+  .welcome__primary {
+    flex: 1;
   }
 }
 </style>

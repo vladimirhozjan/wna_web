@@ -1,29 +1,23 @@
 <template>
-  <Modal :visible="visible" title="Convert to backlog" max-width="520px" :fullscreen-mobile="true" @close="onClose">
+  <Modal :visible="visible" title="Turn ideas into actions" max-width="520px" :fullscreen-mobile="true" @close="onClose">
     <div class="cv" data-testid="canvas-convert">
-      <p v-if="!candidates.length" class="text-body-s cv-intro">Nothing to convert yet. Ideas with no sub-ideas can become actions — ideas already in the backlog show a check mark.</p>
-      <template v-else>
-        <p class="text-body-s color-text-secondary cv-intro">Each ticked idea becomes an action at the end of the project backlog. Untick anything that isn't an action.</p>
-        <div class="cv-toggle" :class="{ 'cv-disabled': converting }">
-          <Lnk text="" :link="allTicked ? 'Untick all' : 'Tick all'" class="cv-toggle-link" @action="toggleAll" />
+      <p class="text-body-s color-text-secondary cv-intro">Each ticked idea becomes an action at the end of the project's backlog. Untick anything that isn't an action.</p>
+      <div class="cv-toggle" :class="{ 'cv-disabled': converting }">
+        <Lnk text="" :link="allTicked ? 'Untick all' : 'Tick all'" class="cv-toggle-link" @action="toggleAll" />
+      </div>
+      <div class="cv-list" :class="{ 'cv-disabled': converting }">
+        <div v-for="idea in candidates" :key="idea.id" class="cv-row">
+          <AnimatedCheckbox :checked="ticked.has(idea.id)" :disabled="converting" no-initial-animation @change="setTick(idea.id, $event)" />
+          <span class="cv-row-text" @click="setTick(idea.id, !ticked.has(idea.id))">
+            <span class="text-body-m cv-title">{{ idea.text.trim() }}</span>
+            <span v-if="pathOf(idea)" class="text-caption color-text-secondary cv-path">{{ pathOf(idea) }}</span>
+          </span>
         </div>
-        <div class="cv-list" :class="{ 'cv-disabled': converting }">
-          <div v-for="idea in candidates" :key="idea.id" class="cv-row">
-            <AnimatedCheckbox :checked="ticked.has(idea.id)" :disabled="converting" no-initial-animation @change="setTick(idea.id, $event)" />
-            <span class="cv-row-text" @click="setTick(idea.id, !ticked.has(idea.id))">
-              <span class="text-body-m cv-title">{{ idea.text.trim() }}</span>
-              <span v-if="pathOf(idea)" class="text-footnote color-text-secondary">{{ pathOf(idea) }}</span>
-            </span>
-          </div>
-        </div>
-      </template>
+      </div>
     </div>
     <template #actions>
-      <Btn v-if="!candidates.length" variant="secondary" size="sm" @click="emit('close')">Close</Btn>
-      <template v-else>
-        <Btn variant="secondary" size="sm" :disabled="converting" @click="emit('close')">Cancel</Btn>
-        <Btn variant="primary" size="sm" :disabled="!tickedCount" :loading="converting" @click="onConfirm">{{ confirmLabel }}</Btn>
-      </template>
+      <Btn variant="secondary" size="sm" :disabled="converting" @click="emit('close')">Cancel</Btn>
+      <Btn variant="primary" size="sm" :disabled="!tickedCount" :loading="converting" @click="onConfirm">{{ confirmLabel }}</Btn>
     </template>
   </Modal>
 </template>
@@ -54,9 +48,9 @@ const tickedCount = computed(() => candidates.value.filter(c => ticked.value.has
 const allTicked = computed(() => tickedCount.value === candidates.value.length)
 
 const confirmLabel = computed(() => {
-  if (!tickedCount.value) return 'Add to backlog'
-  if (tickedCount.value === 1) return 'Add 1 action to backlog'
-  return `Add ${tickedCount.value} actions to backlog`
+  if (!tickedCount.value) return 'Add actions'
+  if (tickedCount.value === 1) return 'Add 1 action'
+  return `Add ${tickedCount.value} actions`
 })
 
 function pathOf(idea) {
@@ -84,12 +78,12 @@ async function onConfirm() {
   if (!ids.length) return
   converting.value = true
   try {
-    const { outcome } = await canvas.convert(ids)
+    const { created, outcome } = await canvas.convert(ids)
     if (outcome === 'network') {
       toaster.push('Couldn\'t add the actions. Check your connection and try again.')
       return
     }
-    if (outcome === 'ok') toaster.success('Ideas added to the project backlog.')
+    if (outcome === 'ok') toaster.success(created === 1 ? '1 action added to the project' : `${created} actions added to the project`)
     emit('close')
   } finally {
     converting.value = false
@@ -114,11 +108,11 @@ watch(() => props.visible, (open) => {
 
 .cv-toggle {
   display: flex;
-  justify-content: flex-end;
+  padding: 0 4px;
 }
 
 .cv-toggle-link {
-  text-align: right;
+  text-align: left;
 }
 
 .cv-list {
@@ -148,12 +142,20 @@ watch(() => props.visible, (open) => {
 .cv-row-text {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  flex: 1;
   min-width: 0;
 }
 
 .cv-title {
   color: var(--color-text-primary);
   word-break: break-word;
+}
+
+.cv-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {

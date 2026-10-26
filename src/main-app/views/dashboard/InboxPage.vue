@@ -10,7 +10,7 @@
           @drop="onPanelDrop"
       >
         <div v-if="dropActive" class="text-body-m inbox-drop-overlay" data-testid="inbox-drop-overlay">
-          {{ isProOrTeam ? 'Drop files to capture them to Inbox' : '🔒 Photo, voice and file capture is available on Pro and Team plans.' }}
+          {{ isProOrTeam ? 'Drop files to capture them to Inbox' : CAPTURE_LOCKED_LINE }}
         </div>
         <!-- Fixed header -->
         <div class="inbox-header">
@@ -56,9 +56,9 @@
           >
             <template #subtitle>
               <div class="queued-row__meta">
-                <Badge v-if="entry.client_key === sendingKey" type="pending" label="Syncing…" />
+                <Badge v-if="entry.client_key === sendingKey" type="draft" label="Syncing…" />
                 <Badge v-else-if="entry.status === 'failed'" type="failed" label="Couldn't sync" />
-                <Badge v-else type="pending" label="Waiting to sync" />
+                <Badge v-else type="draft" label="Waiting to sync" />
                 <MetadataRow v-if="entry.files.length" :item="{ attachment_count: entry.files.length, input_type: entry.input_type }" entity-type="stuff" />
               </div>
               <div v-if="entry.status === 'failed' && entry.client_key !== sendingKey" class="text-footnote color-text-danger queued-row__reason">
@@ -80,6 +80,7 @@
               :loading-ids="loadingIds"
               :completing-ids="completingIds"
               :disabled="clarifyMode || isOffline"
+              :reorderable="pinnedRows.length === 0"
               :checkbox-disabled="isOffline"
               :no-default-action="clarifyMode || isOffline"
               :active-id="currentClarifyItem?.id ?? null"
@@ -160,6 +161,7 @@ import { clarifyModel } from '../../scripts/models/clarifyModel.js'
 import { captureQueue } from '../../scripts/core/captureQueue.js'
 import { offlineModel } from '../../scripts/core/offlineModel.js'
 import { truncateTitle } from '../../scripts/core/textUtils.js'
+import { CAPTURE_LOCKED_LINE } from '../../scripts/core/captureRules.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import Btn from "../../components/Btn.vue";
@@ -220,9 +222,27 @@ const loadingIds = computed(() => {
 // server hides that server row so each capture shows once
 const queuedRows = computed(() => [...entries.value].sort((a, b) => b.captured_at.localeCompare(a.captured_at)))
 const hiddenIds = computed(() => new Set(entries.value.map(e => e.server_id).filter(Boolean)))
+// A synced capture's server row takes its queued row's place (top, newest first) until the Inbox reloads.
+// The server keeps its own order, so in-list reorder waits for that reload
+const pinnedRows = ref([])
 const serverRows = computed({
-  get: () => items.value.filter(i => !hiddenIds.value.has(i.id)),
+  get: () => {
+    const rows = items.value.filter(i => !hiddenIds.value.has(i.id))
+    if (pinnedRows.value.length === 0) return rows
+    const rank = new Map(pinnedRows.value.map((p, i) => [p.id, i]))
+    const pinned = rows.filter(i => rank.has(i.id)).sort((a, b) => rank.get(a.id) - rank.get(b.id))
+    return [...pinned, ...rows.filter(i => !rank.has(i.id))]
+  },
   set: (rows) => { items.value = [...rows, ...items.value.filter(i => hiddenIds.value.has(i.id))] },
+})
+
+watch(entries, (now, before) => {
+  const kept = new Set(now.map(e => e.client_key))
+  const gone = (before || []).filter(e => e.server_id && !kept.has(e.client_key))
+  if (gone.length === 0) return
+  const goneIds = new Set(gone.map(e => e.server_id))
+  pinnedRows.value = [...pinnedRows.value.filter(p => !goneIds.has(p.id)), ...gone.map(e => ({ id: e.server_id, at: e.captured_at }))]
+      .sort((a, b) => b.at.localeCompare(a.at))
 })
 
 // Inbox Zero celebration state
@@ -383,6 +403,7 @@ async function onDiscard(entry) {
 }
 
 function onRefresh() {
+  pinnedRows.value = []
   return loadStuff({ reset: true })
 }
 undo.registerRefresh(onRefresh)
@@ -589,6 +610,14 @@ h1 {
 /* Matches the border ItemList rows reserve for the active marker */
 .queued-row {
   border-left: 3px solid transparent;
+}
+
+/* Hidden actions take no width, so the title can use the whole row */
+@media (hover: hover) and (pointer: fine) {
+  .queued-row:not(:hover):not(:focus-within) :deep(.item__actions) {
+    position: absolute;
+    right: 16px;
+  }
 }
 
 .queued-row__meta {

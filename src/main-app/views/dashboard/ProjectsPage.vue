@@ -9,24 +9,14 @@
           </div>
         </div>
         <div class="add-input" v-if="showAdd">
-          <div class="add-fields">
-            <Inpt
-                ref="add_input"
-                v-model="newTitle"
-                type="text"
-                placeholder="Add new project"
-                @keyup.enter="onAdd"
-                :disabled="adding"
-            />
-            <Inpt
-                v-model="newOutcome"
-                type="text"
-                placeholder="Outcome"
-                @keyup.enter="onAdd"
-                :disabled="adding"
-            />
-            <p class="text-footnote color-text-secondary outcome-helper">Why does this project matter? What does done look like?</p>
-          </div>
+          <Inpt
+              ref="add_input"
+              v-model="newTitle"
+              type="text"
+              placeholder="Add new project"
+              @keyup.enter="onAdd"
+              :disabled="adding"
+          />
           <Btn @click="onAdd"
                :disabled="adding || !newTitle.trim() || !newOutcome.trim()"
                :loading="adding"
@@ -35,6 +25,15 @@
                size="sm">
             Add
           </Btn>
+          <Inpt
+              v-model="newOutcome"
+              type="text"
+              placeholder="Outcome"
+              :footer="OUTCOME_HELPER"
+              class="add-outcome"
+              @keyup.enter="onAdd"
+              :disabled="adding"
+          />
         </div>
       </div>
 
@@ -96,6 +95,7 @@ import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
+import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 
 const router = useRouter()
 const auth = authModel()
@@ -286,21 +286,16 @@ h1 {
 }
 
 .add-input {
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 10px;
+  row-gap: 4px;
   padding: 0;
   margin-bottom: 5px;
 }
 
-.add-fields {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 4px;
-}
-
-.outcome-helper {
-  margin: 0;
+.add-outcome {
+  grid-column: 1;
 }
 
 .add-button {

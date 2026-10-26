@@ -2,8 +2,30 @@
     <div class="review-page">
 
       <div class="review-header">
-        <h1 class="page-title">Weekly Review</h1>
-        <p class="review-last text-body-s">{{ lastReviewedText }}</p>
+        <div class="header-row">
+          <h1 class="page-title">Weekly Review</h1>
+          <div class="header-actions">
+            <template v-if="settingsFailed">
+              <span class="text-body-s color-text-secondary">Couldn't load your review progress.</span>
+              <Btn variant="secondary" size="sm" @click="settings.load()">Retry</Btn>
+            </template>
+            <Btn v-else-if="!inReview" variant="primary" size="sm" :loading="!settings.state.loaded || starting" @click="onStart">
+              Start Review
+            </Btn>
+            <Btn
+                v-else
+                variant="primary"
+                size="sm"
+                :disabled="!allStepsComplete"
+                :loading="completing"
+                :title="allStepsComplete ? undefined : 'Check all 6 steps to complete the review'"
+                @click="onComplete"
+            >
+              Complete Review
+            </Btn>
+          </div>
+        </div>
+        <p class="review-last text-body-s color-text-secondary">{{ lastReviewedText }}</p>
       </div>
 
       <div class="review-body">
@@ -21,19 +43,6 @@
             </Btn>
           </div>
         </TipTricks>
-
-        <div class="review-actions">
-          <template v-if="settingsFailed">
-            <span class="review-error text-body-s">Couldn't load your review progress.</span>
-            <Btn variant="secondary" size="sm" @click="settings.load()">Retry</Btn>
-          </template>
-          <Btn v-else-if="!inReview" variant="primary" size="md" :loading="!settings.state.loaded || starting" @click="onStart">
-            Start Review
-          </Btn>
-          <Btn v-else variant="primary" size="md" :disabled="!allStepsComplete" :loading="completing" @click="onComplete">
-            Complete Review
-          </Btn>
-        </div>
 
         <div v-if="inReview" class="review-progress">
           <div class="review-progress__bar">
@@ -53,73 +62,35 @@
 
         <Celebration
             v-if="celebrating"
-            class="review-celebration"
-            title="Review Complete"
+            class="card review-celebration"
+            title="Review complete"
             subtitle="Your system is current."
             @dismiss="celebrating = false"
         />
 
-        <div v-else class="card review-card" :class="{ 'review-card--disabled': !inReview }">
-          <div class="card-header review-card-header">
-            <span class="review-card-title">Review Steps</span>
-
-          </div>
-          <div class="review-steps">
-            <div
-                v-for="(step, index) in reviewSteps"
-                :key="index"
-                :ref="el => { stepEls[index] = el }"
-                class="review-step"
-                :class="{ 'review-step--checked': steps[index] }"
-            >
-              <label class="review-step__checkbox">
-                <input
-                    type="checkbox"
-                    :checked="steps[index]"
-                    :disabled="!inReview || completing"
-                    @change="onToggle(index)"
-                />
-              </label>
-              <div class="review-step__body">
-                <span class="fw-semibold review-step__title">{{ step.title }}</span>
-                <span class="review-step__hint text-body-s">{{ step.hint }}</span>
-              </div>
-              <span v-if="stepCount(step.statsKey) != null" class="review-step__count text-footnote">
-                {{ stepCount(step.statsKey) }}
-              </span>
-              <Btn variant="outline" size="sm" class="review-step__go" @click="router.push({ name: step.route })">
-                Go
-              </Btn>
-              <div v-if="step.statsKey === 'calendar' && inReview" class="review-step__lists">
-                <div v-for="list in calendarLists" :key="list.label" class="review-list">
-                  <span class="text-overline review-list__label">{{ list.label }}</span>
-                  <div v-if="list.state.error" class="review-list__state text-body-s">
-                    <span>{{ list.errorText }}</span>
-                    <Btn variant="secondary" size="sm" @click="list.retry">Retry</Btn>
-                  </div>
-                  <p v-else-if="!list.state.loading && list.state.items.length === 0" class="review-list__state review-list__empty text-body-s">
-                    {{ list.emptyText }}
-                  </p>
-                  <ItemList
-                      v-else
-                      v-model="list.state.items"
-                      :loading="list.state.loading"
-                      :disabled="true"
-                      :editable="false"
-                      :no-checkbox="true"
-                      @click="onActionClick"
-                  >
-                    <template #subtitle="{ item }">
-                      <MetadataRow :item="item" entity-type="action" />
-                    </template>
-                    <template #actions><span></span></template>
-                  </ItemList>
-                </div>
-              </div>
+        <div v-else class="card review-steps">
+          <div
+              v-for="(step, index) in reviewSteps"
+              :key="index"
+              :ref="el => { stepEls[index] = el }"
+              class="review-step"
+          >
+            <div class="review-step__checkbox">
+              <AnimatedCheckbox
+                  :checked="steps[index]"
+                  :disabled="!inReview || completing"
+                  @change="onToggle(index)"
+              />
             </div>
+            <router-link :to="{ name: step.route }" class="review-step__link" :data-testid="`review-step-${index + 1}`">
+              <span class="review-step__body">
+                <span class="fw-semibold review-step__title">{{ step.title }}</span>
+                <span class="review-step__hint text-body-s color-text-secondary">{{ step.hint }}</span>
+              </span>
+              <ChevronRightIcon class="review-step__chevron" />
+            </router-link>
           </div>
         </div>
-
 
       </div>
 
@@ -127,25 +98,21 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Btn from '../../components/Btn.vue'
 import TipTricks from '../../components/TipTricks.vue'
-import ItemList from '../../components/ItemList.vue'
-import MetadataRow from '../../components/MetadataRow.vue'
+import AnimatedCheckbox from '../../components/AnimatedCheckbox.vue'
 import Celebration from '../../components/Celebration.vue'
+import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import { reviewModel } from '../../scripts/models/reviewModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
-import { statsModel } from '../../scripts/models/statsModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
-import { undoModel } from '../../scripts/core/undoModel.js'
 
 const router = useRouter()
 const toaster = errorModel()
-const undo = undoModel()
 const settings = settingsModel()
-const { stats } = statsModel()
 const { createRecurring } = recurringModel()
 const {
   steps,
@@ -156,14 +123,9 @@ const {
   allStepsComplete,
   starting,
   completing,
-  lastWeek,
-  upcoming,
   startReview,
   toggleStep,
   completeReview,
-  loadCalendarLists,
-  loadLastWeek,
-  loadUpcoming,
   setTemplateId,
 } = reviewModel()
 
@@ -173,12 +135,12 @@ const celebrating = ref(false)
 const stepEls = []
 
 const reviewSteps = [
-  { title: 'Empty your Inbox', hint: 'Process all items — clarify, delegate, or delete', statsKey: 'inbox', route: 'inbox' },
-  { title: 'Review Next Actions', hint: 'Still relevant? Move stale ones to Someday or Trash', statsKey: 'next', route: 'next' },
-  { title: 'Review Waiting For', hint: 'Follow up on delegated items. Any responses?', statsKey: 'waiting', route: 'waiting-for' },
-  { title: 'Review Projects', hint: 'Does each have a next action? Any stuck?', statsKey: 'projects', route: 'projects' },
-  { title: 'Review Someday/Maybe', hint: 'Anything ready to activate? Anything to delete?', statsKey: 'someday', route: 'someday' },
-  { title: 'Review Calendar', hint: 'Anything left from last week? Any prep needed for what\'s coming?', statsKey: 'calendar', route: 'calendar' },
+  { title: 'Empty your Inbox', hint: 'Process all items — clarify, delegate, or delete', route: 'inbox' },
+  { title: 'Review Next Actions', hint: 'Still relevant? Move stale ones to Someday or Trash', route: 'next' },
+  { title: 'Review Waiting For', hint: 'Follow up on delegated items. Any responses?', route: 'waiting-for' },
+  { title: 'Review Projects', hint: 'Does each have a next action? Any stuck?', route: 'projects' },
+  { title: 'Review Someday/Maybe', hint: 'Anything ready to activate? Anything to delete?', route: 'someday' },
+  { title: 'Review Calendar', hint: 'Anything left from last week? Any prep needed for what\'s coming?', route: 'calendar' },
 ]
 
 const lastReviewedText = computed(() => {
@@ -192,28 +154,6 @@ const lastReviewedText = computed(() => {
 const completedCount = computed(() => steps.value.filter(Boolean).length)
 
 const settingsFailed = computed(() => !settings.state.loaded && !settings.state.loading && !!settings.state.error)
-
-const calendarLists = computed(() => [
-  {
-    label: 'Last 7 days — still open',
-    state: lastWeek.value,
-    errorText: 'Couldn\'t load last week\'s actions.',
-    emptyText: 'Nothing left open from last week.',
-    retry: loadLastWeek,
-  },
-  {
-    label: 'Next 14 days',
-    state: upcoming.value,
-    errorText: 'Couldn\'t load upcoming actions.',
-    emptyText: 'Nothing scheduled for the next 14 days.',
-    retry: loadUpcoming,
-  },
-])
-
-function stepCount(key) {
-  const val = stats.value?.[key]?.count
-  return val != null ? val : null
-}
 
 async function createReminder() {
   creatingReminder.value = true
@@ -237,10 +177,6 @@ async function createReminder() {
 
 function scrollToStep(index) {
   stepEls[index]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-}
-
-function onActionClick(item) {
-  router.push({ name: 'action-detail', params: { id: item.id }, query: { from: 'review' } })
 }
 
 async function onStart() {
@@ -268,15 +204,6 @@ async function onComplete() {
     toaster.push('Couldn\'t complete the review. Try again.')
   }
 }
-
-function onRefresh() {
-  if (inReview.value) loadCalendarLists()
-}
-undo.registerRefresh(onRefresh)
-
-watch(inReview, (active) => {
-  if (active) loadCalendarLists()
-}, { immediate: true })
 </script>
 
 <style scoped>
@@ -291,12 +218,25 @@ watch(inReview, (active) => {
   padding: 0;
 }
 
+.header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .review-header h1 {
   margin: 0;
 }
 
 .review-last {
-  color: var(--color-text-secondary);
   margin: 2px 0 24px 0;
 }
 
@@ -327,86 +267,47 @@ watch(inReview, (active) => {
   font-size: var(--font-size-body-s);
 }
 
-/* ── Actions ── */
-.review-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* ── Card ── */
-.review-card {
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--card-radius);
-}
-
-.review-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-}
-
-.review-card-title {
-  font-size: var(--font-size-overline);
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-family-default);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-action);
-}
-
-.review-card--disabled .review-steps {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
 /* ── Steps ── */
 .review-steps {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  margin-bottom: 0;
 }
 
 .review-step {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
   border-top: 1px solid var(--color-border-subtle);
   transition: background 0.15s ease;
 }
 
+.review-step:first-child {
+  border-top: none;
+}
+
 .review-step:hover {
-  background: var(--color-bg-hover);
-}
-
-.review-step--checked {
-  background: var(--color-bg-subtle);
-}
-
-.review-step--checked .review-step__title,
-.review-step--checked .review-step__hint {
-  opacity: 0.5;
+  background: var(--color-bg-row-hover);
 }
 
 .review-step__checkbox {
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  align-self: stretch;
+  padding-left: 20px;
 }
 
-.review-step__checkbox input {
-  width: 16px;
-  height: 16px;
+.review-step__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px 18px 16px;
+  color: inherit;
+  text-decoration: none;
   cursor: pointer;
-  accent-color: var(--color-action);
-  border-radius: 4px;
-}
-
-.review-step__checkbox input:disabled {
-  cursor: default;
-  opacity: 0.4;
 }
 
 .review-step__body {
@@ -419,59 +320,14 @@ watch(inReview, (active) => {
 
 .review-step__title {
   font-size: var(--font-size-body-s);
-  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary-dark);
 }
 
-.review-step__hint {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-caption);
-}
-
-.review-step__count {
+.review-step__chevron {
   flex-shrink: 0;
-  color: var(--color-action);
-  background: var(--color-bg-accent-light);
-  padding: 2px 8px;
-  border-radius: 10px;
-  min-width: 20px;
-  text-align: center;
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-}
-
-.review-step__go {
-  flex-shrink: 0;
-}
-
-.review-step__lists {
-  flex-basis: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-left: 32px;
-}
-
-.review-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.review-list__label,
-.review-list__empty {
-  color: var(--color-text-secondary);
-}
-
-.review-list__state {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-}
-
-.review-error {
-  color: var(--color-text-secondary);
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-tertiary);
 }
 
 /* ── Progress ── */
@@ -489,15 +345,31 @@ watch(inReview, (active) => {
 }
 
 .review-progress__segment {
+  position: relative;
   flex: 1;
   height: 6px;
   border-radius: 3px;
-  background: var(--color-bg-secondary);
+  background: var(--color-border-medium);
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
-.review-progress__segment--filled {
+.review-progress__segment::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--touch-target-min);
+  transform: translateY(-50%);
+}
+
+.review-progress__segment:hover {
+  background: var(--color-bg-hover);
+}
+
+.review-progress__segment--filled,
+.review-progress__segment--filled:hover {
   background: var(--color-action);
 }
 
@@ -507,22 +379,44 @@ watch(inReview, (active) => {
 }
 
 .review-celebration {
+  flex-shrink: 0;
+  margin-bottom: 0;
   padding: 64px 24px;
 }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .review-step {
-    padding: 14px 8px;
+  .review-step__checkbox {
+    padding-left: 8px;
+  }
+
+  .review-step__checkbox :deep(.animated-checkbox) {
+    position: relative;
+  }
+
+  .review-step__checkbox :deep(.animated-checkbox)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
+
+  .review-step__link {
     gap: 8px;
+    padding: 14px 8px 14px 12px;
   }
 
   .review-step__hint {
-    display: none;
-  }
-
-  .review-step__lists {
-    padding-left: 0;
+    font-size: var(--font-size-caption);
+    line-height: var(--lh-caption);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>

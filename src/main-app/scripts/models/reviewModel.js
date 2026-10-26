@@ -1,14 +1,8 @@
 import { ref, computed } from 'vue'
 import { settingsModel } from './settingsModel.js'
-import { listCalendar } from '../core/apiClient.js'
-import { formatDate, subDays, addDays } from '../core/dateUtils.js'
 
 const STEP_COUNT = 6
-const LOOKBACK_DAYS = 7
-const LOOKAHEAD_DAYS = 14
 
-const lastWeek = ref({ items: [], loading: false, error: null })
-const upcoming = ref({ items: [], loading: false, error: null })
 const pendingTicks = ref([])
 let tickQueue = Promise.resolve()
 
@@ -18,19 +12,6 @@ function today() {
 
 function flipStep(steps, index) {
     return steps.map((done, i) => i === index ? !done : done)
-}
-
-async function loadWindow(list, start, end) {
-    list.value.loading = true
-    list.value.error = null
-    try {
-        const data = await listCalendar({ start: formatDate(start), end: formatDate(end) })
-        list.value.items = data.items || []
-    } catch (err) {
-        list.value.error = err
-    } finally {
-        list.value.loading = false
-    }
 }
 
 export function reviewModel() {
@@ -85,21 +66,6 @@ export function reviewModel() {
         return settings.completeReview(today())
     }
 
-    function loadCalendarLists() {
-        loadLastWeek()
-        loadUpcoming()
-    }
-
-    function loadLastWeek() {
-        const now = new Date()
-        return loadWindow(lastWeek, subDays(now, LOOKBACK_DAYS), subDays(now, 1))
-    }
-
-    function loadUpcoming() {
-        const now = new Date()
-        return loadWindow(upcoming, now, addDays(now, LOOKAHEAD_DAYS - 1))
-    }
-
     function setTemplateId(id) {
         settings.setReviewTemplateId(id)
     }
@@ -119,14 +85,9 @@ export function reviewModel() {
         allStepsComplete,
         starting,
         completing,
-        lastWeek,
-        upcoming,
         startReview,
         toggleStep,
         completeReview,
-        loadCalendarLists,
-        loadLastWeek,
-        loadUpcoming,
         setTemplateId,
         clearTemplateId,
     }

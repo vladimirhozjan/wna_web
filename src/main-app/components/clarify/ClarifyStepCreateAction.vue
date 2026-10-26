@@ -433,5 +433,11 @@ function onSubmit() {
     flex-direction: column;
     gap: 8px;
   }
+
+  .clarify-option {
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 12px 20px;
+  }
 }
 </style>

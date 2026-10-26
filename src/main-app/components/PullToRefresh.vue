@@ -8,7 +8,10 @@
         data-testid="pull-to-refresh"
     >
       <Spinner v-if="refreshing" :size="20" />
-      <span v-else-if="pull > 0" class="text-body-s pull-to-refresh__label">{{ armed ? 'Release to refresh' : 'Pull to refresh' }}</span>
+      <template v-else-if="pull > 0">
+        <ChevronDownIcon class="pull-to-refresh__chevron" :class="{ 'pull-to-refresh__chevron--armed': armed }" />
+        <span class="text-body-s pull-to-refresh__label">{{ armed ? 'Release to refresh' : 'Pull to refresh' }}</span>
+      </template>
     </div>
     <slot />
   </div>
@@ -17,6 +20,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import Spinner from './Spinner.vue'
+import ChevronDownIcon from '../assets/ChevronDownIcon.vue'
 import { statsModel } from '../scripts/models/statsModel.js'
 import { useSwipe } from '../scripts/core/swipe.js'
 
@@ -76,12 +80,25 @@ useSwipe(rootEl, {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   height: 0;
   overflow: hidden;
 }
 
 .pull-to-refresh__indicator--settling {
   transition: height 0.15s ease;
+}
+
+.pull-to-refresh__chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-text-tertiary);
+  transition: transform 0.15s ease;
+}
+
+.pull-to-refresh__chevron--armed {
+  transform: rotate(180deg);
 }
 
 .pull-to-refresh__label {

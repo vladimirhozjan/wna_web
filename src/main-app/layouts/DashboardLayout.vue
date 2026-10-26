@@ -21,7 +21,7 @@
       <!-- Dashboard content -->
       <main class="dashboard-content">
         <Alert
-            v-if="isOffline"
+            v-if="isOffline && OFFLINE_BANNER_ROUTES.has(router.currentRoute.value.name)"
             type="info"
             title="You're offline"
             message="What you capture is saved and sent when you're back."
@@ -74,6 +74,8 @@ import { connectionModel } from "../scripts/models/connectionModel.js";
 import router from "../router/router.js";
 
 const FAB_HIDDEN_ROUTES = new Set(["share", "project-canvas"]);
+// Other pages show the offline EmptyState instead (App.vue)
+const OFFLINE_BANNER_ROUTES = new Set(["inbox", "share"]);
 
 const auth = authModel();
 const settings = settingsModel();
@@ -140,7 +142,7 @@ async function closeWelcome() {
   try {
     await settings.completeOnboarding();
   } catch {
-    toaster.push("Couldn't save that you've seen the welcome tour, so it will open again next time — just skip it.");
+    toaster.push("Couldn't save that you've seen the welcome tour, so it will open again next time — just skip it.", "error", { keepOffline: true });
   }
 }
 
@@ -193,11 +195,16 @@ watch(() => router.currentRoute.value.path, () => {
 });
 
 onUnmounted(() => {
+  offlineModel().setDashboardShown(false);
   fabCollapse();
+  delete document.documentElement.dataset.fab;
   shortcuts.detach();
 });
 
 onMounted(() => {
+  offlineModel().setDashboardShown(true);
+  // Mobile toasts clear the bottom bar: the FAB, the canvas FAB in its place, or the /share action bar
+  document.documentElement.dataset.fab = "";
   shortcuts.attach();
   if (auth.isAuthenticated.value && !settings.state.loaded) {
     settings.load().catch(() => {
@@ -246,6 +253,17 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
+.offline-banner :deep(.alert__body) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+}
+
+.offline-banner :deep(.alert__message) {
+  margin-top: 0;
+}
+
 .dashboard-page {
   flex: 1;
   min-height: 0;
@@ -275,6 +293,10 @@ onMounted(() => {
     display: none;
   }
 
+  .offline-banner :deep(.alert__message) {
+    display: none;
+  }
+
   .fab-overlay {
     display: block;
     position: fixed;
@@ -290,7 +312,7 @@ onMounted(() => {
   .mobile-fab-area {
     display: block;
     position: fixed;
-    bottom: 18px;
+    bottom: calc(18px + env(safe-area-inset-bottom));
     right: 16px;
     z-index: 899;
   }
@@ -324,7 +346,10 @@ onMounted(() => {
     bottom: var(--fab-kb-offset, 0px);
     left: 0;
     right: 0;
-    padding: 14px 20px 26px 16px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: var(--color-bg-primary);
+    border-top: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-dropdown);
   }
 
   .fab-capture {

@@ -432,15 +432,16 @@ useSwipe(rootEl, {
   touch-action: pan-y;
 }
 
+/* Clips at the border box (overflow would clip at the padding box), so the strip covers the list's 3px marker border */
 .item--swiping {
-  overflow: hidden;
+  clip-path: inset(0);
 }
 
 .item__swipe-reveal {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
+  left: -3px;
   display: flex;
   align-items: center;
   gap: 8px;

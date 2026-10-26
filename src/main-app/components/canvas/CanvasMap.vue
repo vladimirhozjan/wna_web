@@ -18,8 +18,8 @@
         <path
             v-for="line in layout.lines"
             :key="line.id"
+            class="cm-line"
             :d="line.d"
-            :style="{ stroke: line.color }"
             :stroke-width="line.width"
             fill="none"
         />
@@ -31,7 +31,7 @@
           :ref="el => setNodeEl(el, item.node.id)"
           class="cm-node"
           :class="nodeClasses(item)"
-          :style="{ left: `${item.left}px`, top: `${item.top}px`, '--branch': item.color }"
+          :style="{ left: `${item.left}px`, top: `${item.top}px` }"
           :data-node-id="item.node.id"
           @pointerdown="onNodePointerDown($event, item)"
           @dblclick.stop="onNodeDoubleClick(item)"
@@ -87,20 +87,28 @@
 
       <!-- Empty canvas -->
       <div v-if="rootOnly && rootItem" class="cm-empty" :style="emptyStyle">
-        <template v-if="canvas.canEdit.value">
-          <h4 class="text-h4 cm-empty-title">Brainstorm this project</h4>
-          <p class="text-body-s color-text-secondary cm-empty-text">Get every idea out of your head — no order, no judging. Press Tab to add an idea and Enter for the next one. When you're ready, Convert to backlog turns the ideas you pick into actions.</p>
+        <EmptyState
+            v-if="canvas.canEdit.value"
+            :icon="ProjectsIcon"
+            title="Brainstorm this project"
+            text="Get every idea out of your head — no order, no judging."
+        >
           <Lnk text="" link="How brainstorming works" @pointerdown.stop @action="emit('help')" />
-        </template>
-        <p v-else class="text-body-s color-text-secondary cm-empty-text">{{ canvas.isOwner.value ? 'No ideas were added to this brainstorm.' : 'The project owner hasn\'t added any ideas yet.' }}</p>
+        </EmptyState>
+        <EmptyState
+            v-else
+            :icon="ProjectsIcon"
+            title="No ideas yet"
+            :text="canvas.isOwner.value ? 'No ideas were added to this brainstorm.' : 'The project owner hasn\'t added any ideas yet.'"
+        />
       </div>
     </div>
 
     <!-- Zoom cluster -->
     <div class="cm-zoom" @pointerdown.stop>
-      <Btn variant="icon" title="Zoom out" @click="zoomBy(1 / ZOOM_STEP)">−</Btn>
-      <Btn variant="icon" title="Zoom in" @click="zoomBy(ZOOM_STEP)">+</Btn>
-      <Btn variant="icon" title="Fit all" @click="fitAll">Fit</Btn>
+      <Btn variant="icon" class="cm-zoom-btn" title="Zoom out" @click="zoomBy(1 / ZOOM_STEP)">−</Btn>
+      <Btn variant="icon" class="cm-zoom-btn" title="Zoom in" @click="zoomBy(ZOOM_STEP)">+</Btn>
+      <Btn variant="icon" class="cm-zoom-btn" title="Fit all" @click="fitAll">Fit</Btn>
     </div>
 
     <!-- Context menu -->
@@ -138,6 +146,8 @@
 import { ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import Btn from '../Btn.vue'
 import Lnk from '../Lnk.vue'
+import EmptyState from '../EmptyState.vue'
+import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import CheckIcon from '../../assets/CheckIcon.vue'
 import PlusIcon from '../../assets/PlusIcon.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
@@ -150,11 +160,8 @@ const emit = defineEmits(['move', 'help'])
 // For the header Undo / Redo: ends an open edit; true when that dropped an empty new idea (the drop is the undo)
 defineExpose({ finishEdit: () => !commitEdit() })
 
-const BRANCH_COLORS = [
-  'var(--color-action)', 'var(--color-project)', 'var(--color-info)',
-  'var(--color-success)', 'var(--color-review)', 'var(--color-file-blue)',
-]
 const DEFAULT_SIZE = { w: 120, h: 32 }
+const SIBLING_GAP = 16
 const DRAG_START_PX = 4
 const TAP_MOVE_PX = 10
 const DOUBLE_TAP_MS = 300
@@ -188,6 +195,7 @@ let press = null
 let pinchStart = null
 let longPressTimer = null
 let lastTap = { id: null, at: 0 }
+let initialViewDone = false
 
 const rootNode = computed(() => canvas.nodes.value.find(n => n.parent_id == null) || null)
 const rootOnly = computed(() => canvas.nodes.value.length === 1)
@@ -202,45 +210,57 @@ const layerStyle = computed(() => ({
   transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom.value})`,
 }))
 
-// Visible ideas with their box and the lines between them (root at 0,0)
+// Visible ideas with their box and the lines between them (root at 0,0).
+// Siblings on one side never overlap: a branch that grows taller pushes the siblings below it down.
 const layout = computed(() => {
   const items = []
-  const lines = []
+  const links = []
   const root = rootNode.value
-  if (!root) return { items, lines, byId: new Map() }
+  if (!root) return { items, lines: [], byId: new Map() }
   const byId = new Map()
-  const offX = drag.active ? drag.dx / zoom.value : 0
-  const offY = drag.active ? drag.dy / zoom.value : 0
 
-  const place = (node, x, y, depth, side, color) => {
+  // → every item of the node's visible branch, the node's own item first
+  const walk = (node, x, y, depth, side) => {
     const size = sizes[node.id] || DEFAULT_SIZE
-    const moved = drag.active && drag.branch.has(node.id)
-    const ax = x + (moved ? offX : 0)
-    const ay = y + (moved ? offY : 0)
-    let left
-    if (depth === 0) left = ax - size.w / 2
-    else left = side < 0 ? ax - size.w : ax
-    const item = { node, depth, side, color, left, top: ay - size.h / 2, w: size.w, h: size.h }
+    const left = depth === 0 ? x - size.w / 2 : (side < 0 ? x - size.w : x)
+    const item = { node, depth, side, left, top: y - size.h / 2, w: size.w, h: size.h }
     items.push(item)
     byId.set(node.id, item)
-    return item
+    const branch = [item]
+    if (depth > 0 && node.folded) return branch
+    const children = canvas.childrenOf(node.id)
+    const groups = depth === 0 ? [children.filter(c => c.dx >= 0), children.filter(c => c.dx < 0)] : [children]
+    for (const group of groups) {
+      let shift = 0
+      let bottom = -Infinity
+      for (const child of [...group].sort((a, b) => a.dy - b.dy)) {
+        const cx = x + child.dx
+        const childSide = depth === 0 ? (child.dx < 0 ? -1 : 1) : (cx < 0 ? -1 : 1)
+        const sub = walk(child, cx, y + child.dy + shift, depth + 1, childSide)
+        const overlap = bottom + SIBLING_GAP - Math.min(...sub.map(i => i.top))
+        if (overlap > 0) {
+          for (const i of sub) i.top += overlap
+          shift += overlap
+        }
+        bottom = Math.max(...sub.map(i => i.top + i.h))
+        links.push([item, sub[0]])
+        branch.push(...sub)
+      }
+    }
+    return branch
   }
+  walk(root, 0, 0, 0, 0)
 
-  const walk = (node, x, y, depth, side, color) => {
-    const item = place(node, x, y, depth, side, color)
-    if (depth > 0 && node.folded) return item
-    canvas.childrenOf(node.id).forEach((child, i) => {
-      const cx = x + child.dx
-      const cy = y + child.dy
-      const childSide = depth === 0 ? (child.dx < 0 ? -1 : 1) : (cx < 0 ? -1 : 1)
-      const childColor = depth === 0 ? BRANCH_COLORS[i % BRANCH_COLORS.length] : color
-      const childItem = walk(child, cx, cy, depth + 1, childSide, childColor)
-      lines.push(lineBetween(item, childItem))
-    })
-    return item
+  if (drag.active) {
+    const offX = drag.dx / zoom.value
+    const offY = drag.dy / zoom.value
+    for (const i of items) {
+      if (!drag.branch.has(i.node.id)) continue
+      i.left += offX
+      i.top += offY
+    }
   }
-  walk(root, 0, 0, 0, 0, BRANCH_COLORS[0])
-  return { items, lines, byId }
+  return { items, lines: links.map(([parent, child]) => lineBetween(parent, child)), byId }
 })
 
 const rootItem = computed(() => rootNode.value ? layout.value.byId.get(rootNode.value.id) : null)
@@ -253,19 +273,20 @@ const emptyStyle = computed(() => {
 function lineBetween(parent, child) {
   const side = child.side
   const x1 = side < 0 ? parent.left : parent.left + parent.w
-  const y1 = parent.depth >= 2 ? parent.top + parent.h : parent.top + parent.h / 2
+  const y1 = parent.top + parent.h / 2
   const x2 = side < 0 ? child.left + child.w : child.left
-  const y2 = child.depth >= 2 ? child.top + child.h : child.top + child.h / 2
+  const y2 = child.top + child.h / 2
   const mx = (x1 + x2) / 2
   const width = child.depth === 1 ? 3 : child.depth === 2 ? 2 : 1.5
-  return { id: child.node.id, d: `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`, color: child.color, width }
+  return { id: child.node.id, d: `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`, width }
 }
 
 function nodeClasses(item) {
   const id = item.node.id
   return [
-    `cm-node--d${Math.min(item.depth, 2)}`,
+    item.depth === 0 ? 'cm-node--d0' : 'cm-node--idea',
     {
+      'cm-node--d1': item.depth === 1,
       'cm-node--left': item.side < 0,
       'cm-node--selected': selectedId.value === id,
       'cm-node--editing': editingId.value === id,
@@ -330,6 +351,10 @@ function onResize(entries) {
     const old = sizes[id]
     if (!old || old.w !== w || old.h !== h) sizes[id] = { w, h }
   }
+  if (!initialViewDone) {
+    initialViewDone = true
+    nextTick(showInitialView)
+  }
 }
 
 // ── Selection / view ──
@@ -377,19 +402,32 @@ function zoomBy(factor) {
   zoomAround(factor, el.clientWidth / 2, el.clientHeight / 2)
 }
 
-function fitAll() {
-  const el = surfaceRef.value
+// The ideas' box incl. the view margin
+function contentBounds() {
   const items = layout.value.items
-  if (!el || !items.length) return
+  if (!items.length) return null
   const minX = Math.min(...items.map(i => i.left))
   const minY = Math.min(...items.map(i => i.top))
   const maxX = Math.max(...items.map(i => i.left + i.w))
   const maxY = Math.max(...items.map(i => i.top + i.h))
-  const w = maxX - minX + VIEW_MARGIN * 2
-  const h = maxY - minY + VIEW_MARGIN * 2
-  zoom.value = Math.min(1, Math.max(MIN_ZOOM, Math.min(el.clientWidth / w, el.clientHeight / h)))
-  pan.x = el.clientWidth / 2 - ((minX + maxX) / 2) * zoom.value
-  pan.y = el.clientHeight / 2 - ((minY + maxY) / 2) * zoom.value
+  return { minX, minY, maxX, maxY, w: maxX - minX + VIEW_MARGIN * 2, h: maxY - minY + VIEW_MARGIN * 2 }
+}
+
+function fitAll() {
+  const el = surfaceRef.value
+  const b = contentBounds()
+  if (!el || !b) return
+  zoom.value = Math.min(1, Math.max(MIN_ZOOM, Math.min(el.clientWidth / b.w, el.clientHeight / b.h)))
+  pan.x = el.clientWidth / 2 - ((b.minX + b.maxX) / 2) * zoom.value
+  pan.y = el.clientHeight / 2 - ((b.minY + b.maxY) / 2) * zoom.value
+}
+
+// First open: everything in view when it doesn't fit at 100 %, else the root centred
+function showInitialView() {
+  const el = surfaceRef.value
+  const b = contentBounds()
+  if (el && b && (b.w > el.clientWidth || b.h > el.clientHeight)) fitAll()
+  else centerRoot()
 }
 
 // ── Editing ──
@@ -744,11 +782,14 @@ function finishDrag() {
   const node = canvas.getNode(id)
   const targetId = drag.targetId
   const ddx = drag.dx / zoom.value
-  const ddy = drag.dy / zoom.value
+  const item = layout.value.byId.get(id)
+  const parentItem = node ? layout.value.byId.get(node.parent_id) : null
   resetDrag()
   if (!node) return
   if (targetId && targetId !== node.parent_id && canvas.moveTo(id, targetId)) return
-  canvas.setOffset(id, node.dx + ddx, node.dy + ddy)
+  // The drop lands where it was shown, incl. any push from taller siblings above
+  const dy = item && parentItem ? (item.top + item.h / 2) - (parentItem.top + parentItem.h / 2) : node.dy
+  canvas.setOffset(id, node.dx + ddx, dy)
 }
 
 function onNodeDoubleClick(item) {
@@ -840,6 +881,10 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
+.cm-line {
+  stroke: var(--color-action);
+}
+
 .cm-node {
   position: absolute;
   display: flex;
@@ -873,16 +918,15 @@ onBeforeUnmount(() => {
   cursor: default;
 }
 
-.cm-node--d1 {
+.cm-node--idea {
   padding: 6px 12px;
   background: var(--color-bg-primary);
-  border: 2px solid var(--branch);
+  border: 1px solid var(--color-border-medium);
   border-radius: 8px;
 }
 
-.cm-node--d2 {
-  padding: 2px 4px;
-  border-bottom: 2px solid var(--branch);
+.cm-node--d1 {
+  border-color: var(--color-action);
 }
 
 .cm-node--selected {
@@ -1010,7 +1054,7 @@ onBeforeUnmount(() => {
   height: 20px;
   border-radius: 10px;
   background: var(--color-bg-primary);
-  color: var(--branch);
+  color: var(--color-action);
 }
 
 .cm-node--left .cm-fold {
@@ -1026,7 +1070,7 @@ onBeforeUnmount(() => {
 .cm-fold--folded {
   display: inline-flex;
   padding: 0 6px;
-  background: var(--branch);
+  background: var(--color-action);
   color: var(--color-text-inverse);
 }
 
@@ -1044,23 +1088,17 @@ onBeforeUnmount(() => {
 
 .cm-empty {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 360px;
   transform: translateX(-50%);
   text-align: center;
 }
 
-.cm-empty-title {
-  margin: 0 0 8px;
-  color: var(--color-text-primary);
-}
-
-.cm-empty-text {
-  margin: 0 0 8px;
-}
-
 .cm-zoom {
   position: absolute;
-  right: 16px;
+  left: 16px;
   bottom: 16px;
   display: flex;
   gap: 2px;
@@ -1069,6 +1107,13 @@ onBeforeUnmount(() => {
   border: 1px solid var(--color-border-light);
   border-radius: 8px;
   box-shadow: var(--shadow-card);
+}
+
+.cm-zoom .cm-zoom-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: var(--font-size-body);
 }
 
 .cm-menu-backdrop {

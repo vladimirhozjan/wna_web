@@ -1,14 +1,17 @@
 <template>
   <RouterView v-slot="{ Component, route }">
     <DashboardLayout v-if="isDashboardRoute(route)">
-      <div v-if="isOffline && route.name !== 'inbox' && route.name !== 'share'" class="card offline-state" data-testid="offline-state">
-        <EmptyState
-            :icon="InboxIcon"
-            title="Offline for now"
-            text="This page loads when you're back online. Your Inbox and Quick Add work offline."
-            button-text="Go to Inbox"
-            @action="router.push({ name: 'inbox' })"
-        />
+      <div v-if="isOffline && route.name !== 'inbox' && route.name !== 'share'">
+        <h1 v-if="pageTitle(route)" class="page-title offline-title">{{ pageTitle(route) }}</h1>
+        <div class="card offline-state" data-testid="offline-state">
+          <EmptyState
+              :icon="InboxIcon"
+              title="Offline for now"
+              text="This page loads when you're back online. Your Inbox and Quick Add work offline."
+              button-text="Go to Inbox"
+              @action="router.push({ name: 'inbox' })"
+          />
+        </div>
       </div>
       <component :is="Component" v-else />
     </DashboardLayout>
@@ -38,9 +41,16 @@ import EmptyState from "./components/EmptyState.vue";
 import InboxIcon from "./assets/InboxIcon.vue";
 import { PUBLIC_ROUTE_NAMES } from "./router/router.js";
 import { offlineModel } from "./scripts/core/offlineModel.js";
+import { shortcutModel } from "./scripts/core/shortcutModel.js";
 
 const router = useRouter();
 const { isOffline } = offlineModel();
+const { navigation } = shortcutModel();
+
+// The offline page keeps the title of the page it replaces; detail pages have none
+function pageTitle(route) {
+  return navigation.value.find(n => n.route === route.name)?.page || "";
+}
 
 // One layout instance for every dashboard page, so TopNav, Sidebar, Quick Add and the FAB keep their state while the
 // page inside changes. Offline only Inbox works; any other page is not mounted until the connection is back, then it
@@ -87,6 +97,10 @@ window.addEventListener("vite:preloadError", (event) => {
 </script>
 
 <style scoped>
+.offline-title {
+  margin-bottom: 15px;
+}
+
 .offline-state {
   display: flex;
   flex-direction: column;

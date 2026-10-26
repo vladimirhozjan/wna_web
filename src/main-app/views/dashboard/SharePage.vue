@@ -7,43 +7,44 @@
     <template v-else>
       <h1 class="page-title">Add to Inbox</h1>
 
-      <Inpt
-          v-model="title"
-          title="Title"
-          type="text"
-          :placeholder="titlePlaceholder"
-          :disabled="saving"
-          data-testid="share-title"
-          @enter="submit"
-      />
-
-      <div class="share-field">
-        <label class="text-body-s fw-semibold share-label" for="share-description">Description</label>
-        <textarea
-            id="share-description"
-            v-model="description"
-            class="text-body-m share-textarea"
-            rows="4"
+      <div class="card share-card">
+        <Inpt
+            v-model="title"
+            title="Title"
+            type="text"
+            :placeholder="titlePlaceholder"
             :disabled="saving"
-            data-testid="share-description"
-        ></textarea>
-      </div>
+            data-testid="share-title"
+            @enter="submit"
+        />
 
-      <div v-if="chips.length" class="share-field" data-testid="share-attachments">
-        <span class="text-body-s fw-semibold share-label">Attachments</span>
-        <CaptureChips :chips="chips" :errors="chipErrors" :saving="saving" :locked="!isProOrTeam" @remove="removeChip" />
-      </div>
+        <label class="share-field">
+          <span class="text-label color-text-primary">Description</span>
+          <textarea
+              v-model="description"
+              class="text-body-m share-textarea"
+              rows="4"
+              :disabled="saving"
+              data-testid="share-description"
+          ></textarea>
+        </label>
 
-      <div v-if="chips.length && !isProOrTeam" class="share-locked" data-testid="share-locked">
-        <span class="text-body-s color-text-secondary">{{ LOCKED_LINE }}</span>
-        <Btn variant="primary" size="sm" data-testid="share-upgrade" @click="paymentsEnabled ? showCaptureUpgrade() : contactSupport()">
-          {{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}
-        </Btn>
-      </div>
+        <div v-if="chips.length" class="share-field" data-testid="share-attachments">
+          <span class="text-label color-text-primary">Attachments</span>
+          <CaptureChips :chips="chips" :errors="chipErrors" :saving="saving" :locked="!isProOrTeam" @remove="removeChip" />
+        </div>
 
-      <div class="share-actions">
-        <Btn variant="secondary" size="sm" :disabled="saving" data-testid="share-cancel" @click="cancel">Cancel</Btn>
-        <Btn variant="primary" size="sm" :disabled="!canAdd" :loading="saving" data-testid="share-add" @click="submit">Add to Inbox</Btn>
+        <div v-if="chips.length && !isProOrTeam" class="share-locked" data-testid="share-locked">
+          <span class="text-body-s color-text-secondary">{{ LOCKED_LINE }}</span>
+          <Btn variant="primary" size="sm" data-testid="share-upgrade" @click="paymentsEnabled ? showCaptureUpgrade() : contactSupport()">
+            {{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}
+          </Btn>
+        </div>
+
+        <div class="share-actions">
+          <Btn variant="secondary" size="sm" class="share-btn" :disabled="saving" data-testid="share-cancel" @click="cancel">Cancel</Btn>
+          <Btn variant="primary" size="sm" class="share-btn share-btn--primary" :disabled="!canAdd" :loading="saving" data-testid="share-add" @click="submit">Add to Inbox</Btn>
+        </div>
       </div>
     </template>
   </div>
@@ -73,10 +74,10 @@ import {
   splitTitle,
   inputType,
   autoTitle,
+  CAPTURE_LOCKED_LINE as LOCKED_LINE,
 } from '../../scripts/core/captureRules.js'
 
 const CAPTURED_LINE = 'Captured by share'
-const LOCKED_LINE = '🔒 Files are available on Pro and Team plans. This item is added without them.'
 
 const router = useRouter()
 const auth = authModel()
@@ -211,7 +212,7 @@ async function submit() {
     if (await outcome === 'failed') router.replace({ name: 'inbox' })
     else leave()
   } catch (e) {
-    toaster.push(e.message || 'Failed to add item')
+    toaster.push(e.message || 'Failed to add item', 'error', { keepOffline: true })
     saving.value = false
   }
 }
@@ -232,7 +233,7 @@ onMounted(async () => {
   const share = await pendingShare().read()
   if (!share) {
     router.replace({ name: 'inbox' })
-    toaster.push('The share didn\'t come through. Share it again from the other app.')
+    toaster.push('The share didn\'t come through. Share it again from the other app.', 'error', { keepOffline: true })
     return
   }
 
@@ -271,30 +272,42 @@ onUnmounted(() => {
   padding: 48px;
 }
 
+.share-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 520px;
+  margin-bottom: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
 .share-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.share-label {
-  color: var(--color-text-primary);
+  gap: 8px;
 }
 
 .share-textarea {
-  color: var(--color-text-primary);
-  padding: 10px 12px;
-  border: 1px solid var(--color-input-border);
+  padding: 10px;
   border-radius: 6px;
-  background: var(--color-bg-primary);
-  outline: none;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-background);
+  color: var(--color-text-primary);
   resize: vertical;
   min-height: 80px;
 }
 
 .share-textarea:focus {
+  outline: none;
   border-color: var(--color-input-border-focus);
-  box-shadow: var(--shadow-focus-ring);
+  box-shadow: 0 0 0 1px var(--color-action-ring);
+}
+
+.share-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .share-locked {
@@ -308,5 +321,36 @@ onUnmounted(() => {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+@media (max-width: 768px) {
+  /* Room for the pinned action bar */
+  .share-page {
+    padding-bottom: calc(var(--touch-target-min) + 40px + env(safe-area-inset-bottom));
+  }
+
+  .share-card {
+    max-width: none;
+  }
+
+  .share-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: var(--color-bg-primary);
+    border-top: 1px solid var(--color-border-light);
+    box-shadow: var(--shadow-dropdown);
+  }
+
+  .share-btn {
+    min-height: var(--touch-target-min);
+  }
+
+  .share-btn--primary {
+    flex: 1;
+  }
 }
 </style>

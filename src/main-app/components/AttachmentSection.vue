@@ -41,8 +41,6 @@
     </div>
 
     <template v-else>
-      <AttachmentPreviewStrip v-if="entityType === 'stuff'" :item-id="itemId" :attachments="attachments" />
-
       <!-- Empty state (drop target) -->
       <div v-if="attachments.length === 0 && !uploading" class="detail-section-wrapper">
         <p
@@ -59,8 +57,30 @@
 
       <!-- File list -->
       <div v-if="filteredAttachments.length > 0" class="attachment-list" :class="{ 'attachment-list--grid': viewMode === 'grid' }">
-        <div v-for="att in filteredAttachments" :key="att.id" class="attachment-item" :class="{ 'attachment-item--grid': viewMode === 'grid' }" @click="openPreview(att)">
-          <RefFileIcon :mime-type="att.mime_type" class="attachment-item-icon" />
+        <div
+            v-for="att in filteredAttachments"
+            :key="att.id"
+            class="attachment-item"
+            :class="{ 'attachment-item--grid': viewMode === 'grid' }"
+            :title="rowMedia(att) && !rowMedia(att).loading && !rowMedia(att).url ? 'Couldn\'t load the preview — tap to retry' : undefined"
+            @click="onRowClick(att)"
+        >
+          <span v-if="rowMedia(att)" class="attachment-item-media">
+            <Spinner v-if="rowMedia(att).loading" :size="16" />
+            <img v-else-if="rowMedia(att).url && isImage(att)" :src="rowMedia(att).url" :alt="att.file_name" class="attachment-item-thumb" />
+            <Btn
+                v-else-if="rowMedia(att).url"
+                variant="icon"
+                size="sm"
+                :aria-label="playingId === att.id ? 'Stop' : 'Play'"
+                @click.stop="togglePlay(att)"
+            >
+              <StopIcon v-if="playingId === att.id" class="attachment-item-play-icon" />
+              <TriangleRightIcon v-else class="attachment-item-play-icon" />
+            </Btn>
+            <FileIcon v-else class="attachment-item-icon attachment-item-icon--failed" />
+          </span>
+          <RefFileIcon v-else :mime-type="att.mime_type" class="attachment-item-icon" />
           <div class="attachment-item-info">
             <span class="text-body-m attachment-item-name">{{ att.file_name }}</span>
             <span class="text-body-s attachment-item-size">{{ formatSize(att.size_bytes) }}</span>
@@ -112,11 +132,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import RefFileIcon from './reference/RefFileIcon.vue'
 import RefPreviewModal from './reference/RefPreviewModal.vue'
-import AttachmentPreviewStrip from './AttachmentPreviewStrip.vue'
+import Btn from './Btn.vue'
 import DownloadIcon from '../assets/DownloadIcon.vue'
+import FileIcon from '../assets/FileIcon.vue'
+import StopIcon from '../assets/StopIcon.vue'
+import TriangleRightIcon from '../assets/TriangleRightIcon.vue'
 import ListViewIcon from '../assets/ListViewIcon.vue'
 import GridViewIcon from '../assets/GridViewIcon.vue'
 import ActionBtn from './ActionBtn.vue'
@@ -160,6 +183,22 @@ const preview = reactive({
 
 const atLimit = computed(() => attachments.value.length >= 10)
 
+// Stuff list rows show images as thumbnails and voice memos with Play/Stop instead of the type icon
+const blobs = reactive({})
+const playingId = ref(null)
+let player = null
+let previewOwnsUrl = true
+
+const isImage = (att) => !!att.mime_type?.startsWith('image/')
+const isAudio = (att) => !!att.mime_type?.startsWith('audio/')
+const media = computed(() =>
+    props.entityType === 'stuff' ? attachments.value.filter(a => isImage(a) || isAudio(a)) : []
+)
+
+function rowMedia(att) {
+  return viewMode.value === 'list' ? blobs[att.id] : null
+}
+
 onMounted(() => {
   loadAttachments()
 })
@@ -168,8 +207,13 @@ watch(() => props.itemId, () => {
   uploading.value = false
   progress.value = 0
   closePreview()
+  releaseAll()
   loadAttachments()
 })
+
+watch(() => media.value.map(a => a.id).join(), syncMedia)
+
+onUnmounted(releaseAll)
 
 async function loadAttachments() {
   loading.value = true
@@ -261,9 +305,83 @@ function onDrop(e) {
   uploadFile(file)
 }
 
+// ── Thumbnails and voice playback ──
+
+// The download needs the JWT header, so the bytes come as a blob behind an object URL
+async function loadMedia(att) {
+  blobs[att.id] = { loading: true, url: null }
+  try {
+    const res = await downloadAttachment(props.entityType, props.itemId, att.id)
+    if (!blobs[att.id]) return
+    blobs[att.id] = { loading: false, url: URL.createObjectURL(res.data) }
+  } catch {
+    if (blobs[att.id]) blobs[att.id] = { loading: false, url: null }
+  }
+}
+
+function releaseMedia(id) {
+  if (playingId.value === id) stopPlayback()
+  if (blobs[id]?.url) URL.revokeObjectURL(blobs[id].url)
+  delete blobs[id]
+}
+
+function releaseAll() {
+  stopPlayback()
+  for (const id of Object.keys(blobs)) releaseMedia(id)
+}
+
+function syncMedia() {
+  const ids = new Set(media.value.map(a => a.id))
+  for (const id of Object.keys(blobs)) {
+    if (!ids.has(id)) releaseMedia(id)
+  }
+  for (const att of media.value) {
+    if (!blobs[att.id]) loadMedia(att)
+  }
+}
+
+function stopPlayback() {
+  player?.pause()
+  player = null
+  playingId.value = null
+}
+
+function togglePlay(att) {
+  if (playingId.value === att.id) {
+    stopPlayback()
+    return
+  }
+  stopPlayback()
+  player = new Audio(blobs[att.id].url)
+  player.onended = stopPlayback
+  playingId.value = att.id
+  player.play().catch(stopPlayback)
+}
+
+function onRowClick(att) {
+  const state = rowMedia(att)
+  if (!state) {
+    openPreview(att)
+  } else if (state.loading) {
+    return
+  } else if (!state.url) {
+    loadMedia(att)
+  } else if (isAudio(att)) {
+    togglePlay(att)
+  } else {
+    preview.file = { name: att.file_name, mime_type: att.mime_type }
+    preview.url = state.url
+    preview.text = null
+    preview.loading = false
+    preview.visible = true
+    previewOwnsUrl = false
+  }
+}
+
 // ── Preview ──
 
 async function openPreview(att) {
+  previewOwnsUrl = true
   preview.visible = true
   preview.file = { name: att.file_name, mime_type: att.mime_type }
   preview.url = null
@@ -289,7 +407,7 @@ async function openPreview(att) {
 }
 
 function closePreview() {
-  if (preview.url) {
+  if (preview.url && previewOwnsUrl) {
     URL.revokeObjectURL(preview.url)
   }
   preview.visible = false
@@ -550,6 +668,31 @@ function formatSize(bytes) {
   padding: 2px;
   box-sizing: border-box;
   flex-shrink: 0;
+}
+
+.attachment-item-media {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachment-item-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.attachment-item-play-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.attachment-item-icon--failed {
+  color: var(--color-text-tertiary);
 }
 
 .attachment-item-icon :deep(svg) {

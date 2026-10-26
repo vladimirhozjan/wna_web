@@ -45,6 +45,8 @@ export function canvasModel() {
     const conflict = ref(false)
     const undoStack = ref([])
     const redoStack = ref([])
+    // Bumped by every change that ends an open canvas undo toast (edits, reloads, conversion)
+    const commitSeq = ref(0)
 
     let sessionId = 0
     let dirty = false
@@ -176,6 +178,7 @@ export function canvasModel() {
         nodes.value = list.some(n => n.parent_id == null) ? list : [newRoot()]
         undoStack.value = []
         redoStack.value = []
+        commitSeq.value++
         dirty = false
         retryCount = 0
         clearTimers()
@@ -341,6 +344,7 @@ export function canvasModel() {
         if (!canEdit.value) return false
         if (undoable) pushUndo()
         mutate()
+        commitSeq.value++
         scheduleSave()
         return true
     }
@@ -499,9 +503,9 @@ export function canvasModel() {
 
     function removeNode(id) {
         const node = getNode(id)
-        if (!node || node.parent_id == null) return
+        if (!node || node.parent_id == null) return false
         const gone = new Set([id, ...descendantIds(id)])
-        commit(() => { nodes.value = nodes.value.filter(n => !gone.has(n.id)) })
+        return commit(() => { nodes.value = nodes.value.filter(n => !gone.has(n.id)) })
     }
 
     function moveTo(id, targetId) {
@@ -553,7 +557,7 @@ export function canvasModel() {
         commit(() => { node.converted = false })
     }
 
-    // ── Convert to backlog: existing create-action path, then one save of the marks ──
+    // ── Turn into actions: existing create-action path, then one save of the marks ──
 
     // → { created, outcome: 'ok' | 'network' | 'closed' }
     async function convert(ids) {
@@ -580,16 +584,13 @@ export function canvasModel() {
             for (const node of created) node.converted = true
             undoStack.value = []
             redoStack.value = []
+            commitSeq.value++
             dirty = true
             statsModel().refreshStats()
             await flush()
         }
         if (closed()) return { created: created.length, outcome: 'closed' }
         return { created: created.length, outcome: failed ? 'network' : 'ok' }
-    }
-
-    function exportJson() {
-        return JSON.stringify({ format: FORMAT, nodes: nodes.value }, null, 2)
     }
 
     instance = {
@@ -607,6 +608,7 @@ export function canvasModel() {
         canUndo,
         canRedo,
         unsaved,
+        commitSeq,
         convertCandidates,
         getNode,
         childrenOf,
@@ -636,7 +638,6 @@ export function canvasModel() {
         setFolded,
         unmarkConverted,
         convert,
-        exportJson,
     }
     return instance
 }

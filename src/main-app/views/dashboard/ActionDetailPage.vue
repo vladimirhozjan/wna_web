@@ -87,59 +87,53 @@
         </div>
 
         <!-- Action buttons -->
-        <div class="detail-actions">
-          <template v-if="isCompleted">
-            <Btn
-                v-if="canUndo"
-                variant="primary"
-                size="sm"
-                :loading="actionLoading === 'undo'"
-                @click="onUndo"
-            >
-              Undo
-            </Btn>
-          </template>
-          <template v-else-if="isSomeday">
-            <template v-if="canManageSomeday">
-              <Btn
-                  variant="primary"
-                  size="sm"
-                  :loading="actionLoading === 'activate'"
-                  @click="onActivate"
-              >
-                Activate
-              </Btn>
-              <Btn
-                  variant="ghost-danger"
-                  size="sm"
-                  :loading="actionLoading === 'trash'"
-                  @click="onTrash"
-              >
-                Trash
-              </Btn>
-            </template>
-          </template>
-          <template v-else>
-            <Btn
-                v-if="isWaiting && canMove"
-                variant="primary"
-                size="sm"
-                :loading="actionLoading === 'unwait'"
-                @click="onGotIt"
-            >
-              Got it
-            </Btn>
-            <Btn
-                v-if="canFinish"
-                variant="secondary"
-                size="sm"
-                :loading="actionLoading === 'done'"
-                @click="onMarkDone"
-            >
-              Done
-            </Btn>
-          </template>
-          <Dropdown v-if="canMove" v-model="showMoveDialog" title="Move to">
+        <div v-if="visibleActions.length" class="detail-actions">
+          <Btn
+              v-if="visibleActions.includes('undo')"
+              variant="primary"
+              size="sm"
+              :loading="actionLoading === 'undo'"
+              @click="onUndo"
+          >
+            Undo
+          </Btn>
+          <Btn
+              v-if="visibleActions.includes('activate')"
+              variant="primary"
+              size="sm"
+              :loading="actionLoading === 'activate'"
+              @click="onActivate"
+          >
+            Activate
+          </Btn>
+          <Btn
+              v-if="visibleActions.includes('gotit')"
+              variant="primary"
+              size="sm"
+              :loading="actionLoading === 'unwait'"
+              @click="onGotIt"
+          >
+            Got it
+          </Btn>
+          <Btn
+              v-if="visibleActions.includes('assign')"
+              variant="primary"
+              size="sm"
+              :loading="assignLoading"
+              @click="onAssignToMe"
+          >
+            Assign to me
+          </Btn>
+          <Btn
+              v-if="visibleActions.includes('done')"
+              variant="secondary"
+              size="sm"
+              :loading="actionLoading === 'done'"
+              @click="onMarkDone"
+          >
+            Done
+          </Btn>
+          <Dropdown v-if="visibleActions.includes('move')" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="secondary"
@@ -160,16 +154,7 @@
             </template>
           </Dropdown>
           <Btn
-              v-if="canAssign"
-              variant="primary"
-              size="sm"
-              :loading="assignLoading"
-              @click="onAssignToMe"
-          >
-            Assign to me
-          </Btn>
-          <Btn
-              v-if="canUnassign"
+              v-if="visibleActions.includes('unassign')"
               variant="ghost"
               size="sm"
               :loading="unassignLoading"
@@ -178,7 +163,7 @@
             Unassign
           </Btn>
           <Btn
-              v-if="canFinish"
+              v-if="visibleActions.includes('trash')"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -186,6 +171,18 @@
           >
             Trash
           </Btn>
+          <Dropdown v-if="overflowActions.length" title="More">
+            <template #trigger>
+              <Btn variant="icon" size="sm" title="More" data-testid="detail-more-menu"><MoreIcon class="detail-more-icon" /></Btn>
+            </template>
+            <template #default="{ close }">
+              <button v-if="overflowActions.includes('unassign')" class="dropdown-item" :disabled="unassignLoading" @click="close(); onUnassignMine()">Unassign</button>
+              <button v-if="overflowActions.includes('trash')" class="dropdown-item dropdown-item--danger" :disabled="actionLoading === 'trash'" @click="close(); onTrash()">Trash</button>
+            </template>
+          </Dropdown>
+        </div>
+        <div v-else-if="showViewOnly" class="detail-view-only">
+          <Alert type="info" title="View only" message="You can view this shared project but not change it." />
         </div>
 
         <!-- Project section (if action belongs to a project) -->
@@ -446,6 +443,7 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Btn from '../../components/Btn.vue'
 import Dropdown from '../../components/Dropdown.vue'
+import Alert from '../../components/Alert.vue'
 import TagInput from '../../components/TagInput.vue'
 import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
@@ -472,6 +470,7 @@ import SomedayIcon from '../../assets/SomedayIcon.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 import ReviewIcon from '../../assets/ReviewIcon.vue'
+import MoreIcon from '../../assets/MoreIcon.vue'
 import RecurringIcon from '../../assets/RecurringIcon.vue'
 import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
@@ -564,18 +563,18 @@ const FROM_ROUTES = {
   inbox: 'inbox', next: 'next', today: 'today', calendar: 'calendar',
   waiting: 'waiting-for', completed: 'completed', someday: 'someday',
   projects: 'projects', engage: 'engage', overdue: 'overdue',
-  reference: 'reference', review: 'review',
+  reference: 'reference',
 }
 
 const FROM_LABELS = {
   inbox: 'Inbox', next: 'Next', today: 'Today', calendar: 'Calendar',
   waiting: 'Waiting For', completed: 'Completed', someday: 'Someday / Maybe',
   projects: 'Projects', engage: 'Dashboard', overdue: 'Overdue',
-  reference: 'Reference', review: 'Review', recurring: 'Recurring',
+  reference: 'Reference', recurring: 'Recurring',
 }
 
 // Sources that don't support position-based navigation
-const NO_POSITION_SOURCES = ['calendar', 'engage', 'overdue', 'project', 'recurring', 'reference', 'review']
+const NO_POSITION_SOURCES = ['calendar', 'engage', 'overdue', 'project', 'recurring', 'reference']
 
 // Computed
 const isCompleted = computed(() => action.value?.state === 'COMPLETED')
@@ -633,6 +632,29 @@ const canUnassign = computed(() => isActive.value && isAssignedToMe.value && !!v
 const canUndo = computed(() =>
     (!action.value?.completed_by || action.value.completed_by === myUserId.value) && action.value?.my_role !== 'read_only'
 )
+
+// Detail action row: primary → Done → Move → Unassign → Trash; over 3 buttons everything after Move goes to ⋯
+const actionKeys = computed(() => {
+  if (!action.value) return []
+  if (isCompleted.value) return canUndo.value ? ['undo'] : []
+  if (isSomeday.value) return canManageSomeday.value ? ['activate', ...(canMove.value ? ['move'] : []), 'trash'] : []
+  const keys = []
+  if (isWaiting.value && canMove.value) keys.push('gotit')
+  if (canAssign.value) keys.push('assign')
+  if (canFinish.value) keys.push('done')
+  if (canMove.value) keys.push('move')
+  if (canUnassign.value) keys.push('unassign')
+  if (canFinish.value) keys.push('trash')
+  return keys
+})
+const visibleActions = computed(() => {
+  const keys = actionKeys.value
+  if (keys.length <= 3) return keys
+  const cut = keys.indexOf('move')
+  return keys.slice(0, cut === -1 ? 3 : cut + 1)
+})
+const overflowActions = computed(() => actionKeys.value.slice(visibleActions.value.length))
+const showViewOnly = computed(() => actionKeys.value.length === 0 && action.value?.my_role === 'read_only')
 
 // Command palette "This item" — mirrors the action buttons below the title
 const MOVE_COMMANDS = [
@@ -1946,8 +1968,18 @@ async function onActivate() {
 /* ── Action buttons ── */
 .detail-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 16px 24px 16px 32px; /* 42px icon + 8px gap */
+}
+
+.detail-more-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.detail-view-only {
+  padding: 16px 24px 16px 32px;
 }
 
 /* ── Section areas (description) ── */
@@ -2179,6 +2211,14 @@ async function onActivate() {
   }
 
   .detail-actions {
+    padding: 12px 16px 12px 32px;
+  }
+
+  .detail-actions .base-btn {
+    min-height: var(--touch-target-min);
+  }
+
+  .detail-view-only {
     padding: 12px 16px 12px 32px;
   }
 

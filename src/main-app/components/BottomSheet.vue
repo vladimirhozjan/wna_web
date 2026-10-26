@@ -43,8 +43,11 @@ let resizeObserver = null
 let mutationObserver = null
 
 const overlayStyle = computed(() => ({ top: `${viewport.top}px`, height: `${viewport.height}px` }))
+// Expanded, a strip of backdrop stays visible above the sheet
 const sheetStyle = computed(() => ({
-  height: `${expanded.value ? viewport.height : Math.round(viewport.height * OPEN_RATIO)}px`,
+  height: expanded.value
+      ? `calc(${viewport.height}px - var(--touch-target-min))`
+      : `${Math.round(viewport.height * OPEN_RATIO)}px`,
   transform: dragY.value ? `translateY(${dragY.value}px)` : null,
 }))
 
@@ -165,5 +168,6 @@ onBeforeUnmount(() => {
   flex-direction: column;
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>

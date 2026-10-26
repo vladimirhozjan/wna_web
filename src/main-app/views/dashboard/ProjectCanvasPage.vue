@@ -3,36 +3,51 @@
 
     <!-- Header -->
     <div class="detail-header">
-      <div class="detail-header-left">
+      <div class="detail-header-left" :class="{ 'canvas-header-left--drill': drillDeep }">
         <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
-        <span class="text-body-s detail-meta-link" @click="goBack">Project</span>
+        <span class="text-body-s detail-meta-link canvas-back-label" @click="goBack">{{ backLabel }}</span>
       </div>
       <div v-if="ready" class="detail-header-right">
-        <span v-if="statusText" class="text-footnote canvas-status" :class="statusDanger ? 'color-text-danger' : 'color-text-secondary'" data-testid="canvas-save-status">
-          {{ statusText }}
-          <Lnk v-if="canvas.saveStatus.value === 'error'" text="" link="Retry" class="canvas-retry" @action="canvas.retryNow()" />
-        </span>
         <template v-if="!isMobile">
+          <span v-if="statusText" class="text-footnote canvas-status" :class="statusDanger ? 'color-text-danger' : 'color-text-secondary'" data-testid="canvas-save-status">
+            {{ statusText }}
+            <Lnk v-if="canvas.saveStatus.value === 'error'" text="" link="Retry" class="canvas-retry" @action="canvas.retryNow()" />
+          </span>
           <template v-if="canvas.canEdit.value">
             <Btn variant="ghost" size="sm" :disabled="!canvas.canUndo.value" @mousedown.prevent @click="onUndo">Undo</Btn>
             <Btn variant="ghost" size="sm" :disabled="!canvas.canRedo.value" @mousedown.prevent @click="onRedo">Redo</Btn>
           </template>
-          <Btn v-if="canvas.isOwner.value" variant="ghost" size="sm" @click="download">
-            <DownloadIcon class="canvas-btn-icon" /> Download
-          </Btn>
-          <Btn variant="icon" title="Help: brainstorming" @click="openHelp">?</Btn>
-          <Btn v-if="canvas.canEdit.value" variant="primary" size="sm" @click="convertOpen = true">Convert to backlog</Btn>
+          <Btn variant="ghost" size="sm" data-testid="canvas-help" @click="openHelp">Help</Btn>
+          <span v-if="canvas.canEdit.value" class="canvas-turn" :title="turnDisabledReason">
+            <Btn variant="primary" size="sm" :disabled="!!turnDisabledReason" data-testid="canvas-turn-into-actions" @click="convertOpen = true">Turn into actions</Btn>
+          </span>
         </template>
-        <Dropdown v-else align="right" title="Brainstorm">
-          <template #trigger>
-            <Btn variant="icon" title="More"><MoreIcon class="canvas-btn-icon" /></Btn>
-          </template>
-          <template #default="{ close }">
-            <button v-if="canvas.canEdit.value" class="dropdown-item" @click="close(); convertOpen = true">Convert to backlog</button>
-            <button v-if="canvas.isOwner.value" class="dropdown-item" @click="close(); download()">Download</button>
-            <button class="dropdown-item" @click="close(); openHelp()">Help</button>
-          </template>
-        </Dropdown>
+        <template v-else>
+          <div v-if="drillSiblings.length > 1" class="detail-nav-buttons">
+            <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="drillSiblingIndex <= 0" @click="goSibling(-1)"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
+            <span class="text-body-s detail-position">{{ drillSiblingIndex + 1 }} of {{ drillSiblings.length }}</span>
+            <Btn variant="icon" class="detail-nav-btn" title="Next" :disabled="drillSiblingIndex >= drillSiblings.length - 1" @click="goSibling(1)"><TriangleRightIcon class="detail-nav-icon" /></Btn>
+          </div>
+          <Dropdown v-if="canvas.canEdit.value" align="right" title="Brainstorm">
+            <template #trigger>
+              <Btn variant="icon" title="More"><MoreIcon class="canvas-btn-icon" /></Btn>
+            </template>
+            <template #default="{ close }">
+              <template v-if="drillDeep">
+                <button class="dropdown-item" @click="close(); moveId = drillCurrent.id">Move to…</button>
+                <button v-if="drillCurrent.converted" class="dropdown-item" @click="close(); canvas.unmarkConverted(drillCurrent.id)">Mark as not converted</button>
+                <button class="dropdown-item dropdown-item--danger" @click="close(); deleteIdea(drillCurrent.id)">{{ drillDeleteLabel }}</button>
+                <div class="dropdown-divider"></div>
+              </template>
+              <button class="dropdown-item canvas-menu-turn" :disabled="!!turnDisabledReason" data-testid="canvas-turn-into-actions" @click="close(); convertOpen = true">
+                <span>Turn into actions…</span>
+                <span v-if="turnDisabledReason" class="text-caption color-text-secondary">{{ turnDisabledReason }}</span>
+              </button>
+              <button class="dropdown-item" @click="close(); openHelp()">Help</button>
+            </template>
+          </Dropdown>
+          <Btn v-else variant="ghost" size="sm" data-testid="canvas-help" @click="openHelp">Help</Btn>
+        </template>
       </div>
     </div>
 
@@ -60,6 +75,13 @@
     </div>
 
     <template v-else-if="ready">
+      <!-- Mobile: the save status shows only when a save failed -->
+      <div v-if="isMobile && canvas.unsaved.value" class="canvas-banner" data-testid="canvas-save-status">
+        <Alert type="error" :title="statusText">
+          <Btn v-if="canvas.saveStatus.value === 'error'" variant="secondary" size="sm" @click="canvas.retryNow()">Retry</Btn>
+        </Alert>
+      </div>
+
       <!-- Outcome strip -->
       <div v-if="canvas.project.value.outcome" class="canvas-outcome" @click="isMobile && (outcomeExpanded = !outcomeExpanded)">
         <span class="text-overline color-text-secondary">Outcome</span>
@@ -85,12 +107,20 @@
       </div>
 
       <!-- Canvas body -->
-      <CanvasDrillDown v-if="isMobile" class="canvas-body" @move="moveId = $event" @help="openHelp" />
+      <CanvasDrillDown
+          v-if="isMobile"
+          v-model:current-id="drillId"
+          class="canvas-body"
+          @move="moveId = $event"
+          @delete="deleteIdea"
+          @sibling="goSibling"
+          @help="openHelp"
+      />
       <CanvasMap v-else ref="mapRef" class="canvas-body" @move="moveId = $event" @help="openHelp" />
     </template>
 
     <CanvasConvertModal :visible="convertOpen" @close="convertOpen = false" />
-    <CanvasMovePicker :node-id="moveId" @close="moveId = null" />
+    <CanvasMovePicker :node-id="moveId" @close="moveId = null" @moved="onMoved" />
   </div>
 </template>
 
@@ -108,10 +138,13 @@ import CanvasDrillDown from '../../components/canvas/CanvasDrillDown.vue'
 import CanvasConvertModal from '../../components/canvas/CanvasConvertModal.vue'
 import CanvasMovePicker from '../../components/canvas/CanvasMovePicker.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
-import DownloadIcon from '../../assets/DownloadIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
+import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
+import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import { canvasModel } from '../../scripts/models/canvasModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { errorModel } from '../../scripts/core/errorModel.js'
+import { truncateTitle } from '../../scripts/core/textUtils.js'
 import { isMobileViewport } from '../../scripts/core/swipe.js'
 
 const LEAVE_FLUSH_WAIT_MS = 2000
@@ -127,12 +160,14 @@ const route = useRoute()
 const router = useRouter()
 const canvas = canvasModel()
 const confirm = confirmModel()
+const toaster = errorModel()
 
 const isMobile = ref(isMobileViewport())
 const convertOpen = ref(false)
 const moveId = ref(null)
 const outcomeExpanded = ref(false)
 const mapRef = ref(null)
+const drillId = ref(null)
 const mobileQuery = window.matchMedia('(max-width: 768px)')
 
 const ready = computed(() => !canvas.loading.value && !canvas.loadError.value && !canvas.notFound.value && !!canvas.project.value)
@@ -148,6 +183,23 @@ const statusText = computed(() => {
 })
 
 const statusDanger = computed(() => canvas.unsaved.value)
+
+const turnDisabledReason = computed(() => {
+  if (canvas.convertCandidates.value.length) return ''
+  const allConverted = canvas.nodes.value.some(n => n.parent_id != null && n.converted && n.text.trim() && !canvas.childrenOf(n.id).length)
+  return allConverted ? 'Every idea is already an action.' : 'Add ideas first — ideas without sub-ideas become actions.'
+})
+
+// Mobile drill-down: the idea on screen (null = the root)
+const drillCurrent = computed(() => canvas.getNode(drillId.value) || canvas.nodes.value.find(n => n.parent_id == null) || null)
+const drillDeep = computed(() => isMobile.value && ready.value && drillCurrent.value?.parent_id != null)
+const drillSiblings = computed(() => drillDeep.value ? canvas.childrenOf(drillCurrent.value.parent_id) : [])
+const drillSiblingIndex = computed(() => drillSiblings.value.indexOf(drillCurrent.value))
+const drillDeleteLabel = computed(() => {
+  const n = drillDeep.value ? canvas.descendantCount(drillCurrent.value.id) : 0
+  return n ? `Delete with ${n} sub-ideas` : 'Delete'
+})
+const backLabel = computed(() => drillDeep.value ? canvas.displayText(canvas.getNode(drillCurrent.value.parent_id)) : 'Project')
 
 const viewOnlyMessage = computed(() => {
   if (!canvas.project.value || canvas.canEdit.value) return ''
@@ -166,24 +218,55 @@ function onRedo() {
 }
 
 function goBack() {
+  if (drillDeep.value) {
+    drillId.value = drillCurrent.value.parent_id
+    return
+  }
   router.push({ name: 'project-detail', params: { id: route.params.id } })
+}
+
+function goSibling(step) {
+  const next = drillSiblings.value[drillSiblingIndex.value + step]
+  if (next) drillId.value = next.id
+}
+
+function ideaLabel(node) {
+  return truncateTitle(node.text.trim()) || 'Untitled idea'
+}
+
+// The canvas undo toast undoes exactly its own change: any later edit or leaving the page closes it
+let canvasUndo = null
+
+function showCanvasUndo(message) {
+  const run = () => canvas.undo()
+  toaster.undoable(message, run)
+  canvasUndo = { run, seq: canvas.commitSeq.value }
+}
+
+function closeCanvasUndo() {
+  if (!canvasUndo) return
+  const toast = toaster.undoToast()
+  if (toast && toast.undo === canvasUndo.run && !toast.undoing) toaster.remove(toast.id)
+  canvasUndo = null
+}
+
+function deleteIdea(id) {
+  const node = canvas.getNode(id)
+  if (!node) return
+  const label = ideaLabel(node)
+  if (drillCurrent.value && canvas.isInBranch(drillCurrent.value.id, id)) drillId.value = node.parent_id
+  if (canvas.removeNode(id)) showCanvasUndo(`"${label}" deleted`)
+}
+
+function onMoved(id, targetId) {
+  const node = canvas.getNode(id)
+  if (isMobile.value) showCanvasUndo(`"${ideaLabel(node)}" moved`)
+  else toaster.success(`Moved to “${canvas.displayText(canvas.getNode(targetId))}”.`)
 }
 
 function openHelp() {
   const href = router.resolve({ name: 'help-getting-started', hash: '#brainstorming-a-project' }).href
   window.open(href, '_blank', 'noopener')
-}
-
-function download() {
-  const blob = new Blob([canvas.exportJson()], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `${canvas.projectTitle.value} canvas.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
 }
 
 function onMediaChange() {
@@ -216,8 +299,19 @@ onBeforeRouteLeave(async () => {
 })
 
 watch(() => route.params.id, (id) => {
+  drillId.value = null
+  closeCanvasUndo()
   if (id) canvas.load(id)
 }, { immediate: true })
+
+watch(canvas.commitSeq, (seq) => {
+  if (canvasUndo && seq !== canvasUndo.seq) closeCanvasUndo()
+})
+
+// An undo or a reload can remove the idea on screen
+watch(() => canvas.nodes.value, () => {
+  if (drillId.value && !canvas.getNode(drillId.value)) drillId.value = null
+})
 
 onMounted(() => {
   mobileQuery.addEventListener('change', onMediaChange)
@@ -231,6 +325,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisibilityChange)
   window.removeEventListener('pagehide', onPageHide)
   window.removeEventListener('beforeunload', onBeforeUnload)
+  closeCanvasUndo()
   canvas.close()
 })
 </script>
@@ -260,6 +355,19 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
+.canvas-header-left--drill {
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 45%;
+}
+
+.canvas-back-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .detail-header-right {
   display: flex;
   align-items: center;
@@ -287,6 +395,45 @@ onBeforeUnmount(() => {
 .detail-meta-link:hover {
   color: var(--color-link-hover);
   text-decoration: underline;
+}
+
+.detail-position {
+  color: var(--color-text-primary);
+  min-width: 60px;
+  text-align: center;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.detail-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.detail-nav-btn {
+  font-size: var(--font-size-xs);
+}
+
+.detail-nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.canvas-turn {
+  display: inline-flex;
+}
+
+.canvas-menu-turn {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--color-border-light);
 }
 
 .detail-loading {
@@ -342,6 +489,10 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 768px) {
+  .detail-header {
+    padding: 8px 12px;
+  }
+
   .canvas-status {
     margin-right: 0;
   }

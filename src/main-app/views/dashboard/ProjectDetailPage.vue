@@ -69,50 +69,35 @@
         </div>
 
         <!-- Action buttons -->
-        <div class="detail-actions">
-          <Btn variant="secondary" size="sm" @click="openCanvas">Brainstorm</Btn>
-          <template v-if="isCompleted">
-            <Btn
-                variant="primary"
-                size="sm"
-                :loading="actionLoading === 'undo'"
-                @click="onUndo"
-            >
-              Undo
-            </Btn>
-          </template>
-          <template v-else-if="isSomeday">
-            <template v-if="!isShared || isOwner">
-              <Btn
-                  variant="primary"
-                  size="sm"
-                  :loading="actionLoading === 'activate'"
-                  @click="onActivate"
-              >
-                Activate
-              </Btn>
-              <Btn
-                  variant="secondary"
-                  size="sm"
-                  :loading="actionLoading === 'complete'"
-                  @click="onComplete"
-              >
-                Complete
-              </Btn>
-            </template>
-          </template>
-          <template v-else>
-            <Btn
-                v-if="!isShared || isOwner"
-                variant="secondary"
-                size="sm"
-                :loading="actionLoading === 'complete'"
-                @click="onComplete"
-            >
-              Complete
-            </Btn>
-          </template>
-          <Dropdown v-if="!isCompleted && !isShared" v-model="showMoveDialog" title="Move to">
+        <div v-if="visibleActions.length" class="detail-actions">
+          <Btn
+              v-if="visibleActions.includes('undo')"
+              variant="primary"
+              size="sm"
+              :loading="actionLoading === 'undo'"
+              @click="onUndo"
+          >
+            Undo
+          </Btn>
+          <Btn
+              v-if="visibleActions.includes('activate')"
+              variant="primary"
+              size="sm"
+              :loading="actionLoading === 'activate'"
+              @click="onActivate"
+          >
+            Activate
+          </Btn>
+          <Btn
+              v-if="visibleActions.includes('complete')"
+              variant="secondary"
+              size="sm"
+              :loading="actionLoading === 'complete'"
+              @click="onComplete"
+          >
+            Complete
+          </Btn>
+          <Dropdown v-if="visibleActions.includes('move')" v-model="showMoveDialog" title="Move to">
             <template #trigger>
               <Btn
                   variant="secondary"
@@ -127,7 +112,7 @@
             <button v-if="!isSomeday" class="dropdown-item" @click="onMoveTo('SOMEDAY')"><SomedayIcon class="dropdown-item-icon" /> Someday</button>
           </Dropdown>
           <Btn
-              v-if="!isCompleted && !isShared && isOwner"
+              v-if="visibleActions.includes('share')"
               variant="secondary"
               size="sm"
               :loading="actionLoading === 'share'"
@@ -136,7 +121,7 @@
             Share…
           </Btn>
           <Btn
-              v-if="!isCompleted && isShared && !isOwner"
+              v-if="visibleActions.includes('leave')"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'leave'"
@@ -145,7 +130,7 @@
             Leave
           </Btn>
           <Btn
-              v-else-if="!isCompleted"
+              v-if="visibleActions.includes('trash')"
               variant="ghost-danger"
               size="sm"
               :loading="actionLoading === 'trash'"
@@ -153,12 +138,21 @@
           >
             Trash
           </Btn>
+          <Dropdown v-if="overflowActions.length" title="More">
+            <template #trigger>
+              <Btn variant="icon" size="sm" title="More" data-testid="detail-more-menu"><MoreIcon class="detail-more-icon" /></Btn>
+            </template>
+            <template #default="{ close }">
+              <button v-if="overflowActions.includes('share')" class="dropdown-item" @click="close(); openShareModal('share')">Share…</button>
+              <button v-if="overflowActions.includes('trash')" class="dropdown-item dropdown-item--danger" :disabled="actionLoading === 'trash'" @click="close(); onTrash()">Trash</button>
+            </template>
+          </Dropdown>
         </div>
 
         <!-- Outcome area -->
         <div class="detail-section-area detail-section-area--no-border">
           <label class="text-body-s fw-semibold detail-section-label">Outcome</label>
-          <p v-if="editingField === 'outcome'" class="text-footnote color-text-secondary outcome-helper">Why does this project matter? What does done look like?</p>
+          <p v-if="editingField === 'outcome'" class="text-footnote color-text-secondary outcome-helper">{{ OUTCOME_HELPER }}</p>
           <div class="detail-section-wrapper">
             <p
                 v-if="editingField !== 'outcome'"
@@ -194,6 +188,18 @@
                   @click="cancelEdit"
               >Cancel</Btn>
             </div>
+          </div>
+        </div>
+
+        <!-- Brainstorm section -->
+        <div class="detail-section-area detail-section-area--no-border">
+          <label class="text-body-s fw-semibold detail-section-label">Brainstorm</label>
+          <div class="detail-brainstorm-row" data-testid="project-brainstorm-row" @click="openCanvas">
+            <span
+                class="text-body-m detail-brainstorm-row__text"
+                :class="{ 'detail-section-content--empty': ideaCount === 0 && canEditBrainstorm, 'color-text-secondary': ideaCount === 0 && !canEditBrainstorm }"
+            >{{ brainstormLabel }}</span>
+            <ChevronRightIcon class="detail-brainstorm-row__chevron" />
           </div>
         </div>
 
@@ -267,23 +273,32 @@
                           @swipe-right="onCompleteAction(action)"
                           @swipe-left="onTrashAction(action)"
                       >
-                        <template v-if="ACTION_STATE_ICONS[action.state]" #prefix>
-                          <span class="action-state-icon" :title="actionStateLabel(action.state)" role="img" :aria-label="actionStateLabel(action.state)">
+                        <template #prefix>
+                          <span v-if="ACTION_STATE_ICONS[action.state]" class="action-state-icon" :title="actionStateLabel(action.state)" role="img" :aria-label="actionStateLabel(action.state)">
                             <component :is="ACTION_STATE_ICONS[action.state]" />
                           </span>
+                          <span v-else class="action-state-icon"></span>
                         </template>
                         <template #actions>
-                          <button
-                              v-if="action.state === 'BACKLOG' && action.id !== orderedActions[0]?.id"
-                              type="button"
-                              class="action-assign-btn"
-                              :disabled="doingNextId === action.id"
-                              title="Do next"
-                              @click.stop="onDoNext(action)"
-                          >
-                            <Spinner v-if="doingNextId === action.id" :size="16" />
-                            <NextIcon v-else />
-                          </button>
+                          <template v-if="action.state === 'BACKLOG' && action.id !== orderedActions[0]?.id">
+                            <Btn
+                                variant="ghost"
+                                size="sm"
+                                class="action-do-next-text"
+                                :loading="doingNextId === action.id"
+                                @click.stop="onDoNext(action)"
+                            >Do next</Btn>
+                            <button
+                                type="button"
+                                class="action-assign-btn action-do-next-icon"
+                                :disabled="doingNextId === action.id"
+                                title="Do next"
+                                @click.stop="onDoNext(action)"
+                            >
+                              <Spinner v-if="doingNextId === action.id" :size="16" />
+                              <NextIcon v-else />
+                            </button>
+                          </template>
                           <ActionBtn variant="danger" :disabled="doingNextId === action.id" :loading="trashingActionId === action.id" @click="onTrashAction(action)" />
                         </template>
                       </Item>
@@ -380,17 +395,25 @@
                           </span>
                           <span v-if="isAssignedToMe(action)" class="text-body-s action-assignee-self">You</span>
                           <span v-if="hasActionButtons(action)" class="action-row-buttons">
-                            <button
-                                v-if="canWrite && !action.assigned_to && !myAssignedAction"
-                                type="button"
-                                class="action-assign-btn"
-                                :disabled="assigningId === action.id"
-                                title="Do next"
-                                @click.stop="onAssignToMe(action)"
-                            >
-                              <Spinner v-if="assigningId === action.id" :size="16" />
-                              <NextIcon v-else />
-                            </button>
+                            <template v-if="canWrite && !action.assigned_to && !myAssignedAction">
+                              <Btn
+                                  variant="ghost"
+                                  size="sm"
+                                  class="action-do-next-text"
+                                  :loading="assigningId === action.id"
+                                  @click.stop="onAssignToMe(action)"
+                              >Do next</Btn>
+                              <button
+                                  type="button"
+                                  class="action-assign-btn action-do-next-icon"
+                                  :disabled="assigningId === action.id"
+                                  title="Do next"
+                                  @click.stop="onAssignToMe(action)"
+                              >
+                                <Spinner v-if="assigningId === action.id" :size="16" />
+                                <NextIcon v-else />
+                              </button>
+                            </template>
                             <button
                                 v-else-if="isAssignedToMe(action)"
                                 type="button"
@@ -689,10 +712,13 @@ import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import ChevronsLeftIcon from '../../assets/ChevronsLeftIcon.vue'
 import ChevronsRightIcon from '../../assets/ChevronsRightIcon.vue'
 import PersonRemoveIcon from '../../assets/PersonRemoveIcon.vue'
+import MoreIcon from '../../assets/MoreIcon.vue'
+import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
+import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -847,6 +873,34 @@ const isOwner = computed(() => {
   if (project.value.owner_id) return project.value.owner_id === myUserId.value
   if (project.value.my_role) return project.value.my_role === 'owner'
   return currentRole.value === 'owner'
+})
+
+// Detail action row: primary → Complete → Move → Share… / Leave → Trash; over 3 buttons everything after Move goes to ⋯
+const actionKeys = computed(() => {
+  if (!project.value) return []
+  if (isCompleted.value) return ['undo']
+  const canComplete = !isShared.value || isOwner.value
+  const keys = []
+  if (isSomeday.value && canComplete) keys.push('activate')
+  if (canComplete) keys.push('complete')
+  if (!isShared.value) keys.push('move', 'share')
+  keys.push(isShared.value && !isOwner.value ? 'leave' : 'trash')
+  return keys
+})
+const visibleActions = computed(() => {
+  const keys = actionKeys.value
+  if (keys.length <= 3) return keys
+  const cut = keys.indexOf('move')
+  return keys.slice(0, cut === -1 ? 3 : cut + 1)
+})
+const overflowActions = computed(() => actionKeys.value.slice(visibleActions.value.length))
+
+// Brainstorm section: the count comes from the server (idea_count), never from the canvas
+const ideaCount = computed(() => project.value?.idea_count || 0)
+const canEditBrainstorm = computed(() => isOwner.value && project.value?.state === 'ACTIVE')
+const brainstormLabel = computed(() => {
+  if (ideaCount.value > 0) return ideaCount.value === 1 ? '1 idea' : `${ideaCount.value} ideas`
+  return canEditBrainstorm.value ? 'Get every idea out of your head' : 'No ideas yet'
 })
 
 // Command palette "This item" — mirrors the action buttons below the title
@@ -2074,8 +2128,51 @@ async function onAddAction() {
 /* ── Action buttons ── */
 .detail-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 16px 24px 16px 32px;
+}
+
+.detail-more-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Brainstorm section ── */
+.detail-brainstorm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 4px 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.detail-brainstorm-row:hover {
+  background: var(--color-bg-row-hover);
+}
+
+.detail-brainstorm-row__text {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+
+.detail-brainstorm-row__text.color-text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.detail-brainstorm-row__text.detail-section-content--empty {
+  color: var(--color-text-tertiary);
+}
+
+.detail-brainstorm-row__chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-text-tertiary);
 }
 
 /* ── Section areas (outcome, description) ── */
@@ -2384,6 +2481,28 @@ async function onAddAction() {
   height: 18px;
 }
 
+.action-state-icon:empty {
+  width: 18px;
+}
+
+.action-do-next-text {
+  margin: -4px 0;
+}
+
+.action-assign-btn.action-do-next-icon {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .action-do-next-text {
+    display: none;
+  }
+
+  .action-assign-btn.action-do-next-icon {
+    display: inline-flex;
+  }
+}
+
 /* ── Actions quick-add ── */
 .actions-quick-add--top {
   display: flex;
@@ -2442,6 +2561,14 @@ async function onAddAction() {
 
   .detail-actions {
     padding: 12px 16px 12px 32px;
+  }
+
+  .detail-actions .base-btn {
+    min-height: var(--touch-target-min);
+  }
+
+  .detail-brainstorm-row {
+    min-height: var(--touch-target-min);
   }
 
   .detail-section-area {

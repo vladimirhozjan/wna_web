@@ -29,18 +29,16 @@ import { computed } from 'vue'
 import Modal from '../Modal.vue'
 import Btn from '../Btn.vue'
 import { canvasModel } from '../../scripts/models/canvasModel.js'
-import { errorModel } from '../../scripts/core/errorModel.js'
 
 const props = defineProps({
   nodeId: { type: String, default: null },
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'moved'])
 
 const INDENT_PX = 16
 
 const canvas = canvasModel()
-const toaster = errorModel()
 
 const node = computed(() => props.nodeId ? canvas.getNode(props.nodeId) : null)
 
@@ -52,7 +50,8 @@ const rows = computed(() => {
 })
 
 function pick(target) {
-  if (canvas.moveTo(node.value.id, target.id)) toaster.success(`Moved to “${canvas.displayText(target)}”.`)
+  const id = node.value.id
+  if (canvas.moveTo(id, target.id)) emit('moved', id, target.id)
   emit('close')
 }
 </script>

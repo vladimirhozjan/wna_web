@@ -55,6 +55,7 @@ const classes = computed(() => ([
   position: relative;
   border-radius: 8px;
   border: none;
+  font-family: inherit;
   cursor: pointer;
   transition: 0.15s background, 0.15s color, 0.15s border;
   display: inline-flex;

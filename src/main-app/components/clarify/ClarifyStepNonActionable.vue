@@ -159,4 +159,16 @@ onUnmounted(() => {
   border-radius: 4px;
   flex-shrink: 0;
 }
+
+@media (max-width: 768px) {
+  .clarify-option {
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 12px 20px;
+  }
+
+  .clarify-option-key {
+    display: none;
+  }
+}
 </style>

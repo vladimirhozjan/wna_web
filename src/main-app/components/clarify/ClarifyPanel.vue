@@ -11,7 +11,9 @@
             title="Back"
         >&lt;</button>
         <span class="text-body-s clarify-step-indicator">{{ currentStepNumber }}/{{ totalSteps }}</span>
-        <button class="clarify-nav-btn" @click="onCancel" title="Close">×</button>
+        <Btn variant="icon" size="sm" class="clarify-close" title="Close" aria-label="Close" @click="onCancel">
+          <CloseIcon class="clarify-close-icon" />
+        </Btn>
       </div>
     </div>
 
@@ -26,7 +28,7 @@
       <span class="text-h3 clarify-context-title">
         <component :is="captureIcon" v-if="captureIcon" class="clarify-context-icon" />{{ stuffItem.title }}
       </span>
-      <AttachmentPreviewStrip v-if="stuffItem.attachment_count > 0" :item-id="stuffItem.id" layout="row" class="clarify-context-preview" />
+      <AttachmentPreviewStrip v-if="stuffItem.attachment_count > 0" :item-id="stuffItem.id" />
     </div>
 
     <!-- Step Content -->
@@ -87,6 +89,8 @@ import ClarifyStepCreateAction from './ClarifyStepCreateAction.vue'
 import ClarifyStepCreateProject from './ClarifyStepCreateProject.vue'
 import ClarifyStepDoItNow from './ClarifyStepDoItNow.vue'
 import AttachmentPreviewStrip from '../AttachmentPreviewStrip.vue'
+import Btn from '../Btn.vue'
+import CloseIcon from '../../assets/CloseIcon.vue'
 import CameraIcon from '../../assets/CameraIcon.vue'
 import MicIcon from '../../assets/MicIcon.vue'
 import AttachmentIcon from '../../assets/AttachmentIcon.vue'
@@ -326,6 +330,23 @@ function onCancel() {
   color: var(--color-text-primary);
 }
 
+.clarify-panel .clarify-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--color-text-secondary);
+}
+
+.clarify-panel .clarify-close:hover:not(:disabled) {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.clarify-close-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .clarify-step-indicator {
   color: var(--color-text-tertiary);
   min-width: 28px;
@@ -370,10 +391,6 @@ function onCancel() {
   color: var(--color-text-tertiary);
 }
 
-.clarify-context-preview {
-  text-align: left;
-}
-
 /* Content */
 .clarify-content {
   flex: 1;
@@ -410,7 +427,8 @@ function onCancel() {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .clarify-nav-btn {
+  .clarify-nav-btn,
+  .clarify-panel .clarify-close {
     width: var(--touch-target-min);
     height: var(--touch-target-min);
   }

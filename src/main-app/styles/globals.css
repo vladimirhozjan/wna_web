@@ -17,10 +17,14 @@ h1, h2, h3, h4, p {
     margin: 0;
 }
 
-/* Push toast above FAB input bar when expanded (mobile) */
+/* Toasts sit 12px above the FAB (18px offset + 64px), or above its input bar when expanded (mobile) */
 @media (max-width: 768px) {
+    html[data-fab] .toast-wrapper {
+        bottom: calc(94px + env(safe-area-inset-bottom));
+    }
+
     html[data-fab-open] .toast-wrapper {
-        bottom: calc(84px + var(--fab-kb-offset, 0px));
+        bottom: calc(94px + var(--fab-kb-offset, 0px));
     }
 }
 

@@ -1,15 +1,12 @@
 <template>
   <div class="celebration" :class="{ 'celebration--fading': fading }" @click="dismiss">
-    <div class="celebration__check">
-      <CompletedIcon class="celebration__icon" />
-    </div>
-    <h2 class="text-h3 celebration__title">{{ title }}</h2>
-    <p class="text-body-m celebration__subtitle">{{ subtitle }}</p>
+    <EmptyState :icon="CompletedIcon" :title="title" :text="subtitle" />
   </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
+import EmptyState from './EmptyState.vue'
 import CompletedIcon from '../assets/CompletedIcon.vue'
 
 defineProps({
@@ -45,6 +42,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -53,46 +51,22 @@ onUnmounted(() => {
   transition: opacity 0.3s ease;
 }
 
-.celebration__check {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--color-success-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  animation: check-bloom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+.celebration :deep(.empty-state__art) {
+  animation: celebration-bloom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.celebration__icon {
-  width: 32px;
-  height: 32px;
-  color: var(--color-success);
-  animation: check-draw 0.4s ease 0.2s both;
-}
-
-.celebration__title {
-  color: var(--color-text-primary);
-  margin: 0 0 8px 0;
+.celebration :deep(.empty-state__title) {
   animation: celebration-text-in 0.4s ease 0.3s both;
 }
 
-.celebration__subtitle {
-  color: var(--color-text-secondary);
-  margin: 0;
+.celebration :deep(.empty-state__text) {
   animation: celebration-text-in 0.4s ease 0.45s both;
 }
 
-@keyframes check-bloom {
+@keyframes celebration-bloom {
   0% { transform: scale(0); }
-  70% { transform: scale(1.15); }
+  70% { transform: scale(1.08); }
   100% { transform: scale(1); }
-}
-
-@keyframes check-draw {
-  0% { opacity: 0; transform: scale(0.5); }
-  100% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes celebration-text-in {

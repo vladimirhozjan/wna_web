@@ -94,7 +94,7 @@ async function userEntries() {
 }
 
 function savedOnDevice(title) {
-    errorModel().success(`"${truncateTitle(title)}" saved on this device — it's sent when you're back online`)
+    errorModel().success(`"${truncateTitle(title)}" saved offline`)
 }
 
 // Read and write in one transaction, so a send updating the same entry meanwhile is never overwritten
@@ -341,7 +341,7 @@ async function runQueue({ auto = false } = {}) {
     if (failed && location.pathname !== '/inbox') {
         toaster.push(failed === 1
             ? '1 captured item couldn\'t sync — open Inbox to retry or discard it'
-            : `${failed} captured items couldn't sync — open Inbox to retry or discard them`)
+            : `${failed} captured items couldn't sync — open Inbox to retry or discard them`, 'error', { keepOffline: true })
     }
     if (stop === 'transient') {
         const at = Date.now() + RETRY_MS

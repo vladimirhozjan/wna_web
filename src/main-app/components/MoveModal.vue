@@ -36,7 +36,7 @@
 
           <!-- Outcome Modal -->
           <template v-else-if="move.state.type === 'outcome'">
-            <p class="text-footnote color-text-secondary outcome-helper">Why does this project matter? What does done look like?</p>
+            <p class="text-footnote color-text-secondary outcome-helper">{{ OUTCOME_HELPER }}</p>
             <div class="form-group">
               <textarea
                   ref="outcomeInput"
@@ -73,6 +73,7 @@ import { moveModel } from '../scripts/models/moveModel.js'
 import Btn from './Btn.vue'
 import DateTimeInput from './DateTimeInput.vue'
 import ConnectionPicker from './ConnectionPicker.vue'
+import { OUTCOME_HELPER } from '../scripts/core/textUtils.js'
 
 const move = moveModel()
 const dateTimeInput = ref(null)

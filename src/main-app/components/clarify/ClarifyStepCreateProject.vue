@@ -19,7 +19,7 @@
 
       <div class="clarify-field">
         <label class="text-body-s fw-semibold clarify-label" for="project-outcome">Outcome *</label>
-        <p class="text-footnote color-text-secondary clarify-helper">Why does this project matter? What does done look like?</p>
+        <p class="text-footnote color-text-secondary clarify-helper">{{ OUTCOME_HELPER }}</p>
         <textarea
             id="project-outcome"
             v-model="form.outcome"
@@ -65,6 +65,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import Btn from '../Btn.vue'
 import TagInput from '../TagInput.vue'
+import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 
 const props = defineProps({
   initialData: {

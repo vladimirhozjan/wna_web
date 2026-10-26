@@ -42,7 +42,7 @@
 
         <!-- Title area -->
         <div class="detail-title-area">
-          <InboxIcon class="detail-type-icon" />
+          <component :is="headerIcon" class="detail-type-icon" />
           <div class="detail-title-wrapper">
             <div v-if="savingField === 'title'" class="detail-section-overlay">
               <Spinner />
@@ -251,6 +251,9 @@ import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import InboxIcon from '../../assets/InboxIcon.vue'
+import CameraIcon from '../../assets/CameraIcon.vue'
+import MicIcon from '../../assets/MicIcon.vue'
+import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 import NextIcon from '../../assets/NextIcon.vue'
 import TodayIcon from '../../assets/TodayIcon.vue'
 import CalendarIcon from '../../assets/CalendarIcon.vue'
@@ -291,6 +294,15 @@ const delegatedFromLabel = computed(() =>
     || ''
 )
 const pageLoading = ref(true)
+
+const headerIcon = computed(() => {
+  switch (item.value?.input_type) {
+    case 'photo': return CameraIcon
+    case 'audio': return MicIcon
+    case 'file': return AttachmentIcon
+    default: return InboxIcon
+  }
+})
 const editingField = ref(null)
 const editValue = ref('')
 const savingField = ref(null)

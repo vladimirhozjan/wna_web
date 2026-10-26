@@ -7,7 +7,8 @@ import { formatDate } from './dateUtils.js'
 const PHOTO_MAX_EDGE = 2048
 const PHOTO_QUALITY = 0.85
 const URL_RE = /https?:\/\/[^\s<>"']+/gi
-const UPGRADE_MESSAGE = 'Photo, voice and file capture is available on Pro and Team plans. Upgrade to snap a receipt, record a thought or drop a file straight into your Inbox.'
+export const CAPTURE_LOCKED_LINE = 'Photo, voice and file capture is available on Pro and Team plans.'
+const UPGRADE_MESSAGE = `${CAPTURE_LOCKED_LINE} Upgrade to snap a receipt, record a thought or drop a file straight into your Inbox.`
 const QUEUE_FULL = 'No offline space left on this device — attach it when you\'re back online'
 
 let chipSeq = 0

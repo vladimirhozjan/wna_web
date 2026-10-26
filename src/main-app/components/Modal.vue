@@ -93,6 +93,7 @@ const dialogStyle = computed(() => ({
     max-width: none !important;
     height: 100%;
     min-width: 0;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
     border-radius: 0;
     box-shadow: none;
   }

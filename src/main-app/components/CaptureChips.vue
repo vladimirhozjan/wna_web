@@ -8,27 +8,27 @@
         data-testid="capture-chip"
     >
       <div class="capture-chip__body">
-        <img
-            v-if="chip.kind === 'photo' && chip.url && !chip.thumbFailed"
-            :src="chip.url"
-            :alt="chip.file.name"
-            class="capture-chip__thumb"
-            @error="chip.thumbFailed = true"
-        />
-        <template v-else-if="chip.kind === 'voice'">
+        <template v-if="chip.kind === 'voice'">
           <Btn variant="icon" size="sm" class="capture-chip__play" :aria-label="playingId === chip.id ? 'Stop' : 'Play'" @mousedown.prevent @click="emit('toggle-play', chip)">
             <StopIcon v-if="playingId === chip.id" class="capture-chip__play-icon" />
             <TriangleRightIcon v-else class="capture-chip__play-icon" />
           </Btn>
           <span class="text-body-s capture-chip__name">Voice memo · {{ formatDuration(chip.duration) }}</span>
         </template>
-        <template v-if="chip.kind !== 'voice' && (chip.kind !== 'photo' || !chip.url || chip.thumbFailed)">
-          <RefFileIcon :mime-type="chip.file.type" class="capture-chip__icon" />
+        <template v-else>
+          <img
+              v-if="chip.kind === 'photo' && chip.url && !chip.thumbFailed"
+              :src="chip.url"
+              :alt="chip.file.name"
+              class="capture-chip__thumb"
+              @error="chip.thumbFailed = true"
+          />
+          <RefFileIcon v-else :mime-type="chip.file.type" class="capture-chip__icon" />
           <span class="text-body-s capture-chip__name">{{ chip.file.name }}</span>
         </template>
         <template v-if="!locked">
           <Spinner v-if="saving && !errors[chip.id]" :size="14" />
-          <ActionBtn v-else variant="default" @mousedown.prevent @click="emit('remove', chip)" />
+          <ActionBtn v-else variant="default" class="capture-chip__remove" @mousedown.prevent @click="emit('remove', chip)" />
         </template>
       </div>
       <span v-if="errors[chip.id]" class="text-footnote capture-chip__reason">{{ errors[chip.id] }}</span>
@@ -39,7 +39,7 @@
         <DescriptionIcon class="capture-chip__icon" />
         <span class="text-body-s capture-chip__name">Pasted text — goes to the description</span>
         <Spinner v-if="saving" :size="14" />
-        <ActionBtn v-else variant="default" @mousedown.prevent @click="emit('remove-pasted')" />
+        <ActionBtn v-else variant="default" class="capture-chip__remove" @mousedown.prevent @click="emit('remove-pasted')" />
       </div>
     </div>
   </div>
@@ -106,11 +106,12 @@ const emit = defineEmits(['remove', 'remove-pasted', 'toggle-play'])
   flex-shrink: 0;
 }
 
+/* RefFileIcon colours by type inline; capture chips keep one neutral tone */
 .capture-chip__icon {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-tertiary) !important;
 }
 
 .capture-chip__name {
@@ -130,7 +131,24 @@ const emit = defineEmits(['remove', 'remove-pasted', 'toggle-play'])
   height: 14px;
 }
 
+.capture-chip__remove {
+  position: relative;
+  flex-shrink: 0;
+  color: var(--color-text-tertiary);
+}
+
 .capture-chip__reason {
   color: var(--color-danger);
+}
+@media (max-width: 768px) {
+  .capture-chip__remove::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    transform: translate(-50%, -50%);
+  }
 }
 </style>

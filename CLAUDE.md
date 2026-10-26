@@ -180,6 +180,19 @@ Terser minification (console/debugger stripped). Code obfuscation via `javascrip
 - **Never copy-paste code** — if logic is shared, extract a reusable component or function. Ask before creating it
 - **Before creating any new `.vue` component, model, CSS variable, or utility function** — ask the user for approval. Explain what you need and why an existing one can't be used
 
+### UI Quality — AAA (owner, 2026-10-26)
+- Work as an AAA UI design specialist: the result must look like the best apps on the market. Spacing, alignment,
+  sizes, and hierarchy are consistent with the rest of the app.
+- Use only what exists: fonts, components, CSS tokens, spacing, icons. No new fonts, components, or variables (see
+  Reuse First). Reuse is what keeps the look consistent.
+- Every UI change works on both desktop and mobile (≤ 768px; check 500px).
+- Copy and icon quality is yours (with the designer), not the owner's. If an icon or label looks or reads badly,
+  replace it with a better existing one. The owner only says whether they like the result.
+- Check the result yourself in Chrome (Claude in Chrome) at `http://localhost:5173` (main-app; admin-app
+  `http://localhost:6173`). These dev servers are run by `wnapm` (`../../wna_backend/tools/wnapm/wnapm status`), so never
+  start one yourself. Check at desktop width and at 500px, in every state you touched, and fix whatever looks off before
+  you report. A UI change without this check is not done.
+
 ### Keep Documentation in Sync
 When adding features, fixing bugs, or changing behavior — with or without a slice — update the relevant specs
 **in `wna_orchestration`** (this repo keeps no spec copies):
@@ -232,10 +245,10 @@ The test: every changed line should trace directly to the user's request. Spec u
 ### 4. Goal-Driven Execution
 Define success criteria. Loop until verified.
 
-Transform tasks into verifiable goals. This project has no automated tests and Claude does not run apps or dev servers, so verify with what exists — production builds, code inspection, and the manual test cases spec:
+Transform tasks into verifiable goals. This project has no automated tests, so verify with production builds, code inspection, the manual test cases spec, and — for every UI change — the Chrome check on `:5173` (UI Quality):
 
 - "Add validation" → "List the invalid inputs to handle, implement, confirm `npm run build:main`/`build:admin` passes, list the cases ui-tests must cover"
-- "Fix the bug" → "State the reproduction steps, trace the cause in code, fix it, confirm the build passes, ask the user to verify at runtime"
+- "Fix the bug" → "State the reproduction steps, trace the cause in code, fix it, confirm the build passes, check it in Chrome on `:5173`"
 - "Refactor X" → "Confirm the build passes before and after; behavior must be unchanged"
 
 For multi-step tasks, state a brief plan:

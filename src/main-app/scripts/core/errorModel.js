@@ -1,4 +1,5 @@
 import { reactive } from 'vue';
+import { offlineModel } from './offlineModel.js';
 
 const UNDO_MS = 6000;
 export const SUCCESS_TOAST_MS = 3000;
@@ -15,7 +16,9 @@ export function errorModel() {
     let nextId = 1;
     const timers = new Map();
 
-    function push(message, type = 'error') {
+    function push(message, type = 'error', { keepOffline = false } = {}) {
+        // BUG-066 — offline content on screen already shows the failure
+        if (type === 'error' && !keepOffline && offlineModel().offlineContentShown.value) return;
         if (type === 'error') {
             console.error('[Toast]', message);
         }

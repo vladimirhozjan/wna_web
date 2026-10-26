@@ -33,7 +33,7 @@ export const faq = [
   {
     question: 'What are sessions and how do I manage them?',
     answer:
-      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using. An ended device is signed out within a few minutes. Sessions that have not been used for 14 days expire automatically and no longer appear in the list.',
+      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using. An ended device is signed out within a few minutes. A session you stop using expires on its own 7 to 14 days after its last use and no longer appears in the list.',
   },
 
   {
@@ -217,7 +217,7 @@ export const faq = [
   {
     question: 'What are shared projects?',
     answer:
-      'On the Team plan, a project owner can tap "Share…" to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Once someone assigns an action to themselves, only they can complete, move or trash it; read-only members can comment only. Actions you complete or trash on a shared project appear in your own Completed and Trash, and shared projects and their actions can\'t be moved to Someday/Maybe. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project.',
+      'On the Team plan, a project owner opens the ⋯ menu on the project page and taps "Share…" to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Once someone assigns an action to themselves, only they can complete, move or trash it; read-only members can comment only. Actions you complete or trash on a shared project appear in your own Completed and Trash, and shared projects and their actions can\'t be moved to Someday/Maybe. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project.',
   },
 
   // --- Account & Security ---

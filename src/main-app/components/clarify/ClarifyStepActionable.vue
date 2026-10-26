@@ -116,9 +116,16 @@ onUnmounted(() => {
   }
 
   .clarify-option {
-    padding: 20px;
+    flex: none;
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 12px 20px;
     flex-direction: row;
     justify-content: space-between;
+  }
+
+  .clarify-option-key {
+    display: none;
   }
 }
 </style>
