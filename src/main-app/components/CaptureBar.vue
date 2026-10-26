@@ -49,7 +49,7 @@
                 data-testid="capture-attach"
                 @mousedown.prevent
             >
-              <span class="capture-bar__attach-circle"><PlusIcon class="capture-bar__attach-icon" /></span>
+              <PlusCircleIcon class="capture-bar__attach-icon" />
             </Btn>
           </template>
           <template #default="{ close }">
@@ -131,7 +131,7 @@ import Btn from './Btn.vue'
 import ActionBtn from './ActionBtn.vue'
 import Dropdown from './Dropdown.vue'
 import CaptureChips from './CaptureChips.vue'
-import PlusIcon from '../assets/PlusIcon.vue'
+import PlusCircleIcon from '../assets/PlusCircleIcon.vue'
 import CameraIcon from '../assets/CameraIcon.vue'
 import MicIcon from '../assets/MicIcon.vue'
 import FileIcon from '../assets/FileIcon.vue'
@@ -538,38 +538,32 @@ defineExpose({
   width: 32px;
   height: 32px;
   padding: 0;
-  color: var(--color-text-secondary);
+  color: var(--color-input-border-focus);
 }
 
 .capture-bar .capture-bar__attach-btn:hover:not(:disabled),
 .capture-bar .capture-bar__attach-btn--open {
   background: transparent;
-  color: var(--color-action);
 }
 
 .capture-bar .capture-bar__attach-btn:disabled {
-  color: var(--color-text-tertiary);
+  opacity: 0.5;
 }
 
-.capture-bar__attach-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* 1 px lines like the field's border */
+.capture-bar__attach-icon {
+  display: block;
   width: 22px;
   height: 22px;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  box-sizing: border-box;
-  transition: 0.15s background;
 }
 
-.capture-bar__attach-btn--open .capture-bar__attach-circle {
-  background: var(--color-action-bg-light);
+.capture-bar__attach-icon circle {
+  transition: 0.15s fill;
 }
 
-.capture-bar__attach-icon {
-  width: 10px;
-  height: 10px;
+.capture-bar__attach-btn:hover:not(:disabled) .capture-bar__attach-icon circle,
+.capture-bar__attach-btn--open .capture-bar__attach-icon circle {
+  fill: var(--color-action-bg-light);
 }
 
 .capture-bar__extras {

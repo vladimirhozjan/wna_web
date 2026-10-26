@@ -118,7 +118,7 @@
               :loading="actionLoading === 'share'"
               @click="openShareModal('share')"
           >
-            Share…
+            Share
           </Btn>
           <Btn
               v-if="visibleActions.includes('leave')"
@@ -143,7 +143,7 @@
               <Btn variant="icon" size="sm" title="More" data-testid="detail-more-menu"><MoreIcon class="detail-more-icon" /></Btn>
             </template>
             <template #default="{ close }">
-              <button v-if="overflowActions.includes('share')" class="dropdown-item" @click="close(); openShareModal('share')">Share…</button>
+              <button v-if="overflowActions.includes('share')" class="dropdown-item" @click="close(); openShareModal('share')">Share</button>
               <button v-if="overflowActions.includes('trash')" class="dropdown-item dropdown-item--danger" :disabled="actionLoading === 'trash'" @click="close(); onTrash()">Trash</button>
             </template>
           </Dropdown>
@@ -878,7 +878,7 @@ const isOwner = computed(() => {
   return currentRole.value === 'owner'
 })
 
-// Detail action row: primary → Complete → Move → Share… / Leave → Trash; what doesn't fit the width goes to ⋯
+// Detail action row: primary → Complete → Move → Share / Leave → Trash; what doesn't fit the width goes to ⋯
 const actionKeys = computed(() => {
   if (!project.value) return []
   if (isCompleted.value) return ['undo']
@@ -918,7 +918,7 @@ const itemCommands = computed(() => {
         { label: 'Move to Reference', run: () => onMoveTo('REFERENCE') },
     )
     if (!isSomeday.value) commands.push({ label: 'Move to Someday', run: () => onMoveTo('SOMEDAY') })
-    if (isOwner.value) commands.push({ label: 'Share…', run: () => openShareModal('share') })
+    if (isOwner.value) commands.push({ label: 'Share', run: () => openShareModal('share') })
   }
   if (isShared.value && !isOwner.value) commands.push({ label: 'Leave', run: onLeaveProject })
   else commands.push({ label: 'Trash', run: onTrash })

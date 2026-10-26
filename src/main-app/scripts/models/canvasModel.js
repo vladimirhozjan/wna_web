@@ -19,7 +19,7 @@ const UNDO_LIMIT = 100
 // New-idea placement (px): offsets are measured between the ideas' inner edges (root: its centre)
 const ROOT_CHILD_DX = 200
 const CHILD_DX = 180
-const CHILD_GAP = 40
+export const CHILD_GAP = 40
 const ROW_PX = 48
 const LINE_PX = 22
 const IDEA_MAX_WIDTH = 240

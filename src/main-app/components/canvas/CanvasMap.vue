@@ -86,7 +86,7 @@
       </div>
 
       <!-- Empty canvas -->
-      <div v-if="rootOnly && rootItem" class="cm-empty" :style="emptyStyle">
+      <div v-if="rootOnly && rootItem" ref="emptyRef" class="cm-empty" :style="emptyStyle">
         <EmptyState
             v-if="canvas.canEdit.value"
             :icon="ProjectsIcon"
@@ -152,7 +152,7 @@ import CheckIcon from '../../assets/CheckIcon.vue'
 import PlusIcon from '../../assets/PlusIcon.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
-import { canvasModel, NODE_TEXT_LIMIT } from '../../scripts/models/canvasModel.js'
+import { canvasModel, NODE_TEXT_LIMIT, CHILD_GAP } from '../../scripts/models/canvasModel.js'
 import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 
 const emit = defineEmits(['move', 'help'])
@@ -175,6 +175,7 @@ const canvas = canvasModel()
 const modKey = /mac/i.test(navigator.platform) ? '⌘' : 'Ctrl'
 
 const surfaceRef = ref(null)
+const emptyRef = ref(null)
 const editorRef = ref(null)
 const selectedId = ref(null)
 const editingId = ref(null)
@@ -211,7 +212,7 @@ const layerStyle = computed(() => ({
 }))
 
 // Visible ideas with their box and the lines between them (root at 0,0).
-// Siblings on one side never overlap: a branch that grows taller pushes the siblings below it down.
+// Ideas never overlap: a branch that grows taller pushes the siblings below it down, a wider parent its children out.
 const layout = computed(() => {
   const items = []
   const links = []
@@ -234,7 +235,9 @@ const layout = computed(() => {
       let shift = 0
       let bottom = -Infinity
       for (const child of [...group].sort((a, b) => a.dy - b.dy)) {
-        const cx = x + child.dx
+        const out = depth === 0 ? (child.dx < 0 ? -1 : 1) : side
+        const reach = (depth === 0 ? size.w / 2 : size.w) + CHILD_GAP
+        const cx = out < 0 ? Math.min(x + child.dx, x - reach) : Math.max(x + child.dx, x + reach)
         const childSide = depth === 0 ? (child.dx < 0 ? -1 : 1) : (cx < 0 ? -1 : 1)
         const sub = walk(child, cx, y + child.dy + shift, depth + 1, childSide)
         const overlap = bottom + SIBLING_GAP - Math.min(...sub.map(i => i.top))
@@ -387,6 +390,12 @@ function centerRoot() {
   if (!el) return
   pan.x = el.clientWidth / 2
   pan.y = el.clientHeight / 2
+  // An empty canvas centres the root together with the empty state under it, its top always in view
+  const r = rootItem.value
+  const empty = emptyRef.value
+  if (!r || !empty) return
+  const mid = (r.top + empty.offsetTop + empty.offsetHeight) / 2
+  pan.y = Math.max(VIEW_MARGIN - r.top * zoom.value, el.clientHeight / 2 - mid * zoom.value)
 }
 
 function zoomAround(factor, cx, cy) {

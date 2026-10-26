@@ -9,7 +9,7 @@
           :data-testid="e.type === 'undo' ? 'undo-toast' : null"
           @click="e.type !== 'undo' && error.dismiss(e)"
       >
-        <SuccessCircleIcon v-if="e.type === 'success'" class="toast__icon" />
+        <SuccessCircleIcon v-if="e.type === 'success' || e.type === 'undo'" class="toast__icon" />
         <span class="toast__message">{{ e.message }}</span>
         <button
             v-if="e.type === 'undo'"
@@ -17,7 +17,7 @@
             class="text-label fw-semibold toast__undo"
             :disabled="e.undoing"
             data-testid="undo-toast-button"
-            @click.stop="error.runUndo()"
+            @click.stop="error.runUndo(e)"
         >
           {{ e.undoing ? 'Undoing…' : 'Undo' }}
         </button>
@@ -88,14 +88,9 @@ const error = errorModel()
 /* noinspection CssUnusedSymbol - used via dynamic :class binding */
 .toast--undo {
   box-sizing: border-box;
-  min-width: 320px;
   max-width: 560px;
-  gap: 16px;
-  padding: 10px 8px 10px 16px;
-  border-radius: 8px;
-  background: var(--color-bg-dark);
-  color: var(--color-text-on-dark);
-  box-shadow: var(--shadow-elevated);
+  background: var(--color-toast-success-bg);
+  color: var(--color-toast-success-text);
   text-align: left;
   cursor: default;
 }
@@ -114,7 +109,8 @@ const error = errorModel()
   padding: 0 8px;
   border: none;
   background: none;
-  color: var(--color-action-medium);
+  color: inherit;
+  text-decoration: underline;
   cursor: pointer;
 }
 
@@ -126,10 +122,6 @@ const error = errorModel()
   width: max(100%, var(--touch-target-min));
   height: max(100%, var(--touch-target-min));
   transform: translate(-50%, -50%);
-}
-
-.toast__undo:hover:not(:disabled) {
-  text-decoration: underline;
 }
 
 .toast__undo:disabled {
@@ -161,7 +153,6 @@ const error = errorModel()
   }
 
   .toast--undo {
-    min-width: 0;
     max-width: none;
   }
 }

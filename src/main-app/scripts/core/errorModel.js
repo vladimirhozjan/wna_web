@@ -45,20 +45,18 @@ export function errorModel() {
         push(message, 'success');
     }
 
-    // Success toast with an Undo button; a new one replaces the previous, never deduped by message
+    // Success toast with an Undo button; stacks like the others, never deduped by message
     function undoable(message, undo) {
-        const previous = undoToast();
-        if (previous) remove(previous.id);
         add({ id: nextId++, message, type: 'undo', undo, undoing: false }, UNDO_MS);
     }
 
+    // The newest one — what Ctrl/Cmd+Z runs
     function undoToast() {
-        return state.errors.find(e => e.type === 'undo') || null;
+        return state.errors.findLast(e => e.type === 'undo') || null;
     }
 
     // The toast stays, timer stopped, until the undo settles
-    async function runUndo() {
-        const toast = undoToast();
+    async function runUndo(toast = undoToast()) {
         if (!toast || toast.undoing) return;
         toast.undoing = true;
         clearTimeout(timers.get(toast.id));

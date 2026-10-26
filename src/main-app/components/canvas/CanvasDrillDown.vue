@@ -476,6 +476,7 @@ watch(() => canvas.nodes.value, () => {
 /* The meta is a display: a tap anywhere on the row drills in */
 .dd-card :deep(.item__actions) {
   pointer-events: none;
+  opacity: 1;
 }
 
 .dd-row-text {

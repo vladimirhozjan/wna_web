@@ -11337,7 +11337,7 @@
     "preconditions": "Logged-in user is on Team tier, owns a personal project (active, not completed), and has at least one accepted connection.",
     "steps": [
       "Open Project Detail for the personal project",
-      "Open ⋯ (`detail-more-menu`) in the action row and choose **Share…** (the row shows Complete · Move; Share… and Trash live behind ⋯, BUG-065 S6.2)",
+      "Click **Share** in the action row (on a narrow screen: ⋯ `detail-more-menu` → **Share**)",
       "In the share modal, search for and select one or more connections",
       "Click **Share**"
     ],
@@ -11356,7 +11356,7 @@
     "preconditions": "Logged-in user on Free or Pro tier owns a personal project.",
     "steps": [
       "Open Project Detail",
-      "Open ⋯ (`detail-more-menu`) and choose **Share…** (shown because the user owns a personal project)"
+      "Click **Share** in the action row, or ⋯ (`detail-more-menu`) → **Share** on a narrow screen (shown because the user owns a personal project)"
     ],
     "expected": "The share modal does NOT open. Instead the standard upgrade modal appears with a message indicating sharing is a Team plan feature. No backend request is made. Updated by BUG-065."
   },
@@ -11555,7 +11555,7 @@
       "Open the project detail",
       "Inspect the action button row at the top"
     ],
-    "expected": "- The row is exactly **Leave** (ghost-danger); there is no ⋯ (`detail-more-menu`) (BUG-065 S6.2 \"Active, shared, member\").\n- \"Trash\", \"Complete\" and \"Share…\" are NOT shown (owner only). Updated by BUG-065."
+    "expected": "- The row is exactly **Leave** (ghost-danger); there is no ⋯ (`detail-more-menu`) (BUG-065 S6.2 \"Active, shared, member\").\n- \"Trash\", \"Complete\" and \"Share\" are NOT shown (owner only). Updated by BUG-065."
   },
   {
     "id": "TC-450",
@@ -17456,7 +17456,7 @@
       "On Inbox, tick S1; click the toast message (not the button); then click **Undo**.",
       "Tick S2; then tick A1 on Next before the S2 toast expires."
     ],
-    "expected": "Step 1: A2 animates out; the Undo toast — a dark snackbar with no icon, the message on one line, **Undo** as a separate button at the right — reads `\"A2\" completed`. Step 2: the button reads\n`Undoing…` (disabled) while the call runs; then a plain success toast `\"A2\" moved back` replaces it, A2 is back between\nA1 and A3, and the Next / Completed counts in the sidebar update. Step 3: the toast leaves after 6 s; A2 stays in\nCompleted and nothing can be undone any more. Step 4: the toast stays (a body click does not dismiss an Undo toast, BUG-065 S1); **Undo** brings S1 back with `\"S1\" moved back`. Step 5: the\nA1 Undo toast replaces the S2 one at once — only one Undo toast is ever shown. Updated by BUG-065."
+    "expected": "Step 1: A2 animates out; the Undo toast — green like the success toast, with the check icon, the message on one line, **Undo** as a separate button at the right — reads `\"A2\" completed`. Step 2: the button reads\n`Undoing…` (disabled) while the call runs; then a plain success toast `\"A2\" moved back` replaces it, A2 is back between\nA1 and A3, and the Next / Completed counts in the sidebar update. Step 3: the toast leaves after 6 s; A2 stays in\nCompleted and nothing can be undone any more. Step 4: the toast stays (a body click does not dismiss an Undo toast, BUG-065 S1); **Undo** brings S1 back with `\"S1\" moved back`. Step 5: the\nA1 Undo toast stacks under the S2 one; each **Undo** takes back only its own item, ⌘Z the newest (A1). Updated by BUG-065."
   },
   {
     "id": "TC-863",
@@ -17483,7 +17483,7 @@
       "On Someday, click × on P3.",
       "On Projects, drag P4 onto **Trash** in the sidebar."
     ],
-    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (which replaces the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash. Step 7: toast `\"K1\" moved to trash`; after Undo `\"K1\" moved back`\nand K1 shows again in the open Completed list without a manual reload. Step 8: `\"K2\" moved back`; K2 leaves the open\nTrash list and is in Completed. Step 9: `\"P3\" and its actions moved to trash`. Step 10: `\"P4\" and its actions moved to\ntrash`. Every Undo toast is the dark snackbar without an icon (BUG-065 S1). Updated by BUG-065."
+    "expected": "No step opens a confirmation dialog. Step 1: W2 leaves at once; Undo toast `\"W2\" moved to trash`.\nStep 2: `\"W2\" moved back`; W2 is back between W1 and W3 with its waiting person. Step 3: D1 is back in Someday at its old\nplace. Step 4: the page moves on and the Undo toast reads `\"S1\" moved to trash`. Step 5: toasts `\"P1\" and its actions\nmoved to trash`, then `\"P2\" moved to trash` (stacked under the P1 Undo toast). Step 6: P2 is back in Projects at its\nold place; P1 and its actions are still in Trash. Step 7: toast `\"K1\" moved to trash`; after Undo `\"K1\" moved back`\nand K1 shows again in the open Completed list without a manual reload. Step 8: `\"K2\" moved back`; K2 leaves the open\nTrash list and is in Completed. Step 9: `\"P3\" and its actions moved to trash`. Step 10: `\"P4\" and its actions moved to\ntrash`. Every Undo toast is the dark snackbar without an icon (BUG-065 S1). Updated by BUG-065."
   },
   {
     "id": "TC-864",
@@ -19737,7 +19737,7 @@
       "Open each project as A, and the active shared project as B; open ⋯ where shown.",
       "As A on the personal project choose ⋯ → **Trash**."
     ],
-    "expected": "Rows (visible · ⋯): active personal — Complete · Move · ⋯ Share… · Trash; active shared, owner — Complete · Trash; active shared, member — Leave; Someday personal — Activate · Complete · Move · ⋯ Share… · Trash; Someday shared, owner — Activate · Complete · Trash; completed — Undo. Each row is one line inside 500 px, never wraps or scrolls (`detail-more-menu` holds the listed items). Step 2: the project is trashed (`state` `TRASH`) and the page moves on (S0 X2, S6.2). BUG-065."
+    "expected": "Rows (visible · ⋯): active personal — Complete · Move · ⋯ Share · Trash; active shared, owner — Complete · Trash; active shared, member — Leave; Someday personal — Activate · Complete · Move · ⋯ Share · Trash; Someday shared, owner — Activate · Complete · Trash; completed — Undo. Each row is one line inside 500 px, never wraps or scrolls (`detail-more-menu` holds the listed items). Step 2: the project is trashed (`state` `TRASH`) and the page moves on (S0 X2, S6.2). BUG-065."
   },
   {
     "id": "TC-987",
@@ -19790,7 +19790,7 @@
       "Click / tap the toast message (not the button).",
       "Click **Undo**."
     ],
-    "expected": "Step 1: Undo toast — dark snackbar, no icon. Step 2: the toast stays. Step 3: `\"{title}\" moved back`; the action is back in Next (S1). BUG-065."
+    "expected": "Step 1: Undo toast — green like the success toast, check icon, underlined **Undo**. Step 2: the toast stays. Step 3: `\"{title}\" moved back`; the action is back in Next (S1). BUG-065."
   },
   {
     "id": "TC-990",
@@ -20064,7 +20064,7 @@
     "steps": [
       "Open `/help/getting-started`, `/help/best-practices` and `/help/faq` with every answer expanded."
     ],
-    "expected": "Getting Started contains `Turn into actions` and `attach button at the right end of the field`, and no `Convert to backlog`, `Download saves` or `paperclip next to the field`. Best Practices has no `last week's still-open actions` and keeps `your progress is saved until you complete the review`. FAQ: `… ⋯ menu on the project page and taps Share…` (Help impact). BUG-065."
+    "expected": "Getting Started contains `Turn into actions` and `attach button at the right end of the field`, and no `Convert to backlog`, `Download saves` or `paperclip next to the field`. Best Practices has no `last week's still-open actions` and keeps `your progress is saved until you complete the review`. FAQ: `… taps \"Share\" on the project page` (Help impact). BUG-065."
   },
   {
     "id": "TC-1006",
@@ -20103,6 +20103,6 @@
       "Desktop (≥ 1280 px): open `Row project`, then the Waiting action.",
       "Narrow the window step by step to 375 px, then widen it back."
     ],
-    "expected": "Step 1: project — Complete · Move · Share… · Trash, no ⋯; action — Got it · Done · Move · Unassign · Trash, no ⋯. Step 2: the row never wraps or overflows; as space runs out Trash, then Share… / Unassign move into ⋯ (`detail-more-menu`, Trash in danger colour), the primary, Complete / Done and Move always stay; widening brings them back to the row."
+    "expected": "Step 1: project — Complete · Move · Share · Trash, no ⋯; action — Got it · Done · Move · Unassign · Trash, no ⋯. Step 2: the row never wraps or overflows; as space runs out Trash, then Share / Unassign move into ⋯ (`detail-more-menu`, Trash in danger colour), the primary, Complete / Done and Move always stay; widening brings them back to the row."
   }
 ]

@@ -238,6 +238,7 @@ function ideaLabel(node) {
 let canvasUndo = null
 
 function showCanvasUndo(message) {
+  closeCanvasUndo()
   const run = () => canvas.undo()
   toaster.undoable(message, run)
   canvasUndo = { run, seq: canvas.commitSeq.value }
@@ -245,8 +246,8 @@ function showCanvasUndo(message) {
 
 function closeCanvasUndo() {
   if (!canvasUndo) return
-  const toast = toaster.undoToast()
-  if (toast && toast.undo === canvasUndo.run && !toast.undoing) toaster.remove(toast.id)
+  const toast = toaster.state.errors.find(e => e.undo === canvasUndo.run)
+  if (toast && !toast.undoing) toaster.remove(toast.id)
   canvasUndo = null
 }
 

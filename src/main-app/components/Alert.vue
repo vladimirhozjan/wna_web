@@ -46,6 +46,7 @@ defineProps({
   padding: 14px 16px;
   border-radius: 12px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .alert__icon {
