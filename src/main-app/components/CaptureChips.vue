@@ -78,6 +78,7 @@ const emit = defineEmits(['remove', 'remove-pasted', 'toggle-play'])
 .capture-chip {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
   max-width: 260px;
   padding: 4px 4px 4px 6px;

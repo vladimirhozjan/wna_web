@@ -69,7 +69,7 @@
         </div>
 
         <!-- Action buttons -->
-        <div v-if="visibleActions.length" class="detail-actions">
+        <div v-if="visibleActions.length" ref="detailActionsRef" class="detail-actions">
           <Btn
               v-if="visibleActions.includes('undo')"
               variant="primary"
@@ -719,6 +719,7 @@ import Item from '../../components/Item.vue'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
+import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 
 const route = useRoute()
@@ -778,6 +779,7 @@ const addingAction = ref(false)
 const actionsScrollRef = ref(null)
 const quickAddInput = ref(null)
 const detailBodyRef = ref(null)
+const detailActionsRef = ref(null)
 
 // Auto-hiding scrollbar
 const bodyScrolling = ref(false)
@@ -876,7 +878,7 @@ const isOwner = computed(() => {
   return currentRole.value === 'owner'
 })
 
-// Detail action row: primary → Complete → Move → Share… / Leave → Trash; over 3 buttons everything after Move goes to ⋯
+// Detail action row: primary → Complete → Move → Share… / Leave → Trash; what doesn't fit the width goes to ⋯
 const actionKeys = computed(() => {
   if (!project.value) return []
   if (isCompleted.value) return ['undo']
@@ -888,12 +890,8 @@ const actionKeys = computed(() => {
   keys.push(isShared.value && !isOwner.value ? 'leave' : 'trash')
   return keys
 })
-const visibleActions = computed(() => {
-  const keys = actionKeys.value
-  if (keys.length <= 3) return keys
-  const cut = keys.indexOf('move')
-  return keys.slice(0, cut === -1 ? 3 : cut + 1)
-})
+const { visibleCount } = useOverflowFit(detailActionsRef, actionKeys, ['share', 'trash'])
+const visibleActions = computed(() => actionKeys.value.slice(0, visibleCount.value))
 const overflowActions = computed(() => actionKeys.value.slice(visibleActions.value.length))
 
 // Brainstorm section: the count comes from the server (idea_count), never from the canvas
@@ -2132,6 +2130,10 @@ async function onAddAction() {
   align-items: center;
   gap: 8px;
   padding: 16px 24px 16px 32px;
+}
+
+.detail-actions > * {
+  flex-shrink: 0;
 }
 
 .detail-more-icon {

@@ -503,7 +503,7 @@
       "Inspect the backdrop: does it have a blur effect applied to the background content?",
       "Inspect the dialog card positioning: is it centered both horizontally and vertically on the screen?",
       "Using browser developer tools, inspect the dialog card's computed CSS: what is its `max-width`?",
-      "Resize the browser window to a narrow width (e.g., 375px mobile width). Observe how the dialog adapts.",
+      "Resize the browser window to a narrow width (e.g., 500px mobile width). Observe how the dialog adapts.",
       "Resize the browser to a wide desktop width (e.g., 1920px). Observe the dialog positioning and size."
     ],
     "expected": "- The backdrop has a CSS `backdrop-filter: blur(...)` effect, making the landing page content behind it blurred.\n- The dialog card is centered on the screen (horizontally and vertically).\n- The dialog card has a `max-width` of `420px` (or close to it as defined in the design).\n- On narrow screens (mobile), the dialog adapts gracefully: it may take near-full width with appropriate padding, and content remains accessible without horizontal scrolling.\n- On wide screens, the dialog remains centered and does not stretch beyond its max-width.\n- The dialog card has appropriate styling (border-radius, shadow, padding)."
@@ -1310,7 +1310,7 @@
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is not authenticated. Browser viewport is mobile width (<=768px). Application is loaded at the landing page.",
     "steps": [
-      "Open the application in a mobile-width browser (or use DevTools to set viewport to 375px width) without being logged in",
+      "Open the application in a mobile-width browser (or use DevTools to set viewport to 500px width) without being logged in",
       "Observe the top navigation bar",
       "Verify the app icon and \"WhatsNextAction\" text are present",
       "Verify that a hamburger menu icon is visible instead of the inline navigation links",
@@ -1360,7 +1360,7 @@
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated with a valid session. Browser viewport is mobile width (<=768px). User is on any dashboard page.",
     "steps": [
-      "Log in with valid credentials on a mobile-width browser (or set DevTools viewport to 375px)",
+      "Log in with valid credentials on a mobile-width browser (or set DevTools viewport to 500px)",
       "Observe the top navigation bar after login",
       "Verify an animated hamburger icon (☰) is displayed in the nav bar (no user avatar visible)",
       "Verify the Quick Add button is NOT visible in the top nav (it is replaced by the FAB)",
@@ -1459,7 +1459,7 @@
     "section": "2: Dashboard Layout & Navigation",
     "preconditions": "User is authenticated. Browser viewport is mobile width (<=768px).",
     "steps": [
-      "Log in on a mobile viewport (375px width or use DevTools)",
+      "Log in on a mobile viewport (500px width or use DevTools)",
       "Verify the sidebar is not visible by default (no 260px panel on the left)",
       "Tap the hamburger icon in the top navigation bar",
       "Verify a sidebar drawer slides in from the left side of the screen with an animation",
@@ -6821,7 +6821,7 @@
     "section": "15: Weekly Review",
     "preconditions": "User is logged in. Weekly Review is enabled. Device is a mobile phone or browser is resized to mobile viewport width (< 768px).",
     "steps": [
-      "Resize the browser to a mobile viewport width (e.g., 375px wide) or use a mobile device",
+      "Resize the browser to a mobile viewport width (e.g., 500px wide) or use a mobile device",
       "Navigate to `/review`",
       "Observe the 6 review steps",
       "Verify each step shows its title and its hint text, the hint at most 2 lines (ellipsis when longer)",
@@ -8944,7 +8944,7 @@
     ],
     "smoke": false,
     "section": "21: Quick Add",
-    "preconditions": "User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 375px).",
+    "preconditions": "User is logged in. Viewing the application on a mobile device or using browser device emulation with a mobile viewport width (e.g., 500px).",
     "steps": [
       "On a mobile viewport, verify the Quick Add button is NOT in the top nav bar.",
       "Verify a circular \"+\" FAB (floating action button) is visible at the bottom-right corner.",
@@ -10225,7 +10225,7 @@
       "Verify the footer displays 4 columns side by side (Brand, Product, Support, Legal).",
       "Resize the viewport to a tablet width (e.g., 768px).",
       "Verify the footer displays 2 columns (e.g., Brand + Product on one row, Support + Legal on the next row).",
-      "Resize the viewport to a mobile width (e.g., 375px).",
+      "Resize the viewport to a mobile width (e.g., 500px).",
       "Verify the footer displays 1 column (all sections stacked vertically).",
       "Verify all content remains readable and properly spaced in each layout."
     ],
@@ -10249,7 +10249,7 @@
       "Hover each icon and verify it changes to the accent color.",
       "Click each icon and verify the profile opens in a new tab while the WNA page stays open.",
       "Navigate to /pricing, /help and /legal/terms and verify the same 4 icons appear in the footer.",
-      "Resize the viewport to a mobile width (e.g., 375px) and verify the icons stack below the copyright line."
+      "Resize the viewport to a mobile width (e.g., 500px) and verify the icons stack below the copyright line."
     ],
     "expected": "The footer shows 4 social icons (YouTube, Instagram, TikTok, LinkedIn) on every public page. Each links to the correct WNA profile and opens in a new tab (`target=\"_blank\"`, `rel=\"noopener noreferrer\"`)."
   },
@@ -17235,7 +17235,7 @@
       "Click **Start Review**.",
       "Tick steps 1 and 3.",
       "Hover segment 6; click it.",
-      "Resize to a mobile width (375px)."
+      "Resize to a mobile width (500px)."
     ],
     "expected": "Step 1: only the \"Start Review\" button (header row, right of the title) — no progress row. Step 2: a progress row appears\nbetween the header and the steps card — 6 equal empty segments and \"0 of 6 complete\" right of them; nothing beside\n\"Complete Review\". Step 3: segments 1 and 3 fill (accent colour, short transition), counter \"2 of 6 complete\".\nStep 4: tooltip \"Review Calendar\"; the \"Review Calendar\" step scrolls into view. Step 5: segments and counter stay on\none row; the counter text is not wrapped or cut. Updated by BUG-065 (S5 rows 1, 4)."
   },
@@ -17731,7 +17731,7 @@
       "As B claim N5 and open its detail in two tabs; in the second tab click ⋯ → **Unassign**; in the first tab choose **Move** → **Today**.",
       "As B claim N5 again and choose **Move** → **Calendar** (any date); as A remove B from P (C and D stay, so P stays shared); open P as A and B's Calendar as B."
     ],
-    "expected": "On every page the action row shows at most 3 text buttons and the rest behind ⋯ (`detail-more-menu`), per\nBUG-065 S11 / S6.2; the **This item** palette rows list exactly the row buttons plus the ⋯ items (and Brainstorm on a project\npage), labels verbatim, Move entries as \"Move to {entry}\", order not specified; blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move, ⋯ Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar), ⋯ Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Assign to me · Done · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Assign to me · Done · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo; C on N1 — no buttons; C on N9 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — no Undo; D on N8 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave (no Activate or Complete); Brainstorm is the section row, not a button.\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before.\nStep 8: toast \"Action returned to backlog\"; N1 is gone from B's Today and is in P's backlog, unassigned.\nStep 9: error toast \"Assign this action to yourself before moving it.\" (the backend 403 `detail`, not \"Failed to move\naction\"); N5 stays in P's backlog, unassigned.\nStep 10: N5 is in P's backlog, unassigned, with no scheduled date; it is gone from B's Calendar. Updated by BUG-065."
+    "expected": "On a mobile viewport (≤ 768 px) every page's action row fits on one line and the trailing Unassign / Trash that don't fit are behind ⋯ (`detail-more-menu`) — the ⋯ splits below are for 375 px; on desktop all buttons show (TC-1007), per\nBUG-065 S11 / S6.2; the **This item** palette rows list exactly the row buttons plus the ⋯ items (and Brainstorm on a project\npage), labels verbatim, Move entries as \"Move to {entry}\", order not specified; blocked buttons are not rendered (never disabled).\nStep 1: N1 — Done · Move, ⋯ Unassign · Trash; the Move dropdown lists Today, Calendar, Waiting For only (no Someday,\nProjects or Reference). N2 — Got it · Done · Move (Next Actions, Today, Calendar), ⋯ Unassign · Trash.\nStep 2: N1 (claimed by B) — no buttons, no **This item** group. N5 — Assign to me · Done · Trash, no Move. N7 —\nActivate · Trash.\nStep 3: B on N5 — Assign to me · Done · Trash; B on N6 — Undo; B on N7 — no buttons. C on N3 — Done · Unassign · Trash\n(no Move); C on N5 — no buttons; C on N6 — no Undo; C on N1 — no buttons; C on N9 — no Undo. D on N4 — Done · Unassign · Trash (no Move); D on N6 — no Undo; D on N8 — Undo. Every\npage is right on first paint (no button appears or disappears after load).\nStep 4: toast as for any move to Today; N1 is in B's Today and its detail still shows \"Assigned to You\".\nStep 5: A — Activate · Complete · Trash; B — Leave (no Activate or Complete); Brainstorm is the section row, not a button.\nStep 6: error toast \"Shared projects can't go to Someday/Maybe.\"; P stays in Projects; no request to\n`/v1/project/{id}/someday` is sent.\nStep 7: Done · Move (Today, Calendar, Waiting For, Someday, Projects, Reference) · Trash, as before.\nStep 8: toast \"Action returned to backlog\"; N1 is gone from B's Today and is in P's backlog, unassigned.\nStep 9: error toast \"Assign this action to yourself before moving it.\" (the backend 403 `detail`, not \"Failed to move\naction\"); N5 stays in P's backlog, unassigned.\nStep 10: N5 is in P's backlog, unassigned, with no scheduled date; it is gone from B's Calendar. Updated by BUG-065."
   },
   {
     "id": "TC-899",
@@ -19722,7 +19722,7 @@
   },
   {
     "id": "TC-986",
-    "name": "Project Detail Rows per State × Role at 375 px",
+    "name": "Project Detail Rows per State × Role at 500 px",
     "priority": "High",
     "area": "Projects, Shared Projects, Mobile",
     "areas": [
@@ -19732,16 +19732,16 @@
     ],
     "smoke": false,
     "section": "72: UI Polish After FEAT-057 (BUG-065)",
-    "preconditions": "Team owner A and Team member B (write), viewport 375 × 812: an active personal project, an active shared project, a Someday personal project, a Someday shared project, a completed project.",
+    "preconditions": "Team owner A and Team member B (write), viewport 500 × 812: an active personal project, an active shared project, a Someday personal project, a Someday shared project, a completed project.",
     "steps": [
       "Open each project as A, and the active shared project as B; open ⋯ where shown.",
       "As A on the personal project choose ⋯ → **Trash**."
     ],
-    "expected": "Rows (visible · ⋯): active personal — Complete · Move · ⋯ Share… · Trash; active shared, owner — Complete · Trash; active shared, member — Leave; Someday personal — Activate · Complete · Move · ⋯ Share… · Trash; Someday shared, owner — Activate · Complete · Trash; completed — Undo. Each row is one line inside 375 px, never wraps or scrolls (`detail-more-menu` holds the listed items). Step 2: the project is trashed (`state` `TRASH`) and the page moves on (S0 X2, S6.2). BUG-065."
+    "expected": "Rows (visible · ⋯): active personal — Complete · Move · ⋯ Share… · Trash; active shared, owner — Complete · Trash; active shared, member — Leave; Someday personal — Activate · Complete · Move · ⋯ Share… · Trash; Someday shared, owner — Activate · Complete · Trash; completed — Undo. Each row is one line inside 500 px, never wraps or scrolls (`detail-more-menu` holds the listed items). Step 2: the project is trashed (`state` `TRASH`) and the page moves on (S0 X2, S6.2). BUG-065."
   },
   {
     "id": "TC-987",
-    "name": "Action Detail Rows per State × Role at 375 px",
+    "name": "Action Detail Rows per State × Role at 500 px",
     "priority": "High",
     "area": "Action Detail, Shared Projects, Mobile",
     "areas": [
@@ -19751,11 +19751,11 @@
     ],
     "smoke": false,
     "section": "72: UI Polish After FEAT-057 (BUG-065)",
-    "preconditions": "Team owner A, members B (write) and C (read_only, claimed before becoming read-only), viewport 375 × 812; personal actions in Next, Waiting, Someday and Completed; shared actions claimed by B (Next and Waiting), unassigned, and claimed by C.",
+    "preconditions": "Team owner A, members B (write) and C (read_only, claimed before becoming read-only), viewport 500 × 812; personal actions in Next, Waiting, Someday and Completed; shared actions claimed by B (Next and Waiting), unassigned, and claimed by C.",
     "steps": [
       "Open each action as the listed user; open ⋯ where shown."
     ],
-    "expected": "Personal active — Done · Move · Trash; personal waiting — Got it · Done · Move · ⋯ Trash; personal Someday — Activate · Move · Trash; completed — Undo; B on own claim — Done · Move · ⋯ Unassign · Trash; B on own waiting claim — Got it · Done · Move · ⋯ Unassign · Trash; A on unassigned — Assign to me · Done · Trash; C (read_only) on own claim — Done · Unassign · Trash; A on B's claim — no row (no empty band, no `View only`), the `Assigned to …` chip says why. Each row is one line inside 375 px (S0 X2/X2b, S11). BUG-065."
+    "expected": "Personal active — Done · Move · Trash; personal waiting — Got it · Done · Move · ⋯ Trash; personal Someday — Activate · Move · Trash; completed — Undo; B on own claim — Done · Move · ⋯ Unassign · Trash; B on own waiting claim — Got it · Done · Move · ⋯ Unassign · Trash; A on unassigned — Assign to me · Done · Trash; C (read_only) on own claim — Done · Unassign · Trash; A on B's claim — no row (no empty band, no `View only`), the `Assigned to …` chip says why. Each row is one line inside 500 px (S0 X2/X2b, S11). BUG-065."
   },
   {
     "id": "TC-988",
@@ -19946,7 +19946,7 @@
       "Open `/review`.",
       "Click **Start Review**."
     ],
-    "expected": "Step 1: no `Go` button, no number on any step row, no `Last 7 days — still open` / `Next 14 days` lists; **Start Review** right of the `Weekly Review` title on the same row. Step 2: **Complete Review** in the same place, disabled with title `Check all 6 steps to complete the review`; still no lists (O9, S5). BUG-065."
+    "expected": "Step 1: no `Go` button, no number on any step row, no `Last 7 days — still open` / `Next 14 days` lists; **Start Review** right of the `Weekly Review` title on the same row. Step 2: **Complete Review** in the same place, disabled with title `Check all 6 steps to complete the review`; still no lists (O9, S5). On mobile the header row is checked at 500 px: **Start Review** / **Complete Review** beside the title (owner 2026-10-26). BUG-065."
   },
   {
     "id": "TC-999",
@@ -20086,5 +20086,23 @@
       "Go back; tap `Venue`'s text, then Esc."
     ],
     "expected": "Step 1: the long text wraps across the full row width, only the count / check / chevron column stays free on the right. Step 2: the text becomes an editor in the same place — the row doesn't jump or change height, and the count `3` and chevron stay visible. Step 3: the edit is saved and the row shows the new text. Step 4: drills into `Venue`. Step 5: editing opens without drilling in; Esc restores the text. View-only: tapping the text drills in."
+  },
+  {
+    "id": "TC-1007",
+    "name": "Detail Action Row — Buttons Fit the Width, Overflow to ⋯ Only When Needed",
+    "priority": "Medium",
+    "area": "Project Detail, Action Detail",
+    "areas": [
+      "Project Detail",
+      "Action Detail"
+    ],
+    "smoke": false,
+    "section": "72: UI Polish After FEAT-057 (BUG-065)",
+    "preconditions": "Common preconditions; an active personal project `Row project` and a shared-project action claimed by me in Waiting For (full member, Team).",
+    "steps": [
+      "Desktop (≥ 1280 px): open `Row project`, then the Waiting action.",
+      "Narrow the window step by step to 375 px, then widen it back."
+    ],
+    "expected": "Step 1: project — Complete · Move · Share… · Trash, no ⋯; action — Got it · Done · Move · Unassign · Trash, no ⋯. Step 2: the row never wraps or overflows; as space runs out Trash, then Share… / Unassign move into ⋯ (`detail-more-menu`, Trash in danger colour), the primary, Complete / Done and Move always stay; widening brings them back to the row."
   }
 ]

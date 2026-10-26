@@ -80,7 +80,6 @@
               :loading-ids="loadingIds"
               :completing-ids="completingIds"
               :disabled="clarifyMode || isOffline"
-              :reorderable="pinnedRows.length === 0"
               :checkbox-disabled="isOffline"
               :no-default-action="clarifyMode || isOffline"
               :active-id="currentClarifyItem?.id ?? null"
@@ -223,8 +222,9 @@ const loadingIds = computed(() => {
 const queuedRows = computed(() => [...entries.value].sort((a, b) => b.captured_at.localeCompare(a.captured_at)))
 const hiddenIds = computed(() => new Set(entries.value.map(e => e.server_id).filter(Boolean)))
 // A synced capture's server row takes its queued row's place (top, newest first) until the Inbox reloads.
-// The server keeps its own order, so in-list reorder waits for that reload
+// The server keeps its own order meanwhile, so a reorder first brings it to the order on screen
 const pinnedRows = ref([])
+let serverOrder = null
 const serverRows = computed({
   get: () => {
     const rows = items.value.filter(i => !hiddenIds.value.has(i.id))
@@ -233,7 +233,10 @@ const serverRows = computed({
     const pinned = rows.filter(i => rank.has(i.id)).sort((a, b) => rank.get(a.id) - rank.get(b.id))
     return [...pinned, ...rows.filter(i => !rank.has(i.id))]
   },
-  set: (rows) => { items.value = [...rows, ...items.value.filter(i => hiddenIds.value.has(i.id))] },
+  set: (rows) => {
+    if (pinnedRows.value.length > 0) serverOrder = items.value.filter(i => !hiddenIds.value.has(i.id)).map(i => i.id)
+    items.value = [...rows, ...items.value.filter(i => hiddenIds.value.has(i.id))]
+  },
 })
 
 watch(entries, (now, before) => {
@@ -404,6 +407,7 @@ async function onDiscard(entry) {
 
 function onRefresh() {
   pinnedRows.value = []
+  serverOrder = null
   return loadStuff({ reset: true })
 }
 undo.registerRefresh(onRefresh)
@@ -487,11 +491,28 @@ async function onTrash(id) {
 async function onMove(id, newIndex) {
   movingId.value = id
   try {
-    await moveStuff(id, newIndex)
+    if (serverOrder) await moveToScreenOrder()
+    else await moveStuff(id, newIndex)
   } catch (e) {
     await loadStuff({ reset: true })
   } finally {
     movingId.value = null
+  }
+}
+
+// Moves only the rows whose server position differs from the screen, top to bottom
+async function moveToScreenOrder() {
+  const known = serverOrder
+  serverOrder = null
+  pinnedRows.value = []
+  const target = serverRows.value.map(i => i.id)
+  const order = known.filter(id => target.includes(id))
+  order.push(...target.filter(id => !order.includes(id)))
+  for (let i = 0; i < target.length; i++) {
+    if (order[i] === target[i]) continue
+    order.splice(order.indexOf(target[i]), 1)
+    order.splice(i, 0, target[i])
+    await moveStuff(target[i], i)
   }
 }
 
