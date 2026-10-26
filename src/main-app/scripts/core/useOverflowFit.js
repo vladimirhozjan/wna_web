@@ -57,9 +57,13 @@ export function useOverflowFit(rowRef, keysRef, overflowKeys) {
         observer.observe(row)
     }, { immediate: true })
 
-    document.fonts?.ready.then(measure)
+    // A web font that finishes loading after the first measure changes the button widths
+    document.fonts?.addEventListener('loadingdone', measure)
 
-    onBeforeUnmount(() => observer?.disconnect())
+    onBeforeUnmount(() => {
+        observer?.disconnect()
+        document.fonts?.removeEventListener('loadingdone', measure)
+    })
 
     return { visibleCount }
 }
