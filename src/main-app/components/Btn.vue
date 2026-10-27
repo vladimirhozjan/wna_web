@@ -243,7 +243,8 @@ const classes = computed(() => ([
 
 @media (max-width: 768px) {
   .dashboard .base-btn:is(.base-btn--sm, .base-btn--md, .base-btn--icon, .base-btn--link)::after,
-  .bottom-sheet .base-btn:is(.base-btn--sm, .base-btn--md, .base-btn--icon, .base-btn--link)::after {
+  .bottom-sheet .base-btn:is(.base-btn--sm, .base-btn--md, .base-btn--icon, .base-btn--link)::after,
+  .dropdown-sheet .base-btn:is(.base-btn--sm, .base-btn--md, .base-btn--icon, .base-btn--link)::after {
     content: '';
     position: absolute;
     top: 50%;

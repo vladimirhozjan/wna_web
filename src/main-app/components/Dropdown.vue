@@ -9,20 +9,20 @@
       <template v-if="isOpen && !isMobile">
         <div class="dropdown-backdrop" @click="close"></div>
         <div class="dropdown-menu" :style="menuStyle" ref="menuRef">
-          <slot :close="close" />
+          <slot :close="close" :mobile="false" />
         </div>
       </template>
 
       <!-- Mobile action sheet -->
       <template v-if="isOpen && isMobile">
-        <div class="dropdown-sheet-overlay" @click="close">
-          <div class="dropdown-sheet" @click.stop>
+        <div class="dropdown-sheet-overlay" :style="sheetOverlayStyle" @click="close">
+          <div class="dropdown-sheet" data-testid="dropdown-sheet" @click.stop>
             <div class="dropdown-sheet-header">
               <span class="text-body-l fw-semibold dropdown-sheet-title">{{ title }}</span>
               <button type="button" class="dropdown-sheet-close" @click="close">&times;</button>
             </div>
             <div class="dropdown-sheet-content">
-              <slot :close="close" />
+              <slot :close="close" :mobile="true" />
             </div>
           </div>
         </div>
@@ -32,7 +32,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useVisualViewport } from '../scripts/core/visualViewport.js'
 
 const props = defineProps({
   title: {
@@ -59,6 +60,9 @@ const menuStyle = ref({})
 
 // Support both controlled (v-model) and uncontrolled usage
 const isOpen = ref(false)
+
+const viewport = useVisualViewport(() => isOpen.value && isMobile.value)
+const sheetOverlayStyle = computed(() => ({ top: `${viewport.top}px`, height: `${viewport.height}px` }))
 
 function prePosition() {
   if (!wrapperRef.value) return
@@ -207,7 +211,8 @@ onUnmounted(() => {
 /* Mobile action sheet */
 .dropdown-sheet-overlay {
   position: fixed;
-  inset: 0;
+  left: 0;
+  right: 0;
   background: var(--color-overlay-light);
   z-index: 1000;
   display: flex;
@@ -219,7 +224,9 @@ onUnmounted(() => {
   width: 100%;
   background: var(--color-bg-primary);
   border-radius: 16px 16px 0 0;
-  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  max-height: 70%;
   overflow: hidden;
   animation: slideUp 0.2s ease-out;
 }
@@ -237,6 +244,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
   padding: 16px 20px;
   border-bottom: 1px solid var(--color-border-light);
 }
@@ -260,8 +268,11 @@ onUnmounted(() => {
 }
 
 .dropdown-sheet-content {
-  padding: 8px 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 @media (max-width: 768px) {
@@ -288,7 +299,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-.dropdown-item:hover {
+.dropdown-item:hover:where(:not(:disabled)) {
   background: var(--color-bg-secondary);
 }
 
@@ -308,7 +319,7 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.dropdown-item:hover .dropdown-item-icon {
+.dropdown-item:hover:where(:not(:disabled)) .dropdown-item-icon {
   color: var(--color-action);
 }
 
@@ -316,7 +327,7 @@ onUnmounted(() => {
   color: var(--color-text-danger);
 }
 
-.dropdown-item--danger:hover {
+.dropdown-item--danger:hover:where(:not(:disabled)) {
   background: rgba(220, 38, 38, 0.08);
 }
 

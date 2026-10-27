@@ -84,7 +84,7 @@
 
       <!-- Outcome strip -->
       <div v-if="canvas.project.value.outcome" class="canvas-outcome" @click="isMobile && (outcomeExpanded = !outcomeExpanded)">
-        <span class="text-overline color-text-secondary">Outcome</span>
+        <span :class="isMobile ? 'text-body-s fw-semibold canvas-outcome-label' : 'text-overline color-text-secondary'">Outcome</span>
         <p
             class="text-body-s canvas-outcome-text"
             :class="{ 'canvas-outcome-text--expanded': outcomeExpanded }"
@@ -498,8 +498,16 @@ onBeforeUnmount(() => {
     margin-right: 0;
   }
 
+  /* Same section inset and label as the drill-down below it (Project detail mobile) */
   .canvas-outcome {
+    padding-left: 32px;
     cursor: pointer;
+  }
+
+  .canvas-outcome-label {
+    display: block;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
   }
 
   .canvas-outcome-text {

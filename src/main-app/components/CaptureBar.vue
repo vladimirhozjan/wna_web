@@ -52,7 +52,7 @@
               <PlusCircleIcon class="capture-bar__attach-icon" />
             </Btn>
           </template>
-          <template #default="{ close }">
+          <template #default="{ close, mobile }">
             <div class="capture-menu" data-testid="capture-attach-menu">
               <button class="dropdown-item" :disabled="!isProOrTeam" @mousedown.prevent @click="close(); pickPhoto()">
                 <CameraIcon class="dropdown-item-icon" /> Photo
@@ -65,7 +65,13 @@
               </button>
               <div v-if="!isProOrTeam" class="capture-menu__locked" data-testid="capture-locked">
                 <span class="text-body-s color-text-secondary capture-menu__locked-line">{{ LOCKED_LINE }}</span>
-                <Btn variant="primary" size="sm" @mousedown.prevent @click="close(); paymentsEnabled ? showCaptureUpgrade() : contactSupport()">
+                <Btn
+                    variant="primary"
+                    :size="mobile ? 'md' : 'sm'"
+                    class="capture-menu__locked-cta"
+                    @mousedown.prevent
+                    @click="close(); paymentsEnabled ? showCaptureUpgrade() : contactSupport()"
+                >
                   {{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}
                 </Btn>
               </div>
@@ -557,12 +563,12 @@ defineExpose({
   height: 22px;
 }
 
-.capture-bar__attach-icon circle {
+.capture-bar__attach-icon :deep(circle) {
   transition: 0.15s fill;
 }
 
-.capture-bar__attach-btn:hover:not(:disabled) .capture-bar__attach-icon circle,
-.capture-bar__attach-btn--open .capture-bar__attach-icon circle {
+.capture-bar__attach-btn:hover:not(:disabled) .capture-bar__attach-icon :deep(circle),
+.capture-bar__attach-btn--open .capture-bar__attach-icon :deep(circle) {
   fill: var(--color-action-bg-light);
 }
 
@@ -598,17 +604,38 @@ defineExpose({
 }
 
 /* Attach menu */
+.capture-menu .dropdown-item:disabled {
+  color: var(--color-text-secondary);
+}
+
 .capture-menu__locked {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 8px;
-  max-width: 260px;
-  padding: 8px 4px 4px;
+  width: 260px;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--color-bg-secondary);
+  border-radius: 6px;
 }
 
 .capture-menu__locked-line {
   line-height: var(--lh-normal);
+}
+
+.capture-menu__locked-cta {
+  width: 100%;
+}
+
+/* In the mobile sheet the items are inset 16px */
+@media (max-width: 768px) {
+  .capture-menu__locked {
+    width: auto;
+    margin: 8px 16px;
+    padding: 16px;
+    gap: 12px;
+  }
 }
 
 /* Inbox input: Inpt's 8px top / 4px bottom margins, matched by Add (the Next add-input geometry) */

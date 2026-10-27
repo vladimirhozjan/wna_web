@@ -117,7 +117,11 @@ function writeServiceWorker(dir) {
         ...readdirSync(path.join(dir, 'assets')).sort().map(file => `assets/${file}`),
     ]
     const hash = createHash('sha256')
-    for (const file of files) hash.update(file).update(readFileSync(path.join(dir, file)))
+    for (const file of files) {
+        // Precached but never hashed: a per-env runtime file added by deploy, absent from a clean clone
+        if (file === 'config.js') continue
+        hash.update(file).update(readFileSync(path.join(dir, file)))
+    }
     // Set only by the local wnapm production build, so each local rebuild is a new worker; CI and production never set it
     if (process.env.WNA_BUILD_ID) hash.update(process.env.WNA_BUILD_ID)
     const version = hash.digest('hex').slice(0, 16)

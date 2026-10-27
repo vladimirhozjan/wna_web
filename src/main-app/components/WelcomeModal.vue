@@ -168,6 +168,17 @@ onUnmounted(() => {
   visibility: hidden;
 }
 
+/* The slide copy uses the modal's full width, so no slide runs past 2 lines */
+.welcome__slide :deep(.empty-state__text) {
+  max-width: none;
+}
+
+/* PlusIcon is a filled glyph; drawn smaller it matches the weight of the outline icons on slides 1–3 */
+.welcome__slide:last-child :deep(.empty-state__icon) {
+  width: 30%;
+  height: 30%;
+}
+
 .welcome__input {
   margin-top: 24px;
   max-width: 340px;

@@ -1,161 +1,170 @@
 <template>
   <Transition name="auth-fade">
-    <div v-if="isOpen" class="auth-backdrop" @click="closeAll">
-      <Transition name="auth-section" mode="out-in">
-        <div class="auth-dialog" @click.stop :key="props.mode || 'closed'">
-
-          <section v-if="props.mode === 'register'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Create Your Account</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                Start your journey to better clarity and control.
-              </p>
-            </div>
-            <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
-                  v-model:error="emailError"/>
-            <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
-                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
-                  v-model:error="passwordError"/>
-            <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
-                  placeholder="Confirm your password" v-model:error="confirmError"/>
-            <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
-              <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
-              <span class="text-body-s">
-                I agree to the
-                <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
-                and
-                <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
-              </span>
-            </label>
-            <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
-            <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
-            <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
-            <div v-if="googleSsoEnabled" class="or-divider">
-              <span class="or-divider__line"></span>
-              <span class="or-divider__text text-body-s color-text-secondary">or</span>
-              <span class="or-divider__line"></span>
-            </div>
-            <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
-              <GoogleIcon class="google-icon" width="18" height="18" />
-              Sign up with Google
+    <div v-if="isOpen" ref="backdropEl" class="auth-backdrop" data-testid="auth-backdrop" :style="backdropStyle"
+         @click="closeAll">
+      <div class="auth-scroll">
+        <Transition name="auth-section" mode="out-in">
+          <div ref="cardEl" class="auth-dialog" data-testid="auth-dialog" @click.stop @focusin="onCardFocusIn"
+               :key="props.mode || 'closed'">
+            <Btn variant="icon" size="sm" class="auth-close" data-testid="auth-dialog-close" title="Close"
+                 aria-label="Close" @click="closeAll">
+              <CloseIcon class="auth-close-icon" />
             </Btn>
-            <p v-if="googleSsoEnabled" class="text-footnote google-terms">
-              By continuing with Google, you agree to the
-              <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
-              and acknowledge the
-              <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
-            </p>
-          </section>
 
-          <section v-else-if="props.mode === 'login'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Welcome Back</h2>
-              <p class="subtitle text-body-s color-text-primary" data-testid="login-subtitle">
-                {{ shareWaiting ? 'Sign in to add what you shared to your Inbox.' : 'Let\'s get you organized.' }}
+            <section v-if="props.mode === 'register'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Create Your Account</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  Start your journey to better clarity and control.
+                </p>
+              </div>
+              <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                    v-model:error="emailError"/>
+              <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
+                    footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                    v-model:error="passwordError"/>
+              <Inpt v-model="confirm" @enter="doRegister" type="password" title="Confirm password"
+                    placeholder="Confirm your password" v-model:error="confirmError"/>
+              <label class="agree-checkbox" :class="{ 'agree-checkbox--error': agreeError }">
+                <input type="checkbox" v-model="agreeTerms" @change="agreeError = ''"/>
+                <span class="text-body-s">
+                  I agree to the
+                  <a href="/legal/terms" target="_blank" rel="noopener" @click.stop>Terms of Service</a>
+                  and
+                  <a href="/legal/privacy" target="_blank" rel="noopener" @click.stop>Privacy Policy</a>
+                </span>
+              </label>
+              <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
+              <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
+              <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
+              <div v-if="googleSsoEnabled" class="or-divider">
+                <span class="or-divider__line"></span>
+                <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                <span class="or-divider__line"></span>
+              </div>
+              <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
+                <GoogleIcon class="google-icon" width="18" height="18" />
+                Sign up with Google
+              </Btn>
+              <p v-if="googleSsoEnabled" class="text-footnote google-terms">
+                By continuing with Google, you agree to the
+                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+                and acknowledge the
+                <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
               </p>
-            </div>
-            <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
-                  v-model:error="emailError"/>
-            <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password"
-                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
-                  v-model:error="passwordError"/>
-            <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
-            <Lnk text="Forgot your password?" link="Reset it" @action="goToForgot"/>
-            <div v-if="googleSsoEnabled" class="or-divider">
-              <span class="or-divider__line"></span>
-              <span class="or-divider__text text-body-s color-text-secondary">or</span>
-              <span class="or-divider__line"></span>
-            </div>
-            <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
-              <GoogleIcon class="google-icon" width="18" height="18" />
-              Sign in with Google
-            </Btn>
-            <p v-if="googleSsoEnabled" class="text-footnote google-terms">
-              By continuing with Google, you agree to the
-              <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
-              and acknowledge the
-              <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
-            </p>
-            <div class="separator"></div>
-            <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
-          </section>
+            </section>
 
-          <section v-else-if="props.mode === 'forgot'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Forgot Your Password?</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                No problem. Just enter your email address below and we’ll send you a link to reset it.
+            <section v-else-if="props.mode === 'login'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Welcome Back</h2>
+                <p class="subtitle text-body-s color-text-primary" data-testid="login-subtitle">
+                  {{ shareWaiting ? 'Sign in to add what you shared to your Inbox.' : 'Let\'s get you organized.' }}
+                </p>
+              </div>
+              <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                    v-model:error="emailError"/>
+              <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password"
+                    v-model:error="passwordError"/>
+              <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
+              <Lnk text="Forgot your password?" link="Reset it" @action="goToForgot"/>
+              <div v-if="googleSsoEnabled" class="or-divider">
+                <span class="or-divider__line"></span>
+                <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                <span class="or-divider__line"></span>
+              </div>
+              <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
+                <GoogleIcon class="google-icon" width="18" height="18" />
+                Sign in with Google
+              </Btn>
+              <p v-if="googleSsoEnabled" class="text-footnote google-terms">
+                By continuing with Google, you agree to the
+                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+                and acknowledge the
+                <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
               </p>
-            </div>
-            <Inpt v-model="email" @enter="doForgot" type="email" title="Email"
-                  placeholder="Enter your email address" v-model:error="emailError"/>
-            <Btn @click="doForgot" :disabled="disableForgot" :loading="auth.loading.value">Send reset link</Btn>
-            <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
-          </section>
+              <div class="separator"></div>
+              <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
+            </section>
 
-          <section v-else-if="props.mode === 'reset'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Set a new password</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                Create a new, strong password for your account.
-              </p>
-            </div>
-            <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
-                  footer="Use 8 or more characters with a mix of letters, numbers and symbols"
-                  v-model:error="passwordError"/>
-            <Inpt v-model="confirm" @enter="doReset" type="password" title="Confirm password"
-                  placeholder="Confirm your password" v-model:error="confirmError"/>
-            <Btn @click="doReset" :disabled="disableReset" :loading="auth.loading.value">Update password</Btn>
-            <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
-          </section>
+            <section v-else-if="props.mode === 'forgot'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Forgot Your Password?</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  No problem. Just enter your email address below and we’ll send you a link to reset it.
+                </p>
+              </div>
+              <Inpt v-model="email" @enter="doForgot" type="email" title="Email"
+                    placeholder="Enter your email address" v-model:error="emailError"/>
+              <Btn @click="doForgot" :disabled="disableForgot" :loading="auth.loading.value">Send reset link</Btn>
+              <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
+            </section>
 
-          <section v-else-if="props.mode === 'forgot-sent'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Check your inbox</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                If an account exists for this email, we sent a link to reset your password. It may take a few minutes to arrive.
-              </p>
-            </div>
-            <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
-          </section>
+            <section v-else-if="props.mode === 'reset'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Set a new password</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  Create a new, strong password for your account.
+                </p>
+              </div>
+              <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
+                    footer="Use 8 or more characters with a mix of letters, numbers and symbols"
+                    v-model:error="passwordError"/>
+              <Inpt v-model="confirm" @enter="doReset" type="password" title="Confirm password"
+                    placeholder="Confirm your password" v-model:error="confirmError"/>
+              <Btn @click="doReset" :disabled="disableReset" :loading="auth.loading.value">Update password</Btn>
+              <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
+            </section>
 
-          <section v-else-if="props.mode === 'verify-sent'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Check your inbox</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                We've sent a verification link to <strong>{{ email }}</strong>.
-                Click the link to activate your account.
-              </p>
-            </div>
-            <Btn @click="doResend" :disabled="resendCooldown > 0" :loading="resending">
-              {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email' }}
-            </Btn>
-            <Lnk text="Already verified?" link="Back to login" @action="goToLogin"/>
-          </section>
+            <section v-else-if="props.mode === 'forgot-sent'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Check your inbox</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  If an account exists for this email, we sent a link to reset your password. It may take a few minutes to arrive.
+                </p>
+              </div>
+              <Lnk text="Remember your password?" link="Back to login" @action="goToLogin"/>
+            </section>
 
-          <section v-else-if="props.mode === 'unverified'">
-            <div>
-              <h2 class="text-h2 color-text-primary">Email not verified</h2>
-              <p class="subtitle text-body-s color-text-primary">
-                Please check your inbox for the verification link.
-              </p>
-            </div>
-            <Btn @click="doResend" :disabled="resendCooldown > 0" :loading="resending">
-              {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email' }}
-            </Btn>
-            <Lnk text="Back to login" link="Sign In" @action="goToLogin"/>
-          </section>
-        </div>
-      </Transition>
+            <section v-else-if="props.mode === 'verify-sent'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Check your inbox</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  We've sent a verification link to <strong>{{ email }}</strong>.
+                  Click the link to activate your account.
+                </p>
+              </div>
+              <Btn @click="doResend" :disabled="resendCooldown > 0" :loading="resending">
+                {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email' }}
+              </Btn>
+              <Lnk text="Already verified?" link="Back to login" @action="goToLogin"/>
+            </section>
+
+            <section v-else-if="props.mode === 'unverified'">
+              <div>
+                <h2 class="text-h2 color-text-primary">Email not verified</h2>
+                <p class="subtitle text-body-s color-text-primary">
+                  Please check your inbox for the verification link.
+                </p>
+              </div>
+              <Btn @click="doResend" :disabled="resendCooldown > 0" :loading="resending">
+                {{ resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend verification email' }}
+              </Btn>
+              <Lnk text="Back to login" link="Sign In" @action="goToLogin"/>
+            </section>
+          </div>
+        </Transition>
+      </div>
     </div>
   </Transition>
 </template>
 
 <script setup>
-import {computed, onUnmounted, ref, watch} from 'vue'
+import {computed, nextTick, onBeforeUnmount, onUnmounted, reactive, ref, watch} from 'vue'
 import Inpt from './Inpt.vue'
 import Btn from './Btn.vue'
 import Lnk from './Lnk.vue'
+import CloseIcon from '../assets/CloseIcon.vue'
+import {isMobileViewport} from '../scripts/core/swipe.js'
 import {isValidEmail, isValidPassword} from '../scripts/core/authTools.js'
 import {authModel} from '../scripts/core/authModel.js'
 import {errorModel} from '../scripts/core/errorModel.js'
@@ -236,6 +245,102 @@ watch(isOpen, (open) => {
     userId.value = null
   }
 })
+
+const REVEAL_MARGIN = 20
+
+const backdropEl = ref(null)
+const cardEl = ref(null)
+const viewport = reactive({ top: null, height: null })
+const backdropStyle = computed(() => viewport.height === null
+    ? null
+    : { top: `${viewport.top}px`, height: `${viewport.height}px` })
+let pageLocked = false
+let lockedY = 0
+let trackingViewport = false
+
+watch(isOpen, (open) => {
+  if (open) lockPage()
+  else unlockPage({ restore: true })
+}, { immediate: true })
+
+watch(() => props.mode, (m, old) => {
+  if (m && old && m !== old) nextTick(() => { if (backdropEl.value) backdropEl.value.scrollTop = 0 })
+})
+
+// overflow: hidden stops wheel/touch scroll; holdScroll undoes the iOS keyboard-reveal jump it does not stop
+function lockPage() {
+  if (pageLocked) return
+  pageLocked = true
+  lockedY = window.scrollY
+  const html = document.documentElement
+  if (window.innerWidth - html.clientWidth > 0) html.style.scrollbarGutter = 'stable'
+  html.style.overflow = 'hidden'
+  window.addEventListener('scroll', holdScroll)
+  if (!isMobileViewport()) return
+  trackingViewport = true
+  syncViewport()
+  window.visualViewport?.addEventListener('resize', syncViewport)
+  window.visualViewport?.addEventListener('scroll', syncViewport)
+  window.addEventListener('resize', syncViewport)
+}
+
+function unlockPage({ restore }) {
+  if (!pageLocked) return
+  pageLocked = false
+  window.removeEventListener('scroll', holdScroll)
+  const html = document.documentElement
+  html.style.removeProperty('overflow')
+  html.style.removeProperty('scrollbar-gutter')
+  if (restore) window.scrollTo(0, lockedY)
+  if (!trackingViewport) return
+  trackingViewport = false
+  window.visualViewport?.removeEventListener('resize', syncViewport)
+  window.visualViewport?.removeEventListener('scroll', syncViewport)
+  window.removeEventListener('resize', syncViewport)
+  viewport.top = null
+  viewport.height = null
+}
+
+function holdScroll() {
+  if (window.scrollY !== lockedY) window.scrollTo(0, lockedY)
+}
+
+function syncViewport() {
+  const vv = window.visualViewport
+  viewport.height = vv ? vv.height : window.innerHeight
+  viewport.top = vv ? vv.offsetTop : 0
+  nextTick(revealFocused)
+}
+
+function onCardFocusIn() {
+  if (trackingViewport) revealFocused()
+}
+
+// Inpt's root <label> holds label, input, footer and error, so the whole field is revealed
+function revealFocused() {
+  const field = document.activeElement?.closest('label')
+  if (field && cardEl.value?.contains(field)) revealInBackdrop(field)
+}
+
+function revealInBackdrop(el) {
+  const backdrop = backdropEl.value
+  if (!el || !backdrop) return
+  const b = backdrop.getBoundingClientRect()
+  const r = el.getBoundingClientRect()
+  if (r.bottom > b.bottom - REVEAL_MARGIN) backdrop.scrollTop += r.bottom - (b.bottom - REVEAL_MARGIN)
+  else if (r.top < b.top + REVEAL_MARGIN) backdrop.scrollTop -= (b.top + REVEAL_MARGIN) - r.top
+}
+
+// Mobile: close the keyboard first so the result and the bottom toasts are visible
+function blurOnMobile() {
+  if (isMobileViewport()) document.activeElement?.blur()
+}
+
+function revealFirstError() {
+  if (!isMobileViewport()) return
+  nextTick(() => revealInBackdrop(
+      cardEl.value?.querySelector('.input-error, .agree-checkbox--error')?.closest('label')))
+}
 
 function clearForm() {
   email.value = ''
@@ -353,6 +458,10 @@ onUnmounted(() => {
   stopVerificationPolling()
 })
 
+onBeforeUnmount(() => {
+  unlockPage({ restore: false })
+})
+
 async function doResend() {
   if (resendCooldown.value > 0 || !email.value) return
   resending.value = true
@@ -368,6 +477,7 @@ async function doResend() {
 }
 
 async function doLogin() {
+  blurOnMobile()
   clearErrors()
 
   if (!isValidEmail(email.value)) {
@@ -379,6 +489,7 @@ async function doLogin() {
   }
 
   if (emailError.value || passwordError.value) {
+    revealFirstError()
     return
   }
 
@@ -401,6 +512,7 @@ async function doLogin() {
 }
 
 async function doRegister() {
+  blurOnMobile()
   clearErrors()
 
   if (!isValidEmail(email.value)) {
@@ -420,6 +532,7 @@ async function doRegister() {
   }
 
   if (emailError.value || passwordError.value || confirmError.value || agreeError.value) {
+    revealFirstError()
     return
   }
 
@@ -436,6 +549,7 @@ async function doRegister() {
 }
 
 async function doForgot() {
+  blurOnMobile()
   clearErrors()
 
   if (!isValidEmail(email.value)) {
@@ -443,6 +557,7 @@ async function doForgot() {
   }
 
   if (emailError.value) {
+    revealFirstError()
     return
   }
 
@@ -456,6 +571,7 @@ async function doForgot() {
 }
 
 async function doReset() {
+  blurOnMobile()
   clearErrors()
 
   if (!isValidPassword(password.value)) {
@@ -467,6 +583,7 @@ async function doReset() {
   }
 
   if (passwordError.value || confirmError.value) {
+    revealFirstError()
     return
   }
 
@@ -496,20 +613,50 @@ const disableReset = computed(() => !password.value || !confirm.value)
   inset: 0;
   backdrop-filter: blur(3px);
   background: var(--color-popup-backdrop);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: 40;
 }
 
+/* Grows with a card taller than the backdrop, so the card top-aligns and the backdrop scrolls */
+.auth-scroll {
+  min-height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
 .auth-dialog {
-  margin: 0 20px;
+  position: relative;
+  margin: 0;
   background: var(--color-popup-background);
   padding: 30px 30px;
   border-radius: 12px;
   width: 100%;
   max-width: 420px;
   box-shadow: var(--shadow-auth);
+}
+
+.auth-dialog .auth-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--color-text-secondary);
+}
+
+.auth-dialog .auth-close:hover:not(:disabled) {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.auth-close-icon {
+  width: 18px;
+  height: 18px;
 }
 
 section {
@@ -631,6 +778,24 @@ h2 {
 .auth-section-leave-to {
   opacity: 0;
   transform: translateY(6px);
+}
+
+@media (max-width: 768px) {
+  .auth-backdrop {
+    z-index: 99998;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Desktop header stays above the backdrop: its height (TopNav.vue:404) + 20px */
+  .auth-scroll {
+    padding-top: calc(64px + 20px);
+    padding-bottom: calc(64px + 20px);
+  }
+
+  .auth-dialog .auth-close {
+    display: none;
+  }
 }
 
 </style>

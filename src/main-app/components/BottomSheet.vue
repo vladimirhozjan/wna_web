@@ -20,8 +20,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useSwipe, SNAP_MS } from '../scripts/core/swipe.js'
+import { useVisualViewport } from '../scripts/core/visualViewport.js'
 
 const props = defineProps({
   dismissible: { type: Boolean, default: true },
@@ -35,7 +36,7 @@ const DISMISS_RATIO = 0.25
 const sheetEl = ref(null)
 const handleEl = ref(null)
 const bodyEl = ref(null)
-const viewport = reactive({ height: window.innerHeight, top: 0 })
+const viewport = useVisualViewport(() => true, () => nextTick(checkOverflow))
 const expanded = ref(false)
 const dragY = ref(0)
 const snapping = ref(false)
@@ -53,13 +54,6 @@ const sheetStyle = computed(() => ({
 
 function onBackdrop() {
   if (props.dismissible) emit('close')
-}
-
-function syncViewport() {
-  const vv = window.visualViewport
-  viewport.height = vv ? vv.height : window.innerHeight
-  viewport.top = vv ? vv.offsetTop : 0
-  nextTick(checkOverflow)
 }
 
 // Expansion is one-way: once the content needs full height, it keeps it until the sheet closes.
@@ -90,10 +84,6 @@ useSwipe(handleEl, {
 })
 
 onMounted(() => {
-  syncViewport()
-  window.visualViewport?.addEventListener('resize', syncViewport)
-  window.visualViewport?.addEventListener('scroll', syncViewport)
-  window.addEventListener('resize', syncViewport)
   resizeObserver = new ResizeObserver(checkOverflow)
   resizeObserver.observe(bodyEl.value)
   mutationObserver = new MutationObserver(() => nextTick(checkOverflow))
@@ -101,9 +91,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  window.visualViewport?.removeEventListener('resize', syncViewport)
-  window.visualViewport?.removeEventListener('scroll', syncViewport)
-  window.removeEventListener('resize', syncViewport)
   resizeObserver?.disconnect()
   mutationObserver?.disconnect()
 })
