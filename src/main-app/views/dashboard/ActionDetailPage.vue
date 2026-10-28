@@ -483,6 +483,7 @@ import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { formatDate as toDateStr } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -785,6 +786,7 @@ async function loadAction() {
   totalItems.value = Number(route.query.total) || 1
 }
 undo.registerRefresh(loadAction)
+onAssistantChange(() => loadAction().catch(() => {}))
 
 onMounted(async () => {
   try {

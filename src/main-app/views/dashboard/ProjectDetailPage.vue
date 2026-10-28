@@ -761,6 +761,7 @@ import EmptyState from '../../components/EmptyState.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -1246,6 +1247,7 @@ async function loadProject() {
   await loadProjectActions()
 }
 undo.registerRefresh(loadProject)
+onAssistantChange(() => loadProject().catch(() => {}))
 
 // Sends only the changed key; the response is the viewer's link after the write
 async function onHorizonChange(key, value) {

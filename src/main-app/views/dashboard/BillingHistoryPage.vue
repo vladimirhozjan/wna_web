@@ -124,7 +124,7 @@ async function load() {
 }
 
 function rowTitle(p) {
-  const kind = p.kind.charAt(0).toUpperCase() + p.kind.slice(1)
+  const kind = p.kind === 'credit_pack' ? 'AI credits' : p.kind.charAt(0).toUpperCase() + p.kind.slice(1)
   return `${kind} · ${p.status.charAt(0).toUpperCase() + p.status.slice(1)}`
 }
 

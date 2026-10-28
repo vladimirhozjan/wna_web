@@ -90,6 +90,11 @@ export const bestPractices = [
       'Every AI app you connect can change your lists, so check Settings → AI Apps from time to time. Remove any app you no longer use — it loses access within a few minutes, and you can always connect it again later.',
   },
   {
+    title: 'Hand the Busywork to the AI — Then Check the Changes',
+    description:
+      'Let the AI assistant do the reshuffling you would rather not do by hand — sorting Today, clearing a day in your calendar, breaking a project into steps, tagging a batch of actions. Say what you want in one request ("move everything tagged @errands to Saturday") instead of many small ones; each message is a request and uses credits. Then read the Changes list under its reply and click anything that looks off. The assistant can make mistakes, and what it changes on your instruction is yours. It can think a goal through with you, but the decisions stay yours: what an item means and what matters most is still your call. If it keeps getting one of your habits wrong, tell it once — it notes it in its memory, which you can check in Settings → AI Assistant.',
+  },
+  {
     title: 'Automate With Recurring Actions',
     description:
       'Use recurring action templates for tasks that repeat on a schedule — weekly reviews, monthly reports, daily standups. Set the frequency, pick the days, and optionally add a time and duration. The app automatically spawns a new action instance each cycle so you never have to remember to create it yourself. Access recurring templates from the Calendar\'s Recurring view (Pro and Team plans).',

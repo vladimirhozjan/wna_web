@@ -33,7 +33,12 @@
         <span class="color-text-tertiary">{{ expandedId === row.id ? '▾' : '▸' }}</span>
       </template>
       <template #cell-created_at="{ value }">{{ formatDate(value) }}</template>
-      <template #cell-kind="{ value }"><span class="fw-medium payment-kind">{{ value }}</span></template>
+      <template #cell-kind="{ row }">
+        <span class="fw-medium payment-kind">{{ row.kind?.replace('_', ' ') }}</span>
+        <span v-if="row.credit_pack" class="text-caption color-text-secondary pack-credits">
+          {{ formatInt(row.credit_pack.remaining) }} of {{ formatInt(row.credit_pack.credits) }} left · expires {{ formatDay(row.credit_pack.expires_at) }}
+        </span>
+      </template>
       <template #cell-amount_minor="{ value }">{{ formatEur(value) }}</template>
       <template #cell-vat_amount_minor="{ value }">{{ value != null ? formatEur(value) : '—' }}</template>
       <template #cell-billing_country="{ value }">{{ value || '—' }}</template>
@@ -138,12 +143,13 @@ const KIND_OPTIONS = [
   { value: 'initial', label: 'Initial' },
   { value: 'renewal', label: 'Renewal' },
   { value: 'refund', label: 'Refund' },
+  { value: 'credit_pack', label: 'Credit pack' },
 ]
 
 const columns = [
   { key: 'expand', label: '', width: '32px' },
   { key: 'created_at', label: 'Date', width: '160px' },
-  { key: 'kind', label: 'Kind', width: '90px' },
+  { key: 'kind', label: 'Kind', width: '160px' },
   { key: 'amount_minor', label: 'Amount', width: '100px' },
   { key: 'vat_amount_minor', label: 'VAT', width: '90px' },
   { key: 'billing_country', label: 'Billing country', width: '110px' },
@@ -172,6 +178,15 @@ const refundRemainingMinor = ref(0)
 function formatDate(val) {
   if (!val) return '—'
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
+}
+
+function formatDay(val) {
+  if (!val) return '—'
+  try { return format(parseISO(val), 'MMM d, yyyy') } catch { return val }
+}
+
+function formatInt(val) {
+  return val == null ? '—' : Number(val).toLocaleString()
 }
 
 function formatEur(minor) {
@@ -269,6 +284,10 @@ async function confirmRefund() {
 
 .payment-kind {
   text-transform: capitalize;
+}
+
+.pack-credits {
+  display: block;
 }
 
 .evidence {

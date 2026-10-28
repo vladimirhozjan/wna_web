@@ -2472,6 +2472,142 @@ export async function getCreditNoteHtml(id) {
     }
 }
 
+export async function getCreditPacks() {
+    try {
+        const res = await httpApi.get('/v1/payments/credit-packs', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw {...normalizeError(err), code: err.response?.data?.error}
+    }
+}
+
+export async function checkoutCreditPack({packId, billingCountry, billingState = '', billingName = '', billingAddress1 = '', billingAddress2 = '', billingZip = '', billingCity = '', termsVersion, termsAccepted = false}) {
+    try {
+        const res = await httpApi.post('/v1/payments/credit-packs/checkout', {
+            pack_id: packId,
+            billing_country: billingCountry,
+            billing_state: billingState,
+            billing_name: billingName,
+            billing_address1: billingAddress1,
+            billing_address2: billingAddress2,
+            billing_zip: billingZip,
+            billing_city: billingCity,
+            terms_version: termsVersion,
+            terms_accepted: termsAccepted,
+        }, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw {...normalizeError(err), code: err.response?.data?.error}
+    }
+}
+
+// ── AI Assistant API ──
+
+// The error body carries more than its code (monthly_resets_at, model_name, max_chars)
+function assistantError(err) {
+    const data = err.response?.data || {}
+    return {...normalizeError(err), code: data.error, data}
+}
+
+export async function getAssistant() {
+    try {
+        const res = await httpApi.get('/v1/assistant', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function setAssistantModel(modelId) {
+    try {
+        const res = await httpApi.put('/v1/assistant/model', {model_id: modelId}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function getAssistantConversation() {
+    try {
+        const res = await httpApi.get('/v1/assistant/conversation', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function deleteAssistantConversation() {
+    try {
+        await httpApi.delete('/v1/assistant/conversation', {headers: authHeaders()})
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function sendAssistantMessage({text, pastedText = ''}) {
+    try {
+        const body = {text, timezone: liveTz()}
+        if (pastedText) body.pasted_text = pastedText
+        const res = await httpApi.post('/v1/assistant/messages', body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function getAssistantRequest(id) {
+    try {
+        const res = await httpApi.get(`/v1/assistant/requests/${id}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function stopAssistantRequest(id) {
+    try {
+        const res = await httpApi.post(`/v1/assistant/requests/${id}/stop`, {}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function getAssistantMemory() {
+    try {
+        const res = await httpApi.get('/v1/assistant/memory', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function saveAssistantMemory(text) {
+    try {
+        const res = await httpApi.put('/v1/assistant/memory', {text}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function clearAssistantMemory() {
+    try {
+        await httpApi.delete('/v1/assistant/memory', {headers: authHeaders()})
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
+export async function startCanvasConvert(projectId) {
+    try {
+        const res = await httpApi.post('/v1/assistant/canvas-convert', {project_id: projectId}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw assistantError(err)
+    }
+}
+
 const apiClient = {
     loginUser,
     registerUser,

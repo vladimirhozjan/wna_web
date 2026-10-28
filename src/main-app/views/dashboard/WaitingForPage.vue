@@ -98,6 +98,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 
@@ -179,6 +180,7 @@ function onRefresh() {
   return loadWaiting({ reset: true, tags: effectiveTags.value })
 }
 undo.registerRefresh(onRefresh)
+onAssistantChange(onRefresh)
 
 async function onAdd() {
   const t = newTitle.value.trim()

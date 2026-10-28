@@ -177,6 +177,7 @@ import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
 import BottomSheet from '../../components/BottomSheet.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 // model
 const {
@@ -411,6 +412,7 @@ function onRefresh() {
   return loadStuff({ reset: true })
 }
 undo.registerRefresh(onRefresh)
+onAssistantChange(onRefresh)
 
 function onItemClick(item, index) {
   if (clarifyMode.value) {

@@ -271,7 +271,70 @@
           </div>
         </template>
       </div>
+
+      <!-- AI Credits -->
+      <div v-if="isAdmin" class="info-card card">
+        <div class="card-title-row">
+          <h3 class="text-label color-text-secondary section-title">AI Credits</h3>
+          <Btn variant="secondary" size="sm" :disabled="!aiCredits" @click="openAddCredits">Add credits</Btn>
+        </div>
+        <div v-if="aiCreditsLoading" class="inbox-loading">
+          <Spinner />
+        </div>
+        <p v-else-if="aiCreditsError" class="text-body-s color-text-danger">Couldn't load AI credits.</p>
+        <template v-else-if="aiCredits">
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Credits left</span>
+            <span class="text-body-s fw-medium">{{ formatInt(aiCredits.total) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Monthly credits</span>
+            <span class="text-body-s">{{ formatInt(aiCredits.monthly_left) }} of {{ formatInt(aiCredits.monthly_allowance) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="text-label color-text-secondary">Extra credits</span>
+            <div class="credits-value">
+              <span class="text-body-s">{{ formatInt(aiCredits.purchased_left) }}</span>
+              <span v-if="aiCredits.purchased_next_expiry" class="text-caption color-text-tertiary">
+                {{ formatInt(aiCredits.purchased_next_expiry.credits) }} expire on {{ formatDay(aiCredits.purchased_next_expiry.date) }}
+              </span>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
+
+    <!-- Add AI credits Modal -->
+    <Modal :visible="showAddCredits" title="Add AI credits" @close="showAddCredits = false">
+      <form class="credits-form" @submit.prevent="confirmAddCredits">
+        <Inpt
+            v-model="addCreditsAmount"
+            v-model:error="addCreditsAmountError"
+            type="number"
+            title="Credits"
+            :disabled="addCreditsSaving"
+        />
+        <Inpt
+            v-model="addCreditsReason"
+            v-model:error="addCreditsReasonError"
+            type="text"
+            title="Reason"
+            placeholder="Goodwill for outage on 3 Nov"
+            :disabled="addCreditsSaving"
+        />
+        <p class="text-caption color-text-secondary credits-hint">
+          Valid for {{ aiCredits?.validity_months }} months. Logged in the audit log.
+        </p>
+        <p v-if="addCreditsError" class="text-body-s color-text-danger credits-hint">{{ addCreditsError }}</p>
+      </form>
+
+      <template #actions>
+        <Btn variant="secondary" size="sm" :disabled="addCreditsSaving" @click="showAddCredits = false">Cancel</Btn>
+        <Btn variant="primary" size="sm" :loading="addCreditsSaving" :disabled="addCreditsSaving" @click="confirmAddCredits">
+          Add credits
+        </Btn>
+      </template>
+    </Modal>
 
     <!-- Email to Inbox Modal -->
     <Modal :visible="showInboxModal" title="Email to Inbox" @close="showInboxModal = false">
@@ -432,6 +495,18 @@ const invoiceTiles = computed(() => {
   ]
 })
 
+// AI credits
+const aiCredits = ref(null)
+const aiCreditsLoading = ref(true)
+const aiCreditsError = ref(false)
+const showAddCredits = ref(false)
+const addCreditsAmount = ref('')
+const addCreditsAmountError = ref('')
+const addCreditsReason = ref('')
+const addCreditsReasonError = ref('')
+const addCreditsError = ref('')
+const addCreditsSaving = ref(false)
+
 // Delete modal state
 const showDeleteModal = ref(false)
 const deleteEmailInput = ref('')
@@ -527,6 +602,63 @@ async function loadGatewaySubscription() {
 function formatEur(minor) {
   if (minor == null) return '—'
   return `€${(minor / 100).toFixed(2)}`
+}
+
+function formatInt(val) {
+  return val == null ? '—' : Number(val).toLocaleString()
+}
+
+function formatDay(val) {
+  if (!val) return '—'
+  try { return format(parseISO(val), 'MMM d, yyyy') } catch { return val }
+}
+
+async function loadAiCredits() {
+  if (!isAdmin.value) return
+  aiCreditsLoading.value = true
+  aiCreditsError.value = false
+  try {
+    aiCredits.value = await apiClient.getPlatformUserAiCredits(route.params.id)
+  } catch {
+    aiCredits.value = null
+    aiCreditsError.value = true
+  } finally {
+    aiCreditsLoading.value = false
+  }
+}
+
+function openAddCredits() {
+  addCreditsAmount.value = ''
+  addCreditsReason.value = ''
+  addCreditsAmountError.value = ''
+  addCreditsReasonError.value = ''
+  addCreditsError.value = ''
+  showAddCredits.value = true
+}
+
+async function confirmAddCredits() {
+  addCreditsError.value = ''
+  const credits = Number(addCreditsAmount.value)
+  const reason = String(addCreditsReason.value).trim()
+  if (addCreditsAmount.value === '' || !Number.isInteger(credits) || credits < 1) {
+    addCreditsAmountError.value = 'Enter a whole number of at least 1.'
+  }
+  if (!reason) addCreditsReasonError.value = 'Enter a reason.'
+  if (addCreditsAmountError.value || addCreditsReasonError.value) return
+
+  addCreditsSaving.value = true
+  try {
+    await apiClient.addPlatformUserAiCredits(route.params.id, credits, reason)
+    toaster.success(`${formatInt(credits)} credits added`)
+    showAddCredits.value = false
+    loadAiCredits()
+  } catch (err) {
+    if (err.code === 'invalid_credits') addCreditsAmountError.value = 'Enter a whole number of at least 1.'
+    else if (err.code === 'invalid_reason') addCreditsReasonError.value = 'Enter a reason.'
+    else addCreditsError.value = "Couldn't add credits. Try again."
+  } finally {
+    addCreditsSaving.value = false
+  }
 }
 
 function parseSubExpiry() {
@@ -701,6 +833,7 @@ onMounted(() => {
   loadInboxEmail()
   loadCollabStats()
   loadBillingStats()
+  loadAiCredits()
 })
 </script>
 
@@ -929,6 +1062,36 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   padding: 12px 0;
+}
+
+/* AI credits */
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card-title-row .section-title {
+  margin: 0;
+}
+
+.credits-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.credits-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.credits-hint {
+  margin: 0;
 }
 
 /* Delete modal */

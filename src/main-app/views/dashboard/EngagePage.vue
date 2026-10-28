@@ -220,6 +220,7 @@ import apiClient from '../../scripts/core/apiClient.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import Spinner from '../../components/Spinner.vue'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -277,6 +278,7 @@ async function onRefresh() {
     }
 }
 undo.registerRefresh(onRefresh)
+onAssistantChange(onRefresh)
 
 // Loading state tracking
 const movingId = ref(null)

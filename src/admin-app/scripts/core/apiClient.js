@@ -23,7 +23,7 @@ function normalizeError(error) {
         const backendMsg = data.detail || data.error
 
         if (backendMsg) {
-            return { status, message: backendMsg }
+            return { status, message: backendMsg, code: data.error, detail: data.detail }
         }
 
         switch (status) {
@@ -1144,6 +1144,107 @@ export async function retryFailedBroadcast(id) {
     }
 }
 
+// --- AI assistant endpoints ---
+
+export async function listAiModels() {
+    try {
+        const res = await httpApi.get('/admin/ai/models')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createAiModel(data) {
+    try {
+        const res = await httpApi.post('/admin/ai/models', data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateAiModel(id, data) {
+    try {
+        const res = await httpApi.patch(`/admin/ai/models/${id}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getAiTierCredits() {
+    try {
+        const res = await httpApi.get('/admin/ai/tier-credits')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function setAiTierCredits(data) {
+    try {
+        const res = await httpApi.put('/admin/ai/tier-credits', data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listAiPacks() {
+    try {
+        const res = await httpApi.get('/admin/ai/packs')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createAiPack(data) {
+    try {
+        const res = await httpApi.post('/admin/ai/packs', data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function updateAiPack(id, data) {
+    try {
+        const res = await httpApi.patch(`/admin/ai/packs/${id}`, data)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getAiUsage(params = {}) {
+    try {
+        const res = await httpApi.get('/admin/ai/usage', { params })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getPlatformUserAiCredits(userId) {
+    try {
+        const res = await httpApi.get(`/admin/platform-users/${userId}/ai-credits`)
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function addPlatformUserAiCredits(userId, credits, reason) {
+    try {
+        const res = await httpApi.post(`/admin/platform-users/${userId}/ai-credits`, { credits, reason })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export default {
     login,
     refreshToken,
@@ -1256,4 +1357,15 @@ export default {
     testBroadcast,
     sendBroadcast,
     retryFailedBroadcast,
+    listAiModels,
+    createAiModel,
+    updateAiModel,
+    getAiTierCredits,
+    setAiTierCredits,
+    listAiPacks,
+    createAiPack,
+    updateAiPack,
+    getAiUsage,
+    getPlatformUserAiCredits,
+    addPlatformUserAiCredits,
 }

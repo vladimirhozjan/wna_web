@@ -170,6 +170,7 @@ import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { offlineModel } from '../../scripts/core/offlineModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { truncateTitle } from '../../scripts/core/textUtils.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const COPY = {
   area: {
@@ -235,6 +236,7 @@ const moveOptions = computed(() => {
 function load() {
   horizon.load().catch(() => {})
 }
+onAssistantChange(load)
 
 function isDue(level) {
   return settings.state.reviewEnabled && horizon.state.dueLevels.includes(level)

@@ -141,6 +141,18 @@ If you connect an AI app (for example Claude or ChatGPT) to your account, availa
 - We do not collect location data beyond your IP address and the country-level evidence described in Section 2.5
 - We do not collect biometric data
 
+### 2.11 AI Assistant
+
+If you use the **AI assistant** (available on all plans), it carries out the requests you give it on your content. To provide it, we store:
+
+- **Conversation** - the messages of your one open conversation (your requests, the assistant's replies and the changes it made) and a running summary of its older messages
+- **Memory** - the notes the assistant writes about how you work with it (for example "work tasks get @work"), which you can view, edit and clear in your settings
+- **Model choice** - the AI model you chose in your settings
+- **Credits** - your credit balance, the credit packs you buy, and credits we add to your account
+- **Usage records** - for each request: the time, the model, your plan, the number of tokens processed, our cost and the credits used
+
+The content the assistant reads and changes on your instruction is your content described in Section 2.2; it reaches the same content as a connected AI app (Section 2.9). Payments for credit packs are billing and payment data described in Section 2.5.
+
 ## 3. Legal Basis for Processing
 
 We process your personal data under the following legal bases (Article 6 GDPR):
@@ -153,6 +165,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar and, if you use the WhatsNextAction calendar, to import the events you create there, at your request |
 | Connected Google services data (Google Drive storage) | Contract performance (Art. 6(1)(b)) | Necessary to store your reference files and attachments in your Google Drive at your request |
 | Collaboration data (Team plan) | Contract performance (Art. 6(1)(b)) | Necessary to provide delegation and shared-project features you enable |
+| AI assistant (conversation, memory, usage) | Contract performance (Art. 6(1)(b)) | Necessary to carry out the requests you give the AI assistant and to count the credits they use; credit pack purchases fall under the payment and invoice rows below |
 | Payment data | Contract performance (Art. 6(1)(b)) | Necessary to process subscriptions and payments |
 | Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
 | ToS acceptance record | Legitimate interest (Art. 6(1)(f)) | Proof of the contract terms you accepted at checkout |
@@ -171,6 +184,7 @@ We use your personal data exclusively for the following purposes:
 - **Product announcements** - occasional emails about new features and product news (you can opt out in notification settings)
 - **Task notifications** - sending optional email reminders such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
 - **Collaboration** - enabling delegation and shared projects with the connections you choose (Team plan)
+- **AI assistant** - carrying out the requests you give the AI assistant on your data
 - **Subscription management** - processing payments, issuing invoices, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
 - **Legal compliance** - fulfilling our legal obligations under applicable law
@@ -202,11 +216,11 @@ The Google services above are governed by Google's own privacy policy. WhatsNext
 
 ### 5.4 Payment Processing
 
-- **Dinaro d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed by the Bank of Slovenia - processes subscription card payments. We share your email address, billing details, and the plan you purchase with Dinaro so it can process your payments; on its checkout page Dinaro also collects your card details (card number, expiry date, cardholder name) and IP address. Your full card details are never received or stored by us; we receive only the payment result, the country of your card's issuer, and the card brand and last 4 digits.
+- **Dinaro d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed by the Bank of Slovenia - processes subscription and AI credit pack card payments. We share your email address, billing details, and the plan or credit pack you purchase with Dinaro so it can process your payments; on its checkout page Dinaro also collects your card details (card number, expiry date, cardholder name) and IP address. Your full card details are never received or stored by us; we receive only the payment result, the country of your card's issuer, and the card brand and last 4 digits.
   - **As our processor:** for the payment gateway (integration and technical operation of card acceptance) and the settlement of payments, Dinaro processes personal data on our behalf under a data processing agreement. Its sub-processor for the payment gateway software is SIA Spell (Riga, Latvia).
   - **As an independent controller:** for card acquiring and payment processing under its licence, fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Dinaro decides how it processes the data itself. For this it works with financial partners such as partner banks (e.g. Shift4 Limited, Malta) and the card schemes (Visa, Mastercard). Dinaro's own processing is described in its privacy policy at [dinaro.si/privacy-policy](https://dinaro.si/privacy-policy).
   - Dinaro generally retains payment and transaction records for 10 years after the transaction, or longer where required by law. When you delete your account, we also delete your customer record at the payment platform, subject to these legal retention obligations.
-- **Stripe Payments Europe, Limited**, 1 Wilton Park, Wilton Place, Dublin 2, D02 FX04, Ireland - processes subscription payments when the checkout page shows Stripe as the payment provider. We share your email address, billing name, address and country, the plan you purchase, and our internal user identifier with Stripe so it can process your payments; on its checkout page Stripe also collects your payment details (such as card number or bank account details), IP address, and device data. Your full payment details are never received or stored by us; we receive only the payment result, the payment method type and, for cards, the country of the card's issuer and the card brand and last 4 digits.
+- **Stripe Payments Europe, Limited**, 1 Wilton Park, Wilton Place, Dublin 2, D02 FX04, Ireland - processes subscription and AI credit pack payments when the checkout page shows Stripe as the payment provider. We share your email address, billing name, address and country, the plan or credit pack you purchase, and our internal user identifier with Stripe so it can process your payments; on its checkout page Stripe also collects your payment details (such as card number or bank account details), IP address, and device data. Your full payment details are never received or stored by us; we receive only the payment result, the payment method type and, for cards, the country of the card's issuer and the card brand and last 4 digits.
   - **As our processor:** for processing payments on our behalf, Stripe processes personal data under the data processing agreement that forms part of its Services Agreement.
   - **As an independent controller:** for fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Stripe decides how it processes the data itself. Payment services are provided by Stripe Technology Europe, Limited, an electronic money institution authorised by the Central Bank of Ireland. Stripe's own processing is described in its privacy policy at [stripe.com/privacy](https://stripe.com/privacy).
   - Stripe retains payment and transaction records as required by its legal obligations. When you delete your account, we also delete your customer record at Stripe, subject to these legal retention obligations.
@@ -242,9 +256,13 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 - At your instruction, we let the AI app you connected read and change your content. Its provider receives that content as an independent controller under its own terms and privacy policy, not as our processor.
 
+### 5.12 AI Model Processing
+
+- **Google Cloud (Vertex AI, European Union multi-region)** - if you use the AI assistant, Google Cloud processes what the assistant sends to the AI model (your request, the conversation, the memory notes and the content it reads to carry out your request) and returns the model's reply, as our processor under the Google Cloud data processing terms. Models from other makers offered through Vertex AI (for example Anthropic's Claude) run on Google Cloud; Google does not share your prompts or the model's replies with the model's maker. Vertex AI's European Union multi-region keeps this data within EU member states. Google does not use this content to train or fine-tune AI models.
+
 ## 6. International Data Transfers
 
-We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres.
+We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres. The AI assistant's model processing also stays in the EEA, in Google Cloud's Vertex AI European Union multi-region (Section 5.12).
 
 The exception is card payment data. To process a card payment, it may be transferred to, processed, and stored outside Slovenia and the EEA by our payment provider Dinaro, its service providers (located mostly in the EEA and in Hong Kong), its partner banks, and the international card schemes (such as Visa and Mastercard), and may be disclosed where required by law. Such transfers take place where they are necessary to perform the payment you request (Art. 49(1)(b) GDPR) or under safeguards such as Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Dinaro's privacy policy.
 
@@ -274,6 +292,10 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Sign-in tokens (encrypted Google / Apple sign-in token) | Kept until you delete your account (the Apple token also until you stop using Sign in with Apple for WhatsNextAction); on account deletion we revoke our access at Google / Apple |
 | Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Connected AI apps (name, return addresses, connection and last-use time, hashed credential) | Kept until you remove the app, until its connection expires after the same period of non-use as a session, or until you delete your account; registrations by an AI app that never complete a connection are deleted after 24 hours |
+| AI assistant conversation (messages and running summary) | Deleted 30 days after its last message, when you start a new conversation, or when you delete your account |
+| AI assistant memory | Kept until you edit or clear it, or delete your account |
+| AI credit balance and credit batches | Kept for the duration of your account; purchased credits expire 12 months after purchase. Invoices and payment records for credit packs follow the invoice row below |
+| AI assistant usage records (time, model, plan, tokens, cost, credits) | Kept for 13 months; when you delete your account, they are kept without your identity until that period ends |
 | Operational alerts | Kept until the alert is resolved; deleted 90 days after it is resolved |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |

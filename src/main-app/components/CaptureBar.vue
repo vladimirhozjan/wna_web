@@ -23,7 +23,7 @@
             type="text"
             :placeholder="placeholder"
             :disabled="saving"
-            @keydown.enter="submit"
+            @keydown.enter="onEnterKey"
             @keydown.esc="onEsc"
             @paste="onPaste"
             @blur="onBlur"
@@ -92,7 +92,24 @@
       >Add</Btn>
     </div>
 
-    <div v-if="hasExtras" class="capture-bar__extras">
+    <div v-if="showExtras" class="capture-bar__extras" :class="{ 'capture-bar__extras--ai-only': !hasExtras }">
+      <button
+          v-if="aiRow"
+          type="button"
+          class="dropdown-item capture-ai"
+          :disabled="aiRowDisabled"
+          data-testid="capture-ai-row"
+          @mousedown.prevent
+          @click="runAiRow"
+      >
+        <BoltIcon class="capture-ai__icon" />
+        <span class="capture-ai__text">
+          <span class="text-body-s capture-ai__label">{{ aiRow === 'open' ? 'Open AI conversation' : 'Tell AI what to do' }}</span>
+          <span v-if="aiRowDisabled" class="text-caption color-text-secondary">Needs a connection</span>
+        </span>
+        <span v-if="aiRow === 'send' && !aiRowDisabled" class="text-caption capture-ai__hint">{{ AI_KEY }}</span>
+      </button>
+
       <div v-if="recState" class="text-body-s capture-bar__recording" data-testid="capture-recording">
         <template v-if="recState === 'waiting'">
           <span>Waiting for microphone access…</span>
@@ -120,7 +137,7 @@
           @toggle-play="togglePlay"
       />
 
-      <div v-if="variant === 'quick'" class="capture-bar__panel-actions">
+      <div v-if="variant === 'quick' && hasExtras" class="capture-bar__panel-actions">
         <Btn variant="primary" size="sm" :disabled="!canAdd" :loading="saving" @mousedown.prevent @click="submit">Add</Btn>
       </div>
     </div>
@@ -141,11 +158,13 @@ import PlusCircleIcon from '../assets/PlusCircleIcon.vue'
 import CameraIcon from '../assets/CameraIcon.vue'
 import MicIcon from '../assets/MicIcon.vue'
 import FileIcon from '../assets/FileIcon.vue'
+import BoltIcon from '../assets/BoltIcon.vue'
 import { captureQueue } from '../scripts/core/captureQueue.js'
 import { offlineModel } from '../scripts/core/offlineModel.js'
 import { authModel } from '../scripts/core/authModel.js'
 import { flagsModel } from '../scripts/core/flagsModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { assistantModel } from '../scripts/models/assistantModel.js'
 import {
   createChip,
   formatDuration,
@@ -173,12 +192,15 @@ const emit = defineEmits(['saved', 'close'])
 const VOICE_MAX_SECONDS = 5 * 60
 const VOICE_COUNTDOWN_SECONDS = 30
 
+const AI_KEY = /mac/i.test(navigator.platform) ? '⌘↵' : 'Ctrl+↵'
+
 const auth = authModel()
 const queue = captureQueue()
 const { isOffline } = offlineModel()
 const { paymentsEnabled } = flagsModel()
 const { playingId, toggle: toggleAudio, stop: stopPlayback } = audioPlayer()
 const toaster = errorModel()
+const assistant = assistantModel()
 
 const inptRef = ref(null)
 const inputRef = ref(null)
@@ -216,6 +238,15 @@ const showClear = computed(() => props.variant === 'fab' && hasContent.value)
 const placeholder = computed(() => chips.value.length || pastedText.value ? 'Add a title (optional)' : 'Add new stuff')
 
 const chipErrors = computed(() => limitErrors(chips.value, limits.value, tier.value))
+
+// Quick Add and the FAB only; the assistant takes no attachments, so photo / voice / file chips hide the row
+const aiRow = computed(() => {
+  if (props.variant === 'inbox' || !assistant.enabled.value || chips.value.length || recState.value) return null
+  if (text.value.trim() || pastedText.value.trim()) return 'send'
+  return assistant.hasConversation.value ? 'open' : null
+})
+const aiRowDisabled = computed(() => aiRow.value === 'send' && isOffline.value)
+const showExtras = computed(() => hasExtras.value || !!aiRow.value)
 
 const addable = computed(() => chips.value.filter(c => !chipErrors.value[c.id]))
 const canAdd = computed(() =>
@@ -447,6 +478,31 @@ async function submit() {
   focus()
 }
 
+// ── AI assistant ──
+
+function runAiRow() {
+  if (!aiRow.value || aiRowDisabled.value) return
+  if (aiRow.value === 'open') {
+    assistant.openPanel()
+  } else {
+    const typed = text.value.trim() || pastedText.value.trim()
+    const pasted = text.value.trim() ? pastedText.value : ''
+    assistant.send(typed, pasted)
+  }
+  clearAll()
+  emit('close')
+}
+
+// ⌘/Ctrl+Enter is the AI row; plain Enter stays Inbox
+function onEnterKey(e) {
+  if (e.metaKey || e.ctrlKey) {
+    e.preventDefault()
+    runAiRow()
+    return
+  }
+  submit()
+}
+
 function clearAll() {
   stopRecording(false)
   chips.value.forEach(releaseChip)
@@ -578,6 +634,51 @@ defineExpose({
   gap: 8px;
 }
 
+/* AI row: a dropdown-item row on the popover surface (desktop) / in the bar (mobile) */
+.capture-bar .capture-ai {
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.capture-ai__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-action);
+}
+
+.capture-ai__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.capture-ai__label {
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.capture-ai__hint {
+  margin-left: auto;
+  padding-left: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.capture-bar .capture-ai:disabled {
+  cursor: default;
+}
+
+.capture-ai:disabled .capture-ai__label {
+  color: var(--color-text-secondary);
+}
+
+.capture-ai:disabled .capture-ai__icon {
+  color: var(--color-text-tertiary);
+}
+
 /* Recording row */
 .capture-bar__recording {
   display: flex;
@@ -681,6 +782,15 @@ defineExpose({
   box-sizing: border-box;
 }
 
+/* Only the AI row: left-aligned under the field, the field's width */
+.capture-bar--quick .capture-bar__extras--ai-only {
+  left: 0;
+  right: auto;
+  width: 100%;
+  min-width: 260px;
+  padding: 4px;
+}
+
 .capture-bar__panel-actions {
   display: flex;
   justify-content: flex-end;
@@ -690,6 +800,16 @@ defineExpose({
 .capture-bar--fab .capture-bar__extras {
   order: -1;
   margin-bottom: 10px;
+}
+
+/* Icon in line with the field text (10px padding + 1px border) */
+.capture-bar--fab .capture-ai {
+  min-height: var(--touch-target-min);
+  padding: 0 11px;
+}
+
+.capture-bar--fab .capture-ai__hint {
+  display: none;
 }
 
 .capture-bar--fab .capture-bar__input {

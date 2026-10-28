@@ -308,6 +308,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const SEARCH_MIN = 8
 const LAST_ACTION_MESSAGE = 'A template needs at least one action. Add another one before you delete this.'
@@ -627,6 +628,8 @@ async function onPickTarget(target) {
     if (addTo.visible) loadTargets()
   }
 }
+
+onAssistantChange(loadTemplate)
 
 onMounted(async () => {
   model.current.value = null

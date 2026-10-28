@@ -28,5 +28,77 @@ h1, h2, h3, h4, p {
     }
 }
 
+/* Selectable purchase cards (/upgrade plans, /buy-credits packs) */
+.plan-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 16px;
+}
 
+@media (max-width: 768px) {
+    .plan-grid {
+        grid-auto-flow: row;
+    }
+}
 
+.plan-card {
+    position: relative;
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 24px;
+    background: var(--color-bg-primary);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    cursor: pointer;
+    font: inherit;
+    transition: 0.15s border-color, 0.15s box-shadow;
+}
+
+.plan-card:hover {
+    border-color: var(--color-action);
+}
+
+.plan-card--selected {
+    border: 2px solid var(--color-action);
+    box-shadow: 0 4px 24px rgba(65, 133, 222, 0.15);
+    padding: 23px;
+}
+
+.plan-card__radio {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-border-light);
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.plan-card__radio--on {
+    border-color: var(--color-action);
+    background: radial-gradient(circle, var(--color-action) 0 5px, transparent 6px);
+}
+
+.plan-card__name {
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.plan-card__price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 12px;
+}
+
+.plan-card__price .text-display {
+    color: var(--color-text-primary);
+}
+
+.plan-card__currency {
+    color: var(--color-text-primary);
+}

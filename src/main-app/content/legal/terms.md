@@ -46,6 +46,7 @@ The Service includes the following functionality:
 - **Google Calendar Sync** - Optional two-way sync of your scheduled actions with your Google Calendar, in a dedicated WhatsNextAction calendar we create for you on request or in another calendar you choose; events you create in the WhatsNextAction calendar in Google become scheduled actions in the Service (available on Pro and Team plans)
 - **Google Drive Storage** - Optional storage of your reference files and attachments in your own Google Drive (available on all plans)
 - **AI App Connections** - Optional connection of an AI app you use (for example Claude or ChatGPT) to your account over the Model Context Protocol, so it can read and change your tasks and projects on your instructions (available on all plans)
+- **AI Assistant** - A built-in assistant that does work on your tasks, projects and other content at your instruction, such as sorting your lists, planning a project, or turning a brainstorm into actions; each request uses AI credits (see Section 5.8) (available on all plans)
 
 Feature availability depends on your subscription plan (see Section 5).
 
@@ -147,6 +148,8 @@ To exercise this right, contact us at **info@whatsnextaction.com** with a clear 
 
 Cancelling your subscription in your account settings (Section 5.3) only stops automatic renewal and is not a withdrawal: it does not trigger a refund. To withdraw and receive a refund, you must send us your request by email as described above.
 
+**AI credit packs:** You can withdraw from a credit pack purchase within 14 days as long as none of its credits have been used; once the assistant starts using the pack's credits, the right of withdrawal ends. Your monthly credits are used before purchased credits (Section 5.8). To withdraw, send us your request by email as described above; we refund the full price of the pack and its credits are removed from your account.
+
 You may use the following model withdrawal form, but you are not obliged to:
 
 > **Model withdrawal form**
@@ -154,7 +157,7 @@ You may use the following model withdrawal form, but you are not obliged to:
 >
 > To: QubForge, tehnološke rešitve, d.o.o., Jakopičeva ulica 9, 2000 Maribor, Slovenia, info@whatsnextaction.com
 >
-> I/We (\*) hereby give notice that I/We (\*) withdraw from my/our (\*) contract for the provision of the following service (\*): WhatsNextAction subscription (plan: ……)
+> I/We (\*) hereby give notice that I/We (\*) withdraw from my/our (\*) contract for the provision of the following service (\*): WhatsNextAction subscription (plan: ……) (\*) / AI credit pack (credits: ……) (\*)
 >
 > Ordered on (\*): ……
 >
@@ -172,7 +175,7 @@ You may use the following model withdrawal form, but you are not obliged to:
 
 ### 5.5 Refunds
 
-Outside the 14-day withdrawal period, subscription fees are non-refundable except where required by applicable law. We may, at our discretion, offer refunds or credits in exceptional circumstances.
+Outside the 14-day withdrawal period, subscription fees are non-refundable except where required by applicable law. AI credit packs are non-refundable outside the right of withdrawal in Section 5.4, except where required by applicable law. We may, at our discretion, offer refunds or credits in exceptional circumstances.
 
 ### 5.6 Price Changes
 
@@ -187,6 +190,20 @@ Notice pursuant to Article 12 of ZDavPR:
 > Prodajalec mora za dobavo blaga ali storitev izdati račun in ga izročiti kupcu. Kupec mora prevzeti račun in ga zadržati neposredno po odhodu iz poslovnega prostora. (www.fu.gov.si/blagajne)
 
 English translation, for information only: The seller must issue an invoice for the supplied goods or services and hand it over to the buyer. The buyer must take the invoice and retain it immediately after leaving the business premises.
+
+### 5.8 AI Credits
+
+The AI assistant uses AI credits. Every request you give the assistant uses credits, and in a conversation every message you send is a request; questions the assistant asks you while working on a request are free.
+
+- **Monthly credits:** Each plan includes monthly credits, shown in your account settings. They are refilled on the 1st day of each calendar month (UTC); unused monthly credits lapse and do not carry over. If you change your plan, the new plan's monthly credits apply at once, minus the credits you have already used that month.
+- **Credit packs:** You can buy additional credits in one-time credit packs. Prices are in EUR and include VAT. Credit packs do not renew. We issue an invoice for every pack as described in Section 5.7.
+- **Order of use:** Your monthly credits are used first, then purchased credits.
+- **Validity:** Purchased credits are valid for 12 months from purchase and expire after that.
+- **Credits per request:** The number of credits a request uses depends on the AI model you choose in your settings. We may change the number of credits per request for future requests.
+- **When a request is charged:** A request that finishes uses its credits. A request that ends early (because you stop it, an error occurs, the Service restarts, or a question the assistant asked you is not answered) uses credits only if the assistant had already changed something in your account.
+- **No cash value:** Credits have no cash value, cannot be exchanged for money, and cannot be transferred to another account. Remaining credits end when your account is deleted.
+
+We may add credits to your account as a goodwill gesture; they follow the same rules.
 
 ## 6. Acceptable Use
 
@@ -289,6 +306,10 @@ If you are a consumer in the European Union, you benefit from mandatory consumer
 Some features connect the Service to services run by third parties, such as Google Calendar sync or Google Drive storage. When you connect such a service, its provider's own terms and privacy policy also apply to your use of it. We do not control third-party services and are not liable for their availability, changes, or how they handle your data, including events stored in your Google Calendar or files stored in your Google Drive. You can disconnect an integration at any time in your settings.
 
 If you connect an AI app through AI App Connections, the AI app's provider's own terms and privacy policy apply to your use of it. The AI app acts with your permissions, so you are responsible for the changes an AI app you connected makes in your account. We do not control the AI app or how its provider handles your data. You can remove an AI app at any time in your settings.
+
+### 9.8 AI Assistant Output
+
+The AI assistant uses AI models and can make mistakes: it may misunderstand a request, change the wrong items, or give replies that are incomplete or wrong. After each request it shows you the changes it made, and you are responsible for checking them. The assistant acts with your permissions, so changes it makes on your instruction are your own changes. Before it moves anything to Trash or acts on other people (delegating, sharing, inviting, or removing members), it asks you to confirm.
 
 ## 10. Indemnification
 

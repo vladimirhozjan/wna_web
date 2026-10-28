@@ -37,7 +37,7 @@
     <!-- Mobile FAB — quick add -->
     <div v-if="fabExpanded" class="fab-overlay" @click="fabCollapse" @touchmove.prevent @wheel.prevent></div>
     <!-- Hidden on /share (the page is itself the capture) and on the canvas (it has its own +) -->
-    <div v-show="!FAB_HIDDEN_ROUTES.has(router.currentRoute.value.name)" class="mobile-fab-area">
+    <div v-show="!FAB_HIDDEN_ROUTES.has(router.currentRoute.value.name) && !assistant.state.panelOpen" class="mobile-fab-area">
       <!-- Kept mounted while closed: an overlay tap closes the bar but keeps its text and files -->
       <div v-show="fabExpanded" class="fab-input-bar">
         <CaptureBar ref="fabBarRef" variant="fab" class="fab-capture" @saved="fabCollapse" @close="fabCollapse" />
@@ -49,6 +49,7 @@
 
     <CommandPalette />
     <ShortcutsDialog />
+    <AssistantPanel v-if="assistant.enabled.value" />
     <WelcomeModal :visible="welcomeOpen" @close="closeWelcome" @added="onWelcomeAdded" />
   </div>
 </template>
@@ -62,6 +63,7 @@ import CaptureBar from "../components/CaptureBar.vue";
 import Alert from "../components/Alert.vue";
 import CommandPalette from "../components/CommandPalette.vue";
 import ShortcutsDialog from "../components/ShortcutsDialog.vue";
+import AssistantPanel from "../components/AssistantPanel.vue";
 import WelcomeModal from "../components/WelcomeModal.vue";
 import { authModel } from "../scripts/core/authModel.js";
 import { shortcutModel } from "../scripts/core/shortcutModel.js";
@@ -71,6 +73,7 @@ import { errorModel } from "../scripts/core/errorModel.js";
 import { offlineModel } from "../scripts/core/offlineModel.js";
 import { statsModel } from "../scripts/models/statsModel.js";
 import { connectionModel } from "../scripts/models/connectionModel.js";
+import { assistantModel } from "../scripts/models/assistantModel.js";
 import router from "../router/router.js";
 
 const FAB_HIDDEN_ROUTES = new Set(["share", "project-canvas"]);
@@ -81,6 +84,7 @@ const auth = authModel();
 const settings = settingsModel();
 const toaster = errorModel();
 const shortcuts = shortcutModel();
+const assistant = assistantModel();
 const { isOffline } = offlineModel();
 const isSidebarOpen = ref(false);
 const welcomeOpen = ref(false);
@@ -131,7 +135,7 @@ function resetWindowScroll() {
 
 // These routes are mid-flow (checkout, OAuth callback, a share) — the first-run tour waits for the next dashboard route
 function isWelcomeBlockedRoute(route) {
-  if (route.name === "upgrade" || route.name === "google-connect" || route.name === "share") return true;
+  if (route.name === "upgrade" || route.name === "buy-credits" || route.name === "google-connect" || route.name === "share") return true;
   return route.name === "settings" && !!route.query.status;
 }
 let welcomeWaitPath = null;

@@ -32,12 +32,12 @@
             <div
                 v-else
                 class="palette__row"
-                :class="{ 'palette__row--active': row.index === highlight, 'palette__row--result': row.kind === 'result' }"
+                :class="{ 'palette__row--active': row.index === highlight, 'palette__row--result': row.kind === 'result', 'palette__row--disabled': !row.run }"
                 :data-index="row.index"
                 :data-testid="`command-palette-row-${row.kind}`"
                 @mousemove="highlight = row.index"
                 @mousedown.prevent
-                @click.capture.stop="run(row)"
+                @click.capture.stop="row.run && run(row)"
             >
               <SearchResultRow v-if="row.kind === 'result'" :item="row.item" :term="search.resultTerm.value" no-hover />
               <template v-else-if="row.kind === 'error'">
@@ -47,6 +47,11 @@
               <template v-else-if="row.kind === 'create'">
                 <PlusIcon class="palette__plus-icon" />
                 <span class="text-body-s">{{ row.label }}<span class="fw-semibold">{{ row.title }}</span></span>
+              </template>
+              <template v-else-if="row.kind === 'ai'">
+                <BoltIcon class="palette__plus-icon palette__bolt-icon" />
+                <span class="text-body-s palette__ai-label">{{ row.label }}<span class="fw-semibold">{{ row.title }}</span></span>
+                <span v-if="!row.run" class="text-caption palette__hint">· Needs a connection</span>
               </template>
               <template v-else>
                 <span class="text-body-s">{{ row.label }}</span>
@@ -69,6 +74,7 @@ import Spinner from './Spinner.vue'
 import SearchResultRow from './SearchResultRow.vue'
 import SearchIcon from '../assets/SearchIcon.vue'
 import PlusIcon from '../assets/PlusIcon.vue'
+import BoltIcon from '../assets/BoltIcon.vue'
 import { shortcutModel } from '../scripts/core/shortcutModel.js'
 import { searchModel, searchRoute, SEARCH_MIN_LENGTH } from '../scripts/models/searchModel.js'
 import { stuffModel } from '../scripts/models/stuffModel.js'
@@ -76,6 +82,7 @@ import { nextActionModel } from '../scripts/models/nextActionModel.js'
 import { projectModel } from '../scripts/models/projectModel.js'
 import { moveModel } from '../scripts/models/moveModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
+import { assistantModel } from '../scripts/models/assistantModel.js'
 
 const router = useRouter()
 const shortcuts = shortcutModel()
@@ -85,6 +92,7 @@ const { addAction } = nextActionModel()
 const { addProject } = projectModel()
 const mover = moveModel()
 const toaster = errorModel()
+const assistant = assistantModel()
 
 const query = ref('')
 const highlight = ref(0)
@@ -114,6 +122,11 @@ const navRows = computed(() => shortcuts.navigation.value.map(n => ({
   hint: n.hint,
   run: () => router.push({ name: n.route }),
 })))
+
+// Only while a conversation exists — the way back to it without spending a request
+const assistantRows = computed(() => assistant.enabled.value && assistant.hasConversation.value
+    ? [{ id: 'open-assistant', kind: 'command', label: 'Open AI conversation', keywords: 'open ai assistant conversation', run: assistant.openPanel }]
+    : [])
 
 function resultRows() {
   if (search.error.value) return [{ id: 'error', kind: 'error', keepOpen: true, run: search.retry }]
@@ -149,6 +162,10 @@ function createRows() {
     { id: 'create-inbox', kind: 'create', label: 'Add to Inbox: ', title, run: () => createStuff(title) },
     { id: 'create-project', kind: 'create', label: 'New project: ', title, run: () => createProject(title) },
     { id: 'create-action', kind: 'create', label: 'New next action: ', title, run: () => createAction(title) },
+    // Last, so Enter on a fresh query never spends credits by accident; offline it is shown but skipped
+    ...(assistant.enabled.value
+        ? [{ id: 'create-ai', kind: 'ai', label: 'Tell AI what to do: ', title, run: assistant.isOffline.value ? null : () => assistant.send(title) }]
+        : []),
   ]
 }
 
@@ -163,12 +180,13 @@ const groups = computed(() => {
 
   if (!term.value) {
     add('This item', itemRows.value)
-    add('Go to', navRows.value)
+    add('Go to', [...navRows.value, ...assistantRows.value])
     return list
   }
 
   const needle = term.value.toLowerCase()
-  add('Commands', [...itemRows.value, ...navRows.value].filter(r => r.label.toLowerCase().includes(needle)))
+  add('Commands', [...itemRows.value, ...navRows.value, ...assistantRows.value]
+      .filter(r => `${r.label} ${r.keywords || ''}`.toLowerCase().includes(needle)))
   if (term.value.length >= SEARCH_MIN_LENGTH) add('Results', resultRows())
   add('Create', createRows())
   return list
@@ -328,6 +346,22 @@ watch(() => shortcuts.state.paletteOpen, async (open) => {
   width: 12px;
   height: 12px;
   flex-shrink: 0;
+  color: var(--color-text-tertiary);
+}
+
+.palette__bolt-icon {
+  color: var(--color-action);
+}
+
+.palette__row--disabled {
+  cursor: default;
+}
+
+.palette__row--disabled .palette__ai-label {
+  color: var(--color-text-secondary);
+}
+
+.palette__row--disabled .palette__bolt-icon {
   color: var(--color-text-tertiary);
 }
 

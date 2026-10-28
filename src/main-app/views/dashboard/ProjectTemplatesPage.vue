@@ -56,6 +56,7 @@ import TextFileIcon from '../../assets/TextFileIcon.vue'
 import { projectTemplateModel } from '../../scripts/models/projectTemplateModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -114,6 +115,8 @@ async function onDelete(item) {
 watch(error, (err) => {
   if (err) toaster.push(err.message ?? 'Unknown error')
 })
+
+onAssistantChange(() => loadTemplates({ reset: true }).catch(() => {}))
 
 onMounted(() => {
   loadTemplates({ reset: true }).catch(() => {})

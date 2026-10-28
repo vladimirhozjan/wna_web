@@ -266,6 +266,7 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import { captureIcon } from '../../scripts/core/captureRules.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -397,6 +398,7 @@ async function loadItem() {
   totalItems.value = Number(route.query.total) || 1
 }
 undo.registerRefresh(loadItem)
+onAssistantChange(() => loadItem().catch(() => {}))
 
 onMounted(async () => {
   checkMobile()

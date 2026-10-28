@@ -234,7 +234,7 @@ export const faq = [
   {
     question: 'Is my data secure?',
     answer:
-      'Your account is protected by password requirements (minimum 8 characters with letters, digits, and symbols) and token-based authentication. Sessions are tracked per device — you can review, revoke, or end them from Settings at any time. Logging out in one browser tab instantly logs you out of all other open tabs. Changing your password automatically ends all other sessions.',
+      'Your account is protected by password requirements (minimum 8 characters with letters, digits, and symbols) and token-based authentication. Sessions are tracked per device — you can review, revoke, or end them from Settings at any time. Logging out in one browser tab instantly logs you out of all other open tabs. Changing your password automatically ends all other sessions. If you use the AI assistant, your requests are processed by AI models on Google Cloud in the EU and are not used to train AI models.',
   },
   {
     question: 'Can I use WhatsNextAction with Claude, ChatGPT or another AI?',
@@ -247,6 +247,28 @@ export const faq = [
       'Open Settings → AI Apps and tap the X next to the app, then confirm with Remove. The app loses access within a few minutes. To use it again, connect it again from the AI app.',
   },
 
+  // --- AI Assistant ---
+  {
+    question: 'What is the AI assistant?',
+    answer:
+      'The AI assistant is built into WhatsNextAction and does work in your account at your instruction, on every plan — no separate AI app needed. Type a request in Quick Add, such as "sort out Today" or "create a project Moving with 5 steps", and choose Tell AI what to do (or press ⌘↵ on a Mac, Ctrl+↵ elsewhere); Enter still captures to your Inbox. It works with your lists with the same rules and plan limits as the app and acts with your rights — on a Read-only shared project, it can only read. Under each reply it lists the changes it made, and it asks before moving anything to Trash or acting on other people. It can make mistakes, so check its changes. It needs a connection and doesn\'t take photos, voice memos or files.',
+  },
+  {
+    question: 'How do AI credits work?',
+    answer:
+      'Every request you give the AI assistant uses credits. Each message you send in the conversation is a request; the questions the assistant asks you along the way are free. How many credits a request uses depends on the model you choose in Settings → AI Assistant, where you also see your balance and about how many requests it covers; the credits per model can change for future requests. Every plan gets monthly credits — 1,000 on Free, 3,000 on Pro and 10,000 on Team — refilled on the 1st of each month (UTC); unused monthly credits don\'t carry over. If you change plans, the new plan\'s monthly credits apply right away. Monthly credits are used first, then credits from packs you bought, which stay valid for 12 months. A request that finishes uses its credits. A request that ends early — you press Stop, an error occurs, or a question it asked you goes unanswered — uses credits only if it had already changed something. The assistant tells you when you are running low and when you are out.',
+  },
+  {
+    question: 'Can I buy more AI credits?',
+    answer:
+      'Yes, in one-time credit packs, on every plan. Open Settings → AI Assistant and tap Buy (or Buy credits when the assistant tells you that you are running low or out), pick a pack, enter your billing address and tap Pay to continue to our payment provider\'s secure checkout. Prices are in EUR and include VAT, and an invoice is emailed to you. Packs don\'t renew; their credits are used after your monthly credits and stay valid for 12 months. Within 14 days of purchase you can withdraw from a pack and get a full refund as long as none of its credits have been used — email info@whatsnextaction.com (see the Terms of Service). Unused credits end when you delete your account.',
+  },
+  {
+    question: 'What does the AI assistant remember about me?',
+    answer:
+      'Two things. Its memory: notes the assistant writes itself about how you work, such as "work tasks get @work", so you don\'t have to repeat yourself. Open Settings → AI Assistant and tap View next to Memory to read, edit or clear them; memory holds up to 10,000 characters, and when it is full the assistant shortens it itself, at no cost. And your conversation: your one open conversation is kept so you can pick up where you left off, until you start a new one (⋯ → New conversation) or after 30 days without activity. Starting a new conversation deletes the old one but keeps the memory. Both are deleted with your account.',
+  },
+
   // --- Plans & Limits ---
   {
     question: 'What plans are available?',
@@ -256,7 +278,7 @@ export const faq = [
   {
     question: 'What are the limits on each plan?',
     answer:
-      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Ideas in a project brainstorm: 50 on Free, up to 1000 on Pro and Team, each up to 500 characters. Project templates: 3 on Free, unlimited on Pro and Team. Actions and inbox items are unlimited on every plan, including Free.',
+      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Ideas in a project brainstorm: 50 on Free, up to 1000 on Pro and Team, each up to 500 characters. Project templates: 3 on Free, unlimited on Pro and Team. AI assistant credits each month: 1,000 on Free, 3,000 on Pro and 10,000 on Team, and you can buy more in credit packs. Actions and inbox items are unlimited on every plan, including Free.',
   },
   {
     question: 'What are the limits on attachments and comments?',
@@ -282,7 +304,7 @@ export const faq = [
   {
     question: 'Where can I find my invoices?',
     answer:
-      'An invoice is emailed to you for every payment, including each renewal. You can also open Settings → Plan → Billing history to see all your payments, refunds, invoices, and credit notes, view any document, and download it as a PDF.',
+      'An invoice is emailed to you for every payment, including each renewal and each AI credit pack. You can also open Settings → Plan → Billing history to see all your payments, refunds, invoices, and credit notes, view any document, and download it as a PDF. Credit pack payments are listed there as AI credits.',
   },
   {
     question: 'What happens if a renewal payment fails?',
@@ -340,7 +362,7 @@ export const faq = [
   {
     question: 'Are there keyboard shortcuts?',
     answer:
-      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, or add what you typed as a new Inbox item, project or next action. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), H Horizons (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. Press Cmd/Ctrl+Z while the Undo message shows to undo your last complete, trash or move. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
+      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, add what you typed as a new Inbox item, project or next action, or hand it to the AI assistant. In Quick Add, press ⌘↵ on a Mac (Ctrl+↵ elsewhere) to tell the AI assistant what to do instead of capturing to your Inbox; in the AI assistant panel, Enter sends and Shift+Enter starts a new line. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), H Horizons (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. Press Cmd/Ctrl+Z while the Undo message shows to undo your last complete, trash or move. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
   },
 
   // --- Dashboard ---

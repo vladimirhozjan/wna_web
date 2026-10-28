@@ -101,6 +101,18 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="10" width="3" height="8" rx="0.5"/><rect x="8.5" y="5" width="3" height="13" rx="0.5"/><rect x="15" y="2" width="3" height="16" rx="0.5"/></svg>'
   },
   {
+    label: 'AI Assistant',
+    route: '/ai-assistant',
+    minRole: 'admin',
+    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M11 2L4.5 11h5L9 18l6.5-9h-5L11 2z"/></svg>'
+  },
+  {
+    label: 'AI Usage',
+    route: '/ai-usage',
+    minRole: 'admin',
+    icon: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 15a7 7 0 1 1 14 0"/><line x1="10" y1="15" x2="13.5" y2="9.5"/><circle cx="10" cy="15" r="1"/></svg>'
+  },
+  {
     label: 'Audit Log',
     route: '/audit',
     minRole: 'admin',

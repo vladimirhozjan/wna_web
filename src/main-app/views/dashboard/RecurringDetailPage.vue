@@ -246,6 +246,7 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { formatShortDate } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -309,10 +310,15 @@ onBeforeUnmount(() => {
   detailBodyRef.value?.removeEventListener('scroll', onBodyScroll)
 })
 
+async function loadTemplate() {
+  const data = await getRecurring(route.params.id)
+  template.value = { ...data }
+}
+onAssistantChange(() => loadTemplate().catch(() => {}))
+
 onMounted(async () => {
   try {
-    const data = await getRecurring(route.params.id)
-    template.value = { ...data }
+    await loadTemplate()
   } catch (err) {
     if (err?.status === 404) {
       notFound.value = true

@@ -108,6 +108,7 @@ import { completedModel } from '../../scripts/models/completedModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 
@@ -211,6 +212,7 @@ function onRefresh() {
   return Promise.all([loadCompleted({ reset: true }), loadStats()])
 }
 undo.registerRefresh(onRefresh)
+onAssistantChange(onRefresh)
 
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title

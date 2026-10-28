@@ -182,6 +182,18 @@ const routes = [
                 meta: { requiresAuth: true, minRole: 'viewer' }
             },
             {
+                path: 'ai-assistant',
+                name: 'ai-assistant',
+                component: () => import('../views/AiAssistantPage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
+                path: 'ai-usage',
+                name: 'ai-usage',
+                component: () => import('../views/AiUsagePage.vue'),
+                meta: { requiresAuth: true, minRole: 'admin' }
+            },
+            {
                 path: 'audit',
                 name: 'audit',
                 component: () => import('../views/AuditLogPage.vue'),

@@ -298,14 +298,19 @@ export function canvasModel() {
         if (session === sessionId && !dirty) saveStatus.value = 'saved'
     }
 
+    // A save or the AI convert answered 403 — the page reloads read-only
+    async function onLostEditRights() {
+        toaster.push('You can no longer edit this brainstorm, so your latest changes weren\'t saved.')
+        await reloadAll()
+    }
+
     async function onSaveError(err) {
         const status = err?.status
         if (status === 409) {
             conflict.value = true
             await reloadCanvas()
         } else if (status === 403) {
-            toaster.push('You can no longer edit this brainstorm, so your latest changes weren\'t saved.')
-            await reloadAll()
+            await onLostEditRights()
         } else if (status === 404) {
             dirty = false
             notFound.value = true
@@ -559,21 +564,20 @@ export function canvasModel() {
 
     // ── Turn into actions: existing create-action path, then one save of the marks ──
 
+    // rows = [{ title, source_ids }] in backlog order; every source idea of a created row gets the converted mark
     // → { created, outcome: 'ok' | 'network' | 'closed' }
-    async function convert(ids) {
+    async function convert(rows) {
         const closed = () => conflict.value || notFound.value || !canEdit.value
         await flush()
         if (closed()) return { created: 0, outcome: 'closed' }
         if (dirty || unsaved.value) return { created: 0, outcome: 'network' }
 
-        const wanted = new Set(ids)
-        const ordered = convertCandidates.value.filter(n => wanted.has(n.id))
         const created = []
         let failed = false
-        for (const node of ordered) {
+        for (const row of rows) {
             try {
-                await apiClient.addAction({ title: node.text.trim(), project_id: projectId.value, add_to_top: false })
-                created.push(node)
+                await apiClient.addAction({ title: row.title.trim(), project_id: projectId.value, add_to_top: false })
+                created.push(row)
             } catch {
                 failed = true
                 break
@@ -581,7 +585,12 @@ export function canvasModel() {
         }
 
         if (created.length) {
-            for (const node of created) node.converted = true
+            for (const row of created) {
+                for (const id of row.source_ids) {
+                    const node = getNode(id)
+                    if (node) node.converted = true
+                }
+            }
             undoStack.value = []
             redoStack.value = []
             commitSeq.value++
@@ -638,6 +647,7 @@ export function canvasModel() {
         setFolded,
         unmarkConverted,
         convert,
+        onLostEditRights,
     }
     return instance
 }

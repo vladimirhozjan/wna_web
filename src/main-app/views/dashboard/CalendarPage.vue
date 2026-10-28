@@ -65,6 +65,7 @@ import { calendarModel } from '../../scripts/models/calendarModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 const calendar = calendarModel()
@@ -94,6 +95,7 @@ async function loadData() {
   }
 }
 undo.registerRefresh(loadData)
+onAssistantChange(() => loadData().catch(() => {}))
 
 onMounted(() => {
   loadData()

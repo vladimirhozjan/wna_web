@@ -52,6 +52,7 @@
           <div class="delete-account-body" data-testid="delete-account-modal">
             <p class="text-body-m color-text-secondary">This permanently deletes your account and everything in it, including the projects you share with others. This can't be undone.</p>
             <p v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="text-body-m color-text-secondary">Your paid subscription is cancelled too.</p>
+            <p v-if="assistant.enabled.value && assistant.state.account?.purchased_left > 0" class="text-body-m color-text-secondary" data-testid="delete-account-ai-credits">Your unused extra AI credits are lost too.</p>
             <p class="text-body-m color-text-secondary">To confirm, type <strong class="delete-account-email color-text-primary">{{ userEmail }}</strong> below.</p>
             <Inpt ref="deleteEmailInput" v-model="deleteEmail" type="email" placeholder="Enter your email address"
                   data-testid="delete-account-email" @enter="onDeleteAccount" />
@@ -146,6 +147,85 @@
             </div>
           </div>
         </div>
+
+        <!-- AI Assistant Section -->
+        <div v-if="assistant.enabled.value && sectionVisible('assistant')" class="card" data-testid="settings-assistant">
+          <div class="card-header card-header--toggle" @click="toggleSection('assistant')">
+            <h2 class="settings-section-title">AI Assistant</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('assistant') }">&#8250;</span>
+          </div>
+          <div v-if="isExpanded('assistant')" class="settings-section-body">
+            <div v-if="!aiAccount && (aiLoading || !assistant.state.accountError)" class="settings-loading">
+              <Spinner :size="16" />
+              <span>Loading AI assistant...</span>
+            </div>
+
+            <div v-else-if="!aiAccount" class="settings-error">
+              <span>Couldn't load your AI assistant settings.</span>
+              <Btn variant="secondary" size="sm" @click="loadAssistant">Retry</Btn>
+            </div>
+
+            <template v-else>
+              <div v-if="confirmingCredits" class="settings-loading">
+                <Spinner :size="16" />
+                <span>Confirming your payment...</span>
+              </div>
+              <template v-else>
+                <div v-if="creditsStillProcessing" class="settings-row">
+                  <p class="text-body-s settings-hint">Your payment is still being processed — your credits will appear once it's confirmed. Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.</p>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Credits left</span>
+                    <p v-if="assistant.selectedModel.value" class="text-body-s settings-hint">About {{ aiAccount.requests_left.toLocaleString('en-US') }} requests with {{ assistant.selectedModel.value.name }}</p>
+                  </div>
+                  <span class="settings-value fw-semibold" data-testid="assistant-credits-total">{{ aiAccount.total.toLocaleString('en-US') }}</span>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Monthly credits</span>
+                    <p class="text-body-s settings-hint">Refills on {{ formatLocalDay(aiAccount.monthly_resets_at) }}</p>
+                  </div>
+                  <span class="settings-value">{{ aiAccount.monthly_left.toLocaleString('en-US') }} of {{ aiAccount.monthly_allowance.toLocaleString('en-US') }}</span>
+                </div>
+                <div v-if="aiAccount.purchased_left > 0" class="settings-row">
+                  <div>
+                    <span class="settings-label">Extra credits</span>
+                    <p v-if="aiAccount.purchased_next_expiry" class="text-body-s settings-hint">{{ aiAccount.purchased_next_expiry.credits.toLocaleString('en-US') }} expire on {{ formatDay(aiAccount.purchased_next_expiry.date) }}</p>
+                  </div>
+                  <span class="settings-value">{{ aiAccount.purchased_left.toLocaleString('en-US') }}</span>
+                </div>
+              </template>
+              <div class="settings-row">
+                <div>
+                  <span class="settings-label">Buy credits</span>
+                  <p class="text-body-s settings-hint">One-time packs, used after your monthly credits</p>
+                </div>
+                <Btn v-if="paymentsEnabled" variant="primary" size="sm" class="assistant-buy-btn" @click="router.push({ name: 'buy-credits' })">Buy</Btn>
+                <Btn v-else variant="primary" size="sm" class="assistant-buy-btn" @click="onContactSupport">Contact Us</Btn>
+              </div>
+              <div class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                <div>
+                  <span class="settings-label">Model</span>
+                  <p class="text-body-s settings-hint">Bigger models think better and use more credits.</p>
+                </div>
+                <div class="settings-control assistant-model" :class="{ 'settings-control--saving': aiModelSaving }">
+                  <span v-if="aiModelSaving" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                  <Select v-model="aiModelId" :options="aiModelOptions" title="Model" block />
+                </div>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <span class="settings-label">Memory</span>
+                  <p class="text-body-s settings-hint">What the assistant has noted about how you work</p>
+                </div>
+                <Btn variant="secondary" size="sm" data-testid="assistant-memory-view" @click="showMemoryModal = true">View</Btn>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <AssistantMemoryModal :visible="showMemoryModal" @close="showMemoryModal = false" />
 
         <!-- Email to Inbox Section -->
         <div v-if="tier && sectionVisible('emailInbox')" class="card">
@@ -858,6 +938,8 @@ import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { paymentModel } from '../../scripts/models/paymentModel.js'
 import { format, parseISO } from 'date-fns'
 import Spinner from '../../components/Spinner.vue'
+import AssistantMemoryModal from '../../components/AssistantMemoryModal.vue'
+import { assistantModel, ASSISTANT_POLL_MS, CREDITS_BEFORE_CHECKOUT_KEY } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -871,6 +953,7 @@ const theme = themeModel()
 const { stats, loadStats } = statsModel()
 const { paymentsEnabled, hasFlag } = flagsModel()
 const payment = paymentModel()
+const assistant = assistantModel()
 
 // Search
 const searchVisible = ref(false)
@@ -889,6 +972,7 @@ function toggleSearch() {
 const SECTION_KEYWORDS = {
   account: 'account email password login delete remove',
   plan: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice',
+  assistant: 'ai assistant credits buy pack model memory conversation',
   emailInbox: 'email inbox capture address forward generate reset pause',
   sessions: 'sessions devices logout active current',
   aiApps: 'ai apps mcp claude chatgpt connector connected assistant',
@@ -997,7 +1081,7 @@ async function onCancelSubscription() {
   }
 }
 
-// The gateway's hosted checkout returns to /settings/billing?status=…
+// The gateway's hosted checkout returns to /settings/billing?status=… (a credit pack to /settings/assistant?status=…)
 async function applyCheckoutReturn() {
   const status = route.query.status
   if (!status) return
@@ -1005,6 +1089,7 @@ async function applyCheckoutReturn() {
   delete query.status
   router.replace({query})
 
+  if (route.query.section === 'assistant') return applyCreditsReturn(status)
   if (status === 'success') {
     toaster.success('Payment submitted — confirming with the payment provider…')
     await convergeAfterCheckout()
@@ -1036,6 +1121,90 @@ async function convergeAfterCheckout() {
     paymentStillProcessing.value = true
   } finally {
     confirmingPayment.value = false
+  }
+}
+
+// AI assistant
+const aiAccount = computed(() => assistant.state.account)
+const aiLoading = ref(false)
+const aiModelId = ref(null)
+const aiModelSaving = ref(false)
+const showMemoryModal = ref(false)
+const confirmingCredits = ref(false)
+const creditsStillProcessing = ref(false)
+
+const aiModelOptions = computed(() => (aiAccount.value?.models || []).map(m => ({
+  value: m.id,
+  label: `${m.name} · ${m.credits_per_request.toLocaleString('en-US')} credits per request`,
+})))
+
+async function loadAssistant() {
+  if (!assistant.enabled.value) return
+  aiLoading.value = true
+  try {
+    await assistant.loadAccount()
+  } catch { /* the card shows the error with Retry */ }
+  finally {
+    aiLoading.value = false
+  }
+}
+
+watch(() => aiAccount.value?.selected_model_id, (id) => { aiModelId.value = id ?? null }, { immediate: true })
+
+watch(aiModelId, async (id) => {
+  if (id == null || id === aiAccount.value?.selected_model_id) return
+  aiModelSaving.value = true
+  try {
+    await assistant.setModel(id)
+  } catch {
+    toaster.push('Couldn\'t change the model. Try again.')
+    aiModelId.value = aiAccount.value?.selected_model_id ?? null
+  } finally {
+    aiModelSaving.value = false
+  }
+})
+
+// UTC instants shown as the user's local date
+function formatLocalDay(iso) {
+  if (!iso) return '—'
+  try { return format(parseISO(iso), 'MMM d, yyyy') } catch { return iso }
+}
+
+// Plain dates ("2027-10-28") stay that date in every zone
+function formatDay(day) {
+  if (!day) return '—'
+  try { return format(parseISO(day.slice(0, 10)), 'MMM d, yyyy') } catch { return day }
+}
+
+async function applyCreditsReturn(status) {
+  if (status === 'success') {
+    toaster.success('Payment submitted — confirming with the payment provider…')
+    await convergeAfterCreditsCheckout()
+  } else if (status === 'failure') {
+    toaster.push('Payment failed — you have not been charged. Please try again.')
+  } else if (status === 'cancel') {
+    toaster.push('Checkout cancelled — nothing was bought.')
+  }
+}
+
+// Credits arrive with the paid webhook — poll until the extra credits grow past what they were before checkout
+async function convergeAfterCreditsCheckout() {
+  const stored = sessionStorage.getItem(CREDITS_BEFORE_CHECKOUT_KEY)
+  sessionStorage.removeItem(CREDITS_BEFORE_CHECKOUT_KEY)
+  const before = stored === null ? null : Number(stored)
+  confirmingCredits.value = true
+  try {
+    for (let attempt = 0; attempt < CONVERGE_MAX_ATTEMPTS; attempt++) {
+      if (attempt > 0) await new Promise(resolve => setTimeout(resolve, ASSISTANT_POLL_MS))
+      if (!auth.isAuthenticated.value) return
+      try {
+        const account = await assistant.loadAccount()
+        if (before !== null && account.purchased_left > before) return
+      } catch { /* transient — keep polling */ }
+    }
+    creditsStillProcessing.value = true
+  } finally {
+    confirmingCredits.value = false
   }
 }
 
@@ -1686,6 +1855,7 @@ onMounted(() => {
   loadCalendarSync()
   loadDriveStorage()
   loadPaymentStatus()
+  loadAssistant()
 
   applySectionQuery()
   applyCheckoutReturn()
@@ -2139,6 +2309,25 @@ async function onLogout() {
 
 .settings-control--saving > *:not(.settings-saving-spinner) {
   opacity: 0.5;
+}
+
+/* Fits "Claude Sonnet 5.5 · 500 credits per request" */
+.assistant-model {
+  width: 380px;
+}
+
+.settings-row--column .assistant-model {
+  width: 100%;
+}
+
+.assistant-model :deep(.select-wrapper) {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The hint wraps, the button keeps one line */
+.assistant-buy-btn {
+  flex-shrink: 0;
 }
 
 .delete-account-body {

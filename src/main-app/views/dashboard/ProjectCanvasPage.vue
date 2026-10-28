@@ -18,8 +18,13 @@
             <Btn variant="ghost" size="sm" :disabled="!canvas.canRedo.value" @mousedown.prevent @click="onRedo">Redo</Btn>
           </template>
           <Btn variant="ghost" size="sm" data-testid="canvas-help" @click="openHelp">Help</Btn>
+          <span v-if="showAiConvert" class="canvas-turn" :title="aiDisabledReason || aiTooltip">
+            <Btn variant="secondary" size="sm" :disabled="!!aiDisabledReason" data-testid="canvas-convert-with-ai" @click="openConvert('ai')">
+              <BoltIcon class="canvas-bolt-icon" />Convert with AI
+            </Btn>
+          </span>
           <span v-if="canvas.canEdit.value" class="canvas-turn" :title="turnDisabledReason">
-            <Btn variant="primary" size="sm" :disabled="!!turnDisabledReason" data-testid="canvas-turn-into-actions" @click="convertOpen = true">Turn into actions</Btn>
+            <Btn variant="primary" size="sm" :disabled="!!turnDisabledReason" data-testid="canvas-turn-into-actions" @click="openConvert('manual')">Turn into actions</Btn>
           </span>
         </template>
         <template v-else>
@@ -39,9 +44,13 @@
                 <button class="dropdown-item dropdown-item--danger" @click="close(); deleteIdea(drillCurrent.id)">{{ drillDeleteLabel }}</button>
                 <div class="dropdown-divider"></div>
               </template>
-              <button class="dropdown-item canvas-menu-turn" :disabled="!!turnDisabledReason" data-testid="canvas-turn-into-actions" @click="close(); convertOpen = true">
+              <button class="dropdown-item canvas-menu-turn" :disabled="!!turnDisabledReason" data-testid="canvas-turn-into-actions" @click="close(); openConvert('manual')">
                 <span>Turn into actions…</span>
                 <span v-if="turnDisabledReason" class="text-caption color-text-secondary">{{ turnDisabledReason }}</span>
+              </button>
+              <button v-if="showAiConvert" class="dropdown-item canvas-menu-turn" :disabled="!!aiDisabledReason" data-testid="canvas-convert-with-ai" @click="close(); openConvert('ai')">
+                <span>Convert with AI…</span>
+                <span v-if="aiDisabledReason" class="text-caption color-text-secondary">{{ aiDisabledReason }}</span>
               </button>
               <button class="dropdown-item" @click="close(); openHelp()">Help</button>
             </template>
@@ -119,7 +128,7 @@
       <CanvasMap v-else ref="mapRef" class="canvas-body" @move="moveId = $event" @help="openHelp" />
     </template>
 
-    <CanvasConvertModal :visible="convertOpen" @close="convertOpen = false" />
+    <CanvasConvertModal :visible="convertOpen" :mode="convertMode" @close="convertOpen = false" />
     <CanvasMovePicker :node-id="moveId" @close="moveId = null" @moved="onMoved" />
   </div>
 </template>
@@ -136,6 +145,8 @@ import EmptyState from '../../components/EmptyState.vue'
 import CanvasMap from '../../components/canvas/CanvasMap.vue'
 import CanvasDrillDown from '../../components/canvas/CanvasDrillDown.vue'
 import CanvasConvertModal from '../../components/canvas/CanvasConvertModal.vue'
+import BoltIcon from '../../assets/BoltIcon.vue'
+import { assistantModel } from '../../scripts/models/assistantModel.js'
 import CanvasMovePicker from '../../components/canvas/CanvasMovePicker.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
@@ -159,11 +170,13 @@ const VIEW_ONLY_BY_STATE = {
 const route = useRoute()
 const router = useRouter()
 const canvas = canvasModel()
+const assistant = assistantModel()
 const confirm = confirmModel()
 const toaster = errorModel()
 
 const isMobile = ref(isMobileViewport())
 const convertOpen = ref(false)
+const convertMode = ref('manual')
 const moveId = ref(null)
 const outcomeExpanded = ref(false)
 const mapRef = ref(null)
@@ -189,6 +202,20 @@ const turnDisabledReason = computed(() => {
   const allConverted = canvas.nodes.value.some(n => n.parent_id != null && n.converted && n.text.trim() && !canvas.childrenOf(n.id).length)
   return allConverted ? 'Every idea is already an action.' : 'Add ideas first — ideas without sub-ideas become actions.'
 })
+
+// Same editors as Turn into actions; the AI reads the whole canvas, so any non-blank idea is enough
+const showAiConvert = computed(() => canvas.canEdit.value && assistant.enabled.value)
+const aiDisabledReason = computed(() =>
+    canvas.nodes.value.some(n => n.parent_id != null && n.text.trim()) ? '' : 'Add ideas first.')
+const aiTooltip = computed(() => {
+  const n = assistant.selectedModel.value?.credits_per_request
+  return n ? `Uses 1 request (${n.toLocaleString('en-US')} credits)` : ''
+})
+
+function openConvert(mode) {
+  convertMode.value = mode
+  convertOpen.value = true
+}
 
 // Mobile drill-down: the idea on screen (null = the root)
 const drillCurrent = computed(() => canvas.getNode(drillId.value) || canvas.nodes.value.find(n => n.parent_id == null) || null)
@@ -423,6 +450,13 @@ onBeforeUnmount(() => {
 
 .canvas-turn {
   display: inline-flex;
+}
+
+.canvas-bolt-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  color: var(--color-action);
 }
 
 .canvas-menu-turn {

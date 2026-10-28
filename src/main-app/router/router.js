@@ -54,6 +54,7 @@ const routes = [
     {path: '/settings', name: 'settings', component: SettingsPage},
     {path: '/billing-history', name: 'billing-history', component: () => import('../views/dashboard/BillingHistoryPage.vue')},
     {path: '/upgrade', name: 'upgrade', component: () => import('../views/dashboard/UpgradePage.vue')},
+    {path: '/buy-credits', name: 'buy-credits', component: () => import('../views/dashboard/BuyCreditsPage.vue')},
     // Preserve extra query params — the Paywiser checkout returns to /settings/billing?status=…
     {path: '/settings/:section', redirect: to => ({path: '/settings', query: {...to.query, section: to.params.section}})},
     {path: '/connections', name: 'connections', component: ConnectionsPage},
