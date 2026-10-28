@@ -2311,9 +2311,13 @@ async function onLogout() {
   opacity: 0.5;
 }
 
-/* Fits "Claude Sonnet 5.5 · 500 credits per request" */
+/* Long model names ellipsize; the height matches the other Settings selects */
 .assistant-model {
-  width: 380px;
+  width: 260px;
+}
+
+.assistant-model :deep(.select-trigger) {
+  padding: 6px 12px;
 }
 
 .settings-row--column .assistant-model {

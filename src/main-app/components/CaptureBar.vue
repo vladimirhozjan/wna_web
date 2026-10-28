@@ -164,7 +164,7 @@ import { offlineModel } from '../scripts/core/offlineModel.js'
 import { authModel } from '../scripts/core/authModel.js'
 import { flagsModel } from '../scripts/core/flagsModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
-import { assistantModel } from '../scripts/models/assistantModel.js'
+import { assistantModel, ASSISTANT_TEXT_MAX } from '../scripts/models/assistantModel.js'
 import {
   createChip,
   formatDuration,
@@ -485,12 +485,20 @@ function runAiRow() {
   if (aiRow.value === 'open') {
     assistant.openPanel()
   } else {
-    const typed = text.value.trim() || pastedText.value.trim()
-    const pasted = text.value.trim() ? pastedText.value : ''
-    assistant.send(typed, pasted)
+    const typed = text.value.trim()
+    if (typed) assistant.send(typed, pastedText.value)
+    else assistant.send(...splitPasted(pastedText.value))
   }
   clearAll()
   emit('close')
+}
+
+// Paste with no typed line: its first line (up to the typed cap) is the request, the rest goes as pasted text
+function splitPasted(pasted) {
+  const { first, rest } = splitLines(pasted)
+  const chars = [...first]
+  const overflow = chars.slice(ASSISTANT_TEXT_MAX).join('')
+  return [chars.slice(0, ASSISTANT_TEXT_MAX).join(''), overflow ? [overflow, rest].filter(Boolean).join('\n') : rest]
 }
 
 // ⌘/Ctrl+Enter is the AI row; plain Enter stays Inbox

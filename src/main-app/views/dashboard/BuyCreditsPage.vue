@@ -53,10 +53,12 @@
             </div>
 
             <BillingAddressForm ref="billingRef" :eu-countries="payment.state.euCountries" :fiscal-countries="payment.state.fiscalCountries">
-              <p class="text-body-s buy-credits-withdrawal">
-                You can <a href="/legal/terms" target="_blank" rel="noopener">withdraw</a> from a pack until you use any
-                of its credits. Unused credits end when you delete your account.
-              </p>
+              <template #notice>
+                <p class="text-body-s buy-credits-withdrawal">
+                  You can <a href="/legal/terms" target="_blank" rel="noopener">withdraw</a> from a pack until you use any
+                  of its credits. Unused credits end when you delete your account.
+                </p>
+              </template>
               <template #action>
                 <Btn
                     variant="primary"

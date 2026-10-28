@@ -39,7 +39,7 @@ const error = errorModel()
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 99999;
+  z-index: 100001;
 }
 
 .toast-inner {

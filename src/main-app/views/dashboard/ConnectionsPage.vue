@@ -171,6 +171,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
+import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const auth = authModel()
 const toaster = errorModel()
@@ -320,6 +321,8 @@ function formatRelative(dateStr) {
   if (diffDays < 7) return `${diffDays}d ago`
   return date.toLocaleDateString()
 }
+
+onAssistantChange(() => connections.loadAll().catch(() => {}))
 
 onMounted(() => {
   connections.loadAll().catch(() => {

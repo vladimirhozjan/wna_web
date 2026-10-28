@@ -114,7 +114,8 @@
         <Inpt v-model="modelForm.price_in_eur_per_mtok" type="text" title="Price in (€ per 1M tokens)" :disabled="modelSaving" />
         <Inpt v-model="modelForm.price_cached_in_eur_per_mtok" type="text" title="Price cached in (€ per 1M tokens)" :disabled="modelSaving" />
         <Inpt v-model="modelForm.price_out_eur_per_mtok" type="text" title="Price out (€ per 1M tokens)" :disabled="modelSaving" />
-        <label class="text-body-s check-label">
+        <!-- A new model starts not offered, so it can only become the default once edited -->
+        <label v-if="editingModel" class="text-body-s check-label">
           <input v-model="modelForm.is_default" type="checkbox" :disabled="modelSaving || !!editingModel?.is_default" />
           <span>Make default</span>
         </label>
@@ -337,7 +338,7 @@ function modelBody() {
     if (v === '' || v == null) return
     body[k] = INT_FIELDS.includes(k) ? Number(v) : String(v).trim()
   })
-  if (modelForm.is_default && !editingModel.value?.is_default) body.is_default = true
+  if (editingModel.value && modelForm.is_default && !editingModel.value.is_default) body.is_default = true
   return body
 }
 

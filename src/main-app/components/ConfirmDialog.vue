@@ -44,7 +44,8 @@ watch(() => confirm.state.visible, (visible) => {
   align-items: center;
   padding-bottom: 48px;
   justify-content: center;
-  z-index: 99998;
+  /* Above every Modal / picker it is opened from; only toasts sit higher */
+  z-index: 100000;
 }
 
 .dialog {

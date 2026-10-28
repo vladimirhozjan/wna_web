@@ -237,6 +237,22 @@ export function canvasModel() {
         }
     }
 
+    // The AI assistant changed this canvas on the server. Pending edits go out first (a 409 takes the conflict path);
+    // the idea being edited survives the reload even if the server has not seen it yet, so no typing is lost
+    async function refreshFromServer(editingId = null) {
+        const session = sessionId
+        await flush()
+        if (session !== sessionId || dirty || unsaved.value || conflict.value) return
+        const editing = editingId ? getNode(editingId) : null
+        try {
+            const [p, c] = await Promise.all([apiClient.getProject(projectId.value), apiClient.getProjectCanvas(projectId.value)])
+            if (session !== sessionId || dirty) return
+            project.value = p
+            applyCanvas(c)
+            if (editing && !getNode(editing.id) && getNode(editing.parent_id)) nodes.value = [...nodes.value, editing]
+        } catch { /* the next save or visit loads it */ }
+    }
+
     // Leaving the page: later responses of this session are ignored
     function close() {
         sessionId++
@@ -648,6 +664,7 @@ export function canvasModel() {
         unmarkConverted,
         convert,
         onLostEditRights,
+        refreshFromServer,
     }
     return instance
 }

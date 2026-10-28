@@ -60,6 +60,8 @@
     <span class="text-body-s billing-footer__hint">
       Prices include VAT. You will be redirected to our payment provider to complete the purchase.
     </span>
+    <!-- Lines that must come before the fiscal notice and the Terms -->
+    <slot name="notice" />
     <span v-if="isFiscalCountry" class="text-footnote billing-footer__fiscal-notice">
       Prodajalec mora za dobavo blaga ali storitev izdati račun in ga izročiti kupcu.
       Kupec mora prevzeti račun in ga zadržati neposredno po odhodu iz poslovnega prostora.

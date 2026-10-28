@@ -45,7 +45,7 @@
                     @blur="commitEdit"
                 />
                 <span v-else class="text-body-m cv-title cv-title--editable" @click="startEdit(row)">{{ row.title }}</span>
-                <span class="text-caption color-text-secondary cv-path">From: {{ sourcesOf(row) }}</span>
+                <span v-if="sourcesOf(row)" class="text-caption color-text-secondary cv-path">From: {{ sourcesOf(row) }}</span>
               </span>
             </div>
           </template>
@@ -186,6 +186,9 @@ async function start() {
       phase.value = 'model'
       return
     }
+    // The AI read the server's canvas; ideas added elsewhere meanwhile load first so "From:" can name them
+    if ((data.proposal || []).some(r => r.source_idea_ids.some(id => !canvas.getNode(id)))) await canvas.refreshFromServer()
+    if (stale()) return
     proposal.value = (data.proposal || []).map((r, i) => ({ key: `ai-${i}`, title: r.title, source_ids: r.source_idea_ids }))
     skipped.value = data.skipped_count || 0
     ticked.value = new Set(proposal.value.map(r => r.key))
@@ -338,18 +341,21 @@ watch(() => props.visible, (open) => {
   cursor: text;
 }
 
+/* The Item inline edit: no box, the action underline only; the title's metrics, so nothing moves */
 .cv-edit {
+  display: block;
   width: 100%;
-  margin: -3px 0;
-  padding: 2px 6px;
-  border: 1px solid var(--color-input-border-focus);
-  border-radius: 4px;
+  height: 1lh;
+  margin: 0 0 -1px;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid var(--color-action);
+  border-radius: 0;
   outline: none;
-  box-shadow: var(--shadow-focus-ring);
-  box-sizing: border-box;
+  box-sizing: content-box;
   font-family: inherit;
   color: var(--color-text-primary);
-  background: var(--color-bg-primary);
+  background: transparent;
 }
 
 .cv-row--ai {
@@ -390,10 +396,6 @@ watch(() => props.visible, (open) => {
 }
 
 @media (max-width: 768px) {
-  .cv-edit {
-    font-size: var(--font-size-body);
-  }
-
   .cv-list {
     max-height: none;
   }

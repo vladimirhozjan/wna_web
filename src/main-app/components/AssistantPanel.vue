@@ -19,7 +19,7 @@
             </template>
             <template #default="{ close: closeMenu }">
               <button class="dropdown-item" data-testid="assistant-new-conversation" @click="closeMenu(); onNewConversation()">
-                <PlusIcon class="dropdown-item-icon" /> New conversation
+                <RecurringIcon class="dropdown-item-icon" /> New conversation
               </button>
               <button class="dropdown-item" @click="closeMenu(); openSettings()">
                 <SettingsIcon class="dropdown-item-icon" /> Assistant settings
@@ -140,6 +140,7 @@
                 v-if="assistant.working.value"
                 variant="secondary"
                 size="sm"
+                class="assistant-composer__btn"
                 :loading="state.stopping"
                 :disabled="state.stopping"
                 data-testid="assistant-stop"
@@ -149,6 +150,7 @@
                 v-else
                 variant="primary"
                 size="sm"
+                class="assistant-composer__btn"
                 :disabled="!canSend"
                 :loading="state.sending"
                 data-testid="assistant-send"
@@ -184,7 +186,7 @@ import ItemTypeIcon from './ItemTypeIcon.vue'
 import BoltIcon from '../assets/BoltIcon.vue'
 import MoreIcon from '../assets/MoreIcon.vue'
 import CloseIcon from '../assets/CloseIcon.vue'
-import PlusIcon from '../assets/PlusIcon.vue'
+import RecurringIcon from '../assets/RecurringIcon.vue'
 import SettingsIcon from '../assets/SettingsIcon.vue'
 import { assistantModel, charCount, ASSISTANT_TEXT_MAX } from '../scripts/models/assistantModel.js'
 import { flagsModel } from '../scripts/core/flagsModel.js'
@@ -729,8 +731,14 @@ onBeforeUnmount(() => {
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
   }
 
+  /* One line = the FAB bar: field and Send / Stop at the touch target height */
   .assistant-composer__input {
+    min-height: var(--touch-target-min);
     font-size: var(--font-size-body);
+  }
+
+  .assistant-composer__btn {
+    min-height: var(--touch-target-min);
   }
 }
 </style>

@@ -158,7 +158,7 @@ import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 const emit = defineEmits(['move', 'help'])
 
 // For the header Undo / Redo: ends an open edit; true when that dropped an empty new idea (the drop is the undo)
-defineExpose({ finishEdit: () => !commitEdit() })
+defineExpose({ finishEdit: () => !commitEdit(), editingId: () => editingId.value })
 
 const DEFAULT_SIZE = { w: 120, h: 32 }
 const SIBLING_GAP = 16

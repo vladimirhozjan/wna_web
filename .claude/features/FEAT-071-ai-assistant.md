@@ -214,6 +214,37 @@
 - [x] **W14 List new / stale TCs for ui-tests** in the output (never edit `wna-test-cases.md`).
   → Listed in the implementer output (ui-tests owns `wna-test-cases.md`).
 
+### Review fixes (reviewer J380) — Chrome :5173 desktop (1280px) + 500px
+- [x] **R1 S4a confirm under the memory modal** → `src/main-app/components/ConfirmDialog.vue:48` (100000, above every
+  Modal / picker), `src/main-app/components/ErrorToaster.vue:42` (100001, toasts stay on top). Global, so every
+  `confirm.show` from an open Modal is fixed. Chrome: Clear → confirm on top → toast "Memory cleared", field and server
+  empty; Cancel keeps the text.
+- [x] **R2 refresh on canvas / Connections / Search** → `src/main-app/scripts/models/canvasModel.js:242`
+  (`refreshFromServer`: pending save first, 409 → existing conflict path, the idea being typed survives),
+  `views/dashboard/ProjectCanvasPage.vue:239`, `views/dashboard/ConnectionsPage.vue:325`,
+  `views/dashboard/SearchPage.vue:116`; editing ids exposed from `CanvasMap.vue` / `CanvasDrillDown.vue`. Chrome:
+  `[tool:add_canvas_idea …]` shows the idea on the map (desktop) and in the drill-down (500px) without reload; with an
+  idea open in the editor the new idea appears, the typed text stays and saves without a conflict.
+- [x] **R3 S5 withdrawal line above fiscal notice and Terms** → named slot `src/main-app/components/BillingAddressForm.vue:64`,
+  used at `views/dashboard/BuyCreditsPage.vue:56`. Chrome: SI = hint · withdrawal · fiscal · tick · Pay; DE = hint ·
+  withdrawal · tick · Pay; US = hint · withdrawal · Terms line · Pay; `/upgrade` with SI unchanged (hint · fiscal ·
+  Renews · tick · Subscribe).
+- [x] **R4 S3 ⋯ menu icons** → `src/main-app/components/AssistantPanel.vue:22` `RecurringIcon` (2px stroke, viewBox 24, the
+  SettingsIcon weight). Chrome desktop.
+- [x] **R5 S3 mobile composer** → `AssistantPanel.vue:733-743`: field and Send / Stop `min-height: var(--touch-target-min)`,
+  bottom-aligned; desktop unchanged. Chrome 500px: both 44px, same bottom.
+- [x] **R6 S4 Model select** → `views/dashboard/SettingsPage.vue:2316-2321`: 260px, trigger padding as the other Settings
+  selects. Chrome: 260×33 (all Settings selects 33px), long name ellipsized; 500px stacked full width.
+- [x] **R7 S7a title editor = Item inline edit** → `components/canvas/CanvasConvertModal.vue:345` (no box, action underline,
+  title metrics; redundant mobile font rule removed). Chrome desktop + 500px: text top / left and row height unchanged
+  when editing starts. Plus: proposal ideas the local canvas does not know (added elsewhere) load first, so "From:"
+  always names them (`:190`).
+- [x] **R8 S1 paste with empty field** → `components/CaptureBar.vue:497` (`splitPasted`: first line → `text`, capped at the
+  typed limit, the rest → `pasted_text`). Chrome: 100-line paste (10,403 chars), field cleared → sent text 102 /
+  pasted 10,286, no over-cap; one 10,000-char line → 4,000 / 6,000.
+- [x] **A1 owner answer (Make default only in Edit)** → `src/admin-app/views/AiAssistantPage.vue:118` + body rule; build
+  green. Chrome on :6173 still not possible (admin TOTP).
+
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
    cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.

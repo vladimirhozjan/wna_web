@@ -118,6 +118,7 @@
       <!-- Canvas body -->
       <CanvasDrillDown
           v-if="isMobile"
+          ref="drillRef"
           v-model:current-id="drillId"
           class="canvas-body"
           @move="moveId = $event"
@@ -146,7 +147,7 @@ import CanvasMap from '../../components/canvas/CanvasMap.vue'
 import CanvasDrillDown from '../../components/canvas/CanvasDrillDown.vue'
 import CanvasConvertModal from '../../components/canvas/CanvasConvertModal.vue'
 import BoltIcon from '../../assets/BoltIcon.vue'
-import { assistantModel } from '../../scripts/models/assistantModel.js'
+import { assistantModel, onAssistantChange } from '../../scripts/models/assistantModel.js'
 import CanvasMovePicker from '../../components/canvas/CanvasMovePicker.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
@@ -180,6 +181,7 @@ const convertMode = ref('manual')
 const moveId = ref(null)
 const outcomeExpanded = ref(false)
 const mapRef = ref(null)
+const drillRef = ref(null)
 const drillId = ref(null)
 const mobileQuery = window.matchMedia('(max-width: 768px)')
 
@@ -233,6 +235,8 @@ const viewOnlyMessage = computed(() => {
   if (!canvas.isOwner.value) return 'Only the project owner can edit this brainstorm.'
   return VIEW_ONLY_BY_STATE[canvas.project.value.state] || ''
 })
+
+onAssistantChange(() => canvas.refreshFromServer((mapRef.value || drillRef.value)?.editingId() ?? null))
 
 // The map's open edit ends first; dropping an empty new idea is the undo
 function onUndo() {
