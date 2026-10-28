@@ -242,6 +242,7 @@ const comparisonRows = [
   { group: 'Core' },
   { feature: 'Stuff & Actions',     free: 'Unlimited',  pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Projects',            free: '7',           pro: 'Unlimited',  team: 'Unlimited' },
+  { feature: 'Project templates',   free: '3',           pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Tags',                free: '10',          pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Recurring actions',   free: false,         pro: true,         team: true },
   { feature: 'Reference files',     free: 'View only · Full in Google Drive', pro: 'Full', team: 'Full' },

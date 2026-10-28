@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import apiClient from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
+import { horizonModel } from './horizonModel.js'
 
 export const ClarifyState = {
     IDLE: 'IDLE',
@@ -228,6 +229,7 @@ export function clarifyModel() {
             return true
         } catch (err) {
             state.error = err.message || 'Failed to process item'
+            if (err.code === 'invalid_area_id' || err.code === 'invalid_goal_id') horizonModel().refresh()
             return false
         } finally {
             state.loading = false

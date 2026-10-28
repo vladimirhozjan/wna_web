@@ -10,6 +10,7 @@ const topToday = ref([])
 const topActions = ref([])
 const topWaiting = ref([])
 const stuckProjects = ref([])
+const dailyHorizon = ref(null)
 const loading = ref(false)
 const loaded = ref(false)
 let lastTags = null
@@ -36,6 +37,7 @@ export function engageModel() {
 
             const allProjects = data.projects?.items || data.projects || []
             stuckProjects.value = allProjects.filter(p => !p.next_action_id)
+            dailyHorizon.value = data.horizon ?? null
         } finally {
             loading.value = false
             loaded.value = true
@@ -43,6 +45,7 @@ export function engageModel() {
     }
 
     const reviewEnabled = computed(() => settings.state.reviewEnabled)
+    const horizonCard = computed(() => settings.state.horizonsEnabled ? dailyHorizon.value : null)
 
     return {
         stats,
@@ -52,6 +55,7 @@ export function engageModel() {
         topActions,
         topWaiting,
         stuckProjects,
+        horizonCard,
         loading,
         loaded,
         loadDashboard,

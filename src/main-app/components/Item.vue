@@ -130,7 +130,7 @@ const props = defineProps({
     type: String,
     default: null
   },
-  // 'trash'
+  // 'trash' | 'delete'
   swipeLeft: {
     type: String,
     default: null
@@ -143,6 +143,7 @@ const SWIPE_ACTIONS = {
   complete: { icon: CompletedIcon, label: 'Complete' },
   clarify: { icon: ArrowRightSmallIcon, label: 'Clarify' },
   trash: { icon: TrashIcon, label: 'Trash' },
+  delete: { icon: TrashIcon, label: 'Delete' },
 }
 const SWIPE_ARM_RATIO = 0.4
 
@@ -478,7 +479,8 @@ useSwipe(rootEl, {
   color: var(--color-action);
 }
 
-.item__swipe-reveal--trash {
+.item__swipe-reveal--trash,
+.item__swipe-reveal--delete {
   background: var(--color-danger-light);
   color: var(--color-danger);
 }
@@ -493,7 +495,8 @@ useSwipe(rootEl, {
   color: var(--color-text-inverse);
 }
 
-.item__swipe-reveal--trash.item__swipe-reveal--armed {
+.item__swipe-reveal--trash.item__swipe-reveal--armed,
+.item__swipe-reveal--delete.item__swipe-reveal--armed {
   background: var(--color-danger);
   color: var(--color-text-inverse);
 }

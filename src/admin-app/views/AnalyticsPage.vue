@@ -161,6 +161,7 @@ const signupChartData = computed(() => {
     datasets: [
       { label: 'Email', data: signups.value.map(i => i.email_signups || 0), backgroundColor: c.action, stack: 'signups' },
       { label: 'Google', data: signups.value.map(i => i.google_signups || 0), backgroundColor: c.success, stack: 'signups' },
+      { label: 'Apple', data: signups.value.map(i => i.apple_signups || 0), backgroundColor: c.warning, stack: 'signups' },
     ],
   }
 })

@@ -18,7 +18,7 @@
                 size="sm"
                 :disabled="!allStepsComplete"
                 :loading="completing"
-                :title="allStepsComplete ? undefined : 'Check all 6 steps to complete the review'"
+                :title="allStepsComplete ? undefined : 'Check every step to complete the review'"
                 @click="onComplete"
             >
               Complete Review
@@ -116,6 +116,7 @@ const settings = settingsModel()
 const { createRecurring } = recurringModel()
 const {
   steps,
+  horizonLevels,
   inReview,
   hasReminder,
   daysSinceReview,
@@ -134,7 +135,9 @@ const creatingReminder = ref(false)
 const celebrating = ref(false)
 const stepEls = []
 
-const reviewSteps = [
+const LEVEL_NAMES = { area: 'areas of focus', goal: 'goals', vision: 'vision', purpose: 'purpose & principles' }
+
+const BASE_STEPS = [
   { title: 'Empty your Inbox', hint: 'Process all items — clarify, delegate, or delete', route: 'inbox' },
   { title: 'Review Next Actions', hint: 'Still relevant? Move stale ones to Someday or Trash', route: 'next' },
   { title: 'Review Waiting For', hint: 'Follow up on delegated items. Any responses?', route: 'waiting-for' },
@@ -142,6 +145,22 @@ const reviewSteps = [
   { title: 'Review Someday/Maybe', hint: 'Anything ready to activate? Anything to delete?', route: 'someday' },
   { title: 'Review Calendar', hint: 'Anything left from last week? Any prep needed for what\'s coming?', route: 'calendar' },
 ]
+
+const reviewSteps = computed(() => {
+  const levels = horizonLevels.value
+  if (!levels.length) return BASE_STEPS
+  return [...BASE_STEPS, { title: 'Review horizons', hint: horizonHint(levels), route: 'horizons' }]
+})
+
+// "Time to review: areas of focus and goals." in page order + the question for what is due
+function horizonHint(levels) {
+  const names = Object.keys(LEVEL_NAMES).filter(l => levels.includes(l)).map(l => LEVEL_NAMES[l])
+  const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0]
+  const question = levels.includes('area') || levels.includes('goal')
+    ? 'Does each area and goal have a project?'
+    : 'Do they still ring true?'
+  return `Time to review: ${list}. ${question}`
+}
 
 const lastReviewedText = computed(() => {
   if (!lastReviewDate.value) return 'Never reviewed'

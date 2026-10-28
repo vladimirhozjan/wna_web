@@ -1,5 +1,5 @@
 <template>
-  <div class="select-wrapper" ref="wrapperRef">
+  <div class="select-wrapper" :class="{ 'select-wrapper--block': block }" ref="wrapperRef">
     <button
         type="button"
         class="text-body-m select-trigger"
@@ -139,6 +139,11 @@ const props = defineProps({
     default: 'auto'
   },
   disabled: {
+    type: Boolean,
+    default: false
+  },
+  // Fills its column at form-field height; a long label ellipsises
+  block: {
     type: Boolean,
     default: false
   }
@@ -344,6 +349,24 @@ onUnmounted(() => {
   min-width: 100px;
 }
 
+.select-wrapper--block {
+  display: block;
+  min-width: 0;
+}
+
+.select-wrapper--block .select-trigger {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.select-wrapper--block .select-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .select-trigger:hover {
   border-color: var(--color-border-light);
 }
@@ -372,11 +395,11 @@ onUnmounted(() => {
   transform: rotate(180deg);
 }
 
-/* Desktop dropdown */
+/* Desktop dropdown — at the Modal overlay's level, so a Select inside a dialog opens above it (teleported later) */
 .select-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 99998;
 }
 
 .select-dropdown {
@@ -384,7 +407,7 @@ onUnmounted(() => {
   border: 1px solid var(--color-border-light);
   border-radius: 8px;
   box-shadow: var(--shadow-dropdown);
-  z-index: 1000;
+  z-index: 99998;
   overflow-y: auto;
   max-height: 300px;
   width: max-content;
@@ -471,7 +494,7 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   background: var(--color-overlay-light);
-  z-index: 1000;
+  z-index: 99998;
   display: flex;
   align-items: flex-end;
   justify-content: center;

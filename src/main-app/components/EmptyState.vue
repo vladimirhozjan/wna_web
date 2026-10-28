@@ -14,7 +14,7 @@
   </div>
   <h2 class="text-h3-italic empty-state__title">{{ title }}</h2>
   <p class="text-body-s empty-state__text">{{ text }}</p>
-  <Btn v-if="buttonText" variant="primary" size="md" class="empty-state__btn" :disabled="buttonDisabled" @click="$emit('action')">{{ buttonText }}</Btn>
+  <Btn v-if="buttonText" variant="primary" size="md" class="empty-state__btn" :disabled="buttonDisabled" :data-testid="buttonTestid" @click="$emit('action')">{{ buttonText }}</Btn>
   <slot />
 </template>
 
@@ -27,6 +27,7 @@ defineProps({
   text: { type: String, required: true },
   buttonText: { type: String, default: '' },
   buttonDisabled: { type: Boolean, default: false },
+  buttonTestid: { type: String, default: undefined },
 })
 
 defineEmits(['action'])

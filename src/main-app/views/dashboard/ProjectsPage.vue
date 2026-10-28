@@ -3,9 +3,12 @@
       <div class="projects-header">
         <div class="header-row">
           <h1 class="page-title">Projects</h1>
-          <div class="header-actions" v-if="items.length > 0">
-            <TagFilter v-model="filterTags" />
-            <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+          <div class="header-actions">
+            <Btn variant="ghost" size="sm" data-testid="projects-templates-btn" @click="router.push({ name: 'project-templates' })">Templates</Btn>
+            <template v-if="items.length > 0">
+              <TagFilter v-model="filterTags" />
+              <Btn variant="secondary" size="sm" @click="showAdd = !showAdd">{{ showAdd ? '−' : '+' }}</Btn>
+            </template>
           </div>
         </div>
         <div class="add-input" v-if="showAdd">
@@ -34,6 +37,10 @@
               @keyup.enter="onAdd"
               :disabled="adding"
           />
+          <div v-if="showAreaPicker || showGoalPicker" class="add-horizons">
+            <Select v-if="showAreaPicker" v-model="newArea" :options="horizon.options('area')" title="Area of focus" :disabled="adding" block data-testid="project-add-area" />
+            <Select v-if="showGoalPicker" v-model="newGoal" :options="horizon.options('goal')" title="Goal" :disabled="adding" block data-testid="project-add-goal" />
+          </div>
         </div>
       </div>
 
@@ -79,18 +86,21 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import ItemList from '../../components/ItemList.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
+import Select from '../../components/Select.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { projectModel } from '../../scripts/models/projectModel.js'
+import { horizonModel } from '../../scripts/models/horizonModel.js'
+import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
@@ -98,7 +108,10 @@ import { authModel } from '../../scripts/core/authModel.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 
 const router = useRouter()
+const route = useRoute()
 const auth = authModel()
+const horizon = horizonModel()
+const settings = settingsModel()
 
 function canTrash(item) {
   if (!item?.shared) return true
@@ -124,11 +137,16 @@ const undo = undoModel()
 const showAdd = ref(false)
 const newTitle = ref('')
 const newOutcome = ref('')
+const newArea = ref('')
+const newGoal = ref('')
 const add_input = ref(null)
 const adding = ref(false)
 const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
 const { activeTag } = contextModel()
+
+const showAreaPicker = computed(() => settings.state.horizonsEnabled && horizon.hasAreas.value)
+const showGoalPicker = computed(() => settings.state.horizonsEnabled && horizon.hasGoals.value)
 
 const effectiveTags = computed(() => {
   const tags = [...filterTags.value]
@@ -162,7 +180,17 @@ watch(error, (err) => {
 
 onMounted(() => {
   loadProjects({ reset: true, tags: effectiveTags.value }).catch(() => {})
+  if (settings.state.horizonsEnabled) loadHorizons()
+  if (route.query.add) openAdd()
 })
+
+// From /horizons "Add project": preselect that area / goal once the options are in
+async function loadHorizons() {
+  try { await horizon.load() } catch { return }
+  const { area, goal } = route.query
+  if (area && horizon.state.levels.area.some(i => i.id === area)) newArea.value = area
+  if (goal && horizon.state.levels.goal.some(i => i.id === goal)) newGoal.value = goal
+}
 
 async function loadMore() {
   await loadProjects()
@@ -179,10 +207,18 @@ async function onAdd() {
   if (!t || !o) return
   hasMoreSnapshot.value = hasMore.value
   adding.value = true
-  try { await addProject(t, '', o) } catch { /* error watcher handles it */ }
+  const links = {}
+  if (showAreaPicker.value && newArea.value) links.area_id = newArea.value
+  if (showGoalPicker.value && newGoal.value) links.goal_id = newGoal.value
+  try { await addProject(t, '', o, links) } catch (err) {
+    // error watcher shows the toast
+    if (err.code === 'invalid_area_id' || err.code === 'invalid_goal_id') horizon.refresh()
+  }
   finally { adding.value = false }
   newTitle.value = ''
   newOutcome.value = ''
+  newArea.value = ''
+  newGoal.value = ''
   nextTick(() => add_input.value?.focus())
 }
 
@@ -301,6 +337,15 @@ h1 {
 .add-button {
   margin-top: 8px;
   margin-bottom: 4px;
+}
+
+/* Each picker takes half the fields column; a single one stays on the left */
+.add-horizons {
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin: 8px 0 4px;
 }
 
 .projects-content {

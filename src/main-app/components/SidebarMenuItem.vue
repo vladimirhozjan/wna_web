@@ -8,7 +8,7 @@
     <button
         type="button"
         class="menu-item text-body-m"
-        :class="{ active: isActive, 'drop-target': showDropTarget }"
+        :class="{ active: isActive || props.activeFor.includes(route.name), 'drop-target': showDropTarget }"
         @click="navigate"
         @dragover="onDragOver"
         @dragenter="onDragEnter"
@@ -38,11 +38,14 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import { dragModel } from "../scripts/models/dragModel.js";
 
 const props = defineProps({
   label: { type: String, required: true },
   to: { type: [String, Object], default: null },
+  // Other route names that also highlight this item (pages reached from it without a sidebar entry)
+  activeFor: { type: Array, default: () => [] },
   acceptDrop: { type: Array, default: () => [] },
   count: { type: Number, default: 0 },
   badge: { type: String, default: null },
@@ -51,6 +54,7 @@ const props = defineProps({
 
 const emit = defineEmits(['drop', 'click']);
 
+const route = useRoute();
 const drag = dragModel();
 const isOver = ref(false);
 

@@ -85,12 +85,12 @@ export function projectModel() {
         }
     }
 
-    async function addProject(title, description = '', outcome = '') {
+    async function addProject(title, description = '', outcome = '', links = {}) {
         loading.value = true
         error.value = null
 
         try {
-            const created = await apiClient.addProject({ title, description, outcome })
+            const created = await apiClient.addProject({ title, description, outcome, ...links })
             await loadProjects({ reset: true })
             statsModel().refreshStats()
             errorModel().success(`"${truncateTitle(title)}" added to Projects`)

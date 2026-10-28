@@ -25,6 +25,9 @@ const DEFAULTS = {
         dismissed_tips: [],
         in_progress: null,
     },
+    horizons: {
+        enabled: true,
+    },
 }
 
 const DAY_NAME_TO_NUM = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }
@@ -57,6 +60,9 @@ export function settingsModel() {
         reviewInProgress: null,
         dismissedTips: [],
 
+        // Horizons of Focus
+        horizonsEnabled: true,
+
         // Onboarding — unknown counts as seen
         onboardingCompleted: true,
 
@@ -80,6 +86,7 @@ export function settingsModel() {
             reviewLastDate: false,
             reviewInProgress: false,
             dismissedTips: false,
+            horizonsEnabled: false,
         },
     })
 
@@ -125,6 +132,9 @@ export function settingsModel() {
             state.reviewLastDate = settings.review.last_review_date ?? DEFAULTS.review.last_review_date
             state.reviewInProgress = settings.review.in_progress ?? DEFAULTS.review.in_progress
             state.dismissedTips = Array.isArray(settings.review.dismissed_tips) ? settings.review.dismissed_tips : []
+        }
+        if (settings.horizons) {
+            state.horizonsEnabled = settings.horizons.enabled ?? DEFAULTS.horizons.enabled
         }
         state.onboardingCompleted = settings.onboarding?.completed !== false
     }
@@ -328,6 +338,20 @@ export function settingsModel() {
         }
     }
 
+    async function setHorizonsEnabled(value) {
+        const oldValue = state.horizonsEnabled
+        state.horizonsEnabled = value
+        state.saving.horizonsEnabled = true
+        try {
+            await save('horizons', { enabled: value })
+        } catch (err) {
+            state.horizonsEnabled = oldValue
+            throw err
+        } finally {
+            state.saving.horizonsEnabled = false
+        }
+    }
+
     async function setReviewTemplateId(id) {
         const oldValue = state.reviewTemplateId
         state.reviewTemplateId = id
@@ -421,6 +445,7 @@ export function settingsModel() {
         setWeekStart,
         setTagPresets,
         setReviewEnabled,
+        setHorizonsEnabled,
         setReviewTemplateId,
         setReviewInProgress,
         completeReview,

@@ -59,7 +59,7 @@ src/main-app/
 │   │   ├── authModel.js            # Auth state management (reactive refs, not Vuex/Pinia)
 │   │   ├── errorModel.js           # Toast notifications singleton
 │   │   ├── confirmModel.js         # Confirm dialog singleton
-│   │   ├── domains.js              # Runtime config (API_DOMAIN, GOOGLE_CLIENT_ID)
+│   │   ├── domains.js              # Runtime config (API_DOMAIN, GOOGLE_CLIENT_ID, APPLE_CLIENT_ID)
 │   │   ├── upgradeModel.js         # Tier limit / upgrade modal
 │   │   ├── flagsModel.js           # Feature flags
 │   │   └── ...                     # dateUtils, rruleUtils, calendarLayout, haptics, etc.

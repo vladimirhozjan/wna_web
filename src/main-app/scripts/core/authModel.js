@@ -199,11 +199,19 @@ export function authModel() {
     }
 
     async function googleSsoLogin(code, codeVerifier) {
+        return ssoLogin(() => apiClient.googleSso(code, codeVerifier))
+    }
+
+    async function appleSsoLogin(code, nonce, name) {
+        return ssoLogin(() => apiClient.appleSso(code, nonce, name))
+    }
+
+    async function ssoLogin(signIn) {
         loading.value = true
         error.value = null
 
         try {
-            const data = await apiClient.googleSso(code, codeVerifier)
+            const data = await signIn()
 
             if (data.user) {
                 currentUser.value = data.user
@@ -248,6 +256,15 @@ export function authModel() {
         localStorage.setItem('logout', Date.now())
 
         isAuthenticated.value = false
+    }
+
+    // The server ends every session with the account: sign out locally without the logout call; unsent captures go too
+    async function deleteAccount() {
+        await apiClient.deleteUser()
+        localStorage.removeItem('refresh_token')
+        await captureQueue().clearUser()
+        await pendingShare().remove()
+        await logoutUser()
     }
 
     async function loadUser() {
@@ -307,11 +324,13 @@ export function authModel() {
         loginUser,
         googleLogin,
         googleSsoLogin,
+        appleSsoLogin,
         loadUser,
         refreshToken,
         logoutUser,
         confirmLogout,
         logoutWithConfirm,
+        deleteAccount,
         forgotPassword,
         resetPassword,
         verifyEmail,

@@ -2,7 +2,8 @@ import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 
 // One-line button row: shows as many keys as fit, the rest go to a trailing ⋯.
 // Only a trailing run of `overflowKeys` (the ones the ⋯ menu offers) may be hidden.
-export function useOverflowFit(rowRef, keysRef, overflowKeys) {
+// `alwaysMore()` true = the ⋯ is rendered even when every key fits, so its width always counts.
+export function useOverflowFit(rowRef, keysRef, overflowKeys, alwaysMore = () => false) {
     const fitCount = ref(Infinity)
     let widths = []
     let moreWidth = 0
@@ -24,7 +25,8 @@ export function useOverflowFit(rowRef, keysRef, overflowKeys) {
         const gap = parseFloat(style.columnGap) || 0
         const avail = row.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
         const span = n => widths.slice(0, n).reduce((s, w) => s + w + gap, 0) - gap
-        if (span(widths.length) <= avail) {
+        const tail = alwaysMore() ? gap + moreWidth : 0
+        if (span(widths.length) + tail <= avail) {
             fitCount.value = widths.length
             return
         }

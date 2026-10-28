@@ -22,7 +22,7 @@ export const bestPractices = [
   {
     title: 'Do a Weekly Review',
     description:
-      'The Weekly Review is what makes your system work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. The Calendar step opens your Calendar, and your progress is saved until you complete the review. Enable it in Settings and create a recurring reminder so you never skip it.',
+      'The Weekly Review is what makes your system work long-term. Set aside 30–60 minutes each week to walk through all your lists. WhatsNextAction provides a guided six-step review: empty your Inbox, scan Next Actions for anything stale, follow up on Waiting For items, check that every Project has a next action, review Someday/Maybe for items ready to activate, and look ahead on your Calendar. When one of your Horizons of Focus is due — areas monthly, goals quarterly, vision and purpose yearly — a seventh step asks you to review them and check that each area and goal has a project. The Calendar step opens your Calendar, and your progress is saved until you complete the review. Enable it in Settings and create a recurring reminder so you never skip it.',
   },
   {
     title: 'Write Clear Next Actions',
@@ -82,7 +82,7 @@ export const bestPractices = [
   {
     title: 'Manage Your Sessions',
     description:
-      'Check Settings periodically to review your active sessions. You can see which devices are logged in, how recently each was active, and end any session remotely. If you log in on a shared computer and forget to sign out, you can revoke that session from any other device. A session you stop using expires on its own 7 to 14 days after its last use and drops off the list.',
+      'Check Settings periodically to review your active sessions. You can see which devices are logged in, how each one signed in, how recently each was active, and end any session remotely. If you log in on a shared computer and forget to sign out, you can revoke that session from any other device. A session you stop using expires on its own 7 to 14 days after its last use and drops off the list.',
   },
   {
     title: 'Automate With Recurring Actions',

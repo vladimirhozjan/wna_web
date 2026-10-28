@@ -18,6 +18,7 @@ export const ErrorScenario = Object.freeze({
     CHANGE_PASSWORD: "ChangePassword",
     RESET_PASSWORD: "ResetPassword",
     GOOGLE_LOGIN: "GoogleLogin",
+    APPLE_LOGIN: "AppleLogin",
     GENERIC: "Generic",
 })
 
@@ -38,6 +39,10 @@ export function mapApiError(error, scenario=ErrorScenario.GENERIC) {
         } else if (scenario === ErrorScenario.GOOGLE_LOGIN) {
             if (status === 401) {
                 return "Google authentication failed.";
+            }
+        } else if (scenario === ErrorScenario.APPLE_LOGIN) {
+            if (status === 401) {
+                return "Apple authentication failed.";
             }
         } else if (scenario === ErrorScenario.CHANGE_PASSWORD) {
             if (status === 400) {

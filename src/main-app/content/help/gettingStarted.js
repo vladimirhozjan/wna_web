@@ -7,7 +7,7 @@ export const gettingStarted = [
   {
     title: 'Creating Your Account',
     description:
-      'Tap "Start Free" on the landing page to open the registration dialog. Enter your email, choose a password (at least 8 characters with a letter, a digit, and a symbol), and confirm it. After registering, a verification email is sent to your address — click the link to verify your account. If you don\'t see the email, use the Resend button (available every 60 seconds). The app detects verification automatically — once you click the link in any browser, you\'ll be logged in without returning to the original tab. Prefer one-click sign-up? Use the "Sign up with Google" button to create or access your account with your Google account instead (and "Sign in with Google" on the Sign In dialog). You can also sign in from the "Sign In" button if you already have an account.',
+      'Tap "Start Free" on the landing page to open the registration dialog. Enter your email, choose a password (at least 8 characters with a letter, a digit, and a symbol), and confirm it. After registering, a verification email is sent to your address — click the link to verify your account. If you don\'t see the email, use the Resend button (available every 60 seconds). The app detects verification automatically — once you click the link in any browser, you\'ll be logged in without returning to the original tab. Prefer one-click sign-up? Use the "Sign up with Google" or "Sign up with Apple" button to create or access your account with your Google account or Apple ID instead (and "Sign in with Google" or "Sign in with Apple" on the Sign In dialog). You can also sign in from the "Sign In" button if you already have an account.',
   },
   {
     title: 'Your First Five Minutes',
@@ -22,12 +22,12 @@ export const gettingStarted = [
   {
     title: 'Understanding Your Dashboard',
     description:
-      'After logging in you land on the Engage page — your command center. If anything is overdue, an Overdue section appears first, listing your oldest deadlines so you can complete, rename, or trash them right there. Below it you see your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying or projects are missing a next action. Use this page to decide what to work on right now.',
+      'After logging in you land on the Engage page — your command center. If you keep Horizons of Focus, one of your vision or purpose items sits at the top as a daily reminder of why you do all this. If anything is overdue, an Overdue section appears first, listing your oldest deadlines so you can complete, rename, or trash them right there. Below it you see your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying or projects are missing a next action. Use this page to decide what to work on right now.',
   },
   {
     title: 'Navigating the App',
     description:
-      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Completed, and Trash. Count badges next to each item show how many items are in that bucket, and a small red dot on an icon means something needs attention — overdue items (on Dashboard, Today, Next Actions, Calendar, and Waiting For), a project without a next action (Projects), or a pending connection request (Connections). The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
+      'The sidebar (or slide-in drawer on mobile) is your main navigation. Each section maps to a bucket: Next Actions, Today, Inbox, Projects, Calendar, Waiting For, Someday/Maybe, Reference, Review, Horizons, Completed, and Trash. Count badges next to each item show how many items are in that bucket, and a small red dot on an icon means something needs attention — overdue items (on Dashboard, Today, Next Actions, Calendar, and Waiting For), a project without a next action (Projects), or a pending connection request (Connections). The Context Filter at the top of the sidebar lets you focus all lists on a single context like @office or @home.',
   },
   {
     title: 'Quick Add — Capture From Anywhere',
@@ -57,7 +57,7 @@ export const gettingStarted = [
   {
     title: 'Setting Up Your First Project',
     description:
-      'A project is any outcome that needs more than one action to complete. Go to Projects and add one with a title and an outcome that answers two questions: why does this project matter, and what does done look like? Then add action steps from the project detail page. The first action becomes your Next Action automatically, and when you complete it, the next one in the backlog promotes to take its place. On the Free plan you can keep up to 7 active projects at once; Pro and Team plans are unlimited.',
+      'A project is any outcome that needs more than one action to complete. Go to Projects and add one with a title and an outcome that answers two questions: why does this project matter, and what does done look like? If you keep Horizons of Focus, you can also pick the area of focus and the goal the project serves — both are optional. Then add action steps from the project detail page. The first action becomes your Next Action automatically, and when you complete it, the next one in the backlog promotes to take its place. On the Free plan you can keep up to 7 active projects at once; Pro and Team plans are unlimited. A project you repeat can be saved as a template from its More menu (⋯) and reused from Projects → Templates.',
   },
   {
     title: 'Brainstorming a Project',
@@ -102,7 +102,7 @@ export const gettingStarted = [
   {
     title: 'Customizing Your Settings',
     description:
-      'Visit Settings to personalize the app. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review section, manage notifications, change your password, review active sessions, and manage your plan and billing from here. Changes save automatically.',
+      'Visit Settings to personalize the app. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review and Horizons of Focus, manage notifications, change your password, review active sessions, delete your account, and manage your plan and billing from here. Changes save automatically.',
   },
   {
     title: 'Notifications',

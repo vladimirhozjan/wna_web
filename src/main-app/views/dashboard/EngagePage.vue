@@ -19,6 +19,14 @@
 
         <template v-else>
 
+          <!-- Today's vision / purpose item, view-only -->
+          <div v-if="horizonCard" class="card horizon-card" data-testid="engage-horizon-card" @click="router.push({ name: 'horizons' })">
+            <div class="card-header">
+              <span class="nudges__title">{{ horizonCard.level === 'purpose' ? 'Purpose & principles' : 'Vision' }}</span>
+            </div>
+            <p class="text-h4-italic horizon-card__text"><span class="horizon-card__clamp">{{ horizonCard.title }}</span></p>
+          </div>
+
           <!-- Overdue section -->
           <div class="card" v-if="topOverdue.length > 0" data-testid="engage-overdue-section">
             <div class="card-header">
@@ -229,6 +237,7 @@ const {
     topToday,
     topWaiting,
     stuckProjects,
+    horizonCard,
     loading,
     loadDashboard,
     daysSinceReview,
@@ -694,6 +703,39 @@ async function onDropToWaiting(data) {
 
 .nudge__link:hover {
   background: var(--color-bg-accent-light);
+}
+
+/* Horizon card — reads as a quote, the whole card opens /horizons */
+.horizon-card {
+  cursor: pointer;
+}
+
+.horizon-card__text {
+  margin: 0;
+  padding: 16px 20px;
+  color: var(--color-text-primary);
+  transition: background 0.15s ease;
+}
+
+/* The clamp sits on the text itself, so the padding never shows a clipped next line */
+.horizon-card__clamp {
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.horizon-card:hover .horizon-card__text {
+  background: var(--color-bg-hover);
+}
+
+@media (max-width: 768px) {
+  .horizon-card__clamp {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
 }
 
 /* Empty state */

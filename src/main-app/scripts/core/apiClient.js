@@ -8,6 +8,9 @@ import {referenceModel} from '../models/referenceModel.js'
 function friendlyUpgradeMessage(raw, {storageHint = null} = {}) {
     if (!raw) return 'You\'ve reached a limit on your current plan. Upgrade to unlock more and keep your system growing.'
     const lower = raw.toLowerCase()
+    // Before the project match — the template cap message also contains "project"
+    if (lower.includes('template'))
+        return 'You\'ve reached the template limit on the Free plan. Upgrade to Pro for unlimited project templates.'
     if (lower.includes('project'))
         return 'You\'ve reached the project limit on your current plan. Upgrade to Pro for unlimited projects and keep organizing your work.'
     if (lower.includes('tag'))
@@ -141,6 +144,15 @@ function normalizeError(error, {storageHint = null, quiet = false} = {}) {
 
     // Anything else (unexpected local error)
     return {status: null, message: error.message || "Unknown error."}
+}
+
+// An area / goal deleted meanwhile answers its code; the caller reloads the picker options
+function projectLinkError(err) {
+    const normalized = {...normalizeError(err), code: err.response?.data?.error}
+    if (normalized.code === 'invalid_area_id' || normalized.code === 'invalid_goal_id') {
+        normalized.message = "Couldn't save. Try again."
+    }
+    return normalized
 }
 
 function authHeaders() {
@@ -558,11 +570,13 @@ export async function clarifyToProject(stuffId, projectData) {
         if (projectData.description) body.description = projectData.description
         if (projectData.outcome) body.outcome = projectData.outcome
         if (projectData.tags?.length) body.tags = projectData.tags
+        if (projectData.area_id) body.area_id = projectData.area_id
+        if (projectData.goal_id) body.goal_id = projectData.goal_id
 
         const res = await httpApi.post(`/v1/stuff/${stuffId}/transform`, body, {headers: authHeaders()})
         return res.data
     } catch (err) {
-        throw normalizeError(err)
+        throw projectLinkError(err)
     }
 }
 
@@ -912,12 +926,14 @@ export async function addProject(data) {
         if (data.description) body.description = data.description
         if (data.outcome) body.outcome = data.outcome
         if (data.tags !== undefined) body.tags = data.tags
+        if (data.area_id) body.area_id = data.area_id
+        if (data.goal_id) body.goal_id = data.goal_id
         body.add_to_top = addToTop()
 
         const res = await httpApi.post('/v1/project', body, {headers: authHeaders()})
         return res.data
     } catch (err) {
-        throw normalizeError(err)
+        throw projectLinkError(err)
     }
 }
 
@@ -1052,6 +1068,196 @@ export async function saveProjectCanvas(projectId, body, {keepalive = false} = {
         return res.data
     } catch (err) {
         throw {...normalizeError(err, {quiet: true}), code: err.response?.data?.error}
+    }
+}
+
+// ── Horizons of Focus API ──
+
+export async function getHorizons() {
+    try {
+        const res = await httpApi.get('/v1/horizons', {params: {tz: liveTz()}, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function createHorizonItem({level, title, position = undefined}) {
+    try {
+        const body = {level, title}
+        if (position !== undefined) body.position = position
+        const res = await httpApi.post('/v1/horizons/items', body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw {...normalizeError(err), code: err.response?.data?.error}
+    }
+}
+
+export async function updateHorizonItem(itemId, title) {
+    try {
+        const res = await httpApi.put(`/v1/horizons/items/${itemId}`, {title}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw {...normalizeError(err), code: err.response?.data?.error}
+    }
+}
+
+export async function moveHorizonItem(itemId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/horizons/items/${itemId}/move`, {destination}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deleteHorizonItem(itemId, moveTo = null) {
+    try {
+        const params = moveTo ? {move_to: moveTo} : {}
+        const res = await httpApi.delete(`/v1/horizons/items/${itemId}`, {params, headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw {...normalizeError(err), code: err.response?.data?.error}
+    }
+}
+
+export async function markHorizonsReviewed(levels) {
+    try {
+        const res = await httpApi.post('/v1/horizons/reviewed', {levels}, {params: {tz: liveTz()}, headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// patch carries only the changed key: {area_id} or {goal_id}; null clears it
+export async function setProjectHorizon(projectId, patch) {
+    try {
+        const res = await httpApi.put(`/v1/project/${projectId}/horizon`, patch, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw {...normalizeError(err), code: err.response?.data?.error}
+    }
+}
+
+// ── Project Templates API ──
+
+function templateError(err) {
+    return {...normalizeError(err), code: err.response?.data?.error}
+}
+
+export async function listProjectTemplates({limit = PAGE_SIZE, cursor = null} = {}) {
+    try {
+        const params = {}
+        if (limit) params.limit = limit
+        if (cursor) params.cursor = cursor
+
+        const res = await httpApi.get('/v1/projectTemplates', {params, headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function getProjectTemplate(templateId) {
+    try {
+        const res = await httpApi.get(`/v1/projectTemplates/${templateId}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function saveProjectAsTemplate(projectId) {
+    try {
+        const res = await httpApi.post('/v1/projectTemplates', {project_id: projectId}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function renameProjectTemplate(templateId, name) {
+    try {
+        const res = await httpApi.put(`/v1/projectTemplates/${templateId}`, {name}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function deleteProjectTemplate(templateId) {
+    try {
+        const res = await httpApi.delete(`/v1/projectTemplates/${templateId}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function addTemplateAction(templateId, {title, description = null}) {
+    try {
+        const body = {title}
+        if (description) body.description = description
+        const res = await httpApi.post(`/v1/projectTemplates/${templateId}/actions`, body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+// data carries only the changed keys: {title} and/or {description}; '' clears the description
+export async function updateTemplateAction(templateId, actionId, data) {
+    try {
+        const res = await httpApi.put(`/v1/projectTemplates/${templateId}/actions/${actionId}`, data, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function deleteTemplateAction(templateId, actionId) {
+    try {
+        const res = await httpApi.delete(`/v1/projectTemplates/${templateId}/actions/${actionId}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function moveTemplateAction(templateId, actionId, destination) {
+    try {
+        const res = await httpApi.post(`/v1/projectTemplates/${templateId}/actions/${actionId}/move`, {destination}, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function instantiateProjectTemplate(templateId, {title, outcome}) {
+    try {
+        const res = await httpApi.post(`/v1/projectTemplates/${templateId}/instantiate`, {title, outcome}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function listTemplateTargets(templateId) {
+    try {
+        const res = await httpApi.get(`/v1/projectTemplates/${templateId}/targets`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
+    }
+}
+
+export async function appendProjectTemplate(templateId, projectId) {
+    try {
+        const res = await httpApi.post(`/v1/projectTemplates/${templateId}/append`, {project_id: projectId}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw templateError(err)
     }
 }
 
@@ -1809,8 +2015,16 @@ export async function googleAuth(idToken) {
 }
 
 export async function googleSso(code, codeVerifier) {
+    return ssoSignIn('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz()})
+}
+
+export async function appleSso(code, nonce, name) {
+    return ssoSignIn('/v1/user/apple-sso', {code, nonce, ...(name ? {name} : {}), tz: liveTz()})
+}
+
+async function ssoSignIn(path, body) {
     try {
-        const res = await httpApi.post('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz()})
+        const res = await httpApi.post(path, body)
         const data = res.data
 
         if (!data.access_token || !data.refresh_token) {
@@ -2284,6 +2498,27 @@ const apiClient = {
     listProjectActions,
     getProjectCanvas,
     saveProjectCanvas,
+    // Horizons of Focus API
+    getHorizons,
+    createHorizonItem,
+    updateHorizonItem,
+    moveHorizonItem,
+    deleteHorizonItem,
+    markHorizonsReviewed,
+    setProjectHorizon,
+    // Project Templates API
+    listProjectTemplates,
+    getProjectTemplate,
+    saveProjectAsTemplate,
+    renameProjectTemplate,
+    deleteProjectTemplate,
+    addTemplateAction,
+    updateTemplateAction,
+    deleteTemplateAction,
+    moveTemplateAction,
+    instantiateProjectTemplate,
+    listTemplateTargets,
+    appendProjectTemplate,
     listSomeday,
     moveSomeday,
     getSomedayByPosition,
@@ -2372,6 +2607,7 @@ const apiClient = {
     // Google Auth API
     googleAuth,
     googleSso,
+    appleSso,
     // Google Connection API
     getGoogleStatus,
     startGoogleConnect,

@@ -37,21 +37,25 @@
               <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
               <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
               <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
-              <div v-if="googleSsoEnabled" class="or-divider">
-                <span class="or-divider__line"></span>
-                <span class="or-divider__text text-body-s color-text-secondary">or</span>
-                <span class="or-divider__line"></span>
-              </div>
-              <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
-                <GoogleIcon class="google-icon" width="18" height="18" />
-                Sign up with Google
-              </Btn>
-              <p v-if="googleSsoEnabled" class="text-footnote google-terms">
-                By continuing with Google, you agree to the
-                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
-                and acknowledge the
-                <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
-              </p>
+              <template v-if="ssoEnabled">
+                <div class="or-divider">
+                  <span class="or-divider__line"></span>
+                  <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                  <span class="or-divider__line"></span>
+                </div>
+                <Btn v-for="provider in ssoProviders" :key="provider.id" variant="outline" class="sso-btn"
+                     :data-testid="`${provider.id}-sso-btn`" :loading="ssoLoading === provider.id"
+                     @click="startSso(provider)">
+                  <component :is="provider.icon" class="sso-icon" width="18" height="18" />
+                  Sign up with {{ provider.name }}
+                </Btn>
+                <p class="text-footnote sso-terms">
+                  By continuing with {{ ssoNames }}, you agree to the
+                  <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+                  and acknowledge the
+                  <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+                </p>
+              </template>
             </section>
 
             <section v-else-if="props.mode === 'login'">
@@ -67,21 +71,25 @@
                     v-model:error="passwordError"/>
               <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
               <Lnk text="Forgot your password?" link="Reset it" @action="goToForgot"/>
-              <div v-if="googleSsoEnabled" class="or-divider">
-                <span class="or-divider__line"></span>
-                <span class="or-divider__text text-body-s color-text-secondary">or</span>
-                <span class="or-divider__line"></span>
-              </div>
-              <Btn v-if="googleSsoEnabled" variant="secondary" @click="redirectToGoogle" class="google-sso-btn">
-                <GoogleIcon class="google-icon" width="18" height="18" />
-                Sign in with Google
-              </Btn>
-              <p v-if="googleSsoEnabled" class="text-footnote google-terms">
-                By continuing with Google, you agree to the
-                <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
-                and acknowledge the
-                <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
-              </p>
+              <template v-if="ssoEnabled">
+                <div class="or-divider">
+                  <span class="or-divider__line"></span>
+                  <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                  <span class="or-divider__line"></span>
+                </div>
+                <Btn v-for="provider in ssoProviders" :key="provider.id" variant="outline" class="sso-btn"
+                     :data-testid="`${provider.id}-sso-btn`" :loading="ssoLoading === provider.id"
+                     @click="startSso(provider)">
+                  <component :is="provider.icon" class="sso-icon" width="18" height="18" />
+                  Sign in with {{ provider.name }}
+                </Btn>
+                <p class="text-footnote sso-terms">
+                  By continuing with {{ ssoNames }}, you agree to the
+                  <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+                  and acknowledge the
+                  <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+                </p>
+              </template>
               <div class="separator"></div>
               <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
             </section>
@@ -159,7 +167,7 @@
 </template>
 
 <script setup>
-import {computed, nextTick, onBeforeUnmount, onUnmounted, reactive, ref, watch} from 'vue'
+import {computed, nextTick, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import Inpt from './Inpt.vue'
 import Btn from './Btn.vue'
 import Lnk from './Lnk.vue'
@@ -171,12 +179,20 @@ import {errorModel} from '../scripts/core/errorModel.js'
 import {mapApiError, ErrorScenario} from '../scripts/core/errorMapper.js'
 import {isGoogleSsoEnabled, redirectToGoogle} from '../scripts/core/googleSso.js'
 import {pendingShare} from '../scripts/core/pendingShare.js'
+import {isAppleSsoEnabled, redirectToApple} from '../scripts/core/appleSso.js'
 import GoogleIcon from '../assets/GoogleIcon.vue'
+import AppleIcon from '../assets/AppleIcon.vue'
 
 const auth = authModel()
 const error = errorModel()
 
-const googleSsoEnabled = isGoogleSsoEnabled()
+const ssoProviders = [
+  {id: 'google', name: 'Google', icon: GoogleIcon, enabled: isGoogleSsoEnabled(), redirect: redirectToGoogle},
+  {id: 'apple', name: 'Apple', icon: AppleIcon, enabled: isAppleSsoEnabled(), redirect: redirectToApple},
+].filter(provider => provider.enabled)
+const ssoEnabled = ssoProviders.length > 0
+const ssoNames = ssoProviders.map(provider => provider.name).join(' or ')
+const ssoLoading = ref(null)
 
 const props = defineProps({
   mode: {
@@ -454,8 +470,23 @@ async function autoLogin() {
   }
 }
 
+function startSso(provider) {
+  ssoLoading.value = provider.id
+  provider.redirect()
+}
+
+// Back from the provider restores the page from bfcache with the spinner still on
+function onPageShow(event) {
+  if (event.persisted) ssoLoading.value = null
+}
+
+onMounted(() => {
+  window.addEventListener('pageshow', onPageShow)
+})
+
 onUnmounted(() => {
   stopVerificationPolling()
+  window.removeEventListener('pageshow', onPageShow)
 })
 
 onBeforeUnmount(() => {
@@ -706,13 +737,13 @@ h2 {
 }
 
 .agree-checkbox a,
-.google-terms a {
+.sso-terms a {
   color: var(--color-link-text);
   text-decoration: underline;
 }
 
 .agree-checkbox a:hover,
-.google-terms a:hover {
+.sso-terms a:hover {
   color: var(--color-link-hover);
 }
 
@@ -742,18 +773,37 @@ h2 {
   flex-shrink: 0;
 }
 
-.google-sso-btn {
+.auth-dialog .sso-btn {
+  display: flex;
+  background: var(--color-popup-background);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-medium);
+}
+
+.auth-dialog .sso-btn + .sso-btn {
+  margin-top: -8px;
+}
+
+.auth-dialog .sso-btn:hover:not(:disabled) {
+  background: var(--color-bg-row-hover);
+}
+
+.auth-dialog .sso-btn:active {
+  background: var(--color-bg-hover);
+}
+
+.sso-btn :deep(.base-btn__content) {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
-.google-icon {
+.sso-icon {
   flex-shrink: 0;
 }
 
-.google-terms {
+.sso-terms {
   margin: -8px 0 0;
   color: var(--color-text-secondary);
   text-align: center;
@@ -783,6 +833,11 @@ h2 {
 @media (max-width: 768px) {
   .auth-backdrop {
     z-index: 99998;
+  }
+
+  /* Close reaches 10px into the content box; equal padding keeps the title centred and clear of it */
+  h2 {
+    padding: 0 20px;
   }
 }
 

@@ -138,11 +138,13 @@
           >
             Trash
           </Btn>
-          <Dropdown v-if="overflowActions.length" title="More">
+          <Dropdown v-if="canSaveTemplate || overflowActions.length" title="More">
             <template #trigger>
               <Btn variant="icon" size="sm" title="More" data-testid="detail-more-menu"><MoreIcon class="detail-more-icon" /></Btn>
             </template>
             <template #default="{ close }">
+              <button v-if="canSaveTemplate" class="dropdown-item" :disabled="actionLoading === 'template'" data-testid="save-as-template" @click="close(); onSaveAsTemplate()">Save as template</button>
+              <div v-if="canSaveTemplate && overflowActions.length" class="dropdown-divider"></div>
               <button v-if="overflowActions.includes('share')" class="dropdown-item" @click="close(); openShareModal('share')">Share</button>
               <button v-if="overflowActions.includes('trash')" class="dropdown-item dropdown-item--danger" :disabled="actionLoading === 'trash'" @click="close(); onTrash()">Trash</button>
             </template>
@@ -189,6 +191,41 @@
               >Cancel</Btn>
             </div>
           </div>
+        </div>
+
+        <!-- Area of focus / Goal: the viewer's own link, editable for every role -->
+        <div v-if="showAreaPicker || showGoalPicker" class="detail-section-area detail-section-area--no-border" data-testid="project-horizons">
+          <div class="detail-horizons">
+            <div v-if="showAreaPicker" class="detail-horizons__field">
+              <label class="text-body-s fw-semibold detail-section-label">Area of focus</label>
+              <div class="detail-horizons__control" :class="{ 'detail-horizons__control--saving': savingHorizon === 'area_id' }">
+                <span v-if="savingHorizon === 'area_id'" class="detail-horizons__spinner"><Spinner :size="18" /></span>
+                <Select
+                    :model-value="project.area_id || ''"
+                    :options="horizon.options('area')"
+                    title="Area of focus"
+                    :disabled="!!savingHorizon"
+                    block data-testid="project-area"
+                    @update:model-value="v => onHorizonChange('area_id', v)"
+                />
+              </div>
+            </div>
+            <div v-if="showGoalPicker" class="detail-horizons__field">
+              <label class="text-body-s fw-semibold detail-section-label">Goal</label>
+              <div class="detail-horizons__control" :class="{ 'detail-horizons__control--saving': savingHorizon === 'goal_id' }">
+                <span v-if="savingHorizon === 'goal_id'" class="detail-horizons__spinner"><Spinner :size="18" /></span>
+                <Select
+                    :model-value="project.goal_id || ''"
+                    :options="horizon.options('goal')"
+                    title="Goal"
+                    :disabled="!!savingHorizon"
+                    block data-testid="project-goal"
+                    @update:model-value="v => onHorizonChange('goal_id', v)"
+                />
+              </div>
+            </div>
+          </div>
+          <p v-if="isShared" class="text-footnote color-text-secondary detail-horizons__hint">Only you see this.</p>
         </div>
 
         <!-- Brainstorm section -->
@@ -698,6 +735,9 @@ import { authModel } from '../../scripts/core/authModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
+import { horizonModel } from '../../scripts/models/horizonModel.js'
+import { projectTemplateModel } from '../../scripts/models/projectTemplateModel.js'
+import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import NextIcon from '../../assets/NextIcon.vue'
@@ -731,6 +771,7 @@ const tagMdl = tagModel()
 const auth = authModel()
 const proj = projectModel()
 const conn = connectionModel()
+const templates = projectTemplateModel()
 
 const {
   error,
@@ -765,6 +806,11 @@ useAutoGrow(descriptionInput)
 useAutoGrow(outcomeInput)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
+const horizon = horizonModel()
+const settings = settingsModel()
+const savingHorizon = ref(null)
+const showAreaPicker = computed(() => settings.state.horizonsEnabled && horizon.hasAreas.value)
+const showGoalPicker = computed(() => settings.state.horizonsEnabled && horizon.hasGoals.value)
 const editTags = ref([])
 
 // Actions state
@@ -890,7 +936,9 @@ const actionKeys = computed(() => {
   keys.push(isShared.value && !isOwner.value ? 'leave' : 'trash')
   return keys
 })
-const { visibleCount } = useOverflowFit(detailActionsRef, actionKeys, ['share', 'trash'])
+// Save as template: every project except a trashed one, for every member incl. read-only
+const canSaveTemplate = computed(() => !!project.value && project.value.state !== 'TRASH')
+const { visibleCount } = useOverflowFit(detailActionsRef, actionKeys, ['share', 'trash'], () => canSaveTemplate.value)
 const visibleActions = computed(() => actionKeys.value.slice(0, visibleCount.value))
 const overflowActions = computed(() => actionKeys.value.slice(visibleActions.value.length))
 
@@ -906,7 +954,8 @@ const brainstormLabel = computed(() => {
 const itemCommands = computed(() => {
   if (pageLoading.value || notFound.value || !project.value) return []
   const brainstorm = { label: 'Brainstorm', run: openCanvas }
-  if (isCompleted.value) return [brainstorm, { label: 'Undo', run: onUndo }]
+  const saveTemplate = { label: 'Save as template', run: onSaveAsTemplate }
+  if (isCompleted.value) return [brainstorm, { label: 'Undo', run: onUndo }, saveTemplate]
   const commands = [brainstorm]
   if (!isShared.value || isOwner.value) {
     if (isSomeday.value) commands.push({ label: 'Activate', run: onActivate })
@@ -920,6 +969,7 @@ const itemCommands = computed(() => {
     if (!isSomeday.value) commands.push({ label: 'Move to Someday', run: () => onMoveTo('SOMEDAY') })
     if (isOwner.value) commands.push({ label: 'Share', run: () => openShareModal('share') })
   }
+  if (canSaveTemplate.value) commands.push(saveTemplate)
   if (isShared.value && !isOwner.value) commands.push({ label: 'Leave', run: onLeaveProject })
   else commands.push({ label: 'Trash', run: onTrash })
   return commands
@@ -1197,7 +1247,28 @@ async function loadProject() {
 }
 undo.registerRefresh(loadProject)
 
+// Sends only the changed key; the response is the viewer's link after the write
+async function onHorizonChange(key, value) {
+  const id = project.value.id
+  const oldValue = project.value[key] ?? null
+  const newValue = value || null
+  if (newValue === oldValue) return
+  project.value = { ...project.value, [key]: newValue }
+  savingHorizon.value = key
+  try {
+    const link = await apiClient.setProjectHorizon(id, { [key]: newValue })
+    if (project.value?.id === id) project.value = { ...project.value, area_id: link.area_id, goal_id: link.goal_id }
+  } catch (err) {
+    if (project.value?.id === id) project.value = { ...project.value, [key]: oldValue }
+    toaster.push('Couldn\'t save. Try again.')
+    if (err.code === 'invalid_area_id' || err.code === 'invalid_goal_id') horizon.refresh()
+  } finally {
+    savingHorizon.value = null
+  }
+}
+
 onMounted(async () => {
+  if (settings.state.horizonsEnabled) horizon.load().catch(() => {})
   try {
     fromSource.value = route.query.from || null
 
@@ -1421,6 +1492,19 @@ function goLast() {
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title
   return title.slice(0, maxLen).trim() + '…'
+}
+
+// A 403 at the template cap opens the UpgradeModal (normalizeError); every other error is the server's sentence
+async function onSaveAsTemplate() {
+  if (actionLoading.value === 'template') return
+  actionLoading.value = 'template'
+  try {
+    await templates.saveFromProject(project.value)
+  } catch (err) {
+    if (!err.upgrade) toaster.push(err.message)
+  } finally {
+    actionLoading.value = null
+  }
 }
 
 async function onComplete() {
@@ -2141,6 +2225,12 @@ async function onAddAction() {
   height: 16px;
 }
 
+.dropdown-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--color-border-light);
+}
+
 /* ── Brainstorm section ── */
 .detail-brainstorm-row {
   display: flex;
@@ -2176,6 +2266,42 @@ async function onAddAction() {
   height: 16px;
   flex-shrink: 0;
   color: var(--color-text-tertiary);
+}
+
+/* ── Area of focus / Goal ── */
+.detail-horizons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.detail-horizons__field {
+  min-width: 0;
+}
+
+.detail-horizons__control {
+  position: relative;
+}
+
+.detail-horizons__control--saving {
+  pointer-events: none;
+}
+
+.detail-horizons__control--saving > *:not(.detail-horizons__spinner) {
+  opacity: 0.5;
+}
+
+.detail-horizons__spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.detail-horizons__hint {
+  margin: 6px 0 0;
 }
 
 /* ── Section areas (outcome, description) ── */

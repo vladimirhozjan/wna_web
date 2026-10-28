@@ -7,7 +7,7 @@ export function isGoogleSsoEnabled() {
     return !!getDomains().google_client_id
 }
 
-function randomBase64Url(byteCount) {
+export function randomBase64Url(byteCount) {
     return base64Url(crypto.getRandomValues(new Uint8Array(byteCount)))
 }
 

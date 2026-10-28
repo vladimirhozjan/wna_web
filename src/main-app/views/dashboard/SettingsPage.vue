@@ -38,8 +38,30 @@
               <span class="settings-label">Password</span>
               <Btn variant="secondary" size="sm" @click="openPasswordModal">Change Password</Btn>
             </div>
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Delete account</span>
+                <p class="text-body-s settings-hint">Permanently deletes your account and all your data</p>
+              </div>
+              <Btn variant="ghost-danger" size="sm" data-testid="settings-delete-account" @click="openDeleteModal">Delete</Btn>
+            </div>
           </div>
         </div>
+
+        <Modal :visible="showDeleteModal" title="Delete account" @close="closeDeleteModal">
+          <div class="delete-account-body" data-testid="delete-account-modal">
+            <p class="text-body-m color-text-secondary">This permanently deletes your account and everything in it, including the projects you share with others. This can't be undone.</p>
+            <p v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="text-body-m color-text-secondary">Your paid subscription is cancelled too.</p>
+            <p class="text-body-m color-text-secondary">To confirm, type <strong class="delete-account-email color-text-primary">{{ userEmail }}</strong> below.</p>
+            <Inpt ref="deleteEmailInput" v-model="deleteEmail" type="email" placeholder="Enter your email address"
+                  data-testid="delete-account-email" @enter="onDeleteAccount" />
+          </div>
+          <template #actions>
+            <Btn variant="secondary" size="sm" :disabled="deletingAccount" @click="closeDeleteModal">Cancel</Btn>
+            <Btn variant="danger" size="sm" :disabled="!deleteEmailMatches" :loading="deletingAccount"
+                 data-testid="delete-account-confirm" @click="onDeleteAccount">Delete account</Btn>
+          </template>
+        </Modal>
 
         <!-- Plan Section -->
         <div v-if="tier && sectionVisible('plan')" class="card">
@@ -228,9 +250,10 @@
                     <span v-if="session.is_current" class="text-footnote fw-semibold session-badge">Current</span>
                   </div>
                   <div class="text-body-s session-details">
-                    <span v-if="session.ip">{{ session.ip }}</span>
-                    <span v-if="session.ip && session.last_active" class="session-separator">·</span>
-                    <span v-if="session.last_active">{{ formatSessionTime(session.last_active) }}</span>
+                    <template v-for="(segment, index) in sessionSegments(session)" :key="index">
+                      <span v-if="index" class="session-separator">·</span>
+                      <span class="session-segment">{{ segment }}</span>
+                    </template>
                   </div>
                 </div>
                 <ActionBtn
@@ -534,10 +557,10 @@
           </div>
         </div>
 
-        <!-- Review Section -->
+        <!-- Reflect Section -->
         <div v-if="sectionVisible('review')" class="card">
           <div class="card-header card-header--toggle" @click="toggleSection('review')">
-            <h2 class="settings-section-title">Review</h2>
+            <h2 class="settings-section-title">Reflect</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('review') }">&#8250;</span>
           </div>
           <div v-if="isExpanded('review')" class="settings-section-body">
@@ -550,6 +573,19 @@
                 <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                 <label class="settings-toggle">
                   <input type="checkbox" v-model="reviewEnabled" />
+                  <span class="settings-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div>
+                <span class="settings-label">Horizons of Focus</span>
+                <p class="text-body-s settings-hint">Show areas, goals, vision and purpose in the sidebar, on projects, on Engage and in the Weekly Review</p>
+              </div>
+              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.horizonsEnabled }">
+                <span v-if="settings.state.saving.horizonsEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                <label class="settings-toggle">
+                  <input type="checkbox" v-model="horizonsEnabled" data-testid="settings-horizons-toggle" />
                   <span class="settings-toggle-slider"></span>
                 </label>
               </div>
@@ -800,7 +836,7 @@ function toggleSearch() {
 }
 
 const SECTION_KEYWORDS = {
-  account: 'account email password login',
+  account: 'account email password login delete remove',
   plan: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice',
   emailInbox: 'email inbox capture address forward generate reset pause',
   sessions: 'sessions devices logout active current',
@@ -809,7 +845,7 @@ const SECTION_KEYWORDS = {
   calendar: 'calendar week start time format business hours days',
   calendarSync: 'calendar sync google connect disconnect reconnect sync now events timezone',
   storage: 'storage google drive connect disconnect reconnect attachments reference files local',
-  review: 'review weekly sidebar',
+  review: 'reflect review weekly sidebar horizons focus areas goals vision purpose',
   notifications: 'notifications email reminder daily digest next actions project announcements',
   about: 'about version',
 }
@@ -1434,6 +1470,11 @@ const reviewEnabled = computed({
   set: (val) => settings.setReviewEnabled(val).catch(() => toaster.push('Failed to save setting'))
 })
 
+const horizonsEnabled = computed({
+  get: () => settings.state.horizonsEnabled,
+  set: (val) => settings.setHorizonsEnabled(val).catch(() => toaster.push('Failed to save setting'))
+})
+
 const emailEnabled = computed({
   get: () => notifications.state.emailEnabled,
   set: (val) => notifications.setEmailEnabled(val).catch(() => toaster.push('Failed to save notification setting'))
@@ -1548,6 +1589,12 @@ const revokingAll = ref(false)
 // Other state
 const isMobile = ref(false)
 const loggingOut = ref(false)
+const showDeleteModal = ref(false)
+const deleteEmail = ref('')
+const deleteEmailInput = ref(null)
+const deletingAccount = ref(false)
+const deleteEmailMatches = computed(() =>
+    !!userEmail.value && deleteEmail.value.trim().toLowerCase() === userEmail.value.toLowerCase())
 
 // Computed
 const canChangePassword = computed(() => {
@@ -1653,6 +1700,20 @@ function getDeviceIcon(session) {
     return '📱'
   }
   return '💻'
+}
+
+const LOGIN_METHOD_LABELS = {
+  email: 'Signed in with email',
+  google: 'Signed in with Google',
+  apple: 'Signed in with Apple',
+}
+
+function sessionSegments(session) {
+  return [
+    LOGIN_METHOD_LABELS[session.login_method],
+    session.ip,
+    session.last_active && formatSessionTime(session.last_active),
+  ].filter(Boolean)
 }
 
 function formatSessionTime(dateStr) {
@@ -1785,6 +1846,33 @@ async function onChangePassword() {
 }
 
 // Account actions
+function openDeleteModal() {
+  deleteEmail.value = ''
+  showDeleteModal.value = true
+  nextTick(() => deleteEmailInput.value?.focus())
+}
+
+function closeDeleteModal() {
+  if (deletingAccount.value) return
+  showDeleteModal.value = false
+}
+
+async function onDeleteAccount() {
+  if (!deleteEmailMatches.value || deletingAccount.value) return
+  deletingAccount.value = true
+  try {
+    await auth.deleteAccount()
+    showDeleteModal.value = false
+    toaster.success('Your account has been deleted.')
+    router.push({ name: 'landing' })
+  } catch (err) {
+    // 401: the session interceptor already refreshed or sent the user to login
+    if (err.status !== 401) toaster.push('Couldn\'t delete your account. Please try again.')
+  } finally {
+    deletingAccount.value = false
+  }
+}
+
 async function onLogout() {
   if (!await auth.confirmLogout()) return
 
@@ -1944,6 +2032,20 @@ async function onLogout() {
 
 .settings-control--saving > *:not(.settings-saving-spinner) {
   opacity: 0.5;
+}
+
+.delete-account-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.delete-account-body p {
+  margin: 0;
+}
+
+.delete-account-email {
+  overflow-wrap: anywhere;
 }
 
 .settings-hint {
@@ -2108,9 +2210,14 @@ async function onLogout() {
 
 .session-details {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 2px 6px;
   color: var(--color-text-tertiary);
+}
+
+.session-segment {
+  white-space: nowrap;
 }
 
 .session-separator {

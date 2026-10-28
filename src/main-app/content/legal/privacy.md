@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 26, 2026
+**Last updated:** October 27, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -22,7 +22,8 @@ When you register for the Service, we collect:
 
 - **Email address** - used as your account identifier and for account-related communications (password resets, security notifications)
 - **Password** - stored only in hashed form; we never have access to your plain-text password
-- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier and your email address from Google to create or link your account. We do not receive your Google password, and signing in with Google does not give us access to your Gmail, Google Calendar, Google Drive, or other Google services. We request access to a Google service only when you connect a feature that needs it (see Section 2.8).
+- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier and your email address from Google to create or link your account. We do not receive your Google password, and signing in with Google does not give us access to your Gmail, Google Calendar, Google Drive, or other Google services. We request access to a Google service only when you connect a feature that needs it (see Section 2.8). We keep an encrypted sign-in token (encrypted with keys managed by Google Cloud Key Management Service) only so we can revoke our access at Google when you delete your account.
+- **Apple account identifier** - if you choose to sign in with Apple, we receive an Apple identifier and your email address (your real address or an Apple Hide My Email relay address) and, on your first sign-in only, the name you choose to share, which we store with your account. We do not receive your Apple password, and signing in with Apple does not give us access to any other Apple data. We keep an encrypted sign-in token (encrypted with keys managed by Google Cloud Key Management Service) only so we can revoke our access at Apple when you delete your account.
 
 ### 2.2 User-Generated Content
 
@@ -35,6 +36,8 @@ When you use the Service, you create and store content including:
 - Recurring action templates
 - Calendar entries and scheduling data
 - Project brainstorm canvases (the ideas you write on a project's mind map) — stored on our servers, never in your Google Drive, and deleted with the project or your account
+- Project templates (a name and the action titles and descriptions you save from a project) — kept until you delete the template or your account
+- Horizons of Focus — your areas of focus, goals, vision and purpose & principles, which of your projects you link to an area or goal, and when you last reviewed each level — stored on our servers and deleted with your account
 
 You control what content you create. We process this content solely to provide the Service to you.
 
@@ -56,7 +59,7 @@ If you use collaboration features on the Team plan, certain data becomes visible
 
 - **Connections** - when you invite another person to connect, we store the invitee's email address and send them an invitation. Invitations may be sent to people who do not yet have a WhatsNextAction account.
 - **Delegation** - when you delegate an action to a connection, the action's title, description, and related details are shared with that person as an item in their inbox, and completion updates are shared back with you.
-- **Shared projects** - when you share a project, the members you choose can see the project's actions (titles, descriptions, attachments), assignments, completion status, and comments. Your personal tags remain private to you and are never shown to other members.
+- **Shared projects** - when you share a project, the members you choose can see the project's actions (titles, descriptions, attachments), assignments, completion status, and comments. Your personal tags and the area and goal you link a shared project to remain private to you and are never shown to other members.
 
 We share this data only with the specific users you choose, and only to provide the collaboration features you have enabled.
 
@@ -78,6 +81,7 @@ We automatically collect certain technical data when you use the Service:
 - **IP address** - recorded per login session
 - **Device information** - browser and device string (e.g., "Chrome on Windows"), used to identify sessions in your account settings
 - **Session timestamps** - login time and last activity time per session
+- **Sign-in method** - how each session was signed in (email, Google or Apple), shown in your account settings
 - **Authentication tokens** - stored in your browser's localStorage for session management
 
 ### 2.7 Preference Data
@@ -139,7 +143,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 
 | Data Category | Legal Basis | Purpose |
 |---|---|---|
-| Account data (email, password) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
+| Account data (email, password, name, Google / Apple sign-in identifiers and encrypted sign-in tokens) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
 | User-generated content | Contract performance (Art. 6(1)(b)) | Necessary to deliver the core functionality of the Service |
 | Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
 | Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar and, if you use the WhatsNextAction calendar, to import the events you create there, at your request |
@@ -182,13 +186,15 @@ We share your personal data only with the following categories of recipients, st
 - **Zoho ZeptoMail (EU data centre)** - delivers our emails (account, security, and notification emails)
 - **Zoho Mail (EU data centre)** - receives messages sent to Email-to-Inbox addresses before they are added to your inbox
 
-### 5.3 Google Sign-In, Google Calendar and Google Drive
+### 5.3 Google Sign-In, Sign in with Apple, Google Calendar and Google Drive
 
 - **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier and your email address to create or link your account. Sign-in does not give us access to any of your Google data beyond basic sign-in information.
 - **Google Calendar API** - if you connect Google Calendar sync, we exchange the data described in Section 2.8 with Google through the Google Calendar API, only to provide the sync you requested.
 - **Google Drive API** - if you connect Google Drive storage, we upload, read, rename, move, and delete the files that WhatsNextAction created in your Google Drive through the Google Drive API, only to provide the storage you requested. Google holds these files as your own provider, under your agreement with Google; Google is not our processor for them.
 
-This is governed by Google's own privacy policy. WhatsNextAction's use and transfer of information received from Google APIs to any other app will adhere to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements. We use data received from Google only to provide and improve the Google Calendar sync and Google Drive storage features you see in the Service; we do not use it for advertising, we do not sell it, we do not use it to develop or train generalized AI or machine-learning models, and no person at WhatsNextAction reads it unless you ask us to, it is needed for security, or the law requires it.
+- **Apple (Apple Distribution International Ltd., Ireland)** - if you choose to sign in with Apple, Apple authenticates you and provides us with an Apple identifier, your email address and, on your first sign-in only, the name you choose to share. If you use Hide My Email, the emails we send you pass through Apple's private email relay to your real address. When you stop using Sign in with Apple for WhatsNextAction, Apple tells us and we sign out the sessions you opened with Apple. Sign in with Apple is governed by Apple's own privacy policy.
+
+The Google services above are governed by Google's own privacy policy. WhatsNextAction's use and transfer of information received from Google APIs to any other app will adhere to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements. We use data received from Google only to provide and improve the Google Calendar sync and Google Drive storage features you see in the Service; we do not use it for advertising, we do not sell it, we do not use it to develop or train generalized AI or machine-learning models, and no person at WhatsNextAction reads it unless you ask us to, it is needed for security, or the law requires it.
 
 ### 5.4 Payment Processing
 
@@ -240,6 +246,8 @@ If you connect Google Calendar sync, the events we create for you, and the Whats
 
 If you connect Google Drive storage, the files we store for you are held by Google in your own Google Drive under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the storage you requested (Art. 49(1)(b) GDPR).
 
+If you sign in with Apple, Apple may process your sign-in, and the emails relayed through its private email relay, outside the EEA under its own privacy policy. We use it at your request, to provide the sign-in you chose (Art. 49(1)(b) GDPR).
+
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
 
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
@@ -248,11 +256,12 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 
 | Data | Retention Period |
 |---|---|
-| Active account data and content | Retained for the duration of your account |
+| Active account data (including your name and Google / Apple sign-in identifiers) and content | Retained for the duration of your account |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, WhatsNextAction calendar identifier, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar, the WhatsNextAction calendar identifier and the event identifiers are kept after you disconnect Google Calendar, so that reconnecting continues where you left off, and are deleted when you delete your account. On account deletion we also revoke our access at Google. Your WhatsNextAction calendar and the events already in your Google Calendar are yours and stay there |
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
+| Sign-in tokens (encrypted Google / Apple sign-in token) | Kept until you delete your account (the Apple token also until you stop using Sign in with Apple for WhatsNextAction); on account deletion we revoke our access at Google / Apple |
 | Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Operational alerts | Kept until the alert is resolved; deleted 90 days after it is resolved |
 | Backups | Retained for up to 30 days, then permanently deleted |

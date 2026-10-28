@@ -30,6 +30,17 @@
         ></textarea>
       </div>
 
+      <div v-if="showAreaPicker || showGoalPicker" class="clarify-horizons">
+        <div v-if="showAreaPicker" class="clarify-field">
+          <label class="text-body-s fw-semibold clarify-label">Area of focus</label>
+          <Select v-model="form.area_id" :options="horizon.options('area')" title="Area of focus" block data-testid="clarify-project-area" />
+        </div>
+        <div v-if="showGoalPicker" class="clarify-field">
+          <label class="text-body-s fw-semibold clarify-label">Goal</label>
+          <Select v-model="form.goal_id" :options="horizon.options('goal')" title="Goal" block data-testid="clarify-project-goal" />
+        </div>
+      </div>
+
       <div class="clarify-field">
         <label class="text-body-s fw-semibold clarify-label" for="project-description">Description</label>
         <textarea
@@ -62,10 +73,13 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import Btn from '../Btn.vue'
 import TagInput from '../TagInput.vue'
+import Select from '../Select.vue'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
+import { horizonModel } from '../../scripts/models/horizonModel.js'
+import { settingsModel } from '../../scripts/models/settingsModel.js'
 
 const props = defineProps({
   initialData: {
@@ -81,16 +95,24 @@ const props = defineProps({
 const emit = defineEmits(['submit'])
 
 const titleInput = ref(null)
+const horizon = horizonModel()
+const settings = settingsModel()
+
+const showAreaPicker = computed(() => settings.state.horizonsEnabled && horizon.hasAreas.value)
+const showGoalPicker = computed(() => settings.state.horizonsEnabled && horizon.hasGoals.value)
 
 const form = reactive({
   title: props.initialData.title || '',
   outcome: props.initialData.outcome || '',
   description: props.initialData.description || '',
   tags: props.initialData.tags || [],
+  area_id: props.initialData.area_id || '',
+  goal_id: props.initialData.goal_id || '',
 })
 
 onMounted(() => {
   titleInput.value?.focus()
+  if (settings.state.horizonsEnabled) horizon.load().catch(() => {})
 })
 
 function onSubmit() {
@@ -100,6 +122,8 @@ function onSubmit() {
     outcome: form.outcome.trim(),
     description: form.description.trim(),
     tags: form.tags,
+    area_id: showAreaPicker.value ? form.area_id : '',
+    goal_id: showGoalPicker.value ? form.goal_id : '',
   })
 }
 </script>
@@ -136,6 +160,13 @@ function onSubmit() {
 
 .clarify-label {
   color: var(--color-text-primary);
+}
+
+/* Each picker takes half the width; a single one stays on the left */
+.clarify-horizons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
 }
 
 .clarify-helper {

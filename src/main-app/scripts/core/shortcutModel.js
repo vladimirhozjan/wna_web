@@ -24,6 +24,7 @@ const NAVIGATION = [
     {page: 'Trash', key: 'x', route: 'trash'},
     {page: 'Overdue', key: 'o', route: 'overdue'},
     {page: 'Weekly Review', key: 'v', route: 'review'},
+    {page: 'Horizons', key: 'h', route: 'horizons'},
     {page: 'Settings', key: ',', route: 'settings'},
     {page: 'Connections', route: 'connections'},
     {page: 'Help', route: 'help'},
@@ -50,7 +51,8 @@ export function shortcutModel() {
     let gPressedAt = 0
 
     const navigation = computed(() =>
-        NAVIGATION.filter(n => n.route !== 'review' || settings.state.reviewEnabled)
+        NAVIGATION.filter(n => (n.route !== 'review' || settings.state.reviewEnabled)
+            && (n.route !== 'horizons' || settings.state.horizonsEnabled))
     )
 
     // [{label, run}] for the buttons the current detail page renders enabled

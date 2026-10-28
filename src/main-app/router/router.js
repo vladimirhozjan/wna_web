@@ -38,7 +38,8 @@ const routes = [
     {path: '/reset-password', name: 'reset-password', component: LandingPage, props: route => ({mode: 'reset', token: route.query.token || ''}),
         beforeEnter: to => (to.query.token ? true : {name: 'forgot'})},
     {path: '/verify', name: 'verify-email', component: VerifyEmailPage},
-    {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage},
+    {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage, meta: {ssoProvider: 'google'}},
+    {path: '/apple/sso', name: 'apple-sso', component: GoogleSsoPage, meta: {ssoProvider: 'apple'}},
     {path: '/google/:feature', name: 'google-connect', component: () => import('../views/dashboard/GoogleConnectPage.vue')},
     {path: '/engage', name: 'engage', component: EngagePage},
     {path: '/next', name: 'next', component: NextPage},
@@ -46,6 +47,8 @@ const routes = [
     {path: '/inbox', name: 'inbox', component: InboxPage},
     {path: '/share', name: 'share', component: () => import('../views/dashboard/SharePage.vue')},
     {path: '/projects', name: 'projects', component: ProjectsPage},
+    {path: '/project-templates', name: 'project-templates', component: () => import('../views/dashboard/ProjectTemplatesPage.vue')},
+    {path: '/project-templates/:id', name: 'project-template-detail', component: () => import('../views/dashboard/ProjectTemplateDetailPage.vue')},
     {path: '/reference', name: 'reference', component: ReferencePage},
     {path: '/settings', name: 'settings', component: SettingsPage},
     {path: '/billing-history', name: 'billing-history', component: () => import('../views/dashboard/BillingHistoryPage.vue')},
@@ -60,6 +63,7 @@ const routes = [
     {path: '/trash', name: 'trash', component: TrashPage},
     {path: '/waiting-for', name: 'waiting-for', component: WaitingForPage},
     {path: '/review', name: 'review', component: ReviewPage},
+    {path: '/horizons', name: 'horizons', component: () => import('../views/dashboard/HorizonsPage.vue')},
     {path: '/overdue', name: 'overdue', component: OverduePage},
     {path: '/stuff/:id', name: 'stuff-detail', component: StuffDetailPage},
     {path: '/action/:id', name: 'action-detail', component: ActionDetailPage},
@@ -105,7 +109,7 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
     scrollBehavior(to, from, savedPosition) {
-        if (to.hash) return {el: to.hash, top: 64, behavior: 'smooth'}
+        if (to.hash && !to.meta.ssoProvider) return {el: to.hash, top: 64, behavior: 'smooth'}
         if (savedPosition) return savedPosition
         return {top: 0}
     },
@@ -117,7 +121,7 @@ const auth = authModel()
 
 export const PUBLIC_ROUTE_NAMES = new Set([
     'landing', 'login', 'register', 'forgot', 'reset-password',
-    'verify-email', 'google-sso', 'pricing',
+    'verify-email', 'google-sso', 'apple-sso', 'pricing',
     'help', 'help-getting-started', 'help-faq', 'help-best-practices',
     'legal', 'legal-terms', 'legal-privacy',
 ])

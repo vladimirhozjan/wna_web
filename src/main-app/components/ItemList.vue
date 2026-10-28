@@ -36,6 +36,8 @@
           v-for="(item, index) in items"
           :key="item.id"
           class="item-wrapper"
+          :data-testid="rowTestid"
+          :data-id="rowTestid ? item.id : undefined"
           :class="{
             'item-wrapper--active': activeId != null && activeId === item.id,
             'item-wrapper--dragging': nativeDraggingId === item.id,
@@ -138,6 +140,8 @@ const props = defineProps({
   swipeRight: { type: String, default: null },
   swipeLeft: { type: String, default: null },
   swipeFilter: { type: Function, default: null },
+  // ui-tests hook: each row gets this data-testid plus data-id = the item id
+  rowTestid: { type: String, default: undefined },
 })
 
 const drag = dragModel()
@@ -156,7 +160,7 @@ const showHint = ref(false)
 const isTouch = window.matchMedia('(pointer: coarse)').matches
 
 onMounted(() => {
-  if (!props.disabled && !localStorage.getItem(HINT_KEY)) {
+  if (!props.disabled && props.reorderable && !localStorage.getItem(HINT_KEY)) {
     showHint.value = true
   }
 })

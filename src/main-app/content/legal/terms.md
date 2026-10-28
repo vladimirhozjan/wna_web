@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** October 20, 2026
+**Last updated:** October 27, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -27,6 +27,7 @@ The Service includes the following functionality:
 - **Next Actions** - List of concrete, actionable steps
 - **Today** - Focused daily action list
 - **Projects** - Multi-step outcomes with ordered action lists
+- **Project Templates** - Save a project's actions as a reusable template and start new projects or fill existing ones from it
 - **Calendar** - Time-specific actions and recurring events (day, week, month, and year views)
 - **Waiting For** - Delegated or pending items
 - **Someday / Maybe** - Items for future consideration
@@ -41,6 +42,7 @@ The Service includes the following functionality:
 - **In-App Notifications** - In-app alerts within the Service for delegations, connection invites, and other events
 - **Email Notifications** - Optional task reminders, daily summaries, and project nudges delivered by email
 - **Google Sign-In** - Optional sign-in and registration using your Google account
+- **Sign in with Apple** - Optional sign-in and registration using your Apple ID
 - **Google Calendar Sync** - Optional two-way sync of your scheduled actions with your Google Calendar, in a dedicated WhatsNextAction calendar we create for you on request or in another calendar you choose; events you create in the WhatsNextAction calendar in Google become scheduled actions in the Service (available on Pro and Team plans)
 - **Google Drive Storage** - Optional storage of your reference files and attachments in your own Google Drive (available on all plans)
 
@@ -54,7 +56,7 @@ You must be at least **15 years old** to use the Service. By registering, you re
 
 ### 3.2 Account Creation
 
-To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol), or sign in with your Google account. You must verify your email address before you can access the Service.
+To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol), or sign in with your Google account or your Apple ID. You must verify your email address before you can access the Service.
 
 ### 3.3 Account Security
 
@@ -96,6 +98,7 @@ Usage limits apply based on your subscription plan:
 |---|---|---|---|
 | Storage | 50 MB | 250 MB | 1 GB per user |
 | Projects | 7 | Unlimited | Unlimited |
+| Project templates | 3 | Unlimited | Unlimited |
 | Actions | Unlimited | Unlimited | Unlimited |
 | Inbox items | Unlimited | Unlimited | Unlimited |
 | Context tags | 10 | Unlimited | Unlimited |

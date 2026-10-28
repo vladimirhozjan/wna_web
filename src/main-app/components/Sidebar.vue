@@ -61,6 +61,7 @@
       <SidebarMenuItem
           label="Projects"
           :to="{ name: 'projects' }"
+          :active-for="['project-templates', 'project-template-detail']"
           :count="stats?.projects?.count"
           :accept-drop="['stuff', 'action', 'someday', 'completed', 'reference']"
           @drop="onDropToProjects"
@@ -99,7 +100,7 @@
       </SidebarMenuItem>
 
       <!-- REFLECT -->
-      <div v-if="settingsMdl.state.reviewEnabled" class="sidebar-section-label">Reflect</div>
+      <div v-if="settingsMdl.state.reviewEnabled || settingsMdl.state.horizonsEnabled" class="sidebar-section-label">Reflect</div>
 
       <SidebarMenuItem
           v-if="settingsMdl.state.reviewEnabled"
@@ -109,6 +110,15 @@
           :badge-color="reviewBadgeColor"
       >
         <template #icon><ReviewIcon/></template>
+      </SidebarMenuItem>
+
+      <SidebarMenuItem
+          v-if="settingsMdl.state.horizonsEnabled"
+          label="Horizons"
+          :to="{ name: 'horizons' }"
+          data-testid="sidebar-horizons"
+      >
+        <template #icon><HorizonIcon/></template>
       </SidebarMenuItem>
 
       <!-- TEAM -->
@@ -205,6 +215,7 @@ import TrashIcon from "../assets/TrashIcon.vue";
 import SettingsIcon from "../assets/SettingsIcon.vue";
 import LogoutIcon from "../assets/LogoutIcon.vue";
 import ReviewIcon from "../assets/ReviewIcon.vue";
+import HorizonIcon from "../assets/HorizonIcon.vue";
 import EngageIcon from "../assets/EngageIcon.vue";
 import ConnectionsIcon from "../assets/ConnectionsIcon.vue";
 import { reviewModel } from "../scripts/models/reviewModel.js";

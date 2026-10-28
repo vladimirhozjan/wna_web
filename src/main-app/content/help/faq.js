@@ -3,22 +3,22 @@ export const faq = [
   {
     question: 'How do I create an account?',
     answer:
-      'Tap "Start Free" on the landing page. Enter your email address, choose a password (at least 8 characters with at least one letter, one digit, and one symbol), and confirm it. A verification email will be sent to your address — click the link to verify your account. Once verified, you are automatically logged in and taken to your Dashboard. You can also sign up with Google using the "Sign up with Google" button.',
+      'Tap "Start Free" on the landing page. Enter your email address, choose a password (at least 8 characters with at least one letter, one digit, and one symbol), and confirm it. A verification email will be sent to your address — click the link to verify your account. Once verified, you are automatically logged in and taken to your Dashboard. You can also sign up with Google or Apple using the "Sign up with Google" or "Sign up with Apple" button.',
   },
   {
     question: 'How do I log in?',
     answer:
-      'Tap "Sign In" on the landing page and enter your email and password. On success you are redirected to your Dashboard. You can also use the "Sign in with Google" button to sign in with your Google account. If you have forgotten your password, use the "Forgot your password?" link to reset it.',
+      'Tap "Sign In" on the landing page and enter your email and password. On success you are redirected to your Dashboard. You can also use the "Sign in with Google" or "Sign in with Apple" button to sign in with your Google account or Apple ID. If you have forgotten your password, use the "Forgot your password?" link to reset it.',
   },
   {
-    question: 'Can I sign in with Google?',
+    question: 'Can I sign in with Google or Apple?',
     answer:
-      'Yes. The Sign Up dialog has a "Sign up with Google" button and the Sign In dialog has a "Sign in with Google" button. Choose your Google account, and if it is your first time you are signed up automatically — no separate password needed. If you already have an account with the same email, signing in with Google links to it. You can still use email and password at any time.',
+      'Yes. The Sign Up dialog has "Sign up with Google" and "Sign up with Apple" buttons, and the Sign In dialog has "Sign in with Google" and "Sign in with Apple" buttons. Choose your Google account or Apple ID, and if it is your first time you are signed up automatically — no separate password needed. If you already have an account with the same email, signing in with Google or Apple links to it. If you choose Apple\'s Hide My Email, Apple gives us a private relay address instead of your email, so you get a separate account. If you stop using Sign in with Apple for WhatsNextAction in your Apple ID settings, the sessions you opened with Apple are signed out; your account stays. You can still use email and password at any time.',
   },
   {
     question: 'How do I reset my password?',
     answer:
-      'On the login screen, tap "Forgot your password? Reset it." and enter your email address. Then open the reset link we email you — it opens a form where you set a new password. Once it is saved, sign in with your new password.',
+      'On the login screen, tap "Forgot your password? Reset it." and enter your email address. Then open the reset link we email you — it opens a form where you set a new password. Once it is saved, sign in with your new password. This also lets you add a password to an account you created with Google or Apple.',
   },
   {
     question: 'How do I change my password?',
@@ -33,7 +33,7 @@ export const faq = [
   {
     question: 'What are sessions and how do I manage them?',
     answer:
-      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using. An ended device is signed out within a few minutes. A session you stop using expires on its own 7 to 14 days after its last use and no longer appears in the list.',
+      'Each device or browser you log in from creates a session. Go to Settings to see all your active sessions, including how each one signed in (email, Google or Apple), the device name, IP address, and last activity time. You can end any individual session remotely, or use "End All Other Sessions" to revoke every session except the one you are currently using. An ended device is signed out within a few minutes. A session you stop using expires on its own 7 to 14 days after its last use and no longer appears in the list.',
   },
 
   {
@@ -54,6 +54,11 @@ export const faq = [
       'An action is a single, concrete, physical step you can take — for example, "Call the dentist to schedule an appointment." A project is any outcome that requires more than one action step to complete — for example, "Plan birthday party." Every active project must always have at least one next action. When you complete a project\'s next action, the next item in the backlog automatically promotes to become the new next action.',
   },
   {
+    question: 'What are project templates?',
+    answer:
+      'A project template is a reusable plan for a project you repeat, like a trip or a month-end close. Open any project that is not in the Trash, shared projects included, and choose Save as template from its More menu (⋯). The template keeps the titles and descriptions of the project\'s actions. Find your templates under Projects → Templates, where you can rename them and add, edit, reorder or delete actions. From a template, New project starts a fresh project: the first action becomes the Next Action and the rest go to the backlog. Add to project appends the actions to the end of an active project\'s backlog and leaves its Next Action as it is; on a shared project they land unassigned. Templates are personal and never shared. Free keeps up to 3 templates, Pro and Team unlimited. If you downgrade, you keep every template.',
+  },
+  {
     question: 'What is the difference between Next Actions and Today?',
     answer:
       'Next Actions is your full list of ready-to-do actions — things you could work on right now. Today is a focused subset of actions you have specifically chosen to work on today. Think of Next Actions as your complete menu and Today as what you have put on your plate for the day.',
@@ -61,7 +66,12 @@ export const faq = [
   {
     question: 'What is the Weekly Review?',
     answer:
-      'The Weekly Review is a cornerstone of effective productivity. It is a routine where you step back and review your entire system to make sure it is complete and current. WhatsNextAction guides you through six steps: empty your Inbox, review Next Actions, review Waiting For items, review Projects, review Someday/Maybe, and review your Calendar. You can enable it in Settings and even set up a recurring reminder.',
+      'The Weekly Review is a cornerstone of effective productivity. It is a routine where you step back and review your entire system to make sure it is complete and current. WhatsNextAction guides you through six steps: empty your Inbox, review Next Actions, review Waiting For items, review Projects, review Someday/Maybe, and review your Calendar. When one of your Horizons of Focus is due, a seventh step, Review horizons, is added at the end and names the levels to look at. You can enable it in Settings and even set up a recurring reminder.',
+  },
+  {
+    question: 'What are Horizons of Focus?',
+    answer:
+      'Horizons of Focus are the higher levels of GTD that sit above your projects and actions, so you can see whether what you do serves what matters to you. Open Horizons in the sidebar to fill in four levels, one item at a time: Areas of focus (the parts of your life and work you keep up, like Health or Finances), Goals (what you want to achieve in the next year or two), Vision (what success looks like three to five years from now) and Purpose & principles (why you do what you do, and the values you live by). Edit an item by clicking it, drag to reorder, and delete it when it no longer applies. You can link each project to one area and one goal when you create it, when you clarify an Inbox item into a project, or later on the project page. The Horizons page shows how many active projects serve each area and goal, flags the ones with none, and tells you how many projects have no area or goal; click a count to list those projects. Each level comes due for review at the start of each month (areas), quarter (goals) or year (vision and purpose), and the Weekly Review then adds a Review horizons step. The Engage page shows one of your vision or purpose items each day as a reminder. On shared projects the area and goal you pick are private to you. Every plan, Free included, has Horizons of Focus, and you can turn them off in Settings → Reflect.',
   },
 
   // --- Inbox & Clarify ---
@@ -217,7 +227,7 @@ export const faq = [
   {
     question: 'What are shared projects?',
     answer:
-      'On the Team plan, a project owner taps "Share" on the project page (in its ⋯ menu when the buttons don\'t fit) to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Once someone assigns an action to themselves, only they can complete, move or trash it; read-only members can comment only. Actions you complete or trash on a shared project appear in your own Completed and Trash, and shared projects and their actions can\'t be moved to Someday/Maybe. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project.',
+      'On the Team plan, a project owner taps "Share" on the project page (in its ⋯ menu when the buttons don\'t fit) to share a project with their connections. Each member gets a role: Owner, Write, or Read-only. Shared members see the project backlog, action titles and descriptions, attachments, who is assigned to what, who completed what, and comments. Tags always stay private to each person, even on a shared project. Anyone — including read-only members — can comment. Once someone assigns an action to themselves, only they can complete, move or trash it; read-only members can comment only. Actions you complete or trash on a shared project appear in your own Completed and Trash, and shared projects and their actions can\'t be moved to Someday/Maybe. Members can leave a shared project, and the owner can remove members; if everyone but the owner leaves, the project reverts to a personal project. If the owner deletes their account, the shared project is deleted for every member.',
   },
 
   // --- Account & Security ---
@@ -236,7 +246,7 @@ export const faq = [
   {
     question: 'What are the limits on each plan?',
     answer:
-      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Ideas in a project brainstorm: 50 on Free, up to 1000 on Pro and Team, each up to 500 characters. Actions and inbox items are unlimited on every plan, including Free.',
+      'Active projects: 7 on Free, unlimited on Pro and Team. Distinct context tags: 10 on Free, unlimited on Pro and Team. Recurring actions: not available on Free, included on Pro and Team. File storage: 50 MB on Free, 250 MB on Pro, and 1 GB per user on Team. Maximum attachment size: 5 MB on Free, 20 MB on Pro, and 50 MB on Team. Ideas in a project brainstorm: 50 on Free, up to 1000 on Pro and Team, each up to 500 characters. Project templates: 3 on Free, unlimited on Pro and Team. Actions and inbox items are unlimited on every plan, including Free.',
   },
   {
     question: 'What are the limits on attachments and comments?',
@@ -320,13 +330,13 @@ export const faq = [
   {
     question: 'Are there keyboard shortcuts?',
     answer:
-      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, or add what you typed as a new Inbox item, project or next action. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. Press Cmd/Ctrl+Z while the Undo message shows to undo your last complete, trash or move. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
+      'Yes, on a computer. Press Cmd/Ctrl+K to open the command palette: type to go to a page, run an action on the item you have open, see search results, or add what you typed as a new Inbox item, project or next action. Press G, then a letter, to go to a page: E Engage, I Inbox, T Today, N Next, C Calendar, W Waiting For, P Projects, S Someday/Maybe, R Reference, D Completed, X Trash, O Overdue, V Weekly Review (when it is on in Settings), H Horizons (when it is on in Settings), and comma for Settings. Press C to add a new item to your Inbox, and ? to see every shortcut. Press Cmd/Ctrl+Z while the Undo message shows to undo your last complete, trash or move. These shortcuts pause while you type in a field or a dialog is open, and are not available on phones. Elsewhere, press Enter to submit forms and save inline edits. Press Escape to cancel editing, close modals, and close dropdowns. In the Clarify wizard, Backspace goes back a step (when you are not typing in an input). In the tag input, arrow keys navigate suggestions and comma commits a tag. On list pages, long-press (touch) or click-and-drag (desktop) to reorder items.',
   },
 
   // --- Dashboard ---
   {
     question: 'What is the Dashboard / Engage page?',
     answer:
-      'The Engage page is your home screen after logging in. It gives you a bird\'s-eye overview: an Overdue section when anything is overdue, your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying, projects are missing a next action, or your Weekly Review is overdue. All sections respect the active Context Filter so you can focus on one context at a time.',
+      'The Engage page is your home screen after logging in. It gives you a bird\'s-eye overview: one of your vision or purpose items at the top, a different one each day, when you have Horizons of Focus; an Overdue section when anything is overdue, your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying, projects are missing a next action, or your Weekly Review is overdue. All sections respect the active Context Filter so you can focus on one context at a time.',
   },
 ]

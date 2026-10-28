@@ -44,6 +44,7 @@ import Btn from '../../components/Btn.vue'
 import Spinner from '../../components/Spinner.vue'
 import {authModel} from '../../scripts/core/authModel.js'
 import {takeGoogleSsoVerifier} from '../../scripts/core/googleSso.js'
+import {takeAppleSsoNonce} from '../../scripts/core/appleSso.js'
 import {pendingShare} from '../../scripts/core/pendingShare.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
 import ExclamationIcon from '../../assets/ExclamationIcon.vue'
@@ -53,31 +54,54 @@ const route = useRoute()
 const router = useRouter()
 const auth = authModel()
 
+const providers = {
+  google: {
+    readResult: () => route.query,
+    takeSecret: takeGoogleSsoVerifier,
+    signIn: (result, verifier) => auth.googleSsoLogin(result.code, verifier),
+    errorScenario: ErrorScenario.GOOGLE_LOGIN,
+  },
+  apple: {
+    readResult: readFragment,
+    takeSecret: takeAppleSsoNonce,
+    signIn: (result, nonce) => auth.appleSsoLogin(result.code, nonce, result.name),
+    errorScenario: ErrorScenario.APPLE_LOGIN,
+  },
+}
+const provider = providers[route.meta.ssoProvider]
+
 const status = ref('loading')
 const errorMessage = ref('')
 
+// Apple's result arrives in the fragment (kept out of server logs); drop it from the address bar and history
+function readFragment() {
+  const result = Object.fromEntries(new URLSearchParams(window.location.hash.slice(1)))
+  history.replaceState(history.state, '', window.location.pathname + window.location.search)
+  return result
+}
+
 onMounted(() => {
-  const code = route.query.code
-  const verifier = takeGoogleSsoVerifier(route.query.state)
-  if (route.query.error) {
+  const result = provider.readResult()
+  const secret = provider.takeSecret(result.state)
+  if (result.error) {
     router.replace({name: 'landing'})
     return
   }
-  if (!code || !verifier) {
+  if (!result.code || !secret) {
     status.value = 'invalid'
     return
   }
-  exchangeCode(code, verifier)
+  exchangeCode(result, secret)
 })
 
-async function exchangeCode(code, verifier) {
+async function exchangeCode(result, secret) {
   status.value = 'loading'
   try {
-    await auth.googleSsoLogin(code, verifier)
+    await provider.signIn(result, secret)
     await auth.loadUser()
     router.push(await pendingShare().afterLogin({name: 'engage'}))
   } catch (err) {
-    const mapped = mapApiError(err, ErrorScenario.GOOGLE_LOGIN)
+    const mapped = mapApiError(err, provider.errorScenario)
     status.value = 'error'
     errorMessage.value = mapped
   }
