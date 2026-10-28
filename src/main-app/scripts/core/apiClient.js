@@ -417,6 +417,51 @@ export async function revokeAllSessions() {
     }
 }
 
+export async function getOauthRequest(handle) {
+    try {
+        const res = await httpApi.get(`/v1/user/oauth/requests/${encodeURIComponent(handle)}`, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function approveOauthRequest(handle) {
+    try {
+        const res = await httpApi.post(`/v1/user/oauth/requests/${encodeURIComponent(handle)}/approve`, null, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function denyOauthRequest(handle) {
+    try {
+        const res = await httpApi.post(`/v1/user/oauth/requests/${encodeURIComponent(handle)}/deny`, null, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function listAiApps() {
+    try {
+        const res = await httpApi.get('/v1/user/ai-apps', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function removeAiApp(id) {
+    try {
+        const res = await httpApi.delete(`/v1/user/ai-apps/${id}`, {headers: authHeaders()})
+        return res.data || true
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function addStuff({title, description = "", state = "INBOX", client_key = null, input_type = null}, {quiet = false} = {}) {
     try {
         const body = {title, description, state, add_to_top: addToTop()}
@@ -2440,6 +2485,11 @@ const apiClient = {
     listSessions,
     revokeSession,
     revokeAllSessions,
+    getOauthRequest,
+    approveOauthRequest,
+    denyOauthRequest,
+    listAiApps,
+    removeAiApp,
     logoutUser,
     addStuff,
     updateStuff,

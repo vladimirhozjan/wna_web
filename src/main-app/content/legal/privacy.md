@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 27, 2026
+**Last updated:** October 28, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -130,7 +130,11 @@ If you connect **Google Drive storage** (available on all plans), you grant us p
 
 If you disconnect Google Drive, the files stay in your Google Drive, but you cannot open them in WhatsNextAction until you connect Google Drive again.
 
-### 2.9 Data We Do Not Collect
+### 2.9 Connected AI Apps
+
+If you connect an AI app (for example Claude or ChatGPT) to your account, available on all plans, we store for each connected AI app: the name the AI app gives itself, its return addresses, the date you connected it, the time it was last used, and a hashed access credential. The AI app can reach the content described in Section 2.2 except Reference files and attachments; it never reaches your settings, account or billing data.
+
+### 2.10 Data We Do Not Collect
 
 - We do not use analytics or tracking tools
 - We do not use advertising cookies or pixels
@@ -163,7 +167,7 @@ We use your personal data exclusively for the following purposes:
 
 - **Providing the Service** - storing and organizing your content, synchronizing across your sessions
 - **Authentication and security** - verifying your identity, managing login sessions, detecting unauthorized access
-- **Account communications** - sending password reset emails, email verification, login alerts, security notifications, subscription and payment notices, and service notices (such as changes to these terms, maintenance, and security matters)
+- **Account communications** - sending password reset emails, email verification, login alerts, security notifications (including when a new AI app is connected to your account), subscription and payment notices, and service notices (such as changes to these terms, maintenance, and security matters)
 - **Product announcements** - occasional emails about new features and product news (you can opt out in notification settings)
 - **Task notifications** - sending optional email reminders such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
 - **Collaboration** - enabling delegation and shared projects with the connections you choose (Team plan)
@@ -217,7 +221,7 @@ The Google services above are governed by Google's own privacy policy. WhatsNext
 
 ### 5.7 Other WhatsNextAction Users (Team plan)
 
-- If you use collaboration features, content you choose to delegate or share becomes visible to the specific connections you select, as described in Section 2.4. This sharing happens only at your direction and only with the users you choose.
+- If you use collaboration features, content you choose to delegate or share becomes visible to the specific connections you select, as described in Section 2.4. This sharing happens only at your direction — including when an AI app you connected shares, delegates or invites on your instructions — and only with the users you choose.
 
 ### 5.8 What We Do Not Do
 
@@ -234,6 +238,10 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 - **Slack Technologies Limited**, Dublin, Ireland, a Salesforce company - receives our internal security and operations alerts, which can contain your user identifier, a session identifier, device name and IP address.
 
+### 5.11 AI Apps You Connect
+
+- At your instruction, we let the AI app you connected read and change your content. Its provider receives that content as an independent controller under its own terms and privacy policy, not as our processor.
+
 ## 6. International Data Transfers
 
 We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres.
@@ -247,6 +255,8 @@ If you connect Google Calendar sync, the events we create for you, and the Whats
 If you connect Google Drive storage, the files we store for you are held by Google in your own Google Drive under your Google account terms, and Google may store them outside the EEA. We place them there at your instruction, to provide the storage you requested (Art. 49(1)(b) GDPR).
 
 If you sign in with Apple, Apple may process your sign-in, and the emails relayed through its private email relay, outside the EEA under its own privacy policy. We use it at your request, to provide the sign-in you chose (Art. 49(1)(b) GDPR).
+
+If you connect an AI app, its provider may process the content it reads outside the EEA under its own privacy policy. We make that content available at your instruction, to provide the connection you requested (Art. 49(1)(b) GDPR).
 
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
 
@@ -263,6 +273,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
 | Sign-in tokens (encrypted Google / Apple sign-in token) | Kept until you delete your account (the Apple token also until you stop using Sign in with Apple for WhatsNextAction); on account deletion we revoke our access at Google / Apple |
 | Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
+| Connected AI apps (name, return addresses, connection and last-use time, hashed credential) | Kept until you remove the app, until its connection expires after the same period of non-use as a session, or until you delete your account; registrations by an AI app that never complete a connection are deleted after 24 hours |
 | Operational alerts | Kept until the alert is resolved; deleted 90 days after it is resolved |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |

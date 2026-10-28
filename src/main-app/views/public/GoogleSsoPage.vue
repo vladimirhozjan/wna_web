@@ -99,7 +99,7 @@ async function exchangeCode(result, secret) {
   try {
     await provider.signIn(result, secret)
     await auth.loadUser()
-    router.push(await pendingShare().afterLogin({name: 'engage'}))
+    router.push(await pendingShare().afterLogin(auth.takeReturnPath() ?? {name: 'engage'}))
   } catch (err) {
     const mapped = mapApiError(err, provider.errorScenario)
     status.value = 'error'

@@ -85,6 +85,11 @@ export const bestPractices = [
       'Check Settings periodically to review your active sessions. You can see which devices are logged in, how each one signed in, how recently each was active, and end any session remotely. If you log in on a shared computer and forget to sign out, you can revoke that session from any other device. A session you stop using expires on its own 7 to 14 days after its last use and drops off the list.',
   },
   {
+    title: 'Review Connected AI Apps',
+    description:
+      'Every AI app you connect can change your lists, so check Settings → AI Apps from time to time. Remove any app you no longer use — it loses access within a few minutes, and you can always connect it again later.',
+  },
+  {
     title: 'Automate With Recurring Actions',
     description:
       'Use recurring action templates for tasks that repeat on a schedule — weekly reviews, monthly reports, daily standups. Set the frequency, pick the days, and optionally add a time and duration. The app automatically spawns a new action instance each cycle so you never have to remember to create it yourself. Access recurring templates from the Calendar\'s Recurring view (Pro and Team plans).',

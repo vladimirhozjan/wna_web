@@ -168,6 +168,7 @@
 
 <script setup>
 import {computed, nextTick, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {useRoute} from 'vue-router'
 import Inpt from './Inpt.vue'
 import Btn from './Btn.vue'
 import Lnk from './Lnk.vue'
@@ -184,6 +185,7 @@ import GoogleIcon from '../assets/GoogleIcon.vue'
 import AppleIcon from '../assets/AppleIcon.vue'
 
 const auth = authModel()
+const route = useRoute()
 const error = errorModel()
 
 const ssoProviders = [
@@ -472,6 +474,7 @@ async function autoLogin() {
 
 function startSso(provider) {
   ssoLoading.value = provider.id
+  auth.rememberReturnPath(route.query.redirect)
   provider.redirect()
 }
 

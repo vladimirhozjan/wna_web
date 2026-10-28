@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** October 27, 2026
+**Last updated:** October 28, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -45,6 +45,7 @@ The Service includes the following functionality:
 - **Sign in with Apple** - Optional sign-in and registration using your Apple ID
 - **Google Calendar Sync** - Optional two-way sync of your scheduled actions with your Google Calendar, in a dedicated WhatsNextAction calendar we create for you on request or in another calendar you choose; events you create in the WhatsNextAction calendar in Google become scheduled actions in the Service (available on Pro and Team plans)
 - **Google Drive Storage** - Optional storage of your reference files and attachments in your own Google Drive (available on all plans)
+- **AI App Connections** - Optional connection of an AI app you use (for example Claude or ChatGPT) to your account over the Model Context Protocol, so it can read and change your tasks and projects on your instructions (available on all plans)
 
 Feature availability depends on your subscription plan (see Section 5).
 
@@ -194,7 +195,7 @@ You agree not to:
 - Use the Service for any unlawful purpose or in violation of any applicable law
 - Attempt to gain unauthorized access to the Service, other accounts, or our systems
 - Interfere with or disrupt the Service or its infrastructure
-- Use automated tools, bots, or scripts to access the Service beyond normal use
+- Use automated tools, bots, or scripts to access the Service beyond normal use; using an AI app you connected through AI App Connections within the rate limits is normal use
 - Upload files containing malware, viruses, or malicious code
 - Use the Service to store or distribute content that infringes intellectual property rights
 - Reverse engineer, decompile, or attempt to extract the source code of the Service
@@ -286,6 +287,8 @@ If you are a consumer in the European Union, you benefit from mandatory consumer
 ### 9.7 Third-Party Integrations
 
 Some features connect the Service to services run by third parties, such as Google Calendar sync or Google Drive storage. When you connect such a service, its provider's own terms and privacy policy also apply to your use of it. We do not control third-party services and are not liable for their availability, changes, or how they handle your data, including events stored in your Google Calendar or files stored in your Google Drive. You can disconnect an integration at any time in your settings.
+
+If you connect an AI app through AI App Connections, the AI app's provider's own terms and privacy policy apply to your use of it. The AI app acts with your permissions, so you are responsible for the changes an AI app you connected makes in your account. We do not control the AI app or how its provider handles your data. You can remove an AI app at any time in your settings.
 
 ## 10. Indemnification
 

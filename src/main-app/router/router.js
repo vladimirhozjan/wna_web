@@ -40,6 +40,7 @@ const routes = [
     {path: '/verify', name: 'verify-email', component: VerifyEmailPage},
     {path: '/google/sso', name: 'google-sso', component: GoogleSsoPage, meta: {ssoProvider: 'google'}},
     {path: '/apple/sso', name: 'apple-sso', component: GoogleSsoPage, meta: {ssoProvider: 'apple'}},
+    {path: '/authorize', name: 'authorize', component: () => import('../views/public/AuthorizePage.vue')},
     {path: '/google/:feature', name: 'google-connect', component: () => import('../views/dashboard/GoogleConnectPage.vue')},
     {path: '/engage', name: 'engage', component: EngagePage},
     {path: '/next', name: 'next', component: NextPage},
@@ -121,7 +122,7 @@ const auth = authModel()
 
 export const PUBLIC_ROUTE_NAMES = new Set([
     'landing', 'login', 'register', 'forgot', 'reset-password',
-    'verify-email', 'google-sso', 'apple-sso', 'pricing',
+    'verify-email', 'google-sso', 'apple-sso', 'authorize', 'pricing',
     'help', 'help-getting-started', 'help-faq', 'help-best-practices',
     'legal', 'legal-terms', 'legal-privacy',
 ])

@@ -39,6 +39,11 @@ watch(() => currentUser.value?.id, (id, previous) => {
     statsModel().setStats(null)
 })
 
+// A sign-in return target must stay on this site: a relative path, not `//host` and no `\` (browsers read it as `/`)
+export function validReturnPath(path) {
+    if (typeof path === 'string' && path.startsWith('/') && !path.startsWith('//') && !path.includes('\\')) return path
+    return null
+}
 
 export function authModel() {
 
@@ -304,6 +309,19 @@ export function authModel() {
         return confirmed
     }
 
+    // Google / Apple sign-in leaves the site: keep the pending return path across the provider round trip
+    function rememberReturnPath(path) {
+        const valid = validReturnPath(path)
+        if (valid) sessionStorage.setItem('auth_return_path', valid)
+        else sessionStorage.removeItem('auth_return_path')
+    }
+
+    function takeReturnPath() {
+        const path = validReturnPath(sessionStorage.getItem('auth_return_path'))
+        sessionStorage.removeItem('auth_return_path')
+        return path
+    }
+
     async function logoutWithConfirm() {
         if (!await confirmLogout()) return false
         await logoutUser()
@@ -330,6 +348,8 @@ export function authModel() {
         logoutUser,
         confirmLogout,
         logoutWithConfirm,
+        rememberReturnPath,
+        takeReturnPath,
         deleteAccount,
         forgotPassword,
         resetPassword,

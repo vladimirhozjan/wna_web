@@ -181,7 +181,7 @@
                   <span class="settings-label">Your inbox address</span>
                   <div class="email-address-row">
                     <span class="settings-value email-address">{{ inbox.address }}</span>
-                    <Btn variant="secondary" size="sm" @click="onCopyAddress">{{ copied ? 'Copied!' : 'Copy' }}</Btn>
+                    <Btn variant="secondary" size="sm" @click="onCopyAddress">{{ copied === 'inbox' ? 'Copied!' : 'Copy' }}</Btn>
                   </div>
                   <span class="text-body-s settings-hint">Forward any email to this address to capture it as a new item.</span>
                   <span class="text-body-s settings-hint">Attachments are saved with the item within your plan's limits.</span>
@@ -270,6 +270,54 @@
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- AI Apps Section -->
+        <div v-if="sectionVisible('aiApps')" class="card">
+          <div class="card-header card-header--toggle" @click="toggleSection('aiApps')">
+            <h2 class="settings-section-title">AI Apps</h2>
+            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('aiApps') }">&#8250;</span>
+          </div>
+          <div v-if="isExpanded('aiApps')" class="settings-section-body">
+            <div v-if="loadingAiApps" class="settings-loading">
+              <Spinner :size="16" />
+              <span>Loading AI apps...</span>
+            </div>
+
+            <template v-else>
+              <div v-if="aiAppsError" class="settings-error">
+                <span>Couldn't load your AI apps.</span>
+                <Btn variant="secondary" size="sm" @click="loadAiApps">Retry</Btn>
+              </div>
+
+              <div v-else-if="aiApps.length === 0" class="settings-empty">
+                No AI apps connected yet.
+              </div>
+
+              <div v-else class="sessions-list ai-apps-list">
+                <div v-for="app in aiApps" :key="app.id" class="session-item">
+                  <div class="session-info">
+                    <span class="fw-medium session-name">{{ app.name }}</span>
+                    <span class="text-body-s session-details">Connected {{ formatConnectedDate(app.connected_at) }}</span>
+                  </div>
+                  <ActionBtn
+                      variant="primary"
+                      :loading="removingAiAppId === app.id"
+                      @click="onRemoveAiApp(app)"
+                  />
+                </div>
+              </div>
+
+              <div class="settings-row settings-row--column">
+                <span class="settings-label">Connect an AI app</span>
+                <div class="email-address-row">
+                  <span class="settings-value email-address">{{ mcpUrl }}</span>
+                  <Btn variant="secondary" size="sm" @click="copyAddress('mcp', mcpUrl)">{{ copied === 'mcp' ? 'Copied!' : 'Copy' }}</Btn>
+                </div>
+                <span class="text-body-s settings-hint">Add this address as a connector in Claude, ChatGPT or any AI app that supports MCP. You'll be asked to sign in and allow access.</span>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -757,6 +805,8 @@
                   placeholder="Confirm new password"
                   @enter="onChangePassword"
               />
+
+              <p class="text-body-s settings-hint password-modal-hint">Other devices and your connected AI apps will be signed out.</p>
             </div>
 
             <div class="password-modal-footer">
@@ -797,9 +847,10 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { isValidPassword } from '../../scripts/core/authTools.js'
 import { mapApiError, ErrorScenario } from '../../scripts/core/errorMapper.js'
-import { changePassword, listSessions, revokeSession, revokeAllSessions, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, createWnaCalendar, syncCalendarNow, getStorageSettings, updateStorageSettings } from '../../scripts/core/apiClient.js'
+import { changePassword, listSessions, revokeSession, revokeAllSessions, listAiApps, removeAiApp, getInboxEmail, generateInboxEmail, regenerateInboxEmail, setInboxEmailEnabled, getGoogleStatus, startGoogleConnect, disconnectGoogle, listGoogleCalendars, selectGoogleCalendar, createWnaCalendar, syncCalendarNow, getStorageSettings, updateStorageSettings } from '../../scripts/core/apiClient.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { copyText } from '../../scripts/core/clipboardUtils.js'
+import { getDomains } from '../../scripts/core/domains.js'
 import { notificationModel } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
@@ -840,6 +891,7 @@ const SECTION_KEYWORDS = {
   plan: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice',
   emailInbox: 'email inbox capture address forward generate reset pause',
   sessions: 'sessions devices logout active current',
+  aiApps: 'ai apps mcp claude chatgpt connector connected assistant',
   application: 'application theme dark light position new items timezone time zone',
   tags: 'tags presets quick add',
   calendar: 'calendar week start time format business hours days',
@@ -1001,7 +1053,7 @@ const inbox = reactive({
   savingCapture: false,  // capture toggle in flight
 })
 
-const copied = ref(false)
+const copied = ref(null) // which address shows "Copied!": 'inbox' | 'mcp'
 let copiedTimer = null
 
 function applyInbox(data) {
@@ -1043,16 +1095,20 @@ async function onGenerateAddress() {
   }
 }
 
-async function onCopyAddress() {
-  if (!inbox.address) return
-  const ok = await copyText(inbox.address)
+async function copyAddress(key, text) {
+  const ok = await copyText(text)
   if (!ok) {
     toaster.push('Could not copy to clipboard')
     return
   }
-  copied.value = true
+  copied.value = key
   if (copiedTimer) clearTimeout(copiedTimer)
-  copiedTimer = setTimeout(() => { copied.value = false }, 2000)
+  copiedTimer = setTimeout(() => { copied.value = null }, 2000)
+}
+
+async function onCopyAddress() {
+  if (!inbox.address) return
+  await copyAddress('inbox', inbox.address)
 }
 
 async function onResetAddress() {
@@ -1586,6 +1642,13 @@ const sessionsError = ref(null)
 const revokingId = ref(null)
 const revokingAll = ref(false)
 
+// AI Apps state
+const aiApps = ref([])
+const loadingAiApps = ref(false)
+const aiAppsError = ref(false)
+const removingAiAppId = ref(null)
+const mcpUrl = getDomains().mcp_url
+
 // Other state
 const isMobile = ref(false)
 const loggingOut = ref(false)
@@ -1610,6 +1673,7 @@ onMounted(() => {
   window.addEventListener('resize', checkMobile)
   loadStats() // deep-linked /settings may mount before the sidebar populates stats
   loadSessions()
+  loadAiApps()
   settings.load().catch(() => {
     // Settings will fall back to localStorage, no need to show error
   })
@@ -1787,6 +1851,48 @@ async function onRevokeAllSessions() {
   }
 }
 
+// AI Apps functions
+async function loadAiApps() {
+  loadingAiApps.value = true
+  aiAppsError.value = false
+  try {
+    const data = await listAiApps()
+    aiApps.value = data.ai_apps || []
+  } catch {
+    aiAppsError.value = true
+  } finally {
+    loadingAiApps.value = false
+  }
+}
+
+function formatConnectedDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString()
+}
+
+async function onRemoveAiApp(app) {
+  const confirmed = await confirm.show({
+    title: 'Remove AI App',
+    message: `${app.name} will lose access to your WhatsNextAction data within a few minutes. To use it again, connect it again from ${app.name}.`,
+    confirmText: 'Remove',
+    cancelText: 'Cancel'
+  })
+  if (!confirmed) return
+
+  removingAiAppId.value = app.id
+  try {
+    await removeAiApp(app.id)
+  } catch (err) {
+    if (err.status !== 404) {
+      toaster.push(`Couldn't remove ${app.name}. Try again.`)
+      return
+    }
+  } finally {
+    removingAiAppId.value = null
+  }
+  aiApps.value = aiApps.value.filter(a => a.id !== app.id)
+  toaster.success(`${app.name} removed`)
+}
+
 // Password modal functions
 function openPasswordModal() {
   showPasswordModal.value = true
@@ -1838,6 +1944,7 @@ async function onChangePassword() {
     }
     closePasswordModal()
     loadSessions()
+    loadAiApps()
   } catch (err) {
     toaster.push('Password change failed: ' + mapApiError(err, ErrorScenario.CHANGE_PASSWORD))
   } finally {
@@ -2224,6 +2331,11 @@ async function onLogout() {
   color: var(--color-text-tertiary);
 }
 
+/* The address row follows the last app, so that row keeps its divider */
+.ai-apps-list .session-item:last-child {
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
 /* Toggle switch */
 .settings-toggle {
   position: relative;
@@ -2385,6 +2497,10 @@ async function onLogout() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.password-modal-hint {
+  margin: 0;
 }
 
 .password-modal--fullscreen .password-modal-body {

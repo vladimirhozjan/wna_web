@@ -128,7 +128,8 @@ This allows the same Docker image to run in different environments by changing o
 window.RUNTIME_CONFIG = {
   API_DOMAIN: "https://api-dev.whatsnextaction.com",
   GOOGLE_CLIENT_ID: "783327214800-xxx.apps.googleusercontent.com",
-  APPLE_CLIENT_ID: "com.whatsnextaction.signin.dev"
+  APPLE_CLIENT_ID: "com.whatsnextaction.signin.dev",
+  MCP_URL: "https://api-dev.whatsnextaction.com/mcp"
 };
 ```
 

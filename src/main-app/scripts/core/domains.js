@@ -11,5 +11,6 @@ export function getDomains() {
         base_url: rc.API_DOMAIN || '',
         google_client_id: rc.GOOGLE_CLIENT_ID || '',
         apple_client_id: rc.APPLE_CLIENT_ID || '',
+        mcp_url: rc.MCP_URL || 'http://localhost:8000/mcp',
     }
 }

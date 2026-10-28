@@ -236,6 +236,16 @@ export const faq = [
     answer:
       'Your account is protected by password requirements (minimum 8 characters with letters, digits, and symbols) and token-based authentication. Sessions are tracked per device — you can review, revoke, or end them from Settings at any time. Logging out in one browser tab instantly logs you out of all other open tabs. Changing your password automatically ends all other sessions.',
   },
+  {
+    question: 'Can I use WhatsNextAction with Claude, ChatGPT or another AI?',
+    answer:
+      'Yes, on every plan. Copy the address in Settings → AI Apps, add it as a connector in an AI app that supports MCP (such as Claude or ChatGPT), sign in and tap Allow access. The AI app then works with your lists on your instructions, with the same limits as the app. On shared projects it acts with your rights — if you have Read-only access, so does the AI app.',
+  },
+  {
+    question: 'How do I disconnect an AI app?',
+    answer:
+      'Open Settings → AI Apps and tap the X next to the app, then confirm with Remove. The app loses access within a few minutes. To use it again, connect it again from the AI app.',
+  },
 
   // --- Plans & Limits ---
   {

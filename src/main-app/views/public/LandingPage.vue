@@ -35,6 +35,7 @@ import BookSection from '../../components/public/BookSection.vue'
 import LandingFaqSection from '../../components/public/LandingFaqSection.vue'
 import CtaBanner from '../../components/public/CtaBanner.vue'
 import {pendingShare} from '../../scripts/core/pendingShare.js'
+import {validReturnPath} from '../../scripts/core/authModel.js'
 
 const props = defineProps({
   mode: {
@@ -51,9 +52,7 @@ const router = useRouter()
 const route = useRoute()
 
 function resolveRedirect() {
-  const r = route.query.redirect
-  if (typeof r === 'string' && r.startsWith('/') && !r.startsWith('//')) return r
-  return null
+  return validReturnPath(route.query.redirect)
 }
 
 const authMode = ref(null)
