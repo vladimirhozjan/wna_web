@@ -345,8 +345,6 @@ useSwipe(swipeRef, {
 watch(() => props.currentId, () => endEdit())
 
 // An undo or a reload can remove the idea being edited
-defineExpose({ editingId: () => editingId.value || newRowId.value })
-
 watch(() => canvas.nodes.value, () => {
   if (editingId.value && !canvas.getNode(editingId.value)) editingId.value = null
   if (newRowId.value && !canvas.getNode(newRowId.value)) newRowId.value = null

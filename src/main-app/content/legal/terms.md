@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** October 28, 2026
+**Last updated:** October 30, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 

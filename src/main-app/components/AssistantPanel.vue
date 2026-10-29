@@ -3,6 +3,7 @@
     <Transition name="assistant-panel">
       <aside
           v-if="assistant.enabled.value && state.panelOpen"
+          ref="panelRef"
           class="assistant-panel"
           :style="panelStyle"
           data-testid="assistant-panel"
@@ -206,6 +207,7 @@ const { paymentsEnabled } = flagsModel()
 const confirm = confirmModel()
 const toaster = errorModel()
 
+const panelRef = ref(null)
 const listRef = ref(null)
 const composerRef = ref(null)
 const scrolling = ref(false)
@@ -387,8 +389,11 @@ watch(() => [state.messages.length, lastAssistant.value?.status, !!state.creditC
   if (state.panelOpen) scrollToBottom()
 })
 
+// Back to the composer only from the panel itself (or nowhere) — never out of an editor on the page
 watch(() => assistant.working.value, (working) => {
-  if (!working && state.panelOpen) focusComposer()
+  if (working || !state.panelOpen) return
+  const active = document.activeElement
+  if (!active || active === document.body || panelRef.value?.contains(active)) focusComposer()
 })
 
 onBeforeUnmount(() => {

@@ -164,7 +164,7 @@ import { offlineModel } from '../scripts/core/offlineModel.js'
 import { authModel } from '../scripts/core/authModel.js'
 import { flagsModel } from '../scripts/core/flagsModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
-import { assistantModel, ASSISTANT_TEXT_MAX } from '../scripts/models/assistantModel.js'
+import { assistantModel, ASSISTANT_TEXT_MAX, charCount } from '../scripts/models/assistantModel.js'
 import {
   createChip,
   formatDuration,
@@ -222,6 +222,8 @@ let recStream = null
 let recTimer = null
 let recStartedAt = 0
 let recCancelled = false
+// A paste landed in the field itself (one line), so its length is not typed text
+let pastedInField = false
 
 const tier = computed(() => auth.currentUser.value?.subscription_tier)
 const isProOrTeam = computed(() => tier.value === 'pro' || tier.value === 'team')
@@ -345,7 +347,10 @@ function onPaste(e) {
   }
 
   const { first, rest } = splitLines(pasted)
-  if (!rest) return
+  if (!rest) {
+    pastedInField = true
+    return
+  }
   e.preventDefault()
   const input = e.target
   input.setRangeText(first, input.selectionStart ?? input.value.length, input.selectionEnd ?? input.value.length, 'end')
@@ -486,8 +491,15 @@ function runAiRow() {
     assistant.openPanel()
   } else {
     const typed = text.value.trim()
-    if (typed) assistant.send(typed, pastedText.value)
-    else assistant.send(...splitPasted(pastedText.value))
+    if (!typed) {
+      assistant.send(...splitPasted(pastedText.value))
+    } else if (pastedInField && charCount(typed) > ASSISTANT_TEXT_MAX) {
+      // A long line pasted into the field is pasted text; only typed text over the cap shows the over-cap state
+      const [head, tail] = splitPasted(typed)
+      assistant.send(head, [tail, pastedText.value].filter(Boolean).join('\n'))
+    } else {
+      assistant.send(typed, pastedText.value)
+    }
   }
   clearAll()
   emit('close')
@@ -512,6 +524,7 @@ function onEnterKey(e) {
 }
 
 function clearAll() {
+  pastedInField = false
   stopRecording(false)
   chips.value.forEach(releaseChip)
   chips.value = []
@@ -534,6 +547,10 @@ function onBlur() {
 }
 
 // The device cap applies only offline; the limits switch between live and last known
+watch(text, (v) => {
+  if (!v) pastedInField = false
+})
+
 watch(isOffline, (offline) => {
   if (!offline) chips.value.forEach(c => { c.queueFull = false })
   if (chips.value.length) refreshLimits()

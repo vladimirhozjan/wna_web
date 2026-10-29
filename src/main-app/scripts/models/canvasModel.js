@@ -25,6 +25,11 @@ const LINE_PX = 22
 const IDEA_MAX_WIDTH = 240
 const CHAR_PX = 8
 
+const NODE_FIELDS = ['id', 'parent_id', 'text', 'dx', 'dy', 'folded', 'converted']
+
+const clone = (list) => JSON.parse(JSON.stringify(list))
+const sameNode = (a, b) => NODE_FIELDS.every(k => a[k] === b[k])
+
 let instance = null
 
 export function canvasModel() {
@@ -55,6 +60,11 @@ export function canvasModel() {
     let saveTimer = null
     let retryTimer = null
     let retryCount = 0
+    // The nodes as the server last confirmed them — what a rebase compares local edits against
+    let base = []
+    // The AI assistant may write this canvas meanwhile: a 409 then rebases instead of taking the conflict path
+    let assistantWrites = false
+    let refreshing = false
 
     const isOwner = computed(() => !!project.value && (!project.value.shared || project.value.my_role === 'owner'))
     const canEdit = computed(() => isOwner.value && project.value?.state === 'ACTIVE')
@@ -176,6 +186,7 @@ export function canvasModel() {
         const list = Array.isArray(data?.nodes) ? data.nodes : []
         revision.value = data?.revision ?? 0
         nodes.value = list.some(n => n.parent_id == null) ? list : [newRoot()]
+        base = clone(list)
         undoStack.value = []
         redoStack.value = []
         commitSeq.value++
@@ -237,20 +248,75 @@ export function canvasModel() {
         }
     }
 
-    // The AI assistant changed this canvas on the server. Pending edits go out first (a 409 takes the conflict path);
-    // the idea being edited survives the reload even if the server has not seen it yet, so no typing is lost
-    async function refreshFromServer(editingId = null) {
+    // The AI assistant changed this canvas on the server: hold the pending save, then rebase the local edits onto it
+    async function refreshFromServer() {
         const session = sessionId
-        await flush()
-        if (session !== sessionId || dirty || unsaved.value || conflict.value) return
-        const editing = editingId ? getNode(editingId) : null
+        refreshing = true
+        clearTimers()
         try {
-            const [p, c] = await Promise.all([apiClient.getProject(projectId.value), apiClient.getProjectCanvas(projectId.value)])
-            if (session !== sessionId || dirty) return
+            if (inFlight) await inFlight
+            if (session !== sessionId || conflict.value) return
+            const p = await apiClient.getProject(projectId.value)
+            if (session !== sessionId) return
             project.value = p
-            applyCanvas(c)
-            if (editing && !getNode(editing.id) && getNode(editing.parent_id)) nodes.value = [...nodes.value, editing]
-        } catch { /* the next save or visit loads it */ }
+            await rebase()
+        } catch { /* unreachable now: the next save or visit loads it */ }
+        finally {
+            refreshing = false
+            // The held save still goes out when nothing rescheduled it
+            if (session === sessionId && dirty && !saveTimer && !retryTimer && !inFlight) scheduleSave()
+        }
+    }
+
+    function expectAssistantWrites(on) {
+        assistantWrites = on
+    }
+
+    // Server canvas + what changed here since `base`: local edits, additions and deletions win per idea; ideas left
+    // without a parent are dropped. Anything still different from the server is saved on the new revision
+    async function rebase() {
+        const session = sessionId
+        const c = await apiClient.getProjectCanvas(projectId.value)
+        if (session !== sessionId) return
+        const server = Array.isArray(c?.nodes) ? c.nodes : []
+        const baseById = new Map(base.map(n => [n.id, n]))
+        const localById = new Map(nodes.value.map(n => [n.id, n]))
+        const serverIds = new Set(server.map(n => n.id))
+        const merged = []
+        for (const n of server) {
+            const b = baseById.get(n.id)
+            const l = localById.get(n.id)
+            if (b && !l) continue
+            merged.push(l && (!b || !sameNode(l, b)) ? l : n)
+        }
+        for (const l of nodes.value) {
+            if (!serverIds.has(l.id) && !baseById.has(l.id)) merged.push(l)
+        }
+        const kept = new Set()
+        let grew = true
+        while (grew) {
+            grew = false
+            for (const n of merged) {
+                if (!kept.has(n.id) && (n.parent_id == null || kept.has(n.parent_id))) {
+                    kept.add(n.id)
+                    grew = true
+                }
+            }
+        }
+        const result = merged.filter(n => kept.has(n.id))
+        revision.value = c.revision ?? revision.value
+        base = clone(server)
+        nodes.value = result.some(n => n.parent_id == null) ? result : [newRoot()]
+        undoStack.value = []
+        redoStack.value = []
+        commitSeq.value++
+        retryCount = 0
+        if (result.length === server.length && result.every((n, i) => sameNode(n, server[i]))) {
+            dirty = false
+            saveStatus.value = 'saved'
+        } else {
+            scheduleSave()
+        }
     }
 
     // Leaving the page: later responses of this session are ignored
@@ -303,6 +369,7 @@ export function canvasModel() {
                 const res = await apiClient.saveProjectCanvas(projectId.value, body, { keepalive: useKeepalive })
                 if (session !== sessionId) return
                 revision.value = res.revision
+                base = body.nodes
                 retryCount = 0
             } catch (err) {
                 if (session !== sessionId) return
@@ -322,7 +389,14 @@ export function canvasModel() {
 
     async function onSaveError(err) {
         const status = err?.status
-        if (status === 409) {
+        if (status === 409 && (assistantWrites || refreshing)) {
+            try {
+                await rebase()
+            } catch {
+                saveStatus.value = 'error'
+                retryTimer = setTimeout(() => flush(), RETRY_MS[Math.min(retryCount++, RETRY_MS.length - 1)])
+            }
+        } else if (status === 409) {
             conflict.value = true
             await reloadCanvas()
         } else if (status === 403) {
@@ -665,6 +739,7 @@ export function canvasModel() {
         convert,
         onLostEditRights,
         refreshFromServer,
+        expectAssistantWrites,
     }
     return instance
 }

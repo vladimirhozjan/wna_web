@@ -118,7 +118,6 @@
       <!-- Canvas body -->
       <CanvasDrillDown
           v-if="isMobile"
-          ref="drillRef"
           v-model:current-id="drillId"
           class="canvas-body"
           @move="moveId = $event"
@@ -181,7 +180,6 @@ const convertMode = ref('manual')
 const moveId = ref(null)
 const outcomeExpanded = ref(false)
 const mapRef = ref(null)
-const drillRef = ref(null)
 const drillId = ref(null)
 const mobileQuery = window.matchMedia('(max-width: 768px)')
 
@@ -236,7 +234,9 @@ const viewOnlyMessage = computed(() => {
   return VIEW_ONLY_BY_STATE[canvas.project.value.state] || ''
 })
 
-onAssistantChange(() => canvas.refreshFromServer((mapRef.value || drillRef.value)?.editingId() ?? null))
+// While the assistant works it may write this canvas: a save it overtakes rebases instead of the conflict banner
+watch(() => assistant.working.value, (on) => canvas.expectAssistantWrites(on), { immediate: true })
+onAssistantChange(() => canvas.refreshFromServer())
 
 // The map's open edit ends first; dropping an empty new idea is the undo
 function onUndo() {
@@ -358,6 +358,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('pagehide', onPageHide)
   window.removeEventListener('beforeunload', onBeforeUnload)
   closeCanvasUndo()
+  canvas.expectAssistantWrites(false)
   canvas.close()
 })
 </script>
