@@ -231,6 +231,35 @@ export async function updateNotificationSettings(settings) {
     }
 }
 
+export async function getPushConfig() {
+    try {
+        const res = await httpApi.get('/v1/notification/push-config', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// sub = PushSubscription.toJSON() of this browser
+export async function putPushSubscription(sub) {
+    try {
+        const body = {platform: 'web', endpoint: sub.endpoint, keys: {p256dh: sub.keys.p256dh, auth: sub.keys.auth}}
+        const res = await httpApi.put('/v1/user/push-subscription', body, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function deletePushSubscription() {
+    try {
+        const res = await httpApi.delete('/v1/user/push-subscription', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 // Email to Inbox — Pro/Team only; endpoints return 403 for Free.
 export async function getInboxEmail() {
     try {
@@ -2790,6 +2819,9 @@ const apiClient = {
     // Notification API
     getNotificationSettings,
     updateNotificationSettings,
+    getPushConfig,
+    putPushSubscription,
+    deletePushSubscription,
     // Google Auth API
     googleAuth,
     googleSso,

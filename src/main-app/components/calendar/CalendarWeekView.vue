@@ -623,10 +623,6 @@ onUnmounted(() => {
   border-right: none;
 }
 
-.week-view__all-day-cell:hover {
-  background: var(--color-bg-secondary);
-}
-
 .week-view__all-day-cell--weekend {
   background: var(--color-calendar-weekend-bg);
 }
@@ -691,14 +687,9 @@ onUnmounted(() => {
 .week-view__cell {
   border-bottom: 1px solid var(--color-calendar-grid-line);
   cursor: pointer;
-  transition: background 0.15s;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
-}
-
-.week-view__cell:hover {
-  background: var(--color-bg-secondary);
 }
 
 .week-view__slot-preview {

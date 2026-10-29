@@ -28,6 +28,17 @@
             class="offline-banner"
             data-testid="offline-banner"
         />
+        <Alert
+            v-if="pushOfferShown"
+            type="info"
+            title="Get notified on this device"
+            message="Know when something needs you, even when WhatsNextAction is closed."
+            class="push-offer"
+            data-testid="push-offer"
+        >
+          <Btn variant="ghost" size="sm" class="push-offer__btn" :disabled="pushOfferBusy" @click="onPushNotNow">Not now</Btn>
+          <Btn variant="primary" size="sm" class="push-offer__btn" :loading="pushOfferBusy" @click="onPushTurnOn">Turn on</Btn>
+        </Alert>
         <div class="dashboard-page">
           <slot />
         </div>
@@ -55,12 +66,13 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import TopNav from "../components/TopNav.vue";
 import Sidebar from "../components/Sidebar.vue";
 import SidebarDrawer from "../components/SidebarDrawer.vue";
 import CaptureBar from "../components/CaptureBar.vue";
 import Alert from "../components/Alert.vue";
+import Btn from "../components/Btn.vue";
 import CommandPalette from "../components/CommandPalette.vue";
 import ShortcutsDialog from "../components/ShortcutsDialog.vue";
 import AssistantPanel from "../components/AssistantPanel.vue";
@@ -74,6 +86,8 @@ import { offlineModel } from "../scripts/core/offlineModel.js";
 import { statsModel } from "../scripts/models/statsModel.js";
 import { connectionModel } from "../scripts/models/connectionModel.js";
 import { assistantModel } from "../scripts/models/assistantModel.js";
+import { notificationModel } from "../scripts/models/notificationModel.js";
+import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
 import router from "../router/router.js";
 
 const FAB_HIDDEN_ROUTES = new Set(["share", "project-canvas"]);
@@ -85,9 +99,11 @@ const settings = settingsModel();
 const toaster = errorModel();
 const shortcuts = shortcutModel();
 const assistant = assistantModel();
+const notifications = notificationModel();
 const { isOffline } = offlineModel();
 const isSidebarOpen = ref(false);
 const welcomeOpen = ref(false);
+const pushOfferBusy = ref(false);
 
 // Mobile FAB quick add
 const fabExpanded = ref(false);
@@ -140,6 +156,32 @@ function isWelcomeBlockedRoute(route) {
 }
 let welcomeWaitPath = null;
 
+// Once per sign-in (D10), never over the welcome tour or on the routes where it waits; device "off" = this browser can
+// take push and has neither a subscription nor a blocked permission
+const pushOfferShown = computed(() =>
+    auth.isAuthenticated.value && !isOffline.value && notifications.state.device === "off" && !notifications.state.answered &&
+    settings.state.loaded && settings.state.onboardingCompleted && !welcomeOpen.value &&
+    !isWelcomeBlockedRoute(router.currentRoute.value)
+);
+
+async function onPushTurnOn() {
+  pushOfferBusy.value = true;
+  try {
+    const result = await notifications.enableDevice();
+    notifications.markAnswered();
+    if (result === "on") toaster.success("Notifications are on for this device.");
+    else if (result === "blocked") toaster.push("Notifications are blocked in this browser. To get them, allow them for this site in your browser settings.");
+  } catch {
+    toaster.push("Couldn't turn on notifications. Check your connection and try again.");
+  } finally {
+    pushOfferBusy.value = false;
+  }
+}
+
+function onPushNotNow() {
+  notifications.markAnswered();
+}
+
 async function closeWelcome() {
   welcomeOpen.value = false;
   if (settings.state.onboardingCompleted) return;
@@ -171,6 +213,18 @@ watch(
     { immediate: true }
 );
 
+// A push click lands with ?notif=<bell row>: mark that row read, as a bell click does, and drop the parameter
+watch(
+    () => router.currentRoute.value.query.notif,
+    (id) => {
+      if (!id || !auth.isAuthenticated.value) return;
+      notificationInAppModel().markRead(id).catch(() => {});
+      const { notif, ...query } = router.currentRoute.value.query;
+      router.replace({ query });
+    },
+    { immediate: true }
+);
+
 watch(
     () => auth.isAuthenticated.value,
     (v) => {
@@ -186,6 +240,7 @@ watch(isOffline, (offline) => {
   if (offline || !auth.isAuthenticated.value) return;
   statsModel().loadStats();
   if (!settings.state.loaded) settings.load().catch(() => {});
+  notifications.refreshDevice();
   const connections = connectionModel();
   if (!connections.loaded.value) connections.loadAll().catch(() => {});
 });
@@ -215,6 +270,7 @@ onMounted(() => {
       // Settings will fall back to localStorage, no need to show error
     });
   }
+  if (auth.isAuthenticated.value) notifications.syncDevice();
 });
 </script>
 
@@ -251,21 +307,34 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.offline-banner {
+.offline-banner,
+.push-offer {
   flex-shrink: 0;
   margin-bottom: 12px;
   box-sizing: border-box;
 }
 
-.offline-banner :deep(.alert__body) {
+.offline-banner :deep(.alert__body),
+.push-offer :deep(.alert__body) {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   column-gap: 8px;
 }
 
-.offline-banner :deep(.alert__message) {
+.offline-banner :deep(.alert__message),
+.push-offer :deep(.alert__message) {
   margin-top: 0;
+}
+
+/* One line on desktop: text and buttons share the vertical centre */
+.push-offer {
+  align-items: center;
+}
+
+.push-offer :deep(.alert__actions) {
+  display: flex;
+  gap: 8px;
 }
 
 .dashboard-page {
@@ -299,6 +368,30 @@ onMounted(() => {
 
   .offline-banner :deep(.alert__message) {
     display: none;
+  }
+
+  /* The message stays (it carries the reason); the buttons take their own line under the text */
+  .push-offer {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .push-offer :deep(.alert__body) {
+    display: block;
+  }
+
+  .push-offer :deep(.alert__message) {
+    margin-top: 2px;
+  }
+
+  .push-offer :deep(.alert__actions) {
+    flex-basis: 100%;
+    justify-content: flex-end;
+  }
+
+  .push-offer__btn {
+    min-height: var(--touch-target-min);
+    box-sizing: border-box;
   }
 
   .fab-overlay {

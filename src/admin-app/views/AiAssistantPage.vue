@@ -19,7 +19,7 @@
       <template #cell-model="{ row }">
         <div class="model-name">
           <span class="fw-medium">{{ row.display_name }}</span>
-          <span class="text-caption color-text-tertiary">{{ row.vertex_model_id }}</span>
+          <span class="text-caption color-text-tertiary">{{ row.model_id }}</span>
         </div>
       </template>
       <template #cell-offered="{ row }">
@@ -36,6 +36,7 @@
       </template>
       <template #cell-is_default="{ value }">
         <Badge v-if="value" type="primary" value="Default" />
+        <span v-else />
       </template>
       <template #cell-requests_30d="{ value }">{{ formatInt(value) }}</template>
     </DataTable>
@@ -89,10 +90,11 @@
       <form class="modal-form" @submit.prevent="saveModel">
         <Inpt
             v-if="!editingModel"
-            v-model="modelForm.vertex_model_id"
-            v-model:error="modelErrors.vertex_model_id"
+            v-model="modelForm.model_id"
+            v-model:error="modelErrors.model_id"
             type="text"
-            title="Vertex model id"
+            title="Scaleway model id"
+            placeholder="e.g. deepseek-v4-flash-0731"
             :disabled="modelSaving"
         />
         <Inpt v-model="modelForm.display_name" type="text" title="Display name" :disabled="modelSaving" />
@@ -188,7 +190,7 @@ const tierSaving = ref(false)
 const showModelModal = ref(false)
 const editingModel = ref(null)
 const modelForm = reactive({})
-const modelErrors = reactive({ vertex_model_id: '', credits_per_request: '', conversation_tokens: '' })
+const modelErrors = reactive({ model_id: '', credits_per_request: '', conversation_tokens: '' })
 const modelFormError = ref('')
 const modelSaving = ref(false)
 
@@ -208,9 +210,9 @@ function modelErrorFor(err) {
     case 'default_must_be_offered': return [null, 'The default model must be offered.']
     case 'invalid_credits': return ['credits_per_request', 'Credits per request must be a whole number of at least 1.']
     case 'invalid_context': return ['conversation_tokens', 'Conversation part must be above 0 and below context per round.']
-    case 'vertex_model_rejected': return ['vertex_model_id', `Vertex refused this model: ${err.detail || ''}. Check the model id and that it is enabled for the project.`]
-    case 'unsupported_model_id': return ['vertex_model_id', "This model id isn't supported yet."]
-    case 'model_exists': return ['vertex_model_id', 'This model is already in the list.']
+    case 'model_rejected': return ['model_id', `Scaleway refused this model: ${err.detail || ''}. Check the id against the Scaleway model catalog.`]
+    case 'unsupported_model_id': return ['model_id', "This model id isn't supported yet."]
+    case 'model_exists': return ['model_id', 'This model is already in the list.']
     default: return [null, SAVE_FAILED]
   }
 }
@@ -310,7 +312,7 @@ function clearModelErrors() {
 
 function openModelModal(model) {
   editingModel.value = model
-  modelForm.vertex_model_id = ''
+  modelForm.model_id = ''
   MODEL_FIELDS.forEach(k => { modelForm[k] = model ? model[k] : '' })
   modelForm.is_default = !!model?.is_default
   clearModelErrors()
@@ -349,13 +351,13 @@ async function saveModel() {
     if (editingModel.value) {
       await apiClient.updateAiModel(editingModel.value.id, modelBody())
     } else {
-      await apiClient.createAiModel({ vertex_model_id: String(modelForm.vertex_model_id).trim(), ...modelBody() })
+      await apiClient.createAiModel({ model_id: String(modelForm.model_id).trim(), ...modelBody() })
     }
     closeModelModal()
     await loadModels()
   } catch (err) {
     const [field, copy] = modelErrorFor(err)
-    if (field && (field !== 'vertex_model_id' || !editingModel.value)) modelErrors[field] = copy
+    if (field && (field !== 'model_id' || !editingModel.value)) modelErrors[field] = copy
     else modelFormError.value = copy
   } finally {
     modelSaving.value = false

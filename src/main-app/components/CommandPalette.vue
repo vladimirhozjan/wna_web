@@ -49,7 +49,7 @@
                 <span class="text-body-s">{{ row.label }}<span class="fw-semibold">{{ row.title }}</span></span>
               </template>
               <template v-else-if="row.kind === 'ai'">
-                <BoltIcon class="palette__plus-icon palette__bolt-icon" />
+                <AiIcon class="palette__plus-icon palette__ai-icon" />
                 <span class="text-body-s palette__ai-label">{{ row.label }}<span class="fw-semibold">{{ row.title }}</span></span>
                 <span v-if="!row.run" class="text-caption palette__hint">· Needs a connection</span>
               </template>
@@ -74,7 +74,7 @@ import Spinner from './Spinner.vue'
 import SearchResultRow from './SearchResultRow.vue'
 import SearchIcon from '../assets/SearchIcon.vue'
 import PlusIcon from '../assets/PlusIcon.vue'
-import BoltIcon from '../assets/BoltIcon.vue'
+import AiIcon from '../assets/AiIcon.vue'
 import { shortcutModel } from '../scripts/core/shortcutModel.js'
 import { searchModel, searchRoute, SEARCH_MIN_LENGTH } from '../scripts/models/searchModel.js'
 import { stuffModel } from '../scripts/models/stuffModel.js'
@@ -349,7 +349,10 @@ watch(() => shortcuts.state.paletteOpen, async (open) => {
   color: var(--color-text-tertiary);
 }
 
-.palette__bolt-icon {
+.palette__ai-icon {
+  width: 14px;
+  height: 14px;
+  margin: 0 -1px;
   color: var(--color-action);
 }
 
@@ -361,7 +364,7 @@ watch(() => shortcuts.state.paletteOpen, async (open) => {
   color: var(--color-text-secondary);
 }
 
-.palette__row--disabled .palette__bolt-icon {
+.palette__row--disabled .palette__ai-icon {
   color: var(--color-text-tertiary);
 }
 

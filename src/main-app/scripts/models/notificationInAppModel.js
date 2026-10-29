@@ -57,7 +57,13 @@ export function notificationInAppModel() {
 
     async function markRead(id) {
         const n = notifications.value.find(x => x.id === id)
-        if (!n || n.read) return
+        // A push click names a row the bell may not have loaded yet
+        if (!n) {
+            await apiClient.markNotificationRead(id)
+            await loadUnreadCount()
+            return
+        }
+        if (n.read) return
         n.read = true
         if (unreadCount.value > 0) unreadCount.value -= 1
         try {

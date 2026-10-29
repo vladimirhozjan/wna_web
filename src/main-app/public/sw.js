@@ -87,3 +87,35 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(fetch(req).catch(() => caches.match(url.pathname, { cacheName: CACHE, ignoreSearch: true })))
     }
 })
+
+// Web Push: the payload carries the finished copy and the route; the worker composes nothing and calls no API
+self.addEventListener('push', (event) => {
+    let msg = {}
+    try { msg = event.data ? event.data.json() : {} } catch { /* unreadable payload: generic notification */ }
+    event.waitUntil(self.registration.showNotification(msg.title || 'WhatsNextAction', {
+        body: msg.body || '',
+        icon: '/icon-192.png',
+        tag: msg.tag || undefined,
+        data: { url: msg.url || '/', notification_id: msg.notification_id || null },
+    }))
+})
+
+// Opens the place the bell row opens; ?notif= lets the app mark that bell row read
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close()
+    const { url, notification_id: id } = event.notification.data || {}
+    const target = new URL(url || '/', self.location.origin)
+    if (target.origin !== self.location.origin) target.href = new URL('/', self.location.origin).href
+    if (id) target.searchParams.set('notif', id)
+
+    event.waitUntil((async () => {
+        const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+        const open = windows.find(c => new URL(c.url).origin === self.location.origin)
+        if (open) {
+            await open.focus()
+            // navigate() works only on a window this worker controls
+            if (await open.navigate(target.href).catch(() => null)) return
+        }
+        await self.clients.openWindow(target.href)
+    })())
+})

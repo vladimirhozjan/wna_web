@@ -445,13 +445,8 @@ onUnmounted(() => {
 .time-grid__cell {
   flex: 1;
   cursor: pointer;
-  transition: background 0.15s;
   position: relative;
   overflow: hidden;
-}
-
-.time-grid__cell:hover {
-  background: var(--color-bg-secondary);
 }
 
 .time-grid__slot-preview {

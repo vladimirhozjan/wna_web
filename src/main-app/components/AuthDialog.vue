@@ -18,6 +18,25 @@
                   Start your journey to better clarity and control.
                 </p>
               </div>
+              <template v-if="ssoEnabled">
+                <Btn v-for="provider in ssoProviders" :key="provider.id" variant="outline" class="sso-btn"
+                     :data-testid="`${provider.id}-sso-btn`" :loading="ssoLoading === provider.id"
+                     @click="startSso(provider)">
+                  <component :is="provider.icon" class="sso-icon" width="18" height="18" />
+                  Sign up with {{ provider.name }}
+                </Btn>
+                <p class="text-footnote sso-terms">
+                  By continuing with {{ ssoNames }}, you agree to the
+                  <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
+                  and acknowledge the
+                  <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+                </p>
+                <div class="or-divider">
+                  <span class="or-divider__line"></span>
+                  <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                  <span class="or-divider__line"></span>
+                </div>
+              </template>
               <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
                     v-model:error="emailError"/>
               <Inpt v-model="password" type="password" title="Password" placeholder="Enter your password"
@@ -37,25 +56,6 @@
               <span v-if="agreeError" class="agree-error text-footnote">{{ agreeError }}</span>
               <Btn @click="doRegister" :disabled="disableRegister" :loading="auth.loading.value">Register</Btn>
               <Lnk text="Already have an account?" link="Sign In" @action="goToLogin"/>
-              <template v-if="ssoEnabled">
-                <div class="or-divider">
-                  <span class="or-divider__line"></span>
-                  <span class="or-divider__text text-body-s color-text-secondary">or</span>
-                  <span class="or-divider__line"></span>
-                </div>
-                <Btn v-for="provider in ssoProviders" :key="provider.id" variant="outline" class="sso-btn"
-                     :data-testid="`${provider.id}-sso-btn`" :loading="ssoLoading === provider.id"
-                     @click="startSso(provider)">
-                  <component :is="provider.icon" class="sso-icon" width="18" height="18" />
-                  Sign up with {{ provider.name }}
-                </Btn>
-                <p class="text-footnote sso-terms">
-                  By continuing with {{ ssoNames }}, you agree to the
-                  <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a>
-                  and acknowledge the
-                  <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
-                </p>
-              </template>
             </section>
 
             <section v-else-if="props.mode === 'login'">
@@ -65,18 +65,7 @@
                   {{ shareWaiting ? 'Sign in to add what you shared to your Inbox.' : 'Let\'s get you organized.' }}
                 </p>
               </div>
-              <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
-                    v-model:error="emailError"/>
-              <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password"
-                    v-model:error="passwordError"/>
-              <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
-              <Lnk text="Forgot your password?" link="Reset it" @action="goToForgot"/>
               <template v-if="ssoEnabled">
-                <div class="or-divider">
-                  <span class="or-divider__line"></span>
-                  <span class="or-divider__text text-body-s color-text-secondary">or</span>
-                  <span class="or-divider__line"></span>
-                </div>
                 <Btn v-for="provider in ssoProviders" :key="provider.id" variant="outline" class="sso-btn"
                      :data-testid="`${provider.id}-sso-btn`" :loading="ssoLoading === provider.id"
                      @click="startSso(provider)">
@@ -89,7 +78,18 @@
                   and acknowledge the
                   <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
                 </p>
+                <div class="or-divider">
+                  <span class="or-divider__line"></span>
+                  <span class="or-divider__text text-body-s color-text-secondary">or</span>
+                  <span class="or-divider__line"></span>
+                </div>
               </template>
+              <Inpt v-model="email" type="email" title="Email" placeholder="Enter your email address"
+                    v-model:error="emailError"/>
+              <Inpt v-model="password" @enter="doLogin" type="password" title="Password" placeholder="Enter your password"
+                    v-model:error="passwordError"/>
+              <Btn @click="doLogin" :disabled="disableLogin" :loading="auth.loading.value">Sign In</Btn>
+              <Lnk text="Forgot your password?" link="Reset it" @action="goToForgot"/>
               <div class="separator"></div>
               <Btn class="btn-not-wide" variant="secondary" @click="goToRegister">Create new account</Btn>
             </section>

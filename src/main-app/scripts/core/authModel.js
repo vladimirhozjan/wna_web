@@ -6,6 +6,7 @@ import { captureQueue } from './captureQueue.js'
 import { pendingShare } from './pendingShare.js'
 import { stuffModel } from '../models/stuffModel.js'
 import { statsModel } from '../models/statsModel.js'
+import { notificationModel } from '../models/notificationModel.js'
 
 window.addEventListener('storage', (event) => {
     if (event.key === 'logout') {
@@ -91,6 +92,7 @@ export function authModel() {
             const data = await apiClient.verifyEmail(token)
 
             if (localStorage.getItem('auth_token')) {
+                await notificationModel().onSignIn()
                 isAuthenticated.value = true
             }
 
@@ -162,6 +164,7 @@ export function authModel() {
             }
 
             if (localStorage.getItem('auth_token')) {
+                await notificationModel().onSignIn()
                 isAuthenticated.value = true
             }
 
@@ -189,6 +192,7 @@ export function authModel() {
             }
 
             if (localStorage.getItem('auth_token')) {
+                await notificationModel().onSignIn()
                 isAuthenticated.value = true
             }
 
@@ -224,6 +228,7 @@ export function authModel() {
             }
 
             if (localStorage.getItem('auth_token')) {
+                await notificationModel().onSignIn()
                 isAuthenticated.value = true
             }
 
@@ -254,6 +259,7 @@ export function authModel() {
     }
 
     async function logoutUser() {
+        await notificationModel().onSignOut()
         await apiClient.logoutUser()
         currentUser.value = null
 

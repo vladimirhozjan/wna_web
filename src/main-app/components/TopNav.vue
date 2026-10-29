@@ -37,6 +37,21 @@
     <div v-else class="topnav-auth-right">
       <QuickAddBtn ref="quickAddRef" class="quick-add-desktop" />
 
+      <button
+        v-if="context === 'dashboard' && assistant.enabled.value"
+        type="button"
+        class="ai-btn"
+        :class="{ 'ai-btn--open': assistant.state.panelOpen }"
+        :aria-pressed="assistant.state.panelOpen"
+        :aria-label="aiBtnLabel"
+        :title="aiBtnLabel"
+        data-testid="topnav-ai-btn"
+        @click="onAiClick"
+      >
+        <Spinner v-if="aiWorking" :size="16" />
+        <AiIcon v-else class="ai-btn__icon" />
+      </button>
+
       <!-- Notification bell + dropdown -->
       <Dropdown v-model="notifDropdownOpen" align="right" title="Notifications" class="notifications-dropdown">
         <template #trigger>
@@ -149,7 +164,9 @@ import Spinner from "./Spinner.vue";
 import SearchBox from "./SearchBox.vue";
 import SearchIcon from "../assets/SearchIcon.vue";
 import AppIcon from "../assets/AppIcon.vue";
+import AiIcon from "../assets/AiIcon.vue";
 import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
+import { assistantModel } from "../scripts/models/assistantModel.js";
 import { shortcutModel } from "../scripts/core/shortcutModel.js";
 
 const props = defineProps({
@@ -364,6 +381,19 @@ watch(() => route.fullPath, () => {
   searchExpanded.value = false;
 });
 
+// AI assistant
+const assistant = assistantModel();
+const aiWorking = computed(() => assistant.working.value && !assistant.state.panelOpen);
+const aiBtnLabel = computed(() => {
+  if (assistant.state.panelOpen) return "Close AI assistant";
+  return aiWorking.value ? "AI assistant is working" : "AI assistant";
+});
+
+function onAiClick() {
+  if (assistant.state.panelOpen) assistant.closePanel();
+  else assistant.openPanel();
+}
+
 // C shortcut
 const shortcuts = shortcutModel();
 const quickAddRef = ref(null);
@@ -456,9 +486,10 @@ onBeforeUnmount(() => {
   position: relative;
 }
 
-/* Notifications bell (the search button shares its look) */
+/* Notifications bell (the search and AI buttons share its look) */
 .notifications-btn,
-.search-btn {
+.search-btn,
+.ai-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -481,6 +512,15 @@ onBeforeUnmount(() => {
   color: var(--color-text-primary);
 }
 
+.ai-btn {
+  color: var(--color-action);
+}
+
+.ai-btn:hover,
+.ai-btn--open {
+  background: var(--color-bg-hover);
+}
+
 .notifications-icon {
   display: block;
 }
@@ -489,6 +529,12 @@ onBeforeUnmount(() => {
   display: block;
   width: 18px;
   height: 18px;
+}
+
+.ai-btn__icon {
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .notifications-badge {
@@ -686,6 +732,7 @@ onBeforeUnmount(() => {
   }
 
   .dashboard .search-btn::after,
+  .dashboard .ai-btn::after,
   .dashboard .notifications-btn::after,
   .dashboard .hamburger-menu::after {
     content: '';
@@ -697,6 +744,13 @@ onBeforeUnmount(() => {
     transform: translate(-50%, -50%);
   }
 
+}
+
+/* Below this the wordmark and the four icon buttons no longer fit in one row */
+@media (max-width: 371px) {
+  .dashboard .topnav-title {
+    display: none;
+  }
 }
 
 .topnav-center {

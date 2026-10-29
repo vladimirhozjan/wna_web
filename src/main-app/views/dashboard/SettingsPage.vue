@@ -24,7 +24,7 @@
       <div class="settings-body">
 
         <!-- Account Section -->
-        <div v-if="sectionVisible('account')" class="card">
+        <div v-if="sectionVisible('account')" class="card" data-section="account">
           <div class="card-header card-header--toggle" @click="toggleSection('account')">
             <h2 class="settings-section-title">Account</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('account') }">&#8250;</span>
@@ -65,7 +65,7 @@
         </Modal>
 
         <!-- Plan Section -->
-        <div v-if="tier && sectionVisible('plan')" class="card">
+        <div v-if="tier && sectionVisible('plan')" class="card" data-section="plan">
           <div class="card-header card-header--toggle" @click="toggleSection('plan')">
             <h2 class="settings-section-title">Plan</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('plan') }">&#8250;</span>
@@ -149,7 +149,7 @@
         </div>
 
         <!-- AI Assistant Section -->
-        <div v-if="assistant.enabled.value && sectionVisible('assistant')" class="card" data-testid="settings-assistant">
+        <div v-if="assistant.enabled.value && sectionVisible('assistant')" class="card" data-section="assistant" data-testid="settings-assistant">
           <div class="card-header card-header--toggle" @click="toggleSection('assistant')">
             <h2 class="settings-section-title">AI Assistant</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('assistant') }">&#8250;</span>
@@ -228,7 +228,7 @@
         <AssistantMemoryModal :visible="showMemoryModal" @close="showMemoryModal = false" />
 
         <!-- Email to Inbox Section -->
-        <div v-if="tier && sectionVisible('emailInbox')" class="card">
+        <div v-if="tier && sectionVisible('emailInbox')" class="card" data-section="emailInbox">
           <div class="card-header card-header--toggle" @click="toggleSection('emailInbox')">
             <h2 class="settings-section-title">Email to Inbox</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('emailInbox') }">&#8250;</span>
@@ -296,7 +296,7 @@
         </div>
 
         <!-- Sessions Section -->
-        <div v-if="sectionVisible('sessions')" class="card">
+        <div v-if="sectionVisible('sessions')" class="card" data-section="sessions">
           <div class="card-header card-header--toggle" @click="toggleSection('sessions')">
             <h2 class="settings-section-title">Sessions</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('sessions') }">&#8250;</span>
@@ -354,7 +354,7 @@
         </div>
 
         <!-- AI Apps Section -->
-        <div v-if="sectionVisible('aiApps')" class="card">
+        <div v-if="sectionVisible('aiApps')" class="card" data-section="aiApps">
           <div class="card-header card-header--toggle" @click="toggleSection('aiApps')">
             <h2 class="settings-section-title">AI Apps</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('aiApps') }">&#8250;</span>
@@ -402,7 +402,7 @@
         </div>
 
         <!-- Application Section -->
-        <div v-if="sectionVisible('application')" class="card">
+        <div v-if="sectionVisible('application')" class="card" data-section="application">
           <div class="card-header card-header--toggle" @click="toggleSection('application')">
             <h2 class="settings-section-title">Application</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('application') }">&#8250;</span>
@@ -445,7 +445,7 @@
         </div>
 
         <!-- Tags Section -->
-        <div v-if="sectionVisible('tags')" class="card">
+        <div v-if="sectionVisible('tags')" class="card" data-section="tags">
           <div class="card-header card-header--toggle" @click="toggleSection('tags')">
             <h2 class="settings-section-title">Tags</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('tags') }">&#8250;</span>
@@ -485,7 +485,7 @@
         </div>
 
         <!-- Calendar Section -->
-        <div v-if="sectionVisible('calendar')" class="card">
+        <div v-if="sectionVisible('calendar')" class="card" data-section="calendar">
           <div class="card-header card-header--toggle" @click="toggleSection('calendar')">
             <h2 class="settings-section-title">Calendar</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('calendar') }">&#8250;</span>
@@ -555,7 +555,7 @@
         </div>
 
         <!-- Calendar Sync Section -->
-        <div v-if="tier && calendarSyncEnabled && sectionVisible('calendarSync')" class="card" data-testid="calendar-sync-card">
+        <div v-if="tier && calendarSyncEnabled && sectionVisible('calendarSync')" class="card" data-section="calendarSync" data-testid="calendar-sync-card">
           <div class="card-header card-header--toggle" @click="toggleSection('calendarSync')">
             <h2 class="settings-section-title">Calendar Sync</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('calendarSync') }">&#8250;</span>
@@ -642,7 +642,7 @@
         </Modal>
 
         <!-- Storage Section -->
-        <div v-if="tier && driveEnabled && sectionVisible('storage')" class="card" data-testid="drive-card">
+        <div v-if="tier && driveEnabled && sectionVisible('storage')" class="card" data-section="storage" data-testid="drive-card">
           <div class="card-header card-header--toggle" @click="toggleSection('storage')">
             <h2 class="settings-section-title">Storage</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('storage') }">&#8250;</span>
@@ -686,7 +686,7 @@
         </div>
 
         <!-- Reflect Section -->
-        <div v-if="sectionVisible('review')" class="card">
+        <div v-if="sectionVisible('review')" class="card" data-section="review">
           <div class="card-header card-header--toggle" @click="toggleSection('review')">
             <h2 class="settings-section-title">Reflect</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('review') }">&#8250;</span>
@@ -722,116 +722,92 @@
         </div>
 
         <!-- Notifications Section -->
-        <div v-if="sectionVisible('notifications')" class="card">
+        <div v-if="sectionVisible('notifications')" class="card" data-section="notifications">
           <div class="card-header card-header--toggle" @click="toggleSection('notifications')">
             <h2 class="settings-section-title">Notifications</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('notifications') }">&#8250;</span>
           </div>
           <div v-if="isExpanded('notifications')" class="settings-section-body">
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Email notifications</span>
-                <p class="text-body-s settings-hint">Receive email notifications for tasks and reminders</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
-                <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
+            <div v-if="notifications.state.loading && !notifications.state.loaded" class="settings-loading">
+              <Spinner :size="16" />
+              <span>Loading notification settings...</span>
             </div>
 
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Daily digest</span>
-                <p class="text-body-s settings-hint">Daily email summarizing your today, next actions, and items due, sent in your selected timezone</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.dailyDigest }">
-                <span v-if="notifications.state.saving.dailyDigest" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="dailyDigest" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
+            <div v-else-if="notifications.state.error" class="settings-error">
+              <span>Couldn't load your notification settings. Check your connection and try again.</span>
+              <Btn variant="ghost" size="sm" @click="notifications.load()">Try again</Btn>
             </div>
 
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Project needs next action</span>
-                <p class="text-body-s settings-hint">Alert when a project has no next action defined</p>
+            <template v-else>
+              <div class="settings-row">
+                <div class="notif-row-text">
+                  <span class="settings-label">Email notifications</span>
+                  <p class="text-body-s settings-hint">Turn off to stop every email below. Security and billing emails still come.</p>
+                </div>
+                <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
+                  <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                  <label class="settings-toggle">
+                    <input type="checkbox" :checked="notifications.state.emailEnabled" aria-label="Email notifications" @change="onEmailEnabledToggle($event)" />
+                    <span class="settings-toggle-slider"></span>
+                  </label>
+                </div>
               </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.projectNeedsNextAction }">
-                <span v-if="notifications.state.saving.projectNeedsNextAction" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="projectNeedsNextAction" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
 
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Delegated to you</span>
-                <p class="text-body-s settings-hint">Email when a connection delegates an action to you</p>
+              <div class="settings-row" data-testid="push-device-row">
+                <div class="notif-row-text">
+                  <span class="settings-label">Web notifications on this device</span>
+                  <p class="text-body-s settings-hint">{{ deviceHint }}</p>
+                </div>
+                <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.deviceBusy }">
+                  <span v-if="notifications.state.deviceBusy" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                  <label class="settings-toggle">
+                    <input type="checkbox" :checked="notifications.state.device === 'on'" :disabled="!['on', 'off'].includes(notifications.state.device)" aria-label="Web notifications on this device" @change="onDeviceToggle($event)" />
+                    <span class="settings-toggle-slider"></span>
+                  </label>
+                </div>
               </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.delegatedToYou }">
-                <span v-if="notifications.state.saving.delegatedToYou" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="delegatedToYou" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
 
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Delegation completed</span>
-                <p class="text-body-s settings-hint">Email when an action you delegated is completed</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.delegationCompleted }">
-                <span v-if="notifications.state.saving.delegationCompleted" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="delegationCompleted" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
+              <template v-for="group in notificationGroups" :key="group.name">
+                <div class="notif-group-header">
+                  <span class="text-overline notif-group-name">{{ group.name }}</span>
+                  <div class="notif-columns">
+                    <span class="text-caption notif-column-label">Email</span>
+                    <span class="text-caption notif-column-label">Web</span>
+                  </div>
+                </div>
 
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Connection invitations</span>
-                <p class="text-body-s settings-hint">Email when someone invites you to connect</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.connectionInvite }">
-                <span v-if="notifications.state.saving.connectionInvite" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="connectionInvite" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
+                <div v-for="row in group.events" :key="row.event" class="settings-row" :data-testid="`notif-row-${row.event}`">
+                  <div class="notif-row-text">
+                    <span class="settings-label">{{ row.label }}</span>
+                    <p v-if="row.hint" class="text-body-s settings-hint">{{ row.hint }}</p>
+                  </div>
+                  <div class="notif-columns">
+                    <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`email:${row.event}`] }">
+                      <span v-if="notifications.state.saving[`email:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <label class="settings-toggle">
+                        <input type="checkbox" :checked="notifications.state.email[row.event]" :disabled="!notifications.state.emailEnabled" :aria-label="`${row.label} by email`" @change="onEventToggle('email', row.event, $event)" />
+                        <span class="settings-toggle-slider"></span>
+                      </label>
+                    </div>
+                    <div v-if="row.web !== false" class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`web:${row.event}`] }">
+                      <span v-if="notifications.state.saving[`web:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <label class="settings-toggle">
+                        <input type="checkbox" :checked="notifications.state.web[row.event]" :aria-label="`${row.label} on the web`" @change="onEventToggle('web', row.event, $event)" />
+                        <span class="settings-toggle-slider"></span>
+                      </label>
+                    </div>
+                    <span v-else class="notif-column-label"></span>
+                  </div>
+                </div>
+              </template>
 
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Announcements</span>
-                <p class="text-body-s settings-hint">Product news and feature announcements</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.announcement }">
-                <span v-if="notifications.state.saving.announcement" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="announcement" :disabled="!notifications.state.emailEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <p class="text-body-s settings-hint settings-info-note">In-app notifications are always on. Security emails (verification, password reset, login alerts) and service notices (terms, maintenance, security) cannot be disabled.</p>
+              <p class="text-body-s settings-hint settings-info-note">The bell is always on. Security alerts and failed payments can't be turned off — they always come by email and to every device with notifications on. Service notices (terms, maintenance, security) always come by email.</p>
+            </template>
           </div>
         </div>
 
         <!-- About Section -->
-        <div v-if="sectionVisible('about')" class="card">
+        <div v-if="sectionVisible('about')" class="card" data-section="about">
           <div class="card-header card-header--toggle" @click="toggleSection('about')">
             <h2 class="settings-section-title">About</h2>
             <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('about') }">&#8250;</span>
@@ -931,7 +907,7 @@ import { changePassword, listSessions, revokeSession, revokeAllSessions, listAiA
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { getDomains } from '../../scripts/core/domains.js'
-import { notificationModel } from '../../scripts/models/notificationModel.js'
+import { notificationModel, NOTIFICATION_GROUPS } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
@@ -982,7 +958,7 @@ const SECTION_KEYWORDS = {
   calendarSync: 'calendar sync google connect disconnect reconnect sync now events timezone',
   storage: 'storage google drive connect disconnect reconnect attachments reference files local',
   review: 'reflect review weekly sidebar horizons focus areas goals vision purpose',
-  notifications: 'notifications email reminder daily digest next actions project announcements',
+  notifications: 'notifications email reminder daily digest next actions project announcements push web browser device phone',
   about: 'about version',
 }
 
@@ -1700,40 +1676,47 @@ const horizonsEnabled = computed({
   set: (val) => settings.setHorizonsEnabled(val).catch(() => toaster.push('Failed to save setting'))
 })
 
-const emailEnabled = computed({
-  get: () => notifications.state.emailEnabled,
-  set: (val) => notifications.setEmailEnabled(val).catch(() => toaster.push('Failed to save notification setting'))
-})
+// Free / Pro see the events every tier receives; Team also the delegation, shared-project and connection replies
+const notificationGroups = computed(() => NOTIFICATION_GROUPS
+    .map(group => ({ ...group, events: group.events.filter(row => !row.team || tier.value === 'team') }))
+    .filter(group => group.events.length))
 
-const dailyDigest = computed({
-  get: () => notifications.state.dailyDigest,
-  set: (val) => notifications.setDailyDigest(val).catch(() => toaster.push('Failed to save notification setting'))
-})
+const DEVICE_HINTS = {
+  blocked: 'Notifications are blocked in this browser. Allow them for this site in your browser settings, then turn this on.',
+  'ios-tab': 'On iPhone and iPad, add WhatsNextAction to your Home Screen (Share → Add to Home Screen), then turn this on there.',
+  unsupported: 'This browser can\'t show notifications. Use a current Chrome, Edge, Firefox or Safari.',
+}
+const deviceHint = computed(() => DEVICE_HINTS[notifications.state.device] || 'Show notifications in this browser, even when WhatsNextAction is closed.')
 
-const projectNeedsNextAction = computed({
-  get: () => notifications.state.projectNeedsNextAction,
-  set: (val) => notifications.setProjectNeedsNextAction(val).catch(() => toaster.push('Failed to save notification setting'))
-})
+const NOTIFICATION_SAVE_ERROR = 'Couldn\'t save that change. Check your connection and try again.'
 
-const delegatedToYou = computed({
-  get: () => notifications.state.delegatedToYou,
-  set: (val) => notifications.setDelegatedToYou(val).catch(() => toaster.push('Failed to save notification setting'))
-})
+function onEmailEnabledToggle(e) {
+  notifications.setEmailEnabled(e.target.checked).catch(() => toaster.push(NOTIFICATION_SAVE_ERROR))
+}
 
-const delegationCompleted = computed({
-  get: () => notifications.state.delegationCompleted,
-  set: (val) => notifications.setDelegationCompleted(val).catch(() => toaster.push('Failed to save notification setting'))
-})
+function onEventToggle(channel, event, e) {
+  notifications.setEvent(channel, event, e.target.checked).catch(() => toaster.push(NOTIFICATION_SAVE_ERROR))
+}
 
-const connectionInvite = computed({
-  get: () => notifications.state.connectionInvite,
-  set: (val) => notifications.setConnectionInvite(val).catch(() => toaster.push('Failed to save notification setting'))
-})
-
-const announcement = computed({
-  get: () => notifications.state.announcement,
-  set: (val) => notifications.setAnnouncement(val).catch(() => toaster.push('Failed to save notification setting'))
-})
+// Using the row answers the offer banner for this sign-in; the input is re-synced because a closed prompt leaves the state unchanged
+async function onDeviceToggle(e) {
+  const input = e.target
+  notifications.markAnswered()
+  if (input.checked) {
+    try {
+      if (await notifications.enableDevice() === 'on') toaster.success('Notifications are on for this device.')
+    } catch {
+      toaster.push('Couldn\'t turn on notifications for this device. Check your connection and try again.')
+    }
+  } else {
+    try {
+      await notifications.disableDevice()
+    } catch {
+      toaster.push('Couldn\'t turn off notifications for this device. Check your connection and try again.')
+    }
+  }
+  input.checked = notifications.state.device === 'on'
+}
 
 const positionOptions = [
   { value: 'end', label: 'End' },
@@ -1849,6 +1832,7 @@ onMounted(() => {
   notifications.load().catch(() => {
     // Notification settings will fall back to defaults
   })
+  notifications.refreshDevice()
 
   loadInboxEmail()
   applyCalendarConnectReturn()
@@ -1899,7 +1883,30 @@ function applySectionQuery() {
   if (target === 'billing') target = 'plan'   // Paywiser checkout returns to /settings/billing
   if (typeof target === 'string' && SECTION_KEYWORDS[target]) {
     expandedSections.value.add(target)
+    nextTick(() => scrollToSection(target))
   }
+}
+
+// Only the settings list scrolls (scrollIntoView would also shift the layout's overflow-hidden containers). Sections
+// above load at their own pace, so the card is held at the top until the user touches the list or 5 s pass
+function scrollToSection(name) {
+  const card = document.querySelector(`.settings-page [data-section="${name}"]`)
+  const body = card?.closest('.settings-body')
+  if (!body) return
+  const until = Date.now() + 5000
+  let held = true
+  const release = () => { held = false }
+  const events = ['wheel', 'touchstart', 'pointerdown', 'keydown']
+  events.forEach(type => body.addEventListener(type, release, { once: true, passive: true }))
+  const align = () => {
+    if (!held || Date.now() > until || !card.isConnected) {
+      events.forEach(type => body.removeEventListener(type, release))
+      return
+    }
+    body.scrollTop += card.getBoundingClientRect().top - body.getBoundingClientRect().top
+    requestAnimationFrame(align)
+  }
+  align()
 }
 
 onUnmounted(() => {
@@ -2407,6 +2414,36 @@ async function onLogout() {
 .settings-info-note {
   margin-top: 8px;
   font-style: italic;
+}
+
+/* Notifications: one row per event, an Email and a Web toggle column; rows 1–2 keep their toggle under Web */
+.notif-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  margin-top: 12px;
+}
+
+.notif-group-name {
+  color: var(--color-text-secondary);
+}
+
+.notif-columns {
+  display: flex;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+.notif-column-label {
+  width: 44px;
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.notif-row-text {
+  min-width: 0;
+  padding-right: 16px;
 }
 
 /* Email to Inbox */

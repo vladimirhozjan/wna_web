@@ -83,6 +83,7 @@ We automatically collect certain technical data when you use the Service:
 - **Session timestamps** - login time and last activity time per session
 - **Sign-in method** - how each session was signed in (email, Google or Apple), shown in your account settings
 - **Authentication tokens** - stored in your browser's localStorage for session management
+- **Push notification subscription** - if you turn on notifications on a device, your browser gives us a push address at its vendor's push service and two encryption keys; we keep them with that device's session
 
 ### 2.7 Preference Data
 
@@ -91,7 +92,7 @@ Your application settings are stored to provide a personalized experience:
 - Calendar preferences (week start day, time format, business hours)
 - Display preferences (view modes, item positioning, theme)
 - Tag presets and context filters
-- Notification preferences (email notification toggles)
+- Notification preferences (email and device notification toggles per event)
 - Dismissed tips and hints
 
 ### 2.8 Connected Google Services (Google Calendar Sync and Google Drive Storage)
@@ -180,10 +181,10 @@ We use your personal data exclusively for the following purposes:
 
 - **Providing the Service** - storing and organizing your content, synchronizing across your sessions
 - **Authentication and security** - verifying your identity, managing login sessions, detecting unauthorized access
-- **Account communications** - sending password reset emails, email verification, login alerts, security notifications (including when a new AI app is connected to your account), subscription and payment notices, and service notices (such as changes to these terms, maintenance, and security matters)
+- **Account communications** - sending password reset emails, email verification, login alerts, security notifications (including when a new AI app is connected to your account), subscription and payment notices, and service notices (such as changes to these terms, maintenance, and security matters); security alerts and failed payments also go as notifications to the devices where you turned notifications on
 - **Product announcements** - occasional emails about new features and product news (you can opt out in notification settings)
-- **Task notifications** - sending optional email reminders such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
-- **Collaboration** - enabling delegation and shared projects with the connections you choose (Team plan)
+- **Task notifications** - sending optional reminders by email and as notifications on your devices, such as tasks due today, daily next-action summaries, and project nudges (controllable via notification settings)
+- **Collaboration** - enabling delegation and shared projects with the connections you choose (Team plan), and sending updates about delegations, shared projects and connections by email and as notifications on your devices (controllable via notification settings)
 - **AI assistant** - carrying out the requests you give the AI assistant on your data
 - **Subscription management** - processing payments, issuing invoices, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
@@ -258,11 +259,15 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 ### 5.12 AI Model Processing
 
-- **Google Cloud (Vertex AI, European Union multi-region)** - if you use the AI assistant, Google Cloud processes what the assistant sends to the AI model (your request, the conversation, the memory notes and the content it reads to carry out your request) and returns the model's reply, as our processor under the Google Cloud data processing terms. Models from other makers offered through Vertex AI (for example Anthropic's Claude) run on Google Cloud; Google does not share your prompts or the model's replies with the model's maker. Vertex AI's European Union multi-region keeps this data within EU member states. Google does not use this content to train or fine-tune AI models.
+- **Scaleway (Generative APIs, Paris, France)** - if you use the AI assistant, Scaleway SAS processes what the assistant sends to the AI model you chose (your request, the conversation, the memory notes and the content it reads to carry out your request) and returns the model's reply, as our processor under Scaleway's data processing terms. The models are open models from various makers that Scaleway runs on its own servers in France; the makers of the models do not receive your data. Scaleway does not keep this content after answering, except for up to two weeks when needed to investigate an error or abuse, and does not use it to train AI models.
+
+### 5.13 Browser Push Services
+
+- **Google (Firebase Cloud Messaging: Chrome, Android and most Chromium-based browsers), Apple (Apple Push Notification service: Safari, iPhone and iPad), Mozilla (Firefox) and Microsoft (Windows Push Notification Services: Edge)** - if you turn on notifications on a device, the push service of your browser's vendor delivers each notification to that device. Each notification is encrypted so that only your device can read it; the push service processes the push address and the time and size of each notification under its own privacy policy.
 
 ## 6. International Data Transfers
 
-We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres. The AI assistant's model processing also stays in the EEA, in Google Cloud's Vertex AI European Union multi-region (Section 5.12).
+We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres. The AI assistant's model processing also stays in the EEA, at Scaleway in France (Section 5.12).
 
 The exception is card payment data. To process a card payment, it may be transferred to, processed, and stored outside Slovenia and the EEA by our payment provider Dinaro, its service providers (located mostly in the EEA and in Hong Kong), its partner banks, and the international card schemes (such as Visa and Mastercard), and may be disclosed where required by law. Such transfers take place where they are necessary to perform the payment you request (Art. 49(1)(b) GDPR) or under safeguards such as Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR), as described in Dinaro's privacy policy.
 
@@ -275,6 +280,8 @@ If you connect Google Drive storage, the files we store for you are held by Goog
 If you sign in with Apple, Apple may process your sign-in, and the emails relayed through its private email relay, outside the EEA under its own privacy policy. We use it at your request, to provide the sign-in you chose (Art. 49(1)(b) GDPR).
 
 If you connect an AI app, its provider may process the content it reads outside the EEA under its own privacy policy. We make that content available at your instruction, to provide the connection you requested (Art. 49(1)(b) GDPR).
+
+If you turn on notifications on a device, the push service your browser uses (Section 5.13) may process the push address and delivery metadata outside the EEA; the content of each notification stays encrypted. We use the push service your browser chose, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR).
 
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
 
@@ -291,6 +298,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
 | Sign-in tokens (encrypted Google / Apple sign-in token) | Kept until you delete your account (the Apple token also until you stop using Sign in with Apple for WhatsNextAction); on account deletion we revoke our access at Google / Apple |
 | Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
+| Push notification subscription (push address, encryption keys) | Deleted when you turn notifications off on that device, sign out, the session ends or expires, the push service reports the address invalid, or you delete your account |
 | Connected AI apps (name, return addresses, connection and last-use time, hashed credential) | Kept until you remove the app, until its connection expires after the same period of non-use as a session, or until you delete your account; registrations by an AI app that never complete a connection are deleted after 24 hours |
 | AI assistant conversation (messages and running summary) | Deleted 30 days after its last message, when you start a new conversation, or when you delete your account |
 | AI assistant memory | Kept until you edit or clear it, or delete your account |
@@ -350,6 +358,7 @@ We use your browser's **localStorage** to store:
 - Authentication tokens (required for you to stay logged in)
 - User preferences (calendar settings, view modes, display options)
 - Session state (dismissed tips, drag-and-drop hints)
+- Whether you answered the notification offer in your current sign-in (cleared when you sign in or out)
 
 We use your browser's **IndexedDB** and **cache** to store:
 

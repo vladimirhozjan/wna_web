@@ -40,7 +40,8 @@ The Service includes the following functionality:
 - **Email to Inbox** - A unique inbound email address that turns forwarded or sent emails into inbox items (available on Pro and Team plans)
 - **Team Collaboration** - Connect with other users to delegate actions and share projects (available on the Team plan)
 - **In-App Notifications** - In-app alerts within the Service for delegations, connection invites, and other events
-- **Email Notifications** - Optional task reminders, daily summaries, and project nudges delivered by email
+- **Email Notifications** - Optional task reminders, daily summaries, project nudges, and updates about delegations, shared projects and connections delivered by email
+- **Push Notifications** - Optional notifications on your devices for security alerts, payment problems, delegations, shared projects, connections and daily summaries; turned on per device and chosen per event in Settings (available on all plans)
 - **Google Sign-In** - Optional sign-in and registration using your Google account
 - **Sign in with Apple** - Optional sign-in and registration using your Apple ID
 - **Google Calendar Sync** - Optional two-way sync of your scheduled actions with your Google Calendar, in a dedicated WhatsNextAction calendar we create for you on request or in another calendar you choose; events you create in the WhatsNextAction calendar in Google become scheduled actions in the Service (available on Pro and Team plans)

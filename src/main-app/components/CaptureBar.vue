@@ -102,7 +102,7 @@
           @mousedown.prevent
           @click="runAiRow"
       >
-        <BoltIcon class="capture-ai__icon" />
+        <AiIcon class="capture-ai__icon" />
         <span class="capture-ai__text">
           <span class="text-body-s capture-ai__label">{{ aiRow === 'open' ? 'Open AI conversation' : 'Tell AI what to do' }}</span>
           <span v-if="aiRowDisabled" class="text-caption color-text-secondary">Needs a connection</span>
@@ -158,7 +158,7 @@ import PlusCircleIcon from '../assets/PlusCircleIcon.vue'
 import CameraIcon from '../assets/CameraIcon.vue'
 import MicIcon from '../assets/MicIcon.vue'
 import FileIcon from '../assets/FileIcon.vue'
-import BoltIcon from '../assets/BoltIcon.vue'
+import AiIcon from '../assets/AiIcon.vue'
 import { captureQueue } from '../scripts/core/captureQueue.js'
 import { offlineModel } from '../scripts/core/offlineModel.js'
 import { authModel } from '../scripts/core/authModel.js'

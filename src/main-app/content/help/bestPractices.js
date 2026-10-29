@@ -2,7 +2,7 @@ export const bestPractices = [
   {
     title: 'Start From the Dashboard',
     description:
-      'Begin each work session on the Engage page. It gives you a bird\'s-eye view of what needs attention: an Overdue section at the top when a deadline has passed, your Today list, a snapshot of Next Actions, Waiting For items, and nudges when your Inbox needs clarifying or projects are stuck. Set a context filter to focus on where you are (@office, @home) and let the Dashboard tell you what to do next.',
+      'Begin each work session on the Engage page. It gives you a bird\'s-eye view of what needs attention: an Overdue section at the top for passed deadlines not already in your Today list, your Today list, a snapshot of Next Actions, Waiting For items, and nudges when your Inbox needs clarifying or projects are stuck. Set a context filter to focus on where you are (@office, @home) and let the Dashboard tell you what to do next.',
   },
   {
     title: 'The Two-Minute Rule',
@@ -62,7 +62,7 @@ export const bestPractices = [
   {
     title: 'Let Notifications Close the Loop',
     description:
-      'The bell in the top nav surfaces what needs your attention — a delegated action coming back done, a connection invite, or a nudge from your system. Glance at it instead of re-checking lists constantly, and click an item to jump straight to it. Tune which events also reach you by email under Settings → Notifications; in-app alerts always stay on so nothing slips past you.',
+      'The bell in the top nav surfaces what needs your attention — a delegated action coming back done, a connection invite, or a nudge from your system. Glance at it instead of re-checking lists constantly, and click an item to jump straight to it. Turn on web notifications on the device you work on, so a delegation coming back or a project shared with you reaches you even when WhatsNextAction is closed. Tune which events also reach you by email or on your devices under Settings → Notifications; in-app alerts always stay on so nothing slips past you.',
   },
   {
     title: 'Use Comments as a Log',

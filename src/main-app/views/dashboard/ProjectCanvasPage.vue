@@ -20,7 +20,7 @@
           <Btn variant="ghost" size="sm" data-testid="canvas-help" @click="openHelp">Help</Btn>
           <span v-if="showAiConvert" class="canvas-turn" :title="aiDisabledReason || aiTooltip">
             <Btn variant="secondary" size="sm" :disabled="!!aiDisabledReason" data-testid="canvas-convert-with-ai" @click="openConvert('ai')">
-              <BoltIcon class="canvas-bolt-icon" />Convert with AI
+              <AiIcon class="canvas-ai-icon" />Convert with AI
             </Btn>
           </span>
           <span v-if="canvas.canEdit.value" class="canvas-turn" :title="turnDisabledReason">
@@ -145,7 +145,7 @@ import EmptyState from '../../components/EmptyState.vue'
 import CanvasMap from '../../components/canvas/CanvasMap.vue'
 import CanvasDrillDown from '../../components/canvas/CanvasDrillDown.vue'
 import CanvasConvertModal from '../../components/canvas/CanvasConvertModal.vue'
-import BoltIcon from '../../assets/BoltIcon.vue'
+import AiIcon from '../../assets/AiIcon.vue'
 import { assistantModel, onAssistantChange } from '../../scripts/models/assistantModel.js'
 import CanvasMovePicker from '../../components/canvas/CanvasMovePicker.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
@@ -457,7 +457,7 @@ onBeforeUnmount(() => {
   display: inline-flex;
 }
 
-.canvas-bolt-icon {
+.canvas-ai-icon {
   width: 14px;
   height: 14px;
   margin-right: 6px;

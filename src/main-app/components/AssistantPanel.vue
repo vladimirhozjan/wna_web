@@ -10,7 +10,7 @@
           @keydown.esc="close"
       >
         <header class="assistant-panel__header">
-          <BoltIcon class="assistant-panel__bolt" />
+          <AiIcon class="assistant-panel__ai-icon" />
           <h2 class="text-h4 assistant-panel__title">AI assistant</h2>
           <Dropdown title="AI assistant" align="right">
             <template #trigger>
@@ -44,7 +44,7 @@
 
           <div v-else-if="showEmpty" class="assistant-panel__center assistant-panel__empty">
             <EmptyState
-                :icon="BoltIcon"
+                :icon="AiIcon"
                 title="Tell me what to do"
                 text="I can sort your lists, plan a project, clear your calendar or think a goal through with you — on your WhatsNextAction data."
             />
@@ -132,7 +132,7 @@
                 v-model="state.draft"
                 rows="1"
                 class="text-body-s assistant-composer__input"
-                :placeholder="awaitingAnswer ? 'Answer here' : 'Reply, or tell AI what to do next'"
+                :placeholder="composerPlaceholder"
                 :disabled="composerDisabled"
                 data-testid="assistant-composer"
                 @keydown.enter="onEnter"
@@ -184,7 +184,7 @@ import Spinner from './Spinner.vue'
 import Dropdown from './Dropdown.vue'
 import EmptyState from './EmptyState.vue'
 import ItemTypeIcon from './ItemTypeIcon.vue'
-import BoltIcon from '../assets/BoltIcon.vue'
+import AiIcon from '../assets/AiIcon.vue'
 import MoreIcon from '../assets/MoreIcon.vue'
 import CloseIcon from '../assets/CloseIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
@@ -222,6 +222,10 @@ const panelStyle = computed(() => isMobile.value ? { top: `${viewport.top}px`, h
 
 const lastAssistant = computed(() => [...state.messages].reverse().find(m => m.role === 'assistant') || null)
 const awaitingAnswer = computed(() => lastAssistant.value?.status === 'awaiting_answer')
+const composerPlaceholder = computed(() => {
+  if (!state.messages.length) return 'Tell AI what to do'
+  return awaitingAnswer.value ? 'Answer here' : 'Reply, or tell AI what to do next'
+})
 const showEmpty = computed(() =>
     state.conversationLoaded && !state.messages.length && !state.creditCard && !state.disabled)
 const lowCredits = computed(() => !!state.account?.low || !!lastAssistant.value?.low_credits)
@@ -439,7 +443,7 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
 }
 
-.assistant-panel__bolt {
+.assistant-panel__ai-icon {
   width: 18px;
   height: 18px;
   flex-shrink: 0;

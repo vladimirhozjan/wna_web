@@ -451,10 +451,27 @@ async function onTodayMove(id, newIndex) {
     }
 }
 
+// card rows can skip list positions (actions shown in a card above), so the card index maps to the rows' own positions
+function listPosition(rows, newIndex) {
+    return rows.map(r => r.position).sort((a, b) => a - b)[newIndex]
+}
+
+// the move response carries no positions, so mirror the server's shift for the next drag
+function shiftPositions(rows, id, from, to) {
+    for (const r of rows) {
+        if (r.id === id) r.position = to
+        else if (from < to && r.position > from && r.position <= to) r.position--
+        else if (from > to && r.position >= to && r.position < from) r.position++
+    }
+}
+
 async function onNextMove(id, newIndex) {
     movingId.value = id
+    const from = topActions.value.find(r => r.id === id)?.position
+    const to = listPosition(topActions.value, newIndex)
     try {
-        await apiClient.moveAction(id, newIndex)
+        await apiClient.moveAction(id, to)
+        shiftPositions(topActions.value, id, from, to)
     } catch (e) {
         await loadDashboard({ tags: effectiveTags.value })
     } finally {
@@ -464,8 +481,11 @@ async function onNextMove(id, newIndex) {
 
 async function onWaitingMove(id, newIndex) {
     movingId.value = id
+    const from = topWaiting.value.find(r => r.id === id)?.position
+    const to = listPosition(topWaiting.value, newIndex)
     try {
-        await apiClient.moveWaitingPosition(id, newIndex)
+        await apiClient.moveWaitingPosition(id, to)
+        shiftPositions(topWaiting.value, id, from, to)
     } catch (e) {
         await loadDashboard({ tags: effectiveTags.value })
     } finally {
