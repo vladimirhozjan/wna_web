@@ -1,8 +1,8 @@
 <template>
-    <div class="settings-page">
+    <div class="settings-page" :class="{ 'settings-page--compact': isCompact }">
 
-      <!-- Header -->
-      <div class="settings-header">
+      <!-- Header: desktop and the ≤ 1024px index show the title + search, a section screen its back link -->
+      <div v-if="showIndex" class="settings-header">
         <h1 class="page-title">Settings</h1>
         <div class="settings-header-right">
           <div v-if="searchVisible" class="settings-search-wrap">
@@ -11,7 +11,7 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search settings..."
-                @input="onSearchInput"
+                @enter="onSearchEnter"
             />
           </div>
           <button type="button" class="settings-search-btn" :class="{ 'settings-search-btn--active': searchVisible }" @click="toggleSearch" aria-label="Search settings">
@@ -19,809 +19,735 @@
           </button>
         </div>
       </div>
+      <div v-else class="settings-header">
+        <button type="button" class="settings-back" data-testid="settings-back" @click="backToIndex">
+          <span class="text-body-m settings-back-arrow">&lsaquo;</span>
+          <span class="text-body-s">Settings</span>
+        </button>
+      </div>
 
-      <!-- Body -->
-      <div class="settings-body">
+      <div class="settings-layout">
 
-        <!-- Account Section -->
-        <div v-if="sectionVisible('account')" class="card" data-section="account">
-          <div class="card-header card-header--toggle" @click="toggleSection('account')">
-            <h2 class="settings-section-title">Account</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('account') }">&#8250;</span>
+        <!-- Settings menu (desktop) / index (≤ 1024px) -->
+        <nav v-if="showIndex" class="settings-nav settings-scroll" :class="{ scrolling: scrollingArea === 'nav' }" aria-label="Settings sections" @scroll.passive="onAreaScroll('nav')">
+          <div v-for="group in visibleGroups" :key="group.key" class="settings-nav-group" :data-testid="`settings-group-${group.key}`">
+            <span class="text-overline settings-group-title">{{ group.title }}</span>
+            <div class="settings-nav-list" :class="{ card: isCompact }">
+              <button
+                  v-for="section in group.sections"
+                  :key="section.key"
+                  type="button"
+                  class="settings-nav-item"
+                  :class="[isCompact ? 'text-body-m' : 'text-label', { 'settings-nav-item--active': !isCompact && section.key === activeKey }]"
+                  :aria-current="!isCompact && section.key === activeKey ? 'page' : null"
+                  :data-testid="`settings-nav-${section.key}`"
+                  @click="openSection(section.key)"
+              >
+                <span class="settings-nav-body">
+                  <span :class="{ 'fw-semibold settings-nav-title': isCompact }">{{ section.title }}</span>
+                  <span v-if="isCompact" class="text-body-s color-text-secondary">{{ section.description }}</span>
+                </span>
+                <ChevronRightIcon v-if="isCompact" class="settings-nav-chevron" />
+              </button>
+            </div>
           </div>
-          <div v-if="isExpanded('account')" class="settings-section-body">
-            <div class="settings-row">
-              <span class="settings-label">Email</span>
-              <span class="settings-value">{{ userEmail }}</span>
-            </div>
-            <div class="settings-row">
-              <span class="settings-label">Password</span>
-              <Btn variant="secondary" size="sm" @click="openPasswordModal">Change Password</Btn>
-            </div>
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Delete account</span>
-                <p class="text-body-s settings-hint">Permanently deletes your account and all your data</p>
+          <p v-if="!visibleSections.length" class="settings-empty" data-testid="settings-no-match">No settings match “{{ searchQuery.trim() }}”.</p>
+        </nav>
+
+        <!-- Section pane (desktop) / section screen (≤ 1024px) -->
+        <div v-if="!isCompact || !showIndex" ref="paneScroll" class="settings-pane-scroll settings-scroll" :class="{ scrolling: scrollingArea === 'pane' }" @scroll.passive="onAreaScroll('pane')">
+          <div v-if="!activeSection" class="settings-pane settings-loading">
+            <Spinner :size="16" />
+            <span>Loading...</span>
+          </div>
+
+          <section v-else class="settings-pane" :data-section="activeKey" :data-testid="activeKey === 'assistant' ? 'settings-assistant' : null">
+            <div class="settings-pane-head">
+              <div class="settings-title-row">
+                <component :is="isCompact ? 'h1' : 'h2'" class="settings-section-title" :class="isCompact ? 'page-title' : 'text-h3'">{{ activeSection.title }}</component>
+                <Badge v-if="sectionStatus" :type="sectionStatus.type" :data-testid="`settings-status-${activeKey}`">{{ sectionStatus.label }}</Badge>
               </div>
-              <Btn variant="ghost-danger" size="sm" data-testid="settings-delete-account" @click="openDeleteModal">Delete</Btn>
-            </div>
-          </div>
-        </div>
-
-        <Modal :visible="showDeleteModal" title="Delete account" @close="closeDeleteModal">
-          <div class="delete-account-body" data-testid="delete-account-modal">
-            <p class="text-body-m color-text-secondary">This permanently deletes your account and everything in it, including the projects you share with others. This can't be undone.</p>
-            <p v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="text-body-m color-text-secondary">Your paid subscription is cancelled too.</p>
-            <p v-if="assistant.enabled.value && assistant.state.account?.purchased_left > 0" class="text-body-m color-text-secondary" data-testid="delete-account-ai-credits">Your unused extra AI credits are lost too.</p>
-            <p class="text-body-m color-text-secondary">To confirm, type <strong class="delete-account-email color-text-primary">{{ userEmail }}</strong> below.</p>
-            <Inpt ref="deleteEmailInput" v-model="deleteEmail" type="email" placeholder="Enter your email address"
-                  data-testid="delete-account-email" @enter="onDeleteAccount" />
-          </div>
-          <template #actions>
-            <Btn variant="secondary" size="sm" :disabled="deletingAccount" @click="closeDeleteModal">Cancel</Btn>
-            <Btn variant="danger" size="sm" :disabled="!deleteEmailMatches" :loading="deletingAccount"
-                 data-testid="delete-account-confirm" @click="onDeleteAccount">Delete account</Btn>
-          </template>
-        </Modal>
-
-        <!-- Plan Section -->
-        <div v-if="tier && sectionVisible('plan')" class="card" data-section="plan">
-          <div class="card-header card-header--toggle" @click="toggleSection('plan')">
-            <h2 class="settings-section-title">Plan</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('plan') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('plan') && confirmingPayment" class="settings-section-body">
-            <div class="settings-loading">
-              <Spinner :size="16" />
-              <span>Confirming your payment...</span>
-            </div>
-          </div>
-          <div v-else-if="isExpanded('plan')" class="settings-section-body">
-            <div v-if="paymentStillProcessing && tier === 'free'" class="settings-row">
-              <p class="text-body-s settings-hint">Your payment is still being processed — your plan will update once it's confirmed. Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.</p>
-            </div>
-            <div class="settings-row">
-              <span class="settings-label">Current plan</span>
-              <span class="settings-value fw-semibold" :class="tier === 'team' ? 'color-text-success' : ''">{{ tierLabel }}</span>
-            </div>
-            <div v-if="tierLimits && tierLimits.max_projects !== -1" class="settings-row">
-              <span class="settings-label">Projects</span>
-              <span class="settings-value">{{ stats?.projects?.count ?? 0 }} / {{ tierLimits.max_projects }}</span>
-            </div>
-            <div v-if="tierLimits && tierLimits.max_tags !== -1" class="settings-row">
-              <span class="settings-label">Tags</span>
-              <span class="settings-value">{{ stats?.tags?.count ?? 0 }} / {{ tierLimits.max_tags }}</span>
-            </div>
-            <div v-if="tierLimits && tierLimits.max_storage_bytes !== -1" class="settings-row">
-              <span class="settings-label">Storage</span>
-              <span class="settings-value">{{ formatBytes(stats?.reference?.used_bytes ?? 0) }} / {{ formatBytes(tierLimits.max_storage_bytes) }}</span>
-            </div>
-            <div v-if="tierLimits && tierLimits.max_projects === -1" class="settings-row">
-              <span class="settings-label">Limits</span>
-              <span class="settings-value">Unlimited</span>
+              <p class="text-body-s color-text-secondary settings-section-description">{{ activeSection.description }}</p>
             </div>
 
-            <!-- Payment & billing -->
-            <template v-if="paymentsEnabled">
-              <div v-if="payment.state.loading && !payment.state.loaded" class="settings-loading">
-                <Spinner :size="16" />
-                <span>Loading subscription...</span>
+            <!-- Account -->
+            <div v-if="activeKey === 'account'" class="card">
+              <div class="settings-section-body">
+                <div class="settings-row">
+                  <span class="settings-label">Email</span>
+                  <span class="settings-value settings-email">{{ userEmail }}</span>
+                </div>
+                <div class="settings-row">
+                  <span class="settings-label">Password</span>
+                  <Btn variant="secondary" size="sm" @click="openPasswordModal">Change password</Btn>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Delete account</span>
+                    <p class="text-body-s settings-hint">Permanently deletes your account and all your data</p>
+                  </div>
+                  <Btn variant="ghost-danger" size="sm" data-testid="settings-delete-account" @click="openDeleteModal">Delete</Btn>
+                </div>
               </div>
+            </div>
 
-              <template v-else-if="payment.state.loaded">
-                <!-- Active subscriber -->
-                <template v-if="hasActiveSubscription">
-                  <div class="settings-row">
-                    <span class="settings-label">{{ payment.state.cancelAtPeriodEnd ? 'Access until' : 'Renews on' }}</span>
-                    <span class="settings-value">{{ formatBillingDate(payment.state.expiresAt) }}</span>
+            <!-- Plan -->
+            <div v-else-if="activeKey === 'plan'" class="card">
+              <div v-if="confirmingPayment" class="settings-section-body">
+                <div class="settings-loading">
+                  <Spinner :size="16" />
+                  <span>Confirming your payment...</span>
+                </div>
+              </div>
+              <div v-else class="settings-section-body">
+                <div v-if="paymentStillProcessing && tier === 'free'" class="settings-row">
+                  <p class="text-body-s settings-hint">Your payment is still being processed — your plan will update once it's confirmed. Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.</p>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label fw-semibold"><span :class="{ 'color-text-success': tier === 'team' }">{{ tierLabel }} plan</span></span>
+                    <p v-if="planHint" class="text-body-s settings-hint">{{ planHint }}</p>
+                  </div>
+                  <Btn v-if="planUpgrade" variant="primary" size="sm" @click="paymentsEnabled ? router.push({ name: 'upgrade' }) : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
+                </div>
+                <div v-if="tierLimits && tierLimits.max_projects !== -1" class="settings-row">
+                  <span class="settings-label">Projects</span>
+                  <span class="settings-value">{{ stats?.projects?.count ?? 0 }} / {{ tierLimits.max_projects }}</span>
+                </div>
+                <div v-if="tierLimits && tierLimits.max_tags !== -1" class="settings-row">
+                  <span class="settings-label">Tags</span>
+                  <span class="settings-value">{{ stats?.tags?.count ?? 0 }} / {{ tierLimits.max_tags }}</span>
+                </div>
+                <div v-if="tierLimits && tierLimits.max_storage_bytes !== -1" class="settings-row">
+                  <span class="settings-label">Storage</span>
+                  <span class="settings-value">{{ formatBytes(stats?.reference?.used_bytes ?? 0) }} / {{ formatBytes(tierLimits.max_storage_bytes) }}</span>
+                </div>
+                <div v-if="tierLimits && tierLimits.max_projects === -1" class="settings-row">
+                  <span class="settings-label">Limits</span>
+                  <span class="settings-value">Unlimited</span>
+                </div>
+
+                <template v-if="paymentsEnabled">
+                  <div v-if="payment.state.loading && !payment.state.loaded" class="settings-loading">
+                    <Spinner :size="16" />
+                    <span>Loading subscription...</span>
                   </div>
 
-                  <!-- No change-plan UI: switch plans by cancelling, then upgrading after expiry -->
-                  <div v-if="!payment.state.cancelAtPeriodEnd" class="settings-row">
-                    <div>
-                      <span class="settings-label">Cancel subscription</span>
-                      <p class="text-body-s settings-hint">Stops auto-renew — you keep access until the expiration date</p>
+                  <template v-else-if="payment.state.loaded">
+                    <div class="settings-row">
+                      <span class="settings-label">Billing history</span>
+                      <Btn variant="secondary" size="sm" @click="router.push({ name: 'billing-history' })">View</Btn>
                     </div>
-                    <Btn variant="ghost-danger" size="sm" :disabled="payment.state.acting" @click="onCancelSubscription">Cancel</Btn>
+
+                    <!-- No change-plan UI: switch plans by cancelling, then upgrading after expiry -->
+                    <div v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="settings-row">
+                      <div>
+                        <span class="settings-label">Cancel subscription</span>
+                        <p class="text-body-s settings-hint">Stops auto-renew — you keep access until the expiration date</p>
+                      </div>
+                      <Btn variant="ghost-danger" size="sm" :disabled="payment.state.acting" @click="onCancelSubscription">Cancel</Btn>
+                    </div>
+                  </template>
+                </template>
+              </div>
+            </div>
+
+            <!-- AI Assistant -->
+            <div v-else-if="activeKey === 'assistant'" class="card">
+              <div class="settings-section-body">
+                <div v-if="!aiAccount && (aiLoading || !assistant.state.accountError)" class="settings-loading">
+                  <Spinner :size="16" />
+                  <span>Loading AI assistant...</span>
+                </div>
+
+                <div v-else-if="!aiAccount" class="settings-error">
+                  <span>Couldn't load your AI assistant settings.</span>
+                  <Btn variant="secondary" size="sm" @click="loadAssistant">Retry</Btn>
+                </div>
+
+                <template v-else>
+                  <div v-if="confirmingCredits" class="settings-loading">
+                    <Spinner :size="16" />
+                    <span>Confirming your payment...</span>
+                  </div>
+                  <template v-else>
+                    <div v-if="creditsStillProcessing" class="settings-row">
+                      <p class="text-body-s settings-hint">Your payment is still being processed — your credits will appear once it's confirmed. Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.</p>
+                    </div>
+                    <div class="settings-row">
+                      <div>
+                        <span class="settings-label">Credits left</span>
+                        <p v-if="assistant.selectedModel.value" class="text-body-s settings-hint">About {{ aiAccount.requests_left.toLocaleString('en-US') }} requests with {{ assistant.selectedModel.value.name }}</p>
+                      </div>
+                      <span class="settings-value fw-semibold" data-testid="assistant-credits-total">{{ aiAccount.total.toLocaleString('en-US') }}</span>
+                    </div>
+                    <div class="settings-row">
+                      <div>
+                        <span class="settings-label">Monthly credits</span>
+                        <p class="text-body-s settings-hint">Refills on {{ formatLocalDay(aiAccount.monthly_resets_at) }}</p>
+                      </div>
+                      <span class="settings-value">{{ aiAccount.monthly_left.toLocaleString('en-US') }} of {{ aiAccount.monthly_allowance.toLocaleString('en-US') }}</span>
+                    </div>
+                    <div v-if="aiAccount.purchased_left > 0" class="settings-row">
+                      <div>
+                        <span class="settings-label">Extra credits</span>
+                        <p v-if="aiAccount.purchased_next_expiry" class="text-body-s settings-hint">{{ aiAccount.purchased_next_expiry.credits.toLocaleString('en-US') }} expire on {{ formatDay(aiAccount.purchased_next_expiry.date) }}</p>
+                      </div>
+                      <span class="settings-value">{{ aiAccount.purchased_left.toLocaleString('en-US') }}</span>
+                    </div>
+                  </template>
+                  <div class="settings-row">
+                    <div>
+                      <span class="settings-label">Buy credits</span>
+                      <p class="text-body-s settings-hint">One-time packs, used after your monthly credits</p>
+                    </div>
+                    <Btn v-if="paymentsEnabled" variant="primary" size="sm" @click="router.push({ name: 'buy-credits' })">Buy</Btn>
+                    <Btn v-else variant="primary" size="sm" @click="onContactSupport">Contact Us</Btn>
+                  </div>
+                  <div class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                    <div>
+                      <span class="settings-label">Model</span>
+                      <p class="text-body-s settings-hint">Bigger models think better and use more credits.</p>
+                    </div>
+                    <div class="settings-control assistant-model" :class="{ 'settings-control--saving': aiModelSaving }">
+                      <span v-if="aiModelSaving" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <Select v-model="aiModelId" :options="aiModelOptions" title="Model" block />
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <div>
+                      <span class="settings-label">Memory</span>
+                      <p class="text-body-s settings-hint">What the assistant has noted about how you work</p>
+                    </div>
+                    <Btn variant="secondary" size="sm" data-testid="assistant-memory-view" @click="showMemoryModal = true">View</Btn>
                   </div>
                 </template>
-
-                <!-- Free / lapsed — upgrade. A paid tier granted without a subscription (admin) gets no upgrade or cancel -->
-                <div v-else-if="tier === 'free'" class="settings-row">
-                  <div>
-                    <span class="settings-label">Update plan</span>
-                    <p class="text-body-s settings-hint">Unlock Pro or Team features</p>
-                  </div>
-                  <Btn variant="primary" size="sm" @click="router.push({ name: 'upgrade' })">Upgrade</Btn>
-                </div>
-
-                <div class="settings-row">
-                  <span class="settings-label">Billing history</span>
-                  <Btn variant="secondary" size="sm" @click="router.push({ name: 'billing-history' })">View</Btn>
-                </div>
-              </template>
-            </template>
-            <div v-else class="settings-row">
-              <span class="settings-label">Update plan</span>
-              <Btn variant="primary" size="sm" @click="onContactSupport">Contact Us</Btn>
-            </div>
-          </div>
-        </div>
-
-        <!-- AI Assistant Section -->
-        <div v-if="assistant.enabled.value && sectionVisible('assistant')" class="card" data-section="assistant" data-testid="settings-assistant">
-          <div class="card-header card-header--toggle" @click="toggleSection('assistant')">
-            <h2 class="settings-section-title">AI Assistant</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('assistant') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('assistant')" class="settings-section-body">
-            <div v-if="!aiAccount && (aiLoading || !assistant.state.accountError)" class="settings-loading">
-              <Spinner :size="16" />
-              <span>Loading AI assistant...</span>
-            </div>
-
-            <div v-else-if="!aiAccount" class="settings-error">
-              <span>Couldn't load your AI assistant settings.</span>
-              <Btn variant="secondary" size="sm" @click="loadAssistant">Retry</Btn>
-            </div>
-
-            <template v-else>
-              <div v-if="confirmingCredits" class="settings-loading">
-                <Spinner :size="16" />
-                <span>Confirming your payment...</span>
               </div>
-              <template v-else>
-                <div v-if="creditsStillProcessing" class="settings-row">
-                  <p class="text-body-s settings-hint">Your payment is still being processed — your credits will appear once it's confirmed. Card payments confirm within minutes; bank debits (SEPA) can take up to 6 business days.</p>
+            </div>
+
+            <!-- Sessions -->
+            <div v-else-if="activeKey === 'sessions'" class="card">
+              <div class="settings-section-body">
+                <div v-if="loadingSessions" class="settings-loading">
+                  <Spinner :size="16" />
+                  <span>Loading sessions...</span>
                 </div>
-                <div class="settings-row">
-                  <div>
-                    <span class="settings-label">Credits left</span>
-                    <p v-if="assistant.selectedModel.value" class="text-body-s settings-hint">About {{ aiAccount.requests_left.toLocaleString('en-US') }} requests with {{ assistant.selectedModel.value.name }}</p>
+
+                <div v-else-if="sessionsError" class="settings-error">
+                  <span>{{ sessionsError }}</span>
+                  <Btn variant="secondary" size="sm" @click="loadSessions">Retry</Btn>
+                </div>
+
+                <div v-else-if="sessions.length === 0" class="settings-empty">
+                  No active sessions found.
+                </div>
+
+                <div v-else class="sessions-list">
+                  <div v-for="session in sessions" :key="session.id" class="session-item">
+                    <div class="session-info">
+                      <div class="session-device">
+                        <span class="fw-medium session-name">{{ session.device || 'Unknown Device' }}</span>
+                        <Badge v-if="session.is_current" type="primary">Current</Badge>
+                      </div>
+                      <div class="text-body-s session-details">
+                        <template v-for="(segment, index) in sessionSegments(session)" :key="index">
+                          <span v-if="index" class="session-separator">·</span>
+                          <span class="session-segment">{{ segment }}</span>
+                        </template>
+                      </div>
+                    </div>
+                    <ActionBtn
+                        v-if="session.is_current"
+                        variant="primary"
+                        :loading="loggingOut"
+                        @click="onLogout"
+                    />
+                    <ActionBtn
+                        v-else
+                        variant="primary"
+                        :loading="revokingId === session.id"
+                        @click="onRevokeSession(session.id)"
+                    />
                   </div>
-                  <span class="settings-value fw-semibold" data-testid="assistant-credits-total">{{ aiAccount.total.toLocaleString('en-US') }}</span>
-                </div>
-                <div class="settings-row">
-                  <div>
-                    <span class="settings-label">Monthly credits</span>
-                    <p class="text-body-s settings-hint">Refills on {{ formatLocalDay(aiAccount.monthly_resets_at) }}</p>
-                  </div>
-                  <span class="settings-value">{{ aiAccount.monthly_left.toLocaleString('en-US') }} of {{ aiAccount.monthly_allowance.toLocaleString('en-US') }}</span>
-                </div>
-                <div v-if="aiAccount.purchased_left > 0" class="settings-row">
-                  <div>
-                    <span class="settings-label">Extra credits</span>
-                    <p v-if="aiAccount.purchased_next_expiry" class="text-body-s settings-hint">{{ aiAccount.purchased_next_expiry.credits.toLocaleString('en-US') }} expire on {{ formatDay(aiAccount.purchased_next_expiry.date) }}</p>
-                  </div>
-                  <span class="settings-value">{{ aiAccount.purchased_left.toLocaleString('en-US') }}</span>
-                </div>
-              </template>
-              <div class="settings-row">
-                <div>
-                  <span class="settings-label">Buy credits</span>
-                  <p class="text-body-s settings-hint">One-time packs, used after your monthly credits</p>
-                </div>
-                <Btn v-if="paymentsEnabled" variant="primary" size="sm" class="assistant-buy-btn" @click="router.push({ name: 'buy-credits' })">Buy</Btn>
-                <Btn v-else variant="primary" size="sm" class="assistant-buy-btn" @click="onContactSupport">Contact Us</Btn>
-              </div>
-              <div class="settings-row" :class="{ 'settings-row--column': isMobile }">
-                <div>
-                  <span class="settings-label">Model</span>
-                  <p class="text-body-s settings-hint">Bigger models think better and use more credits.</p>
-                </div>
-                <div class="settings-control assistant-model" :class="{ 'settings-control--saving': aiModelSaving }">
-                  <span v-if="aiModelSaving" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                  <Select v-model="aiModelId" :options="aiModelOptions" title="Model" block />
                 </div>
               </div>
-              <div class="settings-row">
-                <div>
-                  <span class="settings-label">Memory</span>
-                  <p class="text-body-s settings-hint">What the assistant has noted about how you work</p>
-                </div>
-                <Btn variant="secondary" size="sm" data-testid="assistant-memory-view" @click="showMemoryModal = true">View</Btn>
-              </div>
-            </template>
-          </div>
-        </div>
-
-        <AssistantMemoryModal :visible="showMemoryModal" @close="showMemoryModal = false" />
-
-        <!-- Email to Inbox Section -->
-        <div v-if="tier && sectionVisible('emailInbox')" class="card" data-section="emailInbox">
-          <div class="card-header card-header--toggle" @click="toggleSection('emailInbox')">
-            <h2 class="settings-section-title">Email to Inbox</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('emailInbox') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('emailInbox')" class="settings-section-body">
-
-            <!-- Free: locked -->
-            <div v-if="!isProOrTeam" class="settings-row settings-row--column">
-              <span class="settings-value email-locked">🔒 Email to Inbox is available on Pro and Team plans.</span>
-              <Btn variant="primary" size="sm" @click="paymentsEnabled ? onUpgradeEmail() : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
             </div>
 
-            <!-- Pro/Team -->
-            <template v-else>
-              <!-- Loading -->
-              <div v-if="inbox.loading && !inbox.loaded" class="settings-loading">
-                <Spinner :size="16" />
-                <span>Loading...</span>
-              </div>
-
-              <!-- Empty state: no address yet -->
-              <div v-else-if="!inbox.address" class="settings-row settings-row--column">
-                <span class="text-body-s settings-hint email-valueprop">Get a private email address. Forward anything to capture it instantly.</span>
-                <Btn variant="primary" size="sm" :loading="inbox.acting" :disabled="inbox.acting" @click="onGenerateAddress">Generate Address</Btn>
-              </div>
-
-              <!-- Address present -->
-              <template v-else>
-                <div class="settings-row settings-row--column">
-                  <span class="settings-label">Your inbox address</span>
-                  <div class="email-address-row">
-                    <span class="settings-value email-address">{{ inbox.address }}</span>
-                    <Btn variant="secondary" size="sm" @click="onCopyAddress">{{ copied === 'inbox' ? 'Copied!' : 'Copy' }}</Btn>
+            <!-- Application -->
+            <template v-else-if="activeKey === 'application'">
+              <div class="card">
+                <div class="settings-section-body">
+                  <div class="notif-group-header">
+                    <span class="text-overline notif-group-name">Appearance</span>
                   </div>
-                  <span class="text-body-s settings-hint">Forward any email to this address to capture it as a new item.</span>
-                  <span class="text-body-s settings-hint">Attachments are saved with the item within your plan's limits.</span>
-                </div>
-
-                <div class="settings-row">
-                  <span class="settings-label">Usage</span>
-                  <span class="settings-value">Used today: {{ inbox.emailsToday }} of {{ inbox.dailyLimit }}</span>
-                </div>
-
-                <div class="settings-row">
-                  <div>
-                    <span class="settings-label">Capture</span>
-                    <p class="text-body-s settings-hint">{{ inbox.enabled ? 'Capture is on' : 'Capture is paused' }}</p>
+                  <div class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                    <span class="settings-label">Theme</span>
+                    <div class="settings-control">
+                      <SegmentSwitch v-model="themeMode" :options="themeModeOptions" />
+                    </div>
                   </div>
-                  <div class="settings-control" :class="{ 'settings-control--saving': inbox.savingCapture }">
-                    <span v-if="inbox.savingCapture" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                    <label class="settings-toggle">
-                      <input type="checkbox" v-model="captureEnabled" />
-                      <span class="settings-toggle-slider"></span>
-                    </label>
+
+                  <div class="notif-group-header">
+                    <span class="text-overline notif-group-name">Lists</span>
                   </div>
-                </div>
-
-                <div class="settings-row">
-                  <span class="settings-label">Reset address</span>
-                  <Btn variant="ghost" size="sm" :loading="inbox.acting" :disabled="inbox.acting" @click="onResetAddress">Reset address</Btn>
-                </div>
-              </template>
-            </template>
-          </div>
-        </div>
-
-        <!-- Sessions Section -->
-        <div v-if="sectionVisible('sessions')" class="card" data-section="sessions">
-          <div class="card-header card-header--toggle" @click="toggleSection('sessions')">
-            <h2 class="settings-section-title">Sessions</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('sessions') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('sessions')" class="settings-section-body">
-            <div v-if="loadingSessions" class="settings-loading">
-              <Spinner :size="16" />
-              <span>Loading sessions...</span>
-            </div>
-
-            <div v-else-if="sessionsError" class="settings-error">
-              <span>{{ sessionsError }}</span>
-              <Btn variant="secondary" size="sm" @click="loadSessions">Retry</Btn>
-            </div>
-
-            <div v-else-if="sessions.length === 0" class="settings-empty">
-              No active sessions found.
-            </div>
-
-            <div v-else class="sessions-list">
-              <div
-                  v-for="session in sessions"
-                  :key="session.id"
-                  class="session-item"
-                  :class="{ 'session-item--current': session.is_current }"
-              >
-                <div class="session-info">
-                  <div class="session-device">
-                    <span class="session-icon">{{ getDeviceIcon(session) }}</span>
-                    <span class="fw-medium session-name">{{ session.device || 'Unknown Device' }}</span>
-                    <span v-if="session.is_current" class="text-footnote fw-semibold session-badge">Current</span>
+                  <div class="settings-row">
+                    <div>
+                      <span class="settings-label">New items go to</span>
+                      <p class="text-body-s settings-hint">Where new items appear in your lists</p>
+                    </div>
+                    <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
+                      <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <SegmentSwitch v-model="addPosition" :options="positionOptions" />
+                    </div>
                   </div>
-                  <div class="text-body-s session-details">
-                    <template v-for="(segment, index) in sessionSegments(session)" :key="index">
-                      <span v-if="index" class="session-separator">·</span>
-                      <span class="session-segment">{{ segment }}</span>
+                  <div class="settings-row settings-row--column">
+                    <div class="settings-row-head">
+                      <div>
+                        <span class="settings-label">Quick-add tags</span>
+                        <p class="text-body-s settings-hint">Suggested under the tag field. Leave empty to use the defaults.</p>
+                      </div>
+                      <Btn v-if="!editingTagPresets" variant="ghost" size="sm" data-testid="settings-tags-edit" @click="startTagPresetsEdit">Edit</Btn>
+                    </div>
+                    <template v-if="!editingTagPresets">
+                      <span v-if="settings.state.tagPresets.length > 0" class="settings-tags-chips">
+                        <span v-for="tag in settings.state.tagPresets" :key="tag" class="text-body-s settings-tag-chip">{{ tag }}</span>
+                      </span>
+                      <span v-else class="text-body-s settings-hint">No quick-add tags yet — the defaults are used.</span>
+                    </template>
+                    <template v-else>
+                      <TagInput ref="tagPresetsInput" v-model="editTagPresets" placeholder="Add preset tags..." :presetSource="defaultPresets" />
+                      <div class="settings-tag-actions">
+                        <Btn
+                            variant="primary"
+                            size="sm"
+                            :disabled="savingTagPresets"
+                            :loading="savingTagPresets"
+                            @mousedown.prevent
+                            @click="saveTagPresets"
+                        >Save</Btn>
+                        <Btn
+                            variant="secondary"
+                            size="sm"
+                            :disabled="savingTagPresets"
+                            @mousedown.prevent
+                            @click="cancelTagPresetsEdit"
+                        >Cancel</Btn>
+                      </div>
                     </template>
                   </div>
-                </div>
-                <ActionBtn
-                    v-if="session.is_current"
-                    variant="primary"
-                    :loading="loggingOut"
-                    @click="onLogout"
-                />
-                <ActionBtn
-                    v-else
-                    variant="primary"
-                    :loading="revokingId === session.id"
-                    @click="onRevokeSession(session.id)"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- AI Apps Section -->
-        <div v-if="sectionVisible('aiApps')" class="card" data-section="aiApps">
-          <div class="card-header card-header--toggle" @click="toggleSection('aiApps')">
-            <h2 class="settings-section-title">AI Apps</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('aiApps') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('aiApps')" class="settings-section-body">
-            <div v-if="loadingAiApps" class="settings-loading">
-              <Spinner :size="16" />
-              <span>Loading AI apps...</span>
-            </div>
-
-            <template v-else>
-              <div v-if="aiAppsError" class="settings-error">
-                <span>Couldn't load your AI apps.</span>
-                <Btn variant="secondary" size="sm" @click="loadAiApps">Retry</Btn>
-              </div>
-
-              <div v-else-if="aiApps.length === 0" class="settings-empty">
-                No AI apps connected yet.
-              </div>
-
-              <div v-else class="sessions-list ai-apps-list">
-                <div v-for="app in aiApps" :key="app.id" class="session-item">
-                  <div class="session-info">
-                    <span class="fw-medium session-name">{{ app.name }}</span>
-                    <span class="text-body-s session-details">Connected {{ formatConnectedDate(app.connected_at) }}</span>
+                  <div class="notif-group-header">
+                    <span class="text-overline notif-group-name">Time</span>
                   </div>
-                  <ActionBtn
-                      variant="primary"
-                      :loading="removingAiAppId === app.id"
-                      @click="onRemoveAiApp(app)"
-                  />
-                </div>
-              </div>
-
-              <div class="settings-row settings-row--column">
-                <span class="settings-label">Connect an AI app</span>
-                <div class="email-address-row">
-                  <span class="settings-value email-address">{{ mcpUrl }}</span>
-                  <Btn variant="secondary" size="sm" @click="copyAddress('mcp', mcpUrl)">{{ copied === 'mcp' ? 'Copied!' : 'Copy' }}</Btn>
-                </div>
-                <span class="text-body-s settings-hint">Add this address as a connector in Claude, ChatGPT or any AI app that supports MCP. You'll be asked to sign in and allow access.</span>
-              </div>
-            </template>
-          </div>
-        </div>
-
-        <!-- Application Section -->
-        <div v-if="sectionVisible('application')" class="card" data-section="application">
-          <div class="card-header card-header--toggle" @click="toggleSection('application')">
-            <h2 class="settings-section-title">Application</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('application') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('application')" class="settings-section-body">
-            <div class="settings-row">
-              <span class="settings-label">Theme</span>
-              <Select
-                  v-model="themeMode"
-                  :options="themeModeOptions"
-                  title="Theme"
-              />
-            </div>
-            <div class="settings-row">
-              <span class="settings-label">New items position in the list</span>
-              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.newItemsPosition }">
-                <span v-if="settings.state.saving.newItemsPosition" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <Select
-                    v-model="addPosition"
-                    :options="positionOptions"
-                    title="New items position"
-                />
-              </div>
-            </div>
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Timezone</span>
-                <p class="text-body-s settings-hint">Used for day-scoped views and your daily digest email</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timezone }">
-                <span v-if="settings.state.saving.timezone" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <Select
-                    v-model="timezone"
-                    :options="timezoneOptions"
-                    title="Timezone"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tags Section -->
-        <div v-if="sectionVisible('tags')" class="card" data-section="tags">
-          <div class="card-header card-header--toggle" @click="toggleSection('tags')">
-            <h2 class="settings-section-title">Tags</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('tags') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('tags')" class="settings-section-body">
-            <div class="settings-row settings-row--column">
-              <span class="settings-label">Quick-add presets</span>
-              <span class="text-body-s settings-hint">These appear as clickable suggestions below the tag input. Leave empty to use defaults.</span>
-              <div v-if="!editingTagPresets" class="settings-tags-display" @click="startTagPresetsEdit">
-                <span v-if="settings.state.tagPresets.length > 0" class="settings-tags-chips">
-                  <span v-for="tag in settings.state.tagPresets" :key="tag" class="text-body-s settings-tag-chip">{{ tag }}</span>
-                </span>
-                <span v-else class="settings-tag-placeholder">Add preset tags...</span>
-              </div>
-              <template v-else>
-                <TagInput ref="tagPresetsInput" v-model="editTagPresets" placeholder="Add preset tags..." :presetSource="defaultPresets" />
-                <div class="settings-tag-actions">
-                  <Btn
-                      variant="primary"
-                      size="sm"
-                      :disabled="savingTagPresets"
-                      :loading="savingTagPresets"
-                      @mousedown.prevent
-                      @click="saveTagPresets"
-                  >Save</Btn>
-                  <Btn
-                      variant="secondary"
-                      size="sm"
-                      :disabled="savingTagPresets"
-                      @mousedown.prevent
-                      @click="cancelTagPresetsEdit"
-                  >Cancel</Btn>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-
-        <!-- Calendar Section -->
-        <div v-if="sectionVisible('calendar')" class="card" data-section="calendar">
-          <div class="card-header card-header--toggle" @click="toggleSection('calendar')">
-            <h2 class="settings-section-title">Calendar</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('calendar') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('calendar')" class="settings-section-body">
-          <div class="settings-row">
-            <span class="settings-label">Week starts on</span>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.weekStart }">
-              <span v-if="settings.state.saving.weekStart" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-              <Select v-model="weekStart" :options="weekStartOptions" title="Week starts on" />
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <span class="settings-label">Time format</span>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timeFormat }">
-              <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-              <Select
-                  v-model="timeFormat"
-                  :options="timeFormatOptions"
-                  title="Time format"
-              />
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <span class="settings-label">Business hours start</span>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursStart }">
-              <span v-if="settings.state.saving.businessHoursStart" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-              <Select
-                  v-model="businessHoursStart"
-                  :options="hourOptions"
-                  title="Start hour"
-              />
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <span class="settings-label">Business hours end</span>
-            <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursEnd }">
-              <span v-if="settings.state.saving.businessHoursEnd" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-              <Select
-                  v-model="businessHoursEnd"
-                  :options="hourOptions"
-                  title="End hour"
-              />
-            </div>
-          </div>
-
-          <div class="settings-row settings-row--column">
-            <span class="settings-label">Business days</span>
-            <div class="settings-days-control" :class="{ 'settings-control--saving': settings.state.saving.businessDays }">
-              <span v-if="settings.state.saving.businessDays" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-              <div class="settings-days">
-                <label v-for="day in dayOptions" :key="day.value" class="text-body-s settings-day-checkbox">
-                  <input
-                      type="checkbox"
-                      :value="day.value"
-                      v-model="businessDays"
-                  />
-                  <span>{{ day.label }}</span>
-                </label>
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
-
-        <!-- Calendar Sync Section -->
-        <div v-if="tier && calendarSyncEnabled && sectionVisible('calendarSync')" class="card" data-section="calendarSync" data-testid="calendar-sync-card">
-          <div class="card-header card-header--toggle" @click="toggleSection('calendarSync')">
-            <h2 class="settings-section-title">Calendar Sync</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('calendarSync') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('calendarSync')" class="settings-section-body">
-
-            <!-- Free: locked -->
-            <div v-if="!isProOrTeam" class="settings-row settings-row--column" data-testid="calendar-sync-lockout">
-              <span class="settings-value email-locked">🔒 Google Calendar sync is available on Pro and Team plans.</span>
-              <Btn variant="primary" size="sm" data-testid="calendar-sync-upgrade" @click="paymentsEnabled ? onUpgradeCalendarSync() : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
-            </div>
-
-            <!-- Pro/Team -->
-            <template v-else>
-              <div v-if="gcal.loading && !gcal.loaded" class="settings-loading">
-                <Spinner :size="16" />
-                <span>Loading...</span>
-              </div>
-
-              <!-- Not connected / reconnect needed -->
-              <div v-else-if="!gcal.connected || gcal.reauth" class="settings-row settings-row--column">
-                <span class="settings-value" data-testid="calendar-sync-status">{{ calendarNeedsReconnect ? 'Google Calendar needs to be reconnected' : 'Not connected' }}</span>
-                <span class="text-body-s settings-hint email-valueprop">Show your scheduled actions in Google Calendar. Reschedules made on either side sync both ways.</span>
-                <Btn variant="primary" size="sm" :loading="gcal.acting" :disabled="gcal.acting" data-testid="calendar-sync-connect" @click="onConnectCalendar">{{ calendarNeedsReconnect ? 'Reconnect Google Calendar' : 'Connect Google Calendar' }}</Btn>
-              </div>
-
-              <!-- Connected -->
-              <template v-else>
-                <div class="settings-row">
-                  <span class="settings-label">Status</span>
-                  <span class="settings-value" :class="{ 'color-text-success': !gcal.missing }" data-testid="calendar-sync-status">{{ gcal.missing ? 'Calendar was removed in Google' : 'Connected' }}</span>
-                </div>
-
-                <!-- Selected calendar removed in Google: sync paused -->
-                <div v-if="gcal.missing" class="settings-row settings-row--column" data-testid="calendar-sync-missing">
-                  <span class="text-body-s settings-hint email-valueprop">Sync is paused and your actions are unchanged. Re-create the WhatsNextAction calendar or pick another calendar.</span>
-                  <Btn variant="primary" size="sm" :loading="gcal.savingCalendar" :disabled="gcal.savingCalendar" data-testid="calendar-sync-recreate" @click="onCreateWnaCalendar">Re-create calendar</Btn>
-                </div>
-
-                <div class="settings-row">
-                  <span class="settings-label">Calendar</span>
-                  <div class="settings-control" :class="{ 'settings-control--saving': gcal.savingCalendar }">
-                    <span v-if="gcal.savingCalendar" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                    <Select v-model="selectedCalendar" :options="calendarOptions" title="Calendar" data-testid="calendar-sync-picker" />
+                  <div class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                    <div>
+                      <span class="settings-label">Timezone</span>
+                      <p class="text-body-s settings-hint">Used for day-scoped views and your daily digest email</p>
+                    </div>
+                    <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timezone }">
+                      <span v-if="settings.state.saving.timezone" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <Select v-model="timezone" :options="timezoneOptions" title="Timezone" />
+                    </div>
                   </div>
-                </div>
 
-                <div class="settings-row">
-                  <div>
-                    <span class="settings-label">Timezone</span>
-                    <p class="text-body-s settings-hint">Timed events in Google Calendar use this timezone</p>
+                  <div class="notif-group-header">
+                    <span class="text-overline notif-group-name">Reflect</span>
                   </div>
-                  <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timezone }">
-                    <span v-if="settings.state.saving.timezone" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                    <Select v-model="timezone" :options="timezoneOptions" title="Timezone" data-testid="calendar-sync-timezone" />
-                  </div>
-                </div>
-
-                <div class="settings-row settings-row--column" data-testid="calendar-sync-what-syncs">
-                  <span class="settings-label">What syncs</span>
-                  <span class="text-body-s settings-hint email-valueprop">Scheduled actions in Next, Today, Calendar and Waiting For: title, description, date and time. Changes made in Google to these events come back to WNA, and deleting one in Google moves its action to Trash. In the WhatsNextAction calendar, events you create in Google become scheduled actions, and each occurrence of a recurring event in the next 30 days becomes its own action. Due dates, start dates and your other Google events do not sync. Completing or trashing an action removes its event.</span>
-                </div>
-
-                <div class="settings-row">
-                  <span class="settings-label">Sync now</span>
-                  <Btn variant="secondary" size="sm" :loading="gcal.syncing" :disabled="gcal.syncing" data-testid="calendar-sync-now" @click="onSyncCalendarNow">Sync now</Btn>
-                </div>
-
-                <div class="settings-row">
-                  <span class="settings-label">Disconnect</span>
-                  <Btn variant="ghost-danger" size="sm" :loading="gcal.acting" :disabled="gcal.acting" data-testid="calendar-sync-disconnect" @click="onDisconnectCalendar">Disconnect</Btn>
-                </div>
-              </template>
-            </template>
-          </div>
-        </div>
-
-        <Modal :visible="gcal.offerCreate" title="WhatsNextAction calendar" @close="onDeclineWnaCalendar">
-          <div class="text-body-m color-text-secondary" data-testid="calendar-sync-create-modal">Create a WhatsNextAction calendar in your Google account and sync your scheduled actions there? Events you create in that calendar in Google become actions in WNA. You can change the calendar at any time.</div>
-          <template #actions>
-            <Btn variant="secondary" size="sm" data-testid="calendar-sync-create-no" @click="onDeclineWnaCalendar">No</Btn>
-            <Btn variant="primary" size="sm" data-testid="calendar-sync-create-yes" @click="onAcceptWnaCalendar">Yes</Btn>
-          </template>
-        </Modal>
-
-        <!-- Storage Section -->
-        <div v-if="tier && driveEnabled && sectionVisible('storage')" class="card" data-section="storage" data-testid="drive-card">
-          <div class="card-header card-header--toggle" @click="toggleSection('storage')">
-            <h2 class="settings-section-title">Storage</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('storage') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('storage')" class="settings-section-body">
-            <div v-if="drive.loading && !drive.loaded" class="settings-loading">
-              <Spinner :size="16" />
-              <span>Loading...</span>
-            </div>
-
-            <template v-else>
-              <!-- Not connected -->
-              <div v-if="!drive.connected" class="settings-row settings-row--column">
-                <span class="settings-value" data-testid="drive-status">Google Drive not connected</span>
-                <span class="text-body-s settings-hint email-valueprop">Store your reference files and attachments in your own Google Drive. Files saved there don't count toward your storage limit.</span>
-                <Btn variant="primary" size="sm" :loading="drive.acting" :disabled="drive.acting" data-testid="drive-connect" @click="onConnectDrive">Connect Google Drive</Btn>
-              </div>
-
-              <!-- Connected -->
-              <div v-else class="settings-row">
-                <span class="settings-label">Google Drive</span>
-                <span class="settings-value color-text-success" data-testid="drive-status">Connected<template v-if="drive.email"> as {{ drive.email }}</template></span>
-              </div>
-
-              <div class="settings-row">
-                <div>
-                  <span class="settings-label">Save attachments to</span>
-                </div>
-                <div class="settings-control" :class="{ 'settings-control--saving': drive.savingDestination }">
-                  <span v-if="drive.savingDestination" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                  <Select v-model="attachmentsDestination" :options="destinationOptions" :disabled="!drive.connected" title="Save attachments to" data-testid="drive-destination" />
-                </div>
-              </div>
-
-              <div v-if="drive.connected" class="settings-row">
-                <span class="settings-label">Disconnect</span>
-                <Btn variant="ghost-danger" size="sm" :loading="drive.acting" :disabled="drive.acting" data-testid="drive-disconnect" @click="onDisconnectDrive">Disconnect</Btn>
-              </div>
-            </template>
-          </div>
-        </div>
-
-        <!-- Reflect Section -->
-        <div v-if="sectionVisible('review')" class="card" data-section="review">
-          <div class="card-header card-header--toggle" @click="toggleSection('review')">
-            <h2 class="settings-section-title">Reflect</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('review') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('review')" class="settings-section-body">
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Weekly Review</span>
-                <p class="text-body-s settings-hint">Show the Weekly Review section in the sidebar</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.reviewEnabled }">
-                <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="reviewEnabled" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-            <div class="settings-row">
-              <div>
-                <span class="settings-label">Horizons of Focus</span>
-                <p class="text-body-s settings-hint">Show areas, goals, vision and purpose in the sidebar, on projects, on Engage and in the Weekly Review</p>
-              </div>
-              <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.horizonsEnabled }">
-                <span v-if="settings.state.saving.horizonsEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                <label class="settings-toggle">
-                  <input type="checkbox" v-model="horizonsEnabled" data-testid="settings-horizons-toggle" />
-                  <span class="settings-toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Notifications Section -->
-        <div v-if="sectionVisible('notifications')" class="card" data-section="notifications">
-          <div class="card-header card-header--toggle" @click="toggleSection('notifications')">
-            <h2 class="settings-section-title">Notifications</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('notifications') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('notifications')" class="settings-section-body">
-            <div v-if="notifications.state.loading && !notifications.state.loaded" class="settings-loading">
-              <Spinner :size="16" />
-              <span>Loading notification settings...</span>
-            </div>
-
-            <div v-else-if="notifications.state.error" class="settings-error">
-              <span>Couldn't load your notification settings. Check your connection and try again.</span>
-              <Btn variant="ghost" size="sm" @click="notifications.load()">Try again</Btn>
-            </div>
-
-            <template v-else>
-              <div class="settings-row">
-                <div class="notif-row-text">
-                  <span class="settings-label">Email notifications</span>
-                  <p class="text-body-s settings-hint">Turn off to stop every email below. Security and billing emails still come.</p>
-                </div>
-                <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
-                  <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                  <label class="settings-toggle">
-                    <input type="checkbox" :checked="notifications.state.emailEnabled" aria-label="Email notifications" @change="onEmailEnabledToggle($event)" />
-                    <span class="settings-toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="settings-row" data-testid="push-device-row">
-                <div class="notif-row-text">
-                  <span class="settings-label">Web notifications on this device</span>
-                  <p class="text-body-s settings-hint">{{ deviceHint }}</p>
-                </div>
-                <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.deviceBusy }">
-                  <span v-if="notifications.state.deviceBusy" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
-                  <label class="settings-toggle">
-                    <input type="checkbox" :checked="notifications.state.device === 'on'" :disabled="!['on', 'off'].includes(notifications.state.device)" aria-label="Web notifications on this device" @change="onDeviceToggle($event)" />
-                    <span class="settings-toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <template v-for="group in notificationGroups" :key="group.name">
-                <div class="notif-group-header">
-                  <span class="text-overline notif-group-name">{{ group.name }}</span>
-                  <div class="notif-columns">
-                    <span class="text-caption notif-column-label">Email</span>
-                    <span class="text-caption notif-column-label">Web</span>
-                  </div>
-                </div>
-
-                <div v-for="row in group.events" :key="row.event" class="settings-row" :data-testid="`notif-row-${row.event}`">
-                  <div class="notif-row-text">
-                    <span class="settings-label">{{ row.label }}</span>
-                    <p v-if="row.hint" class="text-body-s settings-hint">{{ row.hint }}</p>
-                  </div>
-                  <div class="notif-columns">
-                    <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`email:${row.event}`] }">
-                      <span v-if="notifications.state.saving[`email:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                  <div class="settings-row">
+                    <div>
+                      <span class="settings-label">Weekly Review</span>
+                      <p class="text-body-s settings-hint">Show the Weekly Review section in the sidebar</p>
+                    </div>
+                    <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.reviewEnabled }">
+                      <span v-if="settings.state.saving.reviewEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                       <label class="settings-toggle">
-                        <input type="checkbox" :checked="notifications.state.email[row.event]" :disabled="!notifications.state.emailEnabled" :aria-label="`${row.label} by email`" @change="onEventToggle('email', row.event, $event)" />
+                        <input type="checkbox" v-model="reviewEnabled" />
                         <span class="settings-toggle-slider"></span>
                       </label>
                     </div>
-                    <div v-if="row.web !== false" class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`web:${row.event}`] }">
-                      <span v-if="notifications.state.saving[`web:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                  </div>
+                  <div class="settings-row">
+                    <div>
+                      <span class="settings-label">Horizons of Focus</span>
+                      <p class="text-body-s settings-hint">Show areas, goals, vision and purpose in the sidebar, on projects, on Engage and in the Weekly Review</p>
+                    </div>
+                    <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.horizonsEnabled }">
+                      <span v-if="settings.state.saving.horizonsEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
                       <label class="settings-toggle">
-                        <input type="checkbox" :checked="notifications.state.web[row.event]" :aria-label="`${row.label} on the web`" @change="onEventToggle('web', row.event, $event)" />
+                        <input type="checkbox" v-model="horizonsEnabled" data-testid="settings-horizons-toggle" />
                         <span class="settings-toggle-slider"></span>
                       </label>
                     </div>
-                    <span v-else class="notif-column-label"></span>
                   </div>
                 </div>
-              </template>
-
-              <p class="text-body-s settings-hint settings-info-note">The bell is always on. Security alerts and failed payments can't be turned off — they always come by email and to every device with notifications on. Service notices (terms, maintenance, security) always come by email.</p>
+              </div>
+              <p class="text-caption color-text-tertiary settings-version" data-testid="settings-version">Version {{ appVersion }}</p>
             </template>
-          </div>
-        </div>
 
-        <!-- About Section -->
-        <div v-if="sectionVisible('about')" class="card" data-section="about">
-          <div class="card-header card-header--toggle" @click="toggleSection('about')">
-            <h2 class="settings-section-title">About</h2>
-            <span class="section-chevron" :class="{ 'section-chevron--open': isExpanded('about') }">&#8250;</span>
-          </div>
-          <div v-if="isExpanded('about')" class="settings-section-body">
-            <div class="settings-row">
-              <span class="settings-label">Version</span>
-              <span class="settings-value">{{ appVersion }}</span>
+            <!-- Calendar -->
+            <div v-else-if="activeKey === 'calendar'" class="card">
+              <div class="settings-section-body">
+                <div class="settings-row">
+                  <span class="settings-label">Week starts on</span>
+                  <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.weekStart }">
+                    <span v-if="settings.state.saving.weekStart" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                    <SegmentSwitch v-model="weekStart" :options="weekStartOptions" />
+                  </div>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Time format</span>
+                  <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.timeFormat }">
+                    <span v-if="settings.state.saving.timeFormat" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                    <SegmentSwitch v-model="timeFormat" :options="timeFormatOptions" />
+                  </div>
+                </div>
+
+                <div class="settings-row">
+                  <span class="settings-label">Business hours</span>
+                  <div class="settings-hours">
+                    <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursStart }">
+                      <span v-if="settings.state.saving.businessHoursStart" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <Select v-model="businessHoursStart" :options="hourOptions" title="Start hour" data-testid="settings-business-hours-start" />
+                    </div>
+                    <span class="color-text-tertiary">–</span>
+                    <div class="settings-control" :class="{ 'settings-control--saving': settings.state.saving.businessHoursEnd }">
+                      <span v-if="settings.state.saving.businessHoursEnd" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <Select v-model="businessHoursEnd" :options="hourOptions" title="End hour" data-testid="settings-business-hours-end" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-row settings-row--column">
+                  <span class="settings-label">Business days</span>
+                  <div class="settings-days-control" :class="{ 'settings-control--saving': settings.state.saving.businessDays }">
+                    <span v-if="settings.state.saving.businessDays" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                    <div class="settings-days">
+                      <label v-for="day in dayOptions" :key="day.value" class="text-body-s settings-day-checkbox">
+                        <input
+                            type="checkbox"
+                            :value="day.value"
+                            v-model="businessDays"
+                        />
+                        <span>{{ day.label }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-          </div>
-        </div>
+            <!-- Notifications -->
+            <div v-else-if="activeKey === 'notifications'" class="card">
+              <div class="settings-section-body">
+                <div v-if="notifications.state.loading && !notifications.state.loaded" class="settings-loading">
+                  <Spinner :size="16" />
+                  <span>Loading notification settings...</span>
+                </div>
 
+                <div v-else-if="notifications.state.error" class="settings-error">
+                  <span>Couldn't load your notification settings. Check your connection and try again.</span>
+                  <Btn variant="ghost" size="sm" @click="notifications.load()">Try again</Btn>
+                </div>
+
+                <template v-else>
+                  <div class="settings-row">
+                    <div class="notif-row-text">
+                      <span class="settings-label">Email notifications</span>
+                      <p class="text-body-s settings-hint">Turn off to stop every email below. Security and billing emails still come.</p>
+                    </div>
+                    <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving.emailEnabled }">
+                      <span v-if="notifications.state.saving.emailEnabled" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <label class="settings-toggle">
+                        <input type="checkbox" :checked="notifications.state.emailEnabled" aria-label="Email notifications" @change="onEmailEnabledToggle($event)" />
+                        <span class="settings-toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="settings-row" data-testid="push-device-row">
+                    <div class="notif-row-text">
+                      <span class="settings-label">Web notifications on this device</span>
+                      <p class="text-body-s settings-hint">{{ deviceHint }}</p>
+                    </div>
+                    <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.deviceBusy }">
+                      <span v-if="notifications.state.deviceBusy" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <label class="settings-toggle">
+                        <input type="checkbox" :checked="notifications.state.device === 'on'" :disabled="!['on', 'off'].includes(notifications.state.device)" aria-label="Web notifications on this device" @change="onDeviceToggle($event)" />
+                        <span class="settings-toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <template v-for="group in notificationGroups" :key="group.name">
+                    <div class="notif-group-header">
+                      <span class="text-overline notif-group-name">{{ group.name }}</span>
+                      <div class="notif-columns">
+                        <span class="text-caption notif-column-label">Email</span>
+                        <span class="text-caption notif-column-label">Web</span>
+                      </div>
+                    </div>
+
+                    <div v-for="row in group.events" :key="row.event" class="settings-row" :data-testid="`notif-row-${row.event}`">
+                      <div class="notif-row-text">
+                        <span class="settings-label">{{ row.label }}</span>
+                        <p v-if="row.hint" class="text-body-s settings-hint">{{ row.hint }}</p>
+                      </div>
+                      <div class="notif-columns">
+                        <div class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`email:${row.event}`] }">
+                          <span v-if="notifications.state.saving[`email:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                          <label class="settings-toggle">
+                            <input type="checkbox" :checked="notifications.state.email[row.event]" :disabled="!notifications.state.emailEnabled" :aria-label="`${row.label} by email`" @change="onEventToggle('email', row.event, $event)" />
+                            <span class="settings-toggle-slider"></span>
+                          </label>
+                        </div>
+                        <div v-if="row.web !== false" class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`web:${row.event}`] }">
+                          <span v-if="notifications.state.saving[`web:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                          <label class="settings-toggle">
+                            <input type="checkbox" :checked="notifications.state.web[row.event]" :aria-label="`${row.label} on the web`" @change="onEventToggle('web', row.event, $event)" />
+                            <span class="settings-toggle-slider"></span>
+                          </label>
+                        </div>
+                        <span v-else class="notif-column-label"></span>
+                      </div>
+                    </div>
+                  </template>
+
+                  <p class="text-caption color-text-tertiary settings-info-note">The bell is always on. Security alerts and failed payments can't be turned off — they always come by email and to every device with notifications on. Service notices (terms, maintenance, security) always come by email.</p>
+                </template>
+              </div>
+            </div>
+
+            <!-- Email to Inbox -->
+            <div v-else-if="activeKey === 'emailInbox'" class="card">
+              <div class="settings-section-body">
+                <div v-if="!isProOrTeam" class="settings-row">
+                  <span class="settings-value">Available on Pro and Team plans.</span>
+                  <Btn variant="primary" size="sm" @click="paymentsEnabled ? onUpgradeEmail() : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
+                </div>
+
+                <template v-else>
+                  <div v-if="inbox.loading && !inbox.loaded" class="settings-loading">
+                    <Spinner :size="16" />
+                    <span>Loading...</span>
+                  </div>
+
+                  <div v-else-if="!inbox.address" class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                    <span class="text-body-s settings-hint">Get a private email address. Forward anything to capture it instantly.</span>
+                    <Btn variant="primary" size="sm" :loading="inbox.acting" :disabled="inbox.acting" @click="onGenerateAddress">Generate address</Btn>
+                  </div>
+
+                  <template v-else>
+                    <div class="settings-row settings-row--column">
+                      <span class="settings-label">Your inbox address</span>
+                      <div class="email-address-row">
+                        <span class="settings-value email-address">{{ inbox.address }}</span>
+                        <Btn variant="secondary" size="sm" @click="onCopyAddress">{{ copied === 'inbox' ? 'Copied!' : 'Copy' }}</Btn>
+                      </div>
+                      <div>
+                        <p class="text-body-s settings-hint">Forward any email to this address to capture it as a new item.</p>
+                        <p class="text-body-s settings-hint">Attachments are saved with the item within your plan's limits.</p>
+                      </div>
+                    </div>
+
+                    <div class="settings-row">
+                      <span class="settings-label">Used today</span>
+                      <span class="settings-value">{{ inbox.emailsToday }} of {{ inbox.dailyLimit }}</span>
+                    </div>
+
+                    <div class="settings-row">
+                      <span class="settings-label">Capture</span>
+                      <div class="settings-control" :class="{ 'settings-control--saving': inbox.savingCapture }">
+                        <span v-if="inbox.savingCapture" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                        <label class="settings-toggle">
+                          <input type="checkbox" v-model="captureEnabled" aria-label="Capture" />
+                          <span class="settings-toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="settings-row">
+                      <span class="settings-label">Reset address</span>
+                      <Btn variant="ghost" size="sm" :loading="inbox.acting" :disabled="inbox.acting" @click="onResetAddress">Reset</Btn>
+                    </div>
+                  </template>
+                </template>
+              </div>
+            </div>
+
+            <!-- AI Apps -->
+            <div v-else-if="activeKey === 'aiApps'" class="card">
+              <div class="settings-section-body">
+                <div class="settings-row settings-row--column">
+                  <span class="settings-label">Connect an AI app</span>
+                  <div class="email-address-row">
+                    <span class="settings-value email-address">{{ mcpUrl }}</span>
+                    <Btn variant="secondary" size="sm" @click="copyAddress('mcp', mcpUrl)">{{ copied === 'mcp' ? 'Copied!' : 'Copy' }}</Btn>
+                  </div>
+                  <p class="text-body-s settings-hint">Add this address as a connector in Claude, ChatGPT or any AI app that supports MCP. You'll be asked to sign in and allow access.</p>
+                </div>
+
+                <div v-if="loadingAiApps" class="settings-loading">
+                  <Spinner :size="16" />
+                  <span>Loading AI apps...</span>
+                </div>
+
+                <div v-else-if="aiAppsError" class="settings-error">
+                  <span>Couldn't load your AI apps.</span>
+                  <Btn variant="secondary" size="sm" @click="loadAiApps">Retry</Btn>
+                </div>
+
+                <div v-else-if="aiApps.length === 0" class="settings-empty">
+                  No AI apps connected yet.
+                </div>
+
+                <div v-else class="sessions-list">
+                  <div v-for="app in aiApps" :key="app.id" class="session-item">
+                    <div class="session-info">
+                      <span class="fw-medium session-name">{{ app.name }}</span>
+                      <span class="text-body-s session-details">Connected {{ formatConnectedDate(app.connected_at) }}</span>
+                    </div>
+                    <ActionBtn
+                        variant="primary"
+                        :loading="removingAiAppId === app.id"
+                        @click="onRemoveAiApp(app)"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar Sync -->
+            <div v-else-if="activeKey === 'calendarSync'" class="card" data-testid="calendar-sync-card">
+              <div class="settings-section-body">
+                <div v-if="!isProOrTeam" class="settings-row" data-testid="calendar-sync-lockout">
+                  <span class="settings-value">Google Calendar sync is available on Pro and Team plans.</span>
+                  <Btn variant="primary" size="sm" data-testid="calendar-sync-upgrade" @click="paymentsEnabled ? onUpgradeCalendarSync() : onContactSupport()">{{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}</Btn>
+                </div>
+
+                <template v-else>
+                  <div v-if="gcal.loading && !gcal.loaded" class="settings-loading">
+                    <Spinner :size="16" />
+                    <span>Loading...</span>
+                  </div>
+
+                  <div v-else-if="!gcal.connected || gcal.reauth" class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                    <span class="text-body-s settings-hint">Show your scheduled actions in Google Calendar. Reschedules made on either side sync both ways.</span>
+                    <Btn variant="primary" size="sm" :loading="gcal.acting" :disabled="gcal.acting" data-testid="calendar-sync-connect" @click="onConnectCalendar">{{ calendarNeedsReconnect ? 'Reconnect Google Calendar' : 'Connect Google Calendar' }}</Btn>
+                  </div>
+
+                  <template v-else>
+                    <!-- Selected calendar removed in Google: sync paused -->
+                    <div v-if="gcal.missing" class="settings-row" :class="{ 'settings-row--column': isMobile }" data-testid="calendar-sync-missing">
+                      <span class="text-body-s settings-hint">Sync is paused and your actions are unchanged. Re-create the WhatsNextAction calendar or pick another calendar.</span>
+                      <Btn variant="primary" size="sm" :loading="gcal.savingCalendar" :disabled="gcal.savingCalendar" data-testid="calendar-sync-recreate" @click="onCreateWnaCalendar">Re-create calendar</Btn>
+                    </div>
+
+                    <div class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                      <span class="settings-label">Calendar</span>
+                      <div class="settings-control" :class="{ 'settings-control--saving': gcal.savingCalendar }">
+                        <span v-if="gcal.savingCalendar" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                        <Select v-model="selectedCalendar" :options="calendarOptions" title="Calendar" data-testid="calendar-sync-picker" />
+                      </div>
+                    </div>
+
+                    <div class="settings-row">
+                      <div>
+                        <span class="settings-label">Timezone</span>
+                        <p class="text-body-s settings-hint" data-testid="calendar-sync-timezone">Timed events use your timezone, {{ timezoneLabel }}.</p>
+                      </div>
+                      <Btn variant="ghost" size="sm" data-testid="calendar-sync-timezone-change" @click="router.push({ name: 'settings', query: { section: 'application' } })">Change</Btn>
+                    </div>
+
+                    <div class="settings-row">
+                      <span class="settings-label">What syncs</span>
+                      <Btn variant="ghost" size="sm" data-testid="calendar-sync-learn-more" @click="showWhatSyncs = true">Learn more</Btn>
+                    </div>
+
+                    <div class="settings-row">
+                      <span class="settings-label">Sync now</span>
+                      <Btn variant="secondary" size="sm" :loading="gcal.syncing" :disabled="gcal.syncing" data-testid="calendar-sync-now" @click="onSyncCalendarNow">Sync now</Btn>
+                    </div>
+
+                    <div class="settings-row">
+                      <span class="settings-label">Disconnect</span>
+                      <Btn variant="ghost-danger" size="sm" :loading="gcal.acting" :disabled="gcal.acting" data-testid="calendar-sync-disconnect" @click="onDisconnectCalendar">Disconnect</Btn>
+                    </div>
+                  </template>
+                </template>
+              </div>
+            </div>
+
+            <!-- Storage -->
+            <div v-else-if="activeKey === 'storage'" class="card" data-testid="drive-card">
+              <div class="settings-section-body">
+                <div v-if="drive.loading && !drive.loaded" class="settings-loading">
+                  <Spinner :size="16" />
+                  <span>Loading...</span>
+                </div>
+
+                <template v-else>
+                  <div v-if="!drive.connected" class="settings-row" :class="{ 'settings-row--column': isMobile }">
+                    <span class="text-body-s settings-hint">Store your reference files and attachments in your own Google Drive. Files saved there don't count toward your storage limit.</span>
+                    <Btn variant="primary" size="sm" :loading="drive.acting" :disabled="drive.acting" data-testid="drive-connect" @click="onConnectDrive">Connect Google Drive</Btn>
+                  </div>
+
+                  <div v-else-if="drive.email" class="settings-row">
+                    <span class="settings-label">Google Drive</span>
+                    <span class="settings-value settings-email">{{ drive.email }}</span>
+                  </div>
+
+                  <div class="settings-row">
+                    <span class="settings-label">Save attachments to</span>
+                    <div class="settings-control" :class="{ 'settings-control--saving': drive.savingDestination }">
+                      <span v-if="drive.savingDestination" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <SegmentSwitch v-model="attachmentsDestination" :options="destinationOptions" :disabled="!drive.connected" />
+                    </div>
+                  </div>
+
+                  <div v-if="drive.connected" class="settings-row">
+                    <span class="settings-label">Disconnect</span>
+                    <Btn variant="ghost-danger" size="sm" :loading="drive.acting" :disabled="drive.acting" data-testid="drive-disconnect" @click="onDisconnectDrive">Disconnect</Btn>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
+
+      <Modal :visible="showDeleteModal" title="Delete account" @close="closeDeleteModal">
+        <div class="delete-account-body" data-testid="delete-account-modal">
+          <p class="text-body-m color-text-secondary">This permanently deletes your account and everything in it, including the projects you share with others. This can't be undone.</p>
+          <p v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="text-body-m color-text-secondary">Your paid subscription is cancelled too.</p>
+          <p v-if="assistant.enabled.value && assistant.state.account?.purchased_left > 0" class="text-body-m color-text-secondary" data-testid="delete-account-ai-credits">Your unused extra AI credits are lost too.</p>
+          <p class="text-body-m color-text-secondary">To confirm, type <strong class="delete-account-email color-text-primary">{{ userEmail }}</strong> below.</p>
+          <Inpt ref="deleteEmailInput" v-model="deleteEmail" type="email" placeholder="Enter your email address"
+                data-testid="delete-account-email" @enter="onDeleteAccount" />
+        </div>
+        <template #actions>
+          <Btn variant="secondary" size="sm" :disabled="deletingAccount" @click="closeDeleteModal">Cancel</Btn>
+          <Btn variant="danger" size="sm" :disabled="!deleteEmailMatches" :loading="deletingAccount"
+               data-testid="delete-account-confirm" @click="onDeleteAccount">Delete account</Btn>
+        </template>
+      </Modal>
+
+      <AssistantMemoryModal :visible="showMemoryModal" @close="showMemoryModal = false" />
+
+      <Modal :visible="gcal.offerCreate" title="WhatsNextAction calendar" @close="onDeclineWnaCalendar">
+        <div class="text-body-m color-text-secondary" data-testid="calendar-sync-create-modal">Create a WhatsNextAction calendar in your Google account and sync your scheduled actions there? Events you create in that calendar in Google become actions in WNA. You can change the calendar at any time.</div>
+        <template #actions>
+          <Btn variant="secondary" size="sm" data-testid="calendar-sync-create-no" @click="onDeclineWnaCalendar">No</Btn>
+          <Btn variant="primary" size="sm" data-testid="calendar-sync-create-yes" @click="onAcceptWnaCalendar">Yes</Btn>
+        </template>
+      </Modal>
+
+      <Modal :visible="showWhatSyncs" title="What syncs" max-width="480px" @close="showWhatSyncs = false">
+        <p class="text-body-m color-text-secondary" data-testid="calendar-sync-what-syncs">Scheduled actions in Next, Today, Calendar and Waiting For: title, description, date and time. Changes made in Google to these events come back to WNA, and deleting one in Google moves its action to Trash. In the WhatsNextAction calendar, events you create in Google become scheduled actions, and each occurrence of a recurring event in the next 30 days becomes its own action. Due dates, start dates and your other Google events do not sync. Completing or trashing an action removes its event.</p>
+        <template #actions>
+          <Btn variant="secondary" size="sm" @click="showWhatSyncs = false">Close</Btn>
+        </template>
+      </Modal>
 
       <!-- Change Password Modal -->
       <Teleport to="body" v-if="showPasswordModal">
@@ -890,6 +816,9 @@
 import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SearchIcon from '../../assets/SearchIcon.vue'
+import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
+import Badge from '../../components/Badge.vue'
+import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
@@ -927,7 +856,7 @@ const notifications = notificationModel()
 const theme = themeModel()
 
 const { stats, loadStats } = statsModel()
-const { paymentsEnabled, hasFlag } = flagsModel()
+const { paymentsEnabled, hasFlag, loaded: flagsLoaded } = flagsModel()
 const payment = paymentModel()
 const assistant = assistantModel()
 
@@ -945,53 +874,113 @@ function toggleSearch() {
   }
 }
 
-const SECTION_KEYWORDS = {
-  account: 'account email password login delete remove',
-  plan: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice',
-  assistant: 'ai assistant credits buy pack model memory conversation',
-  emailInbox: 'email inbox capture address forward generate reset pause',
-  sessions: 'sessions devices logout active current',
-  aiApps: 'ai apps mcp claude chatgpt connector connected assistant',
-  application: 'application theme dark light position new items timezone time zone',
-  tags: 'tags presets quick add',
-  calendar: 'calendar week start time format business hours days',
-  calendarSync: 'calendar sync google connect disconnect reconnect sync now events timezone',
-  storage: 'storage google drive connect disconnect reconnect attachments reference files local',
-  review: 'reflect review weekly sidebar horizons focus areas goals vision purpose',
-  notifications: 'notifications email reminder daily digest next actions project announcements push web browser device phone',
-  about: 'about version',
+const GROUPS = [
+  { key: 'account', title: 'Account' },
+  { key: 'preferences', title: 'Preferences' },
+  { key: 'integrations', title: 'Integrations' },
+]
+
+// Order = menu / index order; keywords = search terms (case-insensitive substring)
+const SECTIONS = [
+  { group: 'account', key: 'account', title: 'Account', description: 'Your sign-in email and password.',
+    keywords: 'account email password login delete remove' },
+  { group: 'account', key: 'plan', title: 'Plan', description: 'Your plan and what you use of it.',
+    keywords: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice' },
+  { group: 'account', key: 'assistant', title: 'AI Assistant', description: 'Credits, model and memory of the built-in assistant.',
+    keywords: 'ai assistant credits buy pack model memory conversation' },
+  { group: 'account', key: 'sessions', title: 'Sessions', description: 'Devices signed in to your account.',
+    keywords: 'sessions devices logout active current' },
+  { group: 'preferences', key: 'application', title: 'Application', description: 'How WhatsNextAction looks and works for you.',
+    keywords: 'application theme dark light system position new items top bottom timezone time zone tags presets quick add reflect review weekly sidebar horizons focus areas goals vision purpose about version' },
+  { group: 'preferences', key: 'calendar', title: 'Calendar', description: 'Your week and working hours.',
+    keywords: 'calendar week start time format business hours days' },
+  { group: 'preferences', key: 'notifications', title: 'Notifications', description: 'What we tell you, by email and on the web.',
+    keywords: 'notifications email reminder daily digest next actions project announcements push web browser device phone' },
+  { group: 'integrations', key: 'emailInbox', title: 'Email to Inbox', description: 'Forward emails straight into your Inbox.',
+    keywords: 'email inbox capture address forward generate reset pause' },
+  { group: 'integrations', key: 'aiApps', title: 'AI Apps', description: 'Use your data from Claude, ChatGPT and other AI apps.',
+    keywords: 'ai apps mcp claude chatgpt connector connected assistant' },
+  { group: 'integrations', key: 'calendarSync', title: 'Calendar Sync', description: 'Two-way sync with Google Calendar.',
+    keywords: 'calendar sync google connect disconnect reconnect sync now events timezone' },
+  { group: 'integrations', key: 'storage', title: 'Storage', description: 'Keep files in your own Google Drive.',
+    keywords: 'storage google drive connect disconnect reconnect attachments reference files local' },
+]
+
+// Links to merged or renamed sections; the Paywiser checkout returns to /settings/billing
+const SECTION_ALIASES = { billing: 'plan', review: 'application', tags: 'application', about: 'application' }
+
+function available(key) {
+  switch (key) {
+    case 'plan':
+    case 'emailInbox': return !!tier.value
+    case 'assistant': return assistant.enabled.value
+    case 'calendarSync': return !!tier.value && hasFlag('calendar')
+    case 'storage': return !!tier.value && hasFlag('drive')
+    default: return true
+  }
 }
 
-function sectionVisible(name) {
-  if (!searchQuery.value.trim()) return true
-  const q = searchQuery.value.toLowerCase()
-  return SECTION_KEYWORDS[name]?.includes(q) ?? false
-}
-
-function onSearchInput() {
+const visibleSections = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
-  if (q) {
-    for (const name in SECTION_KEYWORDS) {
-      if (SECTION_KEYWORDS[name].includes(q)) {
-        expandedSections.value.add(name)
-      }
-    }
-  }
+  return SECTIONS.filter(s => available(s.key) && (!q || s.keywords.includes(q)))
+})
+
+const visibleGroups = computed(() => GROUPS
+    .map(group => ({ ...group, sections: visibleSections.value.filter(s => s.group === group.key) }))
+    .filter(group => group.sections.length))
+
+// ≤ 1024px: an index screen and one screen per section; wider: a menu beside the section pane
+const compactQuery = window.matchMedia('(max-width: 1024px)')
+const isCompact = ref(compactQuery.matches)
+
+function onCompactChange(e) {
+  isCompact.value = e.matches
 }
 
-// Collapsible sections — all expanded by default
-const expandedSections = ref(new Set(Object.keys(SECTION_KEYWORDS)))
+const requestedSection = computed(() => {
+  const key = route.query.section
+  if (typeof key !== 'string') return null
+  const resolved = SECTION_ALIASES[key] || key
+  return SECTIONS.some(s => s.key === resolved) ? resolved : null
+})
 
-function toggleSection(name) {
-  if (expandedSections.value.has(name)) {
-    expandedSections.value.delete(name)
-  } else {
-    expandedSections.value.add(name)
-  }
+// Flag-gated sections are unknown until the public flags load (the Google connect return lands before that)
+const sectionPending = computed(() =>
+    !!requestedSection.value && !available(requestedSection.value) && !flagsLoaded.value)
+
+const activeKey = computed(() => {
+  if (requestedSection.value && available(requestedSection.value)) return requestedSection.value
+  if (sectionPending.value || isCompact.value) return null
+  return 'account'
+})
+
+const activeSection = computed(() => SECTIONS.find(s => s.key === activeKey.value) || null)
+
+const showIndex = computed(() => !isCompact.value || (!activeKey.value && !sectionPending.value))
+
+function openSection(key) {
+  const to = { name: 'settings', query: { section: key } }
+  if (isCompact.value) router.push(to)
+  else router.replace(to)
 }
 
-function isExpanded(name) {
-  return expandedSections.value.has(name)
+function onSearchEnter() {
+  if (visibleSections.value.length) openSection(visibleSections.value[0].key)
+}
+
+function backToIndex() {
+  router.push({ name: 'settings' })
+}
+
+// Auto-hiding scrollbar
+const paneScroll = ref(null)
+const scrollingArea = ref(null)
+let areaScrollTimer = null
+
+function onAreaScroll(area) {
+  scrollingArea.value = area
+  clearTimeout(areaScrollTimer)
+  areaScrollTimer = setTimeout(() => { scrollingArea.value = null }, 1000)
 }
 
 // User data
@@ -1018,6 +1007,17 @@ function formatBytes(bytes) {
 // Payment & billing
 const hasActiveSubscription = computed(() =>
     payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))
+
+const planHint = computed(() => {
+  if (hasActiveSubscription.value) {
+    return `${payment.state.cancelAtPeriodEnd ? 'Access until' : 'Renews on'} ${formatBillingDate(payment.state.expiresAt)}`
+  }
+  return tier.value === 'free' ? 'Unlock Pro or Team features' : ''
+})
+
+// A paid tier granted without a subscription (admin) gets no upgrade
+const planUpgrade = computed(() =>
+    tier.value === 'free' && !hasActiveSubscription.value && (!paymentsEnabled.value || payment.state.loaded))
 
 // Post-checkout convergence — poll numbers homed in wna_orchestration/contracts/limits.md
 const CONVERGE_POLL_MS = 2000
@@ -1325,6 +1325,8 @@ const gcal = reactive({
 })
 
 const calendarNeedsReconnect = computed(() => gcal.reauth)
+const showWhatSyncs = ref(false)
+const timezoneLabel = computed(() => (settings.state.timezone || 'UTC').replace(/_/g, ' '))
 
 const CREATE_WNA_CALENDAR = 'create-wna-calendar'
 
@@ -1502,8 +1504,8 @@ const drive = reactive({
 })
 
 const destinationOptions = [
-  { value: 'local', label: 'Local' },
-  { value: 'gdrive', label: 'Google Drive' },
+  { value: 'local', label: 'Local', testid: 'drive-destination-local' },
+  { value: 'gdrive', label: 'Google Drive', testid: 'drive-destination-gdrive' },
 ]
 
 const attachmentsDestination = computed({
@@ -1582,6 +1584,27 @@ async function onSelectDestination(value) {
   }
 }
 
+// Status badge beside the section title
+const sectionStatus = computed(() => {
+  switch (activeKey.value) {
+    case 'emailInbox':
+      if (!isProOrTeam.value) return { type: 'primary', label: 'Pro' }
+      if (!inbox.address) return null
+      return inbox.enabled ? { type: 'active', label: 'On' } : { type: 'pending', label: 'Paused' }
+    case 'calendarSync':
+      if (!isProOrTeam.value) return { type: 'primary', label: 'Pro' }
+      if (gcal.loading && !gcal.loaded) return null
+      if (gcal.reauth) return { type: 'failed', label: 'Reconnect needed' }
+      if (!gcal.connected) return { type: 'draft', label: 'Not connected' }
+      return gcal.missing ? { type: 'failed', label: 'Calendar removed' } : { type: 'active', label: 'Connected' }
+    case 'storage':
+      if (drive.loading && !drive.loaded) return null
+      return drive.connected ? { type: 'active', label: 'Connected' } : { type: 'draft', label: 'Not connected' }
+    default:
+      return null
+  }
+})
+
 function onUpgradeCalendarSync() {
   upgradeModel().show({
     message: 'Google Calendar sync is available on Pro and Team plans. Upgrade to see your scheduled actions in Google Calendar and keep reschedules in sync both ways.',
@@ -1598,9 +1621,9 @@ const themeMode = computed({
 })
 
 const themeModeOptions = [
-  { value: 'system', label: 'System Default' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' }
+  { value: 'system', label: 'System', testid: 'settings-theme-system' },
+  { value: 'light', label: 'Light', testid: 'settings-theme-light' },
+  { value: 'dark', label: 'Dark', testid: 'settings-theme-dark' }
 ]
 
 const addPosition = computed({
@@ -1719,8 +1742,8 @@ async function onDeviceToggle(e) {
 }
 
 const positionOptions = [
-  { value: 'end', label: 'End' },
-  { value: 'beginning', label: 'Beginning' }
+  { value: 'beginning', label: 'Top', testid: 'settings-position-beginning' },
+  { value: 'end', label: 'Bottom', testid: 'settings-position-end' }
 ]
 
 // Calendar preferences - computed from settings model
@@ -1730,8 +1753,8 @@ const weekStart = computed({
 })
 
 const weekStartOptions = [
-  { value: 'mon', label: 'Monday' },
-  { value: 'sun', label: 'Sunday' },
+  { value: 'mon', label: 'Monday', testid: 'settings-weekstart-mon' },
+  { value: 'sun', label: 'Sunday', testid: 'settings-weekstart-sun' },
 ]
 
 const timeFormat = computed({
@@ -1755,8 +1778,8 @@ const businessDays = computed({
 })
 
 const timeFormatOptions = [
-  { value: '12h', label: '12-hour (AM/PM)' },
-  { value: '24h', label: '24-hour' }
+  { value: '24h', label: '24-hour', testid: 'settings-timeformat-24h' },
+  { value: '12h', label: '12-hour', testid: 'settings-timeformat-12h' }
 ]
 
 const hourOptions = computed(() => Array.from({ length: 24 }, (_, i) => ({
@@ -1823,6 +1846,7 @@ const canChangePassword = computed(() => {
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
+  compactQuery.addEventListener('change', onCompactChange)
   loadStats() // deep-linked /settings may mount before the sidebar populates stats
   loadSessions()
   loadAiApps()
@@ -1841,7 +1865,6 @@ onMounted(() => {
   loadPaymentStatus()
   loadAssistant()
 
-  applySectionQuery()
   applyCheckoutReturn()
 })
 
@@ -1876,42 +1899,15 @@ watch(driveEnabled, (enabled) => {
   if (enabled && !drive.loaded) loadDriveStorage()
 })
 
-watch(() => route.query.section, applySectionQuery)
-
-function applySectionQuery() {
-  let target = route.query.section
-  if (target === 'billing') target = 'plan'   // Paywiser checkout returns to /settings/billing
-  if (typeof target === 'string' && SECTION_KEYWORDS[target]) {
-    expandedSections.value.add(target)
-    nextTick(() => scrollToSection(target))
-  }
-}
-
-// Only the settings list scrolls (scrollIntoView would also shift the layout's overflow-hidden containers). Sections
-// above load at their own pace, so the card is held at the top until the user touches the list or 5 s pass
-function scrollToSection(name) {
-  const card = document.querySelector(`.settings-page [data-section="${name}"]`)
-  const body = card?.closest('.settings-body')
-  if (!body) return
-  const until = Date.now() + 5000
-  let held = true
-  const release = () => { held = false }
-  const events = ['wheel', 'touchstart', 'pointerdown', 'keydown']
-  events.forEach(type => body.addEventListener(type, release, { once: true, passive: true }))
-  const align = () => {
-    if (!held || Date.now() > until || !card.isConnected) {
-      events.forEach(type => body.removeEventListener(type, release))
-      return
-    }
-    body.scrollTop += card.getBoundingClientRect().top - body.getBoundingClientRect().top
-    requestAnimationFrame(align)
-  }
-  align()
-}
+watch(activeKey, () => {
+  nextTick(() => { if (paneScroll.value) paneScroll.value.scrollTop = 0 })
+})
 
 onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
+  compactQuery.removeEventListener('change', onCompactChange)
   if (copiedTimer) clearTimeout(copiedTimer)
+  clearTimeout(areaScrollTimer)
 })
 
 function checkMobile() {
@@ -1930,17 +1926,6 @@ async function loadSessions() {
   } finally {
     loadingSessions.value = false
   }
-}
-
-function getDeviceIcon(session) {
-  const device = (session.device || '').toLowerCase()
-  if (device.includes('mobile') || device.includes('iphone') || device.includes('android')) {
-    return '📱'
-  }
-  if (device.includes('tablet') || device.includes('ipad')) {
-    return '📱'
-  }
-  return '💻'
 }
 
 const LOGIN_METHOD_LABELS = {
@@ -2173,31 +2158,6 @@ async function onLogout() {
   height: 100%;
 }
 
-.card-header--toggle {
-  cursor: pointer;
-  user-select: none;
-}
-
-.card-header--toggle:only-child {
-  border-bottom: none !important;
-}
-
-.card-header--toggle:hover {
-  background: var(--color-bg-secondary);
-}
-
-.section-chevron {
-  font-size: 18px;
-  color: var(--color-text-tertiary);
-  transition: transform 0.15s ease;
-  transform: rotate(0deg);
-  line-height: 1;
-}
-
-.section-chevron--open {
-  transform: rotate(90deg);
-}
-
 .settings-header {
   flex-shrink: 0;
   padding: 0 16px;
@@ -2206,6 +2166,7 @@ async function onLogout() {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-height: 38px;
 }
 
 .settings-header h1 {
@@ -2258,27 +2219,218 @@ async function onLogout() {
   height: 18px;
 }
 
-.settings-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 0 20px;
-  touch-action: pan-y;
+/* Back link of a section screen — the detail-page back look */
+.settings-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-link-text);
 }
 
-/* Section title in card header */
-.settings-section-title {
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--font-family-default);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 13px;
+.settings-back-arrow {
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.settings-back:hover {
+  color: var(--color-link-hover);
+}
+
+.settings-back:hover .settings-back-arrow {
+  background: var(--color-bg-secondary);
+}
+
+/* Menu beside the pane; each scrolls on its own */
+.settings-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 32px;
+}
+
+.settings-scroll {
+  overflow-y: auto;
+  min-height: 0;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.settings-scroll.scrolling {
+  scrollbar-color: var(--color-border-light) transparent;
+}
+
+.settings-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.settings-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.settings-scroll.scrolling::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
+}
+
+.settings-nav {
+  flex: 0 0 220px;
+  padding-bottom: 20px;
+}
+
+.settings-nav-group + .settings-nav-group {
+  margin-top: 20px;
+}
+
+.settings-group-title {
+  display: block;
+  padding: 0 16px 6px;
+  color: var(--color-text-secondary);
+}
+
+.settings-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.settings-nav-item:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.settings-nav-item--active,
+.settings-nav-item--active:hover {
+  background: var(--color-action-subtle);
   color: var(--color-action);
+  font-weight: var(--font-weight-semibold);
+}
+
+.settings-nav-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-nav .settings-empty {
+  padding: 12px 16px;
+}
+
+.settings-pane-scroll {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 20px;
+}
+
+.settings-pane {
+  max-width: var(--section-max-width);
+}
+
+.settings-pane-head {
+  margin-bottom: 16px;
+}
+
+.settings-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-section-title {
   margin: 0;
+  color: var(--color-text-primary);
+}
+
+.settings-section-description {
+  margin: 4px 0 0;
 }
 
 .settings-section-body {
   padding: 0 20px;
+}
+
+.settings-version {
+  margin: 12px 0 0;
+  padding: 0 20px;
+}
+
+/* ≤ 1024px: index screen (Weekly Review step-row look) and one screen per section */
+.settings-page--compact .settings-layout {
+  flex-direction: column;
+}
+
+.settings-page--compact .settings-nav,
+.settings-page--compact .settings-pane-scroll {
+  flex: 1;
+}
+
+.settings-page--compact .settings-nav-list {
+  gap: 0;
+  margin-bottom: 0;
+}
+
+.settings-page--compact .settings-nav-item {
+  padding: 16px 20px;
+  border-radius: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  color: inherit;
+}
+
+.settings-page--compact .settings-nav-item:first-child {
+  border-top: none;
+}
+
+.settings-page--compact .settings-nav-item:hover {
+  background: var(--color-bg-row-hover);
+}
+
+.settings-nav-title {
+  font-size: var(--font-size-body-s);
+  color: var(--color-text-primary-dark);
+}
+
+.settings-nav-chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.settings-page--compact .settings-group-title {
+  padding: 0 4px 8px;
+}
+
+.settings-page--compact .settings-pane-head {
+  padding: 0 4px;
+}
+
+.settings-page--compact .settings-section-title {
+  color: var(--color-action-dark);
 }
 
 /* Rows */
@@ -2286,8 +2438,21 @@ async function onLogout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   padding: 14px 0;
   border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.settings-row > .base-btn {
+  flex-shrink: 0;
+}
+
+.settings-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
 }
 
 .settings-row:last-child {
@@ -2302,6 +2467,18 @@ async function onLogout() {
 .settings-value {
   font-size: 14px;
   color: var(--color-text-secondary);
+}
+
+.settings-email {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.settings-hours {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .settings-control {
@@ -2336,11 +2513,6 @@ async function onLogout() {
   min-width: 0;
 }
 
-/* The hint wraps, the button keeps one line */
-.assistant-buy-btn {
-  flex-shrink: 0;
-}
-
 .delete-account-body {
   display: flex;
   flex-direction: column;
@@ -2358,19 +2530,6 @@ async function onLogout() {
 .settings-hint {
   color: var(--color-text-tertiary);
   line-height: var(--lh-normal);
-}
-
-.settings-tags-display {
-  cursor: pointer;
-  padding: 4px 0;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.settings-tags-display:hover {
-  background: var(--color-bg-secondary);
 }
 
 .settings-tags-chips {
@@ -2394,11 +2553,6 @@ async function onLogout() {
   line-height: 1.3;
 }
 
-.settings-tag-placeholder {
-  color: var(--color-text-tertiary);
-  font-style: italic;
-}
-
 .settings-tag-actions {
   display: flex;
   gap: 8px;
@@ -2412,8 +2566,7 @@ async function onLogout() {
 }
 
 .settings-info-note {
-  margin-top: 8px;
-  font-style: italic;
+  margin: 8px 0 16px;
 }
 
 /* Notifications: one row per event, an Email and a Web toggle column; rows 1–2 keep their toggle under Web */
@@ -2446,12 +2599,7 @@ async function onLogout() {
   padding-right: 16px;
 }
 
-/* Email to Inbox */
-.email-locked,
-.email-valueprop {
-  line-height: var(--lh-normal);
-}
-
+/* Email to Inbox, AI Apps: the address to copy */
 .email-address-row {
   display: flex;
   align-items: center;
@@ -2463,6 +2611,9 @@ async function onLogout() {
 .email-address {
   flex: 1;
   min-width: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--color-bg-secondary);
   font-family: var(--font-family-mono);
   word-break: break-all;
 }
@@ -2514,10 +2665,6 @@ async function onLogout() {
   border-bottom: none;
 }
 
-.session-item--current {
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
 .session-info {
   display: flex;
   flex-direction: column;
@@ -2530,19 +2677,8 @@ async function onLogout() {
   gap: 8px;
 }
 
-.session-icon {
-  font-size: var(--font-size-md);
-}
-
 .session-name {
   color: var(--color-text-primary);
-}
-
-.session-badge {
-  color: var(--color-action);
-  background: var(--color-action-subtle);
-  padding: 2px 6px;
-  border-radius: 4px;
 }
 
 .session-details {
@@ -2559,11 +2695,6 @@ async function onLogout() {
 
 .session-separator {
   color: var(--color-text-tertiary);
-}
-
-/* The address row follows the last app, so that row keeps its divider */
-.ai-apps-list .session-item:last-child {
-  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 /* Toggle switch */
@@ -2747,17 +2878,39 @@ async function onLogout() {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .settings-body {
-    padding: 12px;
+  .settings-header {
+    padding: 0 12px;
+  }
+
+  .settings-pane-scroll,
+  .settings-nav {
+    padding: 0 12px 12px;
   }
 
   .settings-row {
     padding: 12px 0;
   }
 
-  .session-item--current {
-    margin: 0 -8px;
-    padding: 12px 8px;
+  .settings-row--column .settings-control {
+    width: 100%;
+  }
+
+  .settings-row--column .settings-control :deep(.select-wrapper) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .settings-row--column .settings-control :deep(.select-trigger) {
+    width: 100%;
+  }
+
+  .settings-row--column .settings-control :deep(.segment-switch) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .settings-row--column .settings-control :deep(.segment-switch__option) {
+    flex: 1;
   }
 
   .session-name {

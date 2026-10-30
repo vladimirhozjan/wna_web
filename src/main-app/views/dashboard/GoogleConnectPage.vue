@@ -52,10 +52,12 @@ onMounted(async () => {
   const returnPath = takeReturnPath()
   if (returnPath) {
     router.replace(returnPath)
-  } else if (connected && route.params.feature === 'calendar') {
-    router.replace({name: 'settings', query: {section: 'calendarSync', calendar: 'connected'}})
   } else {
-    router.replace({name: 'settings'})
+    const drive = route.params.feature === 'drive'
+    router.replace({name: 'settings', query: {
+      section: drive ? 'storage' : 'calendarSync',
+      ...(connected && !drive ? {calendar: 'connected'} : {}),
+    }})
   }
 })
 </script>

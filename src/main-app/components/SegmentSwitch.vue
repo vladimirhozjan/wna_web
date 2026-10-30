@@ -1,5 +1,5 @@
 <template>
-  <div class="segment-switch" role="tablist">
+  <div class="segment-switch" :class="{ 'segment-switch--disabled': disabled }" role="tablist">
     <button
         v-for="option in options"
         :key="option.value"
@@ -9,6 +9,7 @@
         :aria-selected="modelValue === option.value"
         :data-testid="option.testid"
         type="button"
+        :disabled="disabled"
         @click="$emit('update:modelValue', option.value)"
     >
       {{ option.label }}
@@ -25,6 +26,10 @@ defineProps({
   modelValue: {
     type: String,
     default: '',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -51,11 +56,20 @@ defineEmits(['update:modelValue'])
   white-space: nowrap;
 }
 
+.segment-switch--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.segment-switch--disabled .segment-switch__option {
+  cursor: not-allowed;
+}
+
 .segment-switch__option:focus {
   outline: none;
 }
 
-.segment-switch__option:hover:not(.segment-switch__option--active) {
+.segment-switch__option:hover:not(.segment-switch__option--active):not(:disabled) {
   color: var(--color-text-secondary);
   background: var(--color-bg-hover);
 }

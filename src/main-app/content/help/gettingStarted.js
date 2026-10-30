@@ -97,12 +97,12 @@ export const gettingStarted = [
   {
     title: 'Upgrading Your Plan',
     description:
-      'Open Settings and use Update plan → Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, agree to the Terms of Service, and tap Subscribe and pay to continue to our payment provider\'s secure checkout, where you enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period. Upgrading also lifts the Free limits — a project brainstorm, for example, holds up to 50 ideas on Free and up to 1000 on Pro and Team.',
+      'Open Settings → Plan and tap Upgrade (or pick a plan on the Pricing page). Choose Pro or Team, monthly or yearly, enter your billing address, agree to the Terms of Service, and tap Subscribe and pay to continue to our payment provider\'s secure checkout, where you enter your card. Prices are in EUR and include VAT. Once the payment is confirmed your new plan is active right away, and an invoice is emailed to you. Your subscription renews automatically; you can cancel it at any time from Settings and keep your plan until the end of the paid period. Upgrading also lifts the Free limits — a project brainstorm, for example, holds up to 50 ideas on Free and up to 1000 on Pro and Team.',
   },
   {
     title: 'Customizing Your Settings',
     description:
-      'Visit Settings to personalize the app. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your tag presets for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review and Horizons of Focus, manage notifications, change your password, review active sessions, delete your account, and manage your plan and billing from here. Changes save automatically.',
+      'Visit Settings to personalize the app. Settings are grouped into Account, Preferences and Integrations. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your quick-add tags for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review and Horizons of Focus, manage notifications, change your password, review active sessions, delete your account, and manage your plan and billing from here. Changes save automatically.',
   },
   {
     title: 'Connecting an AI App',
