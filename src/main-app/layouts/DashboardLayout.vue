@@ -88,6 +88,7 @@ import { connectionModel } from "../scripts/models/connectionModel.js";
 import { assistantModel } from "../scripts/models/assistantModel.js";
 import { notificationModel } from "../scripts/models/notificationModel.js";
 import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
+import { focusWithoutReveal } from "../scripts/core/visualViewport.js";
 import router from "../router/router.js";
 
 const FAB_HIDDEN_ROUTES = new Set(["share", "project-canvas"]);
@@ -117,11 +118,7 @@ function fabExpand() {
   window.addEventListener("scroll", resetWindowScroll);
   nextTick(() => {
     const input = fabBarRef.value?.input();
-    if (!input) return;
-    // iOS scrolls the page to reveal a focused input near the bottom; focusing it while shifted off-screen prevents that.
-    input.style.transform = "translateY(-2000px)";
-    input.focus();
-    requestAnimationFrame(() => { input.style.transform = ""; });
+    if (input) focusWithoutReveal(input);
   });
 }
 

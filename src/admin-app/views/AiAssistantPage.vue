@@ -113,6 +113,13 @@
             title="Conversation part (tokens)"
             :disabled="modelSaving"
         />
+        <Inpt
+            v-model="modelForm.max_output_tokens"
+            v-model:error="modelErrors.max_output_tokens"
+            type="number"
+            title="Output per call (tokens)"
+            :disabled="modelSaving"
+        />
         <Inpt v-model="modelForm.price_in_eur_per_mtok" type="text" title="Price in (€ per 1M tokens)" :disabled="modelSaving" />
         <Inpt v-model="modelForm.price_cached_in_eur_per_mtok" type="text" title="Price cached in (€ per 1M tokens)" :disabled="modelSaving" />
         <Inpt v-model="modelForm.price_out_eur_per_mtok" type="text" title="Price out (€ per 1M tokens)" :disabled="modelSaving" />
@@ -167,6 +174,7 @@ const modelColumns = [
   { key: 'credits_per_request', label: 'Credits per request' },
   { key: 'context_tokens', label: 'Context per round (tokens)' },
   { key: 'conversation_tokens', label: 'Conversation part (tokens)' },
+  { key: 'max_output_tokens', label: 'Output per call (tokens)' },
   { key: 'avg_cost_eur_30d', label: 'Avg cost per request, last 30 days (€)' },
   { key: 'requests_30d', label: 'Requests, last 30 days' },
 ]
@@ -190,7 +198,7 @@ const tierSaving = ref(false)
 const showModelModal = ref(false)
 const editingModel = ref(null)
 const modelForm = reactive({})
-const modelErrors = reactive({ model_id: '', credits_per_request: '', conversation_tokens: '' })
+const modelErrors = reactive({ model_id: '', credits_per_request: '', conversation_tokens: '', max_output_tokens: '' })
 const modelFormError = ref('')
 const modelSaving = ref(false)
 
@@ -201,8 +209,8 @@ const packFormError = ref('')
 const packSaving = ref(false)
 
 const MODEL_FIELDS = ['display_name', 'credits_per_request', 'context_tokens', 'conversation_tokens',
-  'price_in_eur_per_mtok', 'price_cached_in_eur_per_mtok', 'price_out_eur_per_mtok']
-const INT_FIELDS = ['credits_per_request', 'context_tokens', 'conversation_tokens']
+  'max_output_tokens', 'price_in_eur_per_mtok', 'price_cached_in_eur_per_mtok', 'price_out_eur_per_mtok']
+const INT_FIELDS = ['credits_per_request', 'context_tokens', 'conversation_tokens', 'max_output_tokens']
 
 // error code → [field it shows under (null = modal), copy]
 function modelErrorFor(err) {
@@ -210,6 +218,7 @@ function modelErrorFor(err) {
     case 'default_must_be_offered': return [null, 'The default model must be offered.']
     case 'invalid_credits': return ['credits_per_request', 'Credits per request must be a whole number of at least 1.']
     case 'invalid_context': return ['conversation_tokens', 'Conversation part must be above 0 and below context per round.']
+    case 'invalid_output_tokens': return ['max_output_tokens', 'Output per call must be a whole number of at least 1.']
     case 'model_rejected': return ['model_id', `Scaleway refused this model: ${err.detail || ''}. Check the id against the Scaleway model catalog.`]
     case 'unsupported_model_id': return ['model_id', "This model id isn't supported yet."]
     case 'model_exists': return ['model_id', 'This model is already in the list.']

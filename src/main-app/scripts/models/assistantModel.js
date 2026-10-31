@@ -264,6 +264,9 @@ export function assistantModel() {
         if (!state.panelOpen && data.status === 'done') {
             toaster.success(msg?.summary ? `AI assistant is done: ${msg.summary}` : 'AI assistant is done')
         }
+        if (!state.panelOpen && data.status === 'error') {
+            toaster.push('The AI assistant couldn\'t finish your request. Open the assistant to see why.', 'error')
+        }
         loadAccount().catch(() => {})
     }
 

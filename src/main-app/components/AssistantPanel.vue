@@ -8,8 +8,9 @@
           :style="panelStyle"
           data-testid="assistant-panel"
           @keydown.esc="close"
+          @touchmove="onPanelTouchMove"
       >
-        <header class="assistant-panel__header">
+        <header class="assistant-panel__header" data-testid="assistant-panel-header">
           <AiIcon class="assistant-panel__ai-icon" />
           <h2 class="text-h4 assistant-panel__title">AI assistant</h2>
           <Dropdown title="AI assistant" align="right">
@@ -56,7 +57,7 @@
             <div v-else class="assistant-msg assistant-msg--assistant" :data-testid="`assistant-message-${m.status}`">
               <div v-if="m.status === 'working'" class="assistant-msg__working">
                 <Spinner :size="16" />
-                <span class="text-body-s color-text-secondary">Working on it…</span>
+                <span class="text-body-s color-text-secondary" data-testid="assistant-progress">{{ m.progress || 'Thinking…' }}</span>
               </div>
 
               <template v-else>
@@ -136,6 +137,7 @@
                 :disabled="composerDisabled"
                 data-testid="assistant-composer"
                 @keydown.enter="onEnter"
+                @touchend="onComposerTouchEnd"
             ></textarea>
             <Btn
                 v-if="assistant.working.value"
@@ -195,7 +197,7 @@ import { confirmModel } from '../scripts/core/confirmModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { contactSupport } from '../scripts/core/captureRules.js'
 import { useAutoGrow } from '../scripts/core/useAutoGrow.js'
-import { useVisualViewport } from '../scripts/core/visualViewport.js'
+import { useVisualViewport, focusWithoutReveal } from '../scripts/core/visualViewport.js'
 
 const CHANGES_SHOWN = 5
 const MOBILE_QUERY = '(max-width: 768px)'
@@ -214,9 +216,10 @@ const scrolling = ref(false)
 const isMobile = ref(window.matchMedia(MOBILE_QUERY).matches)
 const expanded = reactive(new Set())
 let scrollTimer = null
+let atBottom = true
 
 useAutoGrow(composerRef)
-const viewport = useVisualViewport(() => state.panelOpen && isMobile.value)
+const viewport = useVisualViewport(() => state.panelOpen && isMobile.value, null, { holdPage: true })
 
 const panelStyle = computed(() => isMobile.value ? { top: `${viewport.top}px`, height: `${viewport.height}px` } : null)
 
@@ -264,6 +267,11 @@ function renderMarkdown(text) {
 function errorLine(m) {
   if (m.status !== 'error') return ''
   if (m.error === 'interrupted') return 'This request was interrupted. The changes made so far are kept — send it again to finish.'
+  if (m.error === 'incomplete') {
+    return m.credits_charged > 0
+        ? 'The AI assistant couldn\'t finish all of this. The changes made so far are kept — ask for the rest in a new message.'
+        : 'The AI assistant couldn\'t finish this. No credits were used — try again, or ask for less at once.'
+  }
   return m.credits_charged > 0
       ? 'The AI assistant stopped working on this. The changes made so far are kept — try again in a few minutes.'
       : 'The AI assistant isn\'t available right now. No credits were used — try again in a few minutes.'
@@ -359,17 +367,44 @@ async function onNewConversation() {
 }
 
 function onScroll() {
+  const el = listRef.value
+  atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 2
   scrolling.value = true
   clearTimeout(scrollTimer)
   scrollTimer = setTimeout(() => { scrolling.value = false }, 1000)
 }
 
 function scrollToBottom() {
+  atBottom = true
   nextTick(() => {
     const el = listRef.value
     if (el) el.scrollTop = el.scrollHeight
   })
 }
+
+// Mobile: the panel holds still — a drag passes only to a scroller under the finger that can take it
+function onPanelTouchMove(e) {
+  if (!isMobile.value) return
+  const list = e.target.closest('.assistant-panel__list')
+  if (list && list.scrollHeight > list.clientHeight) return
+  const field = e.target.closest('.assistant-composer__input')
+  if (field && (field === document.activeElement || field.scrollHeight > field.clientHeight)) return
+  e.preventDefault()
+}
+
+function onComposerTouchEnd(e) {
+  const el = e.currentTarget
+  if (!isMobile.value || document.activeElement === el || el.disabled) return
+  e.preventDefault()
+  focusWithoutReveal(el)
+  el.setSelectionRange(el.value.length, el.value.length)
+}
+
+// Mobile: keyboard, composer growth and rotation resize the list — keep the latest message in view
+const listResizeObserver = new ResizeObserver(() => {
+  const el = listRef.value
+  if (el && isMobile.value && atBottom) el.scrollTop = el.scrollHeight
+})
 
 function focusComposer() {
   if (isMobile.value) return
@@ -382,6 +417,11 @@ function onMediaChange(e) {
 
 const mediaQuery = window.matchMedia(MOBILE_QUERY)
 mediaQuery.addEventListener('change', onMediaChange)
+
+watch(listRef, (el, prev) => {
+  if (prev) listResizeObserver.unobserve(prev)
+  if (el) listResizeObserver.observe(el)
+})
 
 watch(() => state.panelOpen, (open) => {
   if (!open) return
@@ -403,6 +443,7 @@ watch(() => assistant.working.value, (working) => {
 onBeforeUnmount(() => {
   mediaQuery.removeEventListener('change', onMediaChange)
   clearTimeout(scrollTimer)
+  listResizeObserver.disconnect()
 })
 </script>
 
@@ -474,6 +515,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 16px;
   padding: 20px;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
@@ -539,6 +581,13 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.assistant-msg__working > span:last-child {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .assistant-msg__error {
@@ -676,6 +725,7 @@ onBeforeUnmount(() => {
   outline: none;
   resize: none;
   overflow-y: auto;
+  overscroll-behavior: contain;
   field-sizing: content;
   box-sizing: border-box;
   font-family: inherit;

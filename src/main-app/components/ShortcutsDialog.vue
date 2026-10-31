@@ -21,17 +21,14 @@ import { computed } from 'vue'
 import Modal from './Modal.vue'
 import Btn from './Btn.vue'
 import { shortcutModel } from '../scripts/core/shortcutModel.js'
-import { assistantModel } from '../scripts/models/assistantModel.js'
 
 const shortcuts = shortcutModel()
-const assistant = assistantModel()
 
 const isMac = /mac/i.test(navigator.platform)
 const paletteKey = isMac ? '⌘K' : 'Ctrl+K'
 const undoKey = isMac ? '⌘Z' : 'Ctrl+Z'
 const modKey = isMac ? '⌘' : 'Ctrl'
 const redoKey = isMac ? '⌘⇧Z' : 'Ctrl+Shift+Z'
-const aiKey = isMac ? '⌘↵' : 'Ctrl+↵'
 
 const blocks = computed(() => [
   {
@@ -40,7 +37,6 @@ const blocks = computed(() => [
       { keys: paletteKey, action: 'Open the command palette' },
       { keys: undoKey, action: 'Undo the last complete, trash or move' },
       { keys: 'C', action: 'Add to Inbox' },
-      ...(assistant.enabled.value ? [{ keys: aiKey, action: 'Tell AI what to do (in Quick Add)' }] : []),
       { keys: '?', action: 'Show keyboard shortcuts' },
     ],
   },

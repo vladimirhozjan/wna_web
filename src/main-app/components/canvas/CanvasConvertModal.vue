@@ -4,6 +4,7 @@
       <div v-if="ai && phase === 'waiting'" class="cv-state" data-testid="canvas-convert-waiting">
         <Spinner :size="24" />
         <span class="text-body-s color-text-secondary">AI is reading your brainstorm…</span>
+        <span class="text-caption color-text-tertiary">Big brainstorms can take a few minutes.</span>
       </div>
 
       <div v-else-if="ai && phase === 'credits'" class="card cv-credits">
@@ -101,12 +102,13 @@ const emit = defineEmits(['close'])
 const MESSAGES = {
   empty: 'AI found no actions in this brainstorm.',
   model: 'The AI assistant isn\'t available right now. No credits were used — try again in a few minutes.',
+  incomplete: 'The AI assistant couldn\'t finish this brainstorm. No credits were used — try again, or use Turn into actions instead.',
   network: 'Couldn\'t reach the AI assistant. Check your connection and try again.',
   busy: 'The AI assistant is still working on another request. Try again when it\'s done.',
   converted: 'Every idea is already an action.',
   disabled: 'The AI assistant is turned off right now.',
 }
-const RETRYABLE = new Set(['model', 'network', 'busy'])
+const RETRYABLE = new Set(['model', 'incomplete', 'network', 'busy'])
 
 const router = useRouter()
 const canvas = canvasModel()
@@ -183,7 +185,7 @@ async function start() {
     const data = await assistant.waitForRequest(id, stale)
     if (!data) return
     if (data.status !== 'done') {
-      phase.value = 'model'
+      phase.value = data.error === 'incomplete' ? 'incomplete' : 'model'
       return
     }
     // The AI read the server's canvas; ideas added elsewhere meanwhile load first so "From:" can name them
