@@ -2,6 +2,7 @@ import axios from 'axios'
 import apiClient from './apiClient.js'
 import {getDomains} from './domains.js'
 import {offlineModel} from './offlineModel.js'
+import {liveClient} from './liveClient.js'
 
 const { base_url } = getDomains()
 
@@ -18,9 +19,10 @@ function isAuthPath(url) {
 
 let loggingOut = false
 
-function logout() {
+export function logout() {
     if (loggingOut) return
     loggingOut = true
+    liveClient.stop()
     localStorage.removeItem('auth_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('refresh_token_hash')
@@ -59,11 +61,12 @@ export function refreshSession() {
 }
 
 // Only a refresh the server answered 401/403 (or no refresh token at all) ends the session; offline keeps it
-function sessionRejected(err) {
+export function sessionRejected(err) {
     return err?.status === 401 || err?.status === 403 || !localStorage.getItem('refresh_token')
 }
 
 httpApi.interceptors.request.use(async (req) => {
+    req.headers['X-Live-Tab'] = liveClient.tabId
     const access_token = localStorage.getItem('auth_token')
     if (!access_token) return req
 

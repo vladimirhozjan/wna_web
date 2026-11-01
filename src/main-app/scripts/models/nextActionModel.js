@@ -24,9 +24,13 @@ let loadVersion = 0
 
 export function nextActionModel() {
 
-    async function loadActions({ reset = false, tags = undefined } = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadActions({ reset = false, tags = undefined, keepDepth = false } = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         const myVersion = ++loadVersion
 
@@ -42,10 +46,12 @@ export function nextActionModel() {
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
             const { total_count, items: data } = await apiClient.listActions({
-                limit: limit.value,
+                limit: keepDepth ? Math.max(limit.value, items.value.length) : limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
             })
+
+            if (keepDepth && loading.value) return data
 
             // Stale response — a newer loadActions was called while we were waiting
             if (myVersion !== loadVersion) return data
@@ -65,12 +71,12 @@ export function nextActionModel() {
 
             return data
         } catch (err) {
-            if (myVersion === loadVersion) {
+            if (myVersion === loadVersion && !keepDepth) {
                 error.value = err
             }
             throw err
         } finally {
-            if (myVersion === loadVersion) {
+            if (myVersion === loadVersion && !keepDepth) {
                 loading.value = false
             }
         }

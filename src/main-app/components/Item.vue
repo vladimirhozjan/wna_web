@@ -75,13 +75,14 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch, onBeforeUnmount } from 'vue'
 import AnimatedCheckbox from './AnimatedCheckbox.vue'
 import Spinner from './Spinner.vue'
 import CompletedIcon from '../assets/CompletedIcon.vue'
 import ArrowRightSmallIcon from '../assets/ArrowRightSmallIcon.vue'
 import TrashIcon from '../assets/TrashIcon.vue'
 import { useSwipe, SNAP_MS } from '../scripts/core/swipe.js'
+import { liveClient } from '../scripts/core/liveClient.js'
 
 const props = defineProps({
   id: {
@@ -211,6 +212,16 @@ function onCheck(checked) {
   emit('check', props.id, checked)
 }
 
+// A swipe holds live updates so the row never moves under the finger
+let swipeHeld = false
+function holdForSwipe(on) {
+  if (on === swipeHeld) return
+  swipeHeld = on
+  if (on) liveClient.hold()
+  else liveClient.release()
+}
+onBeforeUnmount(() => holdForSwipe(false))
+
 useSwipe(rootEl, {
   canStart: () => (props.swipeRight || props.swipeLeft) && !isEditing.value && !props.loading && !props.checked && !snapping.value,
   onMove(dx) {
@@ -223,6 +234,7 @@ useSwipe(rootEl, {
     if (!rowWidth.value) rowWidth.value = rootEl.value.offsetWidth
     swipeDir.value = dir
     swipeX.value = dx
+    holdForSwipe(true)
     return true
   },
   onEnd() {
@@ -236,6 +248,7 @@ useSwipe(rootEl, {
       swipeDir.value = null
       rowWidth.value = 0
       if (armed) emit(`swipe-${dir}`, props.id)
+      holdForSwipe(false)
     }, SNAP_MS)
   },
 })

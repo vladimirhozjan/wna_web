@@ -15,9 +15,13 @@ let loadVersion = 0
 
 export function overdueModel() {
 
-    async function loadItems({ reset = false } = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadItems({ reset = false, keepDepth = false } = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         const myVersion = ++loadVersion
 
@@ -27,9 +31,11 @@ export function overdueModel() {
             }
 
             const { total_count, items: data } = await apiClient.listOverdue({
-                limit: limit.value,
+                limit: keepDepth ? Math.max(limit.value, items.value.length) : limit.value,
                 cursor: cursor.value,
             })
+
+            if (keepDepth && loading.value) return data
 
             if (myVersion !== loadVersion) return data
 
@@ -48,12 +54,12 @@ export function overdueModel() {
 
             return data
         } catch (err) {
-            if (myVersion === loadVersion) {
+            if (myVersion === loadVersion && !keepDepth) {
                 error.value = err
             }
             throw err
         } finally {
-            if (myVersion === loadVersion) {
+            if (myVersion === loadVersion && !keepDepth) {
                 loading.value = false
             }
         }

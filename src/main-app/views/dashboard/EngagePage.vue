@@ -220,7 +220,7 @@ import apiClient from '../../scripts/core/apiClient.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import Spinner from '../../components/Spinner.vue'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange, onLivePacket } from '../../scripts/core/liveClient.js'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -278,7 +278,13 @@ async function onRefresh() {
     }
 }
 undo.registerRefresh(onRefresh)
-onAssistantChange(onRefresh)
+onLiveChange(() => loadDashboard().catch(() => {}))
+
+// The row a move dialog is open for; the dialog closes when that row leaves (live)
+let dialogItemId = null
+onLivePacket(changes => {
+  if (dialogItemId && changes?.some(c => c.id === dialogItemId && ['trashed', 'completed', 'converted', 'deleted'].includes(c.change))) mover.close()
+})
 
 // Loading state tracking
 const movingId = ref(null)
@@ -546,7 +552,9 @@ async function onDropToNext(data) {
 
 async function onDropToWaiting(data) {
     if (data.state === 'WAITING') return
+    dialogItemId = data.id
     const pick = await mover.showWaiting({ waitingFor: '' })
+    dialogItemId = null
     if (!pick) return
     const item = findDraggedItem(data.id) || data
     try {

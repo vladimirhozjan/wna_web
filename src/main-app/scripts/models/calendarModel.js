@@ -209,21 +209,26 @@ export function calendarModel() {
         return item.scheduled_date || item.start_date || item.due_date
     }
 
-    async function loadCalendarItems(startDate, endDate) {
-        loading.value = true
-        error.value = null
+    // silent: a live re-read — no loading state, dropped while a user load runs
+    async function loadCalendarItems(startDate, endDate, { silent = false } = {}) {
+        if (silent && loading.value) return items.value
+        if (!silent) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             const start = formatDate(subDays(startDate, SPAN_LOOKBACK_DAYS))
             const end = formatDate(endDate)
             const data = await listCalendar({ start, end })
+            if (silent && loading.value) return items.value
             items.value = (data.items || []).map(transformItem)
             return items.value
         } catch (err) {
-            error.value = err
+            if (!silent) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!silent) loading.value = false
         }
     }
 

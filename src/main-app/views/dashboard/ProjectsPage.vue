@@ -106,7 +106,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -201,7 +201,7 @@ function onRefresh() {
   return loadProjects({ reset: true, tags: effectiveTags.value })
 }
 undo.registerRefresh(onRefresh)
-onAssistantChange(onRefresh)
+onLiveChange(() => loadProjects({ reset: true, keepDepth: true }).catch(() => {}))
 
 async function onAdd() {
   const t = newTitle.value.trim()

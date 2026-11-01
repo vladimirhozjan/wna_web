@@ -7,7 +7,7 @@
           <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
           <span class="text-body-s detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="item" class="detail-header-right">
+        <div v-if="item && !positionLost" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst"><ChevronsLeftIcon class="detail-nav-icon" /></Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
@@ -266,13 +266,16 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import { captureIcon } from '../../scripts/core/captureRules.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
+import { authModel } from '../../scripts/core/authModel.js'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const undo = undoModel()
 const mover = moveModel()
+// The item a move dialog is open for; the dialog closes when that item leaves (live)
+let dialogItemId = null
 
 const {
   error,
@@ -334,6 +337,8 @@ const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
 const fromSource = ref(null)
+// The open item has left the list it was opened from (changed elsewhere)
+const positionLost = ref(false)
 
 // From-source route and label mappings
 const FROM_ROUTES = {
@@ -398,7 +403,62 @@ async function loadItem() {
   totalItems.value = Number(route.query.total) || 1
 }
 undo.registerRefresh(loadItem)
-onAssistantChange(() => loadItem().catch(() => {}))
+
+// Silent re-read for a change made elsewhere; a field in edit keeps its own editValue
+async function liveReload() {
+  const id = route.params.id
+  try {
+    const data = await apiClient.getStuff(id)
+    if (route.params.id !== id || navigating.value) return
+    item.value = { ...data }
+    await refreshPosition(data)
+  } catch (err) {
+    if (route.params.id === id && (err?.status === 404 || err?.status === 403)) {
+      if (dialogItemId === id) mover.close()
+      notFound.value = true
+    }
+  }
+}
+
+async function refreshPosition(data) {
+  if (positionLost.value) return
+  const getByPosition = positionGetter()
+  for (const pos of new Set([currentPosition.value, data.position])) {
+    const row = await getByPosition(pos).catch(() => null)
+    if (row?.id === data.id) {
+      currentPosition.value = row.position
+      if (typeof row.total_items === 'number') totalItems.value = row.total_items
+      return
+    }
+  }
+  positionLost.value = true
+}
+
+// Moves on as after the user's own clarify / complete; an open Clarify starts on the next item
+function afterLeft() {
+  if (!showClarify.value) return navigateToNextOrPrev()
+  clarifyModel().cancel()
+  return onClarifyDone()
+}
+
+const LIST_ENTITIES = new Set(['stuff', 'action', 'project', 'item'])
+
+onLivePacket((changes) => {
+  if (pageLoading.value || notFound.value || !item.value) return
+  if (!changes) return liveReload()
+  const mine = changes.find(c => c.entity === 'stuff' && c.id === item.value.id)
+  if (mine && ['trashed', 'converted', 'completed', 'deleted'].includes(mine.change) && mine.tab === liveClient.tabId) return
+  if (mine && ['trashed', 'converted', 'completed'].includes(mine.change)) {
+    showMoveDialog.value = false
+    if (dialogItemId === mine.id) mover.close()
+  }
+  if (mine?.change === 'trashed') {
+    if (showClarify.value) cancelClarify()
+    return afterTrash(mine.actor === authModel().currentUser.value?.id)
+  }
+  if (mine?.change === 'converted' || mine?.change === 'completed') return afterLeft()
+  if (changes.some(c => LIST_ENTITIES.has(c.entity))) liveReload()
+})
 
 onMounted(async () => {
   checkMobile()
@@ -525,16 +585,19 @@ function formatDate(dateStr) {
 }
 
 // Navigation functions
+function positionGetter() {
+  if (fromCompleted.value) return apiClient.getCompletedByPosition
+  if (fromSomeday.value) return apiClient.getSomedayByPosition
+  return apiClient.getStuffByPosition
+}
+
 async function navigateToPosition(position) {
   if (navigating.value) return
   if (position < 0 || position >= totalItems.value) return
 
   navigating.value = true
   try {
-    let getByPosition = getStuffByPosition
-    if (fromCompleted.value) getByPosition = apiClient.getCompletedByPosition
-    else if (fromSomeday.value) getByPosition = apiClient.getSomedayByPosition
-    const data = await getByPosition(position)
+    const data = await positionGetter()(position)
 
     // Mixed-type lists - redirect if type changed
     if (fromMixedList.value && data.type !== 'STUFF') {
@@ -665,10 +728,7 @@ async function navigateToNextOrPrev() {
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    let getByPosition = getStuffByPosition
-    if (fromCompleted.value) getByPosition = apiClient.getCompletedByPosition
-    else if (fromSomeday.value) getByPosition = apiClient.getSomedayByPosition
-    const data = await getByPosition(nextPos)
+    const data = await positionGetter()(nextPos)
 
     // Mixed-type lists - redirect if type changed
     if (fromMixedList.value && data.type !== 'STUFF') {
@@ -693,6 +753,7 @@ async function navigateToNextOrPrev() {
 
 async function onMoveTo(destination) {
   showMoveDialog.value = false
+  const itemId = item.value.id
 
   const destinationLabels = {
     action: 'Next Actions',
@@ -706,12 +767,14 @@ async function onMoveTo(destination) {
 
   // Special handling for calendar - need date input
   if (destination === 'calendar') {
+    dialogItemId = itemId
     const scheduleData = await mover.showSchedule({ date: '', time: '', duration: null })
-    if (!scheduleData || !scheduleData.date) return // User cancelled
+    dialogItemId = null
+    if (!scheduleData || !scheduleData.date || item.value?.id !== itemId) return // User cancelled, or the item left
 
     actionLoading.value = 'move'
     try {
-      await apiClient.clarifyToAction(item.value.id, {
+      await apiClient.clarifyToAction(itemId, {
         title: item.value.title,
         description: item.value.description || '',
         deferType: 'scheduled',
@@ -732,19 +795,21 @@ async function onMoveTo(destination) {
 
   // Special handling for waiting - need waiting_for input
   if (destination === 'waiting') {
+    dialogItemId = itemId
     const pick = await mover.showWaiting({ waitingFor: '' })
-    if (!pick) return // User cancelled
+    dialogItemId = null
+    if (!pick || item.value?.id !== itemId) return // User cancelled, or the item left
 
     actionLoading.value = 'move'
     try {
       if (pick.kind === 'connection') {
-        const created = await apiClient.clarifyToAction(item.value.id, {
+        const created = await apiClient.clarifyToAction(itemId, {
           title: item.value.title,
           description: item.value.description || ''
         })
         await apiClient.delegateAction(created.id, pick.userId, pick.email)
       } else {
-        await apiClient.clarifyToAction(item.value.id, {
+        await apiClient.clarifyToAction(itemId, {
           title: item.value.title,
           description: item.value.description || '',
           waitingFor: pick.value
@@ -783,12 +848,14 @@ async function onMoveTo(destination) {
 
   // Special handling for project - prompt for outcome
   if (destination === 'project') {
+    dialogItemId = itemId
     const outcome = await mover.showOutcome()
-    if (!outcome) return
+    dialogItemId = null
+    if (!outcome || item.value?.id !== itemId) return
 
     actionLoading.value = 'move'
     try {
-      await apiClient.clarifyToProject(item.value.id, {
+      await apiClient.clarifyToProject(itemId, {
         title: item.value.title,
         description: item.value.description || '',
         outcome
@@ -838,17 +905,24 @@ async function onTrash() {
   actionLoading.value = 'trash'
   try {
     await trashStuff(item.value.id)
-    const title = truncateTitle(item.value.title)
-    undo.record({ op: 'trash', item: item.value, title, message: `"${title}" moved to trash` })
-    if (isSomeday.value) {
-      router.push({ name: 'someday' })
-    } else {
-      await navigateToNextOrPrev()
-    }
+    await afterTrash(true)
   } catch (err) {
     toaster.push(err.message || 'Failed to move item to trash')
   } finally {
     actionLoading.value = null
+  }
+}
+
+// Also runs for a trash made elsewhere: the toast only for the user's own change
+async function afterTrash(withToast) {
+  if (withToast) {
+    const title = truncateTitle(item.value.title)
+    undo.record({ op: 'trash', item: item.value, title, message: `"${title}" moved to trash` })
+  }
+  if (isSomeday.value) {
+    router.push({ name: 'someday' })
+  } else {
+    await navigateToNextOrPrev()
   }
 }
 

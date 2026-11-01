@@ -5,6 +5,7 @@ import apiClient from '../core/apiClient.js'
 export const SEARCH_MIN_LENGTH = 2
 const DROPDOWN_LIMIT = 8
 const PAGE_LIMIT = 20
+const SERVER_MAX_LIMIT = 100
 // Same debounce as the Reference search
 const DEBOUNCE_MS = 300
 
@@ -101,6 +102,22 @@ function createSearch(limit) {
         }
     }
 
+    // A live re-read: the shown query again at the loaded depth, in place; a failure keeps the results
+    async function refresh() {
+        if (!term.value || resultTerm.value !== term.value || loading.value || loadingMore.value) return
+        const id = ++requestId
+        try {
+            const depth = Math.min(SERVER_MAX_LIMIT, Math.max(limit, items.value.length))
+            const data = await apiClient.searchItems({q: term.value, types: types.value, limit: depth})
+            if (id !== requestId || loadingMore.value) return
+            items.value = data.items || []
+            totalCount.value = data.total_count ?? items.value.length
+            cursor.value = data.cursor ?? null
+        } catch {
+            // the next packet tries again
+        }
+    }
+
     async function loadMore() {
         if (!cursor.value || loadingMore.value) return
         const id = requestId
@@ -129,6 +146,7 @@ function createSearch(limit) {
         input,
         setTypes,
         retry,
+        refresh,
         loadMore,
         reset,
     }

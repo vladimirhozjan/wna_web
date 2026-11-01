@@ -20,17 +20,23 @@ const current = ref(null)
 
 export function projectTemplateModel() {
 
-    async function loadTemplates({ reset = false } = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadTemplates({ reset = false, keepDepth = false } = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             if (reset) cursor.value = null
 
             const { total_count, items: data } = await apiClient.listProjectTemplates({
-                limit: PAGE_SIZE,
+                limit: keepDepth ? Math.max(PAGE_SIZE, items.value.length) : PAGE_SIZE,
                 cursor: cursor.value,
             })
+
+            if (keepDepth && loading.value) return data
 
             if (reset) {
                 items.value = data.map(toRow)
@@ -46,10 +52,10 @@ export function projectTemplateModel() {
             hasMore.value = total_count > items.value.length
             return data
         } catch (err) {
-            error.value = err
+            if (!keepDepth) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 

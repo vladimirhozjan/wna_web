@@ -146,7 +146,8 @@ import CanvasMap from '../../components/canvas/CanvasMap.vue'
 import CanvasDrillDown from '../../components/canvas/CanvasDrillDown.vue'
 import CanvasConvertModal from '../../components/canvas/CanvasConvertModal.vue'
 import AiIcon from '../../assets/AiIcon.vue'
-import { assistantModel, onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { assistantModel } from '../../scripts/models/assistantModel.js'
+import { onLivePacket } from '../../scripts/core/liveClient.js'
 import CanvasMovePicker from '../../components/canvas/CanvasMovePicker.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
@@ -236,7 +237,11 @@ const viewOnlyMessage = computed(() => {
 
 // While the assistant works it may write this canvas: a save it overtakes rebases instead of the conflict banner
 watch(() => assistant.working.value, (on) => canvas.expectAssistantWrites(on), { immediate: true })
-onAssistantChange(() => canvas.refreshFromServer())
+// The rebase keeps local edits; a member change can make the canvas read-only
+onLivePacket((changes) => {
+  const id = route.params.id
+  if (!changes || changes.some(c => ['canvas', 'project', 'member'].includes(c.entity) && c.id === id)) canvas.refreshFromServer()
+})
 
 // The map's open edit ends first; dropping an empty new idea is the undo
 function onUndo() {

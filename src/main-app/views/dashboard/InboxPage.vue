@@ -177,7 +177,7 @@ import ClarifyPanel from '../../components/clarify/ClarifyPanel.vue'
 import BottomSheet from '../../components/BottomSheet.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 // model
 const {
@@ -412,7 +412,24 @@ function onRefresh() {
   return loadStuff({ reset: true })
 }
 undo.registerRefresh(onRefresh)
-onAssistantChange(onRefresh)
+
+// The item being clarified stays pinned by id; once gone, Clarify moves on as after its own finish
+async function onLiveRefresh() {
+  const index = clarifyMode.value ? currentClarifyIndex.value : -1
+  const clarifyingId = serverRows.value[index]?.id
+  const nextId = serverRows.value[index + 1]?.id
+  await loadStuff({ reset: true, keepDepth: true }).catch(() => {})
+  if (!clarifyingId || !clarifyMode.value) return
+  const rows = serverRows.value
+  const pinned = rows.findIndex(i => i.id === clarifyingId)
+  if (pinned !== -1) currentClarifyIndex.value = pinned
+  else if (rows.length === 0 || singleClarify.value) exitClarifyMode()
+  else {
+    const next = rows.findIndex(i => i.id === nextId)
+    currentClarifyIndex.value = next !== -1 ? next : Math.min(index, rows.length - 1)
+  }
+}
+onLiveChange(onLiveRefresh)
 
 function onItemClick(item, index) {
   if (clarifyMode.value) {

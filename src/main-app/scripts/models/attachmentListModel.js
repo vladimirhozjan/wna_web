@@ -18,9 +18,13 @@ export function attachmentListModel() {
 
     const hasMore = computed(() => offset.value + items.value.length < totalCount.value)
 
-    async function loadAttachments({reset = false} = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadAttachments({reset = false, keepDepth = false} = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             if (reset) {
@@ -28,10 +32,12 @@ export function attachmentListModel() {
             }
 
             const data = await apiClient.listAllAttachments({
-                limit: limit.value,
+                limit: keepDepth ? Math.max(limit.value, items.value.length) : limit.value,
                 offset: offset.value,
                 side: referenceModel().side.value,
             })
+
+            if (keepDepth && loading.value) return
 
             const list = Array.isArray(data) ? data : (data.attachments || [])
             totalCount.value = data.total ?? list.length
@@ -42,10 +48,10 @@ export function attachmentListModel() {
                 items.value.push(...list)
             }
         } catch (err) {
-            error.value = err
+            if (!keepDepth) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 

@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import apiClient from '../core/apiClient.js'
 import { errorModel } from '../core/errorModel.js'
+import { liveClient } from '../core/liveClient.js'
 
 const connections = ref([])
 const pendingSent = ref([])
@@ -71,6 +72,11 @@ export function connectionModel() {
         pendingSent.value = pendingSent.value.filter(p => p.id !== id)
         pendingReceived.value = pendingReceived.value.filter(p => p.id !== id)
     }
+
+    // The Connections page and the sidebar Network count follow their live packets once loaded
+    liveClient.subscribe(changes => {
+        if (loaded.value && (!changes || changes.some(c => c.entity === 'connection'))) loadAll().catch(() => {})
+    })
 
     function reset() {
         connections.value = []

@@ -7,7 +7,7 @@
           <a class="text-body-m detail-back-link" @click="goBack">&lt;</a>
           <span class="text-body-s detail-meta-link" @click="goBack">{{ backLabel }}</span>
         </div>
-        <div v-if="project" class="detail-header-right">
+        <div v-if="project && !positionLost" class="detail-header-right">
           <div class="detail-nav-buttons">
             <Btn variant="icon" class="detail-nav-btn" title="First" :disabled="navigating || currentPosition <= 0" @click="goFirst"><ChevronsLeftIcon class="detail-nav-icon" /></Btn>
             <Btn variant="icon" class="detail-nav-btn" title="Previous" :disabled="navigating || currentPosition <= 0" @click="goPrev"><TriangleLeftIcon class="detail-nav-icon" /></Btn>
@@ -31,7 +31,7 @@
         <EmptyState
             :icon="ProjectsIcon"
             title="This project is no longer here"
-            text="It may have been completed, deleted, or moved to trash."
+            text="It may have been deleted, moved to trash, or you no longer have access."
             buttonText="Go to Projects"
             @action="goToProjects"
         />
@@ -138,7 +138,7 @@
           >
             Trash
           </Btn>
-          <Dropdown v-if="canSaveTemplate || overflowActions.length" title="More">
+          <Dropdown v-if="canSaveTemplate || overflowActions.length" v-model="showMoreMenu" title="More">
             <template #trigger>
               <Btn variant="icon" size="sm" title="More" data-testid="detail-more-menu"><MoreIcon class="detail-more-icon" /></Btn>
             </template>
@@ -761,12 +761,15 @@ import EmptyState from '../../components/EmptyState.vue'
 import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+// The project / member a confirm is open for; the confirm closes when that one leaves (live)
+let dialogItemId = null
+let dialogMemberId = null
 const undo = undoModel()
 const tagMdl = tagModel()
 const auth = authModel()
@@ -777,7 +780,6 @@ const templates = projectTemplateModel()
 const {
   error,
   getProject,
-  getProjectByPosition,
   updateProject,
   trashProject,
   completeProject,
@@ -807,6 +809,7 @@ useAutoGrow(descriptionInput)
 useAutoGrow(outcomeInput)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
+const showMoreMenu = ref(false)
 const horizon = horizonModel()
 const settings = settingsModel()
 const savingHorizon = ref(null)
@@ -861,6 +864,7 @@ onBeforeUnmount(() => {
   clearTimeout(listScrollTimer)
   detailBodyRef.value?.removeEventListener('scroll', onBodyScroll)
   actionsScrollRef.value?.removeEventListener('scroll', onListScroll)
+  if (draggingAction.value) liveClient.release()
 })
 
 // Navigation state
@@ -868,6 +872,8 @@ const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
 const fromSource = ref(null)
+// The open project has left the list it was opened from (changed elsewhere)
+const positionLost = ref(false)
 
 // From-source route and label mappings
 const FROM_ROUTES = {
@@ -1183,16 +1189,20 @@ async function onChangeRole(m, role) {
 }
 
 async function onRemoveMember(m) {
+  const projectId = project.value.id
+  dialogItemId = projectId
+  dialogMemberId = m.user_id
   const confirmed = await confirm.show({
     title: 'Remove member?',
     message: `${m.email || memberEmailFor(m.user_id) || 'This member'} will lose access. Their assigned actions return to the backlog.`,
     confirmText: 'Remove',
     cancelText: 'Cancel',
   })
-  if (!confirmed) return
+  dialogItemId = dialogMemberId = null
+  if (!confirmed || project.value?.id !== projectId) return
   memberRemovingId.value = m.user_id
   try {
-    const data = await removeMember(project.value.id, m.user_id)
+    const data = await removeMember(projectId, m.user_id)
     if (data?.auto_unshared) onAutoUnshared()
   } catch (err) {
     toaster.push(friendlyMemberError(err, 'Could not remove member.'))
@@ -1202,16 +1212,19 @@ async function onRemoveMember(m) {
 }
 
 async function onLeaveProject() {
+  const projectId = project.value.id
+  dialogItemId = projectId
   const confirmed = await confirm.show({
     title: 'Leave this project?',
     message: 'You will lose access. Any actions assigned to you return to the backlog.',
     confirmText: 'Leave',
     cancelText: 'Cancel',
   })
-  if (!confirmed) return
+  dialogItemId = null
+  if (!confirmed || project.value?.id !== projectId) return
   actionLoading.value = 'leave'
   try {
-    await removeMember(project.value.id, myUserId.value)
+    await removeMember(projectId, myUserId.value)
     router.push({ name: 'projects' })
   } catch (err) {
     toaster.push(friendlyMemberError(err, 'Could not leave project.'))
@@ -1247,7 +1260,53 @@ async function loadProject() {
   await loadProjectActions()
 }
 undo.registerRefresh(loadProject)
-onAssistantChange(() => loadProject().catch(() => {}))
+
+// Silent re-read for a change made elsewhere; a field in edit keeps its own editValue / editTags
+async function liveReload() {
+  const id = route.params.id
+  try {
+    const data = await apiClient.getProject(id)
+    if (route.params.id !== id || navigating.value) return
+    project.value = { ...data }
+    await Promise.all([refreshPosition(data), loadProjectActions({ silent: true })])
+  } catch (err) {
+    if (route.params.id === id && (err?.status === 404 || err?.status === 403)) {
+      if (dialogItemId === id) confirm.close()
+      notFound.value = true
+    }
+  }
+}
+
+async function refreshPosition(data) {
+  if (positionLost.value) return
+  const getByPosition = positionGetter()
+  for (const pos of new Set([currentPosition.value, data.position])) {
+    const row = await getByPosition(pos).catch(() => null)
+    if (row?.id === data.id) {
+      currentPosition.value = row.position
+      if (typeof row.total_items === 'number') totalItems.value = row.total_items
+      return
+    }
+  }
+  positionLost.value = true
+}
+
+const LIST_ENTITIES = new Set(['stuff', 'action', 'project', 'item'])
+
+onLivePacket((changes) => {
+  if (pageLoading.value || notFound.value || !project.value) return
+  if (!changes) return liveReload()
+  const id = project.value.id
+  const mine = changes.find(c => c.entity === 'project' && c.id === id)
+  if (mine && ['trashed', 'converted', 'deleted'].includes(mine.change) && mine.tab === liveClient.tabId) return
+  if (mine && ['trashed', 'converted'].includes(mine.change)) {
+    showMoveDialog.value = showMoreMenu.value = false
+    if (dialogItemId === id) confirm.close()
+  }
+  if (mine?.change === 'trashed') return afterTrash(mine.actor === myUserId.value, orderedActions.value.length > 0)
+  if (mine?.change === 'converted') return navigateToNextOrPrev()
+  if (changes.some(c => LIST_ENTITIES.has(c.entity) || (c.entity === 'member' && c.id === id))) liveReload()
+})
 
 // Sends only the changed key; the response is the viewer's link after the write
 async function onHorizonChange(key, value) {
@@ -1433,21 +1492,19 @@ function formatDate(dateStr) {
 }
 
 // Navigation functions
+function positionGetter() {
+  if (fromCompleted.value) return apiClient.getCompletedByPosition
+  if (fromSomeday.value) return apiClient.getSomedayByPosition
+  return apiClient.getProjectByPosition
+}
+
 async function navigateToPosition(position) {
   if (navigating.value) return
   if (position < 0 || position >= totalItems.value) return
 
   navigating.value = true
   try {
-    let getByPosition
-    if (fromCompleted.value) {
-      getByPosition = apiClient.getCompletedByPosition
-    } else if (fromSomeday.value) {
-      getByPosition = apiClient.getSomedayByPosition
-    } else {
-      getByPosition = getProjectByPosition
-    }
-    const data = await getByPosition(position)
+    const data = await positionGetter()(position)
 
     // Mixed-type lists - redirect if type changed
     if (fromMixedList.value && data.type !== 'PROJECT') {
@@ -1510,21 +1567,24 @@ async function onSaveAsTemplate() {
 }
 
 async function onComplete() {
+  const projectId = project.value.id
   const hasActions = orderedActions.value.length > 0
   if (hasActions) {
+    dialogItemId = projectId
     const confirmed = await confirm.show({
       title: 'Complete Project',
       message: `This will complete active action and all actions in backlog. Are you sure?`,
       confirmText: 'Complete',
       cancelText: 'Cancel'
     })
-    if (!confirmed) return
+    dialogItemId = null
+    if (!confirmed || project.value?.id !== projectId) return
   }
 
   actionLoading.value = 'complete'
   const title = truncateTitle(project.value.title)
   try {
-    await completeProject(project.value.id)
+    await completeProject(projectId)
     undo.record({ op: 'complete', item: project.value, title, message: `"${title}" completed` })
     await navigateToNextOrPrev()
   } catch (err) {
@@ -1551,15 +1611,7 @@ async function navigateToNextOrPrev() {
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    let getByPosition
-    if (fromCompleted.value) {
-      getByPosition = apiClient.getCompletedByPosition
-    } else if (fromSomeday.value) {
-      getByPosition = apiClient.getSomedayByPosition
-    } else {
-      getByPosition = getProjectByPosition
-    }
-    const data = await getByPosition(nextPos)
+    const data = await positionGetter()(nextPos)
 
     // Mixed-type lists - redirect if type changed
     if (fromMixedList.value && data.type !== 'PROJECT') {
@@ -1584,22 +1636,28 @@ async function navigateToNextOrPrev() {
 }
 
 async function onTrash() {
-  const title = truncateTitle(project.value.title)
-
   actionLoading.value = 'trash'
   try {
     const result = await trashProject(project.value.id)
-    const message = result?.trashed_actions > 0 ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
-    undo.record({ op: 'trash', item: project.value, title, message })
-    if (isSomeday.value) {
-      router.push({ name: 'someday' })
-    } else {
-      await navigateToNextOrPrev()
-    }
+    await afterTrash(true, result?.trashed_actions > 0)
   } catch (err) {
     toaster.push(err.message || 'Failed to move project to trash')
   } finally {
     actionLoading.value = null
+  }
+}
+
+// Also runs for a trash made elsewhere: the toast only for the user's own change
+async function afterTrash(withToast, withActions) {
+  if (withToast) {
+    const title = truncateTitle(project.value.title)
+    const message = withActions ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`
+    undo.record({ op: 'trash', item: project.value, title, message })
+  }
+  if (isSomeday.value) {
+    router.push({ name: 'someday' })
+  } else {
+    await navigateToNextOrPrev()
   }
 }
 
@@ -1635,21 +1693,24 @@ async function onActivate() {
 
 async function onMoveTo(target) {
   showMoveDialog.value = false
+  const projectId = project.value.id
 
   if (target === 'ACTION') {
     if (orderedActions.value.length > 1) {
+      dialogItemId = projectId
       const confirmed = await confirm.show({
         title: 'Convert to Action',
         message: `This will trash all backlog actions in this project. Continue?`,
         confirmText: 'Convert',
         cancelText: 'Cancel'
       })
-      if (!confirmed) return
+      dialogItemId = null
+      if (!confirmed || project.value?.id !== projectId) return
     }
 
     actionLoading.value = 'move'
     try {
-      await apiClient.transformProjectToAction(project.value.id)
+      await apiClient.transformProjectToAction(projectId)
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(project.value.title)}" converted to action`)
       await navigateToNextOrPrev()
@@ -1663,18 +1724,20 @@ async function onMoveTo(target) {
 
   if (target === 'REFERENCE') {
     if (orderedActions.value.length > 0) {
+      dialogItemId = projectId
       const confirmed = await confirm.show({
         title: 'Convert to Reference',
         message: `This will convert the project and all its actions to a reference file. Continue?`,
         confirmText: 'Convert',
         cancelText: 'Cancel'
       })
-      if (!confirmed) return
+      dialogItemId = null
+      if (!confirmed || project.value?.id !== projectId) return
     }
 
     actionLoading.value = 'move'
     try {
-      await apiClient.transformProjectToFile(project.value.id)
+      await apiClient.transformProjectToFile(projectId)
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(project.value.title)}" moved to Reference`)
       await navigateToNextOrPrev()
@@ -1731,13 +1794,14 @@ function actionStateLabel(state) {
 
 // ── Project Actions functions ──
 
-async function loadProjectActions() {
+// silent: a live re-read — no loading state or toast, the expanded Completed list stays
+async function loadProjectActions({ silent = false } = {}) {
   if (!project.value?.id) return
 
   // Only shared projects expose GET /members; calling it on a personal project 403s.
   if (project.value.shared) {
     try {
-      const members = await loadMembers(project.value.id)
+      const members = silent ? await reloadMembers(project.value.id) : await loadMembers(project.value.id)
       if (members && members.length > 0) {
         const ownerMember = members.find(m => m.role === 'owner')
         const meMember = members.find(m => m.user_id === myUserId.value)
@@ -1756,21 +1820,35 @@ async function loadProjectActions() {
     }
   }
 
-  actionsLoading.value = true
+  if (!silent) actionsLoading.value = true
   try {
-    const data = await getProjectActions(project.value.id)
+    const data = silent ? await apiClient.listProjectActions(project.value.id) : await getProjectActions(project.value.id)
     const actions = Array.isArray(data) ? data : (data.items || [])
     orderedActions.value = actions.sort((a, b) => a.backlog_position - b.backlog_position)
   } catch {
-    toaster.push('Failed to load project actions')
+    if (!silent) toaster.push('Failed to load project actions')
   } finally {
-    actionsLoading.value = false
+    if (!silent) actionsLoading.value = false
+  }
+
+  if (silent && completedLoaded.value) {
+    apiClient.listProjectCompleted(project.value.id, { limit: 100 })
+      .then(res => { completedActions.value = res?.items || [] })
+      .catch(() => {})
+    return
   }
 
   // Reset completed cache so a re-loaded project re-fetches when expanded
   completedActions.value = []
   completedLoaded.value = false
   completedExpanded.value = false
+}
+
+async function reloadMembers(projectId) {
+  const data = await apiClient.listProjectMembers(projectId)
+  currentMembers.value = data.members || []
+  if (dialogMemberId && !currentMembers.value.some(m => m.user_id === dialogMemberId)) confirm.close()
+  return currentMembers.value
 }
 
 // ── Sharing ──
@@ -1922,11 +2000,13 @@ async function onTrashAction(action) {
 }
 
 function onActionDragStart() {
+  if (!draggingAction.value) liveClient.hold()
   draggingAction.value = true
   hapticFeedback()
 }
 
 function onActionDragEnd(evt) {
+  if (draggingAction.value) liveClient.release()
   draggingAction.value = false
   onBacklogReorder(evt)
 }

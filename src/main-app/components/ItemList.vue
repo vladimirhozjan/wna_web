@@ -1,5 +1,6 @@
 <template>
   <div
+      ref="rootEl"
       class="item-list"
       :class="{ 'item-list--has-more': hasMore, 'item-list--drop-target': showDropTarget }"
       @dragover="onExternalDragOver"
@@ -36,6 +37,7 @@
           v-for="(item, index) in items"
           :key="item.id"
           class="item-wrapper"
+          :data-row-id="item.id"
           :data-testid="rowTestid"
           :data-id="rowTestid ? item.id : undefined"
           :class="{
@@ -108,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import Item from './Item.vue'
 import Btn from './Btn.vue'
@@ -118,6 +120,7 @@ import { isOverdue, isScheduledOverdue } from '../scripts/core/dateUtils.js'
 import Spinner from './Spinner.vue'
 import { hapticFeedback } from '../scripts/core/haptics.js'
 import { LONG_PRESS_MS } from '../scripts/core/swipe.js'
+import { liveClient, onLivePacket } from '../scripts/core/liveClient.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -151,8 +154,62 @@ const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-mo
 
 const items = defineModel({ type: Array, required: true })
 
+const rootEl = ref(null)
+
+// A row completed elsewhere leaves with the completion exit, as the user's own; the list re-reads after it
+const COMPLETE_EXIT_MS = 800
+const liveCompletingIds = ref([])
+
+onLivePacket(changes => {
+  const done = new Set((changes || []).filter(c => c.change === 'completed' && c.tab !== liveClient.tabId).map(c => c.id))
+  const rows = items.value.filter(i => done.has(i.id) && !i.checked)
+  if (!rows.length) return
+  rows.forEach(i => { i.checked = true })
+  const ids = rows.map(i => i.id)
+  liveCompletingIds.value = [...liveCompletingIds.value, ...ids]
+  liveClient.hold()
+  setTimeout(() => {
+    liveCompletingIds.value = liveCompletingIds.value.filter(id => !ids.includes(id))
+    liveClient.release()
+  }, COMPLETE_EXIT_MS)
+})
+
 const loadingIdSet = computed(() => new Set(props.loadingIds))
-const completingIdSet = computed(() => new Set(props.completingIds))
+const completingIdSet = computed(() => new Set([...props.completingIds, ...liveCompletingIds.value]))
+
+// Rows on screen keep their place when rows above them come or go
+function scrollParent(el) {
+  for (let p = el.parentElement; p; p = p.parentElement) {
+    const overflowY = getComputedStyle(p).overflowY
+    if ((overflowY === 'auto' || overflowY === 'scroll') && p.scrollHeight > p.clientHeight) return p
+  }
+  return document.scrollingElement
+}
+
+watch(() => items.value, () => {
+  if (isDragging.value || !rootEl.value) return
+  const scroller = scrollParent(rootEl.value)
+  if (!scroller || scroller.scrollTop === 0) return
+  const viewTop = scroller === document.scrollingElement ? 0 : scroller.getBoundingClientRect().top
+  const anchor = [...rootEl.value.querySelectorAll('[data-row-id]')].find(el => el.getBoundingClientRect().bottom > viewTop)
+  if (!anchor) return
+  const id = anchor.dataset.rowId
+  const before = anchor.getBoundingClientRect().top
+  nextTick(() => {
+    const row = rootEl.value?.querySelector(`[data-row-id="${CSS.escape(id)}"]`)
+    if (row) scroller.scrollTop += row.getBoundingClientRect().top - before
+  })
+}, { flush: 'pre' })
+
+// A drag holds live updates so no row moves under the pointer; they apply on drop
+let dragHeld = false
+function holdForDrag(on) {
+  if (on === dragHeld) return
+  dragHeld = on
+  if (on) liveClient.hold()
+  else liveClient.release()
+}
+onBeforeUnmount(() => holdForDrag(false))
 
 // Drag discoverability hint
 const HINT_KEY = 'drag_hint_dismissed'
@@ -196,6 +253,7 @@ function onDragStart(evt) {
   originalIndex = evt.oldIndex
   draggedItemId = items.value[evt.oldIndex]?.id
   isDragging.value = true
+  holdForDrag(true)
   if (showHint.value) dismissHint()
   hapticFeedback()
 
@@ -236,6 +294,7 @@ function onDragEnd(evt) {
   // Delay clearing drag state to prevent hover flash on adjacent items after drop
   setTimeout(() => {
     isDragging.value = false
+    holdForDrag(false)
   }, 50)
 }
 
@@ -247,6 +306,7 @@ function onNativeDragStart(evt, item) {
   }
   if (!props.sourceType) return
 
+  holdForDrag(true)
   nativeDraggingId.value = item.id
   drag.startDrag(item, props.sourceType)
   evt.dataTransfer.effectAllowed = 'move'
@@ -265,6 +325,7 @@ function onNativeDragStart(evt, item) {
 function onNativeDragEnd() {
   nativeDraggingId.value = null
   drag.endDrag()
+  if (!isDragging.value) holdForDrag(false)
 }
 
 // Cross-list drop support

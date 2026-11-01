@@ -51,7 +51,7 @@ import { trashModel } from '../../scripts/models/trashModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 const {
   items,
@@ -87,7 +87,7 @@ function onRefresh() {
   return loadTrash({ reset: true })
 }
 undo.registerRefresh(onRefresh)
-onAssistantChange(onRefresh)
+onLiveChange(() => loadTrash({ reset: true, keepDepth: true }).catch(() => {}))
 
 function truncateTitle(title, maxLen = 30) {
   if (!title || title.length <= maxLen) return title

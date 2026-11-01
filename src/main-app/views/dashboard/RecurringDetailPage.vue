@@ -246,12 +246,14 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { formatShortDate } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLivePacket } from '../../scripts/core/liveClient.js'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+// The template or instance a confirm is open for; the confirm closes when that one leaves (live)
+let dialogItemId = null
 const tagMdl = tagModel()
 
 const {
@@ -314,7 +316,18 @@ async function loadTemplate() {
   const data = await getRecurring(route.params.id)
   template.value = { ...data }
 }
-onAssistantChange(() => loadTemplate().catch(() => {}))
+// Its own changes, or its instance's (the active instance changes with them); fields in edit keep their own values
+onLivePacket((changes) => {
+  if (pageLoading.value || notFound.value) return
+  if (changes && !changes.some(c => (c.entity === 'recurring' && String(c.id) === String(route.params.id)) || c.entity === 'action')) return
+  loadTemplate().then(() => {
+    if (dialogItemId && dialogItemId !== template.value.id && dialogItemId !== template.value.active_instance_id) confirm.close()
+  }).catch((err) => {
+    if (err?.status !== 404) return
+    if (dialogItemId) confirm.close()
+    notFound.value = true
+  })
+})
 
 onMounted(async () => {
   try {
@@ -560,17 +573,21 @@ async function onSpawn() {
 }
 
 async function onDeleteInstance() {
+  const templateId = template.value.id
+  const instanceId = template.value.active_instance_id
+  dialogItemId = instanceId
   const confirmed = await confirm.show({
     title: 'Delete Instance',
     message: 'Delete the active task without spawning the next one? Use Spawn next to resume.',
     confirmText: 'Delete',
     cancelText: 'Cancel'
   })
-  if (!confirmed) return
+  dialogItemId = null
+  if (!confirmed || template.value?.id !== templateId || template.value.active_instance_id !== instanceId) return
 
   actionLoading.value = 'instance'
   try {
-    const updated = await deleteRecurringInstance(template.value.id)
+    const updated = await deleteRecurringInstance(templateId)
     template.value = { ...updated }
     toaster.success('Instance deleted')
   } catch (err) {
@@ -581,9 +598,11 @@ async function onDeleteInstance() {
 }
 
 async function onDelete() {
+  const templateId = template.value.id
   const hasInstance = !!template.value.active_instance_id
 
   let deleteInstance = false
+  dialogItemId = templateId
   if (hasInstance) {
     const choice = await confirm.show({
       title: 'Delete Template',
@@ -592,7 +611,8 @@ async function onDelete() {
       cancelText: 'Cancel',
       altText: 'Keep task'
     })
-    if (!choice) return
+    dialogItemId = null
+    if (!choice || template.value?.id !== templateId) return
     deleteInstance = choice === true
   } else {
     const confirmed = await confirm.show({
@@ -601,12 +621,13 @@ async function onDelete() {
       confirmText: 'Delete',
       cancelText: 'Cancel'
     })
-    if (!confirmed) return
+    dialogItemId = null
+    if (!confirmed || template.value?.id !== templateId) return
   }
 
   actionLoading.value = 'delete'
   try {
-    await deleteRecurringFn(template.value.id, deleteInstance)
+    await deleteRecurringFn(templateId, deleteInstance)
     toaster.success(`"${template.value.title}" deleted`)
     router.push({ name: 'calendar' })
   } catch (err) {

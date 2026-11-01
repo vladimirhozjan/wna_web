@@ -9,19 +9,24 @@ const error = ref(null)
 
 export function recurringModel() {
 
-    async function loadRecurring() {
-        loading.value = true
-        error.value = null
+    // silent: a live re-read — no loading state, dropped while a user load runs
+    async function loadRecurring({ silent = false } = {}) {
+        if (silent && loading.value) return items.value
+        if (!silent) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             const data = await apiClient.listRecurring()
+            if (silent && loading.value) return items.value
             items.value = Array.isArray(data) ? data : (data.items || [])
             return items.value
         } catch (err) {
-            error.value = err
+            if (!silent) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!silent) loading.value = false
         }
     }
 

@@ -109,6 +109,7 @@ import { reviewModel } from '../../scripts/models/reviewModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { onLivePacket } from '../../scripts/core/liveClient.js'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -129,6 +130,11 @@ const {
   completeReview,
   setTemplateId,
 } = reviewModel()
+
+// Review progress is a setting, not a live change: it catches up on reconnect; the step never changes by itself
+onLivePacket(changes => {
+  if (!changes) settings.load()
+})
 
 const setupTip = ref(null)
 const creatingReminder = ref(false)

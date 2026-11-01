@@ -14,6 +14,7 @@ export const APPS = {
             '/v1': {
                 target: 'http://localhost:8000',
                 changeOrigin: true,
+                ws: true,
             }
         }
     },

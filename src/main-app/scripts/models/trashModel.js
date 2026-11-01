@@ -13,9 +13,13 @@ const totalItems = ref(0)
 
 export function trashModel() {
 
-    async function loadTrash({ reset = false } = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadTrash({ reset = false, keepDepth = false } = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             if (reset) {
@@ -23,9 +27,11 @@ export function trashModel() {
             }
 
             const { total_count, items: data } = await apiClient.listTrash({
-                limit: limit.value,
+                limit: keepDepth ? Math.max(limit.value, items.value.length) : limit.value,
                 cursor: cursor.value,
             })
+
+            if (keepDepth && loading.value) return data
 
             if (reset) {
                 items.value = data
@@ -42,10 +48,10 @@ export function trashModel() {
 
             return data
         } catch (err) {
-            error.value = err
+            if (!keepDepth) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 

@@ -308,7 +308,7 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLivePacket } from '../../scripts/core/liveClient.js'
 
 const SEARCH_MIN = 8
 const LAST_ACTION_MESSAGE = 'A template needs at least one action. Add another one before you delete this.'
@@ -317,6 +317,8 @@ const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const confirm = confirmModel()
+// The template a delete confirm is open for; the confirm closes when the template leaves (live)
+let dialogItemId = null
 const model = projectTemplateModel()
 const template = model.current
 
@@ -538,13 +540,15 @@ async function saveDescription() {
 
 async function onDeleteTemplate() {
   const { id, name } = template.value
+  dialogItemId = id
   const ok = await confirm.show({
     title: 'Delete template?',
     message: `"${name}" will be deleted for good. Projects made from it stay as they are.`,
     confirmText: 'Delete',
     cancelText: 'Cancel',
   })
-  if (!ok) return
+  dialogItemId = null
+  if (!ok || template.value?.id !== id) return
   deleting.value = true
   try {
     await model.deleteTemplate(id, name)
@@ -629,7 +633,16 @@ async function onPickTarget(target) {
   }
 }
 
-onAssistantChange(loadTemplate)
+// Silent: a failed re-read only matters when the template is gone; the name / description in edit keep their own values
+onLivePacket((changes) => {
+  if (pageLoading.value || notFound.value) return
+  if (changes && !changes.some(c => c.entity === 'template' && (c.id === null || String(c.id) === String(route.params.id)))) return
+  model.getTemplate(route.params.id).catch((err) => {
+    if (err.status !== 404 && err.status !== 400) return
+    if (dialogItemId) confirm.close()
+    notFound.value = true
+  })
+})
 
 onMounted(async () => {
   model.current.value = null

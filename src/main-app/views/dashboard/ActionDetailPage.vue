@@ -31,7 +31,7 @@
         <EmptyState
             :icon="NextIcon"
             title="This action is no longer here"
-            text="It may have been completed, deleted, or moved."
+            text="It may have been deleted, moved to trash, or you no longer have access."
             buttonText="Go to Next Actions"
             @action="goToNext"
         />
@@ -171,7 +171,7 @@
           >
             Trash
           </Btn>
-          <Dropdown v-if="overflowActions.length" title="More">
+          <Dropdown v-if="overflowActions.length" v-model="showMoreMenu" title="More">
             <template #trigger>
               <Btn variant="icon" size="sm" title="More" data-testid="detail-more-menu"><MoreIcon class="detail-more-icon" /></Btn>
             </template>
@@ -450,8 +450,6 @@ import AttachmentSection from '../../components/AttachmentSection.vue'
 import DateTimeInput from '../../components/DateTimeInput.vue'
 import UserAvatar from '../../components/UserAvatar.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
-import { todayModel } from '../../scripts/models/todayModel.js'
-import { waitingModel } from '../../scripts/models/waitingModel.js'
 import { projectModel } from '../../scripts/models/projectModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
@@ -483,26 +481,25 @@ import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { formatDate as toDateStr } from '../../scripts/core/dateUtils.js'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
 
 const route = useRoute()
 const router = useRouter()
 const toaster = errorModel()
 const undo = undoModel()
 const mover = moveModel()
+// The item a move dialog is open for; the dialog closes when that item leaves (live)
+let dialogItemId = null
 const tagMdl = tagModel()
 const { reviewTemplateId } = reviewModel()
 const settings = settingsModel()
 
 const nextModel = nextActionModel()
-const todayMdl = todayModel()
-const waitingMdl = waitingModel()
 const auth = authModel()
 
 const {
   error,
   getAction,
-  getActionByPosition,
   updateAction,
   trashAction,
   completeAction,
@@ -523,6 +520,7 @@ const descriptionInput = ref(null)
 useAutoGrow(descriptionInput)
 const actionLoading = ref(null)
 const showMoveDialog = ref(false)
+const showMoreMenu = ref(false)
 const detailBodyRef = ref(null)
 const detailActionsRef = ref(null)
 
@@ -560,6 +558,8 @@ const dueDateInput = ref(null)
 const currentPosition = ref(0)
 const totalItems = ref(1)
 const navigating = ref(false)
+// The open action has left the list it was opened from (changed elsewhere)
+const positionLost = ref(false)
 
 // From-source route and label mappings
 const FROM_ROUTES = {
@@ -713,7 +713,7 @@ const fromSomeday = computed(() => fromSource.value === 'someday')
 const fromRecurring = computed(() => fromSource.value === 'recurring')
 const fromEngage = computed(() => fromSource.value === 'engage')
 const fromMixedList = computed(() => fromCompleted.value || fromSomeday.value)
-const hasPositionNav = computed(() => !NO_POSITION_SOURCES.includes(fromSource.value))
+const hasPositionNav = computed(() => !NO_POSITION_SOURCES.includes(fromSource.value) && !positionLost.value)
 
 const backLabel = computed(() => {
   if (fromSource.value === 'project') return route.query.project_title || 'Project'
@@ -786,7 +786,54 @@ async function loadAction() {
   totalItems.value = Number(route.query.total) || 1
 }
 undo.registerRefresh(loadAction)
-onAssistantChange(() => loadAction().catch(() => {}))
+
+// Silent re-read for a change made elsewhere; fields in edit keep their own editValue / dateEdit / editTags
+async function liveReload() {
+  const id = route.params.id
+  try {
+    const data = await apiClient.getAction(id)
+    if (route.params.id !== id || navigating.value) return
+    action.value = { ...data }
+    await refreshPosition(data)
+  } catch (err) {
+    if (route.params.id === id && (err?.status === 404 || err?.status === 403)) {
+      if (dialogItemId === id) mover.close()
+      notFound.value = true
+    }
+  }
+}
+
+async function refreshPosition(data) {
+  if (!hasPositionNav.value) return
+  const getByPosition = positionGetter()
+  for (const pos of new Set([currentPosition.value, data.position])) {
+    const row = await getByPosition(pos).catch(() => null)
+    if (row?.id === data.id) {
+      currentPosition.value = row.position
+      if (typeof row.total_items === 'number') totalItems.value = row.total_items
+      return
+    }
+  }
+  positionLost.value = true
+}
+
+const LIST_ENTITIES = new Set(['stuff', 'action', 'project', 'item'])
+
+onLivePacket((changes) => {
+  if (pageLoading.value || notFound.value || !action.value) return
+  if (!changes) return liveReload()
+  const id = action.value.id
+  const mine = changes.find(c => c.entity === 'action' && c.id === id)
+  if (mine && ['trashed', 'converted', 'deleted'].includes(mine.change) && mine.tab === liveClient.tabId) return
+  if (mine && ['trashed', 'converted'].includes(mine.change)) {
+    showMoveDialog.value = showMoreMenu.value = false
+    if (dialogItemId === id) mover.close()
+  }
+  if (mine?.change === 'trashed') return afterTrash(mine.actor === myUserId.value)
+  if (mine?.change === 'converted') return navigateToNextOrPrev()
+  const projectId = action.value.project?.id
+  if (changes.some(c => LIST_ENTITIES.has(c.entity) || (c.entity === 'member' && c.id === projectId))) liveReload()
+})
 
 onMounted(async () => {
   try {
@@ -955,6 +1002,7 @@ async function onMoveTo(newState) {
   const currentState = action.value.state || 'NEXT'
   if (newState === currentState) return
   const snapshot = { ...action.value }
+  const itemId = action.value.id
 
   const stateLabels = {
     NEXT: 'Next Actions',
@@ -984,12 +1032,14 @@ async function onMoveTo(newState) {
 
   // Special handling for PROJECT - transform action to project
   if (newState === 'PROJECT') {
+    dialogItemId = itemId
     const outcome = await mover.showOutcome()
-    if (!outcome) return
+    dialogItemId = null
+    if (!outcome || action.value?.id !== itemId) return
 
     actionLoading.value = 'move'
     try {
-      await apiClient.transformActionToProject(action.value.id, outcome)
+      await apiClient.transformActionToProject(itemId, outcome)
       statsModel().refreshStats()
       toaster.success(`"${truncateTitle(action.value.title)}" converted to project`)
       await navigateToNextOrPrev()
@@ -1003,10 +1053,12 @@ async function onMoveTo(newState) {
 
   // Special handling for WAITING - need to prompt for waiting_for
   if (newState === 'WAITING') {
+    dialogItemId = itemId
     const pick = await mover.showWaiting({
       waitingFor: action.value.waiting_for || ''
     })
-    if (!pick) return // User cancelled
+    dialogItemId = null
+    if (!pick || action.value?.id !== itemId) return // User cancelled, or the item left
 
     const newWaitingFor = pick.kind === 'connection' ? (pick.label || pick.email) : pick.value
 
@@ -1020,9 +1072,9 @@ async function onMoveTo(newState) {
 
     try {
       if (pick.kind === 'connection') {
-        await delegateAction(action.value.id, pick.userId, pick.email)
+        await delegateAction(itemId, pick.userId, pick.email)
       } else {
-        await waitAction(action.value.id, pick.value)
+        await waitAction(itemId, pick.value)
       }
       statsModel().refreshStats()
       const title = truncateTitle(action.value.title)
@@ -1044,12 +1096,14 @@ async function onMoveTo(newState) {
 
   // Special handling for CALENDAR - need to prompt for date
   if (newState === 'CALENDAR') {
+    dialogItemId = itemId
     const scheduleData = await mover.showSchedule({
       date: action.value.scheduled_date || '',
       time: action.value.scheduled_time || null,
       duration: action.value.scheduled_duration || null
     })
-    if (!scheduleData?.date) return // User cancelled
+    dialogItemId = null
+    if (!scheduleData?.date || action.value?.id !== itemId) return // User cancelled, or the item left
 
     actionLoading.value = 'move'
     const oldState = action.value.state
@@ -1063,7 +1117,7 @@ async function onMoveTo(newState) {
     action.value.scheduled_duration = scheduleData.duration
 
     try {
-      await deferAction(action.value.id, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration)
+      await deferAction(itemId, 'scheduled', scheduleData.date, scheduleData.time, scheduleData.duration)
       statsModel().refreshStats()
       const title = truncateTitle(action.value.title)
       undo.record({ op: 'move', item: snapshot, title, to: 'CALENDAR', message: `"${title}" moved to Calendar` })
@@ -1501,26 +1555,21 @@ async function clearDateField(field) {
 }
 
 // Navigation functions
+function positionGetter() {
+  if (fromCompleted.value) return apiClient.getCompletedByPosition
+  if (fromSomeday.value) return apiClient.getSomedayByPosition
+  if (fromWaiting.value) return apiClient.getWaitingByPosition
+  if (isToday.value) return apiClient.getTodayActionByPosition
+  return apiClient.getActionByPosition
+}
+
 async function navigateToPosition(position) {
   if (navigating.value) return
   if (position < 0 || position >= totalItems.value) return
 
   navigating.value = true
   try {
-    // Use correct model based on source
-    let getByPosition
-    if (fromCompleted.value) {
-      getByPosition = apiClient.getCompletedByPosition
-    } else if (fromSomeday.value) {
-      getByPosition = apiClient.getSomedayByPosition
-    } else if (fromWaiting.value) {
-      getByPosition = waitingMdl.getWaitingByPosition
-    } else if (isToday.value) {
-      getByPosition = todayMdl.getActionByPosition
-    } else {
-      getByPosition = getActionByPosition
-    }
-    const data = await getByPosition(position)
+    const data = await positionGetter()(position)
 
     // Mixed-type lists - redirect if type changed
     if (fromMixedList.value && data.type !== 'ACTION') {
@@ -1613,20 +1662,7 @@ async function navigateToNextOrPrev() {
   const nextPos = currentPosition.value >= newTotal ? newTotal - 1 : currentPosition.value
 
   try {
-    // Use correct model based on source
-    let getByPosition
-    if (fromCompleted.value) {
-      getByPosition = apiClient.getCompletedByPosition
-    } else if (fromSomeday.value) {
-      getByPosition = apiClient.getSomedayByPosition
-    } else if (fromWaiting.value) {
-      getByPosition = waitingMdl.getWaitingByPosition
-    } else if (isToday.value) {
-      getByPosition = todayMdl.getActionByPosition
-    } else {
-      getByPosition = getActionByPosition
-    }
-    const data = await getByPosition(nextPos)
+    const data = await positionGetter()(nextPos)
 
     // Mixed-type lists - redirect if type changed
     if (fromMixedList.value && data.type !== 'ACTION') {
@@ -1653,17 +1689,24 @@ async function onTrash() {
   actionLoading.value = 'trash'
   try {
     await trashAction(action.value.id)
-    const title = truncateTitle(action.value.title)
-    undo.record({ op: 'trash', item: action.value, title, message: `"${title}" moved to trash` })
-    if (isSomeday.value) {
-      router.push({ name: 'someday' })
-    } else {
-      await navigateToNextOrPrev()
-    }
+    await afterTrash(true)
   } catch (err) {
     toaster.push(err.message || 'Failed to move action to trash')
   } finally {
     actionLoading.value = null
+  }
+}
+
+// Also runs for a trash made elsewhere: the toast only for the user's own change
+async function afterTrash(withToast) {
+  if (withToast) {
+    const title = truncateTitle(action.value.title)
+    undo.record({ op: 'trash', item: action.value, title, message: `"${title}" moved to trash` })
+  }
+  if (isSomeday.value) {
+    router.push({ name: 'someday' })
+  } else {
+    await navigateToNextOrPrev()
   }
 }
 

@@ -21,8 +21,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
+import { liveClient } from '../../scripts/core/liveClient.js'
 import RecurringIcon from '../../assets/RecurringIcon.vue'
 
 const props = defineProps({
@@ -73,15 +74,30 @@ function onClick(e) {
   emit('click', props.item)
 }
 
+// A drag or resize holds live updates so the block never moves under the pointer
+let liveHeld = false
+function holdLive(on) {
+  if (on === liveHeld) return
+  liveHeld = on
+  if (on) liveClient.hold()
+  else liveClient.release()
+}
+onBeforeUnmount(() => holdLive(false))
+
 function onResizeStart(e) {
   // The click that follows the resize mouseup must not open the detail page
   suppressClick = true
-  document.addEventListener('mouseup', () => setTimeout(() => { suppressClick = false }, 0), { once: true })
+  holdLive(true)
+  document.addEventListener('mouseup', () => setTimeout(() => {
+    suppressClick = false
+    holdLive(false)
+  }, 0), { once: true })
   emit('resize-start', props.item, e)
 }
 
 function onDragStart(e) {
   isDragging.value = true
+  holdLive(true)
   e.dataTransfer.setData('text/plain', JSON.stringify({
     id: props.item.id,
     type: 'calendar-item',
@@ -96,6 +112,7 @@ function onDragStart(e) {
 
 function onDragEnd() {
   isDragging.value = false
+  holdLive(false)
   emit('drag-end', props.item)
 }
 </script>

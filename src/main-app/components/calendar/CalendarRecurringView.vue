@@ -73,6 +73,7 @@ import { authModel } from '../../scripts/core/authModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 const router = useRouter()
 const auth = authModel()
@@ -113,6 +114,12 @@ watch(error, (err) => {
 onMounted(() => {
   items.value = []
   loadRecurring().catch(() => {})
+})
+// The template a delete confirm is open for; the confirm closes when that row leaves (live)
+let confirmRowId = null
+onLiveChange(async () => {
+  await loadRecurring({ silent: true }).catch(() => {})
+  if (confirmRowId && !items.value.some(i => i.id === confirmRowId)) confirm.close()
 })
 
 function openAdd() {
@@ -172,6 +179,7 @@ async function onDelete(id) {
   const title = truncateTitle(item?.title)
 
   let deleteInstance = false
+  confirmRowId = id
   if (item?.active_instance_id) {
     const choice = await confirm.show({
       title: 'Delete Template',
@@ -180,6 +188,7 @@ async function onDelete(id) {
       cancelText: 'Cancel',
       altText: 'Keep task'
     })
+    confirmRowId = null
     if (!choice) return
     deleteInstance = choice === true
   } else {
@@ -189,6 +198,7 @@ async function onDelete(id) {
       confirmText: 'Delete',
       cancelText: 'Cancel'
     })
+    confirmRowId = null
     if (!confirmed) return
   }
 

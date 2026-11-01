@@ -24,9 +24,13 @@ const activeTags = ref(null)
 
 export function somedayModel() {
 
-    async function loadSomeday({ reset = false, tags = undefined } = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadSomeday({ reset = false, tags = undefined, keepDepth = false } = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             if (tags !== undefined) {
@@ -40,10 +44,12 @@ export function somedayModel() {
             const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
 
             const { total_count, items: data } = await apiClient.listSomeday({
-                limit: limit.value,
+                limit: keepDepth ? Math.max(limit.value, items.value.length) : limit.value,
                 cursor: cursor.value,
                 tags: tagsParam,
             })
+
+            if (keepDepth && loading.value) return data
 
             if (reset) {
                 items.value = data
@@ -60,10 +66,10 @@ export function somedayModel() {
 
             return data
         } catch (err) {
-            error.value = err
+            if (!keepDepth) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 

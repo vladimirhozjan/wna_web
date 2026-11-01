@@ -154,6 +154,7 @@ import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import { canvasModel, NODE_TEXT_LIMIT, CHILD_GAP } from '../../scripts/models/canvasModel.js'
 import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
+import { liveClient } from '../../scripts/core/liveClient.js'
 
 const emit = defineEmits(['move', 'help'])
 
@@ -852,9 +853,13 @@ onMounted(() => {
   focusSurface()
 })
 
+// A row must never move under the pointer: live updates wait for the drop
+watch(() => drag.active, (on) => (on ? liveClient.hold() : liveClient.release()))
+
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   clearLongPress()
+  if (drag.active) liveClient.release()
 })
 </script>
 

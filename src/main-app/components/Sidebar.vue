@@ -223,11 +223,19 @@ import { settingsModel } from "../scripts/models/settingsModel.js";
 import { engageModel } from "../scripts/models/engageModel.js";
 import { connectionModel } from "../scripts/models/connectionModel.js";
 import { truncateTitle } from "../scripts/core/textUtils.js";
+import { onLivePacket } from "../scripts/core/liveClient.js";
 
 const auth = authModel();
 const toaster = errorModel();
 const confirm = confirmModel();
 const mover = moveModel();
+
+// The dropped item a dialog is open for, and that dialog's close; it closes when the item leaves (live)
+let dialogFor = null;
+onLivePacket((changes) => {
+  const f = dialogFor;
+  if (f && changes?.some((c) => c.id === f.id && ["trashed", "completed", "converted", "deleted"].includes(c.change))) f.close();
+});
 const drag = dragModel();
 const undo = undoModel();
 const { items: stuffItems, loadStuff } = stuffModel();
@@ -321,12 +329,14 @@ function recordDrop(op, row, message, to = null) {
 }
 
 async function confirmAndTransformProjectToAction(id) {
+  dialogFor = { id, close: confirm.close };
   const confirmed = await confirm.show({
     title: 'Convert to Action',
     message: 'Converting this project to an action will trash its backlog actions. Continue?',
     confirmText: 'Convert',
     cancelText: 'Cancel'
   });
+  dialogFor = null;
   if (!confirmed) return null;
   return apiClient.transformProjectToAction(id);
 }
@@ -448,7 +458,9 @@ async function onDropToProjects(data) {
     return;
   }
 
+  dialogFor = { id: data.id, close: mover.close };
   const outcome = await mover.showOutcome()
+  dialogFor = null;
   if (!outcome) return
 
   try {
@@ -588,20 +600,24 @@ async function onDropToCalendar(data) {
     || (data.sourceType === 'someday' && data.type === 'PROJECT')
     || (data.sourceType === 'completed' && data.type === 'PROJECT');
   if (isProjectConvert) {
+    dialogFor = { id: data.id, close: confirm.close };
     const confirmed = await confirm.show({
       title: 'Convert to Action',
       message: 'Converting this project to an action will trash its backlog actions. Continue?',
       confirmText: 'Convert',
       cancelText: 'Cancel'
     });
+    dialogFor = null;
     if (!confirmed) return;
   }
 
+  dialogFor = { id: data.id, close: mover.close };
   const scheduleData = await mover.showSchedule({
     date: '',
     time: '',
     duration: null
   });
+  dialogFor = null;
 
   if (!scheduleData || !scheduleData.date) return;
 
@@ -676,18 +692,22 @@ async function onDropToWaitingFor(data) {
     || (data.sourceType === 'someday' && data.type === 'PROJECT')
     || (data.sourceType === 'completed' && data.type === 'PROJECT');
   if (isProjectConvert) {
+    dialogFor = { id: data.id, close: confirm.close };
     const confirmed = await confirm.show({
       title: 'Convert to Action',
       message: 'Converting this project to an action will trash its backlog actions. Continue?',
       confirmText: 'Convert',
       cancelText: 'Cancel'
     });
+    dialogFor = null;
     if (!confirmed) return;
   }
 
+  dialogFor = { id: data.id, close: mover.close };
   const pick = await mover.showWaiting({
     waitingFor: ''
   });
+  dialogFor = null;
 
   if (!pick) return;
 
@@ -754,12 +774,14 @@ async function onDropToWaitingFor(data) {
 
 async function onDropToReference(data) {
   if (data.sourceType === 'project') {
+    dialogFor = { id: data.id, close: confirm.close };
     const confirmed = await confirm.show({
       title: 'Convert to Reference',
       message: 'This will convert the project and all its actions to a reference file. Continue?',
       confirmText: 'Convert',
       cancelText: 'Cancel'
     });
+    dialogFor = null;
     if (!confirmed) return;
   }
 

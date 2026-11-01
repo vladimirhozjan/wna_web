@@ -1,4 +1,4 @@
-import { reactive, computed, watch, effectScope, onMounted, onBeforeUnmount } from 'vue'
+import { reactive, computed, watch, effectScope } from 'vue'
 import {
     getAssistant,
     setAssistantModel,
@@ -16,10 +16,9 @@ import { authModel } from '../core/authModel.js'
 import { flagsModel } from '../core/flagsModel.js'
 import { offlineModel } from '../core/offlineModel.js'
 import { errorModel } from '../core/errorModel.js'
-import { statsModel } from './statsModel.js'
+import { liveClient } from '../core/liveClient.js'
 
 // contracts/limits.md §AI assistant
-export const ASSISTANT_POLL_MS = 2000
 export const ASSISTANT_TEXT_MAX = 4000
 export const ASSISTANT_PASTED_MAX = 20000
 
@@ -29,15 +28,9 @@ export const CREDITS_BEFORE_CHECKOUT_KEY = 'assistant-credits-before-checkout'
 // Unicode code points, as the API counts them
 export const charCount = (s) => [...(s || '')].length
 
-const changeListeners = new Set()
-
-// Call from a page's setup with the function its load / pull-to-refresh runs
-export function onAssistantChange(fn) {
-    onMounted(() => changeListeners.add(fn))
-    onBeforeUnmount(() => changeListeners.delete(fn))
-}
-
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+// A packet names this request, or anything may have changed (null: reconnect / resync); id null = conversation deleted
+const touchesRequest = (changes, id) =>
+    !changes || changes.some(c => c.entity === 'ai_request' && (c.id === null || String(c.id) === String(id)))
 
 let instance = null
 
@@ -77,11 +70,10 @@ export function assistantModel() {
             state.account?.models?.find(m => m.id === state.account.selected_model_id) || null),
     }))
 
-    let pollTimer = null
     let tempId = 0
     let conversationPromise = null
-    // request id → changes_total already announced to the open pages
-    const announced = new Map()
+    let reading = false
+    let readAgain = false
 
     async function loadAccount() {
         try {
@@ -113,10 +105,7 @@ export function assistantModel() {
         state.conversationLoaded = true
         state.conversationError = false
         const last = [...state.messages].reverse().find(m => m.role === 'assistant')
-        if (last?.status === 'working' && last.request_id) {
-            announced.set(last.request_id, last.changes_total || 0)
-            startPoll(last.request_id)
-        }
+        if (last?.status === 'working' && last.request_id) track(last.request_id)
     }
 
     function loadConversation() {
@@ -179,10 +168,9 @@ export function assistantModel() {
             settleEarlierMessages(requestId)
             upsertMessage(data.user_message)
             upsertMessage(data.assistant_message)
-            if (!announced.has(requestId)) announced.set(requestId, 0)
             if (state.account) state.account.has_conversation = true
             state.disabled = false
-            startPoll(requestId)
+            track(requestId)
         } catch (err) {
             state.messages = state.messages.filter(m => m.id !== pending.id)
             state.draft = pending.text
@@ -211,56 +199,56 @@ export function assistantModel() {
         }
     }
 
-    // ── Polling (runs whether the panel is open or not) ──
+    // ── The working request (whether the panel is open or not), re-read on its live packets ──
 
-    function startPoll(id) {
+    function track(id) {
         state.requestId = id
         state.stopping = false
-        clearTimeout(pollTimer)
-        pollTimer = setTimeout(pollOnce, ASSISTANT_POLL_MS)
     }
 
-    function endPoll() {
-        clearTimeout(pollTimer)
-        pollTimer = null
+    function untrack() {
         state.requestId = null
         state.stopping = false
     }
 
-    async function pollOnce() {
+    async function readRequest() {
         const id = state.requestId
         if (!id) return
-        let data
+        if (reading) {
+            readAgain = true
+            return
+        }
+        reading = true
         try {
-            data = await getAssistantRequest(id)
+            const data = await getAssistantRequest(id)
+            if (id !== state.requestId) return
+            if (data.message) upsertMessage(data.message)
+            if (data.status !== 'working') {
+                untrack()
+                onRequestEnded(data)
+            }
         } catch (err) {
             if (id !== state.requestId) return
-            if (err.status === 404) return endPoll()
-            if (err.code === 'assistant_disabled') {
+            if (err.status === 404) untrack()
+            else if (err.code === 'assistant_disabled') {
                 onDisabled()
-                return endPoll()
+                untrack()
             }
-            pollTimer = setTimeout(pollOnce, ASSISTANT_POLL_MS)
-            return
+        } finally {
+            reading = false
+            if (readAgain) {
+                readAgain = false
+                readRequest()
+            }
         }
-        if (id !== state.requestId) return
-        if (data.message) upsertMessage(data.message)
-        if (data.status === 'working') {
-            pollTimer = setTimeout(pollOnce, ASSISTANT_POLL_MS)
-            return
-        }
-        endPoll()
-        onRequestEnded(id, data)
     }
 
-    function onRequestEnded(id, data) {
+    liveClient.subscribe(changes => {
+        if (state.requestId && touchesRequest(changes, state.requestId)) readRequest()
+    })
+
+    function onRequestEnded(data) {
         const msg = data.message
-        const total = msg?.changes_total || 0
-        if (total > (announced.get(id) || 0)) {
-            announced.set(id, total)
-            changeListeners.forEach(fn => fn())
-            statsModel().refreshStats()
-        }
         if (!state.panelOpen && data.status === 'done') {
             toaster.success(msg?.summary ? `AI assistant is done: ${msg.summary}` : 'AI assistant is done')
         }
@@ -277,7 +265,7 @@ export function assistantModel() {
         try {
             await stopAssistantRequest(id)
         } catch (err) {
-            // Already ended — the next poll brings the result
+            // Already ended — its live packet brings the result
             if (err.code !== 'request_not_running') {
                 state.stopping = false
                 toaster.push('Couldn\'t reach the AI assistant. Check your connection and try again.', 'error', { keepOffline: true })
@@ -287,7 +275,7 @@ export function assistantModel() {
 
     async function newConversation() {
         await deleteAssistantConversation()
-        endPoll()
+        untrack()
         state.messages = []
         state.conversationLoaded = true
         state.conversationError = false
@@ -296,31 +284,55 @@ export function assistantModel() {
         loadAccount().catch(() => {})
     }
 
-    // ── Canvas convert: one request, polled by its own modal ──
+    // ── Canvas convert: one request, awaited by its own modal ──
 
     async function startCanvas(projectId) {
         const data = await startCanvasConvert(projectId)
         return data.request_id
     }
 
-    // Resolves with the request once it stops working; isCancelled() ends the wait quietly (null)
-    async function waitForRequest(id, isCancelled = () => false) {
-        for (;;) {
-            await sleep(ASSISTANT_POLL_MS)
-            if (isCancelled()) return null
-            let data
-            try {
-                data = await getAssistantRequest(id)
-            } catch (err) {
-                if (err.status !== null) throw err
-                continue
+    // Resolves with the request once it stops working, re-read on its live packets; isCancelled() ends the wait quietly (null)
+    function waitForRequest(id, isCancelled = () => false) {
+        return new Promise((resolve, reject) => {
+            let busy = false
+            let again = false
+            const off = liveClient.subscribe(changes => {
+                if (isCancelled()) finish(null)
+                else if (touchesRequest(changes, id)) read()
+            })
+            function finish(data) {
+                off()
+                resolve(data)
             }
-            if (isCancelled()) return null
-            if (data.status !== 'working') {
-                loadAccount().catch(() => {})
-                return data
+            async function read() {
+                if (busy) {
+                    again = true
+                    return
+                }
+                busy = true
+                try {
+                    const data = await getAssistantRequest(id)
+                    if (isCancelled()) return finish(null)
+                    if (data.status !== 'working') {
+                        loadAccount().catch(() => {})
+                        return finish(data)
+                    }
+                } catch (err) {
+                    // Offline: the reconnect re-read tries again
+                    if (err.status !== null) {
+                        off()
+                        return reject(err)
+                    }
+                } finally {
+                    busy = false
+                }
+                if (again) {
+                    again = false
+                    read()
+                }
             }
-        }
+            read()
+        })
     }
 
     // ── Memory ──
@@ -330,8 +342,7 @@ export function assistantModel() {
     const clearMemory = () => clearAssistantMemory()
 
     function reset() {
-        endPoll()
-        announced.clear()
+        untrack()
         Object.assign(state, {
             account: null,
             accountError: false,

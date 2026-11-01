@@ -101,6 +101,11 @@ export const faq = [
       'Yes, on every plan. Once you have opened WhatsNextAction online — in the browser or as the installed app — it also opens without a network connection. Offline, Quick Add and your Inbox keep working; other pages show that they load when you\'re back online. Each item you capture appears at the top of your Inbox marked "Waiting to sync" and is sent to your account automatically when the connection returns while WhatsNextAction is open (if it is closed, the next time you open it). On Free you capture text; on Pro and Team you can also attach photos, voice memos and files — up to 50 MB of waiting files per device, and a file that doesn\'t fit stays in the bar so you can attach it when you\'re back online. If the server can\'t save an item, it is marked "Couldn\'t sync" with Retry and Discard. Waiting items are kept on this device only, and logging out deletes them — you are asked first.',
   },
   {
+    question: 'Do my lists update by themselves?',
+    answer:
+      'Yes, on every plan. While WhatsNextAction is open, changes made somewhere else — in another tab or on another device, by an AI app or the AI assistant, or by a member of a shared project — appear within about a second, without reloading. Text you are typing is never overwritten. If the connection drops, the page catches up as soon as it is back. On a phone, pull down at the top of a list to check right away.',
+  },
+  {
     question: 'Can I share to WhatsNextAction from other apps?',
     answer:
       'Yes, on Android with the installed app. In any app — your browser, Photos, WhatsApp, Files — tap Share and choose WNA. A short Add to Inbox form opens already filled in: the shared title or first line becomes the title, and the rest of the text and the link go to the description. Edit anything you like, then tap Add to Inbox and you are taken back to the app you shared from. It works offline too — the item is saved on your device and sent when you\'re back online. If you aren\'t signed in, sign in first and the form opens with what you shared. On Free you share text and links; on Pro and Team you can also share photos and files, within your plan\'s attachment limits. Sharing isn\'t available on iPhone/iPad — Safari doesn\'t support it; it will come with the iOS app.',

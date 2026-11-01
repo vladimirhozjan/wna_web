@@ -76,7 +76,7 @@ import SearchIcon from '../../assets/SearchIcon.vue'
 import { searchModel, SEARCH_MIN_LENGTH } from '../../scripts/models/searchModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 // No Completed chip — completed hits stay in All and their type, badged
 const CHIPS = [
@@ -113,7 +113,7 @@ async function loadMore() {
   }
 }
 undo.registerRefresh(search.retry)
-onAssistantChange(search.retry)
+onLiveChange(search.refresh)
 
 watch(value, (v) => search.input(v))
 

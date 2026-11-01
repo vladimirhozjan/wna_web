@@ -8,10 +8,8 @@ const loaded = ref(false)
 const cursor = ref(null)
 const hasMore = ref(true)
 
-const POLL_INTERVAL_MS = 30000
 const READ_SEND_INTERVAL_MS = 1000
 const READ_BATCH_MAX = 20
-let pollTimer = null
 let readTimer = null
 const pendingReadIds = new Set()
 let instance = null
@@ -19,8 +17,11 @@ let instance = null
 export function notificationInAppModel() {
     if (instance) return instance
 
-    async function loadList({ reset = false, limit = 20 } = {}) {
-        loading.value = true
+    // keepDepth: a live re-read — silent, as many rows as are loaded
+    async function loadList({ reset = false, limit = 20, keepDepth = false } = {}) {
+        if (keepDepth && loading.value) return
+        if (keepDepth) limit = Math.max(limit, notifications.value.length)
+        else loading.value = true
         try {
             if (reset) {
                 cursor.value = null
@@ -28,6 +29,7 @@ export function notificationInAppModel() {
             }
             const data = await apiClient.listNotifications({ limit, cursor: cursor.value })
             const items = data.notifications || []
+            items.forEach(n => { if (pendingReadIds.has(n.id)) n.read = true })
             if (reset) {
                 notifications.value = items
             } else {
@@ -42,7 +44,7 @@ export function notificationInAppModel() {
             if (import.meta.env.DEV) console.warn('[notifications] list failed:', err)
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 
@@ -90,7 +92,7 @@ export function notificationInAppModel() {
         }
     }
 
-    // Failed batches are dropped, not retried — the close-time count check or the poll corrects the badge
+    // Failed batches are dropped, not retried — the close-time count check or the next live packet corrects the badge
     async function sendReadBatch() {
         const ids = [...pendingReadIds].slice(0, READ_BATCH_MAX)
         ids.forEach(id => pendingReadIds.delete(id))
@@ -116,19 +118,6 @@ export function notificationInAppModel() {
         }
     }
 
-    function startPolling() {
-        stopPolling()
-        loadUnreadCount()
-        pollTimer = setInterval(loadUnreadCount, POLL_INTERVAL_MS)
-    }
-
-    function stopPolling() {
-        if (pollTimer) {
-            clearInterval(pollTimer)
-            pollTimer = null
-        }
-    }
-
     function reset() {
         notifications.value = []
         unreadCount.value = 0
@@ -137,7 +126,6 @@ export function notificationInAppModel() {
         loaded.value = false
         pendingReadIds.clear()
         stopReadTimer()
-        stopPolling()
     }
 
     instance = {
@@ -153,8 +141,6 @@ export function notificationInAppModel() {
         markRead,
         markSeen,
         flushRead,
-        startPolling,
-        stopPolling,
         reset,
     }
     return instance

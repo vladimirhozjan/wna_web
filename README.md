@@ -83,7 +83,7 @@ npm run dev:admin         # Start admin-app → http://localhost:7111
 ```
 
 The dev server uses Vite proxy to forward API requests:
-- main-app: `/v1/*` → `http://localhost:8000` (router_service)
+- main-app: `/v1/*` → `http://localhost:8000` (router_service), including the `/v1/live` WebSocket
 - admin-app: `/auth/*`, `/admin/*` → `http://localhost:8004` (admin_service)
 
 Both dev servers listen on all network interfaces, so a phone on the same Wi-Fi can open

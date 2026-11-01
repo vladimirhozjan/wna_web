@@ -219,6 +219,7 @@ export function completedModel() {
 
         loadCompleted,
         loadStats,
+        reconcile,
         uncompleteItem,
         removeItem,
     }

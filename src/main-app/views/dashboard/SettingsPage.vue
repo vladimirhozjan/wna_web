@@ -844,7 +844,7 @@ import { paymentModel } from '../../scripts/models/paymentModel.js'
 import { format, parseISO } from 'date-fns'
 import Spinner from '../../components/Spinner.vue'
 import AssistantMemoryModal from '../../components/AssistantMemoryModal.vue'
-import { assistantModel, ASSISTANT_POLL_MS, CREDITS_BEFORE_CHECKOUT_KEY } from '../../scripts/models/assistantModel.js'
+import { assistantModel, CREDITS_BEFORE_CHECKOUT_KEY } from '../../scripts/models/assistantModel.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -1171,7 +1171,7 @@ async function convergeAfterCreditsCheckout() {
   confirmingCredits.value = true
   try {
     for (let attempt = 0; attempt < CONVERGE_MAX_ATTEMPTS; attempt++) {
-      if (attempt > 0) await new Promise(resolve => setTimeout(resolve, ASSISTANT_POLL_MS))
+      if (attempt > 0) await new Promise(resolve => setTimeout(resolve, CONVERGE_POLL_MS))
       if (!auth.isAuthenticated.value) return
       try {
         const account = await assistant.loadAccount()

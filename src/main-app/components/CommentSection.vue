@@ -87,6 +87,7 @@ import { errorModel } from '../scripts/core/errorModel.js'
 import { authModel } from '../scripts/core/authModel.js'
 import { connectionModel } from '../scripts/models/connectionModel.js'
 import Spinner from './Spinner.vue'
+import { onLivePacket } from '../scripts/core/liveClient.js'
 
 const props = defineProps({
   entityType: { type: String, required: true },
@@ -133,6 +134,16 @@ function commentEmail(comment) {
   if (c?.email) return c.email
   return 'Unconnected member'
 }
+
+// A comment made elsewhere: silent, the text being typed stays
+onLivePacket(async (changes) => {
+  if (loading.value || (changes && !changes.some(c => c.entity === 'comment' && c.id === props.itemId))) return
+  const id = props.itemId
+  try {
+    const data = await listComments(props.entityType, id)
+    if (id === props.itemId) comments.value = data.comments || []
+  } catch { /* the next packet re-reads */ }
+})
 
 async function loadComments() {
   loading.value = true

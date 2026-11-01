@@ -65,7 +65,7 @@ import { calendarModel } from '../../scripts/models/calendarModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 const router = useRouter()
 const calendar = calendarModel()
@@ -78,7 +78,7 @@ const currentDate = computed(() => calendar.currentDate.value)
 const viewMode = computed(() => calendar.viewMode.value)
 const loading = computed(() => calendar.loading.value)
 
-async function loadData() {
+async function loadData({ silent = false } = {}) {
   if (viewMode.value === 'recurring') return
 
   try {
@@ -86,16 +86,16 @@ async function loadData() {
 
     if (viewMode.value === 'year') {
       // Density for efficient rendering; items so multi-day spans count on their continuation days
-      await Promise.all([calendar.loadDensity(start, end), calendar.loadCalendarItems(start, end)])
+      await Promise.all([calendar.loadDensity(start, end), calendar.loadCalendarItems(start, end, { silent })])
     } else {
-      await calendar.loadCalendarItems(start, end)
+      await calendar.loadCalendarItems(start, end, { silent })
     }
   } catch (err) {
-    toaster.push('Failed to load calendar items')
+    if (!silent) toaster.push('Failed to load calendar items')
   }
 }
 undo.registerRefresh(loadData)
-onAssistantChange(() => loadData().catch(() => {}))
+onLiveChange(() => loadData({ silent: true }))
 
 onMounted(() => {
   loadData()

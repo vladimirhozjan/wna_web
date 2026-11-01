@@ -148,6 +148,7 @@ import { errorModel } from '../scripts/core/errorModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import Spinner from './Spinner.vue'
 import { audioPlayer } from '../scripts/core/captureRules.js'
+import { onLivePacket } from '../scripts/core/liveClient.js'
 
 const props = defineProps({
   entityType: { type: String, required: true },
@@ -157,6 +158,8 @@ const props = defineProps({
 
 const toaster = errorModel()
 const confirm = confirmModel()
+// The attachment a delete confirm is open for; the confirm closes when it or its item leaves (live)
+let confirmRowId = null
 const { playingId, toggle: toggleAudio, stop: stopPlayback } = audioPlayer()
 
 const attachments = ref([])
@@ -204,6 +207,7 @@ onMounted(() => {
 })
 
 watch(() => props.itemId, () => {
+  if (confirmRowId) confirm.close()
   uploading.value = false
   progress.value = 0
   closePreview()
@@ -214,6 +218,18 @@ watch(() => props.itemId, () => {
 watch(() => media.value.map(a => a.id).join(), syncMedia)
 
 onUnmounted(releaseAll)
+
+// An attachment added or removed elsewhere: silent
+onLivePacket(async (changes) => {
+  if (loading.value || (changes && !changes.some(c => c.entity === 'attachment' && c.id === props.itemId))) return
+  const id = props.itemId
+  try {
+    const data = await listAttachments(props.entityType, id)
+    if (id !== props.itemId) return
+    attachments.value = data.attachments || []
+    if (confirmRowId && !attachments.value.some(a => a.id === confirmRowId)) confirm.close()
+  } catch { /* the next packet re-reads */ }
+})
 
 async function loadAttachments() {
   loading.value = true
@@ -432,17 +448,20 @@ async function download(att) {
 // ── Delete ──
 
 async function remove(att) {
+  const { entityType, itemId } = props
+  confirmRowId = att.id
   const confirmed = await confirm.show({
     title: 'Delete Attachment',
     message: `Are you sure you want to delete "${att.file_name}"?`,
     confirmText: 'Delete',
     cancelText: 'Cancel'
   })
+  confirmRowId = null
 
-  if (!confirmed) return
+  if (!confirmed || itemId !== props.itemId) return
 
   try {
-    await deleteAttachment(props.entityType, props.itemId, att.id)
+    await deleteAttachment(entityType, itemId, att.id)
     attachments.value = attachments.value.filter(a => a.id !== att.id)
     toaster.success('Attachment deleted')
   } catch {

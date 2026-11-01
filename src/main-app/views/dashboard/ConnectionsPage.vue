@@ -159,7 +159,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import Spinner from '../../components/Spinner.vue'
@@ -171,7 +171,6 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
 
 const auth = authModel()
 const toaster = errorModel()
@@ -285,7 +284,14 @@ async function onDecline(inv) {
   }
 }
 
+// A confirm for a connection that leaves (live) closes with it
+let confirmRowId = null
+watch([connections.connections, connections.pendingSent, connections.pendingReceived], (lists) => {
+  if (confirmRowId && !lists.some(list => list.some(c => c.id === confirmRowId))) confirm.close()
+})
+
 async function onRemove(item) {
+  confirmRowId = item.id
   const confirmed = await confirm.show({
     title: 'Remove connection',
     message: item.email
@@ -294,6 +300,7 @@ async function onRemove(item) {
     confirmText: 'Remove',
     cancelText: 'Cancel',
   })
+  confirmRowId = null
   if (!confirmed) return
   actingId.value = item.id
   actingType.value = 'remove'
@@ -321,8 +328,6 @@ function formatRelative(dateStr) {
   if (diffDays < 7) return `${diffDays}d ago`
   return date.toLocaleDateString()
 }
-
-onAssistantChange(() => connections.loadAll().catch(() => {}))
 
 onMounted(() => {
   connections.loadAll().catch(() => {

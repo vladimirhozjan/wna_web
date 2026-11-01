@@ -56,7 +56,7 @@ import TextFileIcon from '../../assets/TextFileIcon.vue'
 import { projectTemplateModel } from '../../scripts/models/projectTemplateModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
-import { onAssistantChange } from '../../scripts/models/assistantModel.js'
+import { onLiveChange } from '../../scripts/core/liveClient.js'
 
 const router = useRouter()
 const toaster = errorModel()
@@ -94,13 +94,18 @@ async function onRename(id, { title }) {
   }
 }
 
+// A confirm for a template that leaves (live) closes with it
+let confirmRowId = null
+
 async function onDelete(item) {
+  confirmRowId = item.id
   const ok = await confirm.show({
     title: 'Delete template?',
     message: `"${item.name}" will be deleted for good. Projects made from it stay as they are.`,
     confirmText: 'Delete',
     cancelText: 'Cancel',
   })
+  confirmRowId = null
   if (!ok) return
   busyId.value = item.id
   try {
@@ -116,7 +121,10 @@ watch(error, (err) => {
   if (err) toaster.push(err.message ?? 'Unknown error')
 })
 
-onAssistantChange(() => loadTemplates({ reset: true }).catch(() => {}))
+onLiveChange(async () => {
+  await loadTemplates({ reset: true, keepDepth: true }).catch(() => {})
+  if (confirmRowId && !items.value.some(i => i.id === confirmRowId)) confirm.close()
+})
 
 onMounted(() => {
   loadTemplates({ reset: true }).catch(() => {})

@@ -2,7 +2,16 @@
   <nav class="topnav">
     <router-link to="/" class="topnav-left">
       <AppIcon />
-      <span class="topnav-title" :class="{ 'dashboard-title': context === 'dashboard' }"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
+      <span class="topnav-title" :class="{ 'dashboard-title': context === 'dashboard', 'topnav-title--live-paused': liveReconnecting }"><span class="topnav-title-primary">WhatsNext</span><span class="topnav-title-accent">Action</span></span>
+      <span
+        v-if="liveReconnecting"
+        class="topnav-live-status"
+        data-testid="live-status"
+        title="Live updates are paused. Your lists catch up when the connection is back."
+      >
+        <Spinner :size="16" />
+        <span class="text-footnote color-text-secondary">Reconnecting…</span>
+      </span>
     </router-link>
 
     <!-- Center nav links (landing/public context, desktop only) -->
@@ -168,6 +177,7 @@ import AiIcon from "../assets/AiIcon.vue";
 import { notificationInAppModel } from "../scripts/models/notificationInAppModel.js";
 import { assistantModel } from "../scripts/models/assistantModel.js";
 import { shortcutModel } from "../scripts/core/shortcutModel.js";
+import { liveClient, onLivePacket } from "../scripts/core/liveClient.js";
 
 const props = defineProps({
   authenticated: {
@@ -255,6 +265,14 @@ watch(notifDropdownOpen, async (open) => {
   await notifModel.flushRead();
   if (notifModel.unreadCount.value !== unreadAtOpen) notifModel.loadUnreadCount();
 });
+
+onLivePacket((changes) => {
+  if (changes && !changes.some((c) => c.entity === "notification")) return;
+  if (notifDropdownOpen.value) notifModel.loadList({ reset: true, keepDepth: true }).catch(() => {});
+  else notifModel.loadUnreadCount();
+});
+
+const liveReconnecting = computed(() => liveClient.reconnecting.value);
 
 // Viewport root so the sheet's clipping on mobile counts too, not just the list's scroll
 watch([notifListRef, () => notifList.value, () => notifList.value.length], ([el]) => {
@@ -348,9 +366,10 @@ watch(
     () => props.authenticated,
     (v) => {
       if (v) {
-        notifModel.startPolling();
+        notifModel.loadUnreadCount();
+        if (props.context === "dashboard") liveClient.start();
       } else {
-        notifModel.stopPolling();
+        liveClient.stop();
         notifModel.reset();
       }
     },
@@ -411,7 +430,8 @@ function onClickOutside(e) {
 onMounted(() => {
   document.addEventListener("click", onClickOutside);
   if (props.authenticated) {
-    notifModel.startPolling();
+    notifModel.loadUnreadCount();
+    if (props.context === "dashboard") liveClient.start();
   }
 });
 
@@ -419,7 +439,7 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", onClickOutside);
   notifObserver?.disconnect();
   notifModel.flushRead();
-  notifModel.stopPolling();
+  if (props.context === "dashboard") liveClient.stop();
 });
 </script>
 
@@ -459,6 +479,13 @@ onBeforeUnmount(() => {
   font-size: 15px;
   letter-spacing: -0.02em;
   line-height: 18px;
+}
+
+.topnav-live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .topnav-title-primary {
@@ -731,6 +758,10 @@ onBeforeUnmount(() => {
     position: relative;
   }
 
+  .topnav-title--live-paused {
+    display: none;
+  }
+
   .dashboard .search-btn::after,
   .dashboard .ai-btn::after,
   .dashboard .notifications-btn::after,
@@ -748,7 +779,8 @@ onBeforeUnmount(() => {
 
 /* Below this the wordmark and the four icon buttons no longer fit in one row */
 @media (max-width: 371px) {
-  .dashboard .topnav-title {
+  .dashboard .topnav-title,
+  .dashboard .topnav-live-status {
     display: none;
   }
 }

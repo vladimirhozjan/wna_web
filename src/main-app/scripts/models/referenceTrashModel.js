@@ -18,9 +18,13 @@ export function referenceTrashModel() {
 
     const hasMore = computed(() => offset.value + files.value.length < totalFiles.value)
 
-    async function loadTrash({reset = false} = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadTrash({reset = false, keepDepth = false} = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             if (reset) {
@@ -28,10 +32,12 @@ export function referenceTrashModel() {
             }
 
             const data = await apiClient.listRefTrash({
-                limit: limit.value,
+                limit: keepDepth ? Math.max(limit.value, files.value.length) : limit.value,
                 offset: offset.value,
                 side: referenceModel().side.value,
             })
+
+            if (keepDepth && loading.value) return
 
             const items = Array.isArray(data) ? data : (data.files || [])
             totalFiles.value = data.total ?? items.length
@@ -42,10 +48,10 @@ export function referenceTrashModel() {
                 files.value.push(...items)
             }
         } catch (err) {
-            error.value = err
+            if (!keepDepth) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 

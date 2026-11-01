@@ -252,6 +252,7 @@ import TrashIcon from '../../assets/TrashIcon.vue'
 import AttachmentIcon from '../../assets/AttachmentIcon.vue'
 import {referenceModel} from '../../scripts/models/referenceModel.js'
 import {referenceTrashModel} from '../../scripts/models/referenceTrashModel.js'
+import {onLiveChange} from '../../scripts/core/liveClient.js'
 import {attachmentListModel} from '../../scripts/models/attachmentListModel.js'
 import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import Alert from '../../components/Alert.vue'
@@ -398,6 +399,24 @@ onMounted(async () => {
   initialLoading.value = false
 })
 
+// The row a confirm or rename dialog is open for; a dialog for a row that left closes with it
+let confirmRowId = null
+
+onLiveChange(async () => {
+  if (initialLoading.value) return
+  model.loadQuota()
+  const tab = activeTab.value
+  await (tab === 'files' ? model.loadContents({reset: true, keepDepth: true})
+    : tab === 'attachments' ? attModel_.loadAttachments({reset: true, keepDepth: true})
+    : trashModel_.loadTrash({reset: true, keepDepth: true})).catch(() => {})
+  if (tab !== activeTab.value) return
+  const rows = tab === 'files' ? [...model.folders.value, ...model.files.value]
+    : tab === 'attachments' ? attModel_.items.value : trashModel_.files.value
+  const present = id => rows.some(r => r.id === id)
+  if (confirmRowId && !present(confirmRowId)) confirm.close()
+  if (tab === 'files' && model.rename.visible && model.rename.id && !present(model.rename.id)) model.closeRename()
+})
+
 // ?side= picks the side, ?file= opens the file's preview; both are dropped from the URL once handled
 async function openDeepLink(query, {reload = false} = {}) {
   const sideChanged = model.showSwitch.value && sideOptions.some(o => o.value === query.side) && query.side !== model.side.value
@@ -531,12 +550,14 @@ async function onRenameConfirm(name) {
 }
 
 async function onDeleteFolder(folder) {
+  confirmRowId = folder.id
   const confirmed = await confirm.show({
     title: 'Delete Folder',
     message: `This will permanently delete "${folder.name}" and all files inside it. This cannot be undone.`,
     confirmText: 'Delete',
     cancelText: 'Cancel',
   })
+  confirmRowId = null
   if (confirmed) {
     try {
       await model.deleteFolder(folder.id)
@@ -552,12 +573,14 @@ async function onDeleteFolder(folder) {
 }
 
 async function onTrashFile(file) {
+  confirmRowId = file.id
   const confirmed = await confirm.show({
     title: 'Move to Trash',
     message: `Are you sure you want to move "${file.name}" to trash?`,
     confirmText: 'Move to Trash',
     cancelText: 'Cancel',
   })
+  confirmRowId = null
   if (!confirmed) return
   try {
     await model.trashFile(file.id)
@@ -685,12 +708,14 @@ async function onRestoreFile(file) {
 }
 
 async function onPermanentDelete(file) {
+  confirmRowId = file.id
   const confirmed = await confirm.show({
     title: 'Permanently Delete',
     message: `This will permanently delete "${file.name}". This cannot be undone.`,
     confirmText: 'Delete',
     cancelText: 'Cancel',
   })
+  confirmRowId = null
   if (confirmed) {
     try {
       await trashModel_.permanentDelete(file.id)
@@ -749,12 +774,14 @@ async function onDownloadAttachment(att) {
 }
 
 async function onDeleteAttachment(att) {
+  confirmRowId = att.id
   const confirmed = await confirm.show({
     title: 'Delete Attachment',
     message: `Are you sure you want to delete "${att.file_name}"? This cannot be undone.`,
     confirmText: 'Delete',
     cancelText: 'Cancel',
   })
+  confirmRowId = null
   if (!confirmed) return
   try {
     const entityType = att.item_type?.toLowerCase()

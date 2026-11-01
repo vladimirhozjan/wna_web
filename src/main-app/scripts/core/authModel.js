@@ -1,6 +1,7 @@
 import {ref, watch} from 'vue'
 import apiClient from './apiClient.js'
 import { refreshSession } from './httpApi.js'
+import { liveClient } from './liveClient.js'
 import { confirmModel } from './confirmModel.js'
 import { captureQueue } from './captureQueue.js'
 import { pendingShare } from './pendingShare.js'
@@ -10,6 +11,7 @@ import { notificationModel } from '../models/notificationModel.js'
 
 window.addEventListener('storage', (event) => {
     if (event.key === 'logout') {
+        liveClient.stop()
         currentUser.value = null
         isAuthenticated.value = false
         localStorage.removeItem('auth_token')
@@ -259,6 +261,7 @@ export function authModel() {
     }
 
     async function logoutUser() {
+        liveClient.stop()
         await notificationModel().onSignOut()
         await apiClient.logoutUser()
         currentUser.value = null

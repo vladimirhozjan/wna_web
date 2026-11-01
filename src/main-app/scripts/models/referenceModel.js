@@ -104,9 +104,13 @@ export function referenceModel() {
         await loadContents({reset: true})
     }
 
-    async function loadContents({reset = false} = {}) {
-        loading.value = true
-        error.value = null
+    // keepDepth: a live re-read — silent, at the loaded depth, dropped while a user load runs
+    async function loadContents({reset = false, keepDepth = false} = {}) {
+        if (keepDepth && loading.value) return
+        if (!keepDepth) {
+            loading.value = true
+            error.value = null
+        }
 
         try {
             if (reset) {
@@ -120,11 +124,13 @@ export function referenceModel() {
                 apiClient.listRefFiles({
                     folder_id: isSearch ? null : currentFolderId.value,
                     q: isSearch ? searchQuery.value.trim() : null,
-                    limit: limit.value,
+                    limit: keepDepth ? Math.max(limit.value, files.value.length) : limit.value,
                     offset: offset.value,
                     side: side.value,
                 }),
             ])
+
+            if (keepDepth && loading.value) return
 
             if (reset) {
                 folders.value = Array.isArray(foldersData) ? foldersData : (foldersData.folders || [])
@@ -136,10 +142,10 @@ export function referenceModel() {
                 totalFiles.value = filesData.total ?? files.value.length
             }
         } catch (err) {
-            error.value = err
+            if (!keepDepth) error.value = err
             throw err
         } finally {
-            loading.value = false
+            if (!keepDepth) loading.value = false
         }
     }
 
