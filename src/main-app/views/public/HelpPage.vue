@@ -16,6 +16,13 @@
             />
           </div>
         </div>
+        <div class="show-more-wrap">
+          <router-link to="/help/connect-ai" class="text-body-s fw-medium show-more hub-ai-link" data-testid="help-hub-connect-ai">
+            <AiIcon class="hub-ai-link__icon" />
+            Connect Claude or ChatGPT — step-by-step guide
+            <ArrowRightSmallIcon class="show-more__chevron" />
+          </router-link>
+        </div>
       </div>
     </section>
 
@@ -142,6 +149,7 @@ import RocketIcon from '../../assets/RocketIcon.vue'
 import QuizIcon from '../../assets/QuizIcon.vue'
 import ThumbUpIcon from '../../assets/ThumbUpIcon.vue'
 import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
+import AiIcon from '../../assets/AiIcon.vue'
 import { gettingStarted } from '../../content/help/gettingStarted.js'
 import { bestPractices } from '../../content/help/bestPractices.js'
 import { faq } from '../../content/help/faq.js'
@@ -370,6 +378,24 @@ function contactSupport() {
   height: 16px;
   padding: 1px;
   box-sizing: border-box;
+}
+
+.hub-ai-link {
+  white-space: normal;
+  justify-content: center;
+  text-align: center;
+}
+
+.hub-ai-link__icon {
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.hub-ai-link .show-more__chevron {
+  flex-shrink: 0;
 }
 
 /* Desktop: show in header row, hide bottom link */

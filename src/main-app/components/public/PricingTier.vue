@@ -31,6 +31,16 @@
       {{ ctaText }}
     </Btn>
 
+    <div v-if="aiCredits !== null && aiRequests !== null" class="tier__ai" :data-testid="`pricing-ai-credits-${name.toLowerCase()}`">
+      <AiIcon class="tier__ai-icon" />
+      <div>
+        <p class="text-body-s fw-semibold tier__ai-credits">
+          {{ aiCredits.toLocaleString('en-US') }} AI credits a month{{ perUser ? ' per user' : '' }}
+        </p>
+        <p class="text-footnote tier__ai-requests">≈ {{ aiRequests.toLocaleString('en-US') }} requests</p>
+      </div>
+    </div>
+
     <ul class="tier__features">
       <li v-for="(feat, i) in features" :key="i" class="tier__feature text-body-s">
         <CheckIcon class="tier__check" />
@@ -43,6 +53,7 @@
 <script setup>
 import Btn from '../Btn.vue'
 import CheckIcon from '../../assets/CheckIcon.vue'
+import AiIcon from '../../assets/AiIcon.vue'
 
 defineProps({
   name:        { type: String, required: true },
@@ -55,6 +66,8 @@ defineProps({
   perUser:     { type: Boolean, default: false },
   yearlyTotal: { type: Number, default: 0 },
   disabled:    { type: Boolean, default: false },
+  aiCredits:   { type: Number, default: null },
+  aiRequests:  { type: Number, default: null },
 })
 
 defineEmits(['cta-click'])
@@ -130,6 +143,38 @@ defineEmits(['cta-click'])
 .tier__cta {
   width: 100%;
   margin-top: 20px;
+}
+
+.tier__ai {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.tier__ai-icon {
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--color-action);
+}
+
+.tier__ai-credits {
+  color: var(--color-text-primary);
+}
+
+.tier__ai-requests {
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+@media (min-width: 769px) {
+  .tier__ai {
+    min-height: 50px;
+  }
 }
 
 .tier__features {

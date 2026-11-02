@@ -110,7 +110,7 @@ npm run clean             # Remove dist folder
 ```
 
 `build:main` runs `config/prerender.js` after the Vite build (and its obfuscation): it serves `dist/main-app`
-with `vite preview`, opens the 8 public pages in headless Chrome with API requests blocked, and saves each
+with `vite preview`, opens the 9 public pages in headless Chrome with API requests blocked, and saves each
 rendered page to `dist/main-app/_prerender/<route>/index.html` (landing: `_prerender/index.html`). nginx serves
 those files for the exact public paths; `dist/main-app/index.html` stays the empty SPA shell.
 

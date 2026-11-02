@@ -585,6 +585,7 @@
                     <Btn variant="secondary" size="sm" @click="copyAddress('mcp', mcpUrl)">{{ copied === 'mcp' ? 'Copied!' : 'Copy' }}</Btn>
                   </div>
                   <p class="text-body-s settings-hint">Add this address as a connector in Claude, ChatGPT or any AI app that supports MCP. You'll be asked to sign in and allow access.</p>
+                  <Lnk text="" link="Step-by-step guide" class="settings-guide-link" data-testid="settings-ai-apps-guide" @action="router.push({ name: 'help-connect-ai' })" />
                 </div>
 
                 <div v-if="loadingAiApps" class="settings-loading">
@@ -820,6 +821,7 @@ import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import Badge from '../../components/Badge.vue'
 import SegmentSwitch from '../../components/SegmentSwitch.vue'
 import Btn from '../../components/Btn.vue'
+import Lnk from '../../components/Lnk.vue'
 import Inpt from '../../components/Inpt.vue'
 import ActionBtn from '../../components/ActionBtn.vue'
 import Select from '../../components/Select.vue'
@@ -2530,6 +2532,11 @@ async function onLogout() {
 .settings-hint {
   color: var(--color-text-tertiary);
   line-height: var(--lh-normal);
+}
+
+.settings-guide-link {
+  align-self: flex-start;
+  text-align: left;
 }
 
 .settings-tags-chips {

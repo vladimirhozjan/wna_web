@@ -244,7 +244,7 @@ export const faq = [
   {
     question: 'Can I use WhatsNextAction with Claude, ChatGPT or another AI?',
     answer:
-      'Yes, on every plan. Copy the address in Settings → AI Apps, add it as a connector in an AI app that supports MCP (such as Claude or ChatGPT), sign in and tap Allow access. The AI app then works with your lists on your instructions, with the same limits as the app. On shared projects it acts with your rights — if you have Read-only access, so does the AI app.',
+      'Yes, on every plan. Copy the address in Settings → AI Apps, add it as a connector in an AI app that supports MCP (such as Claude or ChatGPT), sign in and tap Allow access. The AI app then works with your lists on your instructions, with the same limits as the app. On shared projects it acts with your rights — if you have Read-only access, so does the AI app. For step-by-step setup in Claude or ChatGPT, see Help → Connect Your Own AI.',
   },
   {
     question: 'How do I disconnect an AI app?',
@@ -278,7 +278,7 @@ export const faq = [
   {
     question: 'What plans are available?',
     answer:
-      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts.',
+      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Every plan also includes the AI assistant with monthly AI credits (more on Pro and Team) and optional credit packs, connecting your own AI app such as Claude or ChatGPT, Horizons of Focus and project brainstorming. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts.',
   },
   {
     question: 'What are the limits on each plan?',

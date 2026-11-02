@@ -3,7 +3,7 @@
     <div class="section-inner">
       <h2 class="text-h1 color-text-primary">Every GTD List, Built In</h2>
       <div class="strip">
-        <div v-for="item in lists" :key="item.title" class="strip-item">
+        <div v-for="item in lists" :key="item.title" class="strip-item" data-testid="landing-strip-item">
           <component :is="item.icon" class="strip-icon" />
           <span class="text-body-s fw-medium color-text-primary">{{ item.title }}</span>
         </div>
@@ -20,6 +20,7 @@ import WaitingIcon from '../../assets/WaitingIcon.vue'
 import SomedayIcon from '../../assets/SomedayIcon.vue'
 import CalendarIcon from '../../assets/CalendarIcon.vue'
 import ReviewIcon from '../../assets/ReviewIcon.vue'
+import HorizonIcon from '../../assets/HorizonIcon.vue'
 import FilterIcon from '../../assets/FilterIcon.vue'
 import ReferenceIcon from '../../assets/ReferenceIcon.vue'
 
@@ -31,6 +32,7 @@ const lists = [
   { title: 'Someday / Maybe', icon: SomedayIcon },
   { title: 'Calendar', icon: CalendarIcon },
   { title: 'Weekly Review', icon: ReviewIcon },
+  { title: 'Horizons of Focus', icon: HorizonIcon },
   { title: 'Context Tags', icon: FilterIcon },
   { title: 'Reference Files', icon: ReferenceIcon },
 ]
@@ -63,6 +65,10 @@ const lists = [
   gap: 12px;
 }
 
+.strip-item:last-child:nth-child(3n + 1) {
+  grid-column: 2;
+}
+
 .strip-icon {
   width: 36px;
   height: 36px;
@@ -76,8 +82,12 @@ const lists = [
   }
 
   .strip {
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     gap: 12px;
+  }
+
+  .strip-item:last-child:nth-child(3n + 1) {
+    grid-column: auto;
   }
 }
 </style>

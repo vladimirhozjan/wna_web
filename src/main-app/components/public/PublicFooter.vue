@@ -22,6 +22,7 @@
           <h4 class="footer-heading text-overline">Support</h4>
           <ul class="footer-links">
             <li><router-link to="/help" class="footer-link text-body-s">Help &amp; FAQ</router-link></li>
+            <li><router-link to="/help/connect-ai" class="footer-link text-body-s" data-testid="footer-connect-ai">Connect your AI</router-link></li>
           </ul>
         </div>
 

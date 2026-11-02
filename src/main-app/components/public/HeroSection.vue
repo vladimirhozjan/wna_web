@@ -3,16 +3,31 @@
     <div class="hero-bg-overlay">
       <div class="hero-inner">
         <BoltIcon class="hero-bolt" />
-        <h1 class="text-display hero-heading">Stress-Free Productivity</h1>
-        <p class="text-body-m hero-subtitle">A Getting Things Done app that works with your Google Calendar, your Google Drive, your email and your team.</p>
+        <h1 class="text-display hero-heading">You Decide. AI Does the Busywork.</h1>
+        <p class="text-body-m hero-subtitle">The Getting Things Done app with a built-in AI assistant. Say what you want — it captures, sorts and schedules in your lists.</p>
         <div class="hero-actions">
           <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
           <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
         </div>
         <p class="text-footnote hero-trust" data-testid="landing-trust-line">Made in the EU · Hosted in the EU · GDPR-compliant</p>
         <div v-if="!shotFailed" class="hero-shot" data-testid="landing-hero-shot">
-          <img :src="engageShot" alt="WhatsNextAction dashboard with today's actions, next actions and waiting-for items" class="hero-shot-img" @error="shotFailed = true" />
+          <video
+              v-if="heroVideo && heroPoster"
+              :src="heroVideo"
+              :poster="heroPoster"
+              class="hero-shot-img"
+              muted
+              autoplay
+              loop
+              playsinline
+              preload="metadata"
+              data-testid="landing-hero-video"
+          />
+          <img v-else :src="engageShot" alt="WhatsNextAction dashboard with today's actions, next actions and waiting-for items" class="hero-shot-img" @error="shotFailed = true" />
         </div>
+        <router-link to="/help/connect-ai" class="text-body-s fw-medium hero-own-ai" data-testid="landing-hero-own-ai">
+          Prefer your own AI? <span class="hero-own-ai__cta">Connect Claude, ChatGPT or any MCP <span class="hero-own-ai__end">app<ArrowRightSmallIcon class="hero-own-ai__chevron" /></span></span>
+        </router-link>
       </div>
     </div>
   </section>
@@ -22,11 +37,23 @@
 import { ref } from 'vue'
 import Btn from '../Btn.vue'
 import BoltIcon from '../../assets/BoltIcon.vue'
+import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
 import engageShot from '../../assets/landing/landing-engage.png'
 
 defineEmits(['open-register'])
 
+// Owner drop-in: both files present in assets/landing → video, else the image
+const heroAssets = import.meta.glob('../../assets/landing/landing-hero{.mp4,-poster.jpg}', { eager: true, query: '?url', import: 'default' })
+const heroVideo = heroAssets['../../assets/landing/landing-hero.mp4']
+const heroPoster = heroAssets['../../assets/landing/landing-hero-poster.jpg']
+
 const shotFailed = ref(false)
+
+if (heroVideo && heroPoster) {
+  const posterProbe = new Image()
+  posterProbe.onerror = () => { shotFailed.value = true }
+  posterProbe.src = heroPoster
+}
 
 function scrollToFeatures() {
   const el = document.getElementById('features')
@@ -126,6 +153,36 @@ function scrollToFeatures() {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.hero-own-ai {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 16px;
+  min-height: 44px;
+  color: var(--color-text-on-dark);
+  text-decoration: none;
+}
+
+.hero-own-ai:hover {
+  text-decoration: underline;
+}
+
+.hero-own-ai__cta {
+  display: inline-block;
+}
+
+.hero-own-ai__end {
+  white-space: nowrap;
+}
+
+.hero-own-ai__chevron {
+  width: 16px;
+  height: 16px;
+  padding: 1px;
+  box-sizing: border-box;
+  margin-left: 6px;
+  vertical-align: -3px;
 }
 
 @media (min-width: 769px) {

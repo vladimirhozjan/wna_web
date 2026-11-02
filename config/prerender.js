@@ -16,6 +16,7 @@ const ROUTES = [
     '/help/getting-started',
     '/help/faq',
     '/help/best-practices',
+    '/help/connect-ai',
     '/legal/terms',
     '/legal/privacy',
 ]

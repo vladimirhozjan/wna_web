@@ -28,7 +28,7 @@ import { faq } from '../../content/help/faq.js'
 const QUESTIONS = [
   'What plans are available?',
   'Can I use WhatsNextAction on my phone?',
-  'Can I sign in with Google or Apple?',
+  'Can I use WhatsNextAction with Claude, ChatGPT or another AI?',
   'How do I cancel my subscription?',
 ]
 

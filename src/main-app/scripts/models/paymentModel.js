@@ -15,6 +15,19 @@ const euro = (v) => Number.isInteger(v) ? String(v) : v.toFixed(2)
 // Yearly = 9 paid months ("3 months free"), so the shown per-month rate is amount / 9
 const yearlyPerMonth = (amount) => Math.round(amount / 9 * 100) / 100
 
+// Per-tier monthly AI credits from the public catalog; no browser fallback — hidden until loaded
+export const AI_CREDITS = reactive({ loaded: false, byPlan: {} })
+
+const isNum = (v) => typeof v === 'number' && Number.isFinite(v)
+
+function applyAiCredits(rows) {
+    for (const r of rows || []) {
+        if (typeof r?.plan !== 'string' || !isNum(r.monthly_credits) || !isNum(r.requests_estimate)) continue
+        AI_CREDITS.byPlan[r.plan] = { monthlyCredits: r.monthly_credits, requestsEstimate: r.requests_estimate }
+    }
+    AI_CREDITS.loaded = ['free', 'pro', 'team'].every(p => AI_CREDITS.byPlan[p])
+}
+
 let catalogLoaded = false
 
 export async function loadPlanCatalog() {
@@ -28,6 +41,7 @@ export async function loadPlanCatalog() {
             opt.price = `€${euro(opt.amount)}/${opt.billingPeriod === 'yearly' ? 'year' : 'month'}`
             if (opt.billingPeriod === 'yearly') opt.perMonth = yearlyPerMonth(opt.amount)
         }
+        applyAiCredits(data.ai_credits)
         catalogLoaded = true
     } catch { /* keep the contract defaults */ }
 }

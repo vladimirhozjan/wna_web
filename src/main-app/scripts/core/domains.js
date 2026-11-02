@@ -12,5 +12,7 @@ export function getDomains() {
         google_client_id: rc.GOOGLE_CLIENT_ID || '',
         apple_client_id: rc.APPLE_CLIENT_ID || '',
         mcp_url: rc.MCP_URL || 'http://localhost:8000/mcp',
+        // false in the pre-render (no config.js), so the localhost fallback never reaches public HTML
+        mcp_url_configured: Boolean(rc.MCP_URL),
     }
 }

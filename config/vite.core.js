@@ -114,7 +114,8 @@ function writeServiceWorker(dir) {
 
     const files = [
         ...SW_SHELL_FILES,
-        ...readdirSync(path.join(dir, 'assets')).sort().map(file => `assets/${file}`),
+        // Videos are streamed on demand — precaching would make every installed app download them
+        ...readdirSync(path.join(dir, 'assets')).sort().filter(file => !file.endsWith('.mp4')).map(file => `assets/${file}`),
     ]
     const hash = createHash('sha256')
     for (const file of files) {

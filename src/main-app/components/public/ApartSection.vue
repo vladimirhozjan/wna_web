@@ -2,7 +2,7 @@
   <section class="section" id="features" data-testid="landing-apart">
     <div class="section-inner">
       <h2 class="text-h1 color-text-primary">What Sets Us Apart</h2>
-      <p class="text-body-m section-subtitle">Built on Getting Things Done, connected to the tools you already use.</p>
+      <p class="text-body-m section-subtitle">Built on Getting Things Done, from your goals to your next action — connected to the tools you already use.</p>
       <div class="apart-grid">
         <div v-for="card in cards" :key="card.key" class="apart-card" :data-testid="`landing-apart-card-${card.key}`">
           <div v-if="!failed[card.key]" class="shot-box">
@@ -23,12 +23,30 @@
 <script setup>
 import { reactive } from 'vue'
 import Badge from '../Badge.vue'
+import canvasShot from '../../assets/landing/landing-canvas.png'
+import horizonsShot from '../../assets/landing/landing-horizons.png'
 import calendarShot from '../../assets/landing/landing-calendar.png'
 import driveShot from '../../assets/landing/landing-drive.png'
 import emailShot from '../../assets/landing/landing-email.png'
 import teamShot from '../../assets/landing/landing-team.png'
 
 const cards = [
+  {
+    key: 'canvas',
+    image: canvasShot,
+    alt: 'Project brainstorm mind map with ideas around the project',
+    plan: 'All plans',
+    title: 'Natural Planning',
+    description: 'Brainstorm a project on a mind map, then let AI turn your ideas into next actions.',
+  },
+  {
+    key: 'horizons',
+    image: horizonsShot,
+    alt: 'Horizons of Focus with areas, goals, vision and purpose',
+    plan: 'All plans',
+    title: 'Horizons of Focus',
+    description: 'See your areas, goals, vision and purpose in one place, and link each project to the goal it serves.',
+  },
   {
     key: 'calendar',
     image: calendarShot,

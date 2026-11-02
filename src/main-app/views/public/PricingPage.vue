@@ -39,9 +39,15 @@
               :per-user="tier.perUser || false"
               :yearly-total="tier.yearlyTotal || 0"
               :disabled="tierCta(tier).disabled"
+              :ai-credits="AI_CREDITS.loaded ? AI_CREDITS.byPlan[tier.plan].monthlyCredits : null"
+              :ai-requests="AI_CREDITS.loaded ? AI_CREDITS.byPlan[tier.plan].requestsEstimate : null"
               @cta-click="tierCta(tier).action"
           />
         </div>
+        <p v-if="AI_CREDITS.loaded" class="text-footnote ai-footnote" data-testid="pricing-ai-footnote">
+          Credits refill every month. Requests are estimated for the default model; bigger models use more credits.
+          Need more? Buy a credit pack on any plan.
+        </p>
       </div>
     </section>
 
@@ -115,7 +121,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
-import { PLAN_OPTIONS, loadPlanCatalog } from '../../scripts/models/paymentModel.js'
+import { PLAN_OPTIONS, AI_CREDITS, loadPlanCatalog } from '../../scripts/models/paymentModel.js'
 import { pendingShare } from '../../scripts/core/pendingShare.js'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
@@ -176,6 +182,7 @@ const planOpt = (plan, period) => PLAN_OPTIONS.find(o => o.plan === plan && o.bi
 const tiers = computed(() => [
   {
     name: 'Free',
+    plan: 'free',
     monthlyPrice: 0,
     yearlyPrice: 0,
     description: 'Get started with GTD for free.',
@@ -193,6 +200,7 @@ const tiers = computed(() => [
   },
   {
     name: 'Pro',
+    plan: 'pro',
     monthlyPrice: planOpt('pro', 'monthly').amount,
     yearlyPrice: planOpt('pro', 'yearly').perMonth,
     yearlyTotal: planOpt('pro', 'yearly').amount,
@@ -214,6 +222,7 @@ const tiers = computed(() => [
   },
   {
     name: 'Team',
+    plan: 'team',
     monthlyPrice: planOpt('team', 'monthly').amount,
     yearlyPrice: planOpt('team', 'yearly').perMonth,
     yearlyTotal: planOpt('team', 'yearly').amount,
@@ -245,7 +254,13 @@ const comparisonRows = [
   { feature: 'Project templates',   free: '3',           pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Tags',                free: '10',          pro: 'Unlimited',  team: 'Unlimited' },
   { feature: 'Recurring actions',   free: false,         pro: true,         team: true },
+  { feature: 'Horizons of Focus',   free: true,          pro: true,         team: true },
+  { feature: 'Project brainstorm (Natural Planning)', free: true, pro: true, team: true },
   { feature: 'Reference files',     free: 'View only · Full in Google Drive', pro: 'Full', team: 'Full' },
+  { group: 'AI' },
+  { feature: 'Built-in AI assistant',     free: true,   pro: true,         team: true },
+  { feature: 'AI credit packs',           free: true,   pro: true,         team: true },
+  { feature: 'Use your own AI app (MCP)', free: true,   pro: true,         team: true },
   { group: 'Storage' },
   { feature: 'WNA hosted storage',  free: '50 MB',       pro: '250 MB',     team: '1 GB/user' },
   { feature: 'Max attachment size', free: '5 MB',        pro: '20 MB',      team: '50 MB' },
@@ -362,6 +377,12 @@ const comparisonRows = [
   .tier-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+.ai-footnote {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-top: 20px;
 }
 
 /* Comparison table heading */

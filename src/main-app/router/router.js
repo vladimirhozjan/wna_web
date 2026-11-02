@@ -28,7 +28,7 @@ import GoogleSsoPage from '../views/public/GoogleSsoPage.vue'
 const routes = [
     {path: '/', name: 'landing', component: LandingPage, meta: {seo: {
         title: 'WhatsNextAction — GTD App for Getting Things Done',
-        description: 'Stress-free productivity with a GTD app: two-way Google Calendar sync, Google Drive storage, email to inbox and team delegation. Start free, upgrade anytime.',
+        description: 'A GTD app where you decide and AI does the busywork: a built-in AI assistant, or your own Claude or ChatGPT. Calendar sync, email to inbox, teams. Start free.',
         jsonLd: 'app',
     }}},
     {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}},
@@ -91,6 +91,10 @@ const routes = [
         description: 'Answers about accounts, the inbox, next actions, projects, the weekly review, the calendar, plans and billing in the WhatsNextAction GTD app.',
         jsonLd: 'faq',
     }}},
+    {path: '/help/connect-ai', name: 'help-connect-ai', component: () => import('../views/public/HelpConnectAiPage.vue'), meta: {seo: {
+        title: 'Connect Claude or ChatGPT | WhatsNextAction Help',
+        description: 'Connect Claude or ChatGPT to WhatsNextAction step by step and let your own AI work with your GTD lists, on every plan.',
+    }}},
     {path: '/help/best-practices', name: 'help-best-practices', component: () => import('../views/public/HelpBestPracticesPage.vue'), meta: {seo: {
         title: 'GTD Best Practices & Weekly Review Tips | WhatsNextAction',
         description: 'Practical Getting Things Done habits: a trusted inbox, clear next actions, contexts, and a weekly review that keeps your task manager current.',
@@ -124,7 +128,7 @@ const auth = authModel()
 export const PUBLIC_ROUTE_NAMES = new Set([
     'landing', 'login', 'register', 'forgot', 'reset-password',
     'verify-email', 'google-sso', 'apple-sso', 'authorize', 'pricing',
-    'help', 'help-getting-started', 'help-faq', 'help-best-practices',
+    'help', 'help-getting-started', 'help-faq', 'help-best-practices', 'help-connect-ai',
     'legal', 'legal-terms', 'legal-privacy',
 ])
 
