@@ -40,6 +40,7 @@ import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarAllDaySection from './CalendarAllDaySection.vue'
 import CalendarTimeGrid from './CalendarTimeGrid.vue'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const props = defineProps({
   currentDate: {
@@ -55,6 +56,7 @@ const hourHeight = 60
 const draggingItem = ref(null)
 const dragOffset = ref(0)
 const scrollRef = ref(null)
+useLiveMotion(scrollRef, () => calendar.items.value, { tiles: true })
 const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 function scrollToBusinessHours() {

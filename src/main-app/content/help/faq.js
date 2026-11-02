@@ -103,7 +103,7 @@ export const faq = [
   {
     question: 'Do my lists update by themselves?',
     answer:
-      'Yes, on every plan. While WhatsNextAction is open, changes made somewhere else — in another tab or on another device, by an AI app or the AI assistant, or by a member of a shared project — appear within about a second, without reloading. Text you are typing is never overwritten. If the connection drops, the page catches up as soon as it is back. On a phone, pull down at the top of a list to check right away.',
+      'Yes, on every plan. While WhatsNextAction is open, changes made somewhere else — in another tab or on another device, by an AI app or the AI assistant, or by a member of a shared project — appear within about a second, without reloading. Rows that arrive, leave or move slide into place and are briefly highlighted, so you can see what changed; your own changes in that tab stay as they are. Text you are typing is never overwritten. If the connection drops, the page catches up as soon as it is back. On a phone, pull down at the top of a list to check right away.',
   },
   {
     question: 'Can I share to WhatsNextAction from other apps?',

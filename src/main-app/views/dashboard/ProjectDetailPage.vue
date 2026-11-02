@@ -296,6 +296,7 @@
                       v-for="action in orderedActions"
                       :key="action.id"
                       class="action-wrapper"
+                      :data-row-id="action.id"
                   >
                     <div class="action-row">
                       <Item
@@ -408,6 +409,7 @@
                       v-for="action in orderedActions"
                       :key="action.id"
                       class="action-wrapper shared-action-wrapper"
+                      :data-row-id="action.id"
                   >
                     <div class="action-row">
                       <Item
@@ -762,6 +764,7 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const route = useRoute()
@@ -830,6 +833,7 @@ const addingAction = ref(false)
 const actionsScrollRef = ref(null)
 const quickAddInput = ref(null)
 const detailBodyRef = ref(null)
+useLiveMotion(detailBodyRef, () => orderedActions.value)
 const detailActionsRef = ref(null)
 
 const { scrolling: bodyScrolling } = useAutoHideScrollbar(detailBodyRef)
@@ -1279,7 +1283,7 @@ onLivePacket((changes) => {
   }
   if (mine?.change === 'trashed') return afterTrash(mine.actor === myUserId.value, orderedActions.value.length > 0)
   if (mine?.change === 'converted') return navigateToNextOrPrev()
-  if (changes.some(c => LIST_ENTITIES.has(c.entity) || (c.entity === 'member' && c.id === id))) liveReload()
+  if (changes.some(c => LIST_ENTITIES.has(c.entity) || (c.entity === 'member' && c.id === id))) return liveReload()
 })
 
 // Sends only the changed key; the response is the viewer's link after the write

@@ -147,7 +147,7 @@ If you connect an AI app (for example Claude or ChatGPT) to your account, availa
 
 If you use the **AI assistant** (available on all plans), it carries out the requests you give it on your content. To provide it, we store:
 
-- **Conversation** - the messages of your one open conversation (your requests, the assistant's replies and the changes it made) and a running summary of its older messages
+- **Conversation** - the messages of your one open conversation (your requests, the assistant's replies, the steps it took — such as the lists it checked — and the changes it made) and a running summary of its older messages
 - **Memory** - the notes the assistant writes about how you work with it (for example "work tasks get @work"), which you can view, edit and clear in your settings
 - **Model choice** - the AI model you chose in your settings
 - **Credits** - your credit balance, the credit packs you buy, and credits we add to your account

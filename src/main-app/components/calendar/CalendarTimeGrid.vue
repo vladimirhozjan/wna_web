@@ -71,6 +71,7 @@
       >
         <CalendarItem
             :item="item"
+            :data-row-id="item._continuesBefore ? undefined : item.id"
             :show-time="!item._continuesBefore"
             :resizable="!!item.scheduled_time && !item._continuesAfter"
             @click="onItemClick"

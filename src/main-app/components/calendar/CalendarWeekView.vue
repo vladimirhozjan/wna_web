@@ -55,6 +55,7 @@
               v-for="item in getAllDayItemsForDate(day.dateStr)"
               :key="item.id"
               :item="item"
+              :data-row-id="item.id"
               :show-time="false"
               :compact="true"
               @click="onItemClick"
@@ -146,6 +147,7 @@
             >
               <CalendarItem
                   :item="item"
+                  :data-row-id="item._continuesBefore ? undefined : item.id"
                   :show-time="!item._continuesBefore"
                   :resizable="!!item.scheduled_time && !item._continuesAfter"
                   @click="onItemClick"
@@ -213,6 +215,7 @@ import { layoutOverlappingItems } from '../../scripts/core/calendarLayout.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const props = defineProps({
   currentDate: {
@@ -227,6 +230,7 @@ const scrollRef = ref(null)
 const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const calendar = calendarModel()
+useLiveMotion(scrollRef, () => calendar.items.value, { tiles: true })
 const hourHeight = 60
 const hours = Array.from({ length: 24 }, (_, i) => i)
 

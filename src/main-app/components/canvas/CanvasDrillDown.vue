@@ -56,6 +56,7 @@
               v-for="child in listChildren"
               :key="child.id"
               :id="child.id"
+              :data-row-id="child.id"
               :title="canvas.displayText(child)"
               no-checkbox
               :editable="false"
@@ -161,6 +162,7 @@ import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import { canvasModel, NODE_TEXT_LIMIT } from '../../scripts/models/canvasModel.js'
 import { useSwipe, LONG_PRESS_MS } from '../../scripts/core/swipe.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const props = defineProps({
   currentId: { type: String, default: null },
@@ -187,6 +189,7 @@ const rootNode = computed(() => canvas.nodes.value.find(n => n.parent_id == null
 const current = computed(() => canvas.getNode(props.currentId) || rootNode.value)
 const isRoot = computed(() => !current.value || current.value.parent_id == null)
 const listChildren = computed(() => current.value ? canvas.childrenOf(current.value.id).filter(c => c.id !== newRowId.value) : [])
+useLiveMotion(swipeRef, () => listChildren.value)
 const sheetNode = computed(() => sheetId.value ? canvas.getNode(sheetId.value) : null)
 const showFab = computed(() => canvas.canEdit.value && !editingId.value && !newRowId.value)
 

@@ -9,12 +9,12 @@
       @drop="onExternalDrop"
   >
     <!-- Loading state -->
-    <div v-if="loading && items.length === 0" class="loading-state">
+    <div v-if="loading && items.length === 0 && !leaveHold" class="loading-state">
       <Spinner :size="32" delayed />
     </div>
 
     <!-- Empty state -->
-    <div v-else-if="!loading && items.length === 0" class="empty-state">
+    <div v-else-if="!loading && (items.length === 0 || arriveHold) && !leaveHold" ref="emptyEl" class="empty-state">
       <slot name="empty" />
     </div>
 
@@ -121,6 +121,7 @@ import Spinner from './Spinner.vue'
 import { hapticFeedback } from '../scripts/core/haptics.js'
 import { LONG_PRESS_MS } from '../scripts/core/swipe.js'
 import { liveClient, onLivePacket } from '../scripts/core/liveClient.js'
+import { useLiveMotion, MOTION_MS } from '../scripts/core/liveMotion.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -155,10 +156,13 @@ const emit = defineEmits(['update', 'check', 'click', 'delete', 'move', 'load-mo
 const items = defineModel({ type: Array, required: true })
 
 const rootEl = ref(null)
+const emptyEl = ref(null)
 
-// A row completed elsewhere leaves with the completion exit, as the user's own; the list re-reads after it
+// A row completed elsewhere leaves with the completion exit, as the user's own; the list re-reads after it and
+// the row keeps its exit look until that re-read lands
 const COMPLETE_EXIT_MS = 800
 const liveCompletingIds = ref([])
+let exitedIds = []
 
 onLivePacket(changes => {
   const done = new Set((changes || []).filter(c => c.change === 'completed' && c.tab !== liveClient.tabId).map(c => c.id))
@@ -169,7 +173,7 @@ onLivePacket(changes => {
   liveCompletingIds.value = [...liveCompletingIds.value, ...ids]
   liveClient.hold()
   setTimeout(() => {
-    liveCompletingIds.value = liveCompletingIds.value.filter(id => !ids.includes(id))
+    exitedIds.push(...ids)
     liveClient.release()
   }, COMPLETE_EXIT_MS)
 })
@@ -199,6 +203,34 @@ watch(() => items.value, () => {
     const row = rootEl.value?.querySelector(`[data-row-id="${CSS.escape(id)}"]`)
     if (row) scroller.scrollTop += row.getBoundingClientRect().top - before
   })
+}, { flush: 'pre' })
+
+// Foreign live changes animate (after the anchoring above); the empty state never shows under a leaving row and
+// fades out before a first row arrives
+const leaveHold = ref(false)
+const arriveHold = ref(false)
+const motion = useLiveMotion(rootEl, () => (arriveHold.value ? null : items.value), { skip: () => completingIdSet.value })
+
+watch(() => items.value, (now, before) => {
+  if (exitedIds.length) {
+    const ids = exitedIds
+    exitedIds = []
+    nextTick(() => { liveCompletingIds.value = liveCompletingIds.value.filter(id => !ids.includes(id)) })
+  }
+  if (!liveClient.motion.active || !before) return
+  if (!now.length && before.some(i => !completingIdSet.value.has(i.id))) {
+    leaveHold.value = true
+    setTimeout(() => {
+      leaveHold.value = false
+      nextTick(() => emptyEl.value?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION_MS }))
+    }, MOTION_MS)
+  } else if (now.length && !before.length && emptyEl.value && !leaveHold.value) {
+    arriveHold.value = true
+    emptyEl.value.animate([{ opacity: 1 }, { opacity: 0 }], { duration: MOTION_MS, fill: 'forwards' }).onfinish = () => {
+      motion.force()
+      arriveHold.value = false
+    }
+  }
 }, { flush: 'pre' })
 
 // A drag holds live updates so no row moves under the pointer; they apply on drop

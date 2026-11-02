@@ -55,6 +55,7 @@ const charts = computed(() => {
 const hasCompletions = computed(() => (stats.value?.total || 0) > 0)
 
 let reconcileTimer = null
+let reconcileWaiters = []
 
 async function loadCompleted({ reset = false } = {}) {
     loading.value = true
@@ -131,9 +132,13 @@ function applyOptimisticRemoval(item) {
 }
 
 // Debounced, coalesced reconcile of stats + list; the list reloads to its current depth so loaded groups don't collapse to page one.
+// Resolves once the coalesced reload has landed.
 function reconcile() {
     clearTimeout(reconcileTimer)
+    const landed = new Promise(resolve => reconcileWaiters.push(resolve))
     reconcileTimer = setTimeout(async () => {
+        const waiters = reconcileWaiters
+        reconcileWaiters = []
         const depth = Math.max(limit.value, items.value.length)
         const [listRes, statsRes] = await Promise.allSettled([
             apiClient.listCompleted({ limit: depth, cursor: null }),
@@ -151,7 +156,9 @@ function reconcile() {
             stats.value = statsRes.value
             statsError.value = null
         }
+        waiters.forEach(resolve => resolve())
     }, 300)
+    return landed
 }
 
 // Watch the length getter: catches in-place splices but ignores per-row toggles, and a same-length re-fetch won't re-fire, so this can't loop.

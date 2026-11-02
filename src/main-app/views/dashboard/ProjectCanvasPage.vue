@@ -240,7 +240,7 @@ watch(() => assistant.working.value, (on) => canvas.expectAssistantWrites(on), {
 // The rebase keeps local edits; a member change can make the canvas read-only
 onLivePacket((changes) => {
   const id = route.params.id
-  if (!changes || changes.some(c => ['canvas', 'project', 'member'].includes(c.entity) && c.id === id)) canvas.refreshFromServer()
+  if (!changes || changes.some(c => ['canvas', 'project', 'member'].includes(c.entity) && c.id === id)) return canvas.refreshFromServer()
 })
 
 // The map's open edit ends first; dropping an empty new idea is the undo

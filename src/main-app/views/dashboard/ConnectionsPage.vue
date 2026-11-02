@@ -81,7 +81,7 @@
                     <Btn variant="primary" size="sm" @click="openUpgrade">{{ upgradeLabel }}</Btn>
                   </template>
                   <div class="connections-list">
-                    <div v-for="inv in connections.pendingReceived.value" :key="inv.id" class="connection-item">
+                    <div v-for="inv in connections.pendingReceived.value" :key="inv.id" :data-row-id="`r-${inv.id}`" class="connection-item">
                       <div class="connection-info">
                         <span class="fw-medium">{{ inv.inviter_email }}</span>
                         <span class="text-body-s connection-meta">invited you · {{ formatRelative(inv.created) }}</span>
@@ -110,7 +110,7 @@
                 <div v-if="connections.pendingSent.value.length > 0" class="settings-row settings-row--column">
                   <span class="settings-label">Pending invitations</span>
                   <div class="connections-list">
-                    <div v-for="inv in connections.pendingSent.value" :key="inv.id" class="connection-item">
+                    <div v-for="inv in connections.pendingSent.value" :key="inv.id" :data-row-id="`s-${inv.id}`" class="connection-item">
                       <div class="connection-info">
                         <span class="fw-medium">{{ inv.invitee_email }}</span>
                         <span class="text-body-s connection-meta">sent · {{ formatRelative(inv.created) }}</span>
@@ -132,7 +132,7 @@
                 <div v-if="connections.connections.value.length > 0" class="settings-row settings-row--column">
                   <span class="settings-label">Connections ({{ connections.connections.value.length }})</span>
                   <div class="connections-list">
-                    <div v-for="conn in connections.connections.value" :key="conn.id" class="connection-item">
+                    <div v-for="conn in connections.connections.value" :key="conn.id" :data-row-id="`c-${conn.id}`" class="connection-item">
                       <div class="connection-info">
                         <span class="fw-medium">{{ conn.email }}</span>
                         <span class="text-body-s connection-meta">connected · {{ formatRelative(conn.connected_since) }}</span>
@@ -172,6 +172,7 @@ import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const scrollRef = ref(null)
 const { scrolling } = useAutoHideScrollbar(scrollRef)
@@ -180,6 +181,7 @@ const auth = authModel()
 const toaster = errorModel()
 const confirm = confirmModel()
 const connections = connectionModel()
+useLiveMotion(scrollRef, () => [connections.pendingReceived.value, connections.pendingSent.value, connections.connections.value])
 const upgrade = upgradeModel()
 
 const tier = computed(() => auth.currentUser.value?.subscription_tier)

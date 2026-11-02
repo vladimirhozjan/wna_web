@@ -24,6 +24,7 @@
           v-for="item in items"
           :key="item.id"
           :item="item"
+          :data-row-id="item.id"
           :show-time="false"
           @click="onItemClick"
           @drag-start="(item, offsetY) => $emit('drag-start', item, offsetY)"

@@ -1,5 +1,5 @@
 <template>
-  <div class="list-view">
+  <div ref="rootRef" class="list-view">
     <table class="text-body-m list-table">
       <thead>
         <tr>
@@ -15,6 +15,7 @@
         <tr
             v-for="folder in folders"
             :key="'f-' + folder.id"
+            :data-row-id="'f-' + folder.id"
             class="list-row list-row--folder"
             :class="{ 'list-row--drop-target': dropTargetId === folder.id }"
             @click="$emit('navigate-folder', folder.id)"
@@ -53,6 +54,7 @@
         <tr
             v-for="file in files"
             :key="'fi-' + file.id"
+            :data-row-id="'fi-' + file.id"
             class="list-row list-row--file"
             :draggable="mode === 'file'"
             @click="$emit('preview-file', file)"
@@ -116,11 +118,13 @@ import TrashIcon from '../../assets/TrashIcon.vue'
 import MoveIcon from '../../assets/MoveIcon.vue'
 import Spinner from '../Spinner.vue'
 import { dragModel } from '../../scripts/models/dragModel.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const drag = dragModel()
 const dropTargetId = ref(null)
+const rootRef = ref(null)
 
-defineProps({
+const props = defineProps({
   folders: {
     type: Array,
     default: () => [],
@@ -150,6 +154,8 @@ defineProps({
     default: () => [],
   },
 })
+
+useLiveMotion(rootRef, () => [props.folders, props.files])
 
 const emit = defineEmits([
   'navigate-folder',

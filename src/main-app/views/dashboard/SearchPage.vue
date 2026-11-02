@@ -52,6 +52,7 @@
           <SearchResultRow
               v-for="item in search.items.value"
               :key="`${item.type}-${item.id}`"
+              :data-row-id="`${item.type}-${item.id}`"
               :item="item"
               :term="search.resultTerm.value"
           />
@@ -78,6 +79,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const scrollRef = ref(null)
 const { scrolling } = useAutoHideScrollbar(scrollRef)
@@ -95,6 +97,7 @@ const CHIPS = [
 const route = useRoute()
 const router = useRouter()
 const search = searchModel().page
+useLiveMotion(scrollRef, () => search.items.value)
 const toaster = errorModel()
 const undo = undoModel()
 

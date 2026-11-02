@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { getDomains } from './domains.js'
 import { offlineModel } from './offlineModel.js'
 import { refreshSession, sessionRejected, logout } from './httpApi.js'
@@ -22,6 +22,8 @@ const tabId = crypto.randomUUID()
 const changeHandlers = new Set()
 const packetHandlers = new Set()
 const linkDownLong = ref(false)
+// A dispatch with a change not made in this tab: lists animate what its re-reads change (liveMotion.js)
+const motion = { active: false, ids: new Set() }
 const reconnecting = computed(() => linkDownLong.value && !isOffline.value)
 
 let running = false
@@ -32,6 +34,10 @@ let attempt = 0
 let resyncOnReady = false
 let holds = 0
 let dirty = false
+// Held foreign changes play with motion at release; a held resync / reconnect / midnight re-reads without
+let heldIds = new Set()
+let heldPlain = false
+let motionRuns = 0
 let reconnectTimer = null
 let pingTimer = null
 let pongTimer = null
@@ -163,22 +169,46 @@ function ping() {
     pongTimer = setTimeout(drop, PONG_WAIT_MS)
 }
 
-// changes === null: anything may have changed (resync, reconnect, a held dispatch) — every handler re-reads
-function dispatch(changes) {
+// changes === null: anything may have changed (resync, reconnect, a held dispatch) — every handler re-reads.
+// heldForeign: ids of foreign changes a hold deferred — the re-read at release plays with motion
+function dispatch(changes, heldForeign = null) {
     if (document.hidden || holds > 0) {
-        dirty = true
+        defer(changes, heldForeign)
         return
     }
-    packetHandlers.forEach(fn => fn(changes))
+    const foreignIds = heldForeign || (changes || []).filter(c => c.tab !== tabId).map(c => c.id)
+    const foreign = heldForeign !== null || foreignIds.length > 0
+    if (foreign) {
+        motionRuns++
+        motion.active = true
+        foreignIds.forEach(id => motion.ids.add(id))
+    }
+    const pending = []
+    packetHandlers.forEach(fn => pending.push(fn(changes)))
     // A packet handler may hold (a row's completion exit) — the list re-reads at release
     if (holds > 0) {
-        dirty = true
-        return
-    }
-    if (!changes || changes.some(c => !PERSONAL.has(c.entity))) {
-        changeHandlers.forEach(fn => fn())
+        defer(changes, heldForeign)
+    } else if (!changes || changes.some(c => !PERSONAL.has(c.entity))) {
+        changeHandlers.forEach(fn => pending.push(fn()))
         statsModel().refreshStats()
     }
+    if (foreign) endMotion(pending)
+}
+
+function defer(changes, heldForeign) {
+    dirty = true
+    if (heldForeign) heldForeign.forEach(id => heldIds.add(id))
+    else if (!changes) heldPlain = true
+    else changes.forEach(c => { if (c.tab !== tabId) heldIds.add(c.id) })
+}
+
+// Motion lasts until every handler's re-read has landed and rendered
+async function endMotion(pending) {
+    await Promise.allSettled(pending)
+    await nextTick()
+    if (--motionRuns > 0) return
+    motion.active = false
+    motion.ids.clear()
 }
 
 // Time passing writes nothing: an arrived tickler, a new day, overdue — re-read at local midnight
@@ -192,13 +222,17 @@ function scheduleMidnight() {
     }, next - Date.now())
 }
 
-function flushHeld() {
+// catchUp: a hidden tab shown again — the screen just shows the current state
+function flushHeld(catchUp = false) {
     if (!dirty || holds > 0 || document.hidden) return
     dirty = false
-    dispatch(null)
+    const ids = catchUp || heldPlain || !heldIds.size ? null : heldIds
+    heldIds = new Set()
+    heldPlain = false
+    dispatch(null, ids)
 }
 
-document.addEventListener('visibilitychange', flushHeld)
+document.addEventListener('visibilitychange', () => flushHeld(true))
 
 window.addEventListener('token_refreshed', () => {
     if (authed) sendToken(localStorage.getItem('auth_token'))
@@ -234,6 +268,8 @@ function stop() {
     clearStatus()
     holds = 0
     dirty = false
+    heldIds = new Set()
+    heldPlain = false
     if (ws) {
         const socket = ws
         ws = null
@@ -262,9 +298,10 @@ function subscribe(fn) {
     return () => packetHandlers.delete(fn)
 }
 
-export const liveClient = { reconnecting, tabId, start, stop, hold, release, subscribe }
+export const liveClient = { reconnecting, tabId, motion, start, stop, hold, release, subscribe }
 
-// Call from a page's setup with the function its load / pull-to-refresh runs
+// Call from a page's setup with the function its load / pull-to-refresh runs; return its re-read promise so a
+// foreign change animates (liveMotion.js)
 export function onLiveChange(fn) {
     onMounted(() => changeHandlers.add(fn))
     onBeforeUnmount(() => changeHandlers.delete(fn))

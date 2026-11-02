@@ -238,7 +238,7 @@ const moveOptions = computed(() => {
 })
 
 function load() {
-  horizon.load().catch(() => {})
+  return horizon.load().catch(() => {})
 }
 onLiveChange(load)
 

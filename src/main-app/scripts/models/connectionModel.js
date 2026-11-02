@@ -75,7 +75,7 @@ export function connectionModel() {
 
     // The Connections page and the sidebar Network count follow their live packets once loaded
     liveClient.subscribe(changes => {
-        if (loaded.value && (!changes || changes.some(c => c.entity === 'connection'))) loadAll().catch(() => {})
+        if (loaded.value && (!changes || changes.some(c => c.entity === 'connection'))) return loadAll().catch(() => {})
     })
 
     function reset() {

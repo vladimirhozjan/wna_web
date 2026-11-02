@@ -18,6 +18,7 @@
         <path
             v-for="line in layout.lines"
             :key="line.id"
+            :data-line-id="line.id"
             class="cm-line"
             :d="line.d"
             :stroke-width="line.width"
@@ -155,6 +156,7 @@ import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import { canvasModel, NODE_TEXT_LIMIT, CHILD_GAP } from '../../scripts/models/canvasModel.js'
 import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 import { liveClient } from '../../scripts/core/liveClient.js'
+import { motionSet, MOTION_MS } from '../../scripts/core/liveMotion.js'
 
 const emit = defineEmits(['move', 'help'])
 
@@ -190,6 +192,10 @@ const panning = ref(false)
 const menu = ref(null)
 
 const nodeEls = new Map()
+// Live motion: per-idea offset (layer px) gliding to 0, read by the pills and their lines
+const glide = reactive({})
+const motion = motionSet()
+let glideFrame = 0
 let resizeObserver = null
 // Pointer bookkeeping for pan / pinch / node press
 const pointers = new Map()
@@ -263,6 +269,12 @@ const layout = computed(() => {
       i.left += offX
       i.top += offY
     }
+  }
+  for (const i of items) {
+    const g = glide[i.node.id]
+    if (!g) continue
+    i.left += g.x
+    i.top += g.y
   }
   return { items, lines: links.map(([parent, child]) => lineBetween(parent, child)), byId }
 })
@@ -856,8 +868,90 @@ onMounted(() => {
 // A row must never move under the pointer: live updates wait for the drop
 watch(() => drag.active, (on) => (on ? liveClient.hold() : liveClient.release()))
 
+// ── Live motion (foreign changes): ideas enter, leave, glide to their new place, highlight; pan / zoom stay ──
+
+function stopGlide() {
+  cancelAnimationFrame(glideFrame)
+  for (const id of Object.keys(glide)) delete glide[id]
+}
+
+function runGlide(offsets, then) {
+  const start = performance.now()
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / MOTION_MS)
+    const left = (1 - t) ** 3
+    for (const [id, o] of offsets) glide[id] = { x: o.x * left, y: o.y * left }
+    if (t < 1) glideFrame = requestAnimationFrame(step)
+    else {
+      stopGlide()
+      then()
+    }
+  }
+  glideFrame = requestAnimationFrame(step)
+}
+
+function onScreen(el) {
+  const r = el.getBoundingClientRect()
+  const view = surfaceRef.value.getBoundingClientRect()
+  return r.bottom > view.top && r.top < view.bottom && r.right > view.left && r.left < view.right
+}
+
+watch(() => canvas.nodes.value, (now, before) => {
+  const surface = surfaceRef.value
+  if (!liveClient.motion.active || !before || !surface) return
+  motion.cancel()
+  stopGlide()
+  const was = new Map(before.map(n => [n.id, n]))
+  const old = new Map()
+  for (const [id, el] of nodeEls) {
+    old.set(id, { el, parent: el.parentNode, left: parseFloat(el.style.left), top: parseFloat(el.style.top), text: el.textContent })
+  }
+  const oldLines = new Map([...surface.querySelectorAll('[data-line-id]')].map(el => [el.dataset.lineId, el]))
+  const svg = surface.querySelector('.cm-lines')
+  nextTick(() => {
+    const offsets = new Map()
+    const marked = []
+    for (const item of layout.value.items) {
+      const id = item.node.id
+      const el = nodeEls.get(id)
+      const o = old.get(id)
+      if (!el) continue
+      if (!o) {
+        if (!onScreen(el)) continue
+        motion.enterTile(el, 0.9)
+        const line = surface.querySelector(`[data-line-id="${CSS.escape(id)}"]`)
+        if (line) motion.play(line, 'enter', [{ opacity: 0 }, { opacity: 1 }], MOTION_MS)
+        continue
+      }
+      const p = was.get(id)
+      const changed = !p || p.parent_id !== item.node.parent_id || p.dx !== item.node.dx || p.dy !== item.node.dy ||
+          o.text !== el.textContent
+      const dx = o.left - item.left
+      const dy = o.top - item.top
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) offsets.set(id, { x: dx, y: dy })
+      if (changed && onScreen(el)) marked.push(el)
+    }
+    for (const [id, o] of old) {
+      if (o.el.isConnected || !o.parent.isConnected) continue
+      o.el.style.pointerEvents = 'none'
+      o.parent.appendChild(o.el)
+      motion.fadeOut(o.el)
+      const line = oldLines.get(id)
+      if (line && !line.isConnected && svg) {
+        svg.appendChild(line)
+        motion.fadeOut(line)
+      }
+    }
+    const highlight = () => marked.forEach(el => el.isConnected && motion.highlight(el))
+    if (offsets.size) runGlide(offsets, highlight)
+    else highlight()
+  })
+}, { flush: 'pre' })
+
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
+  motion.cancel()
+  stopGlide()
   clearLongPress()
   if (drag.active) liveClient.release()
 })

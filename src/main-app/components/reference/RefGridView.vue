@@ -1,9 +1,10 @@
 <template>
-  <div class="grid-view">
+  <div ref="rootRef" class="grid-view">
     <template v-if="folders.length > 0">
       <RefFolderCard
           v-for="folder in folders"
           :key="'f-' + folder.id"
+          :data-row-id="'f-' + folder.id"
           :folder="folder"
           :move-side="moveSide"
           :writes-disabled="writesDisabled"
@@ -18,6 +19,7 @@
     <RefFileCard
         v-for="file in files"
         :key="'fi-' + file.id"
+        :data-row-id="'fi-' + file.id"
         :file="file"
         :mode="mode"
         :move-side="moveSide"
@@ -41,8 +43,10 @@
 import RefFolderCard from './RefFolderCard.vue'
 import RefFileCard from './RefFileCard.vue'
 import Btn from '../Btn.vue'
+import { ref } from 'vue'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
-defineProps({
+const props = defineProps({
   folders: {
     type: Array,
     default: () => [],
@@ -72,6 +76,9 @@ defineProps({
     default: () => [],
   },
 })
+
+const rootRef = ref(null)
+useLiveMotion(rootRef, () => [props.folders, props.files], { tiles: true })
 
 defineEmits([
   'navigate-folder',

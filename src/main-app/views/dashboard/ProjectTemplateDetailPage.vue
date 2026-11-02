@@ -133,6 +133,7 @@
                   class="action-wrapper"
                   data-testid="template-action-row"
                   :data-id="action.id"
+                  :data-row-id="action.id"
               >
                 <div class="action-row">
                   <Item
@@ -309,6 +310,7 @@ import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 import { onLivePacket } from '../../scripts/core/liveClient.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const SEARCH_MIN = 8
@@ -337,6 +339,7 @@ const newActionTitle = ref('')
 const addingAction = ref(false)
 const addInput = ref(null)
 const listRef = ref(null)
+useLiveMotion(listRef, () => template.value?.actions)
 const { scrolling: listScrolling } = useAutoHideScrollbar(listRef)
 const bodyRef = ref(null)
 const { scrolling: bodyScrolling } = useAutoHideScrollbar(bodyRef)
@@ -643,7 +646,7 @@ async function onPickTarget(target) {
 onLivePacket((changes) => {
   if (pageLoading.value || notFound.value) return
   if (changes && !changes.some(c => c.entity === 'template' && (c.id === null || String(c.id) === String(route.params.id)))) return
-  model.getTemplate(route.params.id).catch((err) => {
+  return model.getTemplate(route.params.id).catch((err) => {
     if (err.status !== 404 && err.status !== 400) return
     if (dialogItemId) confirm.close()
     notFound.value = true

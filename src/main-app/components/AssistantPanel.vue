@@ -55,12 +55,8 @@
             <div v-if="m.role === 'user'" class="text-body-s assistant-msg assistant-msg--user">{{ m.text }}</div>
 
             <div v-else class="assistant-msg assistant-msg--assistant" :data-testid="`assistant-message-${m.status}`">
-              <div v-if="m.status === 'working'" class="assistant-msg__working">
-                <Spinner :size="16" />
-                <span class="text-body-s color-text-secondary" data-testid="assistant-progress">{{ m.progress || 'Thinking…' }}</span>
-              </div>
-
-              <template v-else>
+              <Transition name="assistant-end">
+              <div v-if="m.status !== 'working'" class="assistant-msg__end">
                 <p v-if="errorLine(m)" class="text-body-s color-text-error assistant-msg__error">{{ errorLine(m) }}</p>
                 <div v-else-if="m.text" class="text-body-s assistant-msg__text" v-html="renderMarkdown(m.text)"></div>
 
@@ -102,7 +98,66 @@
                   <Btn v-if="paymentsEnabled" variant="secondary" size="sm" @click="goTo({ name: 'upgrade' })">View plans</Btn>
                   <Btn v-else variant="secondary" size="sm" @click="contactSupport">Contact Us</Btn>
                 </div>
-              </template>
+
+                <div v-if="m.steps?.length" class="assistant-steps-done">
+                  <button
+                      type="button"
+                      class="text-caption assistant-steps-toggle"
+                      :class="{ 'assistant-steps-toggle--open': openSteps.has(m.id) }"
+                      :aria-expanded="openSteps.has(m.id) ? 'true' : 'false'"
+                      data-testid="assistant-steps-toggle"
+                      @click="toggleSteps(m.id)"
+                  >
+                    <ChevronRightIcon class="assistant-steps-toggle__icon" />
+                    {{ openSteps.has(m.id) ? 'Hide steps' : 'Show steps' }}
+                  </button>
+                  <Transition :css="false" @enter="openHeight" @leave="closeHeight">
+                    <div v-if="openSteps.has(m.id)" class="assistant-steps" data-testid="assistant-steps">
+                      <div
+                          v-for="(step, i) in m.steps"
+                          :key="i"
+                          class="assistant-step"
+                          data-testid="assistant-step"
+                          :data-status="step.status"
+                      >
+                        <span class="assistant-step__mark">
+                          <CrossIcon v-if="step.status === 'failed'" class="assistant-step__icon" />
+                          <CheckmarkIcon v-else class="assistant-step__icon" />
+                        </span>
+                        <span class="text-body-s color-text-secondary assistant-step__text">{{ step.text }}</span>
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
+              </div>
+              </Transition>
+
+              <Transition :css="false" @leave="closeHeight">
+                <div v-if="m.status === 'working'" class="assistant-steps" data-testid="assistant-steps">
+                  <TransitionGroup name="assistant-step">
+                    <div
+                        v-for="(step, i) in liveSteps(m)"
+                        :key="i"
+                        class="assistant-step"
+                        :class="{ 'assistant-step--live': step.status === 'running' }"
+                        :data-testid="step.status === 'running' ? undefined : 'assistant-step'"
+                        :data-status="step.status === 'running' ? undefined : step.status"
+                    >
+                      <span class="assistant-step__mark">
+                        <Transition name="assistant-step-mark">
+                          <Spinner v-if="step.status === 'running'" :size="16" />
+                          <CrossIcon v-else-if="step.status === 'failed'" class="assistant-step__icon" />
+                          <CheckmarkIcon v-else class="assistant-step__icon" />
+                        </Transition>
+                      </span>
+                      <span
+                          class="text-body-s assistant-step__text"
+                          :data-testid="step.status === 'running' ? 'assistant-progress' : undefined"
+                      >{{ step.text }}</span>
+                    </div>
+                  </TransitionGroup>
+                </div>
+              </Transition>
             </div>
           </template>
 
@@ -186,6 +241,9 @@ import Spinner from './Spinner.vue'
 import Dropdown from './Dropdown.vue'
 import EmptyState from './EmptyState.vue'
 import ItemTypeIcon from './ItemTypeIcon.vue'
+import CheckmarkIcon from '../assets/CheckmarkIcon.vue'
+import CrossIcon from '../assets/CrossIcon.vue'
+import ChevronRightIcon from '../assets/ChevronRightIcon.vue'
 import AiIcon from '../assets/AiIcon.vue'
 import MoreIcon from '../assets/MoreIcon.vue'
 import CloseIcon from '../assets/CloseIcon.vue'
@@ -201,6 +259,7 @@ import { useAutoHideScrollbar } from '../scripts/core/useAutoHideScrollbar.js'
 import { useVisualViewport, focusWithoutReveal } from '../scripts/core/visualViewport.js'
 
 const CHANGES_SHOWN = 5
+const STEPS_MS = 200
 const MOBILE_QUERY = '(max-width: 768px)'
 
 const router = useRouter()
@@ -216,6 +275,8 @@ const composerRef = ref(null)
 const { scrolling } = useAutoHideScrollbar(listRef)
 const isMobile = ref(window.matchMedia(MOBILE_QUERY).matches)
 const expanded = reactive(new Set())
+// Assistant messages whose finished steps are open; closed again after a reload
+const openSteps = reactive(new Set())
 let atBottom = true
 
 useAutoGrow(composerRef)
@@ -283,6 +344,31 @@ function isOpenQuestion(m) {
 
 function isConfirm(m) {
   return m.choices?.length === 2 && m.choices.includes('Go ahead') && m.choices.includes('Cancel')
+}
+
+// The working log: finished steps, then one live row — the running step, or Thinking… while the model thinks
+function liveSteps(m) {
+  const steps = m.steps || []
+  if (steps.at(-1)?.status === 'running') return steps
+  return [...steps, { text: 'Thinking…', status: 'running' }]
+}
+
+function toggleSteps(id) {
+  if (openSteps.has(id)) openSteps.delete(id)
+  else openSteps.add(id)
+}
+
+function openHeight(el, done) {
+  el.animate([{ height: '0px', opacity: 0 }, { height: `${el.offsetHeight}px`, opacity: 1 }], { duration: STEPS_MS, easing: 'ease' }).onfinish = done
+}
+
+// The gap above it closes with it, so nothing jumps when it is removed
+function closeHeight(el, done) {
+  const gap = parseFloat(getComputedStyle(el.parentElement).rowGap) || 0
+  el.animate([
+    { height: `${el.offsetHeight}px`, opacity: 1, marginTop: '0px' },
+    { height: '0px', opacity: 0, marginTop: `-${gap}px` },
+  ], { duration: STEPS_MS, easing: 'ease' }).onfinish = done
 }
 
 function visibleChanges(m) {
@@ -430,6 +516,11 @@ watch(() => [state.messages.length, lastAssistant.value?.status, !!state.creditC
   if (state.panelOpen) scrollToBottom()
 })
 
+// A new step row follows only while the user is at the bottom
+watch(() => lastAssistant.value?.steps?.length, () => {
+  if (state.panelOpen && atBottom) scrollToBottom()
+})
+
 // Back to the composer only from the panel itself (or nowhere) — never out of an editor on the page
 watch(() => assistant.working.value, (working) => {
   if (working || !state.panelOpen) return
@@ -553,17 +644,128 @@ onBeforeUnmount(() => {
   color: var(--color-text-primary);
 }
 
-.assistant-msg__working {
+.assistant-msg__end {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assistant-end-enter-active {
+  transition: opacity 0.2s ease;
+}
+
+.assistant-end-enter-from {
+  opacity: 0;
+}
+
+.assistant-end-leave-active {
+  display: none;
+}
+
+/* Step log */
+.assistant-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.assistant-step {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: 24px;
 }
 
-.assistant-msg__working > span:last-child {
+.assistant-step__mark {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.assistant-step__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.assistant-step__text {
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--color-text-secondary);
+  transition: color 0.15s ease;
+}
+
+.assistant-step--live .assistant-step__text {
+  color: var(--color-text-primary);
+}
+
+.assistant-step-enter-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.assistant-step-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.assistant-step-mark-enter-active,
+.assistant-step-mark-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.assistant-step-mark-leave-active {
+  position: absolute;
+}
+
+.assistant-step-mark-enter-from,
+.assistant-step-mark-leave-to {
+  opacity: 0;
+}
+
+.assistant-steps-done {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.assistant-steps-done > .assistant-steps {
+  align-self: stretch;
+}
+
+.assistant-steps-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.assistant-steps-toggle:hover {
+  color: var(--color-text-primary);
+}
+
+.assistant-steps-toggle__icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.15s ease;
+}
+
+.assistant-steps-toggle--open .assistant-steps-toggle__icon {
+  transform: rotate(90deg);
 }
 
 .assistant-msg__error {
@@ -758,7 +960,8 @@ onBeforeUnmount(() => {
     padding: 16px;
   }
 
-  .assistant-changes__row {
+  .assistant-changes__row,
+  .assistant-steps-toggle {
     min-height: var(--touch-target-min);
   }
 

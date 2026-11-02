@@ -1,5 +1,5 @@
 <template>
-  <div class="month-view">
+  <div ref="rootRef" class="month-view">
     <!-- Desktop: Grid view -->
     <template v-if="!isMobile">
       <!-- Weekday headers -->
@@ -47,6 +47,7 @@
                 v-for="item in getItemsForDay(day).slice(0, maxItemsPerDay)"
                 :key="item.id"
                 :item="item"
+                :data-row-id="item.id"
                 :compact="true"
                 :show-time="false"
                 @click="onItemClick"
@@ -102,6 +103,7 @@
               v-for="item in getItemsForDay(day)"
               :key="item.id"
               :item="item"
+              :data-row-id="item.id"
               :compact="true"
               :show-time="true"
               @click="onItemClick"
@@ -131,6 +133,7 @@ import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
 const props = defineProps({
   currentDate: {
@@ -148,6 +151,8 @@ const dragOverDate = ref(null)
 const draggingItem = ref(null)
 const isMobile = ref(false)
 const listRef = ref(null)
+const rootRef = ref(null)
+useLiveMotion(rootRef, () => calendar.items.value)
 const { scrolling } = useAutoHideScrollbar(listRef)
 
 function checkMobile() {
