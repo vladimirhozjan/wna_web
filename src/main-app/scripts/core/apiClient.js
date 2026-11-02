@@ -169,9 +169,22 @@ export function liveTz() {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 }
 
-export async function registerUser({email, password}) {
+// Fire and forget through fetch: a blocked or failed count must not mark the app offline or reach the user
+export function recordVisit(body) {
+    fetch(`${httpApi.defaults.baseURL || ''}/v1/visits`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+    }).catch(() => {})
+}
+
+function signupUtmField(signupUtm) {
+    return signupUtm ? {signup_utm: signupUtm} : {}
+}
+
+export async function registerUser({email, password, signupUtm = null}) {
     try {
-        const res = await httpApi.post('/v1/user/register', {email, password, timezone: liveTz()})
+        const res = await httpApi.post('/v1/user/register', {email, password, timezone: liveTz(), ...signupUtmField(signupUtm)})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -2088,12 +2101,12 @@ export async function googleAuth(idToken) {
     }
 }
 
-export async function googleSso(code, codeVerifier) {
-    return ssoSignIn('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz()})
+export async function googleSso(code, codeVerifier, signupUtm = null) {
+    return ssoSignIn('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz(), ...signupUtmField(signupUtm)})
 }
 
-export async function appleSso(code, nonce, name) {
-    return ssoSignIn('/v1/user/apple-sso', {code, nonce, ...(name ? {name} : {}), tz: liveTz()})
+export async function appleSso(code, nonce, name, signupUtm = null) {
+    return ssoSignIn('/v1/user/apple-sso', {code, nonce, ...(name ? {name} : {}), tz: liveTz(), ...signupUtmField(signupUtm)})
 }
 
 async function ssoSignIn(path, body) {
@@ -2640,6 +2653,7 @@ export async function startCanvasConvert(projectId) {
 const apiClient = {
     loginUser,
     registerUser,
+    recordVisit,
     refreshToken,
     getPublicFlags,
     getUser,

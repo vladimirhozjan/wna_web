@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** October 30, 2026
+**Last updated:** November 2, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -81,6 +81,7 @@ We automatically collect certain technical data when you use the Service:
 - **IP address** - recorded per login session
 - **Device information** - browser and device string (e.g., "Chrome on Windows"), used to identify sessions in your account settings
 - **Session timestamps** - login time and last activity time per session
+- **Days of use** - the calendar days (UTC) on which you used the Service, recorded once per day, for usage statistics
 - **Sign-in method** - how each session was signed in (email, Google or Apple), shown in your account settings
 - **Authentication tokens** - stored in your browser's localStorage for session management
 - **Push notification subscription** - if you turn on notifications on a device, your browser gives us a push address at its vendor's push service and two encryption keys; we keep them with that device's session
@@ -137,9 +138,9 @@ If you connect an AI app (for example Claude or ChatGPT) to your account, availa
 
 ### 2.10 Data We Do Not Collect
 
-- We do not use analytics or tracking tools
+- We do not use third-party analytics or tracking tools; we count visits to our public pages ourselves, without cookies (Section 2.12)
 - We do not use advertising cookies or pixels
-- We do not collect location data beyond your IP address and the country-level evidence described in Section 2.5
+- We do not collect location data beyond your IP address, the country-level evidence described in Section 2.5 and the country of a public-page visit (Section 2.12)
 - We do not collect biometric data
 
 ### 2.11 AI Assistant
@@ -153,6 +154,12 @@ If you use the **AI assistant** (available on all plans), it carries out the req
 - **Usage records** - for each request: the time, the model, your plan, the number of tokens processed, our cost and the credits used
 
 The content the assistant reads and changes on your instruction is your content described in Section 2.2; it reaches the same content as a connected AI app (Section 2.9). Payments for credit packs are billing and payment data described in Section 2.5.
+
+### 2.12 Public Website Visits and Sign-up Source
+
+When you open a public page (home, sign-in / sign-up, pricing, help, legal), we record the page, the referring website's domain, the campaign tags in the link you followed (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`), the device type, the browser name and the country derived from your IP address. The IP address and the browser string are not stored — they are combined with a key that changes every day and is deleted after that day into a code that only lets us count distinct visitors per day and cannot be linked to you or across days. No cookie and nothing else is stored on your device.
+
+If you create an account during the same visit, the campaign tags of that visit are saved with your account (for Google or Apple sign-up they travel inside the sign-in request).
 
 ## 3. Legal Basis for Processing
 
@@ -171,6 +178,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
 | ToS acceptance record | Legitimate interest (Art. 6(1)(f)) | Proof of the contract terms you accepted at checkout |
 | Technical/session data | Legitimate interest (Art. 6(1)(f)) | Security, fraud prevention, and service reliability |
+| Public-page visit statistics, sign-up source and days of use | Legitimate interest (Art. 6(1)(f)) | Understanding which pages and campaigns bring visitors and how the Service is used, without tracking individuals |
 | Preference data | Contract performance (Art. 6(1)(b)) | Necessary to provide personalized service features |
 
 Where we rely on legitimate interest, we have conducted a balancing test and determined that our interests do not override your fundamental rights. You have the right to object to processing based on legitimate interest (see Section 8).
@@ -188,6 +196,7 @@ We use your personal data exclusively for the following purposes:
 - **AI assistant** - carrying out the requests you give the AI assistant on your data
 - **Subscription management** - processing payments, issuing invoices, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
+- **Statistics** - counting visits to our public pages and which campaigns lead to sign-ups, and how often the Service is used
 - **Legal compliance** - fulfilling our legal obligations under applicable law
 
 We do **not** use your data for profiling, automated decision-making, targeted advertising, or any purpose beyond providing and maintaining the Service.
@@ -299,6 +308,9 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
 | Sign-in tokens (encrypted Google / Apple sign-in token) | Kept until you delete your account (the Apple token also until you stop using Sign in with Apple for WhatsNextAction); on account deletion we revoke our access at Google / Apple |
 | Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
+| Public-page visit records | 7 days; after that only daily totals without any visitor code are kept |
+| Sign-up source | Kept for the duration of your account |
+| Days of use | Kept for the duration of your account; when you delete your account, they are kept without your identity |
 | Push notification subscription (push address, encryption keys) | Deleted when you turn notifications off on that device, sign out, the session ends or expires, the push service reports the address invalid, or you delete your account |
 | Connected AI apps (name, return addresses, connection and last-use time, hashed credential) | Kept until you remove the app, until its connection expires after the same period of non-use as a session, or until you delete your account; registrations by an AI app that never complete a connection are deleted after 24 hours |
 | AI assistant conversation (messages and running summary) | Deleted 30 days after its last message, when you start a new conversation, or when you delete your account |
@@ -352,7 +364,7 @@ While we strive to protect your data, no method of electronic storage or transmi
 
 ## 10. Cookies and Local Storage
 
-WhatsNextAction does **not** use cookies for tracking or advertising purposes.
+WhatsNextAction does **not** use cookies for tracking or advertising purposes. Counting visits to public pages uses no cookie and stores nothing on your device.
 
 We use your browser's **localStorage** to store:
 

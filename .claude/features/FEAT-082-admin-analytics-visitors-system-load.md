@@ -6,11 +6,11 @@
   counted routes), C5 / C6 (admin response shapes); boundaries: §Boundaries (web main-app `visitTracker.js` + auth rows,
   admin-app row) and its "Reuse first" list (incl. the `formatBytes` extraction); flows: §Flows F1–F3, F8; data:
   `## Data contract`; Privacy Policy wording: `## Legal impact` — this slice does not restate them.
-- Order (parent Work breakdown): **W1 after backend B1–B3**; **W3 after B2 + B4**; **W4 after B3**; **W5 after B4 +
-  Q1**; **W6 after B4 (+ deploy P2)**; **W7 with W3–W6**. **W2 needs only Q2's answer and can run any time.** ui-tests
-  U1–U3 wait on W1, W3–W6.
-- Open owner questions in the parent `## Questions`: **Q1** decides W5 (Screens S4 is drawn as option A — replace);
-  **Q2** decides one §7 line of W2. Build exactly the answered option.
+- Order (parent Work breakdown): **W1 after backend B1–B3**; **W3 after B2 + B4**; **W4 after B3**; **W5 after B4**;
+  **W6 after B4 (+ deploy P2)**; **W7 with W3–W6**. **W2 can run any time.** ui-tests U1–U3 wait on W1, W3–W6.
+- Owner answers (parent `## Design` Answers, `decisions.md` 2026-11-02 FEAT-082): **Q1 = A** — Online Now replaces
+  *Active Sessions (15m)* (W5, as Screens S4); **Q2 = B** — the §7 "Days of use" wording "kept without your identity"
+  (W2); **Q3 = B** — no notice to users, only the "Last updated" date (W2).
 - main-app: no visible UI change except the Privacy Policy text (parent Screens intro). Help impact: n/a. Landing /
   Pricing impact: n/a (parent) — no box.
 - New components / models / CSS variables: none (parent Screens); the only new files are `visitTracker.js` (C3,
@@ -45,93 +45,120 @@
 
 ## Checklist
 W1 — main-app counting + signup source (after backend B1–B3):
-- [ ] **W1 — `src/main-app/scripts/core/visitTracker.js`** — C3 (UTM once from the first URL, entry referrer host,
-  module memory only; no cookie / localStorage / sessionStorage / IndexedDB for anything new).
-- [ ] **W1 — counted routes** — `meta.countVisit: true` on the ten C3 routes in `router.js`; call the tracker from the
-  existing `afterEach` (`router.js:137-139`); same-path query / hash change not counted (C3).
-  Data: request only — `POST /v1/visits` (C1), provided by backend **B1** + **B2**; response ignored.
-- [ ] **W1 — `apiClient.recordVisit`** — `POST /v1/visits`, every error swallowed, no toast (§Boundaries, F1).
-- [ ] **W1 — `signup_utm` on registration** — `registerUser` (`apiClient.js:172-179`), `googleSso` / `appleSso`
-  (`:2091-2097`) (C2). Data: request field `signup_utm`, consumed by backend **B3**.
-- [ ] **W1 — Google / Apple `state` suffix** — `googleSso.js:28-32`, `appleSso.js:20-21`; split check in
-  `takeGoogleSsoVerifier` (`googleSso.js:57-64`) / `takeAppleSsoNonce` (`appleSso.js:44-51`); `GoogleSsoPage.vue`
-  passes the decoded UTM; sessionStorage keeps only the random part; the 1000-character rule (C3, F3).
-- [ ] **W1 · Update `wna_orchestration/specs/api/api.md`** — the Google SSO `state` note (C3; parent Contracts
-  touched). Cite the orchestration `file:line`.
-- [ ] **W1 · Verify** — `npm run build:main`; Chrome on `:5173`: the Network / Application checks of parent W1
-  "Verify" (two visits with UTM, none for in-app and `?x=1`, no new cookie / storage key, `google_sso_state` without
-  `.`, UTM in `google-sso` via the local mock).
+- [x] **W1 — `src/main-app/scripts/core/visitTracker.js`** — C3 (UTM once from the first URL, entry referrer host,
+  module memory only; no cookie / localStorage / sessionStorage / IndexedDB for anything new). —
+  `visitTracker.js:7-22` (read once at module load, memory only), `:38-42` (send). Chrome: no new storage key.
+- [x] **W1 — counted routes** — `meta.countVisit: true` on the ten C3 routes in `router.js`; call the tracker from the
+  existing `afterEach`; same-path query / hash change not counted (C3). — `router.js:30,35,36,77,82,86,90,99,104,108`
+  (meta), `:145` (afterEach), `visitTracker.js:40` (`START_LOCATION` = first view always counts; same `path` skipped).
+  `/help/connect-ai` is not in C3's list, so it is not counted (see Questions).
+- [x] **W1 — `apiClient.recordVisit`** — `POST /v1/visits`, every error swallowed, no toast. — `apiClient.js:173-179`
+  (plain `fetch` + `.catch(() => {})`, so a blocked request never reaches the httpApi interceptors / offline banner).
+- [x] **W1 — `signup_utm` on registration** — `registerUser` / `googleSso` / `appleSso` (C2). — `apiClient.js:181-187`,
+  `:2104-2109`; `authModel.js:81` (tab UTM on register). Chrome: register from
+  `/register?utm_source=youtube&utm_medium=video&utm_campaign=launch-2026&utm_content=reel-03&utm_term=gtd` → admin
+  `GET /admin/platform-users/{id}` returns all five parts.
+- [x] **W1 — Google / Apple `state` suffix** — `googleSso.js:22-37` (`ssoState` incl. the 1000-character rule,
+  `splitSsoState`), `:79-86` (split check), `appleSso.js` (same helpers in `getAppleAuthUrl` / `takeAppleSsoNonce`),
+  `GoogleSsoPage.vue:100` (decoded UTM → sign-in). Chrome: `google_sso_state` / `apple_sso_state` hold no `.`, the sent
+  state carries the suffix, verifier / nonce still match, a bad or foreign suffix → `utm: null`, UTF-8 values round-trip.
+- [x] **W1 · Update `wna_orchestration/specs/api/api.md`** — Google SSO `state` note. — `specs/api/api.md:344,352`.
+- [x] **W1 · Verify** — `npm run build:main` green. Chrome `:5173`: `/?utm_source=youtube&utm_campaign=x` → `/pricing`
+  → two `POST /v1/visits` with `{"path":…,"utm":{"source":"youtube",…,"campaign":"x"}}` and status 204 (read from
+  a page-level `fetch` wrapper; the extension's network list showed a spurious 503 while user_service logged 204);
+  `/pricing?x=1` and `/settings` → none; no new cookie / storage key; Google sign-up via the local mock
+  (`localhost:10000`) sent `"signup_utm":{"campaign":"x",…,"source":"youtube",…}` in `google-sso` (router log). The
+  local Google token exchange then failed in user_service (`Google token request failed: 4`, a timeout — environment,
+  not web), so the account was not created on that path; the email path above proves the save end to end.
 
-W2 — Privacy Policy, `src/main-app/content/legal/privacy.md` (needs Q2; any time) — each item of parent
+W2 — Privacy Policy, `src/main-app/content/legal/privacy.md` (any time) — each item of parent
 `## Legal impact`, wording from there:
-- [ ] **W2 · Legal — L3 `**Last updated:**`** → the ship date.
-- [ ] **W2 · Legal — §2.6** new bullet **Days of use**.
-- [ ] **W2 · Legal — §2.10** replace L140 and amend L142 as written; L141 stays.
-- [ ] **W2 · Legal — new §2.12** **Public Website Visits and Sign-up Source**.
-- [ ] **W2 · Legal — §3 table** new row (visit statistics, sign-up source, days of use · Art. 6(1)(f)).
-- [ ] **W2 · Legal — §4** new bullet **Statistics**.
-- [ ] **W2 · Legal — §7 table** the three rows; the "Days of use" wording **per Q2** (A as written; B with "…; when
-  you delete your account, they are kept without your identity").
-- [ ] **W2 · Legal — §10** the sentence after L355.
-- [ ] **W2 · Verify** — `/legal/privacy` renders §2.12, the §3 / §4 / §7 / §10 lines and the new date at desktop +
-  500px (Chrome, `:5173`).
+- [x] **W2 · Legal — L3 `**Last updated:**`** → the ship date. — `privacy.md:3` (November 2, 2026).
+- [x] **W2 · Legal — §2.6** new bullet **Days of use**. — `privacy.md:84`.
+- [x] **W2 · Legal — §2.10** replace L140 and amend L142 as written; L141 stays. — `privacy.md:141,143` (142 unchanged).
+- [x] **W2 · Legal — new §2.12** **Public Website Visits and Sign-up Source**. — `privacy.md:158-162`.
+- [x] **W2 · Legal — §3 table** new row. — `privacy.md:181`.
+- [x] **W2 · Legal — §4** new bullet **Statistics**. — `privacy.md:199`.
+- [x] **W2 · Legal — §7 table** the three rows, Q2 = B wording. — `privacy.md:311-313`.
+- [x] **W2 · Legal — §10** the sentence after L355. — `privacy.md:367`.
+- [x] **W2 · Verify** — Chrome `:5173/legal/privacy`: all eleven new strings present, §2.12 and the §7 rows read well at
+  desktop and at 500px (iframe, no horizontal overflow).
 
 W3 — admin Analytics (after backend B2 + B4):
-- [ ] **W3 — admin `apiClient.js`** — `getVisitorStats(range)`, `getTrafficSources(range, group)`.
-- [ ] **W3 · Screen S1 — Visitors card** — built per parent Screens S1 (first card; range select shared with S2; chart,
-  `summary-stats` with wrap, footnote; Loading / Empty / Error + Retry; ≤768 layout).
-  Data: `bucket`, `items[].date / visits / visitors`, `totals.visits / visitors / signup_rate` from
-  `GET /admin/analytics/visitors` — new, provided by backend **B2** (C5) + **B4** pass-through (C6).
-- [ ] **W3 · Screen S2 — Traffic Sources** — built per parent Screens S2 (second on the page; Group by with 8 options,
-  default Campaign; none-row copy; "Top {shown} shown." only when `truncated`; country names via `Intl.DisplayNames`
-  as `VatRatesPage.vue:77`; `DbIpAttribution` under *Country*; ≤768 Visits column hidden; Loading / Empty / Error +
-  Retry). Page order after the change as Screens S2 last line.
-  Data: `utm`, `rows[].label / sublabel / none / visits / visitors / signups / signup_rate / share`, `shown`,
-  `truncated` from `GET /admin/analytics/traffic-sources` — new, provided by backend **B2** (C5) + **B4**
-  pass-through (C6).
-- [ ] **W3 · Verify** — `npm run build:admin`; `:6173` desktop + 500px with seeded data: each group, empty range, an
-  error (stop user_service) → Retry (parent W3 "Verify"; local admin via
-  `wna_deploy/backend/db_tools/local/reset_admin_local.sh`, OTP per `specs/ci/backend-ci.md` §quick_otp_code).
+- [x] **W3 — admin `apiClient.js`** — `getVisitorStats(range)` `apiClient.js:506`, `getTrafficSources(range, group)` `:515`.
+- [x] **W3 · Screen S1 — Visitors card** — `AnalyticsPage.vue:5-35` (first card, range select shared with S2, Line
+  chart Visits filled / Visitors, `summary-stats` Visits · Visitors · Signup Rate with `flex-wrap`, footnote; Loading /
+  "No visits in this period." / "Couldn't load visitors." + Retry). Week buckets label the Monday, month buckets
+  "Dec 2025".
+- [x] **W3 · Screen S2 — Traffic Sources** — `AnalyticsPage.vue:37-80` (plain section, range caption, Group by with
+  8 options default Campaign, `DataTable`, none-row copy, "Top {shown} shown." `:76`, `Intl.DisplayNames` `:310`,
+  `DbIpAttribution` only for Country `:78`, numbers right-aligned, ≤768 Visits column hidden `:649-650` and Group by
+  full width). First column is titled after the group (as AI Usage) instead of "Name". Page order Visitors · Traffic
+  Sources · Signup & Growth · … unchanged otherwise.
+- [x] **W3 · Verify** — `npm run build:admin` green. Chrome `:6173` (viewer JWT minted with the local secret of
+  `wna-ui-tests/tests/helpers/admin.ts`, no admin reset needed): all 8 groups render with the right columns (e.g.
+  Country "Slovenia / Unknown / Austria" + DB-IP line; Referrer "Direct"; Campaign "No campaign", "x / youtube");
+  90d → 14 weekly points, 12m → 12 monthly; error forced by an invalid `range` → both cards show their own message,
+  Retry reloads; empty + truncated states via component state; desktop and 500px clean.
 
 W4 — admin User detail (after backend B3):
-- [ ] **W4 · Screen S3 — Signup Source row** — built per parent Screens S3: `info-row` after Login Provider
-  (`UserDetailPage.vue:36-37`), parts joined with " · ", empty parts skipped, "Unknown" when `null`; ≤768 wrap.
-  Data: `signup_utm.source / medium / campaign / content / term` from `GET /admin/platform-users/{id}` — new,
-  provided by backend **B3** (C5; copied by `user_management_service_impl.cpp:65-66`).
-- [ ] **W4 · Verify** — a user with five parts, one with two, one with none — desktop + 500px.
+- [x] **W4 · Screen S3 — Signup Source row** — `UserDetailPage.vue:40-43` (after Login Provider), `:557-561` (parts
+  joined with " · ", empty skipped), "Unknown" in tertiary; value right-aligned, wraps (`overflow-wrap: anywhere`),
+  label kept on one line.
+- [x] **W4 · Verify** — support JWT: five parts "youtube · video · launch-2026 · reel-03 · gtd", three parts
+  "reg-… · launch · reg-…", none "Unknown" — desktop and 500px.
 
-W5 — admin Dashboard (after backend B4; per Q1):
-- [ ] **W5 · Screen S4 — Online Now + Live Connections** — built per parent Screens S4: two `Stat`s after DAU
-  (`DashboardPage.vue:40-44`), `null` → "—", rest of the card stays; **Q1 A**: remove the *Active Sessions (15m)* Stat
-  (`:44`); **Q1 B**: keep it.
-  Data: `online_users`, `live_connections` from `GET /admin/dashboard/user-overview` — new, provided by backend
-  **B4** (C6, from router **B1** C7); `active_sessions_15min` (Q1 B only) existing,
-  `admin_repository_impl.cpp:267-276`.
-- [ ] **W5 · Verify** — one open main-app tab → 1 / 1, a second tab → 1 / 2; router stopped → "—", rest intact.
+W5 — admin Dashboard (after backend B4; Q1 = A):
+- [x] **W5 · Screen S4 — Online Now + Live Connections** — `DashboardPage.vue:44-45`; *Active Sessions (15m)* removed
+  (`grep active_sessions_15min src/admin-app` → 0).
+- [x] **W5 · Verify** — one main-app tab → Online Now 1 / Live Connections 1; second tab → 1 / 2; `null` values
+  (set in the model — I do not stop processes) → "—" with the rest of the card intact; 500px 3 per row.
 
 W6 — admin System Health (after backend B4, deploy P2):
-- [ ] **W6 — `formatBytes` extraction** — move from `DashboardPage.vue:232-239` to
-  `src/admin-app/scripts/core/formatBytes.js`, imported by `DashboardPage.vue` + `SystemHealthPage.vue`; `0` copies
-  left (grep).
-- [ ] **W6 — admin `apiClient.js`** — `getSystemLoad(range)`, `getDatabaseSizes()`; loaded on page open + Refresh
-  only, the 30 s timer keeps refreshing the services only (Screens S5 "Load").
-- [ ] **W6 · Screen S5 — Server Load** — built per parent Screens S5 (header + environments caption, range `Select`,
-  disk `Alert` warning / critical, `stats-grid` CPU / RAM / Disk / Disk Full In, "Last sample HH:mm", Load (%) and
-  Live Connections charts, daily-peak legend + "Peak · Avg" tooltip for `30d` / `12m`; every state + copy; ≤768).
-  Data: `environments`, `granularity`, `current.*`, `disk_level`, `disk_full_in`, `load[]`, `connections[]` from
-  `GET /admin/system/load` — new, provided by backend **B4** (C6); `environments` set by deploy **P2**.
-- [ ] **W6 · Screen S6 — Databases** — built per parent Screens S6 (`Stat size="lg"` All Databases, `DataTable`
-  Database · Size · Share; Loading / Error + Retry; ≤768).
-  Data: `total_bytes`, `items[].name / bytes / share` from `GET /admin/system/databases` — new, provided by backend
-  **B4** (C6).
-- [ ] **W6 · Verify** — no samples → empty copy; seeded samples → stats + both charts; `30d` → daily peaks + tooltip
-  avg; seeded disk 85 % / 92 % → warning / error Alert; Databases lists five rows; desktop + 500px.
+- [x] **W6 — `formatBytes` extraction** — `src/admin-app/scripts/core/formatBytes.js`, imported by
+  `DashboardPage.vue:184` + `SystemHealthPage.vue:176`; the Dashboard copy is gone. `ContentBrowserPage.vue:392` keeps
+  its own, different variant (null → "0 B", no TB) — outside this slice, left as is.
+- [x] **W6 — admin `apiClient.js`** — `getSystemLoad(range)` `apiClient.js:157`, `getDatabaseSizes()` `:166`;
+  `SystemHealthPage.vue:277` `refreshAll` on open + Refresh, `:313` the 30 s timer refreshes the services only.
+- [~] **W6 · Screen S5 — Server Load** — built: header + environments caption, range `Select`, disk `Alert` warning /
+  critical, `stats-grid` CPU / RAM / Disk / Disk Full In, "Last sample HH:mm", Loading / Empty / Error + Retry, ≤768
+  (`SystemHealthPage.vue:86-135`). **Remaining: the Load (%) and Live Connections charts (+ daily-peak legend and
+  "Peak · Avg" tooltip).** Blocked on the owner: the chart setup (theme colours, base options, Chart.js registration)
+  lives only inside `AnalyticsPage.vue`; a second chart page needs either a copy (forbidden) or a new shared helper
+  (needs approval) — see Questions Q1.
+- [x] **W6 · Screen S6 — Databases** — `SystemHealthPage.vue:137-160` (`Stat size="lg"` All Databases, `DataTable`
+  Database · Size · Share, Loading / Error + Retry, names wrap).
+- [~] **W6 · Verify** — done for what exists: empty copy, stats, warning / critical Alert, "Not growing" / "~14
+  months" / "~1 day", 30d returns `granularity: day`, Databases lists the five local DBs, error + Retry on both
+  cards, desktop and 500px (Alert spanned past the card padding — fixed with `box-sizing` in `Alert.vue:57`, its
+  first user). **Remaining:** the chart checks (seeded samples → both charts; 30d daily peaks + tooltip avg) after Q1.
 
 W7 — docs (with W3–W6):
-- [ ] **W7 · Update `wna_orchestration/specs/features/wna-features.md`** — admin Analytics, Dashboard, System Health,
-  User detail entries. Cite the orchestration `file:line`.
-- [ ] **W7 · TC report** — a `## TC report` section in this file listing the new / stale TCs for ui-tests (never edit
-  `wna-test-cases.md`).
+- [x] **W7 · Update `wna_orchestration/specs/features/wna-features.md`** — User detail Profile `:1690`, Dashboard
+  User Overview `:1943-1945`, System Health Server Load / Databases `:1958-1966`, Analytics Visitors / Traffic Sources
+  `:2013-2029`, Legal Pages `:2575-2576`, new §24.8 Visit Counting `:2639`. Server Load charts are not described
+  (not built yet).
+- [x] **W7 · TC report** — below.
+
+## TC report
+New TCs for ui-tests (none edited by me):
+- Visits: a public page with UTM sends one `POST /v1/visits` per counted view; `?x=1` / hash-only change and in-app
+  pages send none; nothing new in cookies / storage.
+- Signup source: email registration after a UTM landing → User detail **Signup Source** shows the joined parts;
+  without UTM → "Unknown"; Google / Apple: `google_sso_state` / `apple_sso_state` hold no `.`, the sent `state` has
+  the suffix, `google-sso` body carries `signup_utm`.
+- Analytics: Visitors card (chart, Visits / Visitors / Signup Rate, footnote, empty "No visits in this period.", error
+  "Couldn't load visitors." + Retry); Traffic Sources: Group by (8 options, default Campaign), first column titled
+  after the group, "No campaign" / "Direct" / "Unknown" rows, country names + DB-IP line only for Country, "Top N
+  shown." when truncated, ≤768 no Visits column.
+- Dashboard: Online Now / Live Connections (1 / 1 with one tab, 1 / 2 with two), "—" when unavailable.
+- System Health: Server Load (range select, "Shared by dev and prod" caption only with > 1 environment, stats, disk
+  warning "Disk is filling up" / critical "Disk almost full", "No samples yet…", error + Retry), Databases (total +
+  table). Chart TCs wait for W6 S5 charts.
+- Privacy Policy: §2.12 and the new date render.
+Stale TCs: any TC that expects the Dashboard tile **Active Sessions (15m)** (removed, Q1 = A); any TC that expects
+the System Health 30 s timer to reload everything (only services now); any TC that reads the Privacy Policy "Last
+updated: October 30, 2026" or "We do not use analytics or tracking tools".
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must

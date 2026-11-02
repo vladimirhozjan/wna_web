@@ -1,7 +1,10 @@
 import {getDomains} from './domains.js'
+import {signupUtm, utmToList, utmFromList} from './visitTracker.js'
 
 const STATE_KEY = 'google_sso_state'
 const VERIFIER_KEY = 'google_sso_verifier'
+// Apple's callback caps `state` at 1024 characters
+const MAX_STATE_LENGTH = 1000
 
 export function isGoogleSsoEnabled() {
     return !!getDomains().google_client_id
@@ -13,6 +16,25 @@ export function randomBase64Url(byteCount) {
 
 function base64Url(bytes) {
     return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+// The tab's UTM rides after the first '.' so it survives the redirect; only the random part is stored and compared
+export function ssoState(random) {
+    const utm = signupUtm()
+    if (!utm) return random
+    const state = `${random}.${base64Url(new TextEncoder().encode(JSON.stringify(utmToList(utm))))}`
+    return state.length > MAX_STATE_LENGTH ? random : state
+}
+
+export function splitSsoState(state) {
+    const dot = state.indexOf('.')
+    if (dot < 0) return {random: state, utm: null}
+    try {
+        const bytes = Uint8Array.from(atob(state.slice(dot + 1).replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
+        return {random: state.slice(0, dot), utm: utmFromList(JSON.parse(new TextDecoder().decode(bytes)))}
+    } catch {
+        return {random: state.slice(0, dot), utm: null}
+    }
 }
 
 async function codeChallenge(verifier) {
@@ -38,7 +60,7 @@ export async function getGoogleAuthUrl() {
         scope: 'openid email profile',
         access_type: 'offline',
         prompt: 'select_account',
-        state,
+        state: ssoState(state),
         code_challenge: await codeChallenge(verifier),
         code_challenge_method: 'S256',
     })
@@ -59,6 +81,6 @@ export function takeGoogleSsoVerifier(state) {
     const verifier = sessionStorage.getItem(VERIFIER_KEY)
     sessionStorage.removeItem(STATE_KEY)
     sessionStorage.removeItem(VERIFIER_KEY)
-    if (!state || !storedState || !verifier || state !== storedState) return null
+    if (!state || !storedState || !verifier || splitSsoState(state).random !== storedState) return null
     return verifier
 }

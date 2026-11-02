@@ -37,6 +37,11 @@
           <span class="text-body-s">{{ user.login_provider || '—' }}</span>
         </div>
         <div class="info-row">
+          <span class="text-label color-text-secondary signup-source-label">Signup Source</span>
+          <span v-if="signupSource" class="text-body-s signup-source">{{ signupSource }}</span>
+          <span v-else class="text-body-s color-text-tertiary">Unknown</span>
+        </div>
+        <div class="info-row">
           <span class="text-label color-text-secondary">Created</span>
           <span class="text-body-s">{{ formatDate(user.created_at) }}</span>
         </div>
@@ -549,6 +554,12 @@ async function loadInboxEmail() {
   }
 }
 
+const signupSource = computed(() => {
+  const utm = user.value?.signup_utm
+  if (!utm) return ''
+  return [utm.source, utm.medium, utm.campaign, utm.content, utm.term].filter(Boolean).join(' · ')
+})
+
 function formatDate(val) {
   if (!val) return '—'
   try { return format(parseISO(val), 'MMM d, yyyy HH:mm') } catch { return val }
@@ -902,6 +913,17 @@ onMounted(() => {
 
 .info-row:last-child {
   border-bottom: none;
+}
+
+.signup-source-label {
+  white-space: nowrap;
+}
+
+.signup-source {
+  min-width: 0;
+  padding-left: 16px;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 /* WNA grid */

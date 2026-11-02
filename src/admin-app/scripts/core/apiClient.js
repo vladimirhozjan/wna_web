@@ -154,6 +154,24 @@ export async function getSystemHealth() {
     }
 }
 
+export async function getSystemLoad(range) {
+    try {
+        const res = await httpApi.get('/admin/system/load', { params: { range } })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getDatabaseSizes() {
+    try {
+        const res = await httpApi.get('/admin/system/databases')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
 export async function getDashboardUserOverview() {
     try {
         const res = await httpApi.get('/admin/dashboard/user-overview')
@@ -479,6 +497,24 @@ export async function getFeatureUsageStats() {
 export async function getPlatformHealthStats() {
     try {
         const res = await httpApi.get('/admin/analytics/platform-health')
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getVisitorStats(range) {
+    try {
+        const res = await httpApi.get('/admin/analytics/visitors', { params: { range } })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+export async function getTrafficSources(range, group) {
+    try {
+        const res = await httpApi.get('/admin/analytics/traffic-sources', { params: { range, group } })
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -1255,6 +1291,8 @@ export default {
     getAdminServiceVersion,
     getAdminServiceHealth,
     getSystemHealth,
+    getSystemLoad,
+    getDatabaseSizes,
     getDashboardUserOverview,
     getDashboardPlatformActivity,
     getDashboardRecentActivity,
@@ -1295,6 +1333,8 @@ export default {
     getActiveUserStats,
     getFeatureUsageStats,
     getPlatformHealthStats,
+    getVisitorStats,
+    getTrafficSources,
     downloadGdprExport,
     listFeatureFlags,
     getFeatureFlag,

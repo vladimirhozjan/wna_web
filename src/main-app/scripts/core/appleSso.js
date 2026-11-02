@@ -1,5 +1,5 @@
 import {getDomains} from './domains.js'
-import {randomBase64Url} from './googleSso.js'
+import {randomBase64Url, ssoState, splitSsoState} from './googleSso.js'
 
 const STATE_KEY = 'apple_sso_state'
 const NONCE_KEY = 'apple_sso_nonce'
@@ -26,7 +26,7 @@ export function getAppleAuthUrl() {
         response_type: 'code',
         response_mode: 'form_post',
         scope: 'name email',
-        state,
+        state: ssoState(state),
         nonce,
     })
 
@@ -46,6 +46,6 @@ export function takeAppleSsoNonce(state) {
     const nonce = sessionStorage.getItem(NONCE_KEY)
     sessionStorage.removeItem(STATE_KEY)
     sessionStorage.removeItem(NONCE_KEY)
-    if (!state || !storedState || !nonce || state !== storedState) return null
+    if (!state || !storedState || !nonce || splitSsoState(state).random !== storedState) return null
     return nonce
 }

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authModel } from '../scripts/core/authModel.js'
 import { applySeoHead } from '../scripts/core/seoHead.js'
+import { trackVisit } from '../scripts/core/visitTracker.js'
 
 import LandingPage from '../views/public/LandingPage.vue'
 import NextPage from '../views/dashboard/NextPage.vue'
@@ -26,13 +27,13 @@ import GoogleSsoPage from '../views/public/GoogleSsoPage.vue'
 
 // Use: router.push({name:'name'}) or <router-link :to="{ name: 'next' }">Dashboard</router-link>
 const routes = [
-    {path: '/', name: 'landing', component: LandingPage, meta: {seo: {
+    {path: '/', name: 'landing', component: LandingPage, meta: {countVisit: true, seo: {
         title: 'WhatsNextAction — GTD App for Getting Things Done',
         description: 'A GTD app where you decide and AI does the busywork: a built-in AI assistant, or your own Claude or ChatGPT. Calendar sync, email to inbox, teams. Start free.',
         jsonLd: 'app',
     }}},
-    {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}},
-    {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}},
+    {path: '/login', name: 'login', component: LandingPage, props: {mode: 'login'}, meta: {countVisit: true}},
+    {path: '/register', name: 'register', component: LandingPage, props: {mode: 'register'}, meta: {countVisit: true}},
     {path: '/forgot', name: 'forgot', component: LandingPage, props: {mode: 'forgot'}},
     {path: '/reset', redirect: '/forgot'},
     {path: '/reset-password', name: 'reset-password', component: LandingPage, props: route => ({mode: 'reset', token: route.query.token || ''}),
@@ -73,20 +74,20 @@ const routes = [
     {path: '/project/:id/canvas', name: 'project-canvas', component: () => import('../views/dashboard/ProjectCanvasPage.vue')},
     {path: '/recurring/:id', name: 'recurring-detail', component: RecurringDetailPage},
     {path: '/search', name: 'search', component: () => import('../views/dashboard/SearchPage.vue')},
-    {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue'), meta: {seo: {
+    {path: '/pricing', name: 'pricing', component: () => import('../views/public/PricingPage.vue'), meta: {countVisit: true, seo: {
         title: 'Pricing — To-Do List & Task Manager App | WhatsNextAction',
         description: 'Start free, upgrade when you need more. Compare the Free, Pro and Team plans of a productivity app and task manager built on GTD.',
         jsonLd: 'app',
     }}},
-    {path: '/help', name: 'help', component: () => import('../views/public/HelpPage.vue'), meta: {seo: {
+    {path: '/help', name: 'help', component: () => import('../views/public/HelpPage.vue'), meta: {countVisit: true, seo: {
         title: 'Help & GTD Guides | WhatsNextAction',
         description: 'Guides for the WhatsNextAction GTD app: getting started, Getting Things Done best practices, and answers to frequently asked questions.',
     }}},
-    {path: '/help/getting-started', name: 'help-getting-started', component: () => import('../views/public/HelpGettingStartedPage.vue'), meta: {seo: {
+    {path: '/help/getting-started', name: 'help-getting-started', component: () => import('../views/public/HelpGettingStartedPage.vue'), meta: {countVisit: true, seo: {
         title: 'Getting Started with the GTD App | WhatsNextAction',
         description: 'Set up WhatsNextAction in minutes: capture to your inbox, clarify into next actions and projects, and see what to do next, the Getting Things Done way.',
     }}},
-    {path: '/help/faq', name: 'help-faq', component: () => import('../views/public/HelpFaqPage.vue'), meta: {seo: {
+    {path: '/help/faq', name: 'help-faq', component: () => import('../views/public/HelpFaqPage.vue'), meta: {countVisit: true, seo: {
         title: 'FAQ — GTD App Questions Answered | WhatsNextAction',
         description: 'Answers about accounts, the inbox, next actions, projects, the weekly review, the calendar, plans and billing in the WhatsNextAction GTD app.',
         jsonLd: 'faq',
@@ -95,16 +96,16 @@ const routes = [
         title: 'Connect Claude or ChatGPT | WhatsNextAction Help',
         description: 'Connect Claude or ChatGPT to WhatsNextAction step by step and let your own AI work with your GTD lists, on every plan.',
     }}},
-    {path: '/help/best-practices', name: 'help-best-practices', component: () => import('../views/public/HelpBestPracticesPage.vue'), meta: {seo: {
+    {path: '/help/best-practices', name: 'help-best-practices', component: () => import('../views/public/HelpBestPracticesPage.vue'), meta: {countVisit: true, seo: {
         title: 'GTD Best Practices & Weekly Review Tips | WhatsNextAction',
         description: 'Practical Getting Things Done habits: a trusted inbox, clear next actions, contexts, and a weekly review that keeps your task manager current.',
     }}},
     {path: '/legal', name: 'legal', redirect: '/legal/terms'},
-    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'terms'}, meta: {seo: {
+    {path: '/legal/terms', name: 'legal-terms', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'terms'}, meta: {countVisit: true, seo: {
         title: 'Terms of Service | WhatsNextAction',
         description: 'Terms of Service for WhatsNextAction, the GTD productivity app operated by QubForge d.o.o.',
     }}},
-    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'privacy'}, meta: {seo: {
+    {path: '/legal/privacy', name: 'legal-privacy', component: () => import('../views/public/LegalPage.vue'), props: {doc: 'privacy'}, meta: {countVisit: true, seo: {
         title: 'Privacy Policy | WhatsNextAction',
         description: 'How WhatsNextAction collects, uses and protects your personal data under the GDPR.',
     }}},
@@ -139,5 +140,7 @@ router.beforeEach((to) => {
 })
 
 router.afterEach((to, from, failure) => {
-    if (!failure) applySeoHead(to)
+    if (failure) return
+    applySeoHead(to)
+    trackVisit(to, from)
 })

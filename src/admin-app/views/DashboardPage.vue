@@ -41,7 +41,8 @@
           <Stat label="Signups Today" :value="dashboard.userOverview.value.signups_today" />
           <Stat label="Signups This Week" :value="dashboard.userOverview.value.signups_this_week" />
           <Stat label="DAU" :value="dashboard.userOverview.value.dau" />
-          <Stat label="Active Sessions (15m)" :value="dashboard.userOverview.value.active_sessions_15min" />
+          <Stat label="Online Now" :value="dashboard.userOverview.value.online_users ?? '—'" />
+          <Stat label="Live Connections" :value="dashboard.userOverview.value.live_connections ?? '—'" />
         </div>
         <p v-else class="text-caption color-text-tertiary">Unable to load user stats.</p>
       </Card>
@@ -180,6 +181,7 @@ import StatusDot from '../components/StatusDot.vue'
 import { dashboardModel } from '../scripts/models/dashboardModel.js'
 import { alarmModel } from '../scripts/models/alarmModel.js'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
+import { formatBytes } from '../scripts/core/formatBytes.js'
 
 const dashboard = dashboardModel()
 const alarm = alarmModel()
@@ -227,16 +229,6 @@ const ACTION_LABELS = {
 
 function formatAction(action) {
   return ACTION_LABELS[action] || action.replace(/_/g, ' ')
-}
-
-function formatBytes(bytes) {
-  if (bytes == null) return '—'
-  if (bytes === 0) return '0 B'
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  let i = 0
-  let size = bytes
-  while (size >= 1024 && i < units.length - 1) { size /= 1024; i++ }
-  return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`
 }
 
 function formatTime(timestamp) {

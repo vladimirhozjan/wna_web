@@ -43,7 +43,7 @@ import LandingLayout from '../../layouts/LandingLayout.vue'
 import Btn from '../../components/Btn.vue'
 import Spinner from '../../components/Spinner.vue'
 import {authModel} from '../../scripts/core/authModel.js'
-import {takeGoogleSsoVerifier} from '../../scripts/core/googleSso.js'
+import {takeGoogleSsoVerifier, splitSsoState} from '../../scripts/core/googleSso.js'
 import {takeAppleSsoNonce} from '../../scripts/core/appleSso.js'
 import {pendingShare} from '../../scripts/core/pendingShare.js'
 import {mapApiError, ErrorScenario} from '../../scripts/core/errorMapper.js'
@@ -58,13 +58,13 @@ const providers = {
   google: {
     readResult: () => route.query,
     takeSecret: takeGoogleSsoVerifier,
-    signIn: (result, verifier) => auth.googleSsoLogin(result.code, verifier),
+    signIn: (result, verifier, utm) => auth.googleSsoLogin(result.code, verifier, utm),
     errorScenario: ErrorScenario.GOOGLE_LOGIN,
   },
   apple: {
     readResult: readFragment,
     takeSecret: takeAppleSsoNonce,
-    signIn: (result, nonce) => auth.appleSsoLogin(result.code, nonce, result.name),
+    signIn: (result, nonce, utm) => auth.appleSsoLogin(result.code, nonce, result.name, utm),
     errorScenario: ErrorScenario.APPLE_LOGIN,
   },
 }
@@ -97,7 +97,7 @@ onMounted(() => {
 async function exchangeCode(result, secret) {
   status.value = 'loading'
   try {
-    await provider.signIn(result, secret)
+    await provider.signIn(result, secret, splitSsoState(result.state).utm)
     await auth.loadUser()
     router.push(await pendingShare().afterLogin(auth.takeReturnPath() ?? {name: 'engage'}))
   } catch (err) {

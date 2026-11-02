@@ -5,6 +5,7 @@ import { liveClient } from './liveClient.js'
 import { confirmModel } from './confirmModel.js'
 import { captureQueue } from './captureQueue.js'
 import { pendingShare } from './pendingShare.js'
+import { signupUtm } from './visitTracker.js'
 import { stuffModel } from '../models/stuffModel.js'
 import { statsModel } from '../models/statsModel.js'
 import { notificationModel } from '../models/notificationModel.js'
@@ -77,7 +78,7 @@ export function authModel() {
         error.value = null
 
         try {
-            return await apiClient.registerUser({ email, password })
+            return await apiClient.registerUser({ email, password, signupUtm: signupUtm() })
         } catch (err) {
             error.value = err
             throw err
@@ -209,12 +210,12 @@ export function authModel() {
         }
     }
 
-    async function googleSsoLogin(code, codeVerifier) {
-        return ssoLogin(() => apiClient.googleSso(code, codeVerifier))
+    async function googleSsoLogin(code, codeVerifier, utm) {
+        return ssoLogin(() => apiClient.googleSso(code, codeVerifier, utm))
     }
 
-    async function appleSsoLogin(code, nonce, name) {
-        return ssoLogin(() => apiClient.appleSso(code, nonce, name))
+    async function appleSsoLogin(code, nonce, name, utm) {
+        return ssoLogin(() => apiClient.appleSso(code, nonce, name, utm))
     }
 
     async function ssoLogin(signIn) {
