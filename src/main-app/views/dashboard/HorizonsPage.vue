@@ -9,7 +9,7 @@
         </div>
       </div>
 
-      <div class="horizons-content">
+      <div ref="scrollRef" class="horizons-content auto-scrollbar" :class="{ scrolling }">
 
         <!-- Horizons switched off in Settings -->
         <div v-if="!enabled" class="card">
@@ -171,6 +171,10 @@ import { offlineModel } from '../../scripts/core/offlineModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { truncateTitle } from '../../scripts/core/textUtils.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const COPY = {
   area: {

@@ -5,7 +5,7 @@
         <h1 class="page-title">Billing History</h1>
       </div>
 
-      <div class="billing-body">
+      <div ref="scrollRef" class="billing-body auto-scrollbar" :class="{ scrolling }">
         <div v-if="loading" class="billing-state">
           <Spinner :size="16" />
           <span>Loading payments...</span>
@@ -94,6 +94,10 @@ import Spinner from '../../components/Spinner.vue'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { getPaymentHistory, getInvoiceHtml, getCreditNoteHtml } from '../../scripts/core/apiClient.js'
 import { downloadDocumentPdf } from '../../../shared/invoicePdf.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const toaster = errorModel()
 

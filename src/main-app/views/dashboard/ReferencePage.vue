@@ -39,7 +39,7 @@
             @move-file="onMoveFile"
         />
 
-        <RefUploadZone :disabled="writesDisabled" @upload="onUploadFiles" class="ref-content">
+        <RefUploadZone :disabled="writesDisabled" ref="scrollRef" @upload="onUploadFiles" class="ref-content auto-scrollbar" :class="{ scrolling }">
           <!-- Loading -->
           <div v-if="initialLoading || (model.loading.value && model.folders.value.length === 0 && model.files.value.length === 0)" class="ref-loading">
             <Spinner :size="28" delayed />
@@ -263,6 +263,10 @@ import {confirmModel} from '../../scripts/core/confirmModel.js'
 import {authModel} from '../../scripts/core/authModel.js'
 import {downloadAttachment, deleteAttachment, transformFileToOriginal, startGoogleConnect, getRefFile} from '../../scripts/core/apiClient.js'
 import Spinner from '../../components/Spinner.vue'
+import {useAutoHideScrollbar} from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const route = useRoute()
 const router = useRouter()

@@ -8,7 +8,7 @@
         <h1 class="page-title">Project templates</h1>
       </div>
 
-      <div class="templates-content">
+      <div ref="scrollRef" class="templates-content auto-scrollbar" :class="{ scrolling }">
         <div class="card" data-testid="templates-list">
         <ItemList
             v-model="items"
@@ -57,6 +57,10 @@ import { projectTemplateModel } from '../../scripts/models/projectTemplateModel.
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const toaster = errorModel()

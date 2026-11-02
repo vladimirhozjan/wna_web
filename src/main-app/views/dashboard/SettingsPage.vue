@@ -29,7 +29,7 @@
       <div class="settings-layout">
 
         <!-- Settings menu (desktop) / index (≤ 1024px) -->
-        <nav v-if="showIndex" class="settings-nav settings-scroll" :class="{ scrolling: scrollingArea === 'nav' }" aria-label="Settings sections" @scroll.passive="onAreaScroll('nav')">
+        <nav v-if="showIndex" ref="navScroll" class="settings-nav settings-scroll auto-scrollbar" :class="{ scrolling: navScrolling }" aria-label="Settings sections">
           <div v-for="group in visibleGroups" :key="group.key" class="settings-nav-group" :data-testid="`settings-group-${group.key}`">
             <span class="text-overline settings-group-title">{{ group.title }}</span>
             <div class="settings-nav-list" :class="{ card: isCompact }">
@@ -55,7 +55,7 @@
         </nav>
 
         <!-- Section pane (desktop) / section screen (≤ 1024px) -->
-        <div v-if="!isCompact || !showIndex" ref="paneScroll" class="settings-pane-scroll settings-scroll" :class="{ scrolling: scrollingArea === 'pane' }" @scroll.passive="onAreaScroll('pane')">
+        <div v-if="!isCompact || !showIndex" ref="paneScroll" class="settings-pane-scroll settings-scroll auto-scrollbar" :class="{ scrolling: paneScrolling }">
           <div v-if="!activeSection" class="settings-pane settings-loading">
             <Spinner :size="16" />
             <span>Loading...</span>
@@ -842,6 +842,7 @@ import { notificationModel, NOTIFICATION_GROUPS } from '../../scripts/models/not
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 import { paymentModel } from '../../scripts/models/paymentModel.js'
 import { format, parseISO } from 'date-fns'
 import Spinner from '../../components/Spinner.vue'
@@ -974,16 +975,10 @@ function backToIndex() {
   router.push({ name: 'settings' })
 }
 
-// Auto-hiding scrollbar
+const navScroll = ref(null)
 const paneScroll = ref(null)
-const scrollingArea = ref(null)
-let areaScrollTimer = null
-
-function onAreaScroll(area) {
-  scrollingArea.value = area
-  clearTimeout(areaScrollTimer)
-  areaScrollTimer = setTimeout(() => { scrollingArea.value = null }, 1000)
-}
+const { scrolling: navScrolling } = useAutoHideScrollbar(navScroll)
+const { scrolling: paneScrolling } = useAutoHideScrollbar(paneScroll)
 
 // User data
 const userEmail = computed(() => auth.currentUser.value?.email || '')
@@ -1909,7 +1904,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
   compactQuery.removeEventListener('change', onCompactChange)
   if (copiedTimer) clearTimeout(copiedTimer)
-  clearTimeout(areaScrollTimer)
 })
 
 function checkMobile() {
@@ -2258,29 +2252,6 @@ async function onLogout() {
   overflow-y: auto;
   min-height: 0;
   touch-action: pan-y;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.settings-scroll.scrolling {
-  scrollbar-color: var(--color-border-light) transparent;
-}
-
-.settings-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-
-.settings-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.settings-scroll::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.settings-scroll.scrolling::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
 }
 
 .settings-nav {

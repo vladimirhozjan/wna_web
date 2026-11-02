@@ -24,7 +24,7 @@
       </Btn>
     </div>
 
-    <div class="recurring-view__content">
+    <div ref="scrollRef" class="recurring-view__content auto-scrollbar" :class="{ scrolling }">
       <div class="card">
       <ItemList
           v-model="items"
@@ -74,6 +74,10 @@ import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const auth = authModel()

@@ -1,5 +1,5 @@
 <template>
-  <div class="share-page" data-testid="share-page">
+  <div ref="scrollRef" class="share-page auto-scrollbar" :class="{ scrolling }" data-testid="share-page">
     <div v-if="loading" class="share-loading" data-testid="share-loading">
       <Spinner />
     </div>
@@ -76,6 +76,7 @@ import {
   autoTitle,
   CAPTURE_LOCKED_LINE as LOCKED_LINE,
 } from '../../scripts/core/captureRules.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const CAPTURED_LINE = 'Captured by share'
 
@@ -92,6 +93,8 @@ const description = ref('')
 const chips = ref([])
 const limits = ref(null)
 const saving = ref(false)
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 let leaveTimer = null
 let capCheck = 0

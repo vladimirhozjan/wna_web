@@ -38,7 +38,7 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="item" ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
+      <div v-else-if="item" ref="detailBodyRef" class="detail-body auto-scrollbar" :class="{ scrolling: bodyScrolling }">
 
         <!-- Title area -->
         <div class="detail-title-area">
@@ -234,7 +234,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch, onUnmounted } from 'vue'
+import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Btn from '../../components/Btn.vue'
 import Dropdown from '../../components/Dropdown.vue'
@@ -268,6 +268,7 @@ import EmptyState from '../../components/EmptyState.vue'
 import { captureIcon } from '../../scripts/core/captureRules.js'
 import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
 import { authModel } from '../../scripts/core/authModel.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -306,25 +307,7 @@ const descriptionInput = ref(null)
 useAutoGrow(descriptionInput)
 const detailBodyRef = ref(null)
 
-// Auto-hiding scrollbar
-const bodyScrolling = ref(false)
-let bodyScrollTimer = null
-
-function onBodyScroll() {
-  bodyScrolling.value = true
-  clearTimeout(bodyScrollTimer)
-  bodyScrollTimer = setTimeout(() => { bodyScrolling.value = false }, 1000)
-}
-
-watch(detailBodyRef, (el, oldEl) => {
-  if (oldEl) oldEl.removeEventListener('scroll', onBodyScroll)
-  if (el) el.addEventListener('scroll', onBodyScroll, { passive: true })
-})
-
-onBeforeUnmount(() => {
-  clearTimeout(bodyScrollTimer)
-  detailBodyRef.value?.removeEventListener('scroll', onBodyScroll)
-})
+const { scrolling: bodyScrolling } = useAutoHideScrollbar(detailBodyRef)
 
 // Clarify state
 const showClarify = ref(false)
@@ -1047,29 +1030,6 @@ async function onActivate() {
   overflow-y: auto;
   min-height: 0;
   touch-action: pan-y;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.detail-body.scrolling {
-  scrollbar-color: var(--color-border-light) transparent;
-}
-
-.detail-body::-webkit-scrollbar {
-  width: 4px;
-}
-
-.detail-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.detail-body::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.detail-body.scrolling::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
 }
 
 /* ── Meta (State / Type) ── */

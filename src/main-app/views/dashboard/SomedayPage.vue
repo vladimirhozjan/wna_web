@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <PullToRefresh class="someday-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
+      <PullToRefresh ref="scrollRef" class="someday-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -94,6 +94,10 @@ import { contextModel } from '../../scripts/models/contextModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 

@@ -38,7 +38,7 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="project" ref="detailBodyRef" class="detail-body" :class="{ scrolling: bodyScrolling }">
+      <div v-else-if="project" ref="detailBodyRef" class="detail-body auto-scrollbar" :class="{ scrolling: bodyScrolling }">
 
         <!-- Title area -->
         <div class="detail-title-area">
@@ -281,7 +281,7 @@
               </div>
 
               <!-- Action list -->
-              <div v-if="orderedActions.length > 0" ref="actionsScrollRef" class="actions-list-scroll" :class="{ scrolling: listScrolling }">
+              <div v-if="orderedActions.length > 0" ref="actionsScrollRef" class="actions-list-scroll auto-scrollbar" :class="{ scrolling: listScrolling }">
                 <VueDraggable
                     v-model="orderedActions"
                     :delay="LONG_PRESS_MS"
@@ -678,7 +678,7 @@
           {{ shareableConnections.length === 0 ? 'You have no connections yet.' : 'No connections match your search.' }}
         </p>
 
-        <ul v-else class="share-modal__list">
+        <ul v-else ref="shareListRef" class="share-modal__list auto-scrollbar" :class="{ scrolling: shareListScrolling }">
           <li
               v-for="c in shareModalChoices"
               :key="c.user_id"
@@ -762,6 +762,7 @@ import { useAutoGrow } from '../../scripts/core/useAutoGrow.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -831,39 +832,12 @@ const quickAddInput = ref(null)
 const detailBodyRef = ref(null)
 const detailActionsRef = ref(null)
 
-// Auto-hiding scrollbar
-const bodyScrolling = ref(false)
-const listScrolling = ref(false)
-let bodyScrollTimer = null
-let listScrollTimer = null
-
-function onBodyScroll() {
-  bodyScrolling.value = true
-  clearTimeout(bodyScrollTimer)
-  bodyScrollTimer = setTimeout(() => { bodyScrolling.value = false }, 1000)
-}
-
-function onListScroll() {
-  listScrolling.value = true
-  clearTimeout(listScrollTimer)
-  listScrollTimer = setTimeout(() => { listScrolling.value = false }, 1000)
-}
-
-watch(detailBodyRef, (el, oldEl) => {
-  if (oldEl) oldEl.removeEventListener('scroll', onBodyScroll)
-  if (el) el.addEventListener('scroll', onBodyScroll, { passive: true })
-})
-
-watch(actionsScrollRef, (el, oldEl) => {
-  if (oldEl) oldEl.removeEventListener('scroll', onListScroll)
-  if (el) el.addEventListener('scroll', onListScroll, { passive: true })
-})
+const { scrolling: bodyScrolling } = useAutoHideScrollbar(detailBodyRef)
+const { scrolling: listScrolling } = useAutoHideScrollbar(actionsScrollRef)
+const shareListRef = ref(null)
+const { scrolling: shareListScrolling } = useAutoHideScrollbar(shareListRef)
 
 onBeforeUnmount(() => {
-  clearTimeout(bodyScrollTimer)
-  clearTimeout(listScrollTimer)
-  detailBodyRef.value?.removeEventListener('scroll', onBodyScroll)
-  actionsScrollRef.value?.removeEventListener('scroll', onListScroll)
   if (draggingAction.value) liveClient.release()
 })
 
@@ -2170,29 +2144,6 @@ async function onAddAction() {
   overflow-y: auto;
   min-height: 0;
   touch-action: pan-y;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.detail-body.scrolling {
-  scrollbar-color: var(--color-border-light) transparent;
-}
-
-.detail-body::-webkit-scrollbar {
-  width: 4px;
-}
-
-.detail-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.detail-body::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.detail-body.scrolling::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
 }
 
 .detail-section-overlay {
@@ -2611,29 +2562,6 @@ async function onAddAction() {
   overflow-x: hidden;
   background: var(--color-bg-primary);
   border-radius: 4px;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.actions-list-scroll.scrolling {
-  scrollbar-color: var(--color-border-light) transparent;
-}
-
-.actions-list-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-
-.actions-list-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.actions-list-scroll::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.actions-list-scroll.scrolling::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
 }
 
 .action-wrapper {

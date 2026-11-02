@@ -1,5 +1,5 @@
 <template>
-  <div class="year-view" ref="yearViewRef">
+  <div class="year-view auto-scrollbar" :class="{ scrolling }" ref="yearViewRef">
     <div class="year-view__grid">
       <div
           v-for="month in months"
@@ -65,6 +65,7 @@ import {
   startOfMonth,
 } from '../../scripts/core/dateUtils.js'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const props = defineProps({
   currentDate: {
@@ -77,6 +78,7 @@ const emit = defineEmits(['item-click', 'day-click', 'month-click'])
 
 const calendar = calendarModel()
 const yearViewRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(yearViewRef)
 
 function isCurrentMonth(monthIndex) {
   const now = new Date()

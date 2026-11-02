@@ -1,6 +1,6 @@
 <template>
   <div class="week-view">
-    <div class="week-view__scroll">
+    <div ref="scrollRef" class="week-view__scroll auto-scrollbar" :class="{ scrolling }">
       <!-- Sticky header container (header + all-day) -->
       <div class="week-view__sticky-header">
         <!-- Day headers -->
@@ -212,6 +212,7 @@ import { calendarModel } from '../../scripts/models/calendarModel.js'
 import { layoutOverlappingItems } from '../../scripts/core/calendarLayout.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const props = defineProps({
   currentDate: {
@@ -221,6 +222,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['item-click', 'create', 'reschedule', 'resize'])
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const calendar = calendarModel()
 const hourHeight = 60

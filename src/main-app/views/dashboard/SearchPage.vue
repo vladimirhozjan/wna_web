@@ -21,7 +21,7 @@
         </p>
       </div>
 
-      <div class="search-content">
+      <div ref="scrollRef" class="search-content auto-scrollbar" :class="{ scrolling }">
         <div v-if="!hasQuery" class="search-empty">
           <EmptyState :icon="SearchIcon" title="Find anything you've captured" text="Type a word from a title, description, project outcome or file name." />
         </div>
@@ -77,6 +77,10 @@ import { searchModel, SEARCH_MIN_LENGTH } from '../../scripts/models/searchModel
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 // No Completed chip — completed hits stay in All and their type, badged
 const CHIPS = [

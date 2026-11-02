@@ -1,6 +1,6 @@
 <template>
   <div class="day-view">
-    <div class="day-view__scroll" ref="scrollRef">
+    <div class="day-view__scroll auto-scrollbar" :class="{ scrolling }" ref="scrollRef">
       <!-- All-day section (sticky) -->
       <div class="day-view__all-day-wrapper">
         <CalendarAllDaySection
@@ -39,6 +39,7 @@ import { formatDate } from '../../scripts/core/dateUtils.js'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarAllDaySection from './CalendarAllDaySection.vue'
 import CalendarTimeGrid from './CalendarTimeGrid.vue'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const props = defineProps({
   currentDate: {
@@ -54,6 +55,7 @@ const hourHeight = 60
 const draggingItem = ref(null)
 const dragOffset = ref(0)
 const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 function scrollToBusinessHours() {
   if (!scrollRef.value) return

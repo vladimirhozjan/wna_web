@@ -5,7 +5,7 @@
         <h1 class="page-title">Buy AI credits</h1>
       </div>
 
-      <div class="buy-credits-body">
+      <div ref="scrollRef" class="buy-credits-body auto-scrollbar" :class="{ scrolling }">
         <div class="buy-credits-inner">
 
           <div v-if="!paymentsEnabled" class="card buy-credits-notice">
@@ -92,6 +92,10 @@ import { contactSupport } from '../../scripts/core/captureRules.js'
 import { getCreditPacks, checkoutCreditPack } from '../../scripts/core/apiClient.js'
 import { paymentModel } from '../../scripts/models/paymentModel.js'
 import { assistantModel, CREDITS_BEFORE_CHECKOUT_KEY } from '../../scripts/models/assistantModel.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const toaster = errorModel()

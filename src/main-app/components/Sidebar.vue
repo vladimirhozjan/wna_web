@@ -1,6 +1,6 @@
 <template>
   <aside class="sidebar">
-    <nav class="sidebar-nav">
+    <nav ref="scrollRef" class="sidebar-nav auto-scrollbar" :class="{ scrolling }">
 
       <ContextFilter />
 
@@ -178,7 +178,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { authModel } from "../scripts/core/authModel.js";
 import { errorModel } from "../scripts/core/errorModel.js";
 import { confirmModel } from "../scripts/core/confirmModel.js";
@@ -224,6 +224,10 @@ import { engageModel } from "../scripts/models/engageModel.js";
 import { connectionModel } from "../scripts/models/connectionModel.js";
 import { truncateTitle } from "../scripts/core/textUtils.js";
 import { onLivePacket } from "../scripts/core/liveClient.js";
+import { useAutoHideScrollbar } from "../scripts/core/useAutoHideScrollbar.js";
+
+const scrollRef = ref(null);
+const { scrolling } = useAutoHideScrollbar(scrollRef);
 
 const auth = authModel();
 const toaster = errorModel();

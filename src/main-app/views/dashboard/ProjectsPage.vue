@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <PullToRefresh class="projects-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
+      <PullToRefresh ref="scrollRef" class="projects-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -107,6 +107,10 @@ import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const route = useRoute()

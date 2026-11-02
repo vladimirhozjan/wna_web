@@ -26,7 +26,7 @@
       </div>
 
       <!-- Content -->
-      <div v-else-if="template" class="detail-body">
+      <div v-else-if="template" ref="bodyRef" class="detail-body auto-scrollbar" :class="{ scrolling: bodyScrolling }">
 
         <!-- Title area -->
         <div class="detail-title-area">
@@ -116,7 +116,7 @@
             >Add</Btn>
           </div>
 
-          <div ref="listRef" class="actions-list-scroll">
+          <div ref="listRef" class="actions-list-scroll auto-scrollbar" :class="{ scrolling: listScrolling }">
             <VueDraggable
                 v-model="template.actions"
                 :delay="LONG_PRESS_MS"
@@ -260,7 +260,7 @@
               data-testid="add-to-project-search"
           />
           <p v-if="filteredTargets.length === 0" class="text-body-s color-text-secondary ap-no-match">No projects match your search.</p>
-          <div v-else class="ap-list">
+          <div v-else ref="apListRef" class="ap-list auto-scrollbar" :class="{ scrolling: apListScrolling }">
             <button
                 v-for="t in filteredTargets"
                 :key="t.id"
@@ -309,6 +309,7 @@ import { shortcutModel } from '../../scripts/core/shortcutModel.js'
 import { useOverflowFit } from '../../scripts/core/useOverflowFit.js'
 import { OUTCOME_HELPER } from '../../scripts/core/textUtils.js'
 import { onLivePacket } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const SEARCH_MIN = 8
 const LAST_ACTION_MESSAGE = 'A template needs at least one action. Add another one before you delete this.'
@@ -336,6 +337,11 @@ const newActionTitle = ref('')
 const addingAction = ref(false)
 const addInput = ref(null)
 const listRef = ref(null)
+const { scrolling: listScrolling } = useAutoHideScrollbar(listRef)
+const bodyRef = ref(null)
+const { scrolling: bodyScrolling } = useAutoHideScrollbar(bodyRef)
+const apListRef = ref(null)
+const { scrolling: apListScrolling } = useAutoHideScrollbar(apListRef)
 const busyActionId = ref(null)
 
 const editingDescId = ref(null)
@@ -867,7 +873,6 @@ onMounted(async () => {
   overflow-x: hidden;
   background: var(--color-bg-primary);
   border-radius: 4px;
-  scrollbar-width: thin;
 }
 
 .action-wrapper {

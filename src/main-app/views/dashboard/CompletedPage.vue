@@ -43,7 +43,7 @@
       </div>
 
       <!-- Scrollable list area — only this scrolls; the charts stay fixed above. -->
-      <PullToRefresh class="completed-scroll" :refresh="onRefresh" :disabled="loading && items.length === 0">
+      <PullToRefresh ref="scrollRef" class="completed-scroll auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <!-- Recency-grouped list. .card overflow relaxed so sticky headers anchor to .completed-scroll. -->
         <div class="card completed-list">
           <div v-if="loading && items.length === 0" class="completed-loading">
@@ -109,6 +109,10 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 

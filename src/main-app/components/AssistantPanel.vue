@@ -33,7 +33,7 @@
           </Btn>
         </header>
 
-        <div ref="listRef" class="assistant-panel__list" :class="{ scrolling }" data-testid="assistant-messages" @scroll.passive="onScroll">
+        <div ref="listRef" class="assistant-panel__list auto-scrollbar" :class="{ scrolling }" data-testid="assistant-messages" @scroll.passive="onScroll">
           <div v-if="state.conversationLoading && !state.messages.length" class="assistant-panel__center">
             <Spinner :size="24" />
           </div>
@@ -197,6 +197,7 @@ import { confirmModel } from '../scripts/core/confirmModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { contactSupport } from '../scripts/core/captureRules.js'
 import { useAutoGrow } from '../scripts/core/useAutoGrow.js'
+import { useAutoHideScrollbar } from '../scripts/core/useAutoHideScrollbar.js'
 import { useVisualViewport, focusWithoutReveal } from '../scripts/core/visualViewport.js'
 
 const CHANGES_SHOWN = 5
@@ -212,10 +213,9 @@ const toaster = errorModel()
 const panelRef = ref(null)
 const listRef = ref(null)
 const composerRef = ref(null)
-const scrolling = ref(false)
+const { scrolling } = useAutoHideScrollbar(listRef)
 const isMobile = ref(window.matchMedia(MOBILE_QUERY).matches)
 const expanded = reactive(new Set())
-let scrollTimer = null
 let atBottom = true
 
 useAutoGrow(composerRef)
@@ -369,9 +369,6 @@ async function onNewConversation() {
 function onScroll() {
   const el = listRef.value
   atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 2
-  scrolling.value = true
-  clearTimeout(scrollTimer)
-  scrollTimer = setTimeout(() => { scrolling.value = false }, 1000)
 }
 
 function scrollToBottom() {
@@ -442,7 +439,6 @@ watch(() => assistant.working.value, (working) => {
 
 onBeforeUnmount(() => {
   mediaQuery.removeEventListener('change', onMediaChange)
-  clearTimeout(scrollTimer)
   listResizeObserver.disconnect()
 })
 </script>
@@ -506,7 +502,6 @@ onBeforeUnmount(() => {
   height: 18px;
 }
 
-/* Auto-hiding thin scrollbar, as on detail pages */
 .assistant-panel__list {
   flex: 1;
   min-height: 0;
@@ -516,25 +511,6 @@ onBeforeUnmount(() => {
   gap: 16px;
   padding: 20px;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.assistant-panel__list.scrolling {
-  scrollbar-color: var(--color-border-light) transparent;
-}
-
-.assistant-panel__list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.assistant-panel__list::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.assistant-panel__list.scrolling::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
 }
 
 .assistant-panel__center {

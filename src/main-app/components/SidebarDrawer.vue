@@ -1,14 +1,15 @@
 <template>
   <div>
     <div class="overlay" v-if="open" @click="$emit('close')"></div>
-    <aside ref="drawerRef" class="drawer" :class="{ open, scrolling }">
+    <aside ref="drawerRef" class="drawer auto-scrollbar" :class="{ open, scrolling }">
       <slot />
     </aside>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
+import { useAutoHideScrollbar } from '../scripts/core/useAutoHideScrollbar.js'
 
 defineProps({
   open: { type: Boolean, required: true },
@@ -17,26 +18,7 @@ defineProps({
 defineEmits(["close"]);
 
 const drawerRef = ref(null)
-const scrolling = ref(false)
-let scrollTimer = null
-
-function onScroll() {
-  scrolling.value = true
-  clearTimeout(scrollTimer)
-  scrollTimer = setTimeout(() => {
-    scrolling.value = false
-  }, 1000)
-}
-
-watch(drawerRef, (el, oldEl) => {
-  if (oldEl) oldEl.removeEventListener('scroll', onScroll)
-  if (el) el.addEventListener('scroll', onScroll, { passive: true })
-})
-
-onBeforeUnmount(() => {
-  clearTimeout(scrollTimer)
-  drawerRef.value?.removeEventListener('scroll', onScroll)
-})
+const { scrolling } = useAutoHideScrollbar(drawerRef)
 </script>
 
 <style scoped>
@@ -68,29 +50,6 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.drawer.scrolling {
-  scrollbar-color: var(--color-border-light) transparent;
-}
-
-.drawer::-webkit-scrollbar {
-  width: 4px;
-}
-
-.drawer::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.drawer::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 2px;
-}
-
-.drawer.scrolling::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
 }
 
 .drawer.open {

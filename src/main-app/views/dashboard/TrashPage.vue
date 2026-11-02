@@ -9,7 +9,7 @@
         </div>
       </div>
 
-      <PullToRefresh class="trash-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
+      <PullToRefresh ref="scrollRef" class="trash-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import ItemList from '../../components/ItemList.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import Btn from '../../components/Btn.vue'
@@ -52,6 +52,10 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const {
   items,

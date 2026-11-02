@@ -5,7 +5,7 @@
         <h1 class="page-title">Upgrade Your Plan</h1>
       </div>
 
-      <div class="upgrade-body">
+      <div ref="scrollRef" class="upgrade-body auto-scrollbar" :class="{ scrolling }">
         <div class="upgrade-inner">
 
           <!-- Payments not enabled — contact support -->
@@ -113,6 +113,10 @@ import { authModel } from '../../scripts/core/authModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { paymentModel, PLAN_OPTIONS, loadPlanCatalog } from '../../scripts/models/paymentModel.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const auth = authModel()

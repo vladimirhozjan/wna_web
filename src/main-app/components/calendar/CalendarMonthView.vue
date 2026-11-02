@@ -67,7 +67,7 @@
     </template>
 
     <!-- Mobile: List by days -->
-    <div v-else class="month-view__list" ref="listRef">
+    <div v-else class="month-view__list auto-scrollbar" :class="{ scrolling }" ref="listRef">
       <div
           v-for="day in currentMonthDays"
           :key="formatDate(day)"
@@ -130,6 +130,7 @@ import {
 import { calendarModel } from '../../scripts/models/calendarModel.js'
 import CalendarItem from './CalendarItem.vue'
 import CalendarQuickForm from './CalendarQuickForm.vue'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const props = defineProps({
   currentDate: {
@@ -147,6 +148,7 @@ const dragOverDate = ref(null)
 const draggingItem = ref(null)
 const isMobile = ref(false)
 const listRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(listRef)
 
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768

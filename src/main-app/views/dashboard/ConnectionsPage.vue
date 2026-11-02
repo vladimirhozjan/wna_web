@@ -6,7 +6,7 @@
         </div>
       </div>
 
-      <div class="connections-content">
+      <div ref="scrollRef" class="connections-content auto-scrollbar" :class="{ scrolling }">
         <div class="card">
           <div class="connections-body">
 
@@ -171,6 +171,10 @@ import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const auth = authModel()
 const toaster = errorModel()

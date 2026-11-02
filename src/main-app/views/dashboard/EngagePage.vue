@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <PullToRefresh class="engage-content" :refresh="onRefresh" :disabled="!initialLoadDone">
+      <PullToRefresh ref="scrollRef" class="engage-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="!initialLoadDone">
 
         <!-- Loading state -->
         <div v-if="!initialLoadDone" class="loading-state">
@@ -221,6 +221,10 @@ import { moveModel } from '../../scripts/models/moveModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import Spinner from '../../components/Spinner.vue'
 import { onLiveChange, onLivePacket } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const toaster = errorModel()

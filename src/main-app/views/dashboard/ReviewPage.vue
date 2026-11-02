@@ -28,7 +28,7 @@
         <p class="review-last text-body-s color-text-secondary">{{ lastReviewedText }}</p>
       </div>
 
-      <div class="review-body">
+      <div ref="scrollRef" class="review-body auto-scrollbar" :class="{ scrolling }">
 
         <TipTricks
             v-if="!hasReminder"
@@ -110,6 +110,10 @@ import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { onLivePacket } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 const toaster = errorModel()

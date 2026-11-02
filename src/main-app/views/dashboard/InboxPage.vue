@@ -41,7 +41,7 @@
         </div>
 
         <!-- Scrollable content -->
-        <PullToRefresh class="inbox-content" :refresh="onRefresh" :disabled="clarifyMode || isOffline || (loading && items.length === 0)">
+        <PullToRefresh ref="scrollRef" class="inbox-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="clarifyMode || isOffline || (loading && items.length === 0)">
           <div class="card">
           <Item
               v-for="entry in queuedRows"
@@ -178,6 +178,10 @@ import BottomSheet from '../../components/BottomSheet.vue'
 import PullToRefresh from '../../components/PullToRefresh.vue'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 // model
 const {

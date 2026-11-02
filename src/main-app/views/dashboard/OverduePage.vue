@@ -4,7 +4,7 @@
         <h1 class="page-title">Overdue</h1>
       </div>
 
-      <PullToRefresh class="overdue-content" :refresh="onRefresh" :disabled="loading && items.length === 0">
+      <PullToRefresh ref="scrollRef" class="overdue-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="loading && items.length === 0">
         <div class="card">
         <ItemList
             v-model="items"
@@ -52,6 +52,10 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
+import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+
+const scrollRef = ref(null)
+const { scrolling } = useAutoHideScrollbar(scrollRef)
 
 const router = useRouter()
 
