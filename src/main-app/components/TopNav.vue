@@ -268,7 +268,7 @@ watch(notifDropdownOpen, async (open) => {
 
 onLivePacket((changes) => {
   if (changes && !changes.some((c) => c.entity === "notification")) return;
-  if (notifDropdownOpen.value) notifModel.loadList({ reset: true, keepDepth: true }).catch(() => {});
+  if (notifDropdownOpen.value) notifModel.rereadLoaded();
   else notifModel.loadUnreadCount();
 });
 

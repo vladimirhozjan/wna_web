@@ -8,6 +8,11 @@ const loaded = ref(false)
 const cursor = ref(null)
 const hasMore = ref(true)
 
+const PAGE = 20
+const LIST_MAX = 100
+let rereading = false
+let loadGen = 0
+
 const READ_SEND_INTERVAL_MS = 1000
 const READ_BATCH_MAX = 20
 let readTimer = null
@@ -17,11 +22,10 @@ let instance = null
 export function notificationInAppModel() {
     if (instance) return instance
 
-    // keepDepth: a live re-read — silent, as many rows as are loaded
-    async function loadList({ reset = false, limit = 20, keepDepth = false } = {}) {
-        if (keepDepth && loading.value) return
-        if (keepDepth) limit = Math.max(limit, notifications.value.length)
-        else loading.value = true
+    async function loadList({ reset = false, limit = PAGE } = {}) {
+        if (!reset && rereading) return
+        if (reset) loadGen++
+        loading.value = true
         try {
             if (reset) {
                 cursor.value = null
@@ -44,7 +48,41 @@ export function notificationInAppModel() {
             if (import.meta.env.DEV) console.warn('[notifications] list failed:', err)
             throw err
         } finally {
-            if (!keepDepth) loading.value = false
+            loading.value = false
+        }
+    }
+
+    // Live re-read: silent, at the loaded depth; one extra row tells whether older rows exist
+    async function rereadLoaded() {
+        if (loading.value || rereading) return
+        rereading = true
+        const gen = loadGen
+        try {
+            const depth = Math.max(PAGE, notifications.value.length)
+            const want = depth + 1
+            const rows = []
+            let after = null
+            let data = null
+            while (rows.length < want) {
+                const ask = Math.min(want - rows.length, LIST_MAX)
+                data = await apiClient.listNotifications({ limit: ask, cursor: after })
+                const items = data.notifications || []
+                rows.push(...items)
+                if (items.length < ask) break
+                after = items[items.length - 1].id
+            }
+            if (gen !== loadGen) return
+            rows.forEach(n => { if (pendingReadIds.has(n.id)) n.read = true })
+            const shown = rows.slice(0, depth)
+            notifications.value = shown
+            hasMore.value = rows.length > depth
+            cursor.value = shown.length > 0 ? shown[shown.length - 1].id : null
+            if (typeof data.unread_count === 'number') unreadCount.value = data.unread_count
+            loaded.value = true
+        } catch (err) {
+            if (import.meta.env.DEV) console.warn('[notifications] re-read failed:', err)
+        } finally {
+            rereading = false
         }
     }
 
@@ -137,6 +175,7 @@ export function notificationInAppModel() {
         hasMore,
         // actions
         loadList,
+        rereadLoaded,
         loadUnreadCount,
         markRead,
         markSeen,
