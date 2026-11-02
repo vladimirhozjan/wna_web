@@ -193,7 +193,8 @@ export function useLiveMotion(rootRef, source, { idAttr = 'data-row-id', tiles =
             // New rows start closed, so the rest is measured where it starts out
             const entering = []
             for (const [id, el] of after) {
-                if (known.has(id)) continue
+                // A changed row coming into view from off screen enters like a new one
+                if (known.has(id) && (before.has(id) || !changed.has(id))) continue
                 const rect = el.getBoundingClientRect()
                 if (!inView(rect, view)) continue
                 entering.push({ el, height: rect.height, pad: paddingOf(el) })

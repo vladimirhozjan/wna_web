@@ -51,7 +51,7 @@
   highlight, 250 / 1000 ms, viewport-only, `finish()` before a new run, `data-motion`, `skip`). Verify per W2
   (`npm run build:main`; behaviour through W4).
   Data: none — reads only the DOM and W1's state.
-  Done: `scripts/core/liveMotion.js:146` `useLiveMotion` (enter / ghost leave / FLIP / highlight, 250 / 1000 ms, viewport-only, cancel before a new run, `data-motion`, `skip`, `force()`); `:39` `motionSet` primitives (used by `CanvasMap`); `:96` table-row leave; in-place = id in packet or row text changed (canvas packets carry only the project id); a row re-created elsewhere (other day column) glides. `npm run build:main` green.
+  Done: `scripts/core/liveMotion.js:146` `useLiveMotion` (enter / ghost leave / FLIP / highlight, 250 / 1000 ms, viewport-only, cancel before a new run, `data-motion`, `skip`, `force()`); `:39` `motionSet` primitives (used by `CanvasMap`); `:96` table-row leave; in-place = id in packet or row text changed (canvas packets carry only the project id); a row re-created elsewhere (other day column) glides. Round 2: a changed row (id in the packet) coming into view from off screen enters (`liveMotion.js:196`). `npm run build:main` green.
 - [x] **W3** Every live re-read handler returns its re-read promise — the handlers parent W3 lists (16 `onLiveChange`
   pages / views + packet handlers in `connectionModel.js`, `ProjectCanvasPage`, `ProjectDetailPage`,
   `ProjectTemplateDetailPage`, `EngagePage`). Verify per W3 (grep each handler).
@@ -68,14 +68,14 @@
   `data-row-id` + `useLiveMotion`; new Next Action = old row moves, new one arrives (parent W5).
   Data: `id` + order — `GET /v1/project/action?project_id=` (existing; web order by `backlog_position`) and
   `GET /v1/projectTemplates/{id}` actions (existing).
-  Done: `ProjectDetailPage.vue:836` (+ `data-row-id` on both backlog lists), `ProjectTemplateDetailPage.vue:342`. Chrome: foreign move of "PA three" to Next Action → glide + highlight. Template detail not separately run in Chrome (same composable).
+  Done: `ProjectDetailPage.vue:836` (+ `data-row-id` on both backlog lists), `ProjectTemplateDetailPage.vue:342`. Chrome: foreign move of "PA three" to Next Action → glide + highlight. Template detail checked in Chrome (round 2, desktop + 500 px): foreign add → enter + highlight, move → glide, rename → highlight, delete → leave. Live re-reads now coalesced + narrowed (`ProjectDetailPage.vue:1248` `liveReload` one trailing read, `:1261` `reloadOnce`, `:1292` `isProjectChange`, `:1312` action-only packet → `listProjectActions` only, Completed only when touched); header / pager / members still re-read on project / member / `item` / converted-stuff changes.
 - [x] **W6** Calendar (day / week grid + all-day `tiles: true`, glide to new slot / day; month chips as rows; year
   none), Reference (grid `tiles: true`, list rows), Connections (pending received / sent / connections; accept = leave
   + arrive), Search results: `data-row-id` + `useLiveMotion` (parent W6). **Waits on backend B11.**
   Data: `id` + order — `GET /v1/calendar`, `/v1/reference/folders`, `/v1/reference/attachments`,
   `/v1/connections/pending`, `/v1/search` (existing); `GET /v1/reference/files` and `GET /v1/connections` stable order
   → **backend B11** (new tiebreak).
-  Done (B11 landed): `CalendarDayView.vue:59` / `CalendarWeekView.vue:233` tiles (`data-row-id` on `CalendarItem`, continuation segments excluded), `CalendarMonthView.vue:155` rows, `RefGridView.vue:81` tiles, `RefListView.vue:158` rows, `ConnectionsPage.vue:184` (`r-` / `s-` / `c-` ids → accept = leave + arrive), `SearchPage.vue:100`. Chrome: Week reschedule Mon → Tue glides + highlight. Reference / Connections / Search not run in Chrome.
+  Done (B11 landed): `CalendarDayView.vue:59` / `CalendarWeekView.vue:233` tiles (`data-row-id` on `CalendarItem`, continuation segments excluded), `CalendarMonthView.vue:155` rows, `RefGridView.vue:81` tiles, `RefListView.vue:158` rows, `ConnectionsPage.vue:184` (`r-` / `s-` / `c-` ids → accept = leave + arrive), `SearchPage.vue:100`. Chrome: Week reschedule Mon → Tue glides + highlight. Round 2 Chrome (desktop + 500 px): Reference list (arrive, rename highlight, delete → row fades + rows glide up) and grid (tile enter, neighbours glide, leave); Search (arrive, edit → move + highlight, trash → leave); Connections with a second local account confirmed via Mailpit (accept → leaves Pending + arrives in Connections + highlight; own invite → no motion).
 - [x] **W7** Canvas — `CanvasDrillDown.vue` Ideas rows via `useLiveMotion`; `CanvasMap.vue` per S3 / parent W7 (enter
   with branch line, leave, per-node offset glide by `requestAnimationFrame` read by pills and lines, highlight; pan /
   zoom never change; idea being typed stays).
@@ -103,12 +103,19 @@
 - [x] **W11** Spec sync (boxes under "Spec sync" below) + in the web output list the TCs made new / stale for ui-tests.
   Data: none.
   Done: `wna_orchestration/specs/features/wna-features.md:2802` (§25.10 Motion), `:3748` (§41.3 step log + Show steps), `:3786` test ids. TCs listed in the web output.
-- [~] **W12** Chrome check on `:5173`, desktop and 500 px — every scenario parent W12 lists (Inbox + panel "sort" with
+- [x] **W12** Chrome check on `:5173`, desktop and 500 px — every scenario parent W12 lists (Inbox + panel "sort" with
   3+ writes; Engage, Project detail, Calendar week, Canvas map + drill-down; second-tab change; own action, Load more,
   hidden-tab catch-up without motion; DevTools Network during a 20-write run on Inbox and Engage: average ≤ 8 GET/s,
   no `429`). Waits on W1–W11 + backend done.
   Data: all of the above.
-  Motion scenarios checked in Chrome (see W1–W9). OPEN: 20-write run on Inbox (desktop, panel open) = **9.94 GET/s** avg (41 request + 20 list + 20 stats GETs in 8.2 s), 0× `429` locally (local bucket 50/s; prod user bucket 10/s) — over the ≤ 8 GET/s target. Engage not measured separately (same per-packet reads). Blocked on owner decision (Questions in web output).
+  Done (round 2): request reads merged — `scripts/models/assistantModel.js:32` `READ_DEBOUNCE_MS` = 100, trailing
+  debounce on `ai_request` packets (`:253`), in-flight `reading` / `readAgain` coalescing kept. **Triage-approved
+  departure (J783, option A)** from the parent Boundaries row "`assistantModel.js` logic unchanged" (parent `:260`):
+  packets within 100 ms give one request read. Re-measured on `:5173` desktop, 20 assistant writes each, panel open
+  (resource timings): Inbox **7.50 GET/s**, max **9** in any 1 s, **3.05** GET/write; Engage **7.47**, max **9**,
+  **3.05**; Project detail (shared, Completed open) **7.45**, max **9**, **3.05** (actions list + request + counts per
+  write; before ~6–8). 0× `429` (local bucket 50/s; against prod 10/s burst 30 the 1 s peak is 9). Motion scenarios:
+  W1–W9; own action / Load more / hidden tab without motion.
 
 ## Screens (one box per screen — built per parent `## Screens`, every state + exact copy, desktop + 500 px)
 - [x] **S1 Assistant panel — running step log** — layout table rows 1–3, motion, scrolling, end collapse, every row of
@@ -125,12 +132,12 @@
   Done: W5.
 - [x] **S2 Calendar** — day / week grid + all-day, month chips, year at once (W6).
   Done: W6 (Week checked in Chrome).
-- [~] **S2 Reference files (grid + list), attachments** (W6).
-  Code done (W6); not run in Chrome this round — left for the W12 re-check / ui-tests.
-- [~] **S2 Connections** — pending received / sent / connections (W6).
-  Code done (W6); not run in Chrome (needs a second account) — ui-tests.
-- [~] **S2 Search results** (W6).
-  Code done (W6); not run in Chrome this round.
+- [x] **S2 Reference files (grid + list), attachments** (W6).
+  Done: W6 (round 2 Chrome, desktop + 500 px).
+- [x] **S2 Connections** — pending received / sent / connections (W6).
+  Done: W6 (round 2 Chrome, second local account, desktop + 500 px).
+- [x] **S2 Search results** (W6).
+  Done: W6 (round 2 Chrome, desktop + 500 px).
 - [x] **S3 Canvas — desktop mind map** (W7).
   Done: W7.
 - [x] **S3 Canvas — mobile drill-down Ideas card** (W7).

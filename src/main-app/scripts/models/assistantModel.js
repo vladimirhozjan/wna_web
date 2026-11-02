@@ -28,6 +28,9 @@ export const CREDITS_BEFORE_CHECKOUT_KEY = 'assistant-credits-before-checkout'
 // Unicode code points, as the API counts them
 export const charCount = (s) => [...(s || '')].length
 
+// A step's end and the next step's start arrive a few ms apart: packets within this window give one request read
+const READ_DEBOUNCE_MS = 100
+
 // A packet names this request, or anything may have changed (null: reconnect / resync); id null = conversation deleted
 const touchesRequest = (changes, id) =>
     !changes || changes.some(c => c.entity === 'ai_request' && (c.id === null || String(c.id) === String(id)))
@@ -74,6 +77,7 @@ export function assistantModel() {
     let conversationPromise = null
     let reading = false
     let readAgain = false
+    let readTimer = null
 
     async function loadAccount() {
         try {
@@ -244,7 +248,9 @@ export function assistantModel() {
     }
 
     liveClient.subscribe(changes => {
-        if (state.requestId && touchesRequest(changes, state.requestId)) readRequest()
+        if (!state.requestId || !touchesRequest(changes, state.requestId)) return
+        clearTimeout(readTimer)
+        readTimer = setTimeout(readRequest, READ_DEBOUNCE_MS)
     })
 
     function onRequestEnded(data) {

@@ -1239,10 +1239,29 @@ async function loadProject() {
 }
 undo.registerRefresh(loadProject)
 
-// Silent re-read for a change made elsewhere; a field in edit keeps its own editValue / editTags
-async function liveReload() {
+// Silent re-read for a change made elsewhere; a field in edit keeps its own editValue / editTags.
+// Packets that land while one runs add what they need and are read once after it (one trailing read)
+const FULL_RELOAD = { project: true, completed: true }
+let reloadNeeds = null
+let reloading = null
+
+function liveReload(needs = FULL_RELOAD) {
+  reloadNeeds = { project: !!(reloadNeeds?.project || needs.project), completed: !!(reloadNeeds?.completed || needs.completed) }
+  reloading ||= (async () => {
+    while (reloadNeeds) {
+      const next = reloadNeeds
+      reloadNeeds = null
+      await reloadOnce(next)
+    }
+  })().finally(() => { reloading = null })
+  return reloading
+}
+
+// Only a project / member change touches the header, pager and members; an action change re-reads the actions
+async function reloadOnce({ project: whole, completed }) {
   const id = route.params.id
   try {
+    if (!whole) return await loadProjectActions({ silent: true, members: false, completed })
     const data = await apiClient.getProject(id)
     if (route.params.id !== id || navigating.value) return
     project.value = { ...data }
@@ -1269,7 +1288,10 @@ async function refreshPosition(data) {
   positionLost.value = true
 }
 
-const LIST_ENTITIES = new Set(['stuff', 'action', 'project', 'item'])
+// Changes that may touch the header, the pager or the members; an action change only the lists
+const isProjectChange = (c, id) =>
+  c.entity === 'project' || c.entity === 'item' || (c.entity === 'member' && c.id === id) ||
+  (c.entity === 'stuff' && c.change === 'converted')
 
 onLivePacket((changes) => {
   if (pageLoading.value || notFound.value || !project.value) return
@@ -1283,7 +1305,11 @@ onLivePacket((changes) => {
   }
   if (mine?.change === 'trashed') return afterTrash(mine.actor === myUserId.value, orderedActions.value.length > 0)
   if (mine?.change === 'converted') return navigateToNextOrPrev()
-  if (changes.some(c => LIST_ENTITIES.has(c.entity) || (c.entity === 'member' && c.id === id))) return liveReload()
+  if (changes.some(c => isProjectChange(c, id))) return liveReload()
+  const actions = changes.filter(c => c.entity === 'action')
+  if (!actions.length) return
+  const completed = actions.some(c => c.change === 'completed' || completedActions.value.some(a => a.id === c.id))
+  return liveReload({ project: false, completed })
 })
 
 // Sends only the changed key; the response is the viewer's link after the write
@@ -1773,11 +1799,11 @@ function actionStateLabel(state) {
 // ── Project Actions functions ──
 
 // silent: a live re-read — no loading state or toast, the expanded Completed list stays
-async function loadProjectActions({ silent = false } = {}) {
+async function loadProjectActions({ silent = false, members = true, completed = true } = {}) {
   if (!project.value?.id) return
 
   // Only shared projects expose GET /members; calling it on a personal project 403s.
-  if (project.value.shared) {
+  if (project.value.shared && members) {
     try {
       const members = silent ? await reloadMembers(project.value.id) : await loadMembers(project.value.id)
       if (members && members.length > 0) {
@@ -1810,6 +1836,7 @@ async function loadProjectActions({ silent = false } = {}) {
   }
 
   if (silent && completedLoaded.value) {
+    if (!completed) return
     apiClient.listProjectCompleted(project.value.id, { limit: 100 })
       .then(res => { completedActions.value = res?.items || [] })
       .catch(() => {})
