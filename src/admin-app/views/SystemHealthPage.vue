@@ -131,6 +131,16 @@
           <Stat label="Disk Full In" :value="diskFullIn" />
         </div>
         <p class="text-caption color-text-tertiary last-sample">Last sample {{ formatHourMinute(serverLoad.current.sampled_at) }}</p>
+
+        <h4 class="text-caption color-text-secondary chart-title">Load (%)</h4>
+        <div class="chart-container">
+          <Line :data="loadChartData" :options="loadChartOptions" />
+        </div>
+
+        <h4 class="text-caption color-text-secondary chart-title">Live Connections</h4>
+        <div class="chart-container">
+          <Line :data="connectionsChartData" :options="connectionsChartOptions" />
+        </div>
       </template>
     </div>
 
@@ -164,7 +174,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+import { Line } from 'vue-chartjs'
 import Alert from '../components/Alert.vue'
 import Btn from '../components/Btn.vue'
 import DataTable from '../components/DataTable.vue'
@@ -174,6 +185,7 @@ import Stat from '../components/Stat.vue'
 import StatusDot from '../components/StatusDot.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { formatBytes } from '../scripts/core/formatBytes.js'
+import { chartColors, baseOptions } from '../scripts/core/chartTheme.js'
 import apiClient from '../scripts/core/apiClient.js'
 
 const toaster = errorModel()
@@ -243,6 +255,75 @@ const diskFullIn = computed(() => {
   return `~${estimate.value} ${unit}${estimate.value === 1 ? '' : 's'}`
 })
 
+// 30d / 12m points are days: lines plot the daily peak, the tooltip adds the day's average
+const dailyPoints = computed(() => serverLoad.value?.granularity === 'day')
+
+function pointLabel(t) {
+  if (dailyPoints.value) return format(parseISO(t), serverLoadRange.value === '12m' ? 'M/d/yy' : 'M/d')
+  return format(new Date(t), serverLoadRange.value === '24h' ? 'HH:mm' : 'M/d HH:mm')
+}
+
+function lineDataset(label, color, points, key) {
+  return {
+    label: dailyPoints.value ? `${label} (daily peak)` : label,
+    name: label,
+    data: points.map(p => p[key]),
+    avg: points.map(p => p[`${key}_avg`]),
+    borderColor: color,
+    backgroundColor: 'transparent',
+    tension: 0.3,
+    pointRadius: 0,
+    pointHoverRadius: 4,
+  }
+}
+
+const loadChartData = computed(() => {
+  const c = chartColors.value
+  const points = serverLoad.value?.load || []
+  return {
+    labels: points.map(p => pointLabel(p.t)),
+    datasets: [
+      lineDataset('CPU', c.action, points, 'cpu'),
+      lineDataset('RAM', c.success, points, 'ram'),
+      lineDataset('Disk', c.info, points, 'disk'),
+    ],
+  }
+})
+
+const connectionsChartData = computed(() => {
+  const c = chartColors.value
+  const points = serverLoad.value?.connections || []
+  return {
+    labels: points.map(p => pointLabel(p.t)),
+    datasets: [
+      lineDataset('Connections', c.action, points, 'connections'),
+      lineDataset('Users Online', c.success, points, 'users'),
+    ],
+  }
+})
+
+function serverChartOptions(formatValue, yRange = {}) {
+  const b = baseOptions.value
+  return {
+    ...b,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      ...b.plugins,
+      tooltip: {
+        callbacks: {
+          label: ({ dataset, dataIndex, raw }) => dailyPoints.value
+            ? `${dataset.name}: Peak ${formatValue(raw)} · Avg ${formatValue(dataset.avg[dataIndex])}`
+            : `${dataset.name}: ${formatValue(raw)}`,
+        },
+      },
+    },
+    scales: { ...b.scales, y: { ...b.scales.y, ...yRange } },
+  }
+}
+
+const loadChartOptions = computed(() => serverChartOptions(formatPct, { min: 0, max: 100 }))
+const connectionsChartOptions = computed(() => serverChartOptions(formatCount))
+
 const databaseRows = computed(() => (databases.value?.items || []).map(d => ({ ...d, id: d.name })))
 
 async function loadServerLoad() {
@@ -282,6 +363,10 @@ function refreshAll() {
 
 function formatPct(val) {
   return val == null ? '—' : `${Math.round(val)} %`
+}
+
+function formatCount(val) {
+  return val == null ? '—' : Number(val).toLocaleString(undefined, { maximumFractionDigits: 1 })
 }
 
 function formatShare(val) {
@@ -453,6 +538,17 @@ onUnmounted(() => {
   margin: 12px 0 0;
 }
 
+.chart-title {
+  margin: 20px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chart-container {
+  position: relative;
+  height: 260px;
+}
+
 .databases-total {
   margin-bottom: 16px;
 }
@@ -486,6 +582,10 @@ onUnmounted(() => {
   .range-select,
   .range-select :deep(.select-trigger) {
     width: 100%;
+  }
+
+  .chart-container {
+    height: 200px;
   }
 }
 </style>

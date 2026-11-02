@@ -172,11 +172,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { format, parseISO, subDays } from 'date-fns'
-import {
-  Chart as ChartJS,
-  CategoryScale, LinearScale, PointElement, LineElement, BarElement,
-  Title, Tooltip, Legend, Filler,
-} from 'chart.js'
 import { Bar, Line } from 'vue-chartjs'
 import Btn from '../components/Btn.vue'
 import DataTable from '../components/DataTable.vue'
@@ -186,46 +181,11 @@ import Stat from '../components/Stat.vue'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { authModel, hasMinRole } from '../scripts/core/authModel.js'
 import apiClient from '../scripts/core/apiClient.js'
-import { themeModel } from '../scripts/models/themeModel.js'
-
-ChartJS.register(
-    CategoryScale, LinearScale, PointElement, LineElement, BarElement,
-    Title, Tooltip, Legend, Filler,
-)
+import { chartColors, baseOptions } from '../scripts/core/chartTheme.js'
 
 const toaster = errorModel()
 const auth = authModel()
-const theme = themeModel()
 const role = computed(() => auth.currentAdmin.value?.role)
-
-// Chart theme colors (read from CSS vars at runtime)
-function getCssVar(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-}
-
-// Re-read on theme change so charts pick up the new palette
-const chartColors = computed(() => {
-  theme.isDark.value
-  return {
-    action: getCssVar('--color-action') || '#6366f1',
-    success: getCssVar('--color-success') || '#10b981',
-    warning: getCssVar('--color-warning') || '#f59e0b',
-    border: getCssVar('--color-border-subtle') || '#e5e7eb',
-    text: getCssVar('--color-text-tertiary') || '#9ca3af',
-  }
-})
-
-const baseOptions = computed(() => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 16, color: chartColors.value.text } },
-  },
-  scales: {
-    x: { grid: { display: false }, ticks: { color: chartColors.value.text } },
-    y: { beginAtZero: true, grid: { color: chartColors.value.border }, ticks: { color: chartColors.value.text } },
-  },
-}))
 
 // --- Visitors + Traffic Sources (one range for both) ---
 const VISIT_RANGES = [

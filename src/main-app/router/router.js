@@ -92,7 +92,7 @@ const routes = [
         description: 'Answers about accounts, the inbox, next actions, projects, the weekly review, the calendar, plans and billing in the WhatsNextAction GTD app.',
         jsonLd: 'faq',
     }}},
-    {path: '/help/connect-ai', name: 'help-connect-ai', component: () => import('../views/public/HelpConnectAiPage.vue'), meta: {seo: {
+    {path: '/help/connect-ai', name: 'help-connect-ai', component: () => import('../views/public/HelpConnectAiPage.vue'), meta: {countVisit: true, seo: {
         title: 'Connect Claude or ChatGPT | WhatsNextAction Help',
         description: 'Connect Claude or ChatGPT to WhatsNextAction step by step and let your own AI work with your GTD lists, on every plan.',
     }}},

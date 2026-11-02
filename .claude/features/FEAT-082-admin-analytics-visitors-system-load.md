@@ -51,7 +51,8 @@ W1 — main-app counting + signup source (after backend B1–B3):
 - [x] **W1 — counted routes** — `meta.countVisit: true` on the ten C3 routes in `router.js`; call the tracker from the
   existing `afterEach`; same-path query / hash change not counted (C3). — `router.js:30,35,36,77,82,86,90,99,104,108`
   (meta), `:145` (afterEach), `visitTracker.js:40` (`START_LOCATION` = first view always counts; same `path` skipped).
-  `/help/connect-ai` is not in C3's list, so it is not counted (see Questions).
+  `/help/connect-ai` counted too (Q2 = A, triage J736): `router.js:95`; Chrome: one `POST /v1/visits`
+  `{"path":"/help/connect-ai"}` → 204.
 - [x] **W1 — `apiClient.recordVisit`** — `POST /v1/visits`, every error swallowed, no toast. — `apiClient.js:173-179`
   (plain `fetch` + `.catch(() => {})`, so a blocked request never reaches the httpApi interceptors / offline banner).
 - [x] **W1 — `signup_utm` on registration** — `registerUser` / `googleSso` / `appleSso` (C2). — `apiClient.js:181-187`,
@@ -66,10 +67,10 @@ W1 — main-app counting + signup source (after backend B1–B3):
 - [x] **W1 · Verify** — `npm run build:main` green. Chrome `:5173`: `/?utm_source=youtube&utm_campaign=x` → `/pricing`
   → two `POST /v1/visits` with `{"path":…,"utm":{"source":"youtube",…,"campaign":"x"}}` and status 204 (read from
   a page-level `fetch` wrapper; the extension's network list showed a spurious 503 while user_service logged 204);
-  `/pricing?x=1` and `/settings` → none; no new cookie / storage key; Google sign-up via the local mock
-  (`localhost:10000`) sent `"signup_utm":{"campaign":"x",…,"source":"youtube",…}` in `google-sso` (router log). The
-  local Google token exchange then failed in user_service (`Google token request failed: 4`, a timeout — environment,
-  not web), so the account was not created on that path; the email path above proves the save end to end.
+  `/pricing?x=1` and `/settings` → none; no new cookie / storage key. Google sign-up via the local mock after
+  `/?utm_source=youtube&utm_medium=video&utm_campaign=sso-check&utm_content=reel-07&utm_term=gtd` (rerun after
+  deploy fixed the mock): new account `login_provider: google`, admin `GET /admin/platform-users/{id}` →
+  `signup_utm` with all five parts; Analytics Traffic Sources shows `sso-check` with 1 signup.
 
 W2 — Privacy Policy, `src/main-app/content/legal/privacy.md` (any time) — each item of parent
 `## Legal impact`, wording from there:
@@ -120,29 +121,35 @@ W6 — admin System Health (after backend B4, deploy P2):
   its own, different variant (null → "0 B", no TB) — outside this slice, left as is.
 - [x] **W6 — admin `apiClient.js`** — `getSystemLoad(range)` `apiClient.js:157`, `getDatabaseSizes()` `:166`;
   `SystemHealthPage.vue:277` `refreshAll` on open + Refresh, `:313` the 30 s timer refreshes the services only.
-- [~] **W6 · Screen S5 — Server Load** — built: header + environments caption, range `Select`, disk `Alert` warning /
-  critical, `stats-grid` CPU / RAM / Disk / Disk Full In, "Last sample HH:mm", Loading / Empty / Error + Retry, ≤768
-  (`SystemHealthPage.vue:86-135`). **Remaining: the Load (%) and Live Connections charts (+ daily-peak legend and
-  "Peak · Avg" tooltip).** Blocked on the owner: the chart setup (theme colours, base options, Chart.js registration)
-  lives only inside `AnalyticsPage.vue`; a second chart page needs either a copy (forbidden) or a new shared helper
-  (needs approval) — see Questions Q1.
+- [x] **W6 · Screen S5 — Server Load** — `SystemHealthPage.vue:86-145`: header + environments caption, range
+  `Select`, disk `Alert` warning / critical, `stats-grid` CPU / RAM / Disk / Disk Full In, "Last sample HH:mm", Line
+  **Load (%)** `:135` (y 0–100) and **Live Connections** `:140`; daily points (30d / 12m) plot the peak with legend
+  "… (daily peak)" and tooltip "Peak … · Avg …" (`:259-322`); charts 260px, ≤768 200px (`:549,588`); Loading /
+  Empty / Error + Retry. Shared chart setup moved to `src/admin-app/scripts/core/chartTheme.js` (Q1 = A, triage
+  J736): `ChartJS.register`, `chartColors`, `baseOptions`, imported by `AnalyticsPage.vue:184` and
+  `SystemHealthPage.vue:188` (`grep getCssVar|ChartJS.register src/admin-app` → only `chartTheme.js`). **Deviation:**
+  the Disk line uses `--color-info` (`:288`) instead of Screens' `--color-warning` — in both themes `--color-warning`
+  equals `--color-action` (dark `#fbbf24`, light `#d97706`), so CPU and Disk would be the same colour; `chartColors`
+  therefore also reads `--color-info` (existing token, no new variable).
 - [x] **W6 · Screen S6 — Databases** — `SystemHealthPage.vue:137-160` (`Stat size="lg"` All Databases, `DataTable`
   Database · Size · Share, Loading / Error + Retry, names wrap).
-- [~] **W6 · Verify** — done for what exists: empty copy, stats, warning / critical Alert, "Not growing" / "~14
-  months" / "~1 day", 30d returns `granularity: day`, Databases lists the five local DBs, error + Retry on both
-  cards, desktop and 500px (Alert spanned past the card padding — fixed with `box-sizing` in `Alert.vue:57`, its
-  first user). **Remaining:** the chart checks (seeded samples → both charts; 30d daily peaks + tooltip avg) after Q1.
+- [x] **W6 · Verify** — `npm run build:admin` green. Chrome `:6173`: empty copy, stats, warning / critical Alert,
+  "Not growing" / "~14 months" / "~1 day", Databases lists the five local DBs, error + Retry on both cards (Alert
+  spanned past the card padding — fixed with `box-sizing` in `Alert.vue:57`, its first user); with the local samples
+  24h shows both charts (CPU / RAM / Disk distinct, Connections / Users Online); 30d → `granularity: day`, legend
+  "CPU (daily peak)" …, hover tooltip "Connections: Peak 10 · Avg 7", "CPU: Peak 30 % · Avg 20 %"; desktop
+  (1280px, 260px charts) and 500px (200px charts, no overflow); Analytics renders as before (4 charts, same colours).
 
 W7 — docs (with W3–W6):
 - [x] **W7 · Update `wna_orchestration/specs/features/wna-features.md`** — User detail Profile `:1690`, Dashboard
   User Overview `:1943-1945`, System Health Server Load / Databases `:1958-1966`, Analytics Visitors / Traffic Sources
-  `:2013-2029`, Legal Pages `:2575-2576`, new §24.8 Visit Counting `:2639`. Server Load charts are not described
-  (not built yet).
+  `:2013-2029` (Server Load charts `:1964`), Legal Pages `:2575-2576`, new §24.8 Visit Counting `:2639` (incl.
+  `/help/connect-ai` `:2644`).
 - [x] **W7 · TC report** — below.
 
 ## TC report
 New TCs for ui-tests (none edited by me):
-- Visits: a public page with UTM sends one `POST /v1/visits` per counted view; `?x=1` / hash-only change and in-app
+- Visits: a public page with UTM sends one `POST /v1/visits` per counted view (11 routes incl. `/help/connect-ai`); `?x=1` / hash-only change and in-app
   pages send none; nothing new in cookies / storage.
 - Signup source: email registration after a UTM landing → User detail **Signup Source** shows the joined parts;
   without UTM → "Unknown"; Google / Apple: `google_sso_state` / `apple_sso_state` hold no `.`, the sent `state` has
@@ -153,8 +160,10 @@ New TCs for ui-tests (none edited by me):
   shown." when truncated, ≤768 no Visits column.
 - Dashboard: Online Now / Live Connections (1 / 1 with one tab, 1 / 2 with two), "—" when unavailable.
 - System Health: Server Load (range select, "Shared by dev and prod" caption only with > 1 environment, stats, disk
-  warning "Disk is filling up" / critical "Disk almost full", "No samples yet…", error + Retry), Databases (total +
-  table). Chart TCs wait for W6 S5 charts.
+  warning "Disk is filling up" / critical "Disk almost full", "No samples yet…", error + Retry), charts Load (%)
+  (CPU / RAM / Disk) and Live Connections (Connections / Users Online); 30 days / 12 months → legend "… (daily
+  peak)" and tooltip "Peak … · Avg …"; Databases (total + table).
+- Google sign-up after a UTM landing → User detail Signup Source shows the five parts.
 - Privacy Policy: §2.12 and the new date render.
 Stale TCs: any TC that expects the Dashboard tile **Active Sessions (15m)** (removed, Q1 = A); any TC that expects
 the System Health 30 s timer to reload everything (only services now); any TC that reads the Privacy Policy "Last
