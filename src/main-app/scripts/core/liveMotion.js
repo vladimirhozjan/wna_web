@@ -31,6 +31,16 @@ function paddingOf(el) {
     return { paddingTop: s.paddingTop, paddingBottom: s.paddingBottom }
 }
 
+// The row's own text; parts marked data-motion-skip (counts of what is inside it) are not its change
+function textOf(el) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+        acceptNode: n => (n.parentElement.closest('[data-motion-skip]') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    })
+    let text = ''
+    while (walker.nextNode()) text += walker.currentNode.nodeValue
+    return text
+}
+
 function highlightColor() {
     return getComputedStyle(document.documentElement).getPropertyValue('--color-bg-accent-light').trim()
 }
@@ -139,8 +149,8 @@ function placeOver(ghost, rect, root) {
  * Animates what a foreign live re-read changed among root's `[idAttr]` elements: new → enter, gone → leave (its
  * detached element fades out where it was), moved → glide (FLIP), changed in place (id in the packet, or its text
  * changed) → highlight.
- * Only elements in the viewport move; scroll position never changes. `skip()` = ids that leave on their own (the
- * completion exit). `tiles`: enter by scale, leave without closing the gap. Returns `force()` — the next change of
+ * Only elements in the viewport move; scroll position never changes. `skip()` = ids that get no motion (the
+ * completion exit, a queued capture swapped for its server row). `tiles`: enter by scale, leave without closing the gap. Returns `force()` — the next change of
  * `source` animates even outside a foreign dispatch (a list that waited for its empty state to fade out).
  */
 export function useLiveMotion(rootRef, source, { idAttr = 'data-row-id', tiles = false, skip = () => new Set() } = {}) {
@@ -160,13 +170,15 @@ export function useLiveMotion(rootRef, source, { idAttr = 'data-row-id', tiles =
             known.add(id)
             const rect = el.getBoundingClientRect()
             if (inView(rect, view)) {
-                before.set(id, { el, rect, text: el.textContent, parent: el.parentNode, next: el.nextElementSibling })
+                before.set(id, { el, rect, text: textOf(el), parent: el.parentNode, next: el.nextElementSibling })
             }
         }
         const skipped = new Set([...skip()].map(String))
         const changed = new Set([...liveClient.motion.ids].map(String))
         nextTick(() => {
             if (!root.isConnected) return
+            // Measured again: a clipping card grows with the list, so a row added at its end is inside the new view
+            const viewAfter = viewportOf(root)
             const after = new Map()
             for (const el of root.querySelectorAll(`[${idAttr}]`)) after.set(el.getAttribute(idAttr), el)
 
@@ -194,9 +206,9 @@ export function useLiveMotion(rootRef, source, { idAttr = 'data-row-id', tiles =
             const entering = []
             for (const [id, el] of after) {
                 // A changed row coming into view from off screen enters like a new one
-                if (known.has(id) && (before.has(id) || !changed.has(id))) continue
+                if (skipped.has(id) || (known.has(id) && (before.has(id) || !changed.has(id)))) continue
                 const rect = el.getBoundingClientRect()
-                if (!inView(rect, view)) continue
+                if (!inView(rect, viewAfter)) continue
                 entering.push({ el, height: rect.height, pad: paddingOf(el) })
                 if (!tiles) Object.assign(el.style, { height: '0px', paddingTop: '0px', paddingBottom: '0px', boxSizing: 'border-box' })
             }
@@ -207,7 +219,7 @@ export function useLiveMotion(rootRef, source, { idAttr = 'data-row-id', tiles =
                 const rect = el.getBoundingClientRect()
                 const dx = b.rect.left - rect.left
                 const dy = b.rect.top - rect.top
-                const mark = changed.has(id) || el.textContent !== b.text
+                const mark = changed.has(id) || textOf(el) !== b.text
                 if (Math.abs(dx) > 1 || Math.abs(dy) > 1) moves.push({ el, dx, dy, mark })
                 else if (mark) motion.highlight(el)
             }

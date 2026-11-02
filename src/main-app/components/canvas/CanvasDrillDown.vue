@@ -91,7 +91,7 @@
             <template #actions>
               <span class="dd-row-meta">
                 <CheckIcon v-if="child.converted" class="dd-check" />
-                <span v-if="canvas.descendantCount(child.id) > 0" class="text-footnote color-text-secondary">{{ canvas.descendantCount(child.id) }}</span>
+                <span v-if="canvas.descendantCount(child.id) > 0" class="text-footnote color-text-secondary" data-motion-skip>{{ canvas.descendantCount(child.id) }}</span>
                 <ChevronRightIcon class="dd-chevron" />
               </span>
             </template>

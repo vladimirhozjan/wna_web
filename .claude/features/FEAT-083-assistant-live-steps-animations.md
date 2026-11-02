@@ -64,6 +64,13 @@
   `/v1/overdue`, `/v1/projects`, `/v1/completed`, `/v1/trash`, `/v1/engage`, `/v1/horizons`, `/v1/projectTemplates`,
   `/v1/recurring` (all existing, parent Data contract rows).
   Done: `components/ItemList.vue:212` (after the anchoring watcher; `skip` = completing ids, live-completed rows keep the exit look until the re-read lands `:176`), empty-state ordering `:222`. Chrome: Inbox enter + highlight, leave; Engage in-place highlight.
+  Round 3 (J779 ✘1, TC-1344): the arrival view is measured after the update (`liveMotion.js:181`, used `:211`) — a row
+  added at the end of a list (the clipping card grows) now enters; Chrome (recorder, 1280 + 500 px): Inbox 3 outside
+  creates → 3 `enter` + `highlight`, Next (from empty) 3 `enter`, Project detail backlog 3 `enter` + `highlight`. A
+  capture from another tab of this browser: `liveClient.animate` (`liveClient.js:207`) around the BroadcastChannel
+  reload (`captureQueue.js:185`); queued rows animate (`InboxPage.vue:50`, `:271`); a queued row handing over to its
+  server row is quiet (`InboxPage.vue:251`, `ItemList.vue:139` / `:215` `quietIds`; `skip` now also skips enter,
+  `liveMotion.js:209`). Chrome: page A queued row `enter`, then server row `highlight`; page B (own Quick add) none.
 - [x] **W5** `ProjectDetailPage.vue` (Next Action + backlog `VueDraggable`) and `ProjectTemplateDetailPage.vue` (actions):
   `data-row-id` + `useLiveMotion`; new Next Action = old row moves, new one arrives (parent W5).
   Data: `id` + order — `GET /v1/project/action?project_id=` (existing; web order by `backlog_position`) and
@@ -81,6 +88,11 @@
   zoom never change; idea being typed stays).
   Data: `nodes[].id`, `parent_id`, stored order — `GET /v1/project/{id}/canvas` (existing).
   Done: `CanvasDrillDown.vue:192`; `CanvasMap.vue:899` (enter pill + `data-line-id` line, leave pill + line ghosts, `glide` offsets `:878` read by pills and lines, highlight after glide). Chrome: drill-down rename → highlight, delete → leave, add → enter; desktop map (1280 px iframe) add / delete / move → enter / leave / glide + highlight, pan / zoom unchanged.
+  Round 3 (J779 ✘2, ✘3): the drill-down sub-idea count is `data-motion-skip` (`CanvasDrillDown.vue:94`) and left out of
+  the in-place text compare (`liveMotion.js:35` `textOf`, `:222`); the map compares the idea's stored text
+  (`CanvasMap.vue:934`) and marks gliding pills `data-motion="move"` during the rAF glide (`CanvasMap.vue:200`, `:884`).
+  Chrome (recorder): drill-down count change → no `data-motion`; idea text change → `highlight`; map reparent →
+  `move` then `highlight`.
 - [x] **W8** `AssistantPanel.vue` S1 per parent W8 — working message: `m.steps` → done / failed rows + live row
   (`Thinking…` when the last entry is not `running`), row enter 150 ms, end collapse 200 ms, `atBottom` follow; ended
   assistant message with `m.steps` (D4): the closed **Show steps** row as the message's last element (after Changes and
@@ -116,6 +128,9 @@
   **3.05**; Project detail (shared, Completed open) **7.45**, max **9**, **3.05** (actions list + request + counts per
   write; before ~6–8). 0× `429` (local bucket 50/s; against prod 10/s burst 30 the 1 s peak is 9). Motion scenarios:
   W1–W9; own action / Load more / hidden tab without motion.
+  Round 3: re-checked with the recorder at 1280 + 500 px (Inbox / Next / Project detail end-of-list arrivals, canvas
+  count / text / reparent, second-tab Quick add) on a fresh local account; `npm run build:main` green. Load figures
+  unchanged (no new reads).
 
 ## Screens (one box per screen — built per parent `## Screens`, every state + exact copy, desktop + 500 px)
 - [x] **S1 Assistant panel — running step log** — layout table rows 1–3, motion, scrolling, end collapse, every row of

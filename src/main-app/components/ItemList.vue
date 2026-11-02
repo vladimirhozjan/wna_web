@@ -135,6 +135,8 @@ const props = defineProps({
   noCheckbox: { type: Boolean, default: false },
   sourceType: { type: String, default: null },
   completingIds: { type: Array, default: () => [] },
+  // Rows that appear without live motion (a queued capture handing over to its server row)
+  quietIds: { type: Array, default: () => [] },
   acceptDrop: { type: Array, default: () => [] },
   noInitialAnimation: { type: Boolean, default: false },
   // Independent of disabled (drag): rows whose checkbox can't be ticked
@@ -209,7 +211,9 @@ watch(() => items.value, () => {
 // fades out before a first row arrives
 const leaveHold = ref(false)
 const arriveHold = ref(false)
-const motion = useLiveMotion(rootEl, () => (arriveHold.value ? null : items.value), { skip: () => completingIdSet.value })
+const motion = useLiveMotion(rootEl, () => (arriveHold.value ? null : items.value), {
+  skip: () => new Set([...completingIdSet.value, ...props.quietIds]),
+})
 
 watch(() => items.value, (now, before) => {
   if (exitedIds.length) {

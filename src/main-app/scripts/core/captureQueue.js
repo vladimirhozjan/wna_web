@@ -6,6 +6,7 @@ import { errorModel } from './errorModel.js'
 import { stuffModel } from '../models/stuffModel.js'
 import { statsModel } from '../models/statsModel.js'
 import { truncateTitle } from './textUtils.js'
+import { liveClient } from './liveClient.js'
 
 const DB_NAME = 'wna_capture'
 const STORE = 'queue'
@@ -180,7 +181,8 @@ function refreshInbox() {
 // Another tab is sending: queue one takeover behind its lock. The lock is released when that run ends or its tab
 // closes; only a closed sender is replaced here (see sync)
 function onMessage({ data }) {
-    if (data.type === 'changed') reload({ fromOtherTab: true })
+    // A capture made in another tab arrives here with the live motion (own captures stay without)
+    if (data.type === 'changed') liveClient.animate(reload({ fromOtherTab: true }))
     else if (data.type === 'sent' && sessionKeys.has(data.key)) errorModel().success(`"${truncateTitle(data.title)}" added to Inbox`)
     else if (data.type === 'sending') {
         sendingKey.value = data.key

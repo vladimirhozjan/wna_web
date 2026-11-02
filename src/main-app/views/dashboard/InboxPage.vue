@@ -42,11 +42,12 @@
 
         <!-- Scrollable content -->
         <PullToRefresh ref="scrollRef" class="inbox-content auto-scrollbar" :class="{ scrolling }" :refresh="onRefresh" :disabled="clarifyMode || isOffline || (loading && items.length === 0)">
-          <div class="card">
+          <div ref="cardRef" class="card">
           <Item
               v-for="entry in queuedRows"
               :key="entry.client_key"
               :id="entry.client_key"
+              :data-queued-id="entry.client_key"
               :title="entry.title"
               :editable="false"
               no-checkbox
@@ -79,6 +80,7 @@
               :has-more="hasMore && !clarifyMode"
               :loading-ids="loadingIds"
               :completing-ids="completingIds"
+              :quiet-ids="swapIds"
               :disabled="clarifyMode || isOffline"
               :checkbox-disabled="isOffline"
               :no-default-action="clarifyMode || isOffline"
@@ -158,6 +160,7 @@ import apiClient from '../../scripts/core/apiClient.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { clarifyModel } from '../../scripts/models/clarifyModel.js'
 import { captureQueue } from '../../scripts/core/captureQueue.js'
+import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 import { offlineModel } from '../../scripts/core/offlineModel.js'
 import { truncateTitle } from '../../scripts/core/textUtils.js'
 import { CAPTURE_LOCKED_LINE } from '../../scripts/core/captureRules.js'
@@ -244,14 +247,28 @@ const serverRows = computed({
   },
 })
 
+// A synced capture's queued row hands over to its server row in place, without live motion
+const swapIds = ref([])
+let swapKeys = new Set()
+
 watch(entries, (now, before) => {
   const kept = new Set(now.map(e => e.client_key))
   const gone = (before || []).filter(e => e.server_id && !kept.has(e.client_key))
   if (gone.length === 0) return
+  swapIds.value = gone.map(e => e.server_id)
+  swapKeys = new Set(gone.map(e => e.client_key))
+  nextTick(() => {
+    swapIds.value = []
+    swapKeys = new Set()
+  })
   const goneIds = new Set(gone.map(e => e.server_id))
   pinnedRows.value = [...pinnedRows.value.filter(p => !goneIds.has(p.id)), ...gone.map(e => ({ id: e.server_id, at: e.captured_at }))]
       .sort((a, b) => b.at.localeCompare(a.at))
 })
+
+// Queued captures from another tab arrive with the live motion (captureQueue animates that reload)
+const cardRef = ref(null)
+useLiveMotion(cardRef, () => queuedRows.value, { idAttr: 'data-queued-id', skip: () => swapKeys })
 
 // Inbox Zero celebration state
 const hadItems = ref(false)

@@ -196,6 +196,8 @@ const nodeEls = new Map()
 const glide = reactive({})
 const motion = motionSet()
 let glideFrame = 0
+// Pills gliding now carry data-motion="move" (the ui-tests hook, like every other live motion)
+let gliding = []
 let resizeObserver = null
 // Pointer bookkeeping for pan / pinch / node press
 const pointers = new Map()
@@ -873,9 +875,13 @@ watch(() => drag.active, (on) => (on ? liveClient.hold() : liveClient.release())
 function stopGlide() {
   cancelAnimationFrame(glideFrame)
   for (const id of Object.keys(glide)) delete glide[id]
+  for (const el of gliding) if (el.getAttribute('data-motion') === 'move') el.removeAttribute('data-motion')
+  gliding = []
 }
 
 function runGlide(offsets, then) {
+  gliding = [...offsets.keys()].map(id => nodeEls.get(id)).filter(Boolean)
+  for (const el of gliding) el.setAttribute('data-motion', 'move')
   const start = performance.now()
   const step = (now) => {
     const t = Math.min(1, (now - start) / MOTION_MS)
@@ -904,7 +910,7 @@ watch(() => canvas.nodes.value, (now, before) => {
   const was = new Map(before.map(n => [n.id, n]))
   const old = new Map()
   for (const [id, el] of nodeEls) {
-    old.set(id, { el, parent: el.parentNode, left: parseFloat(el.style.left), top: parseFloat(el.style.top), text: el.textContent })
+    old.set(id, { el, parent: el.parentNode, left: parseFloat(el.style.left), top: parseFloat(el.style.top) })
   }
   const oldLines = new Map([...surface.querySelectorAll('[data-line-id]')].map(el => [el.dataset.lineId, el]))
   const svg = surface.querySelector('.cm-lines')
@@ -925,7 +931,7 @@ watch(() => canvas.nodes.value, (now, before) => {
       }
       const p = was.get(id)
       const changed = !p || p.parent_id !== item.node.parent_id || p.dx !== item.node.dx || p.dy !== item.node.dy ||
-          o.text !== el.textContent
+          p.text !== item.node.text
       const dx = o.left - item.left
       const dy = o.top - item.top
       if (Math.abs(dx) > 1 || Math.abs(dy) > 1) offsets.set(id, { x: dx, y: dy })

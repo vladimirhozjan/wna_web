@@ -202,6 +202,15 @@ function defer(changes, heldForeign) {
     else changes.forEach(c => { if (c.tab !== tabId) heldIds.add(c.id) })
 }
 
+// A change this tab learns of another way (a capture from another tab of this browser) animates like a foreign
+// live update until the promise settles
+function animate(promise) {
+    motionRuns++
+    motion.active = true
+    endMotion([promise])
+    return promise
+}
+
 // Motion lasts until every handler's re-read has landed and rendered
 async function endMotion(pending) {
     await Promise.allSettled(pending)
@@ -298,7 +307,7 @@ function subscribe(fn) {
     return () => packetHandlers.delete(fn)
 }
 
-export const liveClient = { reconnecting, tabId, motion, start, stop, hold, release, subscribe }
+export const liveClient = { reconnecting, tabId, motion, start, stop, hold, release, subscribe, animate }
 
 // Call from a page's setup with the function its load / pull-to-refresh runs; return its re-read promise so a
 // foreign change animates (liveMotion.js)
