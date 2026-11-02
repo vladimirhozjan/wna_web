@@ -353,7 +353,7 @@ export const faq = [
   {
     question: 'How do I send feedback or contact support?',
     answer:
-      'Use the feedback button — the small round button (with a question-mark icon) pinned to the right edge of every page. It opens a menu with two options: "Contact Support" emails support@whatsnextaction.com, and "Report a Bug" emails bug@whatsnextaction.com. Both open your email app with the subject pre-filled, so you just describe what you need and send.',
+      'Open Settings → Help & Support. "Contact Support" emails support@whatsnextaction.com and "Report a Bug" emails bug@whatsnextaction.com — both open your email app with the subject pre-filled, so you just describe what you need and send. Not signed in? Use Contact Support at the bottom of the Help page.',
   },
 
   // --- Account Management ---

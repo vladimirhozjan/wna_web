@@ -713,6 +713,33 @@
                 </template>
               </div>
             </div>
+
+            <!-- Help & Support -->
+            <div v-else-if="activeKey === 'support'" class="card">
+              <div class="settings-section-body">
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Help center</span>
+                    <p class="text-body-s settings-hint">Guides, FAQ and best practices</p>
+                  </div>
+                  <Btn variant="secondary" size="sm" data-testid="settings-support-help" @click="router.push({ name: 'help' })">Open</Btn>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Contact Support</span>
+                    <p class="text-body-s settings-hint">Questions about your account, plan or the app — support@whatsnextaction.com</p>
+                  </div>
+                  <Btn variant="secondary" size="sm" href="mailto:support@whatsnextaction.com?subject=Support%20Request%20-%20WhatsNextAction" data-testid="settings-support-contact">Email us</Btn>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <span class="settings-label">Report a Bug</span>
+                    <p class="text-body-s settings-hint">Something not working? Tell us what you did and what happened — bug@whatsnextaction.com</p>
+                  </div>
+                  <Btn variant="secondary" size="sm" href="mailto:bug@whatsnextaction.com?subject=Bug%20Report%20-%20WhatsNextAction" data-testid="settings-support-bug">Email us</Btn>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </div>
@@ -881,6 +908,7 @@ const GROUPS = [
   { key: 'account', title: 'Account' },
   { key: 'preferences', title: 'Preferences' },
   { key: 'integrations', title: 'Integrations' },
+  { key: 'support', title: 'Support' },
 ]
 
 // Order = menu / index order; keywords = search terms (case-insensitive substring)
@@ -907,6 +935,8 @@ const SECTIONS = [
     keywords: 'calendar sync google connect disconnect reconnect sync now events timezone' },
   { group: 'integrations', key: 'storage', title: 'Storage', description: 'Keep files in your own Google Drive.',
     keywords: 'storage google drive connect disconnect reconnect attachments reference files local' },
+  { group: 'support', key: 'support', title: 'Help & Support', description: 'Find answers, contact us or report a bug.',
+    keywords: 'help support contact email question faq guide bug report problem issue broken feedback' },
 ]
 
 // Links to merged or renamed sections; the Paywiser checkout returns to /settings/billing

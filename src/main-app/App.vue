@@ -24,7 +24,6 @@
   <ConfirmDialog />
   <MoveModal />
   <UpgradeModal />
-  <FeedbackBtn />
 </template>
 
 <script setup>
@@ -34,7 +33,6 @@ import ErrorToaster from "./components/ErrorToaster.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
 import MoveModal from "./components/MoveModal.vue";
 import UpgradeModal from "./components/UpgradeModal.vue";
-import FeedbackBtn from "./components/FeedbackBtn.vue";
 import Spinner from "./components/Spinner.vue";
 import DashboardLayout from "./layouts/DashboardLayout.vue";
 import EmptyState from "./components/EmptyState.vue";

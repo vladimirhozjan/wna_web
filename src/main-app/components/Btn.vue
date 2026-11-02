@@ -1,7 +1,9 @@
 <template>
-  <button
+  <component
+      :is="href ? 'a' : 'button'"
+      :href="href || undefined"
       :class="classes"
-      :disabled="disabled"
+      :disabled="href ? undefined : disabled"
       v-bind="$attrs"
   >
     <!-- Loader -->
@@ -11,7 +13,7 @@
     <span class="base-btn__content">
       <slot />
     </span>
-  </button>
+  </component>
 </template>
 
 <script setup>
@@ -34,6 +36,10 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false,
+  },
+  href: {
+    type: String,
+    default: null,
   }
 })
 
@@ -61,6 +67,7 @@ const classes = computed(() => ([
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 }
 
 .base-btn__loader {

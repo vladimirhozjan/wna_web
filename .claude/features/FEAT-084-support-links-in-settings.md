@@ -38,44 +38,69 @@
 
 ## Checklist
 One job, in this order:
-- [ ] **W1 — `Btn` `href` prop** (`src/main-app/components/Btn.vue`) — exactly parent C1: `href` set → root `<a :href>`
+- [x] **W1 — `Btn` `href` prop** (`src/main-app/components/Btn.vue`) — exactly parent C1: `href` set → root `<a :href>`
   with the same classes / slot / loader / `$attrs`, no `disabled` attribute; unset → `<button>` unchanged; anchor looks
   identical to the button of the same variant/size in every state (no underline, variant colour), mobile hit-area rule
   unchanged.
-- [ ] **W1 · Verify** — `npm run build:main` passes; Chrome `:5173` (after W2): the "Email us" anchors look identical
+  — DONE: `src/main-app/components/Btn.vue:2-8` (`<component :is>` → `<a :href>` / `<button :disabled>`), `:40` (prop), `:70` (`text-decoration: none`).
+- [x] **W1 · Verify** — `npm run build:main` passes; Chrome `:5173` (after W2): the "Email us" anchors look identical
   to Account → "Change password" (default, hover, focus; light + dark; desktop + 500px); DevTools shows `<a>` for them,
   `<button>` for every other `Btn`.
-- [ ] **W2 — Settings → Support / Help & Support** (`src/main-app/views/dashboard/SettingsPage.vue`) — parent C2:
+  — VERIFIED: `npm run build:main` exit 0; Chrome :5173 (500px + 1300px, light + dark): "Email us" = `A`, "Open" = `BUTTON`, both 30px tall, 13px/600 Montserrat, same colour/bg/border, `text-decoration: none`, no `disabled` attr; hover shows the secondary hover bg; keyboard focus shows the native focus ring.
+- [x] **W2 — Settings → Support / Help & Support** (`src/main-app/views/dashboard/SettingsPage.vue`) — parent C2:
   `GROUPS` entry `support` after `integrations`; `SECTIONS` entry `support` last (title, description, keywords as C2);
   one `v-else-if="activeKey === 'support'"` card. Reuse only (parent §Boundaries): no change to `available()`,
   `SECTION_ALIASES`, search, menu/index/back logic or the Plan "Contact Us" handler.
-- [ ] **Screen §2 — Help & Support section** — built per parent `## Screens` §2: menu/index entry, the card with
+  — DONE: `src/main-app/views/dashboard/SettingsPage.vue:911` (GROUPS), `:938-939` (SECTIONS), `:717-743` (card); `available()`, `SECTION_ALIASES`, search, menu/index logic untouched.
+- [x] **Screen §2 — Help & Support section** — built per parent `## Screens` §2: menu/index entry, the card with
   row 1 "Help center" (Open → `router.push({ name: 'help' })`, D2), row 2 "Contact Support" and row 3 "Report a Bug"
   (anchor `Btn`s from W1 with the exact C2 `href`s), hints verbatim (address = plain selectable text), test ids
   `settings-support-help` / `-contact` / `-bug`; every state of §2 States (default, search, no email app, not signed
   in, per role) and the §2 Layout table (desktop > 1024px, ≤ 1024px index → section with "‹ Settings", 500px rows not
   stacked).
-- [ ] **W2 · Verify** — Chrome `:5173`: desktop menu shows SUPPORT last; `/settings?section=support` renders the card;
+  — DONE: `SettingsPage.vue:720-741` — rows Help center / Contact Support / Report a Bug, hints verbatim (addresses plain text), test ids `settings-support-help` `:725`, `-contact` `:732`, `-bug` `:739`; section static, not gated (same for every tier/role).
+- [x] **W2 · Verify** — Chrome `:5173`: desktop menu shows SUPPORT last; `/settings?section=support` renders the card;
   ≤ 1024px index row + "‹ Settings" back; 500px rows do not stack, hints wrap, nothing overflows; search "bug" /
   "feedback" → only Help & Support, Enter opens it; DevTools shows the two exact C2 `href`s; "Open" lands on `/help`
   and browser back returns to `/settings?section=support`.
-- [ ] **W3 — remove the floating button** (Screen §1, C3) — delete `src/main-app/components/FeedbackBtn.vue`; remove
+  — VERIFIED in Chrome :5173: desktop 1300px menu shows SUPPORT → Help & Support last; `/settings?section=support` renders the card; 500px index has group `settings-group-support` last, "‹ Settings" back returns to the index; 500px rows not stacked, hints wrap, `scrollWidth == innerWidth` (no overflow); search "feedback" → only Help & Support, Enter → `?section=support`; DevTools `href`s = the two exact C2 URLs; "Open" → `/help`, browser back → `/settings?section=support`.
+- [x] **W3 — remove the floating button** (Screen §1, C3) — delete `src/main-app/components/FeedbackBtn.vue`; remove
   the `<FeedbackBtn />` mount (`App.vue:27`) and its import (`App.vue:37`). Icons `QuizIcon` / `CommentIcon` /
   `WarningIcon` stay (other users, parent §Boundaries).
-- [ ] **W3 · Verify** — `npm run build:main` passes; `grep -rn "FeedbackBtn\|feedback-btn\|feedback-wrapper" src/` →
+  — DONE: `src/main-app/components/FeedbackBtn.vue` deleted; mount + import removed from `src/main-app/App.vue` (0 matches of "Feedback").
+- [x] **W3 · Verify** — `npm run build:main` passes; `grep -rn "FeedbackBtn\|feedback-btn\|feedback-wrapper" src/` →
   0 matches; Chrome `:5173` — no right-edge tab on Engage, Settings, Landing, Help (desktop + 500px).
-- [ ] **W4 — Help copy** (`src/main-app/content/help/faq.js:356`) — answer of "How do I send feedback or contact
+  — VERIFIED: `npm run build:main` exit 0; `grep -rn "FeedbackBtn\|feedback-btn\|feedback-wrapper" src/` → 0 matches; Chrome :5173 `.feedback-btn,.feedback-wrapper` count 0 on Engage (1300px + 500px), Settings, Landing `/`, `/help`, `/help/faq`.
+- [x] **W4 — Help copy** (`src/main-app/content/help/faq.js:356`) — answer of "How do I send feedback or contact
   support?" replaced with the parent `## Help impact` / Screens §3 text, verbatim.
-- [ ] **W4 · Verify** — `/help/faq` shows the new answer (Chrome `:5173`).
-- [ ] **W5 · Update `wna_orchestration/specs/features/wna-features.md`** — per parent `## Contracts touched`: §21.1
+  — DONE: `src/main-app/content/help/faq.js:356` — Screens §3 text verbatim.
+- [x] **W4 · Verify** — `/help/faq` shows the new answer (Chrome `:5173`).
+  — VERIFIED: Chrome :5173 `/help/faq` → "How do I send feedback or contact support?" expanded shows the new answer.
+- [x] **W5 · Update `wna_orchestration/specs/features/wna-features.md`** — per parent `## Contracts touched`: §21.1
   (keys list + Support group / Help & Support section); §29 rewritten in place (title "Support & Bug Report", the
   Settings rows, the `mailto` table kept, the public Help-page entry); TOC line renamed to match; "Touch targets"
   bullet drops "the Feedback button". Cite the orchestration `file:line`s.
-- [ ] **W5 · TC report** — fill `## TC report` below with the TCs made stale / new for ui-tests (TC-430…TC-436);
+  — DONE: `wna_orchestration/specs/features/wna-features.md:39` (TOC), `:1456` (keys + `support`), `:1466` (Support group), `:2758` (Touch targets drops "the Feedback button"), `:2970-3004` (§29 rewritten: 29.1 Settings rows, 29.2 mailto table kept, 29.3 public Help-page entry).
+- [x] **W5 · TC report** — fill `## TC report` below with the TCs made stale / new for ui-tests (TC-430…TC-436);
   never edit `specs/tests/wna-test-cases.md` (ui-tests only).
+  — DONE: see `## TC report` below.
 
 ## TC report
 (Filled by W5 — the TCs this change makes stale or new, for ui-tests. None edited here.)
+
+Stale — `specs/tests/wna-test-cases.md` §29 "Feedback Button" (line 12402), rewrite in place per parent U1 (same IDs):
+- TC-430 "Feedback Button Visible on Dashboard" → no floating tab on dashboard pages (`.feedback-btn` count 0).
+- TC-431 "Feedback Button Visible on Public Pages" → none on `/`, `/pricing`, `/help` signed out.
+- TC-432 "Feedback Popover Opens and Closes" → Settings group "Support" last with "Help & Support"; title, description,
+  3 rows (Help center first; "Open" → `/help`, back → `/settings?section=support`).
+- TC-433 "Contact Support Opens Email" → `settings-support-contact` is an `<a>` with the C2 support `mailto` `href`.
+- TC-434 "Report a Bug Opens Email" → `settings-support-bug` is an `<a>` with the C2 bug `mailto` `href`.
+- TC-435 "Feedback Button Mobile Positioning" → 500px: index row → section screen with "‹ Settings"; rows not stacked,
+  "Email us" inside the viewport, no horizontal overflow.
+- TC-436 "Feedback Button Dark Theme" → search "feedback" / "bug" leaves only "Help & Support"; Enter opens it.
+Stale references in tests (parent U2): `tests/e2e/auth-dialog-mobile-scroll.spec.ts:179` (`.feedback-btn` as fixed
+reference, TC-1010), `tests/screenshots/landing-screenshots.spec.ts:42-47` (`.feedback-wrapper` in the hide list).
+New: none beyond the rewritten TC-430…TC-436.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
