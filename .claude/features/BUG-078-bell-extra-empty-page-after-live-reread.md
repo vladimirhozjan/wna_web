@@ -39,11 +39,11 @@
   `npm run build:main` passes).
   Data: `notifications[]` (`id`, `read`, …) and `unread_count` — `GET /v1/notifications[?cursor=]` (existing, parent
   `## Data contract`; no backend box).
-- [~] **2** BLOCKED — the Chrome session on `:5173` was logged out (redirect to `/`) and seeding 24 rows needs a logged-in local user + a second user or DB access (see item 3); the logic is covered by item 1's mocked-API check, the observed Network log is not. Chrome check on `http://localhost:5173`, desktop and 500 px — 24-row scenario exactly per parent web item 2
+- [~] **2** 500 px DONE, desktop NOT DONE. 500 px (2026-11-02, fresh user `bug078-1793640086821@test.local`, 24 seeded rows): `limit=20` → re-read `limit=21` → 1 page `limit=20&cursor=…` → re-read `limit=25` (no cursor); 3 bottom scrolls → 0 `/v1/notifications` requests, 24 rows in order 1–24, no spinner, `scrollTop` 928 → 928. REMAINS: desktop width — Chrome window stays at innerWidth 500 (`resize_window` 1280 and 1024 both ignored), so the desktop dropdown was not observed. Chrome check on `http://localhost:5173`, desktop and 500 px — 24-row scenario exactly per parent web item 2
   (one `cursor=` request, then a re-read `limit=25` without `cursor`, 3 bottom scrolls → no new `cursor=` request,
   24 rows, no spinner, scroll position kept).
   Data: same as item 1.
-- [~] **3** BLOCKED — reading `wna_deploy/backend/db_tools/.wna_db_passwords-local.env` was denied by the session permission classifier, so the seed / clean-up SQL was not run (nothing seeded, nothing to clean up); the `limit=100` → `limit=31&cursor=…` sequence is proven only against the mocked API (item 1). Depth ≥ 100 check on the local DB — seed / observe / clean up exactly per parent web item 3 (re-read sends
+- [x] **3** (2026-11-02, 500 px, 130 rows seeded via `docker exec wna_postgres psql -U postgres`): pages `limit=20&cursor=…` up to 130 rows; final re-read `limit=100` (no cursor) then `limit=31&cursor=1bc62c90-…` (row 100); panel 130 unique rows in order 1–130; 3 bottom scrolls → 0 requests, no spinner, `scrollTop` kept (6677); seed rows deleted (`DELETE 130`, 0 left). Depth ≥ 100 check on the local DB — seed / observe / clean up exactly per parent web item 3 (re-read sends
   `limit=100` then `limit=31&cursor=…`; 130 rows in the same order; bottom scroll sends no new `cursor=` request;
   seed rows deleted afterwards).
   Data: same as item 1.
