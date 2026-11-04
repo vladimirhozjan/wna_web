@@ -61,7 +61,10 @@ import CalendarWeekView from '../../components/calendar/CalendarWeekView.vue'
 import CalendarMonthView from '../../components/calendar/CalendarMonthView.vue'
 import CalendarYearView from '../../components/calendar/CalendarYearView.vue'
 import CalendarRecurringView from '../../components/calendar/CalendarRecurringView.vue'
+import { startOfMonth, endOfMonth } from 'date-fns'
 import { calendarModel } from '../../scripts/models/calendarModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
+import { formatDate } from '../../scripts/core/dateUtils.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
@@ -76,6 +79,17 @@ const { loading: recurringLoading } = recurringModel()
 
 const currentDate = computed(() => calendar.currentDate.value)
 const viewMode = computed(() => calendar.viewMode.value)
+
+// The period shown, without the month grid's padding days
+usePlacePart(() => {
+  const view = viewMode.value
+  if (view === 'recurring') return { calendar: { view } }
+  const date = currentDate.value
+  const { start, end } = view === 'day' ? { start: date, end: date }
+      : view === 'month' ? { start: startOfMonth(date), end: endOfMonth(date) }
+      : calendar.dateRange.value
+  return { calendar: { view, start: formatDate(start), end: formatDate(end) } }
+})
 const loading = computed(() => calendar.loading.value)
 
 async function loadData({ silent = false } = {}) {

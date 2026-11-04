@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 2, 2026
+**Last updated:** November 4, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -155,6 +155,8 @@ If you use the **AI assistant** (available on all plans), it carries out the req
 
 The content the assistant reads and changes on your instruction is your content described in Section 2.2; it reaches the same content as a connected AI app (Section 2.9). Payments for credit packs are billing and payment data described in Section 2.5.
 
+With each request the app also sends which page you have open — for example the list and the tags you filter by, the calendar day or week you are viewing, or the title of the item you have open — so that "this" in your request means what you are looking at. It is used for that request only and is not stored.
+
 ### 2.12 Public Website Visits and Sign-up Source
 
 When you open a public page (home, sign-in / sign-up, pricing, help, legal), we record the page, the referring website's domain, the campaign tags in the link you followed (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`), the device type, the browser name and the country derived from your IP address. The IP address and the browser string are not stored — they are combined with a key that changes every day and is deleted after that day into a code that only lets us count distinct visitors per day and cannot be linked to you or across days. No cookie and nothing else is stored on your device.
@@ -268,7 +270,7 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 ### 5.12 AI Model Processing
 
-- **Scaleway (Generative APIs, Paris, France)** - if you use the AI assistant, Scaleway SAS processes what the assistant sends to the AI model you chose (your request, the conversation, the memory notes and the content it reads to carry out your request) and returns the model's reply, as our processor under Scaleway's data processing terms. The models are open models from various makers that Scaleway runs on its own servers in France; the makers of the models do not receive your data. Scaleway does not keep this content after answering, except for up to two weeks when needed to investigate an error or abuse, and does not use it to train AI models.
+- **Scaleway (Generative APIs, Paris, France)** - if you use the AI assistant, Scaleway SAS processes what the assistant sends to the AI model you chose (your request with the page you have open, the conversation, the memory notes and the content it reads to carry out your request) and returns the model's reply, as our processor under Scaleway's data processing terms. The models are open models from various makers that Scaleway runs on its own servers in France; the makers of the models do not receive your data. Scaleway does not keep this content after answering, except for up to two weeks when needed to investigate an error or abuse, and does not use it to train AI models.
 
 ### 5.13 Browser Push Services
 

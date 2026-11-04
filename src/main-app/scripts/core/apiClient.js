@@ -2586,10 +2586,11 @@ export async function deleteAssistantConversation() {
     }
 }
 
-export async function sendAssistantMessage({text, pastedText = ''}) {
+export async function sendAssistantMessage({text, pastedText = '', place = null}) {
     try {
         const body = {text, timezone: liveTz()}
         if (pastedText) body.pasted_text = pastedText
+        if (place) body.place = place
         const res = await httpApi.post('/v1/assistant/messages', body, {headers: authHeaders()})
         return res.data
     } catch (err) {

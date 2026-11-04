@@ -161,6 +161,7 @@ import PlusIcon from '../../assets/PlusIcon.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import { canvasModel, NODE_TEXT_LIMIT } from '../../scripts/models/canvasModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { useSwipe, LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 import { useLiveMotion } from '../../scripts/core/liveMotion.js'
 
@@ -188,6 +189,7 @@ let longPress = null
 const rootNode = computed(() => canvas.nodes.value.find(n => n.parent_id == null) || null)
 const current = computed(() => canvas.getNode(props.currentId) || rootNode.value)
 const isRoot = computed(() => !current.value || current.value.parent_id == null)
+usePlacePart(() => isRoot.value ? null : { idea: { id: current.value.id, text: current.value.text } })
 const listChildren = computed(() => current.value ? canvas.childrenOf(current.value.id).filter(c => c.id !== newRowId.value) : [])
 useLiveMotion(swipeRef, () => listChildren.value)
 const sheetNode = computed(() => sheetId.value ? canvas.getNode(sheetId.value) : null)

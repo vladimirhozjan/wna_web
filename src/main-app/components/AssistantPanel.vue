@@ -47,7 +47,7 @@
             <EmptyState
                 :icon="AiIcon"
                 title="Tell me what to do"
-                text="I can sort your lists, plan a project, clear your calendar or think a goal through with you — on your WhatsNextAction data."
+                text="I can sort your lists, plan a project, clear your calendar or think a goal through with you — on your WhatsNextAction data. I see the page you're on, so &quot;sort this&quot; is enough."
             />
           </div>
 
@@ -182,6 +182,16 @@
         </div>
 
         <div class="assistant-composer">
+          <div
+              v-if="place.place.value"
+              class="assistant-composer__place"
+              data-testid="assistant-place"
+              :data-place="place.place.value.page"
+              :title="placeText"
+          >
+            <component :is="place.icon.value.is" v-bind="place.icon.value.props" class="assistant-composer__place-icon" />
+            <span class="text-caption color-text-secondary assistant-composer__place-text">{{ placeText }}</span>
+          </div>
           <div class="assistant-composer__row">
             <textarea
                 ref="composerRef"
@@ -250,6 +260,7 @@ import CloseIcon from '../assets/CloseIcon.vue'
 import RecurringIcon from '../assets/RecurringIcon.vue'
 import SettingsIcon from '../assets/SettingsIcon.vue'
 import { assistantModel, charCount, ASSISTANT_TEXT_MAX } from '../scripts/models/assistantModel.js'
+import { assistantPlace } from '../scripts/models/assistantPlace.js'
 import { flagsModel } from '../scripts/core/flagsModel.js'
 import { confirmModel } from '../scripts/core/confirmModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
@@ -265,6 +276,7 @@ const MOBILE_QUERY = '(max-width: 768px)'
 const router = useRouter()
 const assistant = assistantModel()
 const { state, isOffline } = assistant
+const place = assistantPlace()
 const { paymentsEnabled } = flagsModel()
 const confirm = confirmModel()
 const toaster = errorModel()
@@ -292,6 +304,7 @@ const composerPlaceholder = computed(() => {
 })
 const showEmpty = computed(() =>
     state.conversationLoaded && !state.messages.length && !state.creditCard && !state.disabled)
+const placeText = computed(() => `Viewing: ${place.label.value}`)
 const lowCredits = computed(() => !!state.account?.low || !!lastAssistant.value?.low_credits)
 
 const draftCount = computed(() => charCount(state.draft))
@@ -885,6 +898,28 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border-light);
+}
+
+.assistant-composer__place {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin-bottom: 6px;
+}
+
+.assistant-composer__place-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-tertiary);
+}
+
+.assistant-composer__place-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .assistant-composer__row {

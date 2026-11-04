@@ -727,6 +727,7 @@ import UserAvatar from '../../components/UserAvatar.vue'
 import Select from '../../components/Select.vue'
 import Modal from '../../components/Modal.vue'
 import { projectModel } from '../../scripts/models/projectModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
@@ -802,6 +803,8 @@ const {
 
 const project = ref(null)
 const notFound = ref(false)
+usePlacePart(() => notFound.value ? { hidden: true }
+    : { item: { type: 'project', id: route.params.id, title: project.value?.id === route.params.id ? project.value.title : undefined } })
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')

@@ -154,6 +154,7 @@ import MoreIcon from '../../assets/MoreIcon.vue'
 import TriangleLeftIcon from '../../assets/TriangleLeftIcon.vue'
 import TriangleRightIcon from '../../assets/TriangleRightIcon.vue'
 import { canvasModel } from '../../scripts/models/canvasModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { truncateTitle } from '../../scripts/core/textUtils.js'
@@ -185,6 +186,8 @@ const drillId = ref(null)
 const mobileQuery = window.matchMedia('(max-width: 768px)')
 
 const ready = computed(() => !canvas.loading.value && !canvas.loadError.value && !canvas.notFound.value && !!canvas.project.value)
+usePlacePart(() => canvas.notFound.value || canvas.loadError.value ? { hidden: true }
+    : { item: { type: 'project', id: route.params.id, title: canvas.project.value?.id === route.params.id ? canvas.projectTitle.value : undefined } })
 
 const statusText = computed(() => {
   switch (canvas.saveStatus.value) {

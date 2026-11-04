@@ -154,6 +154,7 @@ import PlusIcon from '../../assets/PlusIcon.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
 import { canvasModel, NODE_TEXT_LIMIT, CHILD_GAP, IDEA_CHILD_GAP } from '../../scripts/models/canvasModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 import { liveClient } from '../../scripts/core/liveClient.js'
 import { motionSet, MOTION_MS } from '../../scripts/core/liveMotion.js'
@@ -208,6 +209,10 @@ let lastTap = { id: null, at: 0 }
 let initialViewDone = false
 
 const rootNode = computed(() => canvas.nodes.value.find(n => n.parent_id == null) || null)
+usePlacePart(() => {
+  const node = canvas.getNode(selectedId.value)
+  return node && node.parent_id != null ? { idea: { id: node.id, text: node.text } } : null
+})
 const rootOnly = computed(() => canvas.nodes.value.length === 1)
 const menuNode = computed(() => menu.value ? canvas.getNode(menu.value.id) : null)
 

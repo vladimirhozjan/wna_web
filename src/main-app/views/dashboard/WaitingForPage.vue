@@ -94,6 +94,7 @@ import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import MetadataRow from '../../components/MetadataRow.vue'
 import { waitingModel } from '../../scripts/models/waitingModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
@@ -133,6 +134,7 @@ const adding = ref(false)
 const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
 const { activeTag } = contextModel()
+usePlacePart(() => ({ tags: filterTags.value }))
 
 const hasDelegate = computed(() => {
   const d = newDelegate.value

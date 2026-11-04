@@ -17,6 +17,7 @@ import { flagsModel } from '../core/flagsModel.js'
 import { offlineModel } from '../core/offlineModel.js'
 import { errorModel } from '../core/errorModel.js'
 import { liveClient } from '../core/liveClient.js'
+import { assistantPlace } from './assistantPlace.js'
 
 // contracts/limits.md §AI assistant
 export const ASSISTANT_TEXT_MAX = 4000
@@ -152,6 +153,8 @@ export function assistantModel() {
     }
 
     async function send(text, pastedText = '') {
+        // What the place line shows now, before any wait
+        const place = assistantPlace().place.value
         text = text.trim()
         if (!text) return
         openPanel()
@@ -166,7 +169,7 @@ export function assistantModel() {
         const pending = { id: `pending-${++tempId}`, role: 'user', text: pastedText ? `${text}\n${pastedText}` : text }
         state.messages.push(pending)
         try {
-            const data = await sendAssistantMessage({ text, pastedText })
+            const data = await sendAssistantMessage({ text, pastedText, place })
             state.messages = state.messages.filter(m => m.id !== pending.id)
             const requestId = data.request_id
             settleEarlierMessages(requestId)

@@ -75,6 +75,7 @@ import Btn from '../../components/Btn.vue'
 import SearchResultRow from '../../components/SearchResultRow.vue'
 import SearchIcon from '../../assets/SearchIcon.vue'
 import { searchModel, SEARCH_MIN_LENGTH } from '../../scripts/models/searchModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
@@ -97,6 +98,7 @@ const CHIPS = [
 const route = useRoute()
 const router = useRouter()
 const search = searchModel().page
+usePlacePart(() => ({ query: search.resultTerm.value }))
 useLiveMotion(scrollRef, () => search.items.value)
 const toaster = errorModel()
 const undo = undoModel()

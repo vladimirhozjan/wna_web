@@ -213,6 +213,7 @@ import TagFilter from '../../components/TagFilter.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
 import { engageModel } from '../../scripts/models/engageModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
@@ -233,6 +234,7 @@ const mover = moveModel()
 const { refreshStats } = statsModel()
 const { activeTag } = contextModel()
 const filterTags = ref([])
+usePlacePart(() => ({ tags: filterTags.value }))
 
 const {
     stats,

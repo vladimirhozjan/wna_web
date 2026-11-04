@@ -450,6 +450,7 @@ import AttachmentSection from '../../components/AttachmentSection.vue'
 import DateTimeInput from '../../components/DateTimeInput.vue'
 import UserAvatar from '../../components/UserAvatar.vue'
 import { nextActionModel } from '../../scripts/models/nextActionModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { projectModel } from '../../scripts/models/projectModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
@@ -512,6 +513,8 @@ const fromSource = ref(null)
 
 const action = ref(null)
 const notFound = ref(false)
+usePlacePart(() => notFound.value ? { hidden: true }
+    : { item: { type: 'action', id: route.params.id, title: action.value?.id === route.params.id ? action.value.title : undefined } })
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')

@@ -238,6 +238,7 @@ import DateTimeInput from '../../components/DateTimeInput.vue'
 import RecurringIcon from '../../assets/RecurringIcon.vue'
 import ActionIcon from '../../assets/ActionIcon.vue'
 import { recurringModel } from '../../scripts/models/recurringModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
@@ -267,6 +268,8 @@ const {
 
 const template = ref({})
 const notFound = ref(false)
+usePlacePart(() => notFound.value ? { hidden: true }
+    : { item: { type: 'recurring', id: route.params.id, title: template.value.id === route.params.id ? template.value.title : undefined } })
 const pageLoading = ref(true)
 const editingField = ref(null)
 const editValue = ref('')

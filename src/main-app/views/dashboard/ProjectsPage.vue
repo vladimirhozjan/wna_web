@@ -102,6 +102,7 @@ import { projectModel } from '../../scripts/models/projectModel.js'
 import { horizonModel } from '../../scripts/models/horizonModel.js'
 import { settingsModel } from '../../scripts/models/settingsModel.js'
 import { contextModel } from '../../scripts/models/contextModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
@@ -149,6 +150,7 @@ const adding = ref(false)
 const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
 const { activeTag } = contextModel()
+usePlacePart(() => ({ tags: filterTags.value }))
 
 const showAreaPicker = computed(() => settings.state.horizonsEnabled && horizon.hasAreas.value)
 const showGoalPicker = computed(() => settings.state.horizonsEnabled && horizon.hasGoals.value)

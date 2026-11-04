@@ -243,6 +243,7 @@ import BottomSheet from '../../components/BottomSheet.vue'
 import CommentSection from '../../components/CommentSection.vue'
 import AttachmentSection from '../../components/AttachmentSection.vue'
 import { stuffModel } from '../../scripts/models/stuffModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { clarifyModel } from '../../scripts/models/clarifyModel.js'
@@ -288,6 +289,8 @@ const {
 
 const item = ref(null)
 const notFound = ref(false)
+usePlacePart(() => notFound.value ? { hidden: true }
+    : { item: { type: 'stuff', id: route.params.id, title: item.value?.id === route.params.id ? item.value.title : undefined } })
 
 // Delegated-from label (mirrors MetadataRow.vue resolution order)
 const delegatedFromLabel = computed(() =>

@@ -304,6 +304,7 @@ import NextIcon from '../../assets/NextIcon.vue'
 import DescriptionIcon from '../../assets/DescriptionIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
 import { projectTemplateModel } from '../../scripts/models/projectTemplateModel.js'
+import { usePlacePart } from '../../scripts/models/assistantPlace.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
 import { confirmModel } from '../../scripts/core/confirmModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
@@ -327,6 +328,9 @@ const template = model.current
 
 const pageLoading = ref(true)
 const notFound = ref(false)
+// A load that failed for another reason leaves no template
+usePlacePart(() => notFound.value || (!pageLoading.value && !template.value) ? { hidden: true }
+    : { item: { type: 'project_template', id: route.params.id, title: template.value?.name } })
 const deleting = ref(false)
 const detailActionsRef = ref(null)
 
