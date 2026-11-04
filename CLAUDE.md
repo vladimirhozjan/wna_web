@@ -188,8 +188,8 @@ Terser minification (console/debugger stripped). Code obfuscation via `javascrip
 - Every UI change works on both desktop and mobile (≤ 768px; check 500px).
 - Copy and icon quality is yours (with the designer), not the owner's. If an icon or label looks or reads badly,
   replace it with a better existing one. The owner only says whether they like the result.
-- Check the result yourself in Chrome (Claude in Chrome) at `http://localhost:5173` (main-app; admin-app
-  `http://localhost:6173`). These dev servers are run by `wnapm` (`../../wna_backend/tools/wnapm/wnapm status`), so never
+- Check the result yourself in Chrome (Claude in Chrome) at `http://localhost:5173` — main-app only; admin-app is never
+  opened in Chrome (token cost, owner 2026-11-04): verify it by `npm run build:admin` and the code. These dev servers are run by `wnapm` (`../../wna_backend/tools/wnapm/wnapm status`), so never
   start one yourself. Check at desktop width and at 500px, in every state you touched, and fix whatever looks off before
   you report. A UI change without this check is not done.
 
@@ -316,3 +316,38 @@ All specs are centralized in `wna_orchestration` (this repo keeps no spec copies
 - `wna_orchestration/roadmap.md` — Roadmap
 - `wna_orchestration/specs/features/wna-features.md` — Complete user-facing feature documentation
 - `wna_orchestration/specs/tests/wna-test-cases.md` — QA manual test cases
+
+<!-- fil:begin -->
+## Fil code graph
+
+Rules:
+1. For structural questions run fil first (`fil find`, `show`, `callers`,
+   `callees`, `path`, `impact`, `areas`). Use grep only for literal strings,
+   log messages and config keys.
+2. After editing files run `fil update`, unless a fil update hook is installed.
+3. Read only the files and line ranges fil points to.
+4. An empty `callers` result is not proof that code is unused: dynamic dispatch,
+   runtime-registered callbacks and callers outside the workspace are invisible.
+5. Results are capped at 50 rows; use `--limit N` or `--all` for more.
+
+Commands:
+- `fil find "<pattern>" [--limit N|--all]` - declarations by name, prefix or glob
+- `fil show <symbol>` - declaration, signature, calls and callers
+- `fil callers <symbol> [-d depth]` - who calls it
+- `fil callees <symbol> [-d depth]` - what it calls
+- `fil path <a> <b>` - how two symbols are connected
+- `fil impact --file <path>` - blast radius and covering tests
+- `fil areas` - areas and hubs
+- `fil info` - index build id and size
+
+
+Workspace scope:
+- Queries default to the current repository.
+- `--repo <name>` queries another member; `--workspace` searches all members.
+- Members: Dictara, Fil, Pointeuse, Sablier, docker_test, drogon, marketing, nh_hp_bot, pytools, quantum-bitcoin-presentation, qubforge-site, vcpkg, wna-ui-tests, wna_backend, wna_deploy, wna_ios, wna_orchestration, wna_web/main
+
+Output is one record per line: `path:line  qualified.name  [kind]  (provenance)`.
+`inferred` means resolved statically, `ambiguous` means more than one candidate
+and no target was chosen. Use `--json` for machine-readable output. `fil info`
+shows which binary built the index; an older index rebuilds itself.
+<!-- fil:end -->
