@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "fil update >/dev/null 2>&1 &"
+            "command": "(fil update; fil index --changed) >/dev/null 2>&1 &"
           }
         ]
       }

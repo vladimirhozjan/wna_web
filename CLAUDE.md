@@ -324,7 +324,8 @@ Rules:
 1. For structural questions run fil first (`fil find`, `show`, `callers`,
    `callees`, `path`, `impact`, `areas`). Use grep only for literal strings,
    log messages and config keys.
-2. After editing files run `fil update`, unless a fil update hook is installed.
+2. After editing files run `fil update` and `fil index --changed`, unless the fil
+   hook is installed (it runs both in the background).
 3. Read only the files and line ranges fil points to.
 4. An empty `callers` result is not proof that code is unused: dynamic dispatch,
    runtime-registered callbacks and callers outside the workspace are invisible.
@@ -336,9 +337,14 @@ Commands:
 - `fil callers <symbol> [-d depth]` - who calls it
 - `fil callees <symbol> [-d depth]` - what it calls
 - `fil path <a> <b>` - how two symbols are connected
-- `fil impact --file <path>` - blast radius and covering tests
+- `fil impact --file <path>` - blast radius, routes and covering tests
+- `fil routes [--hops]` - HTTP routes (method, path, handler, filters) and
+  service-to-service requests; `fil path <service> <service>` shows the hop
 - `fil areas` - areas and hubs
 - `fil info` - index build id and size
+- `fil index --changed` - refresh the compiler index for changed files (seconds);
+  rows marked (precise) come from it, other provenance means the fallback
+  (file changed since, or no indexer); `fil index` rebuilds it fully
 
 
 Workspace scope:
