@@ -153,7 +153,7 @@ import CheckIcon from '../../assets/CheckIcon.vue'
 import PlusIcon from '../../assets/PlusIcon.vue'
 import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import ChevronRightIcon from '../../assets/ChevronRightIcon.vue'
-import { canvasModel, NODE_TEXT_LIMIT, CHILD_GAP } from '../../scripts/models/canvasModel.js'
+import { canvasModel, NODE_TEXT_LIMIT, CHILD_GAP, IDEA_CHILD_GAP } from '../../scripts/models/canvasModel.js'
 import { LONG_PRESS_MS } from '../../scripts/core/swipe.js'
 import { liveClient } from '../../scripts/core/liveClient.js'
 import { motionSet, MOTION_MS } from '../../scripts/core/liveMotion.js'
@@ -245,7 +245,7 @@ const layout = computed(() => {
       let bottom = -Infinity
       for (const child of [...group].sort((a, b) => a.dy - b.dy)) {
         const out = depth === 0 ? (child.dx < 0 ? -1 : 1) : side
-        const reach = (depth === 0 ? size.w / 2 : size.w) + CHILD_GAP
+        const reach = depth === 0 ? size.w / 2 + CHILD_GAP : size.w + IDEA_CHILD_GAP
         const cx = out < 0 ? Math.min(x + child.dx, x - reach) : Math.max(x + child.dx, x + reach)
         const childSide = depth === 0 ? (child.dx < 0 ? -1 : 1) : (cx < 0 ? -1 : 1)
         const sub = walk(child, cx, y + child.dy + shift, depth + 1, childSide)
@@ -312,6 +312,7 @@ function nodeClasses(item) {
       'cm-node--drop': drag.active && drag.targetId === id,
       'cm-node--converted': item.node.converted,
       'cm-node--editable': canvas.canEdit.value,
+      'cm-node--far-add': hasChildren(item) && item.depth > 0,
     },
   ]
 }
@@ -1015,6 +1016,25 @@ onBeforeUnmount(() => {
 
 .cm-node--editable {
   cursor: grab;
+}
+
+/* hover bridge from the idea to its +: keep in step with .cm-add / .cm-add--far (6 + 20, 32 + 20 px) */
+.cm-node--editable:hover:not(.cm-node--editing):not(.cm-node--dragging)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: 26px;
+}
+
+.cm-node--editable.cm-node--far-add:hover:not(.cm-node--editing):not(.cm-node--dragging)::before {
+  width: 52px;
+}
+
+.cm-node--editable.cm-node--left:hover:not(.cm-node--editing):not(.cm-node--dragging)::before {
+  left: auto;
+  right: 100%;
 }
 
 .cm-node:hover {

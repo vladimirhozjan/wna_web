@@ -307,6 +307,7 @@ function openHelp() {
 }
 
 function onMediaChange() {
+  if (mobileQuery.matches) mapRef.value?.finishEdit()
   isMobile.value = mobileQuery.matches
 }
 
@@ -315,6 +316,7 @@ function onVisibilityChange() {
 }
 
 function onPageHide() {
+  mapRef.value?.finishEdit()
   canvas.flush({ keepalive: true })
 }
 
@@ -325,6 +327,7 @@ function onBeforeUnload(e) {
 }
 
 onBeforeRouteLeave(async () => {
+  mapRef.value?.finishEdit()
   await Promise.race([canvas.flush(), new Promise(resolve => setTimeout(resolve, LEAVE_FLUSH_WAIT_MS))])
   if (!canvas.unsaved.value && canvas.saveStatus.value !== 'saving') return true
   return await confirm.show({

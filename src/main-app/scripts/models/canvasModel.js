@@ -20,6 +20,8 @@ const UNDO_LIMIT = 100
 const ROOT_CHILD_DX = 200
 const CHILD_DX = 180
 export const CHILD_GAP = 40
+// an idea's sub-ideas start beyond its far + (32 + 20 px) + 12 px
+export const IDEA_CHILD_GAP = 64
 const ROW_PX = 48
 const LINE_PX = 22
 const IDEA_MAX_WIDTH = 240
@@ -484,7 +486,7 @@ export function canvasModel() {
         const side = sideOf(parentId)
         const last = siblings[siblings.length - 1]
         return {
-            dx: side * Math.max(CHILD_DX, estimatedWidth(parent) + CHILD_GAP),
+            dx: side * Math.max(CHILD_DX, estimatedWidth(parent) + IDEA_CHILD_GAP),
             dy: last ? last.dy + rowStep(last) : 0,
         }
     }
@@ -589,10 +591,26 @@ export function canvasModel() {
         commit(() => { node.text = clean }, { undoable: !merge })
     }
 
-    // An empty new idea is dropped when its editing ends: its add step is taken back
+    // An empty new idea is dropped when its editing ends, by id: its add step is taken back, or when other steps came
+    // on top (or a rebase emptied the stack) it is removed from the nodes and from every undo / redo snapshot
     function discardNew(id) {
-        if (!canEdit.value || !getNode(id) || !undoStack.value.length) return
-        nodes.value = JSON.parse(undoStack.value.pop())
+        if (!canEdit.value || !getNode(id) || childrenOf(id).length) return
+        const top = undoStack.value[undoStack.value.length - 1]
+        if (top && !JSON.parse(top).some(n => n.id === id)) {
+            nodes.value = JSON.parse(undoStack.value.pop())
+        } else {
+            const strip = (snap) => JSON.stringify(JSON.parse(snap).filter(n => n.id !== id))
+            nodes.value = nodes.value.filter(n => n.id !== id)
+            redoStack.value = redoStack.value.map(strip)
+            const kept = []
+            let next = snapshot()
+            for (let i = undoStack.value.length - 1; i >= 0; i--) {
+                const snap = strip(undoStack.value[i])
+                if (snap !== next) kept.unshift(snap)
+                next = snap
+            }
+            undoStack.value = kept
+        }
         scheduleSave()
     }
 
