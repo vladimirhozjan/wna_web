@@ -3,6 +3,7 @@ import apiClient from '../core/apiClient.js'
 import { PAGE_SIZE } from '../core/domains.js'
 import { statsModel } from './statsModel.js'
 import { errorModel } from '../core/errorModel.js'
+import { createRowHold } from '../core/rowHold.js'
 
 function truncateTitle(title, maxLen = 30) {
     if (!title || title.length <= maxLen) return title
@@ -21,6 +22,25 @@ const activeTags = ref(null)
 
 // Version counter to prevent stale loadActions responses from overwriting fresh data
 let loadVersion = 0
+
+// The re-read a held row waits for (rowHold.js): at the loaded depth, never skipped, never sets `error`
+async function holdReread() {
+    const myVersion = ++loadVersion
+    const tagsParam = activeTags.value?.length ? activeTags.value.join(',') : null
+    const { total_count, items: data } = await apiClient.listActions({
+        limit: Math.max(limit.value, items.value.length),
+        cursor: null,
+        tags: tagsParam,
+    })
+    if (myVersion !== loadVersion) return
+    items.value = data
+    cursor.value = data.length > 0 ? data[data.length - 1].id : null
+    totalItems.value = total_count
+    hasMore.value = total_count > items.value.length
+    loading.value = false
+}
+
+const { held, hold, unhold, settle: settleHeld } = createRowHold({ items, reread: holdReread })
 
 export function nextActionModel() {
 
@@ -164,11 +184,13 @@ export function nextActionModel() {
 
         try {
             await apiClient.trashAction(actionId)
-            items.value = items.value.filter(i => i.id !== actionId)
+            if (!held.value.some(h => h.id === actionId)) {
+                items.value = items.value.filter(i => i.id !== actionId)
 
-            if (cursor.value === actionId) {
-                const last = items.value[items.value.length - 1]
-                cursor.value = last ? last.id : null
+                if (cursor.value === actionId) {
+                    const last = items.value[items.value.length - 1]
+                    cursor.value = last ? last.id : null
+                }
             }
 
             if (current.value?.id === actionId) {
@@ -263,6 +285,7 @@ export function nextActionModel() {
         limit,
         hasMore,
         totalItems,
+        held,
 
         loadActions,
         getAction,
@@ -275,5 +298,8 @@ export function nextActionModel() {
         completeAction,
         removeItem,
         changeActionState,
+        hold,
+        unhold,
+        settleHeld,
     }
 }

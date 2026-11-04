@@ -45,7 +45,9 @@
             'item-wrapper--dragging': nativeDraggingId === item.id,
             'item-wrapper--overdue': itemIsOverdue(item),
             'item-wrapper--wiggle': showHint && index === 0 && items.length >= 3,
-            'item-wrapper--completing': completingIdSet.has(item.id)
+            'item-wrapper--completing': completingIdSet.has(item.id),
+            'item-wrapper--held-complete': heldKinds.get(item.id) === 'complete',
+            'item-wrapper--held-leave': heldKinds.get(item.id) === 'leave'
           }"
           :draggable="!!sourceType && !disabled"
           @dragstart.capture="onNativeDragStart($event, item)"
@@ -121,7 +123,8 @@ import Spinner from './Spinner.vue'
 import { hapticFeedback } from '../scripts/core/haptics.js'
 import { LONG_PRESS_MS } from '../scripts/core/swipe.js'
 import { liveClient, onLivePacket } from '../scripts/core/liveClient.js'
-import { useLiveMotion, MOTION_MS } from '../scripts/core/liveMotion.js'
+import { useLiveMotion, motionSet, MOTION_MS } from '../scripts/core/liveMotion.js'
+import { matchHeld, HOLD_CLOSE_MS } from '../scripts/core/rowHold.js'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -148,6 +151,8 @@ const props = defineProps({
   swipeFilter: { type: Function, default: null },
   // ui-tests hook: each row gets this data-testid plus data-id = the item id
   rowTestid: { type: String, default: undefined },
+  // Rows whose content left but whose height stays until the re-read shows what takes their slot (rowHold.js)
+  held: { type: Array, default: () => [] },
 })
 
 const drag = dragModel()
@@ -207,12 +212,75 @@ watch(() => items.value, () => {
   })
 }, { flush: 'pre' })
 
-// Foreign live changes animate (after the anchoring above); the empty state never shows under a leaving row and
-// fades out before a first row arrives
 const leaveHold = ref(false)
 const arriveHold = ref(false)
+
+function fadeInEmpty(ms) {
+  leaveHold.value = true
+  setTimeout(() => {
+    leaveHold.value = false
+    nextTick(() => emptyEl.value?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION_MS }))
+  }, ms)
+}
+
+// Held rows: the model clears `held` only after the re-read rendered, so the entries are kept here until then
+const heldKinds = computed(() => new Map(props.held.map(h => [h.id, h.kind])))
+const heldEntries = new Map()
+const swappedIds = new Set()
+const heldMotion = motionSet()
+watch(() => props.held, (now) => {
+  const ids = new Set(now.map(h => h.id))
+  for (const id of heldEntries.keys()) if (!ids.has(id)) heldEntries.delete(id)
+  for (const h of now) heldEntries.set(h.id, h.kind)
+}, { flush: 'sync', immediate: true })
+
+// A held row gone from the re-read hands its height to the new row of its project at its index, or closes
+watch(() => items.value, (now, before) => {
+  if (!before || !heldEntries.size || !rootEl.value) return
+  const nowIds = new Set(now.map(i => i.id))
+  const leaving = []
+  for (const row of before) {
+    if (nowIds.has(row.id) || !heldEntries.has(row.id)) continue
+    const el = rootEl.value.querySelector(`[data-row-id="${CSS.escape(String(row.id))}"]`)
+    if (!el) continue
+    const s = getComputedStyle(el)
+    leaving.push({
+      id: row.id, el, kind: heldEntries.get(row.id), height: el.getBoundingClientRect().height,
+      pad: { paddingTop: s.paddingTop, paddingBottom: s.paddingBottom }, parent: el.parentNode, next: el.nextElementSibling,
+    })
+  }
+  if (!leaving.length) return
+  const occupants = matchHeld(before, now, leaving.map(l => l.id))
+  for (const id of occupants.values()) swappedIds.add(id)
+  const closing = leaving.filter(l => !occupants.has(l.id))
+  if (!now.length && closing.length) fadeInEmpty(Math.max(...closing.map(l => HOLD_CLOSE_MS[l.kind])))
+  nextTick(() => {
+    for (const l of leaving) {
+      const occupant = occupants.get(l.id)
+      if (occupant == null) continue
+      const el = rootEl.value?.querySelector(`[data-row-id="${CSS.escape(String(occupant))}"]`)
+      if (el) heldMotion.swapRow(el, l.height)
+    }
+    // Last first, so each ghost finds the row (or ghost) after it
+    for (const l of closing.reverse()) {
+      if (!l.parent.isConnected) continue
+      const ghost = l.el
+      ghost.removeAttribute('data-row-id')
+      ghost.setAttribute('aria-hidden', 'true')
+      ghost.classList.remove('item-wrapper--held-complete', 'item-wrapper--held-leave')
+      Object.assign(ghost.style, { pointerEvents: 'none', opacity: '0' })
+      l.parent.insertBefore(ghost, l.next?.parentNode === l.parent ? l.next : null)
+      heldMotion.closeRow(ghost, l.height, l.pad, HOLD_CLOSE_MS[l.kind])
+    }
+    swappedIds.clear()
+  })
+}, { flush: 'pre' })
+onBeforeUnmount(heldMotion.cancel)
+
+// Foreign live changes animate (after the anchoring above); the empty state never shows under a leaving row and
+// fades out before a first row arrives
 const motion = useLiveMotion(rootEl, () => (arriveHold.value ? null : items.value), {
-  skip: () => new Set([...completingIdSet.value, ...props.quietIds]),
+  skip: () => new Set([...completingIdSet.value, ...props.quietIds, ...heldEntries.keys(), ...swappedIds]),
 })
 
 watch(() => items.value, (now, before) => {
@@ -223,11 +291,7 @@ watch(() => items.value, (now, before) => {
   }
   if (!liveClient.motion.active || !before) return
   if (!now.length && before.some(i => !completingIdSet.value.has(i.id))) {
-    leaveHold.value = true
-    setTimeout(() => {
-      leaveHold.value = false
-      nextTick(() => emptyEl.value?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION_MS }))
-    }, MOTION_MS)
+    fadeInEmpty(MOTION_MS)
   } else if (now.length && !before.length && emptyEl.value && !leaveHold.value) {
     arriveHold.value = true
     emptyEl.value.animate([{ opacity: 1 }, { opacity: 0 }], { duration: MOTION_MS, fill: 'forwards' }).onfinish = () => {
@@ -540,6 +604,30 @@ function onExternalDrop(e) {
   40% { transform: translateX(3px); }
   60% { transform: translateX(-2px); }
   80% { transform: translateX(2px); }
+}
+
+/* Held row: the content leaves, the row keeps its height until its slot is decided */
+.item-wrapper--held-complete,
+.item-wrapper--held-leave {
+  pointer-events: none;
+}
+
+.item-wrapper--held-complete .item {
+  animation: item-held-out 240ms ease 350ms forwards;
+}
+
+.item-wrapper--held-leave .item {
+  animation: item-held-fade 250ms ease forwards;
+}
+
+@keyframes item-held-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(20px); }
+}
+
+@keyframes item-held-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* Completion exit animation */

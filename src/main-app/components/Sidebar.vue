@@ -224,6 +224,7 @@ import { engageModel } from "../scripts/models/engageModel.js";
 import { connectionModel } from "../scripts/models/connectionModel.js";
 import { truncateTitle } from "../scripts/core/textUtils.js";
 import { onLivePacket } from "../scripts/core/liveClient.js";
+import { isHoldable, HOLD_LEAVE_MS } from "../scripts/core/rowHold.js";
 import { useAutoHideScrollbar } from "../scripts/core/useAutoHideScrollbar.js";
 
 const scrollRef = ref(null);
@@ -243,8 +244,10 @@ onLivePacket((changes) => {
 const drag = dragModel();
 const undo = undoModel();
 const { items: stuffItems, loadStuff } = stuffModel();
-const { items: actionItems, loadActions: loadNextActions } = nextActionModel();
-const { items: todayItems, loadActions: loadTodayActions } = todayModel();
+const nextActions = nextActionModel();
+const todayActions = todayModel();
+const { items: actionItems, loadActions: loadNextActions, held: nextHeld } = nextActions;
+const { items: todayItems, loadActions: loadTodayActions, held: todayHeld } = todayActions;
 const { items: waitingItems, loadWaiting } = waitingModel();
 const { items: somedayItems, loadSomeday } = somedayModel();
 const { items: calendarItems } = calendarModel();
@@ -263,8 +266,9 @@ function refreshAfterDrop() {
   }
   // Reload all loaded list models to backfill removed items
   if (stuffItems.value.length)    loadStuff({ reset: true }).catch(() => {})
-  if (actionItems.value.length)   loadNextActions({ reset: true }).catch(() => {})
-  if (todayItems.value.length)    loadTodayActions({ reset: true }).catch(() => {})
+  // A list with held rows re-reads through its hold (rowHold.js)
+  if (actionItems.value.length && !nextHeld.value.length)   loadNextActions({ reset: true }).catch(() => {})
+  if (todayItems.value.length && !todayHeld.value.length)   loadTodayActions({ reset: true }).catch(() => {})
   if (waitingItems.value.length)  loadWaiting({ reset: true }).catch(() => {})
   if (somedayItems.value.length)  loadSomeday({ reset: true }).catch(() => {})
   if (projectItems.value.length)  loadProjects({ reset: true }).catch(() => {})
@@ -330,6 +334,28 @@ function recordDrop(op, row, message, to = null) {
   // DS17: Overdue / Engage rows don't carry their own list's position
   const reorder = !['overdue', 'engage'].includes(router.currentRoute.value.name);
   undo.record({ op, item: row, title: truncateTitle(row.title), message, to, reorder });
+}
+
+// A project's active action dropped from Next / Today keeps its row until the promoted action takes it (rowHold.js)
+function heldDrop(data) {
+  if (data.sourceType !== 'action') return null;
+  const name = router.currentRoute.value.name;
+  const model = name === 'next' ? nextActions : name === 'today' ? todayActions : null;
+  const row = model?.items.value.find((i) => i.id === data.id);
+  return isHoldable(row) ? { model, row } : null;
+}
+
+async function dropOp(h, kind, op) {
+  if (!h) return op();
+  h.model.hold(h.row.id, kind);
+  if (kind === 'complete') h.row.checked = true;
+  try {
+    await Promise.all([op(), new Promise((r) => setTimeout(r, HOLD_LEAVE_MS[kind]))]);
+  } catch (err) {
+    h.model.unhold(h.row.id);
+    if (kind === 'complete') h.row.checked = false;
+    throw err;
+  }
 }
 
 async function confirmAndTransformProjectToAction(id) {
@@ -467,6 +493,7 @@ async function onDropToProjects(data) {
   dialogFor = null;
   if (!outcome) return
 
+  const held = heldDrop(data);
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.clarifyToProject(data.id, {
@@ -475,7 +502,7 @@ async function onDropToProjects(data) {
         outcome
       });
     } else if (data.sourceType === 'action') {
-      await apiClient.transformActionToProject(data.id, outcome);
+      await dropOp(held, 'leave', () => apiClient.transformActionToProject(data.id, outcome));
     } else if (data.sourceType === 'someday' && data.type === 'ACTION') {
       await apiClient.transformActionToProject(data.id, outcome);
     } else if (data.sourceType === 'completed' && data.type === 'ACTION') {
@@ -485,6 +512,7 @@ async function onDropToProjects(data) {
       return;
     }
     removeFromSource(data);
+    if (held) await held.model.settleHeld(data.id);
     toaster.success(`"${truncateTitle(data.title)}" converted to project`);
     refreshAfterDrop();
   } catch (err) {
@@ -503,12 +531,13 @@ async function onDropToSomeday(data) {
     toaster.push("Shared projects can't go to Someday/Maybe.");
     return;
   }
+  const held = heldDrop(data);
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.clarifyToSomeday(data.id);
     } else if (data.sourceType === 'action') {
       if (data.state === 'SOMEDAY') return;
-      await apiClient.somedayAction(data.id);
+      await dropOp(held, 'leave', () => apiClient.somedayAction(data.id));
     } else if (data.sourceType === 'project') {
       await apiClient.somedayProject(data.id);
     } else if (data.sourceType === 'completed') {
@@ -526,6 +555,7 @@ async function onDropToSomeday(data) {
       return;
     }
     removeFromSource(data);
+    if (held) await held.model.settleHeld(data.id);
     const title = truncateTitle(data.title);
     const message = data.sourceType === 'project' && row.next_action_id
       ? `"${title}" moved to Someday. Active actions shelved.`
@@ -789,17 +819,19 @@ async function onDropToReference(data) {
     if (!confirmed) return;
   }
 
+  const held = heldDrop(data);
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.transformStuffToFile(data.id);
     } else if (data.sourceType === 'action') {
-      await apiClient.transformActionToFile(data.id);
+      await dropOp(held, 'leave', () => apiClient.transformActionToFile(data.id));
     } else if (data.sourceType === 'project') {
       await apiClient.transformProjectToFile(data.id);
     } else {
       return;
     }
     removeFromSource(data);
+    if (held) await held.model.settleHeld(data.id);
     toaster.success(`"${truncateTitle(data.title)}" moved to Reference`);
     refreshAfterDrop();
   } catch (err) {
@@ -809,11 +841,12 @@ async function onDropToReference(data) {
 
 async function onDropToCompleted(data) {
   const row = rowOf(data);
+  const held = heldDrop(data);
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.completeStuff(data.id);
     } else if (data.sourceType === 'action') {
-      await apiClient.completeAction(data.id);
+      await dropOp(held, 'complete', () => apiClient.completeAction(data.id));
     } else if (data.sourceType === 'project') {
       await apiClient.completeProject(data.id);
     } else if (data.sourceType === 'someday') {
@@ -828,6 +861,7 @@ async function onDropToCompleted(data) {
       return;
     }
     removeFromSource(data);
+    if (held) await held.model.settleHeld(data.id);
     recordDrop('complete', row, `"${truncateTitle(data.title)}" completed`);
     refreshAfterDrop();
   } catch (err) {
@@ -837,12 +871,13 @@ async function onDropToCompleted(data) {
 
 async function onDropToTrash(data) {
   const row = rowOf(data);
+  const held = heldDrop(data);
   let result = null;
   try {
     if (data.sourceType === 'stuff') {
       await apiClient.trashStuff(data.id);
     } else if (data.sourceType === 'action') {
-      await apiClient.trashAction(data.id);
+      await dropOp(held, 'leave', () => apiClient.trashAction(data.id));
     } else if (data.sourceType === 'project') {
       result = await apiClient.trashProject(data.id);
     } else if (data.sourceType === 'someday' || data.sourceType === 'completed') {
@@ -857,6 +892,7 @@ async function onDropToTrash(data) {
       return;
     }
     removeFromSource(data);
+    if (held) await held.model.settleHeld(data.id);
     const title = truncateTitle(data.title);
     const message = result?.trashed_actions > 0 ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`;
     recordDrop('trash', row, message);
@@ -876,6 +912,8 @@ function removeFromInbox(id) {
 function removeFromActions(id) {
   // Remove from all action lists (Next, Today, Waiting, Someday, Calendar)
   for (const list of [actionItems, todayItems, waitingItems, somedayItems, calendarItems]) {
+    if (list === actionItems && nextHeld.value.some((h) => h.id === id)) continue;
+    if (list === todayItems && todayHeld.value.some((h) => h.id === id)) continue;
     const idx = list.value.findIndex(i => i.id === id);
     if (idx !== -1) list.value.splice(idx, 1);
   }

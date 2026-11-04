@@ -115,6 +115,25 @@ export function motionSet() {
         }))
     }
 
+    // A held row handed to the action that took its slot: the new content fades in, its height glides from the held one
+    function swapRow(el, fromHeight) {
+        const height = el.getBoundingClientRect().height
+        Object.assign(el.style, { overflow: 'hidden', boxSizing: 'border-box' })
+        play(el, 'swap', [
+            { height: `${fromHeight}px`, opacity: 0 },
+            { height: `${height}px`, opacity: 1 },
+        ], MOTION_MS, () => Object.assign(el.style, { overflow: '', boxSizing: '' }), () => highlight(el))
+    }
+
+    // A held row nothing took: its emptied ghost closes its height
+    function closeRow(ghost, height, pad, ms) {
+        Object.assign(ghost.style, { overflow: 'hidden', boxSizing: 'border-box' })
+        play(ghost, 'leave', [
+            { height: `${height}px`, ...pad },
+            { height: '0px', paddingTop: '0px', paddingBottom: '0px' },
+        ], ms, () => ghost.remove())
+    }
+
     function fadeOut(ghost) {
         play(ghost, 'leave', [{ opacity: 1 }, { opacity: 0 }], MOTION_MS, () => ghost.remove())
     }
@@ -126,7 +145,7 @@ export function motionSet() {
         }
     }
 
-    return { play, highlight, enterRow, enterTile, move, leaveRow, leaveTableRow, fadeOut, cancel }
+    return { play, highlight, enterRow, enterTile, move, leaveRow, leaveTableRow, swapRow, closeRow, fadeOut, cancel }
 }
 
 // Absolutely placed over its old rect inside root (tiles, or a row whose list is gone)

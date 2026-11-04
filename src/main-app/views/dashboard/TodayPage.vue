@@ -36,6 +36,7 @@
             :has-more="adding ? hasMoreSnapshot : hasMore"
             :loading-ids="loadingIds"
             :completing-ids="completingIds"
+            :held="held"
             :disabled="adding"
             source-type="action"
             swipe-right="complete"
@@ -89,6 +90,7 @@ import { undoModel } from '../../scripts/core/undoModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import { onLiveChange } from '../../scripts/core/liveClient.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
+import { isHoldable, HOLD_LEAVE_MS } from '../../scripts/core/rowHold.js'
 
 const scrollRef = ref(null)
 const { scrolling } = useAutoHideScrollbar(scrollRef)
@@ -108,6 +110,10 @@ const {
   moveAction,
   completeAction,
   removeItem,
+  held,
+  hold,
+  unhold,
+  settleHeld,
 } = todayModel()
 
 const toaster = errorModel()
@@ -223,6 +229,8 @@ async function onItemCheck(id, checked) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
 
+  if (isHoldable(item)) return completeHeld(item, title)
+
   if (item) item.checked = true
   completingIds.value.push(id)
   hapticFeedback('success')
@@ -244,9 +252,45 @@ async function onItemCheck(id, checked) {
   }
 }
 
+// A project's active action: its row stays and the promoted backlog action takes it in place (rowHold.js)
+async function completeHeld(item, title) {
+  item.checked = true
+  hapticFeedback('success')
+  hold(item.id, 'complete')
+  try {
+    await Promise.all([
+      completeAction(item.id),
+      new Promise(r => setTimeout(r, HOLD_LEAVE_MS.complete))
+    ])
+  } catch (err) {
+    unhold(item.id)
+    item.checked = false
+    toaster.push(err.message || 'Failed to complete action')
+    return
+  }
+  await settleHeld(item.id)
+  undo.record({ op: 'complete', item, title, message: `"${title}" completed` })
+}
+
+async function trashHeld(item, title) {
+  hold(item.id, 'leave')
+  try {
+    await Promise.all([
+      trashAction(item.id),
+      new Promise(r => setTimeout(r, HOLD_LEAVE_MS.leave))
+    ])
+  } catch {
+    unhold(item.id)
+    return
+  }
+  await settleHeld(item.id)
+  undo.record({ op: 'trash', item, title, message: `"${title}" moved to trash` })
+}
+
 async function onTrash(id) {
   const item = items.value.find(i => i.id === id)
   const title = truncateTitle(item?.title)
+  if (isHoldable(item)) return trashHeld(item, title)
 
   deletingId.value = id
   try {
