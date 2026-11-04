@@ -5,3 +5,6 @@ src/main-app/public/config.js
 merge-to-main.sh
 
 
+
+# Fil index (lives in the workspace ~/Documents/.fil)
+.fil/
