@@ -83,7 +83,7 @@ We automatically collect certain technical data when you use the Service:
 - **Session timestamps** - login time and last activity time per session
 - **Days of use** - the calendar days (UTC) on which you used the Service, recorded once per day, for usage statistics
 - **Sign-in method** - how each session was signed in (email, Google or Apple), shown in your account settings
-- **Authentication tokens** - stored in your browser's localStorage for session management
+- **Authentication tokens** - stored in your browser's localStorage, or in the iPhone's Keychain in the iPhone app, for session management
 - **Push notification subscription** - if you turn on notifications on a device, your browser gives us a push address at its vendor's push service and two encryption keys; we keep them with that device's session
 
 ### 2.7 Preference Data
@@ -380,6 +380,8 @@ We use your browser's **IndexedDB** and **cache** to store:
 - Items you capture while offline (their text and attached files) — kept in your browser on this device only until they are sent to your account or you discard them. Logging out deletes them; if your session expires instead, they stay on this device for your next sign-in and are sent then. Another account signing in on the same browser never sees or sends them
 - Content you share to WhatsNextAction from another app (its text, links and files) — kept in your browser on this device only until you add it to your Inbox, cancel it, or log out
 - The app's own files, so WhatsNextAction can open without a network connection
+
+In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
 
 These storage mechanisms are **strictly necessary** for the Service to function and fall under the exemption in Article 5(3) of the ePrivacy Directive (2002/58/EC). No consent is required for strictly necessary storage.
 

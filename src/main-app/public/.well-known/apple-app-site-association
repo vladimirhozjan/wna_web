@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["MM237VJJPY.com.whatsnextaction.app"],
+        "components": [
+          { "/": "/engage" }, { "/": "/inbox" }, { "/": "/stuff/*" }, { "/": "/calendar" }, { "/": "/recurring/*" },
+          { "/": "/projects" }, { "/": "/project/*" }, { "/": "/project-templates/*" }, { "/": "/action/*" },
+          { "/": "/next" }, { "/": "/today" }, { "/": "/overdue" }, { "/": "/waiting-for" }, { "/": "/someday" },
+          { "/": "/review" }, { "/": "/horizons" }, { "/": "/connections" }, { "/": "/completed" }, { "/": "/trash" },
+          { "/": "/reference" }, { "/": "/settings" }, { "/": "/settings/*" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": { "apps": ["MM237VJJPY.com.whatsnextaction.app"] }
+}
