@@ -35,9 +35,9 @@ Job: items W1–W6 (6 boxes). Consumes nothing from other siblings. Item W5 wait
 
 ## Checklist
 Parent § Screens: n/a (layout fix). Parent § Data contract: n/a (no server data). All in `src/main-app/components/calendar/CalendarMonthView.vue`.
-- [ ] W1 — parent web item 1: desktop scroller `.month-view__scroll` around header + grid, per parent.
-- [ ] W2 — parent web item 2: remove `min-height: 490px` from `.month-view`, per parent.
-- [ ] W3 — parent web item 3: sticky weekday header, per parent.
-- [ ] W4 — parent web item 4: auto-hiding thumb via `useAutoHideScrollbar`, per parent.
-- [ ] W5 — parent web item 5: starting scroll position — BLOCKED on D2 (open in parent); do not start until the parent states the rule.
-- [ ] W6 — parent web item 6: regression check + `npm run build:main` green; report the TCs made new / stale.
+- [x] W1 (`src/main-app/components/calendar/CalendarMonthView.vue:4`, `:307-314`; Chrome 1280×500 iframe: scrollHeight 696 > clientHeight 327, bottom reached, cell 41 inside; at 1000 high 827 == 827) — parent web item 1: desktop scroller `.month-view__scroll` around header + grid, per parent.
+- [x] W2 (`.month-view` rule now `:300-304`, no min-height; 0 matches for 490px; month view bottom 490 ≤ content 500) — parent web item 2: remove `min-height: 490px` from `.month-view`, per parent.
+- [x] W3 (`:316-321`; header top 0 relative to scroller when scrolled to bottom) — parent web item 3: sticky weekday header, per parent.
+- [x] W4 (`:154`, `:158`, class binding `:4`; thumb timing reuses the BUG-077 composable, not visually inspected — viewport screenshot unavailable) — parent web item 4: auto-hiding thumb via `useAutoHideScrollbar`, per parent.
+- [x] W5 (D2 decided in parent; `:171-181`; Chrome: open scrollTop 109 = today's week under header, Next → 0, Today → 109, Previous → 0, tall 1000 → 0) — parent web item 5: starting scroll position — BLOCKED on D2 (open in parent); do not start until the parent states the rule.
+- [x] W6 (`npm run build:main` exit 0; cell click in 6th row reachable and navigates to day view as before; mobile list present, grid absent at 500 px; no items in current month so item-click / +N more / drag not exercised → ui-tests) — parent web item 6: regression check + `npm run build:main` green; report the TCs made new / stale.

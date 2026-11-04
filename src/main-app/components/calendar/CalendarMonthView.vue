@@ -1,7 +1,7 @@
 <template>
   <div ref="rootRef" class="month-view">
     <!-- Desktop: Grid view -->
-    <template v-if="!isMobile">
+    <div v-if="!isMobile" ref="gridScrollRef" class="month-view__scroll auto-scrollbar" :class="{ scrolling: gridScrolling }">
       <!-- Weekday headers -->
       <div class="month-view__header">
         <div
@@ -65,7 +65,7 @@
           </div>
         </div>
       </div>
-    </template>
+    </div>
 
     <!-- Mobile: List by days -->
     <div v-else class="month-view__list auto-scrollbar" :class="{ scrolling }" ref="listRef">
@@ -151,9 +151,11 @@ const dragOverDate = ref(null)
 const draggingItem = ref(null)
 const isMobile = ref(false)
 const listRef = ref(null)
+const gridScrollRef = ref(null)
 const rootRef = ref(null)
 useLiveMotion(rootRef, () => calendar.items.value)
 const { scrolling } = useAutoHideScrollbar(listRef)
+const { scrolling: gridScrolling } = useAutoHideScrollbar(gridScrollRef)
 
 function checkMobile() {
   isMobile.value = window.innerWidth <= 768
@@ -165,6 +167,17 @@ function scrollToToday() {
       const todayEl = listRef.value.querySelector('.month-view__list-day--today')
       if (todayEl) {
         todayEl.scrollIntoView({ block: 'start', behavior: 'instant' })
+      }
+    } else if (!isMobile.value && gridScrollRef.value) {
+      const scroller = gridScrollRef.value
+      const cell = isSameMonth(new Date(), props.currentDate)
+        ? scroller.querySelector('.month-view__cell--today')
+        : null
+      if (cell) {
+        const header = scroller.querySelector('.month-view__header')
+        scroller.scrollTop += cell.getBoundingClientRect().top - scroller.getBoundingClientRect().top - header.offsetHeight
+      } else {
+        scroller.scrollTop = 0
       }
     }
   })
@@ -289,10 +302,22 @@ function onDrop(day, event) {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 490px;
+}
+
+.month-view__scroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .month-view__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-bg-primary);
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   border-bottom: 1px solid var(--color-calendar-grid-line);
