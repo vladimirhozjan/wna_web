@@ -145,7 +145,7 @@
                     >
                       <span class="assistant-step__mark">
                         <Transition name="assistant-step-mark">
-                          <Spinner v-if="step.status === 'running'" :size="16" />
+                          <Spinner v-if="step.status === 'running'" :size="12" data-testid="assistant-step-spinner" />
                           <CrossIcon v-else-if="step.status === 'failed'" class="assistant-step__icon" />
                           <CheckmarkIcon v-else class="assistant-step__icon" />
                         </Transition>
