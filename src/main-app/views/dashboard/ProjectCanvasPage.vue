@@ -147,7 +147,7 @@ import CanvasDrillDown from '../../components/canvas/CanvasDrillDown.vue'
 import CanvasConvertModal from '../../components/canvas/CanvasConvertModal.vue'
 import AiIcon from '../../assets/AiIcon.vue'
 import { assistantModel } from '../../scripts/models/assistantModel.js'
-import { onLivePacket } from '../../scripts/core/liveClient.js'
+import { onLivePacket, liveClient } from '../../scripts/core/liveClient.js'
 import CanvasMovePicker from '../../components/canvas/CanvasMovePicker.vue'
 import ProjectsIcon from '../../assets/ProjectsIcon.vue'
 import MoreIcon from '../../assets/MoreIcon.vue'
@@ -237,10 +237,11 @@ const viewOnlyMessage = computed(() => {
 
 // While the assistant works it may write this canvas: a save it overtakes rebases instead of the conflict banner
 watch(() => assistant.working.value, (on) => canvas.expectAssistantWrites(on), { immediate: true })
-// The rebase keeps local edits; a member change can make the canvas read-only
+// The rebase keeps local edits; a member change can make the canvas read-only.
+// This tab's own canvas save comes back as a live change: skip it, so Undo keeps its history
 onLivePacket((changes) => {
   const id = route.params.id
-  if (!changes || changes.some(c => ['canvas', 'project', 'member'].includes(c.entity) && c.id === id)) return canvas.refreshFromServer()
+  if (!changes || changes.some(c => c.id === id && (c.entity === 'project' || c.entity === 'member' || (c.entity === 'canvas' && c.tab !== liveClient.tabId)))) return canvas.refreshFromServer()
 })
 
 // The map's open edit ends first; dropping an empty new idea is the undo

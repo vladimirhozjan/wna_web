@@ -250,7 +250,7 @@ export function canvasModel() {
         }
     }
 
-    // The AI assistant changed this canvas on the server: hold the pending save, then rebase the local edits onto it
+    // This canvas changed elsewhere (assistant, another tab / device, a member): hold the pending save, then rebase the local edits onto it
     async function refreshFromServer() {
         const session = sessionId
         refreshing = true
@@ -280,6 +280,8 @@ export function canvasModel() {
         const session = sessionId
         const c = await apiClient.getProjectCanvas(projectId.value)
         if (session !== sessionId) return
+        // No other write since this tab's last load / save: keep the canvas and its Undo history
+        if ((c?.revision ?? 0) === revision.value) return
         const server = Array.isArray(c?.nodes) ? c.nodes : []
         const baseById = new Map(base.map(n => [n.id, n]))
         const localById = new Map(nodes.value.map(n => [n.id, n]))

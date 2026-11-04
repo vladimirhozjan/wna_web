@@ -1,13 +1,14 @@
 # BUG-081 (web slice): Brainstorm canvas — hover + unreachable, covered by a new idea, empty idea stays
 
 Parent: `wna_orchestration/features/BUG-081-canvas-add-button-and-empty-idea.md` (BUG-081) — problem, Design § Boundaries / Contracts / Flows and Work breakdown live there; not restated here.
-Job: items W1–W5 (5 boxes).
+Job: items W1–W6 (6 boxes).
 
 ## User flows (this project's part)
 - Free / Pro / Team owner / Team member (editor): hovers an idea, moves onto the +, clicks → a new idea opens, the parent's + stays uncovered; clicking away or dragging with nothing typed drops the empty idea (parent § User flows).
 - Team member view-only: n/a — no + (`canEdit` false).
 - Admin: n/a — admin-app has no canvas.
 - Unauthenticated: n/a — canvas is in the dashboard only.
+- Own save (D4): Undo keeps its history after the save; changes from the assistant, other devices and members still refresh the open canvas.
 - Mobile (≤ 768 px): drill-down gets the D3 drop fix through the shared model; no hover +.
 
 ## Hard rules for the implementer
@@ -42,3 +43,4 @@ n/a — parent § Screens: behaviour fix, no new state or copy.
 - [x] W3 — parent Work breakdown web item 3 (D3 `discardNew(id)` drop by id). `canvasModel.js:594-617`. Chrome: + → wait 4 s → click empty canvas → no new "Untitled idea" (count unchanged), Undo disabled. Drag-mid-Tab case (b) and mobile FAB (d) not exercised — left to ui-tests.
 - [~] W4 — parent Work breakdown web item 4 (D3 leave paths in `ProjectCanvasPage.vue`). Code: `ProjectCanvasPage.vue:310` (onMediaChange), `:319` (onPageHide), `:330` (onBeforeRouteLeave). Chrome: + → back link → reopen → no empty idea (verified). Resize 1280→700 not verifiable — Chrome window resize does not change the viewport here; left to ui-tests.
 - [~] W5 — parent Work breakdown web item 5 (regression on `:5173`, `npm run build:main`; list TCs made new / stale for ui-tests). `npm run build:main` green. Chrome regression of TC-948/949/950/953/955 not run beyond the add/drop flows above (ui-tests owns it). New TCs for ui-tests: hover + stays reachable (idea / idea with sub-ideas / left / root); no idea covers its parent's +; empty new idea never stays (after save, press-and-drag, leaving, mobile FAB). Stale: none.
+- [~] W6 — parent Work breakdown web item 6 (D4: this tab's own canvas save echo no longer refreshes the canvas; page filter + `rebase()` guard). Code: `ProjectCanvasPage.vue:150` (import), `:241-245` (filter); `canvasModel.js:253` (comment), `:284` (guard). `npm run build:main` green. Chrome :5173: add idea on left-side Idea B2 via +, type X, Enter, wait 4.5 s → no canvas GET after the PUT (resource entries empty), Undo enabled, Undo removes X, Redo restores it. Cases (b) drag-held echo, (c) second tab, (d) terminal PATCH, (e) TC-969 not exercised — left to ui-tests.
