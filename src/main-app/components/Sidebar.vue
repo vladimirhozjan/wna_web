@@ -259,16 +259,16 @@ const { stats, loadStats, refreshStats } = statsModel();
 const engage = engageModel();
 const connections = connectionModel();
 
-function refreshAfterDrop() {
+function refreshAfterDrop(skipModel) {
   refreshStats()
   if (engage.loaded.value) {
     engage.loadDashboard().catch(() => {})
   }
   // Reload all loaded list models to backfill removed items
   if (stuffItems.value.length)    loadStuff({ reset: true }).catch(() => {})
-  // A list with held rows re-reads through its hold (rowHold.js)
-  if (actionItems.value.length && !nextHeld.value.length)   loadNextActions({ reset: true }).catch(() => {})
-  if (todayItems.value.length && !todayHeld.value.length)   loadTodayActions({ reset: true }).catch(() => {})
+  // A list whose drop went through its hold already re-read itself (rowHold.js)
+  if (actionItems.value.length && skipModel !== nextActions) loadNextActions({ reset: true }).catch(() => {})
+  if (todayItems.value.length && skipModel !== todayActions) loadTodayActions({ reset: true }).catch(() => {})
   if (waitingItems.value.length)  loadWaiting({ reset: true }).catch(() => {})
   if (somedayItems.value.length)  loadSomeday({ reset: true }).catch(() => {})
   if (projectItems.value.length)  loadProjects({ reset: true }).catch(() => {})
@@ -514,7 +514,7 @@ async function onDropToProjects(data) {
     removeFromSource(data);
     if (held) await held.model.settleHeld(data.id);
     toaster.success(`"${truncateTitle(data.title)}" converted to project`);
-    refreshAfterDrop();
+    refreshAfterDrop(held?.model);
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -562,7 +562,7 @@ async function onDropToSomeday(data) {
       : `"${title}" moved to Someday`;
     if (data.sourceType === 'completed') toaster.success(message);
     else recordDrop('move', row, message, 'SOMEDAY');
-    refreshAfterDrop();
+    refreshAfterDrop(held?.model);
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -833,7 +833,7 @@ async function onDropToReference(data) {
     removeFromSource(data);
     if (held) await held.model.settleHeld(data.id);
     toaster.success(`"${truncateTitle(data.title)}" moved to Reference`);
-    refreshAfterDrop();
+    refreshAfterDrop(held?.model);
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
@@ -863,7 +863,7 @@ async function onDropToCompleted(data) {
     removeFromSource(data);
     if (held) await held.model.settleHeld(data.id);
     recordDrop('complete', row, `"${truncateTitle(data.title)}" completed`);
-    refreshAfterDrop();
+    refreshAfterDrop(held?.model);
   } catch (err) {
     toaster.push(err.message || 'Failed to complete item');
   }
@@ -896,7 +896,7 @@ async function onDropToTrash(data) {
     const title = truncateTitle(data.title);
     const message = result?.trashed_actions > 0 ? `"${title}" and its actions moved to trash` : `"${title}" moved to trash`;
     recordDrop('trash', row, message);
-    refreshAfterDrop();
+    refreshAfterDrop(held?.model);
   } catch (err) {
     toaster.push(err.message || 'Failed to move item');
   }
