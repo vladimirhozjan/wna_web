@@ -1,10 +1,11 @@
-# FEAT-090 slice — web (`wna_web/main`)
+# FEAT-091 slice — web (`wna_web/main`)
 
-- Parent: `wna_orchestration/features/FEAT-090-ios-architecture-core.md` (FEAT-090, iOS 4 — architecture I) — Screens, Design (C1–C7, F1–F9), Data contract and Work breakdown live there; this slice restates none of it. Items use the parent's IDs.
+- Parent: `wna_orchestration/features/FEAT-091-ios-architecture-offline.md` (FEAT-091, iOS 5 — architecture II) — Screens, Design, Data contract, Legal impact and Work breakdown live there; this slice restates none of it. Items use the parent's IDs.
 - Project: wna_web, `main` worktree only (never `develop-a` / `develop-b`).
+- Open decisions: the Legal text is written for the locked D5 and D6 = B (every sign-out deletes the copy, unsynced changes included); the parent's "**[D6] = A**" wording is NOT used. If the parent shows another answer when you start, use the parent.
 
 ## User flows (this project's part)
-n/a — no web screen changes (parent § Screens covers the iPhone app only). Role-by-role: Free / Pro / Team owner / Team member — the one static file serves everyone and the Privacy Policy wording applies to all; Admin — n/a, no admin-app change; unauthenticated — the file and the Privacy Policy are public.
+n/a — no web screen changes (parent § Screens covers the iPhone app only). Role-by-role: Free / Pro / Team owner / Team member — the Privacy Policy wording applies to all; Admin — n/a, no admin-app change; unauthenticated — the Privacy Policy is public.
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -19,7 +20,7 @@ n/a — no web screen changes (parent § Screens covers the iPhone app only). Ro
   does not apply to this project/role. State the reason (e.g. "GATE NOT MET — no live error reproduced,
   so the hygiene edit is intentionally skipped"; "n/a — no admin surface"). Does NOT block closure.
 
-Help impact: n/a (parent). Landing / Pricing impact: n/a (parent). Data: no server data read — the file is static. Screens: n/a — no UI change.
+Help impact: n/a (parent). Landing / Pricing impact: n/a (parent). Data: no server data read. Screens: n/a — no UI change.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
@@ -64,8 +65,6 @@ Help impact: n/a (parent). Landing / Pricing impact: n/a (parent). Data: no serv
 9. **No git writes in a PM job** — the queue commits and pushes this repo itself after the job.
 
 ## Checklist
-Order: W1 first (deploy D1 needs W1 on GitHub `main`); W2 has no dependency. Job: **items W1–W2** (2 boxes).
-- [x] **W1** Add `src/main-app/public/.well-known/apple-app-site-association` = the parent's C5 JSON verbatim (no extension, UTF-8, no BOM). No route or code change. Verify: `python3 -m json.tool` on it exits 0; after `npm run build:main` the file is in `dist/main-app/.well-known/` byte-identical.
-  — Done: `src/main-app/public/.well-known/apple-app-site-association:1-17` extracted from parent C5 block (lines 277–295), first bytes `7b0a` (no BOM); `python3 -m json.tool` exit 0; `npm run build:main` OK, `cmp` with `dist/main-app/.well-known/apple-app-site-association` identical (765 B); dev server :5173 serves it (765 B).
-- [x] **W2** Legal impact (parent § Legal impact — ToS / Privacy Policy): `src/main-app/content/legal/privacy.md` — the two changes it lists (§2.6 bullet "Authentication tokens"; §10 new paragraph after the IndexedDB list) + "Last updated" = the date of the change; `terms.md` untouched, `terms_version` unchanged.
-  — Done: `src/main-app/content/legal/privacy.md:86` (§2.6 bullet), `:384` (§10 paragraph after the IndexedDB list, before the Art. 5(3) paragraph that covers it); `:3` "Last updated" already November 4, 2026 = date of change; `git diff terms.md` empty. Rendered in `dist/main-app/_prerender/legal/privacy/index.html` and on :5173 `/legal/privacy` (desktop checked).
+Order: W1 has no dependency. Job: **item W1** (1 box).
+- [x] **W1** Legal impact (parent § Legal impact — ToS / Privacy Policy), all of it in this one box: `src/main-app/content/legal/privacy.md` §10 new paragraph after the iPhone Keychain paragraph (text per the parent, D5 / D6 = B); §7 new row after "Sync records of permanently deleted data"; "Last updated" = the date of the change; `terms.md` untouched, `terms_version` unchanged. Plus `specs/features/wna-features.md` — the iPhone privacy bullet (the FEAT-090 lines) names the local copy (update that orchestration home). Verify: the text matches the parent § Legal impact; `npm run build` green; rendered on `/legal/privacy` locally.
+  - Done (D6 still open in the parent → D6 = B text used, per this slice): `src/main-app/content/legal/privacy.md:387` §10 paragraph (after the Keychain paragraph, verbatim per parent § Legal impact); `privacy.md:308` §7 row right after "Sync records…" (`:307`); `privacy.md:3` "Last updated: November 5, 2026"; `terms.md` untouched (`git diff` empty), `terms_version` unchanged. `wna_orchestration/specs/features/wna-features.md:2594-2599` iPhone privacy bullet names the local copy + §7 row. `npm run build:main` green; `dist/main-app/_prerender/legal/privacy/index.html` contains the paragraph, row and date; Chrome `http://localhost:5173/legal/privacy`: date, §10 paragraph and the §7 row directly after "Sync records" rendered.

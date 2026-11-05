@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 4, 2026
+**Last updated:** November 5, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -305,6 +305,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Active account data (including your name and Google / Apple sign-in identifiers) and content | Retained for the duration of your account |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Sync records of permanently deleted data (the identifier of what was deleted and when — no content), kept so your other devices remove it too | Deleted 90 days after the deletion, or with your account |
+| Copy of your content in the iPhone app (kept on your iPhone) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, WhatsNextAction calendar identifier, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar, the WhatsNextAction calendar identifier and the event identifiers are kept after you disconnect Google Calendar, so that reconnecting continues where you left off, and are deleted when you delete your account. On account deletion we also revoke our access at Google. Your WhatsNextAction calendar and the events already in your Google Calendar are yours and stay there |
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
@@ -382,6 +383,8 @@ We use your browser's **IndexedDB** and **cache** to store:
 - The app's own files, so WhatsNextAction can open without a network connection
 
 In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
+
+The iPhone app also keeps a copy of your account's content — your items and projects, comments, the details of your attachments and Reference files, templates, horizons and the members of your shared projects — in a database on that iPhone, so the app opens without waiting and works without a connection, together with the changes you make until they reach your account. The database is protected by the iPhone's data protection and is not included in iCloud or computer backups. Logging out deletes it (the app warns you first when changes have not reached your account yet), and deleting the app deletes it. When your session ends without logging out — your sign-in expires because the app has not reached our servers for a while, or your session is ended on our side, for example because you signed that iPhone out from another device or deleted your account — the app deletes it, including changes that have not reached your account, as soon as it notices: when it is next opened or next reaches our servers.
 
 These storage mechanisms are **strictly necessary** for the Service to function and fall under the exemption in Article 5(3) of the ePrivacy Directive (2002/58/EC). No consent is required for strictly necessary storage.
 
