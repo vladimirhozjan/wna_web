@@ -8,7 +8,8 @@
           { "/": "/projects" }, { "/": "/project/*" }, { "/": "/project-templates/*" }, { "/": "/action/*" },
           { "/": "/next" }, { "/": "/today" }, { "/": "/overdue" }, { "/": "/waiting-for" }, { "/": "/someday" },
           { "/": "/review" }, { "/": "/horizons" }, { "/": "/connections" }, { "/": "/completed" }, { "/": "/trash" },
-          { "/": "/reference" }, { "/": "/settings" }, { "/": "/settings/*" }
+          { "/": "/reference" }, { "/": "/settings" }, { "/": "/settings/*" },
+          { "/": "/verify" }, { "/": "/reset-password" }
         ]
       }
     ]

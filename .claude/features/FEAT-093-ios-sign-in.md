@@ -1,9 +1,9 @@
-# FEAT-092 — web slice
+# FEAT-093 — web slice
 
-Parent: `FEAT-092` (`../wna_orchestration/features/FEAT-092-ios-architecture-platform.md`) — iOS 6, architecture III: live updates, push, background file transfer. Depends on FEAT-091. This slice is the local checklist only; design (C1–C13), flows (F1–F13), screens (S1–S5), data contract and decisions (D1, D1b, D2) live in the parent — read them there, they are not restated here. Items below are the parent's Work breakdown, verbatim.
+Parent: `FEAT-093` (`../wna_orchestration/features/FEAT-093-ios-sign-in.md`) — iOS 7, sign-in, registration, account. Depends on FEAT-089 + FEAT-092. This slice is the local checklist only; design (C1–C13), flows (F1–F11), screens (S1–S7), data contract, legal impact and decisions (D1, D2) live in the parent — read them there, they are not restated here. The items below are the parent's Work breakdown, verbatim.
 
 ## User flows (this project's part)
-Parent User flows = n/a — infrastructure. Free / Pro / Team owner / Team member / Admin / not-entitled: n/a — web changes only the Privacy Policy text (W1); it applies to every role alike (a public legal page).
+All roles (Free / Pro / Team owner / member / Admin / unauthenticated): no screen and no web flow changes — the website only (1) lets an iPhone with the app open `/verify` and `/reset-password` links (universal links, parent C7, for sign-ups and resets started on the website) and (2) states in the Privacy Policy that one sign-in token is kept per app (parent § Legal impact). Admin-app: n/a — web only, untouched.
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -61,18 +61,12 @@ Parent User flows = n/a — infrastructure. Free / Pro / Team owner / Team membe
    local tests alone — never wait for a dev or prod confirmation.
 
 ## Checklist
-Items below.
+- [x] **W1** AASA = C7. Verify: `npm run build:main`; `jq .` on `dist/main-app/.well-known/apple-app-site-association`
+  lists `/verify` and `/reset-password` beside the FEAT-090 components. Home: `specs/features/wna-ios.md` 2.5 (ios
+  role, I8).
+  Done: `src/main-app/public/.well-known/apple-app-site-association:12` adds `{ "/": "/verify" }`, `{ "/": "/reset-password" }`, nothing else changed; `npm run build:main` green; `jq` on `dist/main-app/.well-known/apple-app-site-association` lists both after the FEAT-090 components. Spec: `wna_orchestration/specs/features/wna-features.md:2640` (static-files bullet cites FEAT-093 C7); `specs/features/wna-ios.md` 2.5 left to the ios role (I8).
+- [x] **W2** Privacy Policy per `## Legal impact`, "Last updated" = the day of this item. Verify: `npm run build:main`;
+  `/legal/privacy` renders the three changed sentences; `terms_version` untouched.
+  Done: `src/main-app/content/legal/privacy.md:25` (Google), `:26` (Apple), `:313` (§7 row) = the § Legal impact wording; `:3` "Last updated" = November 5, 2026 (already today, unchanged); `terms.md` / `__TERMS_VERSION__` untouched. `npm run build:main` green; prerendered `dist/main-app/_prerender/legal/privacy/index.html` and Chrome `localhost:5173/legal/privacy` show all three sentences (desktop + 500 px: the table row wraps, no overflow).
 
-- [x] **W1** Privacy Policy per `## Legal impact` (D2 = A wording), "Last updated" = the day of this
-  item. Verify: `npm run build:main`; `/legal/privacy` renders every changed paragraph; `terms_version` untouched.
-  - Done, verbatim per parent `## Legal impact`: `src/main-app/content/legal/privacy.md:87` §2.6 push bullet (device
-    token); `:275` §5.13 title "Push Services", `:277` browser bullet unchanged, `:278` new Apple APNs bullet; `:296`
-    §6 push paragraph + Apple sentence; `:318` §7 push row (device token, iOS Settings); `:390` §10 new paragraph after
-    the iPhone database paragraph; `:3` "Last updated: November 5, 2026" (already the day of W1, unchanged). `terms.md`
-    untouched (`git diff` empty), `terms_version` unchanged. Spec sync:
-    `wna_orchestration/specs/features/wna-features.md:2599-2605` iPhone privacy bullet. `npm run build:main` green;
-    `dist/main-app/_prerender/legal/privacy/index.html` contains all 8 changed strings; Chrome
-    `http://localhost:5173/legal/privacy`: all changed paragraphs, the "5.13 Push Services" heading (2 bullets) and
-    the §7 row rendered.
-
-Legal (parent `## Legal impact`): W1 is the whole list (§2.6, §5.13, §6, §7, §10, "Last updated"). Help impact: n/a — parent says no change. Landing / Pricing impact: n/a — parent says no change. Screens: n/a — no main-app/admin-app UI changes (Privacy Policy text only). Data contract: n/a — web reads no server data in this FEAT. No dependency on other siblings.
+Screens: n/a — parent § Screens is iPhone-only; the web changes no screen. Help: n/a (parent § Help impact). Landing / Pricing: n/a (parent § Landing / Pricing impact). Data: no server data read.
