@@ -1,11 +1,9 @@
-# FEAT-091 slice — web (`wna_web/main`)
+# FEAT-092 — web slice
 
-- Parent: `wna_orchestration/features/FEAT-091-ios-architecture-offline.md` (FEAT-091, iOS 5 — architecture II) — Screens, Design, Data contract, Legal impact and Work breakdown live there; this slice restates none of it. Items use the parent's IDs.
-- Project: wna_web, `main` worktree only (never `develop-a` / `develop-b`).
-- Open decisions: the Legal text is written for the locked D5 and D6 = B (every sign-out deletes the copy, unsynced changes included); the parent's "**[D6] = A**" wording is NOT used. If the parent shows another answer when you start, use the parent.
+Parent: `FEAT-092` (`../wna_orchestration/features/FEAT-092-ios-architecture-platform.md`) — iOS 6, architecture III: live updates, push, background file transfer. Depends on FEAT-091. This slice is the local checklist only; design (C1–C13), flows (F1–F13), screens (S1–S5), data contract and decisions (D1, D1b, D2) live in the parent — read them there, they are not restated here. Items below are the parent's Work breakdown, verbatim.
 
 ## User flows (this project's part)
-n/a — no web screen changes (parent § Screens covers the iPhone app only). Role-by-role: Free / Pro / Team owner / Team member — the Privacy Policy wording applies to all; Admin — n/a, no admin-app change; unauthenticated — the Privacy Policy is public.
+Parent User flows = n/a — infrastructure. Free / Pro / Team owner / Team member / Admin / not-entitled: n/a — web changes only the Privacy Policy text (W1); it applies to every role alike (a public legal page).
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -19,8 +17,6 @@ n/a — no web screen changes (parent § Screens covers the iPhone app only). Ro
 - `[NA]` — **Not applicable / intentionally not done.** A precondition/gate was not met, or the item
   does not apply to this project/role. State the reason (e.g. "GATE NOT MET — no live error reproduced,
   so the hygiene edit is intentionally skipped"; "n/a — no admin surface"). Does NOT block closure.
-
-Help impact: n/a (parent). Landing / Pricing impact: n/a (parent). Data: no server data read. Screens: n/a — no UI change.
 
 ## Hard rules for the implementer
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
@@ -43,7 +39,7 @@ Help impact: n/a (parent). Landing / Pricing impact: n/a (parent). Data: no serv
    `specs/api/*`; SQL DDL / CI → `specs/ci/*`; features → `specs/features/*`; test cases →
    `specs/tests/*`; architecture → `specs/architecture/*`; numbers → `contracts/*`), you MUST update
    that spec file in `wna_orchestration` as part of this work. Editing the spec's orchestration home is
-   the documented sibling sync requirement (see that repo's CLAUDE.md) — it is REQUIRED, never
+   the documented sibling sync requirement (see this repo's CLAUDE.md) — it is REQUIRED, never
    forbidden, and never "deferred to the user." The local-slice rule forbids only *restating* shared
    facts inside the slice, NOT updating their canonical home. Cite the orchestration `file:line` you
    updated. (Find the home in the orchestration Fact Index.) This includes `/internal/*` routes, CronJobs
@@ -54,17 +50,29 @@ Help impact: n/a (parent). Landing / Pricing impact: n/a (parent). Data: no serv
    one platform module, a single spec file or TC by name). The full regression suite is run by the
    OWNER before deploy — never by the implementer.
 8. **Test and verify LOCALLY only — never on dev/prod** (owner directive). Every run targets the
-   local stack (local docker services, local web dev server, local mocks, the iOS simulator).
+   local stack (local docker services, local web dev server, local mocks; ui-tests `BASE_URL` = local).
    Never deploy, never run tests against `dev.whatsnextaction.com` / `api-dev` / the VM, never add a
    "verify on dev" / "needs a dev deploy" step. A missing dev/prod run is never a reason for `[~]`.
-   The **deploy** slice always prepares BOTH environments, applies the change to the LOCAL stack itself, and writes the exact dev and prod
+   The **deploy** slice always prepares BOTH environments — dev AND prod compose overrides, config.json, crontabs, scripts —
+   applies the change to the LOCAL stack itself (local migrations, local config), and writes the exact dev and prod
    command lines as a section in `wna_deploy/backend/gce/PENDING-develop.md` / `PENDING-production.md`. Operator-only
    steps (GCP/VM provisioning, applying migrations or config to dev/prod) are authored + locally/dry-run verified,
    then marked `[NA] OPERATOR STEP — in PENDING-develop.md / PENDING-production.md §<ID>`. A task closes on
    local tests alone — never wait for a dev or prod confirmation.
-9. **No git writes in a PM job** — the queue commits and pushes this repo itself after the job.
 
 ## Checklist
-Order: W1 has no dependency. Job: **item W1** (1 box).
-- [x] **W1** Legal impact (parent § Legal impact — ToS / Privacy Policy), all of it in this one box: `src/main-app/content/legal/privacy.md` §10 new paragraph after the iPhone Keychain paragraph (text per the parent, D5 / D6 = B); §7 new row after "Sync records of permanently deleted data"; "Last updated" = the date of the change; `terms.md` untouched, `terms_version` unchanged. Plus `specs/features/wna-features.md` — the iPhone privacy bullet (the FEAT-090 lines) names the local copy (update that orchestration home). Verify: the text matches the parent § Legal impact; `npm run build` green; rendered on `/legal/privacy` locally.
-  - Done (D6 still open in the parent → D6 = B text used, per this slice): `src/main-app/content/legal/privacy.md:387` §10 paragraph (after the Keychain paragraph, verbatim per parent § Legal impact); `privacy.md:308` §7 row right after "Sync records…" (`:307`); `privacy.md:3` "Last updated: November 5, 2026"; `terms.md` untouched (`git diff` empty), `terms_version` unchanged. `wna_orchestration/specs/features/wna-features.md:2594-2599` iPhone privacy bullet names the local copy + §7 row. `npm run build:main` green; `dist/main-app/_prerender/legal/privacy/index.html` contains the paragraph, row and date; Chrome `http://localhost:5173/legal/privacy`: date, §10 paragraph and the §7 row directly after "Sync records" rendered.
+Items below.
+
+- [x] **W1** Privacy Policy per `## Legal impact` (D2 = A wording), "Last updated" = the day of this
+  item. Verify: `npm run build:main`; `/legal/privacy` renders every changed paragraph; `terms_version` untouched.
+  - Done, verbatim per parent `## Legal impact`: `src/main-app/content/legal/privacy.md:87` §2.6 push bullet (device
+    token); `:275` §5.13 title "Push Services", `:277` browser bullet unchanged, `:278` new Apple APNs bullet; `:296`
+    §6 push paragraph + Apple sentence; `:318` §7 push row (device token, iOS Settings); `:390` §10 new paragraph after
+    the iPhone database paragraph; `:3` "Last updated: November 5, 2026" (already the day of W1, unchanged). `terms.md`
+    untouched (`git diff` empty), `terms_version` unchanged. Spec sync:
+    `wna_orchestration/specs/features/wna-features.md:2599-2605` iPhone privacy bullet. `npm run build:main` green;
+    `dist/main-app/_prerender/legal/privacy/index.html` contains all 8 changed strings; Chrome
+    `http://localhost:5173/legal/privacy`: all changed paragraphs, the "5.13 Push Services" heading (2 bullets) and
+    the §7 row rendered.
+
+Legal (parent `## Legal impact`): W1 is the whole list (§2.6, §5.13, §6, §7, §10, "Last updated"). Help impact: n/a — parent says no change. Landing / Pricing impact: n/a — parent says no change. Screens: n/a — no main-app/admin-app UI changes (Privacy Policy text only). Data contract: n/a — web reads no server data in this FEAT. No dependency on other siblings.

@@ -84,7 +84,7 @@ We automatically collect certain technical data when you use the Service:
 - **Days of use** - the calendar days (UTC) on which you used the Service, recorded once per day, for usage statistics
 - **Sign-in method** - how each session was signed in (email, Google or Apple), shown in your account settings
 - **Authentication tokens** - stored in your browser's localStorage, or in the iPhone's Keychain in the iPhone app, for session management
-- **Push notification subscription** - if you turn on notifications on a device, your browser gives us a push address at its vendor's push service and two encryption keys; we keep them with that device's session
+- **Push notification subscription** - if you turn on notifications on a device, your browser gives us a push address at its vendor's push service and two encryption keys, or the iPhone app gives us the device token Apple assigned to it for notifications; we keep them with that device's session
 
 ### 2.7 Preference Data
 
@@ -272,9 +272,10 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 - **Scaleway (Generative APIs, Paris, France)** - if you use the AI assistant, Scaleway SAS processes what the assistant sends to the AI model you chose (your request with the page you have open, the conversation, the memory notes and the content it reads to carry out your request) and returns the model's reply, as our processor under Scaleway's data processing terms. The models are open models from various makers that Scaleway runs on its own servers in France; the makers of the models do not receive your data. Scaleway does not keep this content after answering, except for up to two weeks when needed to investigate an error or abuse, and does not use it to train AI models.
 
-### 5.13 Browser Push Services
+### 5.13 Push Services
 
 - **Google (Firebase Cloud Messaging: Chrome, Android and most Chromium-based browsers), Apple (Apple Push Notification service: Safari, iPhone and iPad), Mozilla (Firefox) and Microsoft (Windows Push Notification Services: Edge)** - if you turn on notifications on a device, the push service of your browser's vendor delivers each notification to that device. Each notification is encrypted so that only your device can read it; the push service processes the push address and the time and size of each notification under its own privacy policy.
+- **Apple (Apple Push Notification service: the iPhone app)** - if you turn on notifications in the iPhone app, Apple's push service delivers each notification to your iPhone. To deliver it, Apple receives the device token and the notification itself — its title and text, such as an action or project title or the email address of the person who acted — and processes them under its own privacy policy; unlike browser notifications, these are not encrypted end to end.
 
 ## 6. International Data Transfers
 
@@ -292,7 +293,7 @@ If you sign in with Apple, Apple may process your sign-in, and the emails relaye
 
 If you connect an AI app, its provider may process the content it reads outside the EEA under its own privacy policy. We make that content available at your instruction, to provide the connection you requested (Art. 49(1)(b) GDPR).
 
-If you turn on notifications on a device, the push service your browser uses (Section 5.13) may process the push address and delivery metadata outside the EEA; the content of each notification stays encrypted. We use the push service your browser chose, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR).
+If you turn on notifications on a device, the push service your browser uses (Section 5.13) may process the push address and delivery metadata outside the EEA; the content of each notification stays encrypted. We use the push service your browser chose, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR). In the iPhone app, Apple may also process the content of each notification outside the EEA (Section 5.13); we use it, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR).
 
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
 
@@ -314,7 +315,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Public-page visit records | 7 days; after that only daily totals without any visitor code are kept |
 | Sign-up source | Kept for the duration of your account |
 | Days of use | Kept for the duration of your account; when you delete your account, they are kept without your identity |
-| Push notification subscription (push address, encryption keys) | Deleted when you turn notifications off on that device, sign out, the session ends or expires, the push service reports the address invalid, or you delete your account |
+| Push notification subscription (push address, encryption keys; iPhone device token) | Deleted when you turn notifications off on that device (on the iPhone also in iOS Settings, noticed the next time you open the app), sign out, the session ends or expires, the push service reports the address invalid, or you delete your account |
 | Connected AI apps (name, return addresses, connection and last-use time, hashed credential) | Kept until you remove the app, until its connection expires after the same period of non-use as a session, or until you delete your account; registrations by an AI app that never complete a connection are deleted after 24 hours |
 | AI assistant conversation (messages and running summary) | Deleted 30 days after its last message, when you start a new conversation, or when you delete your account |
 | AI assistant memory | Kept until you edit or clear it, or delete your account |
@@ -385,6 +386,8 @@ We use your browser's **IndexedDB** and **cache** to store:
 In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
 
 The iPhone app also keeps a copy of your account's content — your items and projects, comments, the details of your attachments and Reference files, templates, horizons and the members of your shared projects — in a database on that iPhone, so the app opens without waiting and works without a connection, together with the changes you make until they reach your account. The database is protected by the iPhone's data protection and is not included in iCloud or computer backups. Logging out deletes it (the app warns you first when changes have not reached your account yet), and deleting the app deletes it. When your session ends without logging out — your sign-in expires because the app has not reached our servers for a while, or your session is ended on our side, for example because you signed that iPhone out from another device or deleted your account — the app deletes it, including changes that have not reached your account, as soon as it notices: when it is next opened or next reaches our servers.
+
+The iPhone app also keeps the attachments you open or download, so they open again without downloading, and whether you turned notifications on in your current sign-in. Logging out deletes both; iOS may delete the kept attachments earlier when the iPhone runs low on space.
 
 These storage mechanisms are **strictly necessary** for the Service to function and fall under the exemption in Article 5(3) of the ePrivacy Directive (2002/58/EC). No consent is required for strictly necessary storage.
 
