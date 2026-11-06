@@ -1,9 +1,9 @@
-# FEAT-093 — web slice
+# FEAT-094 — web slice
 
-Parent: `FEAT-093` (`../wna_orchestration/features/FEAT-093-ios-sign-in.md`) — iOS 7, sign-in, registration, account. Depends on FEAT-089 + FEAT-092. This slice is the local checklist only; design (C1–C13), flows (F1–F11), screens (S1–S7), data contract, legal impact and decisions (D1, D2) live in the parent — read them there, they are not restated here. The items below are the parent's Work breakdown, verbatim.
+Parent: `FEAT-094` (`../wna_orchestration/features/FEAT-094-ios-capture-inbox.md`) — iOS 8, capture and Inbox. Depends on FEAT-093. This slice is the local checklist only; design (C1–C9), flows (F1–F8), screens (S1–S5), data contract, legal impact and decisions live in the parent — read them there, they are not restated here. The items below are the parent's Work breakdown.
 
 ## User flows (this project's part)
-All roles (Free / Pro / Team owner / member / Admin / unauthenticated): no screen and no web flow changes — the website only (1) lets an iPhone with the app open `/verify` and `/reset-password` links (universal links, parent C7, for sign-ups and resets started on the website) and (2) states in the Privacy Policy that one sign-in token is kept per app (parent § Legal impact). Admin-app: n/a — web only, untouched.
+All roles (Free / Pro / Team owner / member / Admin / unauthenticated): no screen and no web flow changes — the website only states in the Privacy Policy that the iPhone app also uses the camera (parent § Legal impact). Admin-app: n/a — web only, no change. Not-entitled: n/a — no tier gate.
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -61,12 +61,14 @@ All roles (Free / Pro / Team owner / member / Admin / unauthenticated): no scree
    local tests alone — never wait for a dev or prod confirmation.
 
 ## Checklist
-- [x] **W1** AASA = C7. Verify: `npm run build:main`; `jq .` on `dist/main-app/.well-known/apple-app-site-association`
-  lists `/verify` and `/reset-password` beside the FEAT-090 components. Home: `specs/features/wna-ios.md` 2.5 (ios
-  role, I8).
-  Done: `src/main-app/public/.well-known/apple-app-site-association:12` adds `{ "/": "/verify" }`, `{ "/": "/reset-password" }`, nothing else changed; `npm run build:main` green; `jq` on `dist/main-app/.well-known/apple-app-site-association` lists both after the FEAT-090 components. Spec: `wna_orchestration/specs/features/wna-features.md:2640` (static-files bullet cites FEAT-093 C7); `specs/features/wna-ios.md` 2.5 left to the ios role (I8).
-- [x] **W2** Privacy Policy per `## Legal impact`, "Last updated" = the day of this item. Verify: `npm run build:main`;
-  `/legal/privacy` renders the three changed sentences; `terms_version` untouched.
-  Done: `src/main-app/content/legal/privacy.md:25` (Google), `:26` (Apple), `:313` (§7 row) = the § Legal impact wording; `:3` "Last updated" = November 5, 2026 (already today, unchanged); `terms.md` / `__TERMS_VERSION__` untouched. `npm run build:main` green; prerendered `dist/main-app/_prerender/legal/privacy/index.html` and Chrome `localhost:5173/legal/privacy` show all three sentences (desktop + 500 px: the table row wraps, no overflow).
+- [x] **W1** Privacy Policy per `## Legal impact`, "Last updated" = the day of this item. Verify: `npm run build:main`;
+  `/legal/privacy` renders the changed §2.2 sentence; `terms_version` untouched.
+  Done: `src/main-app/content/legal/privacy.md:3` (Last updated: November 6, 2026), `:44` (§2.2 sentence verbatim per
+  parent § Legal impact; next sentence unchanged). `npm run build:main` green; prerendered `/legal/privacy` contains the new
+  sentence and date; live `:5173/legal/privacy` renders it (Chrome). `terms.md` untouched → `__TERMS_VERSION__`
+  (`config/vite.core.js:170`) unchanged.
 
-Screens: n/a — parent § Screens is iPhone-only; the web changes no screen. Help: n/a (parent § Help impact). Landing / Pricing: n/a (parent § Landing / Pricing impact). Data: no server data read.
+### Who / what / waits on
+| Items | Needs from others |
+|---|---|
+| W1 | nothing — no dependency; no screen, no Help, no Landing / Pricing change (parent § Help impact, § Landing / Pricing impact: n/a) |
