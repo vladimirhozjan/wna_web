@@ -74,12 +74,9 @@
                 <!-- Received invitations (all tiers) -->
                 <div v-if="connections.pendingReceived.value.length > 0" class="settings-row settings-row--column">
                   <span class="settings-label">Received invitations</span>
-                  <template v-if="!isTeamTier">
-                    <p class="text-body-s settings-hint">
-                      You can accept these invitations by upgrading to the Team plan. Otherwise, you can decline them on your current plan.
-                    </p>
-                    <Btn variant="primary" size="sm" @click="openUpgrade">{{ upgradeLabel }}</Btn>
-                  </template>
+                  <p v-if="!isTeamTier && !showDowngradeBanner" class="text-body-s settings-hint">
+                    Accepting a connection requires the Team plan. You can decline any invitation on your current plan.
+                  </p>
                   <div class="connections-list">
                     <div v-for="inv in connections.pendingReceived.value" :key="inv.id" :data-row-id="`r-${inv.id}`" class="connection-item">
                       <div class="connection-info">
@@ -91,7 +88,7 @@
                             variant="primary"
                             size="sm"
                             :loading="actingId === inv.id && actingType === 'accept'"
-                            :disabled="!!actingId || !isTeamTier"
+                            :disabled="!!actingId"
                             @click="onAccept(inv)"
                         >Accept</Btn>
                         <Btn
@@ -121,7 +118,7 @@
                             size="sm"
                             :loading="actingId === inv.id && actingType === 'remove'"
                             :disabled="!!actingId"
-                            @click="onRemove(inv)"
+                            @click="onCancelInvite(inv)"
                         >Cancel</Btn>
                       </div>
                     </div>
@@ -143,7 +140,7 @@
                             size="sm"
                             :loading="actingId === conn.id && actingType === 'remove'"
                             :disabled="!!actingId"
-                            @click="onRemove(conn)"
+                            @click="onRemoveConnection(conn)"
                         >Remove</Btn>
                       </div>
                     </div>
@@ -296,16 +293,27 @@ watch([connections.connections, connections.pendingSent, connections.pendingRece
   if (confirmRowId && !lists.some(list => list.some(c => c.id === confirmRowId))) confirm.close()
 })
 
-async function onRemove(item) {
-  confirmRowId = item.id
-  const confirmed = await confirm.show({
-    title: 'Remove connection',
-    message: item.email
-        ? `Remove ${item.email} from your connections? In-flight delegations stay open.`
-        : `Cancel the invitation to ${item.invitee_email || item.inviter_email || 'this person'}?`,
+function onCancelInvite(inv) {
+  return confirmRemove(inv, {
+    title: 'Cancel invitation?',
+    message: `${inv.invitee_email} won't be able to accept it.`,
+    confirmText: 'Cancel invitation',
+    cancelText: 'Keep',
+  }, "Couldn't cancel the invitation. Try again.")
+}
+
+function onRemoveConnection(conn) {
+  return confirmRemove(conn, {
+    title: 'Remove connection?',
+    message: `Remove ${conn.email} from your connections? Delegated actions stay open. In projects you share, whoever doesn't own the project loses access.`,
     confirmText: 'Remove',
     cancelText: 'Cancel',
-  })
+  }, "Couldn't remove the connection. Try again.")
+}
+
+async function confirmRemove(item, dialog, failureMessage) {
+  confirmRowId = item.id
+  const confirmed = await confirm.show(dialog)
   confirmRowId = null
   if (!confirmed) return
   actingId.value = item.id
@@ -313,7 +321,9 @@ async function onRemove(item) {
   try {
     await connections.remove(item.id)
   } catch (err) {
-    toaster.push(err?.message || 'Could not remove')
+    // Already gone elsewhere — the re-read drops the row
+    if (err?.status === 404) connections.loadAll().catch(() => {})
+    else toaster.push(failureMessage)
   } finally {
     actingId.value = null
     actingType.value = null

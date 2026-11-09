@@ -1136,7 +1136,8 @@ async function submitShareModal() {
     shareModalOpen.value = false
   } catch (err) {
     const status = err?.status || err?.response?.status
-    if (status === 403) shareModalError.value = 'Sharing requires the Team plan.'
+    if (err?.code === 'not_a_connection') shareModalError.value = err.message
+    else if (status === 403) shareModalError.value = 'Sharing requires the Team plan.'
     else if (status === 409) shareModalError.value = 'Project state changed — please retry.'
     else if (status === 400) shareModalError.value = 'Invalid selection — please retry.'
     else shareModalError.value = friendlyMemberError(err, 'Could not complete the action.')
