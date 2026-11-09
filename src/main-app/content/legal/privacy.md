@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 6, 2026
+**Last updated:** November 9, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -277,6 +277,10 @@ We may disclose your data if required to do so by law, court order, or a binding
 - **Google (Firebase Cloud Messaging: Chrome, Android and most Chromium-based browsers), Apple (Apple Push Notification service: Safari, iPhone and iPad), Mozilla (Firefox) and Microsoft (Windows Push Notification Services: Edge)** - if you turn on notifications on a device, the push service of your browser's vendor delivers each notification to that device. Each notification is encrypted so that only your device can read it; the push service processes the push address and the time and size of each notification under its own privacy policy.
 - **Apple (Apple Push Notification service: the iPhone app)** - if you turn on notifications in the iPhone app, Apple's push service delivers each notification to your iPhone. To deliver it, Apple receives the device token and the notification itself — its title and text, such as an action or project title or the email address of the person who acted — and processes them under its own privacy policy; unlike browser notifications, these are not encrypted end to end.
 
+### 5.14 Siri and Shortcuts
+
+- If you use WhatsNextAction with Siri or Shortcuts, Apple processes your request under its own privacy policy. To answer "What's next", the app gives Siri the titles of up to three of your Today or Next actions to show and read aloud; Siri asks you to unlock your iPhone first. Adding to your Inbox works while the iPhone is locked.
+
 ## 6. International Data Transfers
 
 We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres. The AI assistant's model processing also stays in the EEA, at Scaleway in France (Section 5.12).
@@ -295,6 +299,8 @@ If you connect an AI app, its provider may process the content it reads outside 
 
 If you turn on notifications on a device, the push service your browser uses (Section 5.13) may process the push address and delivery metadata outside the EEA; the content of each notification stays encrypted. We use the push service your browser chose, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR). In the iPhone app, Apple may also process the content of each notification outside the EEA (Section 5.13); we use it, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR).
 
+If you use Siri, Apple may process your request and its answer outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
+
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
 
 If any data transfer outside the EEA becomes necessary in the future, we will ensure appropriate safeguards are in place, such as Standard Contractual Clauses (SCCs) approved by the European Commission, and we will update this Privacy Policy accordingly.
@@ -306,7 +312,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Active account data (including your name and Google / Apple sign-in identifiers) and content | Retained for the duration of your account |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Sync records of permanently deleted data (the identifier of what was deleted and when — no content), kept so your other devices remove it too | Deleted 90 days after the deletion, or with your account |
-| Copy of your content in the iPhone app (kept on your iPhone) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
+| Copy of your content in the iPhone app (kept on your iPhone, and the Next list on a paired Apple Watch) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, WhatsNextAction calendar identifier, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar, the WhatsNextAction calendar identifier and the event identifiers are kept after you disconnect Google Calendar, so that reconnecting continues where you left off, and are deleted when you delete your account. On account deletion we also revoke our access at Google. Your WhatsNextAction calendar and the events already in your Google Calendar are yours and stay there |
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
@@ -386,6 +392,8 @@ We use your browser's **IndexedDB** and **cache** to store:
 In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
 
 The iPhone app also keeps a copy of your account's content — your items and projects, comments, the details of your attachments and Reference files, templates, horizons and the members of your shared projects — in a database on that iPhone, so the app opens without waiting and works without a connection, together with the changes you make until they reach your account. The database is protected by the iPhone's data protection and is not included in iCloud or computer backups. Logging out deletes it (the app warns you first when changes have not reached your account yet), and deleting the app deletes it. When your session ends without logging out — your sign-in expires because the app has not reached our servers for a while, or your session is ended on our side, for example because you signed that iPhone out from another device or deleted your account — the app deletes it, including changes that have not reached your account, as soon as it notices: when it is next opened or next reaches our servers.
+
+If you add WhatsNextAction widgets, the iPhone keeps a small copy for them — your Inbox, Today and Next counts and the titles and dates of your first Today actions — and holds what you share to WhatsNextAction, complete from a widget or capture on your Apple Watch until the app adds it to your account. If you use the Apple Watch app, your iPhone sends the Watch your first 50 Next actions (titles, dates, project names, tags and the start of each description), which the Watch keeps until the next update. Both copies are protected by the device's data protection; logging out on the iPhone deletes them and clears the Watch.
 
 The iPhone app also keeps the attachments you open or download, so they open again without downloading, and whether you turned notifications on in your current sign-in. Logging out deletes both; iOS may delete the kept attachments earlier when the iPhone runs low on space.
 

@@ -1,9 +1,11 @@
-# FEAT-094 — web slice
+# FEAT-107 — web slice
 
-Parent: `FEAT-094` (`../wna_orchestration/features/FEAT-094-ios-capture-inbox.md`) — iOS 8, capture and Inbox. Depends on FEAT-093. This slice is the local checklist only; design (C1–C9), flows (F1–F8), screens (S1–S5), data contract, legal impact and decisions live in the parent — read them there, they are not restated here. The items below are the parent's Work breakdown.
+Parent: `FEAT-107` (`../wna_orchestration/features/FEAT-107-ios-only-extras.md`) — iOS 21, iOS-only: widget, Share, Siri, Apple Watch. This slice is the local checklist only; the wording of the Privacy Policy edit is the parent's `## Legal impact — ToS / Privacy Policy` — read it there, it is not restated here. No code, no server data (Data contract: none for web). Help and Landing / Pricing impact: n/a per the parent — no box.
+
+Reserved TCs: none (TCs are authored by `ios-tests`).
 
 ## User flows (this project's part)
-All roles (Free / Pro / Team owner / member / Admin / unauthenticated): no screen and no web flow changes — the website only states in the Privacy Policy that the iPhone app also uses the camera (parent § Legal impact). Admin-app: n/a — web only, no change. Not-entitled: n/a — no tier gate.
+Free / Pro / Team user: reads the changed Privacy Policy paragraphs at `/legal/privacy`. Team member: as above. Admin: n/a — admin-app is web only. Unauthenticated: the legal pages are public and show the same text. Not-entitled / blocked: n/a — no gate.
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -61,14 +63,5 @@ All roles (Free / Pro / Team owner / member / Admin / unauthenticated): no scree
    local tests alone — never wait for a dev or prod confirmation.
 
 ## Checklist
-- [x] **W1** Privacy Policy per `## Legal impact`, "Last updated" = the day of this item. Verify: `npm run build:main`;
-  `/legal/privacy` renders the changed §2.2 sentence; `terms_version` untouched.
-  Done: `src/main-app/content/legal/privacy.md:3` (Last updated: November 6, 2026), `:44` (§2.2 sentence verbatim per
-  parent § Legal impact; next sentence unchanged). `npm run build:main` green; prerendered `/legal/privacy` contains the new
-  sentence and date; live `:5173/legal/privacy` renders it (Chrome). `terms.md` untouched → `__TERMS_VERSION__`
-  (`config/vite.core.js:170`) unchanged.
-
-### Who / what / waits on
-| Items | Needs from others |
-|---|---|
-| W1 | nothing — no dependency; no screen, no Help, no Landing / Pricing change (parent § Help impact, § Landing / Pricing impact: n/a) |
+- [x] **W1** Privacy Policy per the parent's `## Legal impact`: §5.14 new (Siri and Shortcuts), §6 (Siri outside the EEA), §7 row (copy in the iPhone app and the Next list on a paired Apple Watch), §10 paragraph (widgets / Watch copy), `**Last updated:**` = the ship date; file `src/main-app/content/legal/privacy.md`; `terms_version` untouched. Verify: `npm run build:main`; `/legal/privacy` renders the changed paragraphs; `terms_version` untouched.
+  - Done 2026-11-09: `src/main-app/content/legal/privacy.md:3` Last updated November 9, 2026 · `:280` §5.14 Siri and Shortcuts · `:302` §6 Siri outside the EEA · `:315` §7 row (+ Next list on a paired Apple Watch) · `:396` §10 widgets / Watch paragraph — wording verbatim from the parent's `## Legal impact`. `npm run build:main` green; prerendered `dist/main-app/_prerender/legal/privacy/index.html` contains all five changes. `terms_version` untouched (`content/legal/terms.md` not changed; no ToS edit). Spec: `wna_orchestration/specs/features/wna-features.md:2609` §24.4.
