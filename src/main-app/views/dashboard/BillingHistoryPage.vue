@@ -30,7 +30,7 @@
               <div class="billing-row-info">
                 <span class="billing-row-title">{{ rowTitle(p) }}</span>
                 <span class="text-body-s billing-row-meta">
-                  {{ formatDate(p.created_at) }}<template v-if="p.invoice"> · Invoice {{ p.invoice.invoice_number }}</template>
+                  {{ formatDate(p.created_at) }}<template v-if="p.invoice"> · Invoice {{ p.invoice.invoice_number }}</template><template v-else-if="p.provider === 'app_store'"> · App Store</template>
                 </span>
               </div>
               <span class="billing-row-amount" :class="{ 'billing-row-amount--refund': p.kind === 'refund' }">{{ formatAmount(p) }}</span>
@@ -53,7 +53,7 @@
                 <span class="billing-row-title">Credit note {{ cn.credit_note_number }}</span>
                 <span class="text-body-s billing-row-meta">{{ formatDate(cn.issued_at) }}</span>
               </div>
-              <span class="billing-row-amount billing-row-amount--refund">−€{{ (cn.amount_minor / 100).toFixed(2) }}</span>
+              <span class="billing-row-amount billing-row-amount--refund">−{{ formatMoney(cn.amount_minor, p.currency) }}</span>
               <Btn
                   variant="secondary" size="sm"
                   :loading="downloadingId === cn.id"
@@ -132,8 +132,14 @@ function rowTitle(p) {
   return `${kind} · ${p.status.charAt(0).toUpperCase() + p.status.slice(1)}`
 }
 
+// amount_minor is in the minor units of the row's ISO 4217 currency (JPY has none)
+function formatMoney(amountMinor, currency) {
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency })
+  return fmt.format(amountMinor / 10 ** fmt.resolvedOptions().maximumFractionDigits)
+}
+
 function formatAmount(p) {
-  const value = `€${(p.amount_minor / 100).toFixed(2)}`
+  const value = formatMoney(p.amount_minor, p.currency)
   return p.kind === 'refund' ? `−${value}` : value
 }
 

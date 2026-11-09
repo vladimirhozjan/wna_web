@@ -1,11 +1,9 @@
-# FEAT-107 — web slice
+# FEAT-104 — web slice
 
-Parent: `FEAT-107` (`../wna_orchestration/features/FEAT-107-ios-only-extras.md`) — iOS 21, iOS-only: widget, Share, Siri, Apple Watch. This slice is the local checklist only; the wording of the Privacy Policy edit is the parent's `## Legal impact — ToS / Privacy Policy` — read it there, it is not restated here. No code, no server data (Data contract: none for web). Help and Landing / Pricing impact: n/a per the parent — no box.
-
-Reserved TCs: none (TCs are authored by `ios-tests`).
+Parent: `FEAT-104` (`../wna_orchestration/features/FEAT-104-ios-in-app-purchase.md`) — iOS 18: in-app purchase (Pro, Team, AI credits). This slice is the local checklist only; Design (Boundaries, Contracts C1–C16, Flows F1–F10), Data contract, Screens, Legal / Help / Landing impact and decisions D1–D8 live in the parent — read them there, they are not restated here. Item ids (DP/B/W/U/I/T) are the parent's Work breakdown ids. Local stack only. Work ONLY in the `main` worktree. Starts after backend B1–B9 and deploy DP4; deploy DP6 waits on W5. Screens: S7 of the parent § Screens (every state, exact copy).
 
 ## User flows (this project's part)
-Free / Pro / Team user: reads the changed Privacy Policy paragraphs at `/legal/privacy`. Team member: as above. Admin: n/a — admin-app is web only. Unauthenticated: the legal pages are public and show the same text. Not-entitled / blocked: n/a — no gate.
+Free / Pro / Team owner / Team member: a user whose subscription is billed by the App Store sees S7 (Plan line, delete-modal line, Billing-history row, per-row currency); web subscriptions are unchanged. Admin (admin-app): App Store label, Refund / Cancel-on-gateway hidden for App Store rows (W3). Not-entitled / blocked: n/a — no change. Unauthenticated: public Pricing footnote (W7), legal and Help texts (W5, W6).
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
 - `[ ]` — **Not started.** Untouched; no work done yet. This is the generator default; once you act on
@@ -63,5 +61,31 @@ Free / Pro / Team user: reads the changed Privacy Policy paragraphs at `/legal/p
    local tests alone — never wait for a dev or prod confirmation.
 
 ## Checklist
-- [x] **W1** Privacy Policy per the parent's `## Legal impact`: §5.14 new (Siri and Shortcuts), §6 (Siri outside the EEA), §7 row (copy in the iPhone app and the Next list on a paired Apple Watch), §10 paragraph (widgets / Watch copy), `**Last updated:**` = the ship date; file `src/main-app/content/legal/privacy.md`; `terms_version` untouched. Verify: `npm run build:main`; `/legal/privacy` renders the changed paragraphs; `terms_version` untouched.
-  - Done 2026-11-09: `src/main-app/content/legal/privacy.md:3` Last updated November 9, 2026 · `:280` §5.14 Siri and Shortcuts · `:302` §6 Siri outside the EEA · `:315` §7 row (+ Next list on a paired Apple Watch) · `:396` §10 widgets / Watch paragraph — wording verbatim from the parent's `## Legal impact`. `npm run build:main` green; prerendered `dist/main-app/_prerender/legal/privacy/index.html` contains all five changes. `terms_version` untouched (`content/legal/terms.md` not changed; no ToS edit). Spec: `wna_orchestration/specs/features/wna-features.md:2609` §24.4.
+- [ ] W1 — `main-app/scripts/models/paymentModel.js` `applyStatus` keeps `provider` (C6, from B5).
+  - `SettingsPage.vue` Plan: while `provider === 'app_store'`, the Cancel row (`:143`) is replaced by the S7 line
+    `data-testid="plan-app-store"`.
+  - Delete modal (`:750`): the existing line only for `paywiser` / `stripe`; the S7 line
+    `data-testid="delete-account-app-store"` while App Store and renewing.
+  - Unit test (vitest) for both branches. Consumes B5.
+  - Screen: S7 Plan + Delete account modal, built per the parent § Screens S7 (every state + exact copy).
+  - Data: `provider` (+ `status`, `expires_at`, `cancel_at_period_end`) — `GET /v1/payments/status` — new field `provider` provided by backend B5.
+- [ ] W2 — `BillingHistoryPage.vue`: `formatAmount` (`:135`) and the credit-note amount (`:56`) format
+  `amount_minor` in the row's `currency` (F9; refunds "−").
+  - An `app_store` row: meta "{date} · App Store", not clickable, no Download.
+  - Vitest: EUR, USD, JPY; an App Store row has no button. Consumes B3 (row shape) / C7.
+  - Screen: S7 Billing history, built per the parent § Screens S7 (every state + exact copy).
+  - Data: `amount_minor`, `currency`, `provider`, `invoice` (null for App Store) — `GET /v1/payments/history` — App Store rows provided by backend B3.
+- [ ] W3 — admin-app:
+  - `scripts/core/apiClient.js` `GATEWAYS` gains `{ value: 'app_store', label: 'App Store' }`;
+  - `UserPaymentsPage.vue` / `UserInvoicesPage.vue` hide Refund on `provider === 'app_store'` rows and show
+    `store_environment` `Sandbox` as a `Badge`;
+  - `UserDetailPage.vue` hides "Cancel on {Gateway}" when the gateway-subscription `provider` is `app_store`.
+  - Vitest per hide. Consumes B8.
+  - Data: `provider`, `store_environment` — admin user payments / gateway-subscription endpoints — backend B8.
+- [ ] W4 — C15 AASA paths in `src/main-app/public/.well-known/apple-app-site-association`; `jq .` passes. Consumed by
+  I9 (real links).
+- [ ] W5 — `content/legal/terms.md` and `privacy.md` per `## Legal impact`, with "Last updated" = the date of the change
+  (no change notice, D8). The same date goes to deploy DP6 `terms_version`.
+- [ ] W6 — `content/help/faq.js` per `## Help impact` (6 edited answers + 1 new entry).
+- [ ] W7 — `views/public/PricingPage.vue`: the footnote of `## Landing / Pricing impact`.
+- [ ] W8 — `specs/features/wna-features.md` §21.3 / §41.6: the S7 lines, from the built code.

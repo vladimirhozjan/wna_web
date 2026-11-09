@@ -6,6 +6,8 @@ Obey this repo's CLAUDE.md (code style, rules, memories) at all times. "This rep
 you are invoked in (here: `wna-web`) — NOT `wna_orchestration`. Only `wna-web/CLAUDE.md` governs
 your behavior.
 
+Code lookups (owner, 2026-11-09): for structural questions (where is X declared, who calls X, what does X call, what does a change touch) run `fil find|show|callers|callees|impact` FIRST, with `--repo <name>` for a sibling; then read only the lines it points to. Do not `grep -rn "func X"` / `"var X"` / `"class X"` for declarations or usages. Use grep only for literal strings, log messages, config keys and docs.
+
 Implement $ARGUMENTS in this repo.
 
 1. Read the local feat/bug slice for $ARGUMENTS in this repo at `.claude/features/$ARGUMENTS-*.md`.

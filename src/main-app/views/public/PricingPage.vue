@@ -48,6 +48,9 @@
           Credits refill every month. Requests are estimated for the default model; bigger models use more credits.
           Need more? Buy a credit pack on any plan.
         </p>
+        <p class="text-footnote ai-footnote" data-testid="pricing-app-store-footnote">
+          Prices are for purchases on the website. In the iPhone app, plans and AI credits are sold by Apple at App Store prices.
+        </p>
       </div>
     </section>
 

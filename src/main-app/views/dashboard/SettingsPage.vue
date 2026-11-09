@@ -140,7 +140,10 @@
                     </div>
 
                     <!-- No change-plan UI: switch plans by cancelling, then upgrading after expiry -->
-                    <div v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="settings-row">
+                    <div v-if="hasActiveSubscription && payment.state.provider === 'app_store'" class="settings-row">
+                      <p class="text-body-s settings-hint" data-testid="plan-app-store">Billed through the App Store. Change or cancel it on your iPhone in Settings → your name → Subscriptions.</p>
+                    </div>
+                    <div v-else-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="settings-row">
                       <div>
                         <span class="settings-label">Cancel subscription</span>
                         <p class="text-body-s settings-hint">Stops auto-renew — you keep access until the expiration date</p>
@@ -747,7 +750,8 @@
       <Modal :visible="showDeleteModal" title="Delete account" @close="closeDeleteModal">
         <div class="delete-account-body" data-testid="delete-account-modal">
           <p class="text-body-m color-text-secondary">This permanently deletes your account and everything in it, including the projects you share with others. This can't be undone.</p>
-          <p v-if="hasActiveSubscription && !payment.state.cancelAtPeriodEnd" class="text-body-m color-text-secondary">Your paid subscription is cancelled too.</p>
+          <p v-if="renewingSubscription && payment.state.provider === 'app_store'" class="text-body-m color-text-secondary" data-testid="delete-account-app-store">Deleting your account doesn't cancel your App Store subscription. Cancel it on your iPhone first, or Apple keeps charging you.</p>
+          <p v-else-if="renewingSubscription && ['paywiser', 'stripe'].includes(payment.state.provider)" class="text-body-m color-text-secondary">Your paid subscription is cancelled too.</p>
           <p v-if="assistant.enabled.value && assistant.state.account?.purchased_left > 0" class="text-body-m color-text-secondary" data-testid="delete-account-ai-credits">Your unused extra AI credits are lost too.</p>
           <p class="text-body-m color-text-secondary">To confirm, type <strong class="delete-account-email color-text-primary">{{ userEmail }}</strong> below.</p>
           <Inpt ref="deleteEmailInput" v-model="deleteEmail" type="email" placeholder="Enter your email address"
@@ -1034,6 +1038,8 @@ function formatBytes(bytes) {
 // Payment & billing
 const hasActiveSubscription = computed(() =>
     payment.state.tier !== 'free' && ['active', 'past_due'].includes(payment.state.status))
+
+const renewingSubscription = computed(() => hasActiveSubscription.value && !payment.state.cancelAtPeriodEnd)
 
 const planHint = computed(() => {
   if (hasActiveSubscription.value) {

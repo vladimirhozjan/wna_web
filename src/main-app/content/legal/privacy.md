@@ -71,6 +71,7 @@ If you subscribe to a paid plan, we collect and store:
 - **Payment records** - date, amount, plan, status, payment method type and, for cards, the card brand and last 4 digits, and refunds of each payment, together with the invoices and credit notes we issue to you
 - **Location evidence for VAT** - the country of your card's issuer, where available (received from our payment provider) and, for your first payment, the country derived from your IP address. EU VAT law requires us to keep evidence of the customer's location. The IP country lookup uses [IP Geolocation by DB-IP](https://db-ip.com).
 - **ToS acceptance record** - the version of the Terms of Service you accepted at checkout, the time, your IP address and browser (user agent)
+- **App Store purchase records** - for subscriptions and AI credit packs bought in the iPhone app: Apple's transaction identifiers, the product, the date, the amount and currency Apple charged, and the refund state. We receive no payment details from Apple
 
 We never receive your full card number, bank account details or other payment credentials; these are entered on our payment provider's page. For card payments we receive only the card brand and last 4 digits, which appear on your invoice.
 
@@ -237,6 +238,8 @@ The Google services above are governed by Google's own privacy policy. WhatsNext
   - **As an independent controller:** for fraud monitoring and prevention, anti-money-laundering checks, and its other legal obligations, Stripe decides how it processes the data itself. Payment services are provided by Stripe Technology Europe, Limited, an electronic money institution authorised by the Central Bank of Ireland. Stripe's own processing is described in its privacy policy at [stripe.com/privacy](https://stripe.com/privacy).
   - Stripe retains payment and transaction records as required by its legal obligations. When you delete your account, we also delete your customer record at Stripe, subject to these legal retention obligations.
 
+- **Apple Distribution International Ltd.**, Hollyhill Industrial Estate, Hollyhill, Cork, Ireland - sells, charges and refunds subscriptions and AI credit packs bought in the iPhone app through the App Store, as an independent controller under its own privacy policy at [apple.com/legal/privacy](https://www.apple.com/legal/privacy/). Apple gives us a signed record of each purchase, with our internal user identifier attached by the app, so that we can activate your plan or credits. We receive no payment details from Apple.
+
 ### 5.5 Tax Authority
 
 - **Financial Administration of the Republic of Slovenia (FURS)** - where required by Slovenian law (ZDavPR), we send invoice data to FURS for fiscal verification of invoices. We also report VAT as required by law.
@@ -299,6 +302,8 @@ If you connect an AI app, its provider may process the content it reads outside 
 
 If you turn on notifications on a device, the push service your browser uses (Section 5.13) may process the push address and delivery metadata outside the EEA; the content of each notification stays encrypted. We use the push service your browser chose, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR). In the iPhone app, Apple may also process the content of each notification outside the EEA (Section 5.13); we use it, at your request, to deliver the notifications you turned on (Art. 49(1)(b) GDPR).
 
+If you buy a subscription or AI credit pack in the iPhone app, Apple may process the purchase outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
+
 If you use Siri, Apple may process your request and its answer outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
@@ -330,6 +335,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Operational alerts | Kept until the alert is resolved; deleted 90 days after it is resolved |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
+| App Store purchase records | Retained for 10 years like the payment records above; after account deletion they are kept without your identity; permanently deleted after that period |
 
 When you delete your account, we initiate permanent deletion of all your personal data and content, except invoices, credit notes, and payment records that we are legally required to retain (Art. 17(3)(b) GDPR). Backup copies are purged according to our backup retention schedule (up to 30 days).
 

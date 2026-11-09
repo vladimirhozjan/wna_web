@@ -50,8 +50,10 @@ wna_web/
 │   │   ├── scripts/
 │   │   └── styles/
 │   └── shared/             # Runtime code shared by both apps (invoicePdf.js)
+├── tests/                  # Vitest unit tests: main-app/, admin-app/, setup.js, mockHttp.js (canned HTTP)
 ├── dist/                   # Generated builds
 ├── vite.config.js          # Entry point (reads APP env var)
+├── vitest.config.js        # Test config (jsdom, the same @ aliases, no app root)
 ├── package.json
 ├── Dockerfile
 └── nginx.conf
@@ -107,6 +109,7 @@ APP=main-app    # or admin-app
 npm run build:main        # Build main-app  → dist/main-app/ (+ pre-render, see below)
 npm run build:admin       # Build admin-app → dist/admin-app/
 npm run clean             # Remove dist folder
+npm test                  # Vitest unit tests for main-app + admin-app (tests/, jsdom, no server)
 ```
 
 `build:main` runs `config/prerender.js` after the Vite build (and its obfuscation): it serves `dist/main-app`

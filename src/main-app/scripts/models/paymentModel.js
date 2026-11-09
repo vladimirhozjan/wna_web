@@ -60,6 +60,7 @@ export function paymentModel() {
         status: 'none',
         expiresAt: '',
         cancelAtPeriodEnd: false,
+        provider: 'none',
         euCountries: [],
         fiscalCountries: [],
     })
@@ -70,6 +71,7 @@ export function paymentModel() {
         state.status = data.status || 'none'
         state.expiresAt = data.expires_at || ''
         state.cancelAtPeriodEnd = data.cancel_at_period_end === true
+        state.provider = data.provider || 'none'
         state.euCountries = data.eu_countries || []
         state.fiscalCountries = data.fiscal_countries || []
     }

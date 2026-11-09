@@ -9,6 +9,7 @@
           { "/": "/next" }, { "/": "/today" }, { "/": "/overdue" }, { "/": "/waiting-for" }, { "/": "/someday" },
           { "/": "/review" }, { "/": "/horizons" }, { "/": "/connections" }, { "/": "/completed" }, { "/": "/trash" },
           { "/": "/reference" }, { "/": "/settings" }, { "/": "/settings/*" },
+          { "/": "/upgrade" }, { "/": "/billing-history" }, { "/": "/buy-credits" },
           { "/": "/verify" }, { "/": "/reset-password" }
         ]
       }

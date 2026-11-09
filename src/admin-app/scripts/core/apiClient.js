@@ -3,6 +3,7 @@ import { httpApi } from './httpApi.js'
 export const GATEWAYS = [
     { value: 'paywiser', label: 'Paywiser' },
     { value: 'stripe', label: 'Stripe' },
+    { value: 'app_store', label: 'App Store' },
 ]
 
 export function gatewayLabel(provider) {

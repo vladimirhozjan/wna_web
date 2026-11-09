@@ -266,7 +266,7 @@ export const faq = [
   {
     question: 'Can I buy more AI credits?',
     answer:
-      'Yes, in one-time credit packs, on every plan. Open Settings → AI Assistant and tap Buy (or Buy credits when the assistant tells you that you are running low or out), pick a pack, enter your billing address and tap Pay to continue to our payment provider\'s secure checkout. Prices are in EUR and include VAT, and an invoice is emailed to you. Packs don\'t renew; their credits are used after your monthly credits and stay valid for 12 months. Within 14 days of purchase you can withdraw from a pack and get a full refund as long as none of its credits have been used — email info@whatsnextaction.com (see the Terms of Service). Unused credits end when you delete your account.',
+      'Yes, in one-time credit packs, on every plan. Open Settings → AI Assistant and tap Buy (or Buy credits when the assistant tells you that you are running low or out), pick a pack, enter your billing address and tap Pay to continue to our payment provider\'s secure checkout. Prices are in EUR and include VAT, and an invoice is emailed to you. Packs don\'t renew; their credits are used after your monthly credits and stay valid for 12 months. Within 14 days of purchase you can withdraw from a pack and get a full refund as long as none of its credits have been used — email info@whatsnextaction.com (see the Terms of Service). Unused credits end when you delete your account. Credits you buy in the iPhone app are sold by Apple at App Store prices and add to the same balance.',
   },
   {
     question: 'What does the AI assistant remember about me?',
@@ -278,7 +278,7 @@ export const faq = [
   {
     question: 'What plans are available?',
     answer:
-      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Every plan also includes the AI assistant with monthly AI credits (more on Pro and Team) and optional credit packs, connecting your own AI app such as Claude or ChatGPT, Horizons of Focus and project brainstorming. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts.',
+      'WhatsNextAction offers three plans: Free, Pro, and Team. The Free plan lets you get started with up to 7 active projects, 10 distinct context tags, and 50 MB of file storage (reference files are view-only, except on the Google Drive side of Reference, where Free can upload and organize files too). The Pro plan is for serious users — unlimited projects and tags, recurring actions, reference file uploads, email-to-inbox capture, and 250 MB of storage. The Team plan adds collaboration: connections, delegation, and shared projects, plus 1 GB of storage per user. Actions and inbox items are unlimited on every plan, including Free. Every plan also includes the AI assistant with monthly AI credits (more on Pro and Team) and optional credit packs, connecting your own AI app such as Claude or ChatGPT, Horizons of Focus and project brainstorming. Visit the Pricing page for current prices (in EUR, VAT included) and yearly discounts. You can also buy Pro or Team in the iPhone app through the App Store, billed by Apple at App Store prices. One subscription works on both the web and the app.',
   },
   {
     question: 'What are the limits on each plan?',
@@ -299,22 +299,27 @@ export const faq = [
   {
     question: 'How do I cancel my subscription?',
     answer:
-      'Go to Settings → Plan and tap Cancel subscription. Automatic renewal stops, and you keep your paid plan until the date shown ("Access until …"). After that your account returns to the Free plan — nothing is deleted, but Free plan limits apply again. You can subscribe again at any time. Cancelling does not refund the current period. Within 14 days of purchase, EU consumers can instead withdraw and get a full refund by emailing info@whatsnextaction.com — see the Terms of Service.',
+      'Go to Settings → Plan and tap Cancel subscription. Automatic renewal stops, and you keep your paid plan until the date shown ("Access until …"). After that your account returns to the Free plan — nothing is deleted, but Free plan limits apply again. You can subscribe again at any time. Cancelling does not refund the current period. Within 14 days of purchase, EU consumers can instead withdraw and get a full refund by emailing info@whatsnextaction.com — see the Terms of Service. A subscription bought in the iPhone app is cancelled in your Apple account instead (on iPhone: Settings → your name → Subscriptions). Deleting your account does not cancel it.',
   },
   {
     question: 'Can I switch between plans or billing cycles?',
     answer:
-      'Not directly. To move between Pro and Team or between monthly and yearly billing, cancel your current subscription, and once it has ended, subscribe to the new plan from Settings.',
+      'Not directly. To move between Pro and Team or between monthly and yearly billing, cancel your current subscription, and once it has ended, subscribe to the new plan from Settings. A subscription bought in the iPhone app switches between Pro and Team, or monthly and yearly, in your Apple account settings.',
   },
   {
     question: 'Where can I find my invoices?',
     answer:
-      'An invoice is emailed to you for every payment, including each renewal and each AI credit pack. You can also open Settings → Plan → Billing history to see all your payments, refunds, invoices, and credit notes, view any document, and download it as a PDF. Credit pack payments are listed there as AI credits.',
+      'An invoice is emailed to you for every payment, including each renewal and each AI credit pack. You can also open Settings → Plan → Billing history to see all your payments, refunds, invoices, and credit notes, view any document, and download it as a PDF. Credit pack payments are listed there as AI credits. Purchases in the iPhone app have no WhatsNextAction invoice: Apple\'s receipt is in your Apple account\'s Purchase History, and Billing history lists them as App Store.',
   },
   {
     question: 'What happens if a renewal payment fails?',
     answer:
-      'You receive a payment notice by email and in the app, and your plan stays active until the end of the current billing period while the payment provider retries the charge. If the payment still does not go through, your account returns to the Free plan at the end of the period. Your data is kept, and you can subscribe again at any time.',
+      'You receive a payment notice by email and in the app, and your plan stays active until the end of the current billing period while the payment provider retries the charge. If the payment still does not go through, your account returns to the Free plan at the end of the period. Your data is kept, and you can subscribe again at any time. For a subscription bought in the iPhone app, Apple retries the charge; update your payment method in your Apple account.',
+  },
+  {
+    question: 'Can I get a refund for an App Store purchase?',
+    answer:
+      'Request it from Apple at reportaproblem.apple.com — purchases made in the iPhone app are refunded by Apple under its terms, not by us. If Apple approves a refund for a subscription, your paid plan ends at once and your account returns to the Free plan, with your data kept. If it refunds an AI credit pack, the credits that remain from that pack are removed.',
   },
 
   // --- Appearance & Notifications ---

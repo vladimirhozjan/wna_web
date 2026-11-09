@@ -44,12 +44,15 @@
       <template #cell-billing_country="{ value }">{{ value || '—' }}</template>
       <template #cell-card="{ row }">{{ formatCard(row) }}</template>
       <template #cell-ip_country="{ value }">{{ value ? `${value}*` : '—' }}</template>
-      <template #cell-provider="{ value }">{{ gatewayLabel(value) || '—' }}</template>
+      <template #cell-provider="{ row, value }">
+        {{ gatewayLabel(value) || '—' }}
+        <span v-if="row.store_environment === 'Sandbox'" class="store-env"><Badge type="pending" value="Sandbox" /></span>
+      </template>
       <template #cell-payment_method_type="{ value }">{{ value || '—' }}</template>
       <template #cell-status="{ value }"><Badge type="status" :value="value" /></template>
       <template #cell-actions="{ row }">
         <Btn
-            v-if="row.kind !== 'refund' && row.status === 'paid'"
+            v-if="row.kind !== 'refund' && row.status === 'paid' && row.provider !== 'app_store'"
             variant="ghost-danger" size="sm"
             @click.stop="handleRefund(row)"
         >
@@ -286,7 +289,8 @@ async function confirmRefund() {
   text-transform: capitalize;
 }
 
-.pack-credits {
+.pack-credits,
+.store-env {
   display: block;
 }
 
