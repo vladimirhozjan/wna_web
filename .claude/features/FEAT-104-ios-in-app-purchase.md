@@ -1,6 +1,6 @@
 # FEAT-104 — web slice
 
-Parent: `FEAT-104` (`../wna_orchestration/features/FEAT-104-ios-in-app-purchase.md`) — iOS 18: in-app purchase (Pro, Team, AI credits). This slice is the local checklist only; Design (Boundaries, Contracts C1–C16, Flows F1–F10), Data contract, Screens, Legal / Help / Landing impact and decisions D1–D8 live in the parent — read them there, they are not restated here. Item ids (DP/B/W/U/I/T) are the parent's Work breakdown ids. Local stack only. Work ONLY in the `main` worktree. Starts after backend B1–B9 and deploy DP4; deploy DP6 waits on W5. Screens: S7 of the parent § Screens (every state, exact copy).
+Parent: `FEAT-104` (`../wna_orchestration/features/FEAT-104-ios-in-app-purchase.md`) — iOS 18: in-app purchase (Pro, Team, AI credits). This slice is the local checklist only; Design (Boundaries, Contracts C1–C16, Flows F1–F10), Data contract, Screens, Legal / Help / Landing impact and decisions D1–D11 live in the parent — read them there, they are not restated here. Item ids (DP/B/W/U/I/T) are the parent's Work breakdown ids. Local stack only. Work ONLY in the `main` worktree. Starts after backend B1–B9 and deploy DP4; deploy DP6 waits on W5. Screens: S7 of the parent § Screens (every state, exact copy).
 
 ## User flows (this project's part)
 Free / Pro / Team owner / Team member: a user whose subscription is billed by the App Store sees S7 (Plan line, delete-modal line, Billing-history row, per-row currency); web subscriptions are unchanged. Admin (admin-app): App Store label, Refund / Cancel-on-gateway hidden for App Store rows (W3). Not-entitled / blocked: n/a — no change. Unauthenticated: public Pricing footnote (W7), legal and Help texts (W5, W6).
@@ -61,31 +61,67 @@ Free / Pro / Team owner / Team member: a user whose subscription is billed by th
    local tests alone — never wait for a dev or prod confirmation.
 
 ## Checklist
-- [ ] W1 — `main-app/scripts/models/paymentModel.js` `applyStatus` keeps `provider` (C6, from B5).
+- [x] W1 — `main-app/scripts/models/paymentModel.js` `applyStatus` keeps `provider` (C6, from B5).
   - `SettingsPage.vue` Plan: while `provider === 'app_store'`, the Cancel row (`:143`) is replaced by the S7 line
     `data-testid="plan-app-store"`.
   - Delete modal (`:750`): the existing line only for `paywiser` / `stripe`; the S7 line
     `data-testid="delete-account-app-store"` while App Store and renewing.
-  - Unit test (vitest) for both branches. Consumes B5.
+  - Covered by ui-tests U3 (D11). Consumes B5.
   - Screen: S7 Plan + Delete account modal, built per the parent § Screens S7 (every state + exact copy).
   - Data: `provider` (+ `status`, `expires_at`, `cancel_at_period_end`) — `GET /v1/payments/status` — new field `provider` provided by backend B5.
-- [ ] W2 — `BillingHistoryPage.vue`: `formatAmount` (`:135`) and the credit-note amount (`:56`) format
+  - Proof: `paymentModel.js:74` (`provider`, default `none`); `SettingsPage.vue:143-145` (S7 line replaces Cancel,
+    renewing or not); `:753-754` (App Store line / web line only for `paywiser`|`stripe`), `:1042` `renewingSubscription`.
+    Upgrade never shows for it (`:1052` needs tier Free). Chrome :5173 desktop + 500px (stubbed `provider: app_store`):
+    Plan shows the S7 line and no Cancel; the delete modal shows the S7 line.
+  - ui-tests U3 must cover: (a) Stripe Pro → Cancel row visible, `plan-app-store` count 0 (`01-payments.spec.ts:483`);
+    (b) Stripe/Paywiser renewing → delete modal "Your paid subscription is cancelled too.", `delete-account-app-store`
+    count 0; (c) TC-1076 mock gains `provider: 'stripe'` (without `provider` the web line no longer shows);
+    (d) App Store renewing → `plan-app-store` shown, no Cancel, no Upgrade; delete modal shows
+    `delete-account-app-store` and not the web line; (e) App Store after `AUTO_RENEW_DISABLED` → `plan-app-store`
+    still shown, `delete-account-app-store` hidden.
+- [x] W2 — `BillingHistoryPage.vue`: `formatAmount` (`:135`) and the credit-note amount (`:56`) format
   `amount_minor` in the row's `currency` (F9; refunds "−").
   - An `app_store` row: meta "{date} · App Store", not clickable, no Download.
-  - Vitest: EUR, USD, JPY; an App Store row has no button. Consumes B3 (row shape) / C7.
+  - Covered by ui-tests U3 (D11). Consumes B3 (row shape) / C7.
   - Screen: S7 Billing history, built per the parent § Screens S7 (every state + exact copy).
   - Data: `amount_minor`, `currency`, `provider`, `invoice` (null for App Store) — `GET /v1/payments/history` — App Store rows provided by backend B3.
-- [ ] W3 — admin-app:
+  - Proof: `BillingHistoryPage.vue:136-139` `formatMoney` (`Intl.NumberFormat`, the currency's own fraction digits),
+    `:142` rows, `:56` credit notes; `:33` "· App Store"; clickable / Download only `v-if="p.invoice"` (`:27-28`, `:37`).
+    Chrome :5173 desktop + 500px (stubbed rows): "€112.99", "$9.99", "−¥1,200" (refund, red), App Store rows not
+    clickable and without Download; Stripe row "€11.00" + Download, credit note "−€3.00".
+  - ui-tests U3 must cover: App Store rows in EUR ("€112.99"), USD ("$9.99") and JPY ("¥1,200", no decimals) via U1
+    `currency` / `price`; meta "{date} · App Store"; the row has no button, no Download and opens no preview; a
+    Stripe row still shows "€…", its invoice number and opens its invoice.
+- [x] W3 — admin-app:
   - `scripts/core/apiClient.js` `GATEWAYS` gains `{ value: 'app_store', label: 'App Store' }`;
   - `UserPaymentsPage.vue` / `UserInvoicesPage.vue` hide Refund on `provider === 'app_store'` rows and show
     `store_environment` `Sandbox` as a `Badge`;
   - `UserDetailPage.vue` hides "Cancel on {Gateway}" when the gateway-subscription `provider` is `app_store`.
-  - Vitest per hide. Consumes B8.
+  - Covered by ui-tests U3 (D11). Consumes B8.
   - Data: `provider`, `store_environment` — admin user payments / gateway-subscription endpoints — backend B8.
-- [ ] W4 — C15 AASA paths in `src/main-app/public/.well-known/apple-app-site-association`; `jq .` passes. Consumed by
-  I9 (real links).
-- [ ] W5 — `content/legal/terms.md` and `privacy.md` per `## Legal impact`, with "Last updated" = the date of the change
+  - Deviation (answered from `specs/api/admin-api.md`): `GATEWAYS` also feeds the Billing Templates create buttons,
+    slot columns and gateway filter and the Payments report gateway select, which accept only `paywiser|stripe`
+    (`400` otherwise) and exclude App Store rows. So `GATEWAYS` stays the two billing gateways and
+    `gatewayLabel` maps `app_store` → "App Store" (`apiClient.js:9-12`). Same visible result for W3.
+  - Proof: `UserPaymentsPage.vue:47-50` gateway label + `Sandbox` `Badge`, `:55` Refund hidden for `app_store`;
+    `UserDetailPage.vue:245-249` App Store caption, no Cancel button. `UserInvoicesPage.vue`: no change — it lists
+    invoices / credit notes only and has no Refund; App Store rows carry `invoice: null`, so they never appear there.
+    `npm run build:admin` green (admin-app is not opened in Chrome).
+  - ui-tests U3 must cover: the App Store row in `/users/:id/payments` shows Gateway "App Store" and no Refund;
+    a `store_environment = 'Sandbox'` row shows the "Sandbox" badge, an `Xcode` row none; `UserDetailPage` for an
+    App Store subscriber shows no "Cancel on …" button and the caption "Tier changes here never touch App Store
+    billing — the user cancels in their Apple account"; the Billing Templates page and the Payments report gateway
+    select offer only Paywiser / Stripe.
+- [x] W4 — C15 AASA paths in `src/main-app/public/.well-known/apple-app-site-association`; `jq .` passes. Consumed by
+  I9 (real links). Proof: `apple-app-site-association:12` (`/upgrade`, `/billing-history`, `/buy-credits`); `jq .` OK.
+- [x] W5 — `content/legal/terms.md` and `privacy.md` per `## Legal impact`, with "Last updated" = the date of the change
   (no change notice, D8). The same date goes to deploy DP6 `terms_version`.
-- [ ] W6 — `content/help/faq.js` per `## Help impact` (6 edited answers + 1 new entry).
-- [ ] W7 — `views/public/PricingPage.vue`: the footnote of `## Landing / Pricing impact`.
-- [ ] W8 — `specs/features/wna-features.md` §21.3 / §41.6: the S7 lines, from the built code.
+  Proof: `terms.md:3` "November 9, 2026" (→ DP6 `terms_version` `2026-11-09`), §5.2 `:129-135`, §5.3, §5.4, §5.5,
+  §5.6, §5.7, §5.8, §11.1 `:337`; `privacy.md:74` (§2.5), `:241` (§5.4), §6, `:338` (§7).
+- [x] W6 — `content/help/faq.js` per `## Help impact` (6 edited answers + 1 new entry). Proof: `faq.js:269`, `:281`,
+  the cancel / switch / invoices / failed-renewal answers, new entry `:320`.
+- [x] W7 — `views/public/PricingPage.vue`: the footnote of `## Landing / Pricing impact`. Proof: `PricingPage.vue:51-53`;
+  Chrome :5173 desktop + 500px: shown under the AI footnote, same style.
+- [x] W8 — `specs/features/wna-features.md` §21.3 / §41.6: the S7 lines, from the built code. Proof:
+  `wna-features.md:1517` (§21.2 delete modal), `:1596` (§21.3 Plan), `:1620` (§21.3 Billing history), `:2524`
+  (Pricing footnote), `:1740` / `:1784` (admin payments / user detail), `:3893` (§41.6).

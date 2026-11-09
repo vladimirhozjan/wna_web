@@ -26,7 +26,6 @@ npm run dev:admin         # Start admin-app dev server (http://localhost:7111)
 npm run build:main        # Build main-app → dist/main-app/
 npm run build:admin       # Build admin-app → dist/admin-app/
 npm run clean             # Remove dist folder
-npm test                  # Vitest unit tests, main-app + admin-app (tests/, no server)
 ```
 
 ## Architecture
@@ -246,9 +245,9 @@ The test: every changed line should trace directly to the user's request. Spec u
 ### 4. Goal-Driven Execution
 Define success criteria. Loop until verified.
 
-Transform tasks into verifiable goals. Verify with vitest unit tests (`npm test`, under `tests/main-app/` and `tests/admin-app/`, run without a server — HTTP is stubbed by `tests/mockHttp.js`), production builds, code inspection, the manual test cases spec, and — for every UI change — the Chrome check on `:5173` (UI Quality). `npm test`, `build:main` and `build:admin` must all be green:
+Transform tasks into verifiable goals. This project has no automated tests, so verify with production builds, code inspection, the manual test cases spec, and — for every UI change — the Chrome check on `:5173` (UI Quality):
 
-- "Add validation" → "List the invalid inputs to handle, implement, add vitest cases, confirm `npm test` and `npm run build:main`/`build:admin` pass, list the cases ui-tests must cover"
+- "Add validation" → "List the invalid inputs to handle, implement, confirm `npm run build:main`/`build:admin` passes, list the cases ui-tests must cover"
 - "Fix the bug" → "State the reproduction steps, trace the cause in code, fix it, confirm the build passes, check it in Chrome on `:5173`"
 - "Refactor X" → "Confirm the build passes before and after; behavior must be unchanged"
 
@@ -287,7 +286,6 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - **Minimize dependencies** — prefer vanilla JS/CSS
 - No state management libraries (Pinia/Vuex), no CSS frameworks (Tailwind/Bootstrap), no heavy UI component libraries
 - Current deps: vue 3.5, vue-router 4.6, axios 1.13, date-fns 4.1, chart.js 4.5, vue-chartjs 5.3, vue-draggable-plus 0.6, marked 17.0, qrcode 1.5, html2canvas 1.4, jspdf 4.2
-- Test devDependencies: vitest 5.1, @vue/test-utils 2.5, jsdom 31 (config `vitest.config.js`)
 
 ## Tech Constraints
 
@@ -303,7 +301,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## Known Pain Points
 
 - **Bundle size**: Main-app main chunk exceeds 500 KB. Needs `manualChunks` or more aggressive code splitting
-- **Thin unit-test coverage**: vitest unit tests (`npm test`) cover only the code that has them; most flows are covered by ui-tests and manual checks
+- **No automated tests**: Zero unit/component/E2E tests. Manual testing only
 - **apiClient.js size**: Main-app is ~1,700 lines in a single file. Could split by domain
 - **Code duplication**: Both apps implement identical base components (Btn, Inpt, Modal, etc.) independently
 - **No offline/optimistic updates**: All mutations wait for server response

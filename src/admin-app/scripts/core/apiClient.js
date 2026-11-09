@@ -3,10 +3,11 @@ import { httpApi } from './httpApi.js'
 export const GATEWAYS = [
     { value: 'paywiser', label: 'Paywiser' },
     { value: 'stripe', label: 'Stripe' },
-    { value: 'app_store', label: 'App Store' },
 ]
 
+// App Store is a payment provider but not a billing gateway: no templates, slots or report filter
 export function gatewayLabel(provider) {
+    if (provider === 'app_store') return 'App Store'
     return GATEWAYS.find(g => g.value === provider)?.label || provider
 }
 
