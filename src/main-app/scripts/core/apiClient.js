@@ -4,7 +4,6 @@ import {flagsModel} from './flagsModel.js'
 import {authModel} from './authModel.js'
 import {PAGE_SIZE} from './domains.js'
 import {referenceModel} from '../models/referenceModel.js'
-import {connectionModel} from '../models/connectionModel.js'
 
 function friendlyUpgradeMessage(raw, {storageHint = null} = {}) {
     if (!raw) return 'You\'ve reached a limit on your current plan. Upgrade to unlock more and keep your system growing.'
@@ -103,12 +102,6 @@ function normalizeError(error, {storageHint = null, quiet = false} = {}) {
                 kind: 'storage',
             })
             return {status, message: backendMsg || 'File too large or storage quota exceeded.'}
-        }
-
-        // A stale picker offered a removed connection — re-read the list the pickers and the share modal show
-        if (data.error === 'not_a_connection') {
-            connectionModel().loadAll().catch(() => {})
-            return {status, code: 'not_a_connection', message: 'That recipient is no longer a connection.'}
         }
 
         // Backend message → has priority
