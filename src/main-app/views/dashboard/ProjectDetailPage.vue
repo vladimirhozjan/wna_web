@@ -686,7 +686,7 @@
               :key="c.user_id"
               class="share-modal__item"
               :class="{ 'share-modal__item--selected': shareModalSelected.includes(c.user_id) }"
-              @click="toggleShareSelected(c.user_id)"
+              @click="toggleShareSelected(c)"
           >
             <UserAvatar :email="c.email" class="user-item-icon" />
             <span class="text-body-m share-modal__name">{{ c.email }}</span>
@@ -896,6 +896,7 @@ const shareModalOpen = ref(false)
 const shareModalMode = ref('share')   // 'share' for personal→shared, 'add' for already-shared
 const shareModalFilter = ref('')
 const shareModalSelected = ref([])    // array of user_id
+const shareModalPickEmails = new Map() // user_id → email, kept so a refusal can name a pick the live re-read already dropped
 const shareModalSubmitting = ref(false)
 const shareModalError = ref('')
 const shareModalSearchInput = ref(null)
@@ -1100,6 +1101,7 @@ function openShareModal(mode) {
   shareModalMode.value = mode
   shareModalFilter.value = ''
   shareModalSelected.value = []
+  shareModalPickEmails.clear()
   shareModalError.value = ''
   shareModalSubmitting.value = false
   shareModalOpen.value = true
@@ -1112,10 +1114,15 @@ function closeShareModal() {
   shareModalOpen.value = false
 }
 
-function toggleShareSelected(userId) {
-  const idx = shareModalSelected.value.indexOf(userId)
-  if (idx === -1) shareModalSelected.value.push(userId)
-  else shareModalSelected.value.splice(idx, 1)
+function toggleShareSelected(c) {
+  const idx = shareModalSelected.value.indexOf(c.user_id)
+  if (idx === -1) {
+    shareModalSelected.value.push(c.user_id)
+    shareModalPickEmails.set(c.user_id, c.email)
+  } else {
+    shareModalSelected.value.splice(idx, 1)
+    shareModalPickEmails.delete(c.user_id)
+  }
 }
 
 async function submitShareModal() {
@@ -1137,7 +1144,7 @@ async function submitShareModal() {
           await addMember(project.value.id, uid, 'write')
         } catch (err) {
           if (!isNotConnection(err)) throw err
-          refused.push({ uid, who: recipientLabel(err) })
+          refused.push({ uid, who: recipientLabel(err, shareModalPickEmails.get(uid)) })
         }
       }
       if (refused.length === picks.length) {
@@ -1158,7 +1165,7 @@ async function submitShareModal() {
   } catch (err) {
     const status = err?.status || err?.response?.status
     if (isNotConnection(err)) {
-      const who = recipientLabel(err)
+      const who = recipientLabel(err, shareModalPickEmails.get(err.user_id))
       await dropRefusedPicks([err.user_id])
       shareModalError.value = shareModalSelected.value.length
           ? notConnectionCopy.shareRest(who)
