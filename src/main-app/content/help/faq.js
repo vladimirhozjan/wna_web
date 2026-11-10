@@ -222,7 +222,7 @@ export const faq = [
   {
     question: 'How do connections work?',
     answer:
-      'Connections are peer relationships between WhatsNextAction users. Open the Connections page from the sidebar and invite someone by email (Team plan). They receive an invitation they can accept or decline — receiving and declining invitations is available on every plan. Once connected, you can delegate actions to each other and share projects. Either side can remove the connection at any time: actions already delegated stay open, and in projects you share, whoever doesn\'t own the project loses access. If you leave the Team plan, you keep your connections, but accepting or sending invitations, delegating and sharing need Team again.',
+      'Connections are peer relationships between WhatsNextAction users. Open the Connections page from the sidebar and invite someone by email (Team plan). They receive an invitation they can accept or decline — receiving and declining invitations is available on every plan. Once connected, you can delegate actions to each other and share projects. Either side can remove the connection at any time: actions already delegated stay open, and in projects you share, whoever doesn\'t own the project loses access. After that, neither of you can delegate to or share with the other until you connect again. If you leave the Team plan, you keep your connections, but accepting or sending invitations, delegating and sharing need Team again.',
   },
   {
     question: 'How do I delegate an action to someone?',

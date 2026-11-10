@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 import apiClient from '../core/apiClient.js'
 import { statsModel } from './statsModel.js'
 import { horizonModel } from './horizonModel.js'
+import { isNotConnection, recipientLabel, refreshConnections } from '../core/notConnection.js'
 
 export const ClarifyState = {
     IDLE: 'IDLE',
@@ -61,6 +62,7 @@ export function clarifyModel() {
         // UI state
         loading: false,
         error: null,
+        refusedRecipient: null,
     })
 
     function getProgress() {
@@ -106,6 +108,7 @@ export function clarifyModel() {
         }
         state.loading = false
         state.error = null
+        state.refusedRecipient = null
     }
 
     function start(stuffItem, mode = 'inline') {
@@ -195,6 +198,7 @@ export function clarifyModel() {
     async function confirm() {
         state.loading = true
         state.error = null
+        state.refusedRecipient = null
 
         try {
             const stuffId = state.stuffItem?.id
@@ -216,8 +220,16 @@ export function clarifyModel() {
                 // Create action
                 const created = await apiClient.clarifyToAction(stuffId, state.actionData)
                 // Real cross-user delegation runs as a follow-up step on the new action
-                if (state.actionData?.delegate?.userId && state.actionData?.delegate?.email && created?.id) {
-                    await apiClient.delegateAction(created.id, state.actionData.delegate.userId, state.actionData.delegate.email)
+                const delegate = state.actionData?.delegate
+                if (delegate?.userId && delegate?.email && created?.id) {
+                    try {
+                        await apiClient.delegateAction(created.id, delegate.userId, delegate.email)
+                    } catch (err) {
+                        if (!isNotConnection(err)) throw err
+                        // The action stays in Next Actions; ClarifyPanel shows the refusal instead of the success toast
+                        state.refusedRecipient = recipientLabel(err, delegate.email)
+                        refreshConnections()
+                    }
                 }
             } else {
                 // Create project

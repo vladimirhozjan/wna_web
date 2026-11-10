@@ -197,6 +197,7 @@ import { completedModel } from "../scripts/models/completedModel.js";
 import { overdueModel } from "../scripts/models/overdueModel.js";
 import { trashModel } from "../scripts/models/trashModel.js";
 import apiClient from "../scripts/core/apiClient.js";
+import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from "../scripts/core/notConnection.js";
 import { useRouter } from "vue-router";
 
 import SidebarMenuItem from "./SidebarMenuItem.vue";
@@ -802,7 +803,21 @@ async function onDropToWaitingFor(data) {
     else toaster.success(message);
     refreshAfterDrop();
   } catch (err) {
-    toaster.push(err.message || 'Failed to move item');
+    if (!isNotConnection(err)) {
+      toaster.push(err.message || 'Failed to move item');
+      return;
+    }
+    const who = recipientLabel(err, pick.email);
+    refreshConnections();
+    if (data.sourceType === 'action') {
+      toaster.push(notConnectionCopy.pickAgain(who));
+      return;
+    }
+    // The first step (clarify / transform / activate / uncomplete) stays; only the delegation was refused
+    const madeActive = ['someday', 'completed'].includes(data.sourceType) && data.type === 'ACTION';
+    removeFromSource(data);
+    toaster.push(madeActive ? notConnectionCopy.activeAgain(who) : notConnectionCopy.inNext(who));
+    refreshAfterDrop();
   }
 }
 

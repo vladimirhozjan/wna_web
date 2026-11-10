@@ -218,6 +218,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
+import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { hapticFeedback } from '../../scripts/core/haptics.js'
 import Spinner from '../../components/Spinner.vue'
@@ -577,7 +578,12 @@ async function onDropToWaiting(data) {
         if (pick.kind === 'connection') toaster.success(message)
         else undo.record({ op: 'move', item, title, to: 'WAITING', message, reorder: false })
     } catch (err) {
-        toaster.push(err.message || 'Failed to move item')
+        if (isNotConnection(err)) {
+            toaster.push(notConnectionCopy.pickAgain(recipientLabel(err, pick.email)))
+            refreshConnections()
+        } else {
+            toaster.push(err.message || 'Failed to move item')
+        }
     }
 }
 

@@ -456,6 +456,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction } from '../../scripts/core/apiClient.js'
+import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
@@ -1073,7 +1074,12 @@ async function onMoveTo(newState) {
       action.value.state = oldState
       action.value.waiting_for = oldWaitingFor
       action.value.waiting_for_user_id = oldWaitingForUserId
-      toaster.push(err.message || 'Failed to move action')
+      if (isNotConnection(err)) {
+        toaster.push(notConnectionCopy.pickAgain(recipientLabel(err, pick.email)))
+        refreshConnections()
+      } else {
+        toaster.push(err.message || 'Failed to move action')
+      }
     } finally {
       actionLoading.value = null
     }

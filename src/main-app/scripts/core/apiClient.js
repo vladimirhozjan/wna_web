@@ -108,7 +108,7 @@ function normalizeError(error, {storageHint = null, quiet = false} = {}) {
         if (backendMsg) {
             const normalized = {status, message: backendMsg, fromServer: true}
             if (data.user_id) normalized.user_id = data.user_id
-            if (data.error === 'drive_file_not_found') normalized.code = data.error
+            if (data.error === 'drive_file_not_found' || data.error === 'not_a_connection') normalized.code = data.error
             return normalized
         }
 

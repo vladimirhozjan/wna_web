@@ -736,6 +736,7 @@ import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
+import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import { horizonModel } from '../../scripts/models/horizonModel.js'
@@ -1129,20 +1130,53 @@ async function submitShareModal() {
       await loadProjectActions()
       toaster.success('Project shared')
     } else {
-      for (const uid of shareModalSelected.value) {
-        await addMember(project.value.id, uid, 'write')
+      const picks = [...shareModalSelected.value]
+      const refused = []
+      for (const uid of picks) {
+        try {
+          await addMember(project.value.id, uid, 'write')
+        } catch (err) {
+          if (!isNotConnection(err)) throw err
+          refused.push({ uid, who: recipientLabel(err) })
+        }
+      }
+      if (refused.length === picks.length) {
+        await dropRefusedPicks(refused.map(r => r.uid))
+        shareModalError.value = refused.length === 1
+            ? notConnectionCopy.pickAgain(refused[0].who)
+            : notConnectionCopy.allRefused
+        return
+      }
+      if (refused.length) {
+        refreshConnections()
+        toaster.push(refused.length === 1
+            ? notConnectionCopy.notAdded(refused[0].who)
+            : notConnectionCopy.notAddedMany(refused.length))
       }
     }
     shareModalOpen.value = false
   } catch (err) {
     const status = err?.status || err?.response?.status
-    if (status === 403) shareModalError.value = 'Sharing requires the Team plan.'
+    if (isNotConnection(err)) {
+      const who = recipientLabel(err)
+      await dropRefusedPicks([err.user_id])
+      shareModalError.value = shareModalSelected.value.length
+          ? notConnectionCopy.shareRest(who)
+          : notConnectionCopy.pickAgain(who)
+    } else if (status === 403) shareModalError.value = 'Sharing requires the Team plan.'
     else if (status === 409) shareModalError.value = 'Project state changed — please retry.'
     else if (status === 400) shareModalError.value = 'Invalid selection — please retry.'
     else shareModalError.value = friendlyMemberError(err, 'Could not complete the action.')
   } finally {
     shareModalSubmitting.value = false
   }
+}
+
+// Labels must be taken before this: the re-read drops the refused people from the connections
+async function dropRefusedPicks(userIds) {
+  await refreshConnections()
+  const live = new Set((conn.connections.value || []).map(c => c.user_id))
+  shareModalSelected.value = shareModalSelected.value.filter(uid => !userIds.includes(uid) && live.has(uid))
 }
 
 function canRemoveMember(m) {

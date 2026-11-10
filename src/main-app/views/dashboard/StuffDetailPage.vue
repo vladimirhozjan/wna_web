@@ -248,6 +248,7 @@ import { errorModel } from '../../scripts/core/errorModel.js'
 import { undoModel } from '../../scripts/core/undoModel.js'
 import { clarifyModel } from '../../scripts/models/clarifyModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
+import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
@@ -805,7 +806,14 @@ async function onMoveTo(destination) {
       toaster.success(`"${truncateTitle(item.value.title)}" moved to Waiting For`)
       await navigateToNextOrPrev()
     } catch (err) {
-      toaster.push(err.message || 'Failed to move item')
+      if (isNotConnection(err)) {
+        toaster.push(notConnectionCopy.inNext(recipientLabel(err, pick.email)))
+        refreshConnections()
+        statsModel().refreshStats()
+        await navigateToNextOrPrev()
+      } else {
+        toaster.push(err.message || 'Failed to move item')
+      }
     } finally {
       actionLoading.value = null
     }

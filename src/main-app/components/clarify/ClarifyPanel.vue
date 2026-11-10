@@ -81,6 +81,7 @@
 import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { clarifyModel, ClarifyState, NonActionableTarget } from '../../scripts/models/clarifyModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
+import { notConnectionCopy } from '../../scripts/core/notConnection.js'
 import ClarifyStepActionable from './ClarifyStepActionable.vue'
 import ClarifyStepNonActionable from './ClarifyStepNonActionable.vue'
 import ClarifyStepActionCount from './ClarifyStepActionCount.vue'
@@ -245,7 +246,8 @@ async function executeConfirm() {
           break
       }
     } else if (state.isSingleAction) {
-      toaster.success(`"${title}" converted to action`)
+      if (state.refusedRecipient) toaster.push(notConnectionCopy.inNext(state.refusedRecipient))
+      else toaster.success(`"${title}" converted to action`)
     } else {
       toaster.success(`"${title}" converted to project`)
     }

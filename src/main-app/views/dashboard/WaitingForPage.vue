@@ -19,6 +19,7 @@
                 :disabled="adding"
             />
             <ConnectionPicker
+                ref="add_picker"
                 :model-value="newDelegate"
                 @update:model-value="newDelegate = $event"
                 @enter="onAdd"
@@ -88,6 +89,7 @@ import TagFilter from '../../components/TagFilter.vue'
 import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import ConnectionPicker from '../../components/ConnectionPicker.vue'
+import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
 import WaitingIcon from '../../assets/WaitingIcon.vue'
 import EmptyState from '../../components/EmptyState.vue'
 import FilterEmptyState from '../../components/FilterEmptyState.vue'
@@ -130,6 +132,7 @@ const showAdd = ref(false)
 const newTitle = ref('')
 const newDelegate = ref(null)
 const add_input = ref(null)
+const add_picker = ref(null)
 const adding = ref(false)
 const hasMoreSnapshot = ref(false)
 const filterTags = ref([])
@@ -198,6 +201,7 @@ async function onAdd() {
   hasMoreSnapshot.value = hasMore.value
   adding.value = true
   let failed = false
+  let refused = false
   try {
     await addWaiting(t, waitingForText, delegate)
   } catch (err) {
@@ -206,8 +210,11 @@ async function onAdd() {
       const status = err?.status
       if (status === 403) {
         upgrade.show({ message: 'Delegating actions requires the Team plan.' })
-      } else if (status === 404) {
-        toaster.push('That recipient is no longer a connection.')
+      } else if (isNotConnection(err)) {
+        refused = true
+        toaster.push(notConnectionCopy.pickAgain(recipientLabel(err, d.email)))
+        newDelegate.value = null
+        refreshConnections()
       } else if (status === 400) {
         toaster.push(err?.message || 'Invalid recipient.')
       } else {
@@ -222,7 +229,7 @@ async function onAdd() {
     newTitle.value = ''
     newDelegate.value = null
   }
-  nextTick(() => add_input.value?.focus())
+  nextTick(() => (refused ? add_picker : add_input).value?.focus())
 }
 
 function openAdd() {
