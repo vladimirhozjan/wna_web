@@ -3,14 +3,6 @@
     <div class="attachment-toolbar">
       <label class="text-body-s fw-semibold detail-section-label">Attachments</label>
       <div class="attachment-toolbar-right">
-        <input
-            v-if="attachments.length > 0"
-            v-model="searchQuery"
-            type="text"
-            class="text-body-s attachment-search"
-            placeholder="Search files..."
-            @keydown.esc="searchQuery = ''"
-        />
         <div v-if="attachments.length > 0" class="attachment-view-toggle">
           <button
               type="button"
@@ -56,9 +48,9 @@
       </div>
 
       <!-- File list -->
-      <div v-if="filteredAttachments.length > 0" class="attachment-list" :class="{ 'attachment-list--grid': viewMode === 'grid' }">
+      <div v-if="attachments.length > 0" class="attachment-list" :class="{ 'attachment-list--grid': viewMode === 'grid' }">
         <div
-            v-for="att in filteredAttachments"
+            v-for="att in attachments"
             :key="att.id"
             class="attachment-item"
             :class="{ 'attachment-item--grid': viewMode === 'grid' }"
@@ -168,14 +160,7 @@ const uploading = ref(false)
 const progress = ref(0)
 const fileInput = ref(null)
 const dragover = ref(false)
-const searchQuery = ref('')
 const viewMode = ref('list')
-
-const filteredAttachments = computed(() => {
-  const q = searchQuery.value.toLowerCase().trim()
-  if (!q) return attachments.value
-  return attachments.value.filter(a => a.file_name?.toLowerCase().includes(q))
-})
 
 // Preview state (same shape as referenceModel.preview)
 const preview = reactive({
@@ -535,27 +520,6 @@ function formatSize(bytes) {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.attachment-search {
-  padding: 5px 10px;
-  border: 1px solid var(--color-border-light);
-  border-radius: 6px;
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  width: 140px;
-  box-sizing: border-box;
-  transition: border-color 0.15s;
-}
-
-.attachment-search:focus {
-  outline: none;
-  border-color: var(--color-action);
-  box-shadow: 0 0 0 1px rgba(65, 133, 222, 0.2);
-}
-
-.attachment-search::placeholder {
-  color: var(--color-text-tertiary);
 }
 
 .attachment-view-toggle {
