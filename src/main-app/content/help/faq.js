@@ -384,6 +384,6 @@ export const faq = [
   {
     question: 'What is the Dashboard / Engage page?',
     answer:
-      'The Engage page is your home screen after logging in. It gives you a bird\'s-eye overview: one of your vision or purpose items at the top, a different one each day, when you have Horizons of Focus; an Overdue section for overdue actions not already in Today, your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying, projects are missing a next action, or your Weekly Review is overdue. No action shows twice: an action in Today is left out of Overdue, and one in Today or Overdue is left out of Next Actions and Waiting For. All sections respect the active Context Filter so you can focus on one context at a time.',
+      'The Engage page is your home screen after logging in. It gives you a bird\'s-eye overview: one of your vision or purpose items at the top, a different one each day, when you have Horizons of Focus; an Overdue section for overdue actions not already in Today, your Today actions, a snapshot of Next Actions, your Waiting For items, and nudges when your Inbox needs clarifying, projects are missing a next action, or your Weekly Review is overdue. Click or tap a section\'s title, or its View all link, to open that whole list. No action shows twice: an action in Today is left out of Overdue, and one in Today or Overdue is left out of Next Actions and Waiting For. All sections respect the active Context Filter so you can focus on one context at a time.',
   },
 ]

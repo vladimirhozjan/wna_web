@@ -62,11 +62,11 @@
           <!-- Today section -->
           <div class="card" v-if="topToday.length > 0">
             <div class="card-header">
-              <router-link :to="{ name: 'today' }" class="section__title">
+              <router-link :to="{ name: 'today' }" class="section__title" data-testid="engage-today-title">
                 Today
                 <span v-if="todayCount > 0" class="section__count">{{ todayCount }}</span>
               </router-link>
-              <router-link v-if="hasMoreToday" :to="{ name: 'today' }" class="section__link">View all</router-link>
+              <router-link v-if="hasMoreToday" :to="{ name: 'today' }" class="section__link" data-testid="engage-today-view-all">View all</router-link>
             </div>
             <ItemList
                 v-model="topToday"
@@ -96,11 +96,11 @@
           <!-- Next Actions section -->
           <div class="card" v-if="topActions.length > 0">
             <div class="card-header">
-              <router-link :to="{ name: 'next' }" class="section__title">
+              <router-link :to="{ name: 'next' }" class="section__title" data-testid="engage-next-title">
                 Next Actions
                 <span v-if="nextCount > 0" class="section__count">{{ nextCount }}</span>
               </router-link>
-              <router-link v-if="hasMoreNext" :to="{ name: 'next' }" class="section__link">View all</router-link>
+              <router-link v-if="hasMoreNext" :to="{ name: 'next' }" class="section__link" data-testid="engage-next-view-all">View all</router-link>
             </div>
             <ItemList
                 v-model="topActions"
@@ -130,11 +130,11 @@
           <!-- Waiting For section -->
           <div class="card" v-if="topWaiting.length > 0">
             <div class="card-header">
-              <router-link :to="{ name: 'waiting-for' }" class="section__title">
+              <router-link :to="{ name: 'waiting-for' }" class="section__title" data-testid="engage-waiting-title">
                 Waiting For
                 <span v-if="waitingCount > 0" class="section__count">{{ waitingCount }}</span>
               </router-link>
-              <router-link v-if="hasMoreWaiting" :to="{ name: 'waiting-for' }" class="section__link">View all</router-link>
+              <router-link v-if="hasMoreWaiting" :to="{ name: 'waiting-for' }" class="section__link" data-testid="engage-waiting-view-all">View all</router-link>
             </div>
             <ItemList
                 v-model="topWaiting"
