@@ -75,8 +75,12 @@
 
         <!-- Assignee chip (shared-project actions) -->
         <div v-if="isSharedAction" class="text-body-s detail-assignee-chip">
-          <UserAvatar v-if="action.assigned_to" :email="assigneeEmail" class="detail-assignee-chip__avatar" />
-          <span v-if="action.assigned_to">Assigned to {{ assigneeLabel }}</span>
+          <UserAvatar v-if="action.assigned_to" :email="assigneeAvatar.email" :name="assigneeAvatar.name" :picture-url="assigneeAvatar.picture_url" :size="22" />
+          <span v-if="assigneePerson?.name" class="detail-assignee-chip__text">
+            <span class="detail-assignee-chip__name">Assigned to {{ assigneePerson.name }}</span>
+            <span class="detail-assignee-chip__email">&nbsp;· {{ assigneePerson.email }}</span>
+          </span>
+          <span v-else-if="action.assigned_to">Assigned to {{ assigneeLabel }}</span>
           <span v-else class="detail-assignee-chip__unassigned">Unassigned</span>
         </div>
 
@@ -200,7 +204,11 @@
         <div v-if="delegatedFromLabel" class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">From</label>
           <div class="detail-section-wrapper">
-            <p class="text-body-m detail-section-content">{{ delegatedFromLabel }}</p>
+            <p v-if="delegatedFromPerson?.name" class="text-body-m detail-section-content">
+              {{ delegatedFromPerson.name }}
+              <span class="text-body-s detail-person-email">{{ delegatedFromPerson.email }}</span>
+            </p>
+            <p v-else class="text-body-m detail-section-content">{{ delegatedFromLabel }}</p>
           </div>
         </div>
 
@@ -288,8 +296,9 @@
           <label class="text-body-s fw-semibold detail-section-label">Waiting on</label>
           <div class="detail-section-wrapper">
             <p class="text-body-m detail-section-content">
-              <span class="detail-waiting-for">{{ action.waiting_for || 'Unknown' }}</span>
+              <span class="detail-waiting-for">{{ waitingPerson?.name || action.waiting_for || 'Unknown' }}</span>
               <span v-if="action.waiting_since" class="detail-waiting-since">{{ formatWaitingDuration(action.waiting_since) }}</span>
+              <span v-if="waitingPerson?.name" class="text-body-s detail-person-email">{{ waitingPerson.email }}</span>
             </p>
           </div>
         </div>
@@ -417,7 +426,7 @@
         <AttachmentSection v-if="action.id" :entity-type="'action'" :item-id="action.id" />
 
         <!-- Comments section -->
-        <CommentSection v-if="action.id" :entity-type="'action'" :item-id="action.id" />
+        <CommentSection v-if="action.id" :entity-type="'action'" :item-id="action.id" :members="projectMembers" />
 
         <!-- Metadata section -->
         <div class="detail-metadata">
@@ -457,6 +466,8 @@ import { undoModel } from '../../scripts/core/undoModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import apiClient, { deferAction, undeferAction, setDueDate, clearDueDate, waitAction, unwaitAction, delegateAction, todayAction, activateAction, assignAction, unassignAction } from '../../scripts/core/apiClient.js'
 import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
+import { personOf } from '../../scripts/core/person.js'
+import { connectionModel } from '../../scripts/models/connectionModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { moveModel } from '../../scripts/models/moveModel.js'
 import { shortcutModel } from '../../scripts/core/shortcutModel.js'
@@ -579,6 +590,32 @@ const delegatedFromLabel = computed(() =>
     || ''
 )
 
+// People: the own user, connections, then the members of a shared action's project
+const conn = connectionModel()
+const projectMembers = ref([])
+const sharedProjectId = computed(() => (action.value?.project_shared ? action.value.project?.id || null : null))
+
+async function loadProjectMembers() {
+  const projectId = sharedProjectId.value
+  if (!projectId) {
+    projectMembers.value = []
+    return
+  }
+  try {
+    const data = await apiClient.listProjectMembers(projectId)
+    if (sharedProjectId.value === projectId) projectMembers.value = data.members || []
+  } catch { /* names fall back to the stored text */ }
+}
+
+watch(sharedProjectId, loadProjectMembers)
+
+function personFor(userId) {
+  return personOf(userId, { me: auth.currentUser.value, connections: conn.connections.value, members: projectMembers.value })
+}
+
+const delegatedFromPerson = computed(() => personFor(action.value?.delegated_from?.user_id))
+const waitingPerson = computed(() => personFor(action.value?.waiting_for_user_id))
+
 // Shared-project flags — detected via BE assignment metadata; inert until those fields exist
 const myUserId = computed(() => auth.currentUser.value?.id || null)
 const myTier = computed(() => auth.currentUser.value?.subscription_tier || 'free')
@@ -680,13 +717,16 @@ const assigneeLabel = computed(() => {
   const a = action.value
   if (!a?.assigned_to) return ''
   if (a.assigned_to === myUserId.value) return 'You'
-  return a.assigned_to_email || 'a member'
+  return personFor(a.assigned_to)?.email || a.assigned_to_email || 'a member'
 })
-const assigneeEmail = computed(() => {
+const assigneePerson = computed(() => {
   const a = action.value
-  if (!a?.assigned_to) return ''
-  if (a.assigned_to === myUserId.value) return auth.currentUser.value?.email || ''
-  return a.assigned_to_email || ''
+  if (!a?.assigned_to || a.assigned_to === myUserId.value) return null
+  return personFor(a.assigned_to)
+})
+const assigneeAvatar = computed(() => {
+  const a = action.value
+  return personFor(a?.assigned_to) || { email: a?.assigned_to_email || '' }
 })
 
 const assignLoading = ref(false)
@@ -808,6 +848,7 @@ const LIST_ENTITIES = new Set(['stuff', 'action', 'project', 'item'])
 
 onLivePacket((changes) => {
   if (pageLoading.value || notFound.value || !action.value) return
+  if (!changes || changes.some(c => c.entity === 'member' && c.id === sharedProjectId.value)) loadProjectMembers()
   if (!changes) return liveReload()
   const id = action.value.id
   const mine = changes.find(c => c.entity === 'action' && c.id === id)
@@ -2335,15 +2376,35 @@ async function onActivate() {
   border-radius: 9999px;
   color: var(--color-text-secondary);
   width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.detail-assignee-chip__avatar :deep(.avatar-wrapper) {
-  width: 22px;
-  height: 22px;
+/* One-line person: the email ellipsizes first, then the name */
+.detail-assignee-chip__text {
+  display: flex;
+  min-width: 0;
+  white-space: nowrap;
 }
 
-.detail-assignee-chip__avatar :deep(.avatar-fallback) {
-  font-size: 9px;
+.detail-assignee-chip__name {
+  flex-shrink: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-assignee-chip__email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-text-tertiary);
+}
+
+.detail-person-email {
+  display: block;
+  color: var(--color-text-tertiary);
+  overflow-wrap: anywhere;
 }
 
 .detail-assignee-chip__unassigned {

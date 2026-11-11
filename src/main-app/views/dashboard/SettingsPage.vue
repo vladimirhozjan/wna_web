@@ -73,6 +73,44 @@
             <!-- Account -->
             <div v-if="activeKey === 'account'" class="card">
               <div class="settings-section-body">
+                <div class="settings-row" data-testid="settings-picture">
+                  <div class="settings-picture">
+                    <div class="settings-control settings-picture__avatar" :class="{ 'settings-control--saving': pictureBusy }" @click="pickPicture">
+                      <span v-if="pictureBusy" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                      <UserAvatar :email="userEmail" :name="userName" :picture-url="userPicture" :size="48" @source="pictureSource = $event" />
+                    </div>
+                    <div class="settings-picture__label">
+                      <span class="settings-label">Picture</span>
+                      <p v-if="pictureSource === 'gravatar'" class="text-body-s settings-hint">From Gravatar</p>
+                    </div>
+                  </div>
+                  <div class="settings-picture__actions">
+                    <Btn variant="secondary" size="sm" :disabled="pictureBusy" data-testid="settings-picture-upload" @click="pickPicture">{{ userPicture ? 'Change' : 'Upload' }}</Btn>
+                    <Btn v-if="userPicture" variant="ghost" size="sm" :disabled="pictureBusy" data-testid="settings-picture-remove" @click="onRemovePicture">Remove</Btn>
+                  </div>
+                  <input ref="pictureInput" type="file" accept="image/jpeg,image/png" hidden data-testid="settings-picture-input" @change="onPictureChosen" />
+                </div>
+                <div class="settings-row settings-row--column" data-testid="settings-name">
+                  <div class="settings-row-head">
+                    <div>
+                      <span class="settings-label">Name</span>
+                      <p class="text-body-s settings-hint">Shown instead of your email to the people you work with.</p>
+                    </div>
+                    <Btn v-if="!editingName" variant="ghost" size="sm" data-testid="settings-name-edit" @click="startNameEdit">{{ userName ? 'Edit' : 'Add' }}</Btn>
+                  </div>
+                  <template v-if="!editingName">
+                    <span v-if="userName" class="text-body-m settings-name" data-testid="settings-name-value">{{ userName }}</span>
+                    <span v-else class="text-body-s settings-hint">No name yet — people see your email.</span>
+                  </template>
+                  <template v-else>
+                    <Inpt ref="nameInput" v-model="nameDraft" v-model:error="nameError" type="text" placeholder="Your name"
+                          :maxlength="nameMaxLength" data-testid="settings-name-input" @enter="saveName" @keydown.esc="cancelNameEdit" />
+                    <div class="settings-tag-actions">
+                      <Btn variant="primary" size="sm" :disabled="savingName" :loading="savingName" data-testid="settings-name-save" @mousedown.prevent @click="saveName">Save</Btn>
+                      <Btn variant="secondary" size="sm" :disabled="savingName" @mousedown.prevent @click="cancelNameEdit">Cancel</Btn>
+                    </div>
+                  </template>
+                </div>
                 <div class="settings-row">
                   <span class="settings-label">Email</span>
                   <span class="settings-value settings-email">{{ userEmail }}</span>
@@ -877,6 +915,8 @@ import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js
 import { paymentModel } from '../../scripts/models/paymentModel.js'
 import { format, parseISO } from 'date-fns'
 import Spinner from '../../components/Spinner.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
+import { offlineModel } from '../../scripts/core/offlineModel.js'
 import AssistantMemoryModal from '../../components/AssistantMemoryModal.vue'
 import { assistantModel, CREDITS_BEFORE_CHECKOUT_KEY } from '../../scripts/models/assistantModel.js'
 
@@ -917,8 +957,8 @@ const GROUPS = [
 
 // Order = menu / index order; keywords = search terms (case-insensitive substring)
 const SECTIONS = [
-  { group: 'account', key: 'account', title: 'Account', description: 'Your sign-in email and password.',
-    keywords: 'account email password login delete remove' },
+  { group: 'account', key: 'account', title: 'Account', description: 'Your name, picture and sign-in.',
+    keywords: 'account email password login delete remove name picture photo avatar profile' },
   { group: 'account', key: 'plan', title: 'Plan', description: 'Your plan and what you use of it.',
     keywords: 'plan tier subscription free pro team projects tags storage limits upgrade billing renew cancel payment invoice' },
   { group: 'account', key: 'assistant', title: 'AI Assistant', description: 'Credits, model and memory of the built-in assistant.',
@@ -1016,6 +1056,97 @@ const { scrolling: paneScrolling } = useAutoHideScrollbar(paneScroll)
 
 // User data
 const userEmail = computed(() => auth.currentUser.value?.email || '')
+const userName = computed(() => auth.currentUser.value?.name || '')
+const userPicture = computed(() => auth.currentUser.value?.picture_url || null)
+const profileLimits = computed(() => auth.currentUser.value?.profile_limits || null)
+const nameMaxLength = computed(() => profileLimits.value?.name_max_length || null)
+const { isOffline } = offlineModel()
+
+const pictureInput = ref(null)
+const pictureBusy = ref(false)
+const pictureSource = ref(null)
+const OFFLINE_COPY = "You're offline. Try again when you're back online."
+
+function pickPicture() {
+  if (pictureBusy.value) return
+  pictureInput.value?.click()
+}
+
+function pictureTooBigCopy() {
+  const max = profileLimits.value?.picture_max_bytes
+  return max ? `That picture is too big. Choose one under ${formatBytes(max).replace('.0 ', ' ')}.` : 'That picture is too big.'
+}
+
+async function onPictureChosen(e) {
+  const file = e.target.files?.[0]
+  e.target.value = ''
+  if (!file) return
+  if (isOffline.value) return toaster.push(OFFLINE_COPY)
+  const max = profileLimits.value?.picture_max_bytes
+  if (max && file.size > max) return toaster.push(pictureTooBigCopy())
+  pictureBusy.value = true
+  try {
+    await auth.setPicture(file)
+  } catch (err) {
+    if (err?.code === 'picture_too_large') toaster.push(pictureTooBigCopy())
+    else if (err?.code === 'unsupported_image') toaster.push("That file isn't a picture we can use. Choose a JPG or PNG.")
+    else if (err?.status == null) toaster.push(OFFLINE_COPY)
+    else toaster.push("Couldn't upload your picture. Try again.")
+  } finally {
+    pictureBusy.value = false
+  }
+}
+
+async function onRemovePicture() {
+  if (pictureBusy.value) return
+  if (isOffline.value) return toaster.push(OFFLINE_COPY)
+  pictureBusy.value = true
+  try {
+    await auth.removePicture()
+  } catch (err) {
+    toaster.push(err?.status == null ? OFFLINE_COPY : "Couldn't remove your picture. Try again.")
+  } finally {
+    pictureBusy.value = false
+  }
+}
+
+const editingName = ref(false)
+const nameDraft = ref('')
+const nameError = ref('')
+const nameInput = ref(null)
+const savingName = ref(false)
+
+function startNameEdit() {
+  nameDraft.value = userName.value
+  nameError.value = ''
+  editingName.value = true
+  nextTick(() => nameInput.value?.focus())
+}
+
+function cancelNameEdit() {
+  if (savingName.value) return
+  editingName.value = false
+  nameError.value = ''
+}
+
+async function saveName() {
+  if (savingName.value) return
+  const value = nameDraft.value.trim()
+  if (value === userName.value) {
+    editingName.value = false
+    return
+  }
+  savingName.value = true
+  try {
+    await auth.setName(value || null)
+    editingName.value = false
+  } catch (err) {
+    if (err?.code === 'name_too_long') nameError.value = 'Your name is too long. Shorten it and save.'
+    else toaster.push("Couldn't save your name. Try again.")
+  } finally {
+    savingName.value = false
+  }
+}
 
 // Plan
 const tier = computed(() => auth.currentUser.value?.subscription_tier)
@@ -2502,6 +2633,33 @@ async function onLogout() {
 
 .settings-control--saving > *:not(.settings-saving-spinner) {
   opacity: 0.5;
+}
+
+/* Account › Picture: the avatar is the upload target too */
+.settings-picture {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.settings-picture__avatar {
+  flex-shrink: 0;
+}
+
+.settings-picture__label {
+  min-width: 0;
+}
+
+.settings-picture__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.settings-name {
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
 }
 
 /* Long model names ellipsize; the height matches the other Settings selects */

@@ -222,7 +222,7 @@ export const faq = [
   {
     question: 'How do connections work?',
     answer:
-      'Connections are peer relationships between WhatsNextAction users. Open the Connections page from the sidebar and invite someone by email (Team plan). They receive an invitation they can accept or decline — receiving and declining invitations is available on every plan. Once connected, you can delegate actions to each other and share projects. Either side can remove the connection at any time: actions already delegated stay open, and in projects you share, whoever doesn\'t own the project loses access. After that, neither of you can delegate to or share with the other until you connect again. If you leave the Team plan, you keep your connections, but accepting or sending invitations, delegating and sharing need Team again.',
+      'Connections are peer relationships between WhatsNextAction users. Open the Connections page from the sidebar and invite someone by email (Team plan). They receive an invitation they can accept or decline — receiving and declining invitations is available on every plan. Once connected, you can delegate actions to each other and share projects, and you see each other\'s name and picture next to the email — search the Connections list and the connection pickers by name or email. Either side can remove the connection at any time: actions already delegated stay open, and in projects you share, whoever doesn\'t own the project loses access. After that, neither of you can delegate to or share with the other until you connect again. If you leave the Team plan, you keep your connections, but accepting or sending invitations, delegating and sharing need Team again.',
   },
   {
     question: 'How do I delegate an action to someone?',
@@ -329,9 +329,9 @@ export const faq = [
       'Yes. Go to Settings, open Application and choose System, Light or Dark. System follows your operating system\'s preference and updates live when you change it.',
   },
   {
-    question: 'How do I change my avatar?',
+    question: 'How do I set my name and picture?',
     answer:
-      'WhatsNextAction uses Gravatar for profile pictures. Create a free account at gravatar.com with the same email you use for WhatsNextAction, and your avatar will appear automatically. If you don\'t have a Gravatar, the app displays a colored circle with your initials.',
+      'Open Settings → Account — one click on your name in the sidebar takes you there. Add a name and upload a JPG or PNG picture of up to 10 MB; the picture is cropped to a square for you. Without an uploaded picture your Gravatar shows (from gravatar.com, for the same email), else a colored circle with your initials. Your name and picture are shown to your connections and to the members of projects you share, with your email still visible next to the name.',
   },
   {
     question: 'How do I manage notifications?',

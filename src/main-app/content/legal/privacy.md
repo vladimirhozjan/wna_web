@@ -22,8 +22,9 @@ When you register for the Service, we collect:
 
 - **Email address** - used as your account identifier and for account-related communications (password resets, security notifications)
 - **Password** - stored only in hashed form; we never have access to your plain-text password
-- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier and your email address from Google to create or link your account. We do not receive your Google password, and signing in with Google does not give us access to your Gmail, Google Calendar, Google Drive, or other Google services. We request access to a Google service only when you connect a feature that needs it (see Section 2.8). We keep an encrypted sign-in token for each app you sign in with — the website and the iPhone app (encrypted with keys managed by Google Cloud Key Management Service) — only so we can revoke our access at Google when you delete your account.
-- **Apple account identifier** - if you choose to sign in with Apple, we receive an Apple identifier and your email address (your real address or an Apple Hide My Email relay address) and, on your first sign-in only, the name you choose to share, which we store with your account. We do not receive your Apple password, and signing in with Apple does not give us access to any other Apple data. We keep an encrypted sign-in token for each app you sign in with — the website and the iPhone app (encrypted with keys managed by Google Cloud Key Management Service) — only so we can revoke our access at Apple when you delete your account.
+- **Profile name and picture (optional)** - a name and a picture you set in Settings. The picture is converted to a 256 × 256 image when you upload it; the original file and its metadata (for example its location) are not kept.
+- **Google account identifier** - if you choose to sign in with Google, we receive a verified identifier, your email address and the name on your Google account, which we store as your profile name if your account has none, to create or link your account. We do not receive your Google password, and signing in with Google does not give us access to your Gmail, Google Calendar, Google Drive, or other Google services. We request access to a Google service only when you connect a feature that needs it (see Section 2.8). We keep an encrypted sign-in token for each app you sign in with — the website and the iPhone app (encrypted with keys managed by Google Cloud Key Management Service) — only so we can revoke our access at Google when you delete your account.
+- **Apple account identifier** - if you choose to sign in with Apple, we receive an Apple identifier and your email address (your real address or an Apple Hide My Email relay address) and, on your first sign-in only, the name you choose to share, which we store as your profile name if your account has none. We do not receive your Apple password, and signing in with Apple does not give us access to any other Apple data. We keep an encrypted sign-in token for each app you sign in with — the website and the iPhone app (encrypted with keys managed by Google Cloud Key Management Service) — only so we can revoke our access at Apple when you delete your account.
 
 ### 2.2 User-Generated Content
 
@@ -59,6 +60,7 @@ If you use collaboration features on the Team plan, certain data becomes visible
 
 - **Connections** - when you invite another person to connect, we store the invitee's email address and send them an invitation. Invitations may be sent to people who do not yet have a WhatsNextAction account.
 - **Delegation** - when you delegate an action to a connection, the action's title, description, and related details are shared with that person as an item in their inbox, and completion updates are shared back with you.
+- **Profile** - your profile name and picture, together with your email address, are shown to your accepted connections and to the members of every project you share or are a member of (including members you are not connected with). Pending invitations show only your email address.
 - **Shared projects** - when you share a project, the members you choose can see the project's actions (titles, descriptions, attachments), assignments, completion status, and comments. Your personal tags and the area and goal you link a shared project to remain private to you and are never shown to other members.
 
 We share this data only with the specific users you choose, and only to provide the collaboration features you have enabled.
@@ -170,7 +172,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 
 | Data Category | Legal Basis | Purpose |
 |---|---|---|
-| Account data (email, password, name, Google / Apple sign-in identifiers and encrypted sign-in tokens) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
+| Account data (email, password, name, profile picture, Google / Apple sign-in identifiers and encrypted sign-in tokens) | Contract performance (Art. 6(1)(b)) | Necessary to create and maintain your account and provide the Service |
 | User-generated content | Contract performance (Art. 6(1)(b)) | Necessary to deliver the core functionality of the Service |
 | Inbound email content (Email-to-Inbox) | Contract performance (Art. 6(1)(b)) | Necessary to capture forwarded messages into your inbox |
 | Connected Google services data (Google Calendar sync) | Contract performance (Art. 6(1)(b)) | Necessary to sync your scheduled actions with your Google Calendar and, if you use the WhatsNextAction calendar, to import the events you create there, at your request |
@@ -219,7 +221,7 @@ We share your personal data only with the following categories of recipients, st
 
 ### 5.3 Google Sign-In, Sign in with Apple, Google Calendar and Google Drive
 
-- **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier and your email address to create or link your account. Sign-in does not give us access to any of your Google data beyond basic sign-in information.
+- **Google** - if you choose to sign in with Google, Google authenticates you and provides us with a verified identifier, your email address and your name to create or link your account. Sign-in does not give us access to any of your Google data beyond basic sign-in information.
 - **Google Calendar API** - if you connect Google Calendar sync, we exchange the data described in Section 2.8 with Google through the Google Calendar API, only to provide the sync you requested.
 - **Google Drive API** - if you connect Google Drive storage, we upload, read, rename, move, and delete the files that WhatsNextAction created in your Google Drive through the Google Drive API, only to provide the storage you requested. Google holds these files as your own provider, under your agreement with Google; Google is not our processor for them.
 
@@ -246,11 +248,11 @@ The Google services above are governed by Google's own privacy policy. WhatsNext
 
 ### 5.6 Avatar Service
 
-- **Gravatar (Automattic, Inc.)** — We send a one-way SHA-256 hash of your lowercase email address to gravatar.com to retrieve your profile avatar image. No other personal data is shared with Gravatar. If no Gravatar account exists for your email, no image is returned and a local fallback (your initials) is displayed instead.
+- **Gravatar (Automattic, Inc.)** — Only when you have not uploaded a profile picture, we send a one-way SHA-256 hash of your lowercase email address to gravatar.com to retrieve your profile avatar image. No other personal data is shared with Gravatar. If no Gravatar account exists for your email, no image is returned and a local fallback (your initials) is displayed instead.
 
 ### 5.7 Other WhatsNextAction Users (Team plan)
 
-- If you use collaboration features, content you choose to delegate or share becomes visible to the specific connections you select, as described in Section 2.4. This sharing happens only at your direction — including when an AI app you connected shares, delegates or invites on your instructions — and only with the users you choose.
+- If you use collaboration features, content you choose to delegate or share becomes visible to the specific connections you select, as described in Section 2.4. Your profile name, picture and email address are visible to your connections and project members (Section 2.4). This sharing happens only at your direction — including when an AI app you connected shares, delegates or invites on your instructions — and only with the users you choose.
 
 ### 5.8 What We Do Not Do
 
@@ -315,6 +317,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Data | Retention Period |
 |---|---|
 | Active account data (including your name and Google / Apple sign-in identifiers) and content | Retained for the duration of your account |
+| Profile picture | Until you replace or remove it (then deleted at once) or delete your account; backups as in the Backups row |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Sync records of permanently deleted data (the identifier of what was deleted and when — no content), kept so your other devices remove it too | Deleted 90 days after the deletion, or with your account |
 | Copy of your content in the iPhone app (kept on your iPhone, and the Next list on a paired Apple Watch) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
@@ -395,7 +398,7 @@ We use your browser's **IndexedDB** and **cache** to store:
 - Content you share to WhatsNextAction from another app (its text, links and files) — kept in your browser on this device only until you add it to your Inbox, cancel it, or log out
 - The app's own files, so WhatsNextAction can open without a network connection
 
-In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
+In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address, profile name and picture address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
 
 The iPhone app also keeps a copy of your account's content — your items and projects, comments, the details of your attachments and Reference files, templates, horizons and the members of your shared projects — in a database on that iPhone, so the app opens without waiting and works without a connection, together with the changes you make until they reach your account. The database is protected by the iPhone's data protection and is not included in iCloud or computer backups. Logging out deletes it (the app warns you first when changes have not reached your account yet), and deleting the app deletes it. When your session ends without logging out — your sign-in expires because the app has not reached our servers for a while, or your session is ended on our side, for example because you signed that iPhone out from another device or deleted your account — the app deletes it, including changes that have not reached your account, as soon as it notices: when it is next opened or next reaches our servers.
 

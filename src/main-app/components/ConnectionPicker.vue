@@ -24,8 +24,11 @@
           :class="{ 'cp-option--active': i === highlightedIndex }"
           @mousedown.prevent="selectConnection(c)"
       >
-        <span class="cp-avatar" aria-hidden="true">{{ initials(c) }}</span>
-        <span class="text-body-m cp-option-label">{{ c.email }}</span>
+        <UserAvatar :email="c.email" :name="c.name" :picture-url="c.picture_url" :size="28" aria-hidden="true" />
+        <span class="cp-option-person">
+          <span class="text-body-m cp-option-label">{{ twoLine(c).primary }}</span>
+          <span v-if="twoLine(c).secondary" class="text-body-s cp-option-email">{{ twoLine(c).secondary }}</span>
+        </span>
       </div>
       <div
           v-if="allowText && query.trim() && !exactMatch"
@@ -43,6 +46,8 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { connectionModel } from '../scripts/models/connectionModel.js'
+import { twoLine, matchesPerson } from '../scripts/core/person.js'
+import UserAvatar from './UserAvatar.vue'
 
 const props = defineProps({
   modelValue: {
@@ -106,25 +111,17 @@ const isLoading = computed(() => conn.loading.value && !conn.loaded.value)
 const filtered = computed(() => {
   const exclude = new Set(props.excludeUserIds || [])
   const list = (conn.connections.value || []).filter(c => !exclude.has(c.user_id))
-  const q = query.value.trim().toLowerCase()
-  if (!q) return list
-  return list.filter(c => (c.email || '').toLowerCase().includes(q))
+  return list.filter(c => matchesPerson(query.value, c))
 })
 
 const exactMatch = computed(() => {
   const q = query.value.trim().toLowerCase()
   if (!q) return false
-  return (conn.connections.value || []).some(c => (c.email || '').toLowerCase() === q)
+  return (conn.connections.value || []).some(c => (c.email || '').toLowerCase() === q || (c.name || '').toLowerCase() === q)
 })
 
 function labelOf(c) {
-  return c.email || ''
-}
-
-function initials(c) {
-  const local = (c.email || '').split('@')[0]
-  if (!local) return '?'
-  return local.slice(0, 2).toUpperCase()
+  return c.name || c.email || ''
 }
 
 function emitText(text) {
@@ -301,17 +298,17 @@ onMounted(() => {
   text-overflow: ellipsis;
 }
 
-.cp-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--color-action-subtle);
-  color: var(--color-action);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
+.cp-option-person {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cp-option-email {
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cp-option--free {

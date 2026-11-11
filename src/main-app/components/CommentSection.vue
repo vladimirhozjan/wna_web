@@ -63,12 +63,12 @@
       <div v-if="comments.length > 0" class="comment-list">
         <div v-for="comment in comments" :key="comment.id" class="comment-item">
           <div class="comment-avatar-wrap">
-            <UserAvatar :email="commentEmail(comment)" :size="28" />
+            <UserAvatar :email="authorOf(comment)?.email || 'Unconnected member'" :name="authorOf(comment)?.name" :picture-url="authorOf(comment)?.picture_url" :size="28" />
           </div>
           <div class="comment-body">
             <div class="comment-meta">
-              <span class="text-footnote comment-author">{{ commentEmail(comment) }}</span>
-              <span class="text-footnote comment-timestamp">{{ formatRelativeTime(comment.created_at) }}</span>
+              <span class="text-footnote comment-author">{{ authorOf(comment) ? twoLine(authorOf(comment)).primary : 'Unconnected member' }}</span>
+              <span class="text-footnote comment-timestamp">{{ authorOf(comment)?.name ? `${authorOf(comment).email} · ` : '' }}{{ formatRelativeTime(comment.created_at) }}</span>
             </div>
             <p class="text-body-m comment-message">{{ comment.message }}</p>
           </div>
@@ -86,6 +86,7 @@ import { listComments, createComment } from '../scripts/core/apiClient.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import { authModel } from '../scripts/core/authModel.js'
 import { connectionModel } from '../scripts/models/connectionModel.js'
+import { personOf, twoLine } from '../scripts/core/person.js'
 import Spinner from './Spinner.vue'
 import { onLivePacket } from '../scripts/core/liveClient.js'
 
@@ -100,7 +101,6 @@ const toaster = errorModel()
 const { currentUser } = authModel()
 const conn = connectionModel()
 
-const userEmail = ref('')
 const comments = ref([])
 const loading = ref(true)
 const newMessage = ref('')
@@ -112,7 +112,6 @@ const textareaRef = ref(null)
 const atLimit = computed(() => comments.value.length >= 50)
 
 onMounted(async () => {
-  userEmail.value = currentUser.value?.email || ''
   if (!conn.loaded.value) conn.loadAll().catch(() => {})
   await loadComments()
 })
@@ -124,15 +123,8 @@ watch(() => props.itemId, () => {
   loadComments()
 })
 
-function commentEmail(comment) {
-  const uid = comment.user_id
-  if (!uid) return ''
-  if (uid === currentUser.value?.id) return userEmail.value
-  const m = props.members.find(x => x.user_id === uid)
-  if (m?.email) return m.email
-  const c = (conn.connections.value || []).find(x => x.user_id === uid)
-  if (c?.email) return c.email
-  return 'Unconnected member'
+function authorOf(comment) {
+  return personOf(comment.user_id, { me: currentUser.value, connections: conn.connections.value, members: props.members })
 }
 
 // A comment made elsewhere: silent, the text being typed stays

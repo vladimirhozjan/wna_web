@@ -145,6 +145,8 @@
       <div v-if="context !== 'dashboard'" class="avatar-container" ref="avatarContainerRef">
         <UserAvatar
           :email="user?.email"
+          :name="user?.name"
+          :picture-url="user?.picture_url"
           @toggle-menu="onAvatarClick"
         />
         <TopNavDropdown

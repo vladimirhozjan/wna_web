@@ -158,12 +158,14 @@
 
     <div class="sidebar-footer">
 
-      <div v-if="auth.currentUser.value" class="sidebar-user">
-        <UserAvatar :email="auth.currentUser.value?.email" :size="32" />
-        <div class="sidebar-user__info">
-          <span class="text-label sidebar-user__email">{{ auth.currentUser.value?.email }}</span>
-        </div>
-      </div>
+      <button v-if="auth.currentUser.value" type="button" class="sidebar-user" data-testid="sidebar-user" @click="router.push({ name: 'settings', query: { section: 'account' } })">
+        <UserAvatar :email="auth.currentUser.value.email" :name="auth.currentUser.value.name" :picture-url="auth.currentUser.value.picture_url" :size="32" />
+        <span class="sidebar-user__info">
+          <span v-if="auth.currentUser.value.name" class="text-label sidebar-user__name">{{ auth.currentUser.value.name }}</span>
+          <span v-if="auth.currentUser.value.name" class="text-footnote sidebar-user__email">{{ auth.currentUser.value.email }}</span>
+          <span v-else class="text-label sidebar-user__email">{{ auth.currentUser.value.email }}</span>
+        </span>
+      </button>
 
       <SidebarMenuItem label="Settings" :to="{ name: 'settings' }">
         <template #icon><SettingsIcon/></template>
@@ -1004,12 +1006,29 @@ function removeFromSource(data) {
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.sidebar-user:hover {
+  background: var(--color-bg-hover);
 }
 
 .sidebar-user__info {
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+
+.sidebar-user__name {
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sidebar-user__email {

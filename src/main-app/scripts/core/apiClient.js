@@ -2,7 +2,7 @@ import {httpApi} from './httpApi.js'
 import {upgradeModel} from './upgradeModel.js'
 import {flagsModel} from './flagsModel.js'
 import {authModel} from './authModel.js'
-import {PAGE_SIZE} from './domains.js'
+import {PAGE_SIZE, getDomains} from './domains.js'
 import {referenceModel} from '../models/referenceModel.js'
 
 function friendlyUpgradeMessage(raw, {storageHint = null} = {}) {
@@ -58,7 +58,7 @@ async function parseBlobError(err) {
     return err
 }
 
-function normalizeError(error, {storageHint = null, quiet = false} = {}) {
+function normalizeError(error, {storageHint = null, quiet = false, picture = false} = {}) {
     if (error.response) {
         const cfg = error.config || {}
         console.error(`[api] ${cfg.method?.toUpperCase() || 'REQ'} ${cfg.url || ''} → ${error.response.status}`, error.response.data)
@@ -92,6 +92,9 @@ function normalizeError(error, {storageHint = null, quiet = false} = {}) {
             return {status, message: backendMsg || 'Limit reached', upgrade: true}
         }
 
+        // Above the user_service body cap the picture 413 has no body — every picture 413 is the same error
+        if (status === 413 && picture) return {status, code: 'picture_too_large', message: 'picture_too_large'}
+
         // File/storage limit errors (413)
         if (status === 413) {
             if (quiet) return {status, message: backendMsg || 'File too large or storage quota exceeded.'}
@@ -108,7 +111,7 @@ function normalizeError(error, {storageHint = null, quiet = false} = {}) {
         if (backendMsg) {
             const normalized = {status, message: backendMsg, fromServer: true}
             if (data.user_id) normalized.user_id = data.user_id
-            if (data.error === 'drive_file_not_found' || data.error === 'not_a_connection') normalized.code = data.error
+            if (['drive_file_not_found', 'not_a_connection', 'name_too_long', 'unsupported_image'].includes(data.error)) normalized.code = data.error
             return normalized
         }
 
@@ -380,6 +383,45 @@ export async function getUser() {
     } catch (err) {
         throw normalizeError(err)
     }
+}
+
+export async function updateUserName(name) {
+    try {
+        const res = await httpApi.put('/v1/user/name', {name}, {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+// The server reads the image type from the bytes; the file goes as the raw body
+export async function uploadUserPicture(file) {
+    try {
+        const res = await httpApi.put('/v1/user/picture', file, {
+            headers: {...authHeaders(), 'Content-Type': file.type || 'application/octet-stream'},
+        })
+        return res.data
+    } catch (err) {
+        throw normalizeError(err, {picture: true})
+    }
+}
+
+export async function removeUserPicture() {
+    try {
+        const res = await httpApi.delete('/v1/user/picture', {headers: authHeaders()})
+        return res.data
+    } catch (err) {
+        throw normalizeError(err)
+    }
+}
+
+let apiBase = null
+
+// picture_url is API-relative
+export function pictureSrc(path) {
+    if (!path) return null
+    if (apiBase === null) apiBase = getDomains().base_url
+    return `${apiBase}${path}`
 }
 
 export async function forgotPassword(email) {
@@ -2658,6 +2700,9 @@ const apiClient = {
     refreshToken,
     getPublicFlags,
     getUser,
+    updateUserName,
+    uploadUserPicture,
+    removeUserPicture,
     forgotPassword,
     resetPassword,
     deleteUser,

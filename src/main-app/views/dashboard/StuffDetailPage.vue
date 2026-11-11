@@ -139,7 +139,11 @@
         <div v-if="delegatedFromLabel" class="detail-section-area">
           <label class="text-body-s fw-semibold detail-section-label">From</label>
           <div class="detail-section-wrapper">
-            <p class="text-body-m detail-section-content">{{ delegatedFromLabel }}</p>
+            <p v-if="delegatedFromPerson?.name" class="text-body-m detail-section-content">
+              {{ delegatedFromPerson.name }}
+              <span class="text-body-s detail-person-email">{{ delegatedFromPerson.email }}</span>
+            </p>
+            <p v-else class="text-body-m detail-section-content">{{ delegatedFromLabel }}</p>
           </div>
         </div>
 
@@ -270,6 +274,8 @@ import EmptyState from '../../components/EmptyState.vue'
 import { captureIcon } from '../../scripts/core/captureRules.js'
 import { liveClient, onLivePacket } from '../../scripts/core/liveClient.js'
 import { authModel } from '../../scripts/core/authModel.js'
+import { connectionModel } from '../../scripts/models/connectionModel.js'
+import { personOf } from '../../scripts/core/person.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 
 const route = useRoute()
@@ -300,6 +306,9 @@ const delegatedFromLabel = computed(() =>
     || item.value?.delegated_from_user_name
     || ''
 )
+// The sender's current name while they are still a connection
+const delegatedFromPerson = computed(() => personOf(item.value?.delegated_from?.user_id,
+    { me: authModel().currentUser.value, connections: connectionModel().connections.value }))
 const pageLoading = ref(true)
 
 const headerIcon = computed(() => captureIcon(item.value?.input_type, InboxIcon))
@@ -1315,5 +1324,11 @@ async function onActivate() {
   .clarify-slideover {
     display: none;
   }
+}
+
+.detail-person-email {
+  display: block;
+  color: var(--color-text-tertiary);
+  overflow-wrap: anywhere;
 }
 </style>

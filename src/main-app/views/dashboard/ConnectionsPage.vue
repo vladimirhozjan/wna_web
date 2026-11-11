@@ -79,6 +79,7 @@
                   </p>
                   <div class="connections-list">
                     <div v-for="inv in connections.pendingReceived.value" :key="inv.id" :data-row-id="`r-${inv.id}`" class="connection-item">
+                      <UserAvatar :email="inv.inviter_email" :size="34" />
                       <div class="connection-info">
                         <span class="fw-medium">{{ inv.inviter_email }}</span>
                         <span class="text-body-s connection-meta">invited you · {{ formatRelative(inv.created) }}</span>
@@ -108,6 +109,7 @@
                   <span class="settings-label">Pending invitations</span>
                   <div class="connections-list">
                     <div v-for="inv in connections.pendingSent.value" :key="inv.id" :data-row-id="`s-${inv.id}`" class="connection-item">
+                      <UserAvatar :email="inv.invitee_email" :size="34" />
                       <div class="connection-info">
                         <span class="fw-medium">{{ inv.invitee_email }}</span>
                         <span class="text-body-s connection-meta">sent · {{ formatRelative(inv.created) }}</span>
@@ -128,11 +130,25 @@
                 <!-- Accepted connections -->
                 <div v-if="connections.connections.value.length > 0" class="settings-row settings-row--column">
                   <span class="settings-label">Connections ({{ connections.connections.value.length }})</span>
-                  <div class="connections-list">
-                    <div v-for="conn in connections.connections.value" :key="conn.id" :data-row-id="`c-${conn.id}`" class="connection-item">
+                  <div v-if="showSearch" class="connections-search" @keydown.esc="searchQuery = ''">
+                    <Inpt v-model="searchQuery" type="text" placeholder="Search by name or email…" data-testid="connections-search" />
+                  </div>
+                  <p v-if="showSearch && visibleConnections.length === 0" class="text-body-s settings-hint" data-testid="connections-no-match">No connections match “{{ searchQuery.trim() }}”.</p>
+                  <div v-else class="connections-list">
+                    <div v-for="conn in visibleConnections" :key="conn.id" :data-row-id="`c-${conn.id}`" class="connection-item">
+                      <UserAvatar :email="conn.email" :name="conn.name" :picture-url="conn.picture_url" :size="34" />
                       <div class="connection-info">
-                        <span class="fw-medium">{{ conn.email }}</span>
-                        <span class="text-body-s connection-meta">connected · {{ formatRelative(conn.connected_since) }}</span>
+                        <template v-if="conn.name">
+                          <span class="fw-medium">{{ conn.name }}</span>
+                          <span class="text-body-s connection-meta connection-meta--person">
+                            <span class="connection-meta__email">{{ conn.email }}</span>
+                            <span class="connection-meta__since">&nbsp;· connected {{ formatRelative(conn.connected_since) }}</span>
+                          </span>
+                        </template>
+                        <template v-else>
+                          <span class="fw-medium">{{ conn.email }}</span>
+                          <span class="text-body-s connection-meta">connected · {{ formatRelative(conn.connected_since) }}</span>
+                        </template>
                       </div>
                       <div class="connection-actions">
                         <Btn
@@ -161,6 +177,7 @@ import Btn from '../../components/Btn.vue'
 import Inpt from '../../components/Inpt.vue'
 import Spinner from '../../components/Spinner.vue'
 import EmptyState from '../../components/EmptyState.vue'
+import UserAvatar from '../../components/UserAvatar.vue'
 import ConnectionsIcon from '../../assets/ConnectionsIcon.vue'
 import { authModel } from '../../scripts/core/authModel.js'
 import { errorModel } from '../../scripts/core/errorModel.js'
@@ -170,6 +187,7 @@ import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { useAutoHideScrollbar } from '../../scripts/core/useAutoHideScrollbar.js'
 import { useLiveMotion } from '../../scripts/core/liveMotion.js'
+import { sentence, matchesPerson } from '../../scripts/core/person.js'
 
 const scrollRef = ref(null)
 const { scrolling } = useAutoHideScrollbar(scrollRef)
@@ -189,6 +207,15 @@ const inviteError = ref('')
 const inviting = ref(false)
 const actingId = ref(null)
 const actingType = ref(null)
+
+// A short list is read at a glance; the search shows above 5 accepted connections
+const SEARCH_MIN = 6
+const searchQuery = ref('')
+const showSearch = computed(() => connections.connections.value.length >= SEARCH_MIN)
+const visibleConnections = computed(() => showSearch.value
+    ? connections.connections.value.filter(c => matchesPerson(searchQuery.value, c))
+    : connections.connections.value)
+watch(showSearch, (shown) => { if (!shown) searchQuery.value = '' })
 
 const hasAnyData = computed(() =>
     connections.connections.value.length > 0 ||
@@ -305,7 +332,7 @@ function onCancelInvite(inv) {
 function onRemoveConnection(conn) {
   return confirmRemove(conn, {
     title: 'Remove connection?',
-    message: `Remove ${conn.email} from your connections? Delegated actions stay open. In projects you share, whoever doesn't own the project loses access.`,
+    message: `Remove ${sentence(conn)} from your connections? Delegated actions stay open. In projects you share, whoever doesn't own the project loses access.`,
     confirmText: 'Remove',
     cancelText: 'Cancel',
   }, "Couldn't remove the connection. Try again.")
@@ -467,10 +494,37 @@ onMounted(() => {
 }
 
 .connection-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+}
+
+.connection-meta--person {
+  display: flex;
+  min-width: 0;
+}
+
+.connection-meta__email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.connection-meta__since {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.connections-search {
+  width: 100%;
+}
+
+.connections-search :deep(input) {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .connection-info .fw-medium {

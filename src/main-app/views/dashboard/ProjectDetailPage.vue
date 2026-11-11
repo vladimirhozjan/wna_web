@@ -430,7 +430,11 @@
                         <template #actions>
                           <span v-if="action.assigned_to && !isAssignedToMe(action)" class="text-body-s action-assignee-right">
                             <template v-if="action.state === 'WAITING'">Waiting</template>
-                            <template v-else>{{ assigneeLabel(action) }}</template>
+                            <template v-else-if="personFor(action.assigned_to)?.name">
+                              <span class="action-assignee-right__line action-assignee-right__name">{{ personFor(action.assigned_to).name }}</span>
+                              <span class="text-footnote action-assignee-right__line">{{ personFor(action.assigned_to).email }}</span>
+                            </template>
+                            <span v-else class="action-assignee-right__line">{{ assigneeLabel(action) }}</span>
                           </span>
                           <span v-if="isAssignedToMe(action)" class="text-body-s action-assignee-self">You</span>
                           <span v-if="hasActionButtons(action)" class="action-row-buttons">
@@ -576,9 +580,15 @@
                   :key="m.user_id"
                   class="user-item"
               >
-                <UserAvatar :email="memberEmailFor(m.user_id) || m.email" class="user-item-icon" />
+                <UserAvatar :email="personFor(m.user_id)?.email" :name="personFor(m.user_id)?.name" :picture-url="personFor(m.user_id)?.picture_url" :size="32" class="user-item-icon" />
                 <div class="user-item-info">
-                  <span class="text-body-m user-item-name">{{ memberChipLabel(m) }}</span>
+                  <span class="user-item-text">
+                    <span class="user-item-line">
+                      <span class="text-body-m user-item-name">{{ memberLines(m).primary }}</span>
+                      <span v-if="m.user_id === myUserId" class="text-body-m user-item-you">&nbsp;(you)</span>
+                    </span>
+                    <span v-if="memberLines(m).secondary" class="text-body-s user-item-email">{{ memberLines(m).secondary }}</span>
+                  </span>
                   <Select
                       v-if="m.role !== 'owner' && isOwner"
                       :model-value="m.role"
@@ -672,7 +682,7 @@
             v-model="shareModalFilter"
             type="text"
             class="text-body-m share-modal__filter"
-            placeholder="Search a connection…"
+            placeholder="Search by name or email…"
             @keydown.esc="closeShareModal"
         />
 
@@ -688,8 +698,11 @@
               :class="{ 'share-modal__item--selected': shareModalSelected.includes(c.user_id) }"
               @click="toggleShareSelected(c)"
           >
-            <UserAvatar :email="c.email" class="user-item-icon" />
-            <span class="text-body-m share-modal__name">{{ c.email }}</span>
+            <UserAvatar :email="c.email" :name="c.name" :picture-url="c.picture_url" :size="32" class="user-item-icon" />
+            <span class="share-modal__person">
+              <span class="text-body-m share-modal__name">{{ twoLine(c).primary }}</span>
+              <span v-if="twoLine(c).secondary" class="text-body-s share-modal__email">{{ twoLine(c).secondary }}</span>
+            </span>
             <span v-if="shareModalSelected.includes(c.user_id)" class="text-body-m share-modal__check">✓</span>
           </li>
         </ul>
@@ -737,6 +750,7 @@ import { flagsModel } from '../../scripts/core/flagsModel.js'
 import { authModel } from '../../scripts/core/authModel.js'
 import apiClient from '../../scripts/core/apiClient.js'
 import { isNotConnection, recipientLabel, refreshConnections, notConnectionCopy } from '../../scripts/core/notConnection.js'
+import { personOf, twoLine, sentence, matchesPerson } from '../../scripts/core/person.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { tagModel } from '../../scripts/models/tagModel.js'
 import { horizonModel } from '../../scripts/models/horizonModel.js'
@@ -1013,17 +1027,11 @@ function hasActionButtons(action) {
 function assigneeLabel(action) {
   if (!action?.assigned_to) return ''
   if (action.assigned_to === myUserId.value) return 'You'
-  return action.assigned_to_email || memberEmailFor(action.assigned_to) || 'Unconnected member'
+  return personFor(action.assigned_to)?.email || action.assigned_to_email || 'Unconnected member'
 }
 
-function memberEmailFor(userId) {
-  if (!userId) return ''
-  if (userId === myUserId.value) return auth.currentUser.value?.email || ''
-  const m = (currentMembers.value || []).find(x => x.user_id === userId)
-  if (m?.email) return m.email
-  const c = (conn.connections.value || []).find(x => x.user_id === userId)
-  if (c?.email) return c.email
-  return ''
+function personFor(userId) {
+  return personOf(userId, { me: auth.currentUser.value, connections: conn.connections.value, members: currentMembers.value })
 }
 
 const orderedSharedMembers = computed(() => {
@@ -1038,11 +1046,10 @@ const orderedSharedMembers = computed(() => {
   return list
 })
 
-function memberChipLabel(m) {
-  if (m.user_id === myUserId.value) {
-    return `${m.email || memberEmailFor(m.user_id) || auth.currentUser.value?.email || 'You'} (you)`
-  }
-  return m.email || memberEmailFor(m.user_id) || 'Unconnected member'
+function memberLines(m) {
+  const p = personFor(m.user_id)
+  if (p) return twoLine(p)
+  return { primary: m.user_id === myUserId.value ? 'You' : 'Unconnected member', secondary: '' }
 }
 
 function roleLabel(role) {
@@ -1073,9 +1080,7 @@ const shareModalChoices = computed(() => {
   const base = shareModalMode.value === 'share'
       ? shareableConnections.value
       : addableConnections.value
-  const q = shareModalFilter.value.trim().toLowerCase()
-  if (!q) return base
-  return base.filter(c => (c.email || '').toLowerCase().includes(q))
+  return base.filter(c => matchesPerson(shareModalFilter.value, c))
 })
 
 const { paymentsEnabled } = flagsModel()
@@ -1216,7 +1221,7 @@ async function onRemoveMember(m) {
   dialogMemberId = m.user_id
   const confirmed = await confirm.show({
     title: 'Remove member?',
-    message: `${m.email || memberEmailFor(m.user_id) || 'This member'} will lose access. Their assigned actions return to the backlog.`,
+    message: `${sentence(personFor(m.user_id)) || 'This member'} will lose access. Their assigned actions return to the backlog.`,
     confirmText: 'Remove',
     cancelText: 'Cancel',
   })
@@ -1989,7 +1994,7 @@ function completerLabel(act) {
   if (!isShared.value) return ''
   if (!act.completed_by) return ''
   if (act.completed_by === myUserId.value) return 'you'
-  return act.completed_by_email || memberEmailFor(act.completed_by) || 'a member'
+  return sentence(personFor(act.completed_by)) || act.completed_by_email || 'a member'
 }
 
 async function onActionUpdate(actionId, data) {
@@ -2850,8 +2855,8 @@ async function onAddAction() {
 }
 
 .user-item-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
 }
 
@@ -2868,12 +2873,37 @@ async function onAddAction() {
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+}
+
+.user-item-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-item-line {
+  display: flex;
+  min-width: 0;
 }
 
 .user-item-name {
   color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-item-you {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.user-item-email {
+  color: var(--color-text-tertiary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2888,7 +2918,6 @@ async function onAddAction() {
 .user-item-role {
   flex-shrink: 0;
   display: inline-flex;
-  align-self: baseline;
 }
 
 .user-item-role :deep(.select-trigger) {
@@ -3003,10 +3032,22 @@ async function onAddAction() {
   background: var(--color-bg-accent-light);
 }
 
-.share-modal__name {
+.share-modal__person {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.share-modal__name {
   color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-modal__email {
+  color: var(--color-text-tertiary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -3089,6 +3130,22 @@ async function onAddAction() {
   color: var(--color-text-tertiary);
   white-space: nowrap;
   margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 40cqi;
+  min-width: 0;
+  text-align: right;
+}
+
+.action-assignee-right__line {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-assignee-right__name {
+  color: var(--color-text-secondary);
 }
 
 /* Assign / Unassign icon buttons — same scale as ActionBtn (16px icon, 4px 8px padding) */
@@ -3143,6 +3200,11 @@ async function onAddAction() {
 }
 
 /* Reserve a fixed height matching the buttons so the row doesn't jump on hover. */
+/* The assignee block is capped at 40% of the row (cqi), so the title always keeps the rest */
+.shared-action-wrapper {
+  container-type: inline-size;
+}
+
 .shared-action-wrapper :deep(.item__actions) {
   opacity: 1;
   align-items: center;

@@ -7,6 +7,7 @@
         :placeholder="props.placeholder"
         :type="props.type"
         :disabled="props.disabled"
+        :maxlength="props.maxlength"
         class="text-body-m color-text-primary"
         :class="{ 'input-error': error, 'input-success': success }"
         @input="handleInput"
@@ -39,6 +40,10 @@ const props = defineProps({
   success: {
     type: Boolean,
     default: false,
+  },
+  maxlength: {
+    type: Number,
+    default: null,
   }
 })
 

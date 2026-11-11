@@ -102,7 +102,7 @@ export const gettingStarted = [
   {
     title: 'Customizing Your Settings',
     description:
-      'Visit Settings to personalize the app. Settings are grouped into Account, Preferences and Integrations. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your quick-add tags for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review and Horizons of Focus, manage notifications, change your password, review active sessions, delete your account, and manage your plan and billing from here. Changes save automatically.',
+      'Visit Settings to personalize the app. Settings are grouped into Account, Preferences and Integrations. Under Account, add your name and a picture — the people you work with see them instead of just your email. Choose a theme (light, dark, or match your system), set your calendar preferences (week start day, time format, business hours and business days), customize your quick-add tags for quick tagging, and choose whether new items appear at the top or bottom of lists. You can also enable or disable the Weekly Review and Horizons of Focus, manage notifications, change your password, review active sessions, delete your account, and manage your plan and billing from here. Changes save automatically.',
   },
   {
     title: 'Connecting an AI App',

@@ -1,4 +1,5 @@
 import { connectionModel } from '../models/connectionModel.js'
+import { sentence } from './person.js'
 
 export function isNotConnection(err) {
     return err?.status === 404 && err?.code === 'not_a_connection'
@@ -6,9 +7,9 @@ export function isNotConnection(err) {
 
 // Call before refreshConnections(): the re-read drops the refused person from the list
 export function recipientLabel(err, pickEmail = '') {
-    if (pickEmail) return pickEmail
     const c = (connectionModel().connections.value || []).find(x => x.user_id === err?.user_id)
-    return c?.email || 'Someone you picked'
+    if (c?.email) return sentence(c)
+    return pickEmail || 'Someone you picked'
 }
 
 export function refreshConnections() {

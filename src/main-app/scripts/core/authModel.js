@@ -43,6 +43,19 @@ watch(() => currentUser.value?.id, (id, previous) => {
     statsModel().setStats(null)
 })
 
+let accountLiveSubscribed = false
+let profileReread = false
+
+// A failed re-read keeps the user as they are
+async function refreshUser() {
+    try {
+        const user = await apiClient.getUser()
+        if (!isAuthenticated.value) return
+        currentUser.value = user
+        localStorage.setItem('current_user', JSON.stringify(user))
+    } catch { /* stale profile is acceptable */ }
+}
+
 // A sign-in return target must stay on this site: a relative path, not `//host` and no `\` (browsers read it as `/`)
 export function validReturnPath(path) {
     if (typeof path === 'string' && path.startsWith('/') && !path.startsWith('//') && !path.includes('\\')) return path
@@ -50,6 +63,15 @@ export function validReturnPath(path) {
 }
 
 export function authModel() {
+
+    // Own profile, tier or timezone changed elsewhere (live `account`); null = anything may have changed
+    if (!accountLiveSubscribed) {
+        accountLiveSubscribed = true
+        liveClient.subscribe(changes => {
+            if (!isAuthenticated.value || (changes && !changes.some(c => c.entity === 'account'))) return
+            return refreshUser()
+        })
+    }
 
     async function _init() {
         const token = localStorage.getItem('auth_token')
@@ -68,6 +90,10 @@ export function authModel() {
                 } catch {
                     // Silently fail — user will be prompted to log in if needed
                 }
+            } else if (!currentUser.value.profile_limits && !profileReread) {
+                // Kept from before profiles: re-read once for name, picture and their limits
+                profileReread = true
+                refreshUser()
             }
         }
     }
@@ -300,6 +326,30 @@ export function authModel() {
         }
     }
 
+    function patchUser(fields) {
+        if (!currentUser.value) return
+        currentUser.value = { ...currentUser.value, ...fields }
+        localStorage.setItem('current_user', JSON.stringify(currentUser.value))
+    }
+
+    async function setName(name) {
+        const data = await apiClient.updateUserName(name)
+        patchUser({ name: data?.name ?? null })
+        return data
+    }
+
+    async function setPicture(file) {
+        const data = await apiClient.uploadUserPicture(file)
+        patchUser({ picture_url: data?.picture_url ?? null })
+        return data
+    }
+
+    async function removePicture() {
+        const data = await apiClient.removeUserPicture()
+        patchUser({ picture_url: null })
+        return data
+    }
+
     // Unsent captures of this user and a pending share are deleted on a confirmed manual logout; a forced logout keeps them
     async function confirmLogout() {
         const queue = captureQueue()
@@ -354,6 +404,9 @@ export function authModel() {
         googleSsoLogin,
         appleSsoLogin,
         loadUser,
+        setName,
+        setPicture,
+        removePicture,
         refreshToken,
         logoutUser,
         confirmLogout,

@@ -14,9 +14,13 @@
       </span>
 
       <!-- Delegated from (inbox stuff or actions clarified from delegations) -->
-      <span v-if="delegatedFromLabel" class="chip">
+      <span v-if="delegatedFromLabel" class="chip chip--person">
         <SharedIcon class="chip__icon chip__icon--tertiary" />
-        <span class="chip__text chip__text--tertiary">From: {{ delegatedFromLabel }}</span>
+        <span v-if="delegatedFromPerson?.name" class="chip__text chip__text--tertiary chip__person">
+          <span class="chip__person-name">From: {{ delegatedFromPerson.name }}</span>
+          <span class="chip__person-email">&nbsp;· {{ delegatedFromPerson.email }}</span>
+        </span>
+        <span v-else class="chip__text chip__text--tertiary">From: {{ delegatedFromLabel }}</span>
       </span>
 
       <!-- Assignee (shared-project actions only) -->
@@ -38,9 +42,13 @@
       </span>
 
       <!-- Waiting for -->
-      <span v-if="entityType === 'action' && item.waiting_for" class="chip">
+      <span v-if="entityType === 'action' && item.waiting_for" class="chip chip--person">
         <HourglassIcon class="chip__icon" />
-        <span class="chip__text">{{ item.waiting_for }}</span>
+        <span v-if="waitingPerson?.name" class="chip__text chip__person">
+          <span class="chip__person-name">{{ waitingPerson.name }}</span>
+          <span class="chip__person-email">&nbsp;· {{ waitingPerson.email }}</span>
+        </span>
+        <span v-else class="chip__text">{{ item.waiting_for }}</span>
       </span>
 
       <!-- Due date -->
@@ -106,6 +114,8 @@ import SharedIcon from '../assets/SharedIcon.vue'
 import { isOverdue, isScheduledOverdue, formatShortDate } from '../scripts/core/dateUtils.js'
 import { describeRRule } from '../scripts/core/rruleUtils.js'
 import { authModel } from '../scripts/core/authModel.js'
+import { connectionModel } from '../scripts/models/connectionModel.js'
+import { personOf } from '../scripts/core/person.js'
 import { captureIcon } from '../scripts/core/captureRules.js'
 
 const props = defineProps({
@@ -143,6 +153,14 @@ const delegatedFromLabel = computed(() => {
       || props.item.delegated_from_user_name
       || ''
 })
+
+// A delegated item names the person while they are still a connection; else the stored text
+function personFor(userId) {
+  return personOf(userId, { me: authModel().currentUser.value, connections: connectionModel().connections.value })
+}
+
+const delegatedFromPerson = computed(() => personFor(props.item.delegated_from?.user_id))
+const waitingPerson = computed(() => (props.entityType === 'action' ? personFor(props.item.waiting_for_user_id) : null))
 
 const assigneeLabel = computed(() => {
   const email = props.item.assigned_to_email
@@ -340,6 +358,32 @@ const hasAnyMetadata = computed(() => {
 
 .chip__text {
   line-height: 1.2;
+}
+
+/* One-line person: the email ellipsizes first, then the name */
+.chip--person {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chip__person {
+  display: flex;
+  min-width: 0;
+}
+
+.chip__person-name,
+.chip__person-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip__person-name {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.chip__person-email {
+  min-width: 0;
 }
 
 .chip__text--warning {
