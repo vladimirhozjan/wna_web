@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 9, 2026
+**Last updated:** November 11, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -41,7 +41,7 @@ When you use the Service, you create and store content including:
 
 You control what content you create. We process this content solely to provide the Service to you.
 
-The camera and microphone are used only when you choose Photo or Voice (in the iPhone app: Take Photo or Voice), through your browser's or your iPhone's permission prompt. Photos you take in the iPhone app are not saved to your photo library. Nothing is recorded in the background. Voice recordings are stored as files and are not transcribed.
+The camera and microphone are used only when you press the camera or microphone button in the capture bar (in the iPhone app also the camera tile), through your browser's or your iPhone's permission prompt. In the iPhone app, if you allow access to your photo library, the app shows your latest photos under the capture bar; they are read on your iPhone only, and only the photos you select are uploaded, as attachments. You can limit or turn off this access in your iPhone's Settings at any time. Photos you take in the iPhone app are not saved to your photo library. Nothing is recorded in the background. Voice recordings are stored as files and are not transcribed.
 
 ### 2.3 Inbound Email Content (Email-to-Inbox)
 

@@ -1,12 +1,27 @@
 <template>
   <div class="capture-bar" :class="`capture-bar--${variant}`" data-testid="capture-bar">
     <div class="capture-bar__main">
+      <Btn
+          variant="icon"
+          size="sm"
+          class="capture-bar__icon-btn capture-bar__file"
+          title="Attach files"
+          aria-label="Attach files"
+          :disabled="saving || !!recState"
+          data-testid="capture-file"
+          @mousedown.prevent
+          @click="pickFile"
+      >
+        <PlusCircleIcon class="capture-bar__icon capture-bar__file-icon" />
+      </Btn>
+
       <div class="capture-bar__field">
         <Inpt
             v-if="variant === 'inbox'"
             ref="inptRef"
             v-model="text"
             class="capture-bar__inpt"
+            :class="iconsClass"
             type="text"
             :placeholder="placeholder"
             :disabled="saving"
@@ -19,7 +34,7 @@
             ref="inputRef"
             v-model="text"
             class="capture-bar__input"
-            :class="{ 'text-body-s': variant === 'quick', 'capture-bar__input--clearable': showClear }"
+            :class="[{ 'text-body-s': variant === 'quick' }, iconsClass]"
             type="text"
             :placeholder="placeholder"
             :disabled="saving"
@@ -29,67 +44,60 @@
             @blur="onBlur"
         />
         <ActionBtn
-            v-if="showClear"
+            v-if="hasContent"
             variant="default"
             class="capture-bar__clear"
+            :class="{ 'capture-bar__clear--beside': isMobile }"
+            title="Clear"
+            aria-label="Clear"
+            :disabled="saving"
+            data-testid="capture-clear"
             @mousedown.prevent
             @click="clearAll(); focus()"
         />
-
-        <Dropdown v-model="menuModel" title="Attach" align="right" class="capture-bar__attach">
-          <template #trigger>
-            <Btn
-                variant="icon"
-                size="sm"
-                class="capture-bar__attach-btn"
-                :class="{ 'capture-bar__attach-btn--open': menuOpen }"
-                title="Attach photo, voice or file"
-                aria-label="Attach photo, voice or file"
-                :disabled="saving || !!recState"
-                data-testid="capture-attach"
-                @mousedown.prevent
-            >
-              <PlusCircleIcon class="capture-bar__attach-icon" />
-            </Btn>
-          </template>
-          <template #default="{ close, mobile }">
-            <div class="capture-menu" data-testid="capture-attach-menu">
-              <button class="dropdown-item" :disabled="!isProOrTeam" @mousedown.prevent @click="close(); pickPhoto()">
-                <CameraIcon class="dropdown-item-icon" /> Photo
-              </button>
-              <button class="dropdown-item" :disabled="!isProOrTeam" @mousedown.prevent @click="close(); startRecording()">
-                <MicIcon class="dropdown-item-icon" /> Voice
-              </button>
-              <button class="dropdown-item" :disabled="!isProOrTeam" @mousedown.prevent @click="close(); pickFile()">
-                <FileIcon class="dropdown-item-icon" /> File
-              </button>
-              <div v-if="!isProOrTeam" class="capture-menu__locked" data-testid="capture-locked">
-                <span class="text-body-s color-text-secondary capture-menu__locked-line">{{ LOCKED_LINE }}</span>
-                <Btn
-                    variant="primary"
-                    :size="mobile ? 'md' : 'sm'"
-                    class="capture-menu__locked-cta"
-                    @mousedown.prevent
-                    @click="close(); paymentsEnabled ? showCaptureUpgrade() : contactSupport()"
-                >
-                  {{ paymentsEnabled ? 'Upgrade' : 'Contact Us' }}
-                </Btn>
-              </div>
-            </div>
-          </template>
-        </Dropdown>
+        <Btn
+            v-if="isMobile"
+            variant="icon"
+            size="sm"
+            class="capture-bar__icon-btn capture-bar__photo"
+            title="Add photos"
+            aria-label="Add photos"
+            :disabled="saving || !!recState"
+            data-testid="capture-photo"
+            @mousedown.prevent
+            @click="pickPhoto"
+        >
+          <CameraIcon class="capture-bar__icon" />
+        </Btn>
       </div>
 
-      <Btn
-          v-if="variant !== 'quick'"
-          variant="primary"
-          size="sm"
-          class="capture-bar__add"
-          :disabled="!canAdd"
-          :loading="saving"
-          @mousedown.prevent
-          @click="submit"
-      >Add</Btn>
+      <div class="capture-bar__slot">
+        <Btn
+            variant="icon"
+            size="sm"
+            class="capture-bar__icon-btn capture-bar__mic"
+            :class="{ 'capture-bar__slot-off': hasContent }"
+            title="Record a voice memo"
+            aria-label="Record a voice memo"
+            :disabled="saving"
+            data-testid="capture-mic"
+            @mousedown.prevent
+            @click="startRecording"
+        >
+          <MicIcon class="capture-bar__icon" />
+        </Btn>
+        <Btn
+            variant="primary"
+            size="sm"
+            class="capture-bar__add"
+            :class="{ 'capture-bar__slot-off': !hasContent }"
+            :disabled="!canAdd"
+            :loading="saving"
+            data-testid="capture-add"
+            @mousedown.prevent
+            @click="submit"
+        >Add</Btn>
+      </div>
     </div>
 
     <div v-if="hasExtras" class="capture-bar__extras">
@@ -119,10 +127,6 @@
           @remove-pasted="pastedText = ''"
           @toggle-play="togglePlay"
       />
-
-      <div v-if="variant === 'quick' && hasExtras" class="capture-bar__panel-actions">
-        <Btn variant="primary" size="sm" :disabled="!canAdd" :loading="saving" @mousedown.prevent @click="submit">Add</Btn>
-      </div>
     </div>
 
     <input ref="photoInput" type="file" accept="image/*" multiple hidden @change="onPhotoPicked" @cancel="onPickCancel" />
@@ -131,27 +135,23 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import Inpt from './Inpt.vue'
 import Btn from './Btn.vue'
 import ActionBtn from './ActionBtn.vue'
-import Dropdown from './Dropdown.vue'
 import CaptureChips from './CaptureChips.vue'
 import PlusCircleIcon from '../assets/PlusCircleIcon.vue'
 import CameraIcon from '../assets/CameraIcon.vue'
 import MicIcon from '../assets/MicIcon.vue'
-import FileIcon from '../assets/FileIcon.vue'
 import { captureQueue } from '../scripts/core/captureQueue.js'
 import { offlineModel } from '../scripts/core/offlineModel.js'
 import { authModel } from '../scripts/core/authModel.js'
-import { flagsModel } from '../scripts/core/flagsModel.js'
 import { errorModel } from '../scripts/core/errorModel.js'
 import {
   createChip,
   formatDuration,
   stamp,
   showCaptureUpgrade,
-  contactSupport,
   loadAttachmentLimits,
   chipErrors as limitErrors,
   resizePhoto,
@@ -159,7 +159,6 @@ import {
   inputType,
   buildCapture,
   lateUploadReason,
-  CAPTURE_LOCKED_LINE as LOCKED_LINE,
   audioPlayer,
 } from '../scripts/core/captureRules.js'
 
@@ -172,11 +171,11 @@ const emit = defineEmits(['saved', 'close'])
 // contracts/limits.md §Voice memo
 const VOICE_MAX_SECONDS = 5 * 60
 const VOICE_COUNTDOWN_SECONDS = 30
+const MOBILE_QUERY = '(max-width: 768px)'
 
 const auth = authModel()
 const queue = captureQueue()
 const { isOffline } = offlineModel()
-const { paymentsEnabled } = flagsModel()
 const { playingId, toggle: toggleAudio, stop: stopPlayback } = audioPlayer()
 const toaster = errorModel()
 
@@ -190,10 +189,10 @@ const pastedText = ref('')
 const chips = ref([])
 const limits = ref(null)
 const saving = ref(false)
-const menuOpen = ref(false)
 const picking = ref(false)
 const recState = ref(null) // null, waiting, recording
 const recElapsed = ref(0)
+const isMobile = ref(window.matchMedia(MOBILE_QUERY).matches)
 
 let recorder = null
 let recStream = null
@@ -204,15 +203,14 @@ let recCancelled = false
 const tier = computed(() => auth.currentUser.value?.subscription_tier)
 const isProOrTeam = computed(() => tier.value === 'pro' || tier.value === 'team')
 
-const menuModel = computed({
-  get: () => menuOpen.value,
-  set: (v) => { menuOpen.value = v && !saving.value && !recState.value },
-})
-
 const recRemaining = computed(() => VOICE_MAX_SECONDS - recElapsed.value)
 const hasExtras = computed(() => !!recState.value || chips.value.length > 0 || !!pastedText.value)
 const hasContent = computed(() => !!text.value || hasExtras.value)
-const showClear = computed(() => props.variant === 'fab' && hasContent.value)
+// Icons inside the field's right end: × and, on mobile, the camera
+const iconsClass = computed(() => {
+  const count = (hasContent.value ? 1 : 0) + (isMobile.value ? 1 : 0)
+  return count ? `capture-bar__field--icons-${count}` : null
+})
 const placeholder = computed(() => chips.value.length || pastedText.value ? 'Add a title (optional)' : 'Add new stuff')
 
 const chipErrors = computed(() => limitErrors(chips.value, limits.value, tier.value))
@@ -260,13 +258,13 @@ function addFiles(list) {
 }
 
 function pickPhoto() {
-  if (!isProOrTeam.value) return
+  if (!isProOrTeam.value) { showCaptureUpgrade(); return }
   picking.value = true
   photoInput.value?.click()
 }
 
 function pickFile() {
-  if (!isProOrTeam.value) return
+  if (!isProOrTeam.value) { showCaptureUpgrade(); return }
   picking.value = true
   fileInput.value?.click()
 }
@@ -289,7 +287,7 @@ function onFilePicked(e) {
   const files = [...(e.target.files || [])]
   e.target.value = ''
   picking.value = false
-  for (const f of files) pushChip('file', f)
+  for (const f of files) pushChip(f.type.startsWith('image/') ? 'photo' : 'file', f)
   if (files.length) refreshLimits()
   focus()
 }
@@ -325,9 +323,10 @@ function onPaste(e) {
 // ── Voice ──
 
 async function startRecording() {
-  if (!isProOrTeam.value || recState.value) return
+  if (!isProOrTeam.value) { showCaptureUpgrade(); return }
+  if (recState.value) return
   if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-    toaster.push('This browser can\'t record audio. Choose File to attach a recording instead.', 'error', { keepOffline: true })
+    toaster.push('This browser can\'t record audio. Attach a recording with + instead.', 'error', { keepOffline: true })
     return
   }
 
@@ -340,8 +339,8 @@ async function startRecording() {
     recState.value = null
     if (recCancelled) return
     toaster.push(['NotFoundError', 'DevicesNotFoundError', 'OverconstrainedError'].includes(err?.name)
-        ? 'No microphone found. Connect one, then choose Voice again.'
-        : 'Microphone access is blocked. Allow it for this site in your browser settings, then choose Voice again.', 'error', { keepOffline: true })
+        ? 'No microphone found. Connect one, then press the microphone again.'
+        : 'Microphone access is blocked. Allow it for this site in your browser settings, then press the microphone again.', 'error', { keepOffline: true })
     return
   }
   if (recCancelled) {
@@ -464,7 +463,7 @@ function onEsc() {
 // Quick Add closes on blur only while nothing but typed text would be lost
 function onBlur() {
   if (props.variant !== 'quick') return
-  if (hasExtras.value || menuOpen.value || picking.value || saving.value) return
+  if (hasExtras.value || picking.value || saving.value) return
   clearAll()
   emit('close')
 }
@@ -475,11 +474,16 @@ watch(isOffline, (offline) => {
   if (chips.value.length) refreshLimits()
 })
 
-watch(menuOpen, (open) => {
-  if (!open && !picking.value) focus()
-})
+function onMediaChange(e) {
+  isMobile.value = e.matches
+}
+
+const mediaQuery = window.matchMedia(MOBILE_QUERY)
+
+onMounted(() => mediaQuery.addEventListener('change', onMediaChange))
 
 onUnmounted(() => {
+  mediaQuery.removeEventListener('change', onMediaChange)
   stopRecording(false)
   stopPlayback()
   chips.value.forEach(releaseChip)
@@ -506,7 +510,12 @@ defineExpose({
   gap: 10px;
 }
 
-/* The attach button sits inside the field's right edge in every variant */
+.capture-bar--quick .capture-bar__main,
+.capture-bar--fab .capture-bar__main {
+  align-items: center;
+}
+
+/* × and, on mobile, the camera sit inside the field's right end */
 .capture-bar__field {
   flex: 1;
   display: flex;
@@ -520,7 +529,6 @@ defineExpose({
 }
 
 .capture-bar__inpt :deep(input) {
-  padding-right: 40px;
   text-overflow: ellipsis;
 }
 
@@ -533,43 +541,74 @@ defineExpose({
   text-overflow: ellipsis;
 }
 
-.capture-bar__field .capture-bar__attach {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.capture-bar .capture-bar__attach-btn {
+/* + · camera · mic: 1 px lines like the field's border */
+.capture-bar .capture-bar__icon-btn,
+.capture-bar .capture-bar__icon-btn:disabled {
+  flex-shrink: 0;
   width: 32px;
   height: 32px;
   padding: 0;
   color: var(--color-input-border-focus);
 }
 
-.capture-bar .capture-bar__attach-btn:hover:not(:disabled),
-.capture-bar .capture-bar__attach-btn--open {
-  background: transparent;
-}
-
-.capture-bar .capture-bar__attach-btn:disabled {
+.capture-bar .capture-bar__icon-btn:disabled {
   opacity: 0.5;
 }
 
-/* 1 px lines like the field's border */
-.capture-bar__attach-icon {
+.capture-bar__icon {
   display: block;
   width: 22px;
   height: 22px;
 }
 
-.capture-bar__attach-icon :deep(circle) {
+.capture-bar .capture-bar__file:hover:not(:disabled) {
+  background: transparent;
+}
+
+.capture-bar__file-icon :deep(circle) {
   transition: 0.15s fill;
 }
 
-.capture-bar__attach-btn:hover:not(:disabled) .capture-bar__attach-icon :deep(circle),
-.capture-bar__attach-btn--open .capture-bar__attach-icon :deep(circle) {
+.capture-bar__file:hover:not(:disabled) .capture-bar__file-icon :deep(circle) {
   fill: var(--color-action-bg-light);
+}
+
+.capture-bar__field .capture-bar__photo {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+}
+
+.capture-bar__clear {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  color: var(--color-text-tertiary);
+}
+
+.capture-bar__clear--beside {
+  right: 38px;
+}
+
+/* Mic and Add share one cell, so the slot is always Add's width and the field never moves */
+.capture-bar__slot {
+  display: grid;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.capture-bar__slot > * {
+  grid-area: 1 / 1;
+}
+
+.capture-bar .capture-bar__mic {
+  place-self: center;
+}
+
+.capture-bar__slot-off {
+  visibility: hidden;
 }
 
 .capture-bar__extras {
@@ -603,47 +642,19 @@ defineExpose({
   color: var(--color-danger);
 }
 
-/* Attach menu */
-.capture-menu .dropdown-item:disabled {
-  color: var(--color-text-secondary);
-}
-
-.capture-menu__locked {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 260px;
-  box-sizing: border-box;
-  margin-top: 8px;
-  padding: 12px;
-  background: var(--color-bg-secondary);
-  border-radius: 6px;
-}
-
-.capture-menu__locked-line {
-  line-height: var(--lh-normal);
-}
-
-.capture-menu__locked-cta {
-  width: 100%;
-}
-
-/* In the mobile sheet the items are inset 16px */
-@media (max-width: 768px) {
-  .capture-menu__locked {
-    width: auto;
-    margin: 8px 16px;
-    padding: 16px;
-    gap: 12px;
-  }
-}
-
-/* Inbox input: Inpt's 8px top / 4px bottom margins, matched by Add (the Next add-input geometry) */
-.capture-bar--inbox .capture-bar__field .capture-bar__attach {
+/* Inbox input: Inpt's 8px top / 4px bottom margins, matched by + and the slot (the Next add-input geometry) */
+.capture-bar--inbox .capture-bar__field .capture-bar__photo,
+.capture-bar--inbox .capture-bar__clear {
   top: calc(50% + 2px);
 }
 
-.capture-bar--inbox .capture-bar__add {
+.capture-bar--inbox .capture-bar__file {
+  align-self: center;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.capture-bar--inbox .capture-bar__slot {
   margin-top: 8px;
   margin-bottom: 4px;
 }
@@ -652,12 +663,12 @@ defineExpose({
   margin-top: 4px;
 }
 
-/* Desktop Quick Add: chips + Add in a panel under the field */
+/* Desktop Quick Add: chips and the recording in a panel under the row */
 .capture-bar--quick .capture-bar__input {
   flex: none;
   box-sizing: border-box;
   width: 250px;
-  padding: 8px 40px 8px 14px;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--color-btn-secondary-border);
   background: var(--color-bg-accent-light);
@@ -681,9 +692,11 @@ defineExpose({
   box-sizing: border-box;
 }
 
-.capture-bar__panel-actions {
-  display: flex;
-  justify-content: flex-end;
+/* Narrow desktop: the TopNav must not wrap */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .capture-bar--quick .capture-bar__input {
+    width: 200px;
+  }
 }
 
 /* Mobile FAB bar: chips and recording sit above the field (the bar rests on the keyboard) */
@@ -695,15 +708,11 @@ defineExpose({
 .capture-bar--fab .capture-bar__input {
   box-sizing: border-box;
   min-height: var(--touch-target-min);
-  padding: 10px 40px 10px 10px;
+  padding: 10px;
   border-radius: 6px;
   border: 1px solid var(--color-input-border);
   background: var(--color-input-background);
   font-size: var(--font-size-body);
-}
-
-.capture-bar--fab .capture-bar__input--clearable {
-  padding-right: 72px;
 }
 
 .capture-bar--fab .capture-bar__input:focus {
@@ -715,11 +724,14 @@ defineExpose({
   color: var(--color-text-prefill);
 }
 
-.capture-bar__clear {
-  position: absolute;
-  top: 50%;
-  right: 38px;
-  transform: translateY(-50%);
-  color: var(--color-text-tertiary);
+/* Room for the icons inside the field's right end */
+.capture-bar .capture-bar__input.capture-bar__field--icons-1,
+.capture-bar__inpt.capture-bar__field--icons-1 :deep(input) {
+  padding-right: 40px;
+}
+
+.capture-bar .capture-bar__input.capture-bar__field--icons-2,
+.capture-bar__inpt.capture-bar__field--icons-2 :deep(input) {
+  padding-right: 72px;
 }
 </style>
