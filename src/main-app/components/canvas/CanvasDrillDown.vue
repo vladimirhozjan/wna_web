@@ -86,7 +86,7 @@
                   Ideas can be up to {{ NODE_TEXT_LIMIT }} characters.
                 </p>
               </template>
-              <span v-else class="dd-row-text" :class="{ 'dd-blank': isBlank(child) }" @click="onRowTextClick($event, child.id)">{{ canvas.displayText(child) }}</span>
+              <span v-else class="dd-row-text" :class="{ 'dd-blank': isBlank(child) }">{{ canvas.displayText(child) }}</span>
             </template>
             <template #actions>
               <span class="dd-row-meta">
@@ -118,7 +118,7 @@
           </div>
 
           <p v-if="!listChildren.length && !newRowId" class="text-body-s color-text-secondary dd-card-empty">
-            {{ canvas.canEdit.value ? 'No ideas under this one yet. Tap + to add one.' : 'No ideas under this one.' }}
+            {{ canvas.canEdit.value ? 'No ideas under this one yet.' : 'No ideas under this one.' }}
           </p>
         </div>
       </div>
@@ -134,13 +134,14 @@
           @mousedown.prevent
           @click="addNewRow"
       >
-        <PlusIcon width="20" height="20" />
+        <PlusIcon width="16" height="16" />
+        <span class="text-body-s fw-semibold">Add idea</span>
       </button>
 
       <!-- Idea menu -->
       <BottomSheet v-if="sheetNode" @close="sheetId = null">
         <div class="dd-sheet" data-testid="canvas-idea-menu">
-          <button class="dropdown-item" @click="sheetAction(id => startEdit(id))">Edit</button>
+          <button class="dropdown-item" @click="sheetAction(id => startEdit(id))">Rename</button>
           <button class="dropdown-item" @click="sheetAction(id => emit('move', id))">Move to…</button>
           <button v-if="sheetNode.converted" class="dropdown-item" @click="sheetAction(id => canvas.unmarkConverted(id))">Mark as not converted</button>
           <button class="dropdown-item dropdown-item--danger" @click="sheetAction(id => emit('delete', id))">{{ deleteLabel(sheetNode.id) }}</button>
@@ -227,13 +228,6 @@ function startEdit(id) {
   draft.value = node.text
   editingId.value = id
   focusEditor()
-}
-
-// Like other lists: tapping the text edits, the rest of the row drills in
-function onRowTextClick(e, id) {
-  if (!canvas.canEdit.value) return
-  e.stopPropagation()
-  startEdit(id)
 }
 
 function onEditorInput(e) {
@@ -345,6 +339,8 @@ useSwipe(swipeRef, {
     swipeDx = 0
   },
 })
+
+defineExpose({ renameCurrent: () => current.value && startEdit(current.value.id) })
 
 // Header navigation (back, siblings) ends the open edit
 watch(() => props.currentId, () => endEdit())
@@ -547,10 +543,12 @@ watch(() => canvas.nodes.value, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
+  gap: 8px;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 9999px;
   border: none;
+  white-space: nowrap;
   background: var(--color-btn-primary-bg);
   color: var(--color-btn-primary-text);
   cursor: pointer;

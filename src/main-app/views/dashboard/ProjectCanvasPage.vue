@@ -39,6 +39,7 @@
             </template>
             <template #default="{ close }">
               <template v-if="drillDeep">
+                <button class="dropdown-item" @click="close(); drillRef.renameCurrent()">Rename</button>
                 <button class="dropdown-item" @click="close(); moveId = drillCurrent.id">Move to…</button>
                 <button v-if="drillCurrent.converted" class="dropdown-item" @click="close(); canvas.unmarkConverted(drillCurrent.id)">Mark as not converted</button>
                 <button class="dropdown-item dropdown-item--danger" @click="close(); deleteIdea(drillCurrent.id)">{{ drillDeleteLabel }}</button>
@@ -118,6 +119,7 @@
       <!-- Canvas body -->
       <CanvasDrillDown
           v-if="isMobile"
+          ref="drillRef"
           v-model:current-id="drillId"
           class="canvas-body"
           @move="moveId = $event"
@@ -182,6 +184,7 @@ const convertMode = ref('manual')
 const moveId = ref(null)
 const outcomeExpanded = ref(false)
 const mapRef = ref(null)
+const drillRef = ref(null)
 const drillId = ref(null)
 const mobileQuery = window.matchMedia('(max-width: 768px)')
 
