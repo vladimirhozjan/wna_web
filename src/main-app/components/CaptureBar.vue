@@ -76,7 +76,7 @@
             variant="icon"
             size="sm"
             class="capture-bar__icon-btn capture-bar__mic"
-            :class="{ 'capture-bar__slot-off': hasContent }"
+            v-show="!hasContent"
             title="Record a voice memo"
             aria-label="Record a voice memo"
             :disabled="saving"
@@ -90,7 +90,7 @@
             variant="primary"
             size="sm"
             class="capture-bar__add"
-            :class="{ 'capture-bar__slot-off': !hasContent }"
+            v-show="hasContent"
             :disabled="!canAdd"
             :loading="saving"
             data-testid="capture-add"
@@ -506,13 +506,8 @@ defineExpose({
 
 .capture-bar__main {
   display: flex;
-  align-items: stretch;
-  gap: 10px;
-}
-
-.capture-bar--quick .capture-bar__main,
-.capture-bar--fab .capture-bar__main {
   align-items: center;
+  gap: 10px;
 }
 
 /* × and, on mobile, the camera sit inside the field's right end */
@@ -529,6 +524,7 @@ defineExpose({
 }
 
 .capture-bar__inpt :deep(input) {
+  margin: 0;
   text-overflow: ellipsis;
 }
 
@@ -592,23 +588,16 @@ defineExpose({
   right: 38px;
 }
 
-/* Mic and Add share one cell, so the slot is always Add's width and the field never moves */
+/* The slot hugs the mic or Add; the field gives way on the swap */
 .capture-bar__slot {
-  display: grid;
+  display: flex;
   flex-shrink: 0;
   align-self: stretch;
-}
-
-.capture-bar__slot > * {
-  grid-area: 1 / 1;
+  align-items: stretch;
 }
 
 .capture-bar .capture-bar__mic {
-  place-self: center;
-}
-
-.capture-bar__slot-off {
-  visibility: hidden;
+  align-self: center;
 }
 
 .capture-bar__extras {
@@ -642,21 +631,9 @@ defineExpose({
   color: var(--color-danger);
 }
 
-/* Inbox input: Inpt's 8px top / 4px bottom margins, matched by + and the slot (the Next add-input geometry) */
-.capture-bar--inbox .capture-bar__field .capture-bar__photo,
-.capture-bar--inbox .capture-bar__clear {
-  top: calc(50% + 2px);
-}
-
-.capture-bar--inbox .capture-bar__file {
-  align-self: center;
-  margin-top: 8px;
-  margin-bottom: 4px;
-}
-
-.capture-bar--inbox .capture-bar__slot {
-  margin-top: 8px;
-  margin-bottom: 4px;
+/* Inbox: Inpt's 8px top / 4px bottom margins sit on the row, so the row is the field's height */
+.capture-bar--inbox .capture-bar__main {
+  margin: 8px 0 4px;
 }
 
 .capture-bar--inbox .capture-bar__extras {
@@ -664,10 +641,16 @@ defineExpose({
 }
 
 /* Desktop Quick Add: chips and the recording in a panel under the row */
+.capture-bar--quick {
+  margin-right: 8px;
+}
+
+.capture-bar--quick .capture-bar__main {
+  width: 366px;
+}
+
 .capture-bar--quick .capture-bar__input {
-  flex: none;
   box-sizing: border-box;
-  width: 250px;
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--color-btn-secondary-border);
@@ -694,8 +677,8 @@ defineExpose({
 
 /* Narrow desktop: the TopNav must not wrap */
 @media (min-width: 769px) and (max-width: 1023px) {
-  .capture-bar--quick .capture-bar__input {
-    width: 200px;
+  .capture-bar--quick .capture-bar__main {
+    width: 316px;
   }
 }
 
