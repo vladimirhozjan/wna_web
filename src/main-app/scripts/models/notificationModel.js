@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import { getNotificationSettings, updateNotificationSettings, getPushConfig, putPushSubscription, deletePushSubscription } from '../core/apiClient.js'
+import { getDomains } from '../core/domains.js'
 
 // Settings → Notifications rows; team = shown to Team only, web: false = email only (announcements never go to devices)
 export const NOTIFICATION_GROUPS = [
@@ -33,6 +34,9 @@ export const NOTIFICATION_GROUPS = [
 const EVENTS = NOTIFICATION_GROUPS.flatMap(g => g.events)
 const WEB_EVENTS = EVENTS.filter(e => e.web !== false)
 
+// The Mobile column (same events as Web) exists only once the iPhone app is live; hidden, the iPhone keeps its own values
+export const MOBILE_COLUMN = Boolean(getDomains().app_store_url)
+
 // The offer banner was answered in this sign-in (D10); cleared on every sign-in and sign-out
 const ANSWERED_KEY = 'wna_push_answered'
 
@@ -54,6 +58,7 @@ export function notificationModel() {
         emailEnabled: true,       // master toggle: false when "*" in disabled_events.email
         email: Object.fromEntries(EVENTS.map(e => [e.event, true])),
         web: Object.fromEntries(WEB_EVENTS.map(e => [e.event, true])),
+        mobile: Object.fromEntries(WEB_EVENTS.map(e => [e.event, true])),
 
         loading: false,
         loaded: false,
@@ -69,18 +74,20 @@ export function notificationModel() {
     function applyToState() {
         const email = disabledEvents.email || []
         const web = disabledEvents.web || []
+        const mobile = disabledEvents.mobile || []
         state.emailEnabled = !email.includes('*')
         for (const { event } of EVENTS) state.email[event] = !email.includes(event)
         for (const { event } of WEB_EVENTS) state.web[event] = !web.includes('*') && !web.includes(event)
+        if (MOBILE_COLUMN) for (const { event } of WEB_EVENTS) state.mobile[event] = !mobile.includes('*') && !mobile.includes(event)
     }
 
     function buildPayload() {
-        return {
-            disabled_events: {
-                email: state.emailEnabled ? EVENTS.filter(e => !state.email[e.event]).map(e => e.event) : ['*'],
-                web: WEB_EVENTS.filter(e => !state.web[e.event]).map(e => e.event),
-            },
+        const disabled = {
+            email: state.emailEnabled ? EVENTS.filter(e => !state.email[e.event]).map(e => e.event) : ['*'],
+            web: WEB_EVENTS.filter(e => !state.web[e.event]).map(e => e.event),
         }
+        if (MOBILE_COLUMN) disabled.mobile = WEB_EVENTS.filter(e => !state.mobile[e.event]).map(e => e.event)
+        return { disabled_events: disabled }
     }
 
     async function load() {

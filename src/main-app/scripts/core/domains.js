@@ -14,5 +14,7 @@ export function getDomains() {
         mcp_url: rc.MCP_URL || 'http://localhost:8000/mcp',
         // false in the pre-render (no config.js), so the localhost fallback never reaches public HTML
         mcp_url_configured: Boolean(rc.MCP_URL),
+        // null in the pre-render (no config.js), so App Store elements only appear once the app is live
+        app_store_url: /^[0-9]+$/.test(rc.APP_STORE_ID || '') ? `https://apps.apple.com/app/id${rc.APP_STORE_ID}` : null,
     }
 }

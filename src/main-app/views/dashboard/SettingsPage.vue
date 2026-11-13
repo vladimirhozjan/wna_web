@@ -526,6 +526,7 @@
                       <div class="notif-columns">
                         <span class="text-caption notif-column-label">Email</span>
                         <span class="text-caption notif-column-label">Web</span>
+                        <span v-if="MOBILE_COLUMN" class="text-caption notif-column-label">Mobile</span>
                       </div>
                     </div>
 
@@ -550,6 +551,16 @@
                           </label>
                         </div>
                         <span v-else class="notif-column-label"></span>
+                        <template v-if="MOBILE_COLUMN">
+                          <div v-if="row.web !== false" class="settings-control" :class="{ 'settings-control--saving': notifications.state.saving[`mobile:${row.event}`] }">
+                            <span v-if="notifications.state.saving[`mobile:${row.event}`]" class="settings-saving-spinner"><Spinner :size="18" class="settings-saving-spin" /></span>
+                            <label class="settings-toggle">
+                              <input type="checkbox" :checked="notifications.state.mobile[row.event]" :aria-label="`${row.label} on mobile`" :data-testid="`notif-mobile-${row.event}`" @change="onEventToggle('mobile', row.event, $event)" />
+                              <span class="settings-toggle-slider"></span>
+                            </label>
+                          </div>
+                          <span v-else class="notif-column-label"></span>
+                        </template>
                       </div>
                     </div>
                   </template>
@@ -907,7 +918,7 @@ import { changePassword, listSessions, revokeSession, revokeAllSessions, listAiA
 import { upgradeModel } from '../../scripts/core/upgradeModel.js'
 import { copyText } from '../../scripts/core/clipboardUtils.js'
 import { getDomains } from '../../scripts/core/domains.js'
-import { notificationModel, NOTIFICATION_GROUPS } from '../../scripts/models/notificationModel.js'
+import { notificationModel, NOTIFICATION_GROUPS, MOBILE_COLUMN } from '../../scripts/models/notificationModel.js'
 import { themeModel } from '../../scripts/models/themeModel.js'
 import { statsModel } from '../../scripts/models/statsModel.js'
 import { flagsModel } from '../../scripts/core/flagsModel.js'
@@ -2741,7 +2752,7 @@ async function onLogout() {
   margin: 8px 0 16px;
 }
 
-/* Notifications: one row per event, an Email and a Web toggle column; rows 1–2 keep their toggle under Web */
+/* Notifications: one row per event, an Email, a Web and (iPhone app live) a Mobile toggle column */
 .notif-group-header {
   display: flex;
   align-items: center;

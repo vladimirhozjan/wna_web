@@ -1,3 +1,12 @@
+import { getDomains } from '../../scripts/core/domains.js'
+
+// Entries that change once the iPhone app is live; the pre-render (no config.js) always gets today's text
+const APP_LIVE = Boolean(getDomains().app_store_url)
+
+const OFFLINE = 'Yes, on every plan. Once you have opened WhatsNextAction online — in the browser or as the installed app — it also opens without a network connection. Offline, Quick Add and your Inbox keep working; other pages show that they load when you\'re back online. Each item you capture appears at the top of your Inbox marked "Waiting to sync" and is sent to your account automatically when the connection returns while WhatsNextAction is open (if it is closed, the next time you open it). On Free you capture text; on Pro and Team you can also attach photos, voice memos and files — up to 50 MB of waiting files per device, and a file that doesn\'t fit stays in the bar so you can attach it when you\'re back online. If the server can\'t save an item, it is marked "Couldn\'t sync" with Retry and Discard. Waiting items are kept on this device only, and logging out deletes them — you are asked first.'
+
+const SHARE_ANDROID = 'In any app — your browser, Photos, WhatsApp, Files — tap Share and choose WNA. A short Add to Inbox form opens already filled in: the shared title or first line becomes the title, and the rest of the text and the link go to the description. Edit anything you like, then tap Add to Inbox and you are taken back to the app you shared from. It works offline too — the item is saved on your device and sent when you\'re back online. If you aren\'t signed in, sign in first and the form opens with what you shared. On Free you share text and links; on Pro and Team you can also share photos and files, within your plan\'s attachment limits.'
+
 export const faq = [
   // --- Account & Authentication ---
   {
@@ -98,7 +107,7 @@ export const faq = [
   {
     question: 'Can I capture while offline?',
     answer:
-      'Yes, on every plan. Once you have opened WhatsNextAction online — in the browser or as the installed app — it also opens without a network connection. Offline, Quick Add and your Inbox keep working; other pages show that they load when you\'re back online. Each item you capture appears at the top of your Inbox marked "Waiting to sync" and is sent to your account automatically when the connection returns while WhatsNextAction is open (if it is closed, the next time you open it). On Free you capture text; on Pro and Team you can also attach photos, voice memos and files — up to 50 MB of waiting files per device, and a file that doesn\'t fit stays in the bar so you can attach it when you\'re back online. If the server can\'t save an item, it is marked "Couldn\'t sync" with Retry and Discard. Waiting items are kept on this device only, and logging out deletes them — you are asked first.',
+      OFFLINE + (APP_LIVE ? ' In the iPhone app everything works offline, not only capture: your lists open from the copy on your iPhone, and every change you make is sent when you\'re back online.' : ''),
   },
   {
     question: 'Do my lists update by themselves?',
@@ -108,7 +117,9 @@ export const faq = [
   {
     question: 'Can I share to WhatsNextAction from other apps?',
     answer:
-      'Yes, on Android with the installed app. In any app — your browser, Photos, WhatsApp, Files — tap Share and choose WNA. A short Add to Inbox form opens already filled in: the shared title or first line becomes the title, and the rest of the text and the link go to the description. Edit anything you like, then tap Add to Inbox and you are taken back to the app you shared from. It works offline too — the item is saved on your device and sent when you\'re back online. If you aren\'t signed in, sign in first and the form opens with what you shared. On Free you share text and links; on Pro and Team you can also share photos and files, within your plan\'s attachment limits. Sharing isn\'t available on iPhone/iPad — Safari doesn\'t support it; it will come with the iOS app.',
+      APP_LIVE
+        ? 'Yes. On iPhone, get the WhatsNextAction app from the App Store: in any app tap Share and choose WhatsNextAction — a short Add to Inbox form opens with what you shared, also offline. On Android, with the installed web app: ' + SHARE_ANDROID
+        : 'Yes, on Android with the installed app. ' + SHARE_ANDROID + ' Sharing isn\'t available on iPhone/iPad — Safari doesn\'t support it; it will come with the iOS app.',
   },
 
   // --- Moving & Organizing ---
@@ -336,12 +347,20 @@ export const faq = [
   {
     question: 'How do I manage notifications?',
     answer:
-      'Go to Settings and find the Notifications section. Each event has its own row with two switches: Email, and Web for notifications on your devices (it applies to every device where you turned notifications on). Everything is on by default. The Email notifications switch at the top stops every email in the list at once. The Web notifications on this device switch turns notifications on or off for the browser you are using; your other devices keep theirs. Every plan sees the daily digest, project-needs-a-next-action alerts, connection invitations and Announcements (email only); the Team plan also gets the Delegation and Shared projects groups and replies to your connection invitations. The bell in the top bar is always on. Security alerts (a new sign-in, a changed password, an added Google or Apple sign-in, a connected AI app) and failed payments cannot be turned off — they always come by email and to every device with notifications on. Verification and password-reset emails, subscription notices and service notices (terms changes, maintenance, security) always come by email.',
+      'Go to Settings and find the Notifications section. Each event has its own row with '
+      + (APP_LIVE
+        ? 'three switches: Email; Web, for notifications in your browsers (every browser where you turned them on); and Mobile, for notifications in the iPhone app (every iPhone where you turned them on)'
+        : 'two switches: Email, and Web for notifications on your devices (it applies to every device where you turned notifications on)')
+      + '. Everything is on by default. The Email notifications switch at the top stops every email in the list at once. The Web notifications on this device switch turns notifications on or off for the browser you are using; your other devices keep theirs. Every plan sees the daily digest, project-needs-a-next-action alerts, connection invitations and Announcements (email only); the Team plan also gets the Delegation and Shared projects groups and replies to your connection invitations. The bell in the top bar is always on. Security alerts (a new sign-in, a changed password, an added Google or Apple sign-in, a connected AI app) and failed payments cannot be turned off — they always come by email and to every device with notifications on. Verification and password-reset emails, subscription notices and service notices (terms changes, maintenance, security) always come by email.',
   },
   {
     question: 'How do I get notifications on my computer or phone?',
     answer:
-      'Choose Turn on when WhatsNextAction offers notifications after you sign in, then Allow in your browser — or turn on Web notifications on this device in Settings → Notifications at any time. Notifications are set per device: turn them on in each browser where you want them. Signing out stops them on that device, and the next sign-in offers them again. On iPhone and iPad (iOS / iPadOS 16.4 or later) they work only in the Home Screen app: in Safari tap Share → Add to Home Screen, open WhatsNextAction from your Home Screen and turn them on there. If you chose Block, allow notifications for this site in your browser\'s site settings, then turn the switch on. In Brave, first turn on "Use Google services for push messaging" in Brave\'s privacy settings. Notifications work in current Chrome, Edge, Firefox and Safari.',
+      'Choose Turn on when WhatsNextAction offers notifications after you sign in, then Allow in your browser — or turn on Web notifications on this device in Settings → Notifications at any time. Notifications are set per device: turn them on in each browser where you want them. Signing out stops them on that device, and the next sign-in offers them again. '
+      + (APP_LIVE
+        ? 'In the iPhone app from the App Store, turn them on when the app offers them after you sign in, or in the app\'s Settings → Notifications. On iPad (iPadOS 16.4 or later) they work only in the Home Screen web app: in Safari tap Share → Add to Home Screen, open WhatsNextAction from your Home Screen and turn them on there.'
+        : 'On iPhone and iPad (iOS / iPadOS 16.4 or later) they work only in the Home Screen app: in Safari tap Share → Add to Home Screen, open WhatsNextAction from your Home Screen and turn them on there.')
+      + ' If you chose Block, allow notifications for this site in your browser\'s site settings, then turn the switch on. In Brave, first turn on "Use Google services for push messaging" in Brave\'s privacy settings. Notifications work in current Chrome, Edge, Firefox and Safari.',
   },
   {
     question: 'What are in-app notifications?',
@@ -372,7 +391,9 @@ export const faq = [
   {
     question: 'Can I use WhatsNextAction on my phone?',
     answer:
-      'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover. You can also install WhatsNextAction on your home screen so it opens like an app: on Android (Chrome) use ⋮ → Install app or Add to Home screen, on iPhone/iPad (Safari) use Share → Add to Home Screen, on a Mac (Safari) use File → Add to Dock, and in desktop Chrome or Edge use the install icon in the address bar. The installed app also opens without a network connection, so you can keep capturing into your Inbox offline. On Android the installed app also appears in the Share menu of other apps, so you can share into your Inbox from any app.',
+      APP_LIVE
+        ? 'Yes. On iPhone, get the WhatsNextAction app from the App Store: it works offline, captures from the Share menu, widgets, Siri and Apple Watch, and uses the same account as the web. On iPad, Android and computers, WhatsNextAction is a web app that works in any modern browser, and you can install it so it opens like an app: on Android (Chrome) use ⋮ → Install app or Add to Home screen, on a Mac (Safari) use File → Add to Dock, and in desktop Chrome or Edge use the install icon in the address bar. The installed web app also opens without a connection, so you can keep capturing into your Inbox offline, and on Android it appears in the Share menu of other apps.'
+        : 'Yes. WhatsNextAction is a responsive web application that works on any device with a modern browser. On mobile you get a slide-in navigation drawer, bottom action sheets for dropdowns and selects, full-screen modals, and touch-friendly controls. The Quick Add button becomes a floating button in the bottom-right corner. Action buttons are always visible on touch devices without needing to hover. You can also install WhatsNextAction on your home screen so it opens like an app: on Android (Chrome) use ⋮ → Install app or Add to Home screen, on iPhone/iPad (Safari) use Share → Add to Home Screen, on a Mac (Safari) use File → Add to Dock, and in desktop Chrome or Edge use the install icon in the address bar. The installed app also opens without a network connection, so you can keep capturing into your Inbox offline. On Android the installed app also appears in the Share menu of other apps, so you can share into your Inbox from any app.',
   },
   {
     question: 'Are there keyboard shortcuts?',

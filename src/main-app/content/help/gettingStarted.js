@@ -1,3 +1,8 @@
+import { getDomains } from '../../scripts/core/domains.js'
+
+// The pre-render (no config.js) never shows the iPhone entry
+const APP_LIVE = Boolean(getDomains().app_store_url)
+
 export const gettingStarted = [
   {
     title: 'What is WhatsNextAction?',
@@ -34,6 +39,11 @@ export const gettingStarted = [
     description:
       'The Quick Add button (+) in the top navigation bar lets you capture a thought without leaving whatever page you\'re on. Tap it, type your item, and press Enter. It goes straight to your Inbox as unprocessed stuff. The input stays open so you can rapid-fire multiple items — press Escape when you\'re done. On mobile, a floating + button in the bottom-right corner does the same thing. It works offline too — what you capture waits on your device and is sent when you\'re back online. Links you type or paste go to the item\'s description, and so do further lines of pasted text. On Pro and Team plans the buttons around the field add more: + attaches files, the microphone records a voice memo of up to 5 minutes (it turns into Add once you have typed or attached something), and on a phone the camera button takes or picks a photo — in the iPhone app it shows your latest photos under the bar, one tap each. On a computer you can also drop files onto the Inbox page or paste a screenshot into the field. Several files in one capture become one Inbox item, and with no title typed the item gets one automatically (for example "Photo · 25 Oct 14:32"). Your plan\'s attachment limits apply — a file that doesn\'t fit is marked red and isn\'t added.',
   },
+  ...(APP_LIVE ? [{
+    title: 'WhatsNextAction on iPhone and Apple Watch',
+    description:
+      'Get the WhatsNextAction app from the App Store and sign in with the same account — your lists are the same as on the web. The tabs at the bottom are Engage, Inbox, Calendar, Projects and Lists; the round capture button on each list adds to your Inbox by text, photo, voice memo or file. Share from any app to WhatsNextAction, add the widgets to your Home Screen or Lock Screen, ask Siri to add to WhatsNextAction, and use the Apple Watch app for your Next list, voice capture and Complete. The app works offline and sends your changes when you\'re back online. Plans can also be bought in the app through the App Store.',
+  }] : []),
   {
     title: 'Capture by Email (Pro & Team)',
     description:

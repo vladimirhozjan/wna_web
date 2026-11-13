@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** November 9, 2026
+**Last updated:** November 13, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -8,7 +8,7 @@ By creating an account or using the Service, you agree to be bound by these Term
 
 ## 1. Definitions
 
-- **Service** - The WhatsNextAction web application, including all features, content, and functionality accessible at whatsnextaction.com and associated domains.
+- **Service** - The WhatsNextAction web application and the WhatsNextAction apps for iPhone and Apple Watch, including all features, content, and functionality accessible at whatsnextaction.com, associated domains and in those apps.
 - **User** / **You** - Any individual who creates an account and uses the Service.
 - **Content** - Any data, text, files, comments, or other materials you create, upload, or store through the Service, including but not limited to inbox items (stuff), actions, projects, tags, descriptions, attachments, and comments.
 - **Subscription** - A paid plan (Pro or Team) providing access to additional features and higher usage limits.
@@ -16,7 +16,7 @@ By creating an account or using the Service, you agree to be bound by these Term
 
 ## 2. Service Description
 
-WhatsNextAction is a web-based productivity platform designed for stress-free productivity, inspired by proven task management principles. The Service provides tools for capturing, clarifying, organizing, reviewing, and engaging with tasks and projects.
+WhatsNextAction is a productivity platform on the web, iPhone and Apple Watch, designed for stress-free productivity, inspired by proven task management principles. The Service provides tools for capturing, clarifying, organizing, reviewing, and engaging with tasks and projects. The iPhone and Apple Watch apps are distributed through Apple's App Store, which licenses them to you under Apple's standard Licensed Application End User License Agreement; these Terms govern your account and the Service the apps connect to.
 
 ### Core Features
 
