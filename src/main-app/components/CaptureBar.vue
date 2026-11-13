@@ -641,10 +641,6 @@ defineExpose({
 }
 
 /* Desktop Quick Add: chips and the recording in a panel under the row */
-.capture-bar--quick {
-  margin-right: 8px;
-}
-
 .capture-bar--quick .capture-bar__main {
   width: 366px;
 }
