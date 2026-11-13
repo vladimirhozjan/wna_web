@@ -8,7 +8,7 @@
             <svg v-html="item.svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" class="item-icon" fill="none" stroke-linecap="round" stroke-linejoin="round" />
           </div>
           <h3 class="text-h4 item-title">{{ item.title }}</h3>
-          <p class="text-caption item-desc">{{ item.description }}</p>
+          <p class="text-caption item-desc" :data-testid="item.testid">{{ item.description }}</p>
         </div>
       </div>
     </div>
@@ -16,6 +16,8 @@
 </template>
 
 <script setup>
+import { getDomains } from '../../scripts/core/domains.js'
+
 const items = [
   {
     title: 'Methodology-Driven',
@@ -29,7 +31,10 @@ const items = [
   },
   {
     title: 'Cross-Platform',
-    description: 'Access your system from any device. Your lists stay in sync everywhere you go.',
+    description: getDomains().app_store_url
+      ? 'On the web, iPhone and Apple Watch. Your lists stay in sync everywhere you go.'
+      : 'Access your system from any device. Your lists stay in sync everywhere you go.',
+    testid: 'landing-why-cross',
     svg: '<path d="M25.0003 45.8333C36.5063 45.8333 45.8337 36.5059 45.8337 25C45.8337 13.494 36.5063 4.16663 25.0003 4.16663C13.4944 4.16663 4.16699 13.494 4.16699 25C4.16699 36.5059 13.4944 45.8333 25.0003 45.8333Z" stroke="white" stroke-width="1.5"/><path d="M4.16699 25H45.8337" stroke="white" stroke-width="1.5"/><path d="M25.0003 4.16663C30.2113 9.87153 33.1727 17.275 33.3337 25C33.1727 32.7249 30.2113 40.1284 25.0003 45.8333C19.7893 40.1284 16.8279 32.7249 16.667 25C16.8279 17.275 19.7893 9.87153 25.0003 4.16663Z" stroke="white" stroke-width="1.5"/>',
   },
 ]

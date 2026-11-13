@@ -3,11 +3,14 @@
     <div class="hero-bg-overlay">
       <div class="hero-inner">
         <BoltIcon class="hero-bolt" />
+        <a v-if="appStoreUrl" href="#capture" class="text-body-s fw-medium hero-ios" data-testid="landing-hero-ios" @click.prevent="scrollToSection('capture')">
+          Now on iPhone and Apple Watch<ArrowRightSmallIcon class="hero-ios__chevron" />
+        </a>
         <h1 class="text-display hero-heading">You Decide. AI Does the Busywork.</h1>
         <p class="text-body-m hero-subtitle">The Getting Things Done app with a built-in AI assistant. Say what you want — it captures, sorts and schedules in your lists.</p>
         <div class="hero-actions">
           <Btn variant="primary" size="lg" @click="$emit('open-register')">Start Free</Btn>
-          <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToFeatures">Learn More</button>
+          <button class="text-body-m fw-semibold hero-ghost-btn" @click="scrollToSection('features')">Learn More</button>
         </div>
         <p class="text-footnote hero-trust" data-testid="landing-trust-line">Made in the EU · Hosted in the EU · GDPR-compliant</p>
         <div v-if="!shotFailed" class="hero-shot" data-testid="landing-hero-shot">
@@ -39,6 +42,7 @@ import Btn from '../Btn.vue'
 import BoltIcon from '../../assets/BoltIcon.vue'
 import ArrowRightSmallIcon from '../../assets/ArrowRightSmallIcon.vue'
 import engageShot from '../../assets/landing/landing-engage.png'
+import { getDomains } from '../../scripts/core/domains.js'
 
 defineEmits(['open-register'])
 
@@ -47,6 +51,7 @@ const heroAssets = import.meta.glob('../../assets/landing/landing-hero{.mp4,-pos
 const heroVideo = heroAssets['../../assets/landing/landing-hero.mp4']
 const heroPoster = heroAssets['../../assets/landing/landing-hero-poster.jpg']
 
+const appStoreUrl = getDomains().app_store_url
 const shotFailed = ref(false)
 
 if (heroVideo && heroPoster) {
@@ -55,8 +60,8 @@ if (heroVideo && heroPoster) {
   posterProbe.src = heroPoster
 }
 
-function scrollToFeatures() {
-  const el = document.getElementById('features')
+function scrollToSection(id) {
+  const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 </script>
@@ -84,6 +89,33 @@ function scrollToFeatures() {
   height: 64px;
   color: var(--color-text-on-dark);
   margin-bottom: 36px;
+}
+
+.hero-ios {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin: -12px auto 24px;
+  padding: 8px 16px;
+  color: var(--color-text-on-dark);
+  background: var(--color-on-dark-glass);
+  border: 1px solid var(--color-overlay-white-subtle);
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.hero-ios:hover {
+  background: var(--color-overlay-white-subtle);
+}
+
+.hero-ios__chevron {
+  width: 16px;
+  height: 16px;
+  padding: 1px;
+  box-sizing: border-box;
+  margin-left: 6px;
 }
 
 .hero-heading {

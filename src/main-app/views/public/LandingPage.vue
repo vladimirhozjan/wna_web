@@ -3,6 +3,7 @@
     <HeroSection @open-register="openAuth('register')" />
     <ApartSection />
     <HowItWorksSection />
+    <CaptureEverywhereSection />
     <FeaturesSection />
     <WhyUsSection />
     <TestimonySection />
@@ -28,6 +29,7 @@ import AuthDialog from '../../components/AuthDialog.vue'
 import HeroSection from '../../components/public/HeroSection.vue'
 import ApartSection from '../../components/public/ApartSection.vue'
 import HowItWorksSection from '../../components/public/HowItWorksSection.vue'
+import CaptureEverywhereSection from '../../components/public/CaptureEverywhereSection.vue'
 import FeaturesSection from '../../components/public/FeaturesSection.vue'
 import WhyUsSection from '../../components/public/WhyUsSection.vue'
 import TestimonySection from '../../components/public/TestimonySection.vue'

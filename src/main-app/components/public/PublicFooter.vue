@@ -8,6 +8,7 @@
             <span class="footer-brand-name"><span class="footer-brand-primary">WhatsNext</span><span class="footer-brand-accent">Action</span></span>
           </div>
           <p class="text-caption footer-tagline">Stress-free productivity</p>
+          <AppStoreBadge background="dark" :height="40" class="footer-appstore" data-testid="footer-appstore-badge" />
         </div>
 
         <div class="footer-col">
@@ -58,6 +59,7 @@
 
 <script setup>
 import AppIcon from '../../assets/AppIcon.vue'
+import AppStoreBadge from './AppStoreBadge.vue'
 import YoutubeIcon from '../../assets/YoutubeIcon.vue'
 import InstagramIcon from '../../assets/InstagramIcon.vue'
 import TiktokIcon from '../../assets/TiktokIcon.vue'
@@ -117,6 +119,11 @@ const socialLinks = [
 .footer-tagline {
   color: var(--color-text-secondary);
   line-height: var(--lh-relaxed);
+}
+
+.footer-appstore {
+  align-self: flex-start;
+  margin-top: 4px;
 }
 
 .footer-col {
