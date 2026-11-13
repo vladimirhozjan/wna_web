@@ -181,13 +181,13 @@ export function recordVisit(body) {
     }).catch(() => {})
 }
 
-function signupUtmField(signupUtm) {
-    return signupUtm ? {signup_utm: signupUtm} : {}
+function signupFields({utm = null, ref = null} = {}) {
+    return {...(utm && {signup_utm: utm}), ...(ref && {signup_ref: ref})}
 }
 
-export async function registerUser({email, password, signupUtm = null}) {
+export async function registerUser({email, password, signup = {}}) {
     try {
-        const res = await httpApi.post('/v1/user/register', {email, password, timezone: liveTz(), ...signupUtmField(signupUtm)})
+        const res = await httpApi.post('/v1/user/register', {email, password, timezone: liveTz(), ...signupFields(signup)})
         return res.data
     } catch (err) {
         throw normalizeError(err)
@@ -2143,12 +2143,12 @@ export async function googleAuth(idToken) {
     }
 }
 
-export async function googleSso(code, codeVerifier, signupUtm = null) {
-    return ssoSignIn('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz(), ...signupUtmField(signupUtm)})
+export async function googleSso(code, codeVerifier, signup = {}) {
+    return ssoSignIn('/v1/user/google-sso', {code, code_verifier: codeVerifier, tz: liveTz(), ...signupFields(signup)})
 }
 
-export async function appleSso(code, nonce, name, signupUtm = null) {
-    return ssoSignIn('/v1/user/apple-sso', {code, nonce, ...(name ? {name} : {}), tz: liveTz(), ...signupUtmField(signupUtm)})
+export async function appleSso(code, nonce, name, signup = {}) {
+    return ssoSignIn('/v1/user/apple-sso', {code, nonce, ...(name ? {name} : {}), tz: liveTz(), ...signupFields(signup)})
 }
 
 async function ssoSignIn(path, body) {

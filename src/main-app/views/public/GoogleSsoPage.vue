@@ -58,13 +58,13 @@ const providers = {
   google: {
     readResult: () => route.query,
     takeSecret: takeGoogleSsoVerifier,
-    signIn: (result, verifier, utm) => auth.googleSsoLogin(result.code, verifier, utm),
+    signIn: (result, verifier, signup) => auth.googleSsoLogin(result.code, verifier, signup),
     errorScenario: ErrorScenario.GOOGLE_LOGIN,
   },
   apple: {
     readResult: readFragment,
     takeSecret: takeAppleSsoNonce,
-    signIn: (result, nonce, utm) => auth.appleSsoLogin(result.code, nonce, result.name, utm),
+    signIn: (result, nonce, signup) => auth.appleSsoLogin(result.code, nonce, result.name, signup),
     errorScenario: ErrorScenario.APPLE_LOGIN,
   },
 }
@@ -97,7 +97,8 @@ onMounted(() => {
 async function exchangeCode(result, secret) {
   status.value = 'loading'
   try {
-    await provider.signIn(result, secret, splitSsoState(result.state).utm)
+    const {utm, ref} = splitSsoState(result.state)
+    await provider.signIn(result, secret, {utm, ref})
     await auth.loadUser()
     router.push(await pendingShare().afterLogin(auth.takeReturnPath() ?? {name: 'engage'}))
   } catch (err) {

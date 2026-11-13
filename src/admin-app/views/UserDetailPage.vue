@@ -39,7 +39,7 @@
         <div class="info-row">
           <span class="text-label color-text-secondary signup-source-label">Signup Source</span>
           <span v-if="signupSource" class="text-body-s signup-source">{{ signupSource }}</span>
-          <span v-else class="text-body-s color-text-tertiary">Unknown</span>
+          <span v-else class="text-body-s color-text-tertiary">Direct</span>
         </div>
         <div class="info-row">
           <span class="text-label color-text-secondary">Created</span>
@@ -555,10 +555,19 @@ async function loadInboxEmail() {
   }
 }
 
+const SIGNUP_STORES = { app_store: 'App Store', google_play: 'Google Play' }
+
 const signupSource = computed(() => {
-  const utm = user.value?.signup_utm
-  if (!utm) return ''
-  return [utm.source, utm.medium, utm.campaign, utm.content, utm.term].filter(Boolean).join(' · ')
+  const u = user.value
+  switch (u?.signup_kind) {
+    case 'store': return SIGNUP_STORES[u.signup_store] || ''
+    case 'utm': {
+      const utm = u.signup_utm || {}
+      return [utm.source, utm.medium, utm.campaign, utm.content, utm.term].filter(Boolean).join(' · ')
+    }
+    case 'ref': return `${u.signup_ref} · ref link`
+    default: return ''
+  }
 })
 
 function formatDate(val) {

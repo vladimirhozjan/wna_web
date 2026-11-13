@@ -160,11 +160,13 @@ The content the assistant reads and changes on your instruction is your content 
 
 With each request the app also sends which page you have open — for example the list and the tags you filter by, the calendar day or week you are viewing, or the title of the item you have open — so that "this" in your request means what you are looking at. It is used for that request only and is not stored.
 
-### 2.12 Public Website Visits and Sign-up Source
+### 2.12 Public Website Visits, Sign-up Source and First-Week Activity
 
-When you open a public page (home, sign-in / sign-up, pricing, help, legal), we record the page, the referring website's domain, the campaign tags in the link you followed (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`), the device type, the browser name and the country derived from your IP address. The IP address and the browser string are not stored — they are combined with a key that changes every day and is deleted after that day into a code that only lets us count distinct visitors per day and cannot be linked to you or across days. No cookie and nothing else is stored on your device.
+When you open a public page (home, sign-in / sign-up, pricing, help, legal), we record the page, the referring website's domain, the campaign tags in the link you followed (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`) and the `ref` tag of the link (for example `?ref=producthunt`), the device type, the browser name and the country derived from your IP address. The IP address and the browser string are not stored — they are combined with a key that changes every day and is deleted after that day into a code that only lets us count distinct visitors per day and cannot be linked to you or across days. No cookie and nothing else is stored on your device.
 
-If you create an account during the same visit, the campaign tags of that visit are saved with your account (for Google or Apple sign-up they travel inside the sign-in request).
+If you create an account during the same visit, the campaign and `ref` tags of that visit are saved with your account (for Google or Apple sign-up they travel inside the sign-in request). If you create your account in our iPhone app, we save that it came from the App Store; we recognise this from the app's own request and read nothing from your device.
+
+To see whether new accounts get started, we count how many items you capture and clarify and save the time each count first reaches our first-week goal. We keep only these counts and times, never the items themselves.
 
 ## 3. Legal Basis for Processing
 
@@ -183,7 +185,7 @@ We process your personal data under the following legal bases (Article 6 GDPR):
 | Invoices, payment records, and VAT location evidence | Legal obligation (Art. 6(1)(c)) | Required by tax and accounting law (invoicing, VAT, and fiscal verification of invoices) |
 | ToS acceptance record | Legitimate interest (Art. 6(1)(f)) | Proof of the contract terms you accepted at checkout |
 | Technical/session data | Legitimate interest (Art. 6(1)(f)) | Security, fraud prevention, and service reliability |
-| Public-page visit statistics, sign-up source and days of use | Legitimate interest (Art. 6(1)(f)) | Understanding which pages and campaigns bring visitors and how the Service is used, without tracking individuals |
+| Public-page visit statistics, sign-up source, first-week activity and days of use | Legitimate interest (Art. 6(1)(f)) | Understanding which pages and campaigns bring visitors and how the Service is used, without tracking individuals |
 | Preference data | Contract performance (Art. 6(1)(b)) | Necessary to provide personalized service features |
 
 Where we rely on legitimate interest, we have conducted a balancing test and determined that our interests do not override your fundamental rights. You have the right to object to processing based on legitimate interest (see Section 8).
@@ -201,7 +203,7 @@ We use your personal data exclusively for the following purposes:
 - **AI assistant** - carrying out the requests you give the AI assistant on your data
 - **Subscription management** - processing payments, issuing invoices, managing plan tiers and feature access
 - **Service maintenance** - identifying and resolving technical issues, ensuring platform stability
-- **Statistics** - counting visits to our public pages and which campaigns lead to sign-ups, and how often the Service is used
+- **Statistics** - counting visits to our public pages and which campaigns lead to sign-ups, whether new accounts get started, and how often the Service is used
 - **Legal compliance** - fulfilling our legal obligations under applicable law
 
 We do **not** use your data for profiling, automated decision-making, targeted advertising, or any purpose beyond providing and maintaining the Service.
@@ -334,6 +336,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Session data | A session expires 7 to 14 days after its last use; session records (IP address, device, login times) are deleted 30 days after the session expires |
 | Public-page visit records | 7 days; after that only daily totals without any visitor code are kept |
 | Sign-up source | Kept for the duration of your account |
+| First-week activity (counts of captured and clarified items and the times they first reached the first-week goal) | Kept for the duration of your account; deleted with your account |
 | Days of use | Kept for the duration of your account; when you delete your account, they are kept without your identity |
 | Push notification subscription (push address, encryption keys; iPhone device token) | Deleted when you turn notifications off on that device (on the iPhone also in iOS Settings, noticed the next time you open the app), sign out, the session ends or expires, the push service reports the address invalid, or you delete your account |
 | Connected AI apps (name, return addresses, connection and last-use time, hashed credential) | Kept until you remove the app, until its connection expires after the same period of non-use as a session, or until you delete your account; registrations by an AI app that never complete a connection are deleted after 24 hours |

@@ -1,5 +1,5 @@
 import {getDomains} from './domains.js'
-import {signupUtm, utmToList, utmFromList} from './visitTracker.js'
+import {sourceToList, sourceFromList} from './visitTracker.js'
 
 const STATE_KEY = 'google_sso_state'
 const VERIFIER_KEY = 'google_sso_verifier'
@@ -18,22 +18,22 @@ function base64Url(bytes) {
     return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
-// The tab's UTM rides after the first '.' so it survives the redirect; only the random part is stored and compared
+// The tab's source rides after the first '.' so it survives the redirect; only the random part is stored and compared
 export function ssoState(random) {
-    const utm = signupUtm()
-    if (!utm) return random
-    const state = `${random}.${base64Url(new TextEncoder().encode(JSON.stringify(utmToList(utm))))}`
+    const source = sourceToList()
+    if (!source) return random
+    const state = `${random}.${base64Url(new TextEncoder().encode(JSON.stringify(source)))}`
     return state.length > MAX_STATE_LENGTH ? random : state
 }
 
 export function splitSsoState(state) {
     const dot = state.indexOf('.')
-    if (dot < 0) return {random: state, utm: null}
+    if (dot < 0) return {random: state, utm: null, ref: null}
     try {
         const bytes = Uint8Array.from(atob(state.slice(dot + 1).replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
-        return {random: state.slice(0, dot), utm: utmFromList(JSON.parse(new TextDecoder().decode(bytes)))}
+        return {random: state.slice(0, dot), ...sourceFromList(JSON.parse(new TextDecoder().decode(bytes)))}
     } catch {
-        return {random: state.slice(0, dot), utm: null}
+        return {random: state.slice(0, dot), utm: null, ref: null}
     }
 }
 

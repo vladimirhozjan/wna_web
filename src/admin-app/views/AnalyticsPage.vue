@@ -56,24 +56,43 @@
       <template v-else>
         <DataTable
             class="sources-table"
+            :class="{ 'sources-table--funnel': sources?.funnel }"
             :columns="sourceColumns"
             :rows="sourceRows"
             :loading="sourcesLoading"
             :show-pagination="false"
-            empty-text="No visits in this period."
+            :empty-text="sources?.funnel ? 'No visits or sign-ups in this period.' : 'No visits in this period.'"
         >
           <template #cell-label="{ row }">
             <span class="source-name">{{ sourceName(row) }}</span>
-            <span v-if="row.sublabel" class="text-caption color-text-tertiary source-name">{{ row.sublabel }}</span>
+            <span v-if="sourceSublabel(row)" class="text-caption color-text-tertiary source-name">{{ sourceSublabel(row) }}</span>
           </template>
           <template #cell-visits="{ value }">{{ formatInt(value) }}</template>
           <template #cell-visitors="{ value }">{{ formatInt(value) }}</template>
-          <template #cell-signups="{ value }">{{ formatInt(value) }}</template>
-          <template #cell-signup_rate="{ value }">{{ formatPct(value) }}</template>
+          <template #cell-signups="{ row, value }">
+            {{ formatInt(value) }}
+            <span v-if="row.signup_rate != null" class="text-caption color-text-tertiary cell-caption">{{ formatPct(row.signup_rate) }} of visitors</span>
+          </template>
+          <template #cell-activated="{ row, value }">
+            {{ formatInt(value) }}
+            <span v-if="row.activated_rate != null" class="text-caption color-text-tertiary cell-caption">{{ formatPct(row.activated_rate) }}</span>
+          </template>
+          <template #cell-trial_started="{ value }">{{ formatInt(value) }}</template>
+          <template #cell-paid="{ row, value }">
+            {{ formatInt(value) }}
+            <span v-if="row.paid_rate != null" class="text-caption color-text-tertiary cell-caption">{{ formatPct(row.paid_rate) }}</span>
+          </template>
+          <template #cell-mrr_minor="{ value }">{{ formatMrr(value) }}</template>
           <template #cell-share="{ value }">{{ formatPct(value) }}</template>
         </DataTable>
         <p v-if="!sourcesLoading && sources?.truncated" class="text-caption color-text-tertiary table-note">
           Top {{ sources.shown }} shown.
+        </p>
+        <p v-if="!sourcesLoading && sources?.funnel && sourceRows.length" class="text-caption color-text-tertiary footnote">
+          People are counted in the week they signed up, by where they first came from.
+          Activated: {{ sources.activation.stuff }}+ items captured and {{ sources.activation.clarify }}+ clarified
+          within {{ sources.activation.days }} days of sign-up, so the newest days are still counting.
+          Paid and MRR leave out plans granted by an admin.
         </p>
         <DbIpAttribution v-if="!sourcesLoading && sources?.group === 'country' && sourceRows.length" class="attribution" />
       </template>
@@ -171,7 +190,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { format, parseISO, subDays } from 'date-fns'
+import { format, isSameMonth, parseISO, subDays } from 'date-fns'
 import { Bar, Line } from 'vue-chartjs'
 import Btn from '../components/Btn.vue'
 import DataTable from '../components/DataTable.vue'
@@ -189,6 +208,8 @@ const role = computed(() => auth.currentAdmin.value?.role)
 
 // --- Visitors + Traffic Sources (one range for both) ---
 const VISIT_RANGES = [
+  { value: 'this_week', label: 'This week' },
+  { value: 'last_week', label: 'Last week' },
   { value: '7d', label: 'Last 7 days' },
   { value: '30d', label: 'Last 30 days' },
   { value: '90d', label: 'Last 90 days' },
@@ -199,6 +220,7 @@ const SOURCE_GROUPS = [
   { value: 'source', label: 'Source' },
   { value: 'campaign', label: 'Campaign' },
   { value: 'ad', label: 'Ad' },
+  { value: 'week', label: 'Week' },
   { value: 'page', label: 'Page' },
   { value: 'referrer', label: 'Referrer' },
   { value: 'country', label: 'Country' },
@@ -206,7 +228,18 @@ const SOURCE_GROUPS = [
   { value: 'browser', label: 'Browser' },
 ]
 
-const NONE_LABELS = { source: 'No campaign', campaign: 'No campaign', ad: 'No campaign', referrer: 'Direct' }
+const NONE_LABELS = { source: 'Direct', campaign: 'No campaign', ad: 'No campaign', referrer: 'Direct' }
+
+const STORE_LABELS = { app_store: 'App Store', google_play: 'Google Play' }
+
+const FUNNEL_COLUMNS = [
+  { key: 'visitors', label: 'Visitors' },
+  { key: 'signups', label: 'Sign-ups' },
+  { key: 'activated', label: 'Activated' },
+  { key: 'trial_started', label: 'Trial started' },
+  { key: 'paid', label: 'Paid' },
+  { key: 'mrr_minor', label: 'MRR' },
+]
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
 
@@ -257,17 +290,32 @@ let sourcesSeq = 0
 const sourceColumns = computed(() => {
   const group = sources.value?.group || sourceGroup.value
   const name = { key: 'label', label: SOURCE_GROUPS.find(g => g.value === group)?.label }
-  const counts = [{ key: 'visits', label: 'Visits' }, { key: 'visitors', label: 'Visitors' }]
-  if (sources.value?.utm) return [name, ...counts, { key: 'signups', label: 'Signups' }, { key: 'signup_rate', label: 'Signup Rate' }]
-  return [name, ...counts, { key: 'share', label: 'Share' }]
+  if (sources.value?.funnel) return [name, ...FUNNEL_COLUMNS]
+  return [name, { key: 'visits', label: 'Visits' }, { key: 'visitors', label: 'Visitors' }, { key: 'share', label: 'Share' }]
 })
 
 const sourceRows = computed(() => (sources.value?.rows || []).map((r, i) => ({ ...r, id: i + 1 })))
 
 function sourceName(row) {
-  if (row.none) return NONE_LABELS[sources.value.group] || 'Unknown'
-  if (sources.value.group !== 'country') return row.label
+  const group = sources.value.group
+  if (group === 'week') return weekLabel(row)
+  if (row.kind === 'store') return STORE_LABELS[row.store]
+  if (row.none) return NONE_LABELS[group] || 'Unknown'
+  if (group !== 'country') return row.label
   try { return regionNames.of(row.label) || row.label } catch { return row.label }
+}
+
+function sourceSublabel(row) {
+  if (sources.value.group === 'week') return row.current ? 'This week' : null
+  if (row.kind === 'ref') return 'ref link'
+  return row.sublabel
+}
+
+function weekLabel(row) {
+  const from = parseISO(row.from)
+  const to = parseISO(row.to)
+  if (row.from === row.to) return format(from, 'MMM d')
+  return `${format(from, 'MMM d')} – ${format(to, isSameMonth(from, to) ? 'd' : 'MMM d')}`
 }
 
 async function loadTrafficSources() {
@@ -438,6 +486,11 @@ function formatPct(val) {
   return val == null ? '—' : `${Number(val).toFixed(1)} %`
 }
 
+function formatMrr(minor) {
+  if (!minor) return '—'
+  return new Intl.NumberFormat('en', { style: 'currency', currency: sources.value.currency }).format(minor / 100)
+}
+
 function formatMonth(dateStr) {
   try { return format(parseISO(dateStr), 'MMM yyyy') } catch { return dateStr }
 }
@@ -577,6 +630,10 @@ onMounted(() => {
   overflow-wrap: anywhere;
 }
 
+.cell-caption {
+  display: block;
+}
+
 .table-note {
   margin: 8px 0 0;
 }
@@ -608,6 +665,12 @@ onMounted(() => {
   /* Visitors carries the count on narrow screens */
   .sources-table :deep(th:nth-child(2)),
   .sources-table :deep(td:nth-child(2)) {
+    display: none;
+  }
+
+  /* Trial started mostly equals Sign-ups */
+  .sources-table--funnel :deep(th:nth-child(5)),
+  .sources-table--funnel :deep(td:nth-child(5)) {
     display: none;
   }
 }

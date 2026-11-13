@@ -109,8 +109,15 @@ const routes = [
         title: 'Privacy Policy | WhatsNextAction',
         description: 'How WhatsNextAction collects, uses and protects your personal data under the GDPR.',
     }}},
+    {path: '/start', redirect: to => ({path: '/register', query: sourceQuery(to.query)})},
     {path: '/:pathMatch(.*)*', redirect: '/'},
 ]
+
+// Short links keep only their source tags on the way to registration
+function sourceQuery(query) {
+    const keys = ['src', 'ref', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
+    return Object.fromEntries(keys.filter(key => typeof query[key] === 'string' && query[key].trim()).map(key => [key, query[key]]))
+}
 
 const router = createRouter({
     history: createWebHistory(),

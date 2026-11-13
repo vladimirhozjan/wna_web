@@ -5,7 +5,7 @@ import { liveClient } from './liveClient.js'
 import { confirmModel } from './confirmModel.js'
 import { captureQueue } from './captureQueue.js'
 import { pendingShare } from './pendingShare.js'
-import { signupUtm } from './visitTracker.js'
+import { signupUtm, signupRef } from './visitTracker.js'
 import { stuffModel } from '../models/stuffModel.js'
 import { statsModel } from '../models/statsModel.js'
 import { notificationModel } from '../models/notificationModel.js'
@@ -106,7 +106,7 @@ export function authModel() {
         error.value = null
 
         try {
-            return await apiClient.registerUser({ email, password, signupUtm: signupUtm() })
+            return await apiClient.registerUser({ email, password, signup: { utm: signupUtm(), ref: signupRef() } })
         } catch (err) {
             error.value = err
             throw err
@@ -238,12 +238,12 @@ export function authModel() {
         }
     }
 
-    async function googleSsoLogin(code, codeVerifier, utm) {
-        return ssoLogin(() => apiClient.googleSso(code, codeVerifier, utm))
+    async function googleSsoLogin(code, codeVerifier, signup) {
+        return ssoLogin(() => apiClient.googleSso(code, codeVerifier, signup))
     }
 
-    async function appleSsoLogin(code, nonce, name, utm) {
-        return ssoLogin(() => apiClient.appleSso(code, nonce, name, utm))
+    async function appleSsoLogin(code, nonce, name, signup) {
+        return ssoLogin(() => apiClient.appleSso(code, nonce, name, signup))
     }
 
     async function ssoLogin(signIn) {
