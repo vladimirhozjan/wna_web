@@ -15359,7 +15359,7 @@
       "On `/pricing`, switch the Monthly/Yearly toggle.",
       "Log in, then open `/` directly."
     ],
-    "expected": "Step 1 — the landing page is visible immediately; the login dialog opens. Step 2 — the tab title and description change to each page's own (\"Pricing — To-Do List & Task Manager App | WhatsNextAction\", \"FAQ — GTD App Questions Answered | WhatsNextAction\"). Step 3 — prices switch as before. Step 4 — the user lands where they did before this change; no duplicated content or broken layout after the app mounts."
+    "expected": "Step 1 — the landing page is visible immediately; the login dialog opens. Step 2 — the tab title and description change to each page's own (\"Pricing for the To-Do List & Task Manager App | WhatsNextAction\", \"FAQ: GTD Questions Answered | WhatsNextAction\"). Step 3 — prices switch as before. Step 4 — the user lands where they did before this change; no duplicated content or broken layout after the app mounts."
   },
   {
     "id": "TC-732",
