@@ -45,6 +45,8 @@ watch(() => currentUser.value?.id, (id, previous) => {
 
 let accountLiveSubscribed = false
 let profileReread = false
+// authModel() is called from computeds: re-reading current_user there would replace it and re-trigger them forever
+let initialized = false
 
 // A failed re-read keeps the user as they are
 async function refreshUser() {
@@ -388,7 +390,10 @@ export function authModel() {
         return true
     }
 
-    _init()
+    if (!initialized) {
+        initialized = true
+        _init()
+    }
 
     return {
         // state
