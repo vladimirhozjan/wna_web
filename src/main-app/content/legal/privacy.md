@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 13, 2026
+**Last updated:** November 14, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -86,7 +86,7 @@ We automatically collect certain technical data when you use the Service:
 - **Session timestamps** - login time and last activity time per session
 - **Days of use** - the calendar days (UTC) on which you used the Service, recorded once per day, for usage statistics
 - **Sign-in method** - how each session was signed in (email, Google or Apple), shown in your account settings
-- **Authentication tokens** - stored in your browser's localStorage, or in the iPhone's Keychain in the iPhone app, for session management
+- **Authentication tokens** - stored in your browser's localStorage, in the iPhone's Keychain in the iPhone app, or in the Android app's private storage encrypted with a key held in the phone's Android Keystore, for session management
 - **Push notification subscription** - if you turn on notifications on a device, your browser gives us a push address at its vendor's push service and two encryption keys, or the iPhone app gives us the device token Apple assigned to it for notifications; we keep them with that device's session
 
 ### 2.7 Preference Data
@@ -409,6 +409,8 @@ We use your browser's **IndexedDB** and **cache** to store:
 - The app's own files, so WhatsNextAction can open without a network connection
 
 In the iPhone app, your authentication tokens are kept in the iPhone's **Keychain** — on that iPhone only, and not moved to another device by a backup — and the app's own storage keeps your account's email address, profile name and picture address (to show your avatar without a connection) and the active context. Signing out deletes them, deleting the app deletes the app's storage, and the next install removes any sign-in left in the Keychain.
+
+In the Android app, your authentication tokens are kept in the app's private storage, encrypted with a key held in the phone's Android Keystore — on that phone only; the app is left out of Android backups and phone-to-phone transfers, so the sign-in never moves to another phone. The app's own storage also keeps your account's email address, profile name and picture address (to show your avatar without a connection) and the active context. Logging out deletes them, and deleting the app deletes all of them.
 
 The iPhone app also keeps a copy of your account's content — your items and projects, comments, the details of your attachments and Reference files, templates, horizons and the members of your shared projects — in a database on that iPhone, so the app opens without waiting and works without a connection, together with the changes you make until they reach your account. The database is protected by the iPhone's data protection and is not included in iCloud or computer backups. Logging out deletes it (the app warns you first when changes have not reached your account yet), and deleting the app deletes it. When your session ends without logging out — your sign-in expires because the app has not reached our servers for a while, or your session is ended on our side, for example because you signed that iPhone out from another device or deleted your account — the app deletes it, including changes that have not reached your account, as soon as it notices: when it is next opened or next reaches our servers.
 
