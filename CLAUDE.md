@@ -350,7 +350,7 @@ Commands:
 Workspace scope:
 - Queries default to the current repository.
 - `--repo <name>` queries another member; `--workspace` searches all members.
-- Members: Dictara, Fil, Pointeuse, Sablier, docker_test, drogon, marketing, nh_hp_bot, pytools, quantum-bitcoin-presentation, qubforge-site, vcpkg, wna-ui-tests, wna_backend, wna_deploy, wna_ios, wna_orchestration, wna_web/main
+- Members: Dictara, Fil, Pointeuse, Sablier, docker_test, drogon, marketing, nh_hp_bot, pytools, quantum-bitcoin-presentation, qubforge-site, vcpkg, wna-ui-tests, wna_android, wna_backend, wna_deploy, wna_ios, wna_orchestration, wna_web/main
 
 Output is one record per line: `path:line  qualified.name  [kind]  (provenance)`.
 `inferred` means resolved statically, `ambiguous` means more than one candidate
