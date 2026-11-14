@@ -1,13 +1,11 @@
-# FEAT-120 (web slice): Android 6 — architecture III: live updates, push, background file transfer
+# FEAT-121 (web slice): Android 7 — sign-in, registration, account
 
-Parent: FEAT-120 — `../wna_orchestration/features/FEAT-120-android-architecture-platform.md`. Local slice only: the exact Privacy Policy text is in the parent § Legal impact — read it there,
-never restated here. Work only in the `main` worktree. Role `web`; no dependency on any other sibling.
+Parent: FEAT-121 — `../wna_orchestration/features/FEAT-121-android-sign-in.md`. Local slice only: the exact Privacy Policy text is in the parent § Legal impact — read it there, never restated here. Work only in the `main` worktree. No dependency on any other sibling; Help impact and Landing / Pricing impact are n/a in the parent.
+Role `web`, repo `wna_web/main`, on `main`.
 
 ## User flows (this project's part)
-- Free / Pro / Team owner / Team member: the Privacy Policy page (all visitors) tells them the Android app sends
-  notifications through Google Firebase Cloud Messaging, keeps an FCM token per session and remembers saved attachments —
-  no flow, no screen change.
-- Admin roles: n/a — no admin surface.
+- Free / Pro / Team owner / Team member (and every visitor of the public page): the Privacy Policy tells them Android Google sign-in keeps no token, Android Apple sign-in uses the website's token, and the Android store source — no flow, no screen change.
+- Admin roles: n/a — admin-app is not touched.
 - Not-entitled / blocked: n/a — the page is public.
 
 ## Checkbox legend (every box resolves to one of these — never leave a box you acted on as bare `[ ]`)
@@ -27,7 +25,7 @@ never restated here. Work only in the `main` worktree. Role `web`; no dependency
 1. **Do not tick a checkbox you haven't verified by re-reading the actual source.** Each `[x]` must
    cite the `file:line` that proves it. A green test run is NOT proof a feature exists — open the file.
 2. **Definition of done = observable end-user behavior**, not "code compiles" or "tests pass". State
-   the concrete artifact to inspect (the rendered Privacy Policy page) and confirm it.
+   the concrete artifact to inspect (the rendered `/legal/privacy` page) and confirm it.
 3. **Leave zero references to anything you renamed/removed** — grep the source and confirm `0` matches
    before claiming done.
 4. **Honor the parent's User flows for every role**; don't silently implement only the happy path.
@@ -39,26 +37,17 @@ never restated here. Work only in the `main` worktree. Role `web`; no dependency
    read any `wna_orchestration` file (the parent, specs, contracts, decisions) — pull the authoritative form
    from its home rather than guessing or asking. Reading is unrestricted; only *writing* is scoped (to the spec
    homes this repo owns). If your work changes a fact whose canonical home is a spec in `wna_orchestration`
-   (`specs/features/*`), you MUST update that spec file there as part of this work — REQUIRED, never "deferred to the
+   (features → `specs/features/*`; numbers → `contracts/*`), you MUST update that spec file there as part of this work — REQUIRED, never "deferred to the
    user." The local-slice rule forbids only *restating* shared facts inside the slice, NOT updating their canonical
    home. Cite the orchestration `file:line` you updated. Specs describe what the code/config IS, never per-env
    rollout state (no "applied to dev", "not yet on prod").
 7. **Run only the NEW and directly-relevant tests — never the repo's full suite during slice work**
-   (owner directive 2026-08-19): a local build only. The full regression suite is the OWNER's run before deploy.
-8. **Test and verify LOCALLY only — never on dev/prod** (owner directive). Local build / dev server only; never
-   deploy, never verify on `dev.whatsnextaction.com`.
+   (owner directive 2026-08-19): the build and the one page named in the box. The full regression suite is the OWNER's run before deploy.
+8. **Test and verify LOCALLY only — never on dev/prod** (owner directive). Local stack only; never deploy, never test
+   against `dev.whatsnextaction.com` / `api-dev` / the VM, never add a "verify on dev" step. A missing dev/prod run is never a reason for `[~]`.
 
 ## Checklist
-Test scope: no new test and no existing test is affected (a legal-text change; no asserted behaviour changes).
+Test scope: no test code in this slice; no existing test is directly affected (a legal-text edit changes no asserted behaviour) and no generic regression box.
 
-- [x] **W1** Privacy Policy `src/main-app/content/legal/privacy.md` per the parent § Legal impact: §2.6 push bullet, §5.13 new
-  Google (Firebase Cloud Messaging) bullet after the iPhone one, §6 push paragraph's last sentence, §7 push row, §10 new
-  paragraph after the Android database paragraph; "Last updated" = the day of this item. Terms of Service unchanged
-  (`terms_version` untouched). Verify: the text matches the parent § Legal impact word for word; `npm run build:main`
-  green; `/legal/privacy` renders every changed paragraph.
-  Done: `src/main-app/content/legal/privacy.md:90` (§2.6), `:286` (§5.13 Google FCM bullet), `:312` (§6), `:343` (§7 row),
-  `:421` (§10), `:3` (Last updated November 14, 2026); text copied verbatim from the parent § Legal impact; `terms_version`
-  untouched (no other file changed); `npm run build:main` green; `/legal/privacy` on :5173 shows all six strings.
-- [x] Update `../wna_orchestration/specs/features/wna-features.md` — the Android privacy bullet names FCM, the FCM token and the
-  Downloads index (as FEAT-119's W1 did for the local copy).
-  Done: `../wna_orchestration/specs/features/wna-features.md:2720-2726` (FEAT-120 sentence appended to the Android privacy bullet).
+- [x] **W1** Privacy Policy (`wna_web/main/src/main-app/content/legal/privacy.md`) per the parent `## Legal impact`: §2.1 Google account identifier bullet, last sentence; §2.1 Apple account identifier bullet, last sentence; §2.12 App Store / Google Play sentence; §7 the "Sign-in tokens" row (retention column unchanged); "Last updated" = the day of this item. Terms of Service: n/a — `terms_version` untouched. Verify: `npm run build:main`; `/legal/privacy` renders the four changed sentences.
+  - Done 2026-11-14: `src/main-app/content/legal/privacy.md:26` (Google: website + iPhone token, Android gives no token), `:27` (Apple: Android uses the website's token), `:167` (App Store / Google Play), `:337` (§7 row, retention column unchanged), `:3` Last updated = November 14, 2026 (already today's date). Old wording "one for each app" / "each app you sign in with" → 0 matches. `npm run build:main` green; prerendered `dist/main-app/_prerender/legal/privacy/index.html` and live `http://localhost:5173/legal/privacy` (Chrome) both contain all four new sentences. Terms untouched.
