@@ -47,12 +47,13 @@
       <template #cell-provider="{ row, value }">
         {{ gatewayLabel(value) || '—' }}
         <span v-if="row.store_environment === 'Sandbox'" class="store-env"><Badge type="pending" value="Sandbox" /></span>
+        <span v-else-if="row.store_environment === 'Test'" class="store-env"><Badge type="pending" value="Test" /></span>
       </template>
       <template #cell-payment_method_type="{ value }">{{ value || '—' }}</template>
       <template #cell-status="{ value }"><Badge type="status" :value="value" /></template>
       <template #cell-actions="{ row }">
         <Btn
-            v-if="row.kind !== 'refund' && row.status === 'paid' && row.provider !== 'app_store'"
+            v-if="row.kind !== 'refund' && row.status === 'paid' && !['app_store', 'google_play'].includes(row.provider)"
             variant="ghost-danger" size="sm"
             @click.stop="handleRefund(row)"
         >

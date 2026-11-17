@@ -30,7 +30,7 @@
               <div class="billing-row-info">
                 <span class="billing-row-title">{{ rowTitle(p) }}</span>
                 <span class="text-body-s billing-row-meta">
-                  {{ formatDate(p.created_at) }}<template v-if="p.invoice"> · Invoice {{ p.invoice.invoice_number }}</template><template v-else-if="p.provider === 'app_store'"> · App Store</template>
+                  {{ formatDate(p.created_at) }}<template v-if="p.invoice"> · Invoice {{ p.invoice.invoice_number }}</template><template v-else-if="p.provider === 'app_store'"> · App Store</template><template v-else-if="p.provider === 'google_play'"> · Google Play</template>
                 </span>
               </div>
               <span class="billing-row-amount" :class="{ 'billing-row-amount--refund': p.kind === 'refund' }">{{ formatAmount(p) }}</span>

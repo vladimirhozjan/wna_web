@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 15, 2026
+**Last updated:** November 17, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -74,6 +74,7 @@ If you subscribe to a paid plan, we collect and store:
 - **Location evidence for VAT** - the country of your card's issuer, where available (received from our payment provider) and, for your first payment, the country derived from your IP address. EU VAT law requires us to keep evidence of the customer's location. The IP country lookup uses [IP Geolocation by DB-IP](https://db-ip.com).
 - **ToS acceptance record** - the version of the Terms of Service you accepted at checkout, the time, your IP address and browser (user agent)
 - **App Store purchase records** - for subscriptions and AI credit packs bought in the iPhone app: Apple's transaction identifiers, the product, the date, the amount and currency Apple charged, and the refund state. We receive no payment details from Apple
+- **Google Play purchase records** - for subscriptions and AI credit packs bought in the Android app: Google's purchase token and order numbers, the product, the dates, the amount and currency Google charged, and the refund state. We receive no payment details from Google
 
 We never receive your full card number, bank account details or other payment credentials; these are entered on our payment provider's page. For card payments we receive only the card brand and last 4 digits, which appear on your invoice.
 
@@ -243,6 +244,7 @@ The Google services above are governed by Google's own privacy policy. WhatsNext
   - Stripe retains payment and transaction records as required by its legal obligations. When you delete your account, we also delete your customer record at Stripe, subject to these legal retention obligations.
 
 - **Apple Distribution International Ltd.**, Hollyhill Industrial Estate, Hollyhill, Cork, Ireland - sells, charges and refunds subscriptions and AI credit packs bought in the iPhone app through the App Store, as an independent controller under its own privacy policy at [apple.com/legal/privacy](https://www.apple.com/legal/privacy/). Apple gives us a signed record of each purchase, with our internal user identifier attached by the app, so that we can activate your plan or credits. We receive no payment details from Apple.
+- **Google Commerce Limited**, Gordon House, Barrow Street, Dublin 4, Ireland - sells, charges and refunds subscriptions and AI credit packs bought in the Android app through Google Play, as an independent controller under its own privacy policy at [policies.google.com/privacy](https://policies.google.com/privacy). The app attaches our internal user identifier to each purchase, and we ask Google for the state of your purchases so that we can activate, renew or end your plan or credits, and cancel your Google Play subscription when you delete your account. We receive no payment details from Google.
 
 ### 5.5 Tax Authority
 
@@ -313,6 +315,8 @@ If you turn on notifications on a device, the push service your browser uses (Se
 
 If you buy a subscription or AI credit pack in the iPhone app, Apple may process the purchase outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
+If you buy a subscription or AI credit pack in the Android app, Google may process the purchase outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
+
 If you use Siri, Apple may process your request and its answer outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
 If you test through TestFlight or share app analytics with developers, Apple may process that data outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
@@ -349,7 +353,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Operational alerts | Kept until the alert is resolved; deleted 90 days after it is resolved |
 | Backups | Retained for up to 30 days, then permanently deleted |
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
-| App Store purchase records | Retained for 10 years like the payment records above; after account deletion they are kept without your identity; permanently deleted after that period |
+| App Store and Google Play purchase records | Retained for 10 years like the payment records above; after account deletion they are kept without your identity; permanently deleted after that period |
 | TestFlight tester details, feedback and crash reports | Kept by Apple in App Store Connect under Apple's retention; we remove a tester and their feedback on request or when the beta ends |
 
 When you delete your account, we initiate permanent deletion of all your personal data and content, except invoices, credit notes, and payment records that we are legally required to retain (Art. 17(3)(b) GDPR). Backup copies are purged according to our backup retention schedule (up to 30 days).

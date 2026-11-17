@@ -5,9 +5,10 @@ export const GATEWAYS = [
     { value: 'stripe', label: 'Stripe' },
 ]
 
-// App Store is a payment provider but not a billing gateway: no templates, slots or report filter
+// App Store and Google Play are payment providers but not billing gateways: no templates, slots or report filter
 export function gatewayLabel(provider) {
     if (provider === 'app_store') return 'App Store'
+    if (provider === 'google_play') return 'Google Play'
     return GATEWAYS.find(g => g.value === provider)?.label || provider
 }
 

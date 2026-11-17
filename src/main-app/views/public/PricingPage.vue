@@ -49,7 +49,7 @@
           Need more? Buy a credit pack on any plan.
         </p>
         <p class="text-footnote ai-footnote" data-testid="pricing-app-store-footnote">
-          Prices are for purchases on the website. In the iPhone app, plans and AI credits are sold by Apple at App Store prices.
+          Prices are for purchases on the website. In the iPhone and Android apps, plans and AI credits are sold by Apple and Google at App Store and Google Play prices.
         </p>
       </div>
     </section>
@@ -384,6 +384,7 @@ const comparisonRows = [
 
 .ai-footnote {
   text-align: center;
+  text-wrap: balance;
   color: var(--color-text-secondary);
   margin-top: 20px;
 }

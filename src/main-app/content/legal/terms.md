@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** November 13, 2026
+**Last updated:** November 17, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -131,8 +131,9 @@ Paid subscriptions provide access to additional features and higher usage limits
 - **Payment processing:** Payments on our website are processed by our payment provider: **DINARO družba za izdajo elektronskega denarja in plačilne storitve, d.o.o.** (formerly Paywiser d.o.o.), Bravničarjeva ulica 13, 1000 Ljubljana, Slovenia, an electronic money institution licensed and supervised by the Bank of Slovenia (licence no. 0.04.5.4-5/2020-70), or **Stripe Payments Europe, Limited**, Dublin, Ireland, with payment services provided by Stripe Technology Europe, Limited, an electronic money institution authorised by the Central Bank of Ireland. The provider is shown on the checkout page. Payment details are entered on the payment provider's secure checkout page and are never received or stored by us. Payments are charged in EUR.
 - **Automatic renewal:** Subscriptions renew automatically at the end of each billing cycle unless cancelled before the renewal date. Your payment method is saved securely with our payment provider and charged automatically at each renewal.
 - **Failed payments:** If a renewal payment fails, your plan remains active until the end of the current billing period while the payment provider retries the charge. If payment is not completed by then, your account reverts to the Free plan.
-- **Changing plans:** To switch between plans or billing cycles, cancel your current subscription and subscribe to the new plan after the current billing period ends. An App Store subscription switches between Pro and Team, or between monthly and yearly, in your Apple account settings.
-- **In-app purchases on iPhone:** Subscriptions and AI credit packs bought in the iPhone app are sold by Apple through the App Store. Apple charges them in your App Store currency at App Store prices, which can differ from the prices on our website. Apple handles VAT, payment and the receipt under Apple's terms, and App Store subscriptions renew through your Apple account. You can have one paid subscription at a time, bought either on our website or in the App Store.
+- **Changing plans:** To switch between plans or billing cycles, cancel your current subscription and subscribe to the new plan after the current billing period ends. An App Store subscription switches between Pro and Team, or between monthly and yearly, in your Apple account settings. A Google Play subscription switches between Pro and Team, or between monthly and yearly, in the Android app or in Google Play.
+- **In-app purchases on iPhone:** Subscriptions and AI credit packs bought in the iPhone app are sold by Apple through the App Store. Apple charges them in your App Store currency at App Store prices, which can differ from the prices on our website. Apple handles VAT, payment and the receipt under Apple's terms, and App Store subscriptions renew through your Apple account.
+- **In-app purchases on Android:** Subscriptions and AI credit packs bought in the Android app are sold by Google through Google Play. Google charges them in your Google Play currency at Google Play prices, which can differ from the prices on our website. Google handles VAT, payment and the receipt under Google Play's terms, and Google Play subscriptions renew through your Google account. You can have one paid subscription at a time, bought on our website, in the App Store or on Google Play.
 
 ### 5.3 Cancellation
 
@@ -142,7 +143,7 @@ You may cancel your subscription at any time through your account settings. Upon
 - After the billing period ends, your account reverts to the Free plan
 - If your stored content exceeds Free plan limits, you will retain read-only access to existing content but will not be able to create new items until you are within the Free plan limits
 
-App Store subscriptions are cancelled in your Apple account settings (on iPhone: Settings → your name → Subscriptions), not in our Service.
+App Store subscriptions are cancelled in your Apple account settings (on iPhone: Settings → your name → Subscriptions), not in our Service. Google Play subscriptions are cancelled in Google Play (Play Store → your profile → Payments & subscriptions → Subscriptions), not in our Service.
 
 ### 5.4 Right of Withdrawal (EU Consumers)
 
@@ -179,19 +180,23 @@ You may use the following model withdrawal form, but you are not obliged to:
 
 **App Store purchases:** For subscriptions and credit packs bought in the iPhone app, the right of withdrawal and refund requests go to Apple (reportaproblem.apple.com) under Apple's terms. We do not refund App Store purchases.
 
+**Google Play purchases:** For subscriptions and credit packs bought in the Android app, the right of withdrawal and refund requests go to Google under Google Play's terms. We do not refund Google Play purchases.
+
 ### 5.5 Refunds
 
 Outside the 14-day withdrawal period, subscription fees are non-refundable except where required by applicable law. AI credit packs are non-refundable outside the right of withdrawal in Section 5.4, except where required by applicable law. We may, at our discretion, offer refunds or credits in exceptional circumstances.
 
 When Apple refunds an App Store subscription, your paid plan ends at once and your account reverts to the Free plan; your content is kept. When Apple refunds an App Store credit pack, the credits that remain from that pack are removed from your account.
 
+When Google refunds a Google Play subscription, your paid plan ends at once and your account reverts to the Free plan; your content is kept. When Google refunds a Google Play credit pack, the credits that remain from that pack are removed from your account.
+
 ### 5.6 Price Changes
 
-We may change subscription prices with at least **30 days** notice. Price changes take effect at the start of the next billing cycle following the notice period. If you do not agree with a price change, you may cancel your subscription before the new price takes effect. Price changes of App Store subscriptions follow Apple's rules and notices.
+We may change subscription prices with at least **30 days** notice. Price changes take effect at the start of the next billing cycle following the notice period. If you do not agree with a price change, you may cancel your subscription before the new price takes effect. Price changes of App Store and Google Play subscriptions follow Apple's and Google's rules and notices.
 
 ### 5.7 Invoice Issuance and Fiscal Verification (Slovenia)
 
-For every purchase on our website we issue an invoice and deliver it to you by email. We issue no invoice for App Store purchases; Apple provides the receipt. Where required by the Slovenian Tax Verification of Invoices Act (Zakon o davčnem potrjevanju računov, ZDavPR), invoices are fiscally verified with the Financial Administration of the Republic of Slovenia (FURS).
+For every purchase on our website we issue an invoice and deliver it to you by email. We issue no invoice for App Store or Google Play purchases; Apple or Google provides the receipt. Where required by the Slovenian Tax Verification of Invoices Act (Zakon o davčnem potrjevanju računov, ZDavPR), invoices are fiscally verified with the Financial Administration of the Republic of Slovenia (FURS).
 
 Notice pursuant to Article 12 of ZDavPR:
 
@@ -204,7 +209,7 @@ English translation, for information only: The seller must issue an invoice for 
 The AI assistant uses AI credits. Every request you give the assistant uses credits, and in a conversation every message you send is a request; questions the assistant asks you while working on a request are free.
 
 - **Monthly credits:** Each plan includes monthly credits, shown in your account settings. They are refilled on the 1st day of each calendar month (UTC); unused monthly credits lapse and do not carry over. If you change your plan, the new plan's monthly credits apply at once, minus the credits you have already used that month.
-- **Credit packs:** You can buy additional credits in one-time credit packs. Prices on our website are in EUR and include VAT. Credit packs do not renew. We issue an invoice for every pack bought on our website as described in Section 5.7. Packs bought in the iPhone app are sold by Apple at App Store prices, with Apple's receipt instead of our invoice (Section 5.2).
+- **Credit packs:** You can buy additional credits in one-time credit packs. Prices on our website are in EUR and include VAT. Credit packs do not renew. We issue an invoice for every pack bought on our website as described in Section 5.7. Packs bought in the iPhone or Android app are sold by Apple or Google at App Store or Google Play prices, with their receipt instead of our invoice (Section 5.2).
 - **Order of use:** Your monthly credits are used first, then purchased credits.
 - **Validity:** Purchased credits are valid for 12 months from purchase and expire after that.
 - **Credits per request:** The number of credits a request uses depends on the AI model you choose in your settings. We may change the number of credits per request for future requests.
@@ -334,7 +339,7 @@ You agree to indemnify and hold harmless QubForge, tehnološke rešitve, d.o.o. 
 You may delete your account at any time through the Service. Upon account deletion:
 
 - Your Content will be permanently deleted within 30 days; files stored in your own Google Drive are not deleted and stay in your Google Drive
-- Any active paid subscription bought on our website is cancelled and will not renew. Deleting your account does not cancel an App Store subscription: cancel it with Apple first, or Apple keeps charging you
+- Any active paid subscription bought on our website or on Google Play is cancelled and will not renew; a Google Play subscription is not refunded for the rest of its period. Deleting your account does not cancel an App Store subscription: cancel it with Apple first, or Apple keeps charging you
 - Backup copies of your data will be purged within our backup retention period (up to 30 days)
 - Invoices, credit notes, and related payment records are retained for the period required by tax law, as described in our [Privacy Policy](/legal/privacy)
 

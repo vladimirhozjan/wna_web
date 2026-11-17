@@ -243,10 +243,11 @@
         <div class="info-row expiration-row">
           <div class="action-info">
             <span v-if="gatewayProvider === 'app_store'" class="text-caption color-text-tertiary">Tier changes here never touch App Store billing — the user cancels in their Apple account</span>
+            <span v-else-if="gatewayProvider === 'google_play'" class="text-caption color-text-tertiary">Tier changes here never touch Google Play billing — the user cancels in Google Play</span>
             <span v-else class="text-caption color-text-tertiary">Tier changes here never touch {{ gatewayName }} billing — use Cancel on {{ gatewayName }} to stop charges</span>
             <span class="text-caption color-text-secondary">{{ gatewayCaption }}</span>
           </div>
-          <div v-if="gatewayProvider !== 'app_store'" class="action-control">
+          <div v-if="!['app_store', 'google_play'].includes(gatewayProvider)" class="action-control">
             <Btn
                 variant="ghost-danger" size="sm"
                 :loading="cancelSaving"
