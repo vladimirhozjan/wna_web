@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 17, 2026
+**Last updated:** November 18, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -295,6 +295,10 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 - If you test a beta version of the iPhone app through Apple's TestFlight, Apple gives us your name and email address when we invite you by email, and the feedback, screenshots and crash reports you send, with your device model and iOS version. If you allow 'Share With App Developers' in your iPhone's settings, Apple also gives us crash reports and app usage statistics for the App Store app. Apple (Apple Distribution International Ltd., Ireland) collects these under its own privacy policy; we read them in App Store Connect only to fix problems and do not copy them into our systems.
 
+### 5.16 Wear OS
+
+- If you use the Wear OS watch app, your phone and watch exchange your Next actions and what you capture on the watch through Google Play services on both devices; when the watch is not near the phone, Google may pass this through its servers, under its own privacy policy. Text you dictate on the watch is turned into text by your watch's own input (Google's speech service under its own privacy policy); WhatsNextAction receives only the text. Voice memos recorded on the watch are sent to your phone as files and are not transcribed.
+
 ## 6. International Data Transfers
 
 We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres. The AI assistant's model processing also stays in the EEA, at Scaleway in France (Section 5.12).
@@ -319,6 +323,8 @@ If you buy a subscription or AI credit pack in the Android app, Google may proce
 
 If you use Siri, Apple may process your request and its answer outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
+If you use the Wear OS watch app, Google may process what your phone and watch exchange outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
+
 If you test through TestFlight or share app analytics with developers, Apple may process that data outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
@@ -334,7 +340,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Sync records of permanently deleted data (the identifier of what was deleted and when — no content), kept so your other devices remove it too | Deleted 90 days after the deletion, or with your account |
 | Copy of your content in the iPhone app (kept on your iPhone, and the Next list on a paired Apple Watch) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
-| Copy of your content in the Android app (kept on your phone) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
+| Copy of your content in the Android app (kept on your phone, and the Next list on a paired Wear OS watch) | Until you log out, your session ends (§10) or you delete the app; changes that have not reached your account until they are sent, you discard them or they are deleted with the copy |
 | Account data after deletion | Permanently deleted within 30 days of account deletion request |
 | Google connection (encrypted token, connected Google account, granted permissions) and Google Calendar details (selected calendar, WhatsNextAction calendar identifier, event identifiers) | The encrypted token, connected Google account and granted permissions are kept until you disconnect the last connected Google service (Google Calendar or Google Drive) or delete your account; the selected calendar, the WhatsNextAction calendar identifier and the event identifiers are kept after you disconnect Google Calendar, so that reconnecting continues where you left off, and are deleted when you delete your account. On account deletion we also revoke our access at Google. Your WhatsNextAction calendar and the events already in your Google Calendar are yours and stay there |
 | Google Drive file details (name, size, file type, Google Drive file identifier, folder) | Kept for as long as the file exists in WhatsNextAction; deleted when you permanently delete the file or your account. Files in your Google Drive are yours and stay there after you disconnect Google Drive or delete your account |
@@ -423,6 +429,8 @@ The iPhone app also keeps a copy of your account's content — your items and pr
 The Android app also keeps a copy of your account's content — your items and projects, comments, the details of your attachments and Reference files, templates, horizons and the members of your shared projects — in a database in the app's private storage on that phone, so the app opens without waiting and works without a connection, together with the changes you make until they reach your account. Android keeps the app's storage encrypted and readable only after the phone has been unlocked once since it started, and the app is left out of Android backups and phone-to-phone transfers. Logging out deletes the database (the app warns you first when changes have not reached your account yet), and deleting the app deletes it. When your session ends without logging out — your sign-in expires because the app has not reached our servers for a while, or your session is ended on our side, for example because you signed that phone out from another device or deleted your account — the app deletes it, including changes that have not reached your account, as soon as it notices: when it is next opened or next reaches our servers.
 
 The Android app also keeps whether you turned notifications on in your current sign-in, and which attachments it saved to your phone's Downloads folder, so they open again without downloading; logging out deletes both. Files saved to Downloads are yours: they stay on the phone after you log out until you delete them.
+
+If you add WhatsNextAction widgets on Android, they show your Inbox count and your Today actions (titles and dates) on your home screen; the Capture widget can also sit on the lock screen, where it shows only the Inbox count. What you share to WhatsNextAction while you are signed out is kept in the app's private storage on that phone until you add it, dismiss it or log out. If you use the Wear OS watch app, your phone sends the watch your first 50 Next actions (titles, dates, project names, tags and the start of each description), which the watch keeps until the next update; logging out on the phone clears the watch.
 
 If you add WhatsNextAction widgets, the iPhone keeps a small copy for them — your Inbox, Today and Next counts and the titles and dates of your first Today actions — and holds what you share to WhatsNextAction, complete from a widget or capture on your Apple Watch until the app adds it to your account. If you use the Apple Watch app, your iPhone sends the Watch your first 50 Next actions (titles, dates, project names, tags and the start of each description), which the Watch keeps until the next update. Both copies are protected by the device's data protection; logging out on the iPhone deletes them and clears the Watch.
 
