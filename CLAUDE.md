@@ -333,7 +333,10 @@ Rules:
 
 Commands:
 - `fil find "<pattern>" [--limit N|--all]` - declarations by name, prefix or glob
-- `fil show <symbol>` - declaration, signature, calls and callers
+- `fil show <symbol> [--body]` - declaration, signature, calls and callers;
+  `--body` prints the source lines (instead of `grep -A N 'fun X'`)
+- `fil outline <file>` - declarations of one file in line order (instead of
+  `grep -n 'fun ' File.kt`)
 - `fil callers <symbol> [-d depth]` - who calls it
 - `fil callees <symbol> [-d depth]` - what it calls
 - `fil path <a> <b>` - how two symbols are connected

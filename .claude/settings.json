@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "fil hook-guard"
+            "command": "fil hook-guard --strict"
           }
         ]
       }

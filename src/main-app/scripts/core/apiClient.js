@@ -828,7 +828,6 @@ export async function updateAction(actionId, data) {
     try {
         const body = {title: data.title}
         if (data.description !== undefined) body.description = data.description
-        if (data.state) body.state = data.state
         if (data.project_id) body.project_id = data.project_id
         if (data.start_date !== undefined) body.start_date = data.start_date
         if (data.start_time !== undefined) body.start_time = data.start_time
