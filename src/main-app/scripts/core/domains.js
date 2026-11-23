@@ -7,6 +7,8 @@ export function getDomains() {
         console.warn('[WNA] GOOGLE_CLIENT_ID is not set in RUNTIME_CONFIG — Google SSO will not work')
     }
 
+    const app_store_url = /^[0-9]+$/.test(rc.APP_STORE_ID || '') ? `https://apps.apple.com/app/id${rc.APP_STORE_ID}` : null
+
     return {
         base_url: rc.API_DOMAIN || '',
         google_client_id: rc.GOOGLE_CLIENT_ID || '',
@@ -15,6 +17,10 @@ export function getDomains() {
         // false in the pre-render (no config.js), so the localhost fallback never reaches public HTML
         mcp_url_configured: Boolean(rc.MCP_URL),
         // null in the pre-render (no config.js), so App Store elements only appear once the app is live
-        app_store_url: /^[0-9]+$/.test(rc.APP_STORE_ID || '') ? `https://apps.apple.com/app/id${rc.APP_STORE_ID}` : null,
+        app_store_url,
+        // set only with the App Store link too: Android elements appear only once both apps are live
+        google_play_url: app_store_url && /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(rc.GOOGLE_PLAY_PACKAGE || '')
+            ? `https://play.google.com/store/apps/details?id=${rc.GOOGLE_PLAY_PACKAGE}`
+            : null,
     }
 }

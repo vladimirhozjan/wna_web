@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 18, 2026
+**Last updated:** November 23, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -299,6 +299,10 @@ We may disclose your data if required to do so by law, court order, or a binding
 
 - If you use the Wear OS watch app, your phone and watch exchange your Next actions and what you capture on the watch through Google Play services on both devices; when the watch is not near the phone, Google may pass this through its servers, under its own privacy policy. Text you dictate on the watch is turned into text by your watch's own input (Google's speech service under its own privacy policy); WhatsNextAction receives only the text. Voice memos recorded on the watch are sent to your phone as files and are not transcribed.
 
+### 5.17 Google Play Console
+
+- If you test a version of the Android app before its release through Google Play's testing tracks, we give Google your email address when we add you as a tester by email; feedback you send reaches us by email like any support request. For the Android and Wear OS apps from Google Play, Google gives us crash and 'app not responding' reports with your device model and Android version, and install statistics, if your device shares usage and diagnostics data with Google. Google (Google Ireland Limited, Ireland) collects these under its own privacy policy; we read them in Google Play Console only to fix problems and do not copy them into our systems.
+
 ## 6. International Data Transfers
 
 We process your data within the **European Economic Area (EEA)**. Our servers are hosted by Google Cloud Platform in Warsaw, Poland, our backups are stored by Google Cloud Platform in Madrid, Spain, and our email providers operate from EU data centres. The AI assistant's model processing also stays in the EEA, at Scaleway in France (Section 5.12).
@@ -326,6 +330,8 @@ If you use Siri, Apple may process your request and its answer outside the EEA u
 If you use the Wear OS watch app, Google may process what your phone and watch exchange outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
 If you test through TestFlight or share app analytics with developers, Apple may process that data outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
+
+If you test through Google Play or your device shares usage and diagnostics data with Google, Google may process that data outside the EEA under its own privacy policy; you use it at your request (Art. 49(1)(b) GDPR).
 
 Our internal security and operations alerts (Section 5.10) may be processed by Slack in the United States. Such transfers take place under the EU-US Data Privacy Framework (Art. 45 GDPR) and Standard Contractual Clauses approved by the European Commission (Art. 46 GDPR).
 
@@ -361,6 +367,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Invoices, credit notes, and payment records (including VAT location evidence and the ToS acceptance record) | Retained for 10 years as required by Slovenian tax law, also after account deletion; permanently deleted after that period |
 | App Store and Google Play purchase records | Retained for 10 years like the payment records above; after account deletion they are kept without your identity; permanently deleted after that period |
 | TestFlight tester details, feedback and crash reports | Kept by Apple in App Store Connect under Apple's retention; we remove a tester and their feedback on request or when the beta ends |
+| Google Play tester email addresses and crash reports | Tester addresses are kept in Google Play Console until we remove the tester (on request or when the test ends); crash reports are kept by Google under its retention |
 
 When you delete your account, we initiate permanent deletion of all your personal data and content, except invoices, credit notes, and payment records that we are legally required to retain (Art. 17(3)(b) GDPR). Backup copies are purged according to our backup retention schedule (up to 30 days).
 

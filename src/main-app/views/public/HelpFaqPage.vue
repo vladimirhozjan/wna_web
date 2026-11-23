@@ -14,6 +14,7 @@
           <FaqItem
             v-for="item in faq"
             :key="item.question"
+            :id="item.id"
             :question="item.question"
             :answer="item.answer"
           />
@@ -32,8 +33,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
 import FaqItem from '../../components/public/FaqItem.vue'
@@ -41,12 +42,17 @@ import ChevronLeftIcon from '../../assets/ChevronLeftIcon.vue'
 import { faq } from '../../content/help/faq.js'
 import { pendingShare } from '../../scripts/core/pendingShare.js'
 
+const route = useRoute()
 const router = useRouter()
 const authMode = ref(null)
 
 function openAuth(mode) { authMode.value = mode }
 async function onSuccess() { authMode.value = null; router.push(await pendingShare().afterLogin({ name: 'engage' })) }
 function onSuccessPasswordReset() { authMode.value = null; router.push({ name: 'login' }) }
+
+onMounted(() => {
+  if (route.hash) document.getElementById(route.hash.slice(1))?.scrollIntoView()
+})
 </script>
 
 <style scoped>

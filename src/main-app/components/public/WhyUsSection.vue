@@ -18,6 +18,8 @@
 <script setup>
 import { getDomains } from '../../scripts/core/domains.js'
 
+const domains = getDomains()
+
 const items = [
   {
     title: 'Methodology-Driven',
@@ -31,9 +33,11 @@ const items = [
   },
   {
     title: 'Cross-Platform',
-    description: getDomains().app_store_url
-      ? 'On the web, iPhone and Apple Watch. Your lists stay in sync everywhere you go.'
-      : 'Access your system from any device. Your lists stay in sync everywhere you go.',
+    description: domains.google_play_url
+      ? 'On the web, iPhone, Android and your watch. Your lists stay in sync everywhere you go.'
+      : domains.app_store_url
+        ? 'On the web, iPhone and Apple Watch. Your lists stay in sync everywhere you go.'
+        : 'Access your system from any device. Your lists stay in sync everywhere you go.',
     testid: 'landing-why-cross',
     svg: '<path d="M25.0003 45.8333C36.5063 45.8333 45.8337 36.5059 45.8337 25C45.8337 13.494 36.5063 4.16663 25.0003 4.16663C13.4944 4.16663 4.16699 13.494 4.16699 25C4.16699 36.5059 13.4944 45.8333 25.0003 45.8333Z" stroke="white" stroke-width="1.5"/><path d="M4.16699 25H45.8337" stroke="white" stroke-width="1.5"/><path d="M25.0003 4.16663C30.2113 9.87153 33.1727 17.275 33.3337 25C33.1727 32.7249 30.2113 40.1284 25.0003 45.8333C19.7893 40.1284 16.8279 32.7249 16.667 25C16.8279 17.275 19.7893 9.87153 25.0003 4.16663Z" stroke="white" stroke-width="1.5"/>',
   },

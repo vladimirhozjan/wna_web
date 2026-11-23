@@ -4,7 +4,7 @@
       <div class="hero-inner">
         <BoltIcon class="hero-bolt" />
         <a v-if="appStoreUrl" href="#capture" class="text-body-s fw-medium hero-ios" data-testid="landing-hero-ios" @click.prevent="scrollToSection('capture')">
-          Now on iPhone and Apple Watch<ArrowRightSmallIcon class="hero-ios__chevron" />
+          {{ googlePlayUrl ? 'Now on iPhone and Android' : 'Now on iPhone and Apple Watch' }}<ArrowRightSmallIcon class="hero-ios__chevron" />
         </a>
         <h1 class="text-display hero-heading">You Decide. AI Does the Busywork.</h1>
         <p class="text-body-m hero-subtitle">The Getting Things Done app with a built-in AI assistant. Say what you want — it captures, sorts and schedules in your lists.</p>
@@ -51,7 +51,7 @@ const heroAssets = import.meta.glob('../../assets/landing/landing-hero{.mp4,-pos
 const heroVideo = heroAssets['../../assets/landing/landing-hero.mp4']
 const heroPoster = heroAssets['../../assets/landing/landing-hero-poster.jpg']
 
-const appStoreUrl = getDomains().app_store_url
+const { app_store_url: appStoreUrl, google_play_url: googlePlayUrl } = getDomains()
 const shotFailed = ref(false)
 
 if (heroVideo && heroPoster) {

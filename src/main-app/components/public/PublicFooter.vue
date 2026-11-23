@@ -9,6 +9,7 @@
           </div>
           <p class="text-caption footer-tagline">Stress-free productivity</p>
           <AppStoreBadge background="dark" :height="40" class="footer-appstore" data-testid="footer-appstore-badge" />
+          <AppStoreBadge store="google-play" :height="40" class="footer-googleplay" data-testid="footer-googleplay-badge" />
         </div>
 
         <div class="footer-col">
@@ -37,7 +38,10 @@
       </div>
 
       <div class="footer-bottom">
-        <p class="text-footnote footer-copyright">&copy; 2026 WhatsNextAction. All rights reserved.</p>
+        <div class="footer-legal">
+          <p class="text-footnote footer-copyright">&copy; 2026 WhatsNextAction. All rights reserved.</p>
+          <p v-if="googlePlayUrl" class="text-footnote footer-copyright" data-testid="footer-trademarks">Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc. Google Play and the Google Play logo are trademarks of Google LLC.</p>
+        </div>
         <div class="footer-social">
           <a
             v-for="link in socialLinks"
@@ -64,6 +68,9 @@ import YoutubeIcon from '../../assets/YoutubeIcon.vue'
 import InstagramIcon from '../../assets/InstagramIcon.vue'
 import TiktokIcon from '../../assets/TiktokIcon.vue'
 import LinkedinIcon from '../../assets/LinkedinIcon.vue'
+import { getDomains } from '../../scripts/core/domains.js'
+
+const googlePlayUrl = getDomains().google_play_url
 
 const socialLinks = [
   { platform: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/@WhatsNextAction', icon: YoutubeIcon },
@@ -126,6 +133,10 @@ const socialLinks = [
   margin-top: 4px;
 }
 
+.footer-googleplay {
+  align-self: flex-start;
+}
+
 .footer-col {
   display: flex;
   flex-direction: column;
@@ -165,6 +176,12 @@ const socialLinks = [
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+.footer-legal {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .footer-copyright {

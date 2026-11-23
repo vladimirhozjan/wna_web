@@ -2,6 +2,7 @@ import { getDomains } from '../../scripts/core/domains.js'
 
 // The pre-render (no config.js) never shows the iPhone entry
 const APP_LIVE = Boolean(getDomains().app_store_url)
+const BOTH_LIVE = Boolean(getDomains().google_play_url)
 
 export const gettingStarted = [
   {
@@ -43,6 +44,11 @@ export const gettingStarted = [
     title: 'WhatsNextAction on iPhone and Apple Watch',
     description:
       'Get the WhatsNextAction app from the App Store and sign in with the same account — your lists are the same as on the web. The tabs at the bottom are Engage, Inbox, Calendar, Projects and Lists; the round capture button on each list adds to your Inbox by text, photo, voice memo or file. Share from any app to WhatsNextAction, add the widgets to your Home Screen or Lock Screen, ask Siri to add to WhatsNextAction, and use the Apple Watch app for your Next list, voice capture and Complete. The app works offline and sends your changes when you\'re back online. Plans can also be bought in the app through the App Store.',
+  }] : []),
+  ...(BOTH_LIVE ? [{
+    title: 'WhatsNextAction on Android and Wear OS',
+    description:
+      'Get the WhatsNextAction app from Google Play (Android 12 or later) and sign in with the same account — your lists are the same as on the web. The tabs at the bottom are Engage, Inbox, Calendar, Projects and Lists; the round capture button on each list adds to your Inbox by text, photo, voice memo or file. Share from any app to WNA, add the Capture and Today widgets to your home screen, touch and hold the app icon for the Capture, Voice memo and Today shortcuts, and add the Add to Inbox tile to Quick Settings. On a Wear OS watch (Wear OS 4 or later) you see your Next list, complete actions and capture by text — or by voice on Pro and Team. The app works offline and sends your changes when you\'re back online. Plans can also be bought in the app through Google Play.',
   }] : []),
   {
     title: 'Capture by Email (Pro & Team)',

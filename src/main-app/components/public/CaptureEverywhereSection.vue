@@ -2,7 +2,7 @@
   <section v-if="appStoreUrl" class="section" id="capture" data-testid="landing-capture">
     <div class="section-inner">
       <h2 class="text-h1 capture-title" data-testid="landing-capture-title">Capture Everywhere</h2>
-      <p class="text-body-m capture-subtitle">Get it out of your head the moment it shows up — on iPhone, Apple Watch and the web.</p>
+      <p class="text-body-m capture-subtitle">{{ subtitle }}</p>
       <div class="capture-body">
         <img
             v-if="!shotFailed"
@@ -25,8 +25,11 @@
               </div>
             </div>
           </div>
-          <AppStoreBadge background="dark" :height="48" class="capture-badge" data-testid="landing-appstore-capture" />
-          <p class="text-caption capture-android" data-testid="landing-capture-android">On Android? Install the web app from Chrome — it captures offline too.</p>
+          <div class="capture-badges" data-testid="landing-store-badges">
+            <AppStoreBadge background="dark" :height="48" data-testid="landing-appstore-capture" />
+            <AppStoreBadge store="google-play" :height="48" data-testid="landing-googleplay-capture" />
+          </div>
+          <p v-if="!googlePlayUrl" class="text-caption capture-android" data-testid="landing-capture-android">On Android? Install the web app from Chrome — it captures offline too.</p>
         </div>
       </div>
     </div>
@@ -39,8 +42,11 @@ import AppStoreBadge from './AppStoreBadge.vue'
 import { getDomains } from '../../scripts/core/domains.js'
 import captureShot from '../../assets/landing/landing-iphone-capture.png'
 
-const appStoreUrl = getDomains().app_store_url
+const { app_store_url: appStoreUrl, google_play_url: googlePlayUrl } = getDomains()
 const shotFailed = ref(false)
+const subtitle = googlePlayUrl
+  ? 'Get it out of your head the moment it shows up — on iPhone, Android, your watch and the web.'
+  : 'Get it out of your head the moment it shows up — on iPhone, Apple Watch and the web.'
 
 const items = [
   {
@@ -52,7 +58,9 @@ const items = [
   {
     key: 'share',
     title: 'Share From Any App',
-    description: 'Send a link, photo or document from any iPhone app straight to your Inbox.',
+    description: googlePlayUrl
+      ? 'Send a link, photo or document from any app on your phone straight to your Inbox.'
+      : 'Send a link, photo or document from any iPhone app straight to your Inbox.',
     svg: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/>',
   },
   {
@@ -63,8 +71,10 @@ const items = [
   },
   {
     key: 'watch',
-    title: 'Widgets, Siri and Apple Watch',
-    description: 'Add from your Home Screen, Lock Screen, Siri or your wrist.',
+    title: googlePlayUrl ? 'Widgets and Your Watch' : 'Widgets, Siri and Apple Watch',
+    description: googlePlayUrl
+      ? 'Add from a widget, Siri or Quick Settings — or straight from your Apple Watch or Wear OS watch.'
+      : 'Add from your Home Screen, Lock Screen, Siri or your wrist.',
     svg: '<circle cx="12" cy="12" r="6"/><path d="M12 10v2l1 1"/><path d="M16.13 7.66l-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05"/><path d="M7.88 16.36l.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05"/>',
   },
 ]
@@ -157,7 +167,10 @@ const items = [
   line-height: var(--lh-loose);
 }
 
-.capture-badge {
+.capture-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 32px;
 }
 
@@ -167,7 +180,7 @@ const items = [
 }
 
 @media (max-width: 768px) {
-  .capture-badge :deep(img) {
+  .capture-badges :deep(img) {
     height: 40px;
   }
 }

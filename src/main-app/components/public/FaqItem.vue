@@ -1,5 +1,5 @@
 <template>
-  <div :class="['faq-item', { 'faq-item--open': open }]">
+  <div :id="id || undefined" :class="['faq-item', { 'faq-item--open': open }]">
     <button class="faq-question" @click="open = !open">
       <span class="text-body-m fw-semibold faq-question__text">{{ question }}</span>
       <ChevronDownIcon class="faq-chevron" />
@@ -14,18 +14,22 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import ChevronDownIcon from '../../assets/ChevronDownIcon.vue'
 
-defineProps({
+const props = defineProps({
+  id: { type: String, default: null },
   question: { type: String, required: true },
   answer: { type: String, required: true },
 })
 
-const open = ref(false)
+const route = useRoute()
+const open = ref(Boolean(props.id) && route.hash === `#${props.id}`)
 </script>
 
 <style scoped>
 .faq-item {
+  scroll-margin-top: 64px;
   border: var(--card-border);
   border-radius: 8px;
   margin-bottom: 8px;
