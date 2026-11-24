@@ -57,6 +57,13 @@
           <p class="text-body-m contact-text">Something not working?</p>
           <Btn variant="link" size="md" @click="contactSupport">Contact Support</Btn>
         </div>
+
+        <p class="text-footnote listed" data-testid="help-connect-ai-glama">
+          Listed on Glama
+          <a href="https://glama.ai/mcp/connectors/com.whatsnextaction/wna" target="_blank" rel="noopener" class="listed__link">
+            <img src="https://glama.ai/mcp/connectors/com.whatsnextaction/wna/badges/score.svg" alt="WhatsNextAction MCP connector" height="20">
+          </a>
+        </p>
       </div>
     </section>
 
@@ -243,5 +250,19 @@ function onSuccessPasswordReset() { authMode.value = null; router.push({ name: '
 .contact-text {
   color: var(--color-text-secondary);
   margin-bottom: 12px;
+}
+
+.listed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+  color: var(--color-text-tertiary);
+}
+
+.listed__link {
+  display: inline-flex;
 }
 </style>
