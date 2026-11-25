@@ -280,7 +280,7 @@ export function referenceModel() {
                     files.value.unshift(result)
                     totalFiles.value++
                 } else {
-                    console.warn('[referenceModel] Unexpected upload response, reloading:', result)
+                    if (import.meta.env.DEV) console.warn('[referenceModel] Unexpected upload response, reloading:', result)
                     await loadContents({reset: true})
                 }
                 loadQuota()

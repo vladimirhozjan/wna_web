@@ -249,7 +249,7 @@ async function uploadFile(file) {
     if (attachment && attachment.id) {
       attachments.value.push(attachment)
     } else {
-      console.warn('[AttachmentSection] Unexpected upload response, reloading:', attachment)
+      if (import.meta.env.DEV) console.warn('[AttachmentSection] Unexpected upload response, reloading:', attachment)
       await loadAttachments()
     }
     toaster.success('File attached')

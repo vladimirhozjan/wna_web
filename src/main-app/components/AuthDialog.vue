@@ -434,18 +434,18 @@ function startVerificationPolling() {
   stopVerificationPolling()
   if (!userId.value) return
 
-  console.log('[AuthDialog] Verification polling started for user:', userId.value)
+  if (import.meta.env.DEV) console.log('[AuthDialog] Verification polling started')
 
   verifyPollTimer = setInterval(async () => {
     try {
-      console.log('[AuthDialog] Polling verification status...')
+      if (import.meta.env.DEV) console.log('[AuthDialog] Polling verification status...')
       const data = await auth.checkVerificationStatus(userId.value)
-      console.log('[AuthDialog] Verification status:', data.verified)
+      if (import.meta.env.DEV) console.log('[AuthDialog] Verification status:', data.verified)
       if (data.verified) {
         await autoLogin()
       }
     } catch (err) {
-      console.log('[AuthDialog] Polling error (will retry):', err.message || err)
+      if (import.meta.env.DEV) console.log('[AuthDialog] Polling error (will retry):', err.message || err)
     }
   }, 3000)
 
@@ -540,7 +540,6 @@ async function doLogin() {
       startVerificationPolling()
       return
     }
-    console.log(err)
     error.push('Login failed with error: ' + mapApiError(err, ErrorScenario.LOGIN))
   }
 }
@@ -576,7 +575,6 @@ async function doRegister() {
     emit('update:mode', 'verify-sent')
     startVerificationPolling()
   } catch (err) {
-    console.log(err)
     const mapped = mapApiError(err, ErrorScenario.REGISTER)
     error.push('Registration failed with error: ' + mapped)
   }
@@ -599,7 +597,6 @@ async function doForgot() {
     await auth.forgotPassword(email.value)
     emit('update:mode', 'forgot-sent')
   } catch (err) {
-    console.log(err)
     error.push('Forgot password failed with error: ' + mapApiError(err))
   }
 }
@@ -625,7 +622,6 @@ async function doReset() {
     await auth.resetPassword(password.value, resetToken.value)
     goToLogin()
   } catch (err) {
-    console.log(err)
     if (err.status === 401) {
       error.push(mapApiError(err, ErrorScenario.RESET_PASSWORD))
       goToForgot()

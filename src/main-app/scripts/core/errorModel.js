@@ -20,7 +20,7 @@ export function errorModel() {
         // BUG-066 — offline content on screen already shows the failure
         if (type === 'error' && !keepOffline && offlineModel().offlineContentShown.value) return;
         if (type === 'error') {
-            console.error('[Toast]', message);
+            if (import.meta.env.DEV) console.error('[Toast]', message);
         }
 
         // Remove duplicates

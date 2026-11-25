@@ -41,18 +41,21 @@ Parent flows 1–6 (parent § Design → Flows) are the observable console behav
    `dev.whatsnextaction.com` / `api-dev` / the VM.
 
 ## Checklist (parent § Work breakdown → web)
-- [ ] W1 `src/main-app/scripts/core/apiClient.js:64` (`normalizeError`): drop the `error.response.data` argument; the
+- [x] W1 `src/main-app/scripts/core/apiClient.js:64` (`normalizeError`): drop the `error.response.data` argument; the
   line logs exactly `` `[api] ${METHOD} ${cfg.url} → ${status}` ``, nothing more. Lines 66 and 68 unchanged. Return
   values unchanged. Data: none.
-- [ ] W2 `src/main-app/components/AuthDialog.vue`: line 437 — remove the `userId.value` argument and the words
+  DONE: `src/main-app/scripts/core/apiClient.js:64` logs method + path + status only; lines 66/68 unchanged.
+- [x] W2 `src/main-app/components/AuthDialog.vue`: line 437 — remove the `userId.value` argument and the words
   "for user", wrap in `if (import.meta.env.DEV)`; lines 441, 443, 448 — wrap each in `if (import.meta.env.DEV)`
   (text unchanged); lines 543, 579, 602, 628 — delete the four `console.log(err)`. No other change in the file.
   Data: none.
-- [ ] W3 DEV-gate (wrap in `if (import.meta.env.DEV)`, text and arguments unchanged):
+  DONE: `src/main-app/components/AuthDialog.vue:437` (no userId, DEV-gated), `:441/:443/:448` DEV-gated, four `console.log(err)` deleted (login/register/forgot/reset catch blocks).
+- [x] W3 DEV-gate (wrap in `if (import.meta.env.DEV)`, text and arguments unchanged):
   `src/main-app/scripts/core/errorModel.js:23`, `src/admin-app/scripts/core/errorModel.js:16`,
   `src/main-app/scripts/models/calendarModel.js:243`, `src/main-app/components/AttachmentSection.vue:252`,
   `src/main-app/scripts/models/referenceModel.js:283`. Behaviour around each line unchanged. Data: none.
-- [ ] W4 Verify (no new automated test: built bundles strip console output, the repo has no unit-test runner;
+  DONE: `src/main-app/scripts/core/errorModel.js:23`, `src/admin-app/scripts/core/errorModel.js:16`, `src/main-app/scripts/models/calendarModel.js:243`, `src/main-app/components/AttachmentSection.vue:252`, `src/main-app/scripts/models/referenceModel.js:283` — all `if (import.meta.env.DEV)`.
+- [~] W4 Verify (no new automated test: built bundles strip console output, the repo has no unit-test runner;
   existing tests directly affected: none — no test in `wna-ui-tests` reads console output).
   (a) `grep -rnE "console\.(log|error|warn|info|debug)" src --include='*.js' --include='*.vue' --include='*.ts'`
   returns exactly: `apiClient.js` 64/66/68 (64 without `response.data`), `domains.js:7`, and DEV-gated lines only
@@ -61,6 +64,9 @@ Parent flows 1–6 (parent § Design → Flows) are the observable console behav
   (b) On the local dev server (`http://localhost:5173`): sign in with a wrong password → the console shows
   `[api] POST /v1/user/login → 401` and no response body.
   (c) `npm run build:main` and `npm run build:admin` exit 0. Consumes W1–W3.
-- [ ] W5 `CLAUDE.md` §Production Build: add one line — "Console: an API failure is logged only in
+  PARTIAL: (a) done — grep returns only: `apiClient.js` 64 (no response.data)/66/68, `domains.js:7`, and DEV-gated lines: AuthDialog 437/441/443/448, both `errorModel.js`, `calendarModel.js:243`, `AttachmentSection.vue:252`, `referenceModel.js:283`, `notificationInAppModel.js` 48/83/94/143. (c) done — `npm run build:main` and `npm run build:admin` exit 0. (b) DEFERRED TO OWNER: Claude in Chrome extension not connected, so the wrong-password login check on `http://localhost:5173` (expect `[api] POST /v1/user/login → 401`, no body) was not run.
+- [x] W5 `CLAUDE.md` §Production Build: add one line — "Console: an API failure is logged only in
   `apiClient.js normalizeError` as method + path + status (never the response body, params or headers); any other
   console output only under `if (import.meta.env.DEV)`; no log line names the user (FEAT-168)." Consumes W1–W3.
+
+  DONE: `CLAUDE.md` §Production Build, line after the obfuscator paragraph.

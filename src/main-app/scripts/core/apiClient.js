@@ -61,7 +61,7 @@ async function parseBlobError(err) {
 function normalizeError(error, {storageHint = null, quiet = false, picture = false} = {}) {
     if (error.response) {
         const cfg = error.config || {}
-        console.error(`[api] ${cfg.method?.toUpperCase() || 'REQ'} ${cfg.url || ''} → ${error.response.status}`, error.response.data)
+        console.error(`[api] ${cfg.method?.toUpperCase() || 'REQ'} ${cfg.url || ''} → ${error.response.status}`)
     } else if (error.request) {
         console.error('[api] no response', error.config?.url || '', error.message)
     } else {

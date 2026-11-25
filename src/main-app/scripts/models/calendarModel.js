@@ -240,7 +240,7 @@ export function calendarModel() {
             densityData.value = data.density || {}
             return densityData.value
         } catch (err) {
-            console.error('Failed to load density:', err)
+            if (import.meta.env.DEV) console.error('Failed to load density:', err)
             return {}
         }
     }

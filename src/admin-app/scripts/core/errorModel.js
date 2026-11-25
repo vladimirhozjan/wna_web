@@ -13,7 +13,7 @@ export function errorModel() {
 
     function push(message, type = 'error') {
         if (type === 'error') {
-            console.error('[Toast]', message)
+            if (import.meta.env.DEV) console.error('[Toast]', message)
         }
 
         const existing = state.errors.find(e => e.message === message)

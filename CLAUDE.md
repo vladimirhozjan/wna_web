@@ -172,6 +172,8 @@ JWT tokens in localStorage: `auth_token`, `refresh_token`, `current_user`.
 
 Terser minification (console/debugger stripped). Code obfuscation via `javascript-obfuscator` runs as a post-build step on every production build (`config/vite.core.js`). Runtime-heavy options (`controlFlowFlattening`, `deadCodeInjection`, string encoding) must stay off — they multiply runtime cost 5-10x.
 
+Console: an API failure is logged only in `apiClient.js normalizeError` as method + path + status (never the response body, params or headers); any other console output only under `if (import.meta.env.DEV)`; no log line names the user (FEAT-168).
+
 ## Mandatory Rules
 
 ### Reuse First, Ask Before Creating
