@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '../layouts/AuthLayout.vue'
 import Inpt from '../components/Inpt.vue'
@@ -78,13 +78,20 @@ const route = useRoute()
 const router = useRouter()
 const auth = authModel()
 
-const token = computed(() => route.query.token || '')
+const token = ref(route.query.token || '')
 const password = ref('')
 const confirmPassword = ref('')
 const passwordError = ref('')
 const confirmError = ref('')
 const formError = ref('')
 const success = ref(false)
+
+onMounted(() => {
+  if (route.query.token) {
+    const { token: _token, ...rest } = route.query
+    router.replace({ query: rest })
+  }
+})
 
 // --- Password strength ---
 const hasMinLength = computed(() => password.value.length >= 12)

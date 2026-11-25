@@ -13,7 +13,7 @@
   </LandingLayout>
   <AuthDialog
       v-model:mode="authMode"
-      :token="props.token"
+      :token="resetToken"
       :prefill-email="prefillEmail"
       @logged-in="onSuccess"
       @registered="onSuccess"
@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import {ref, computed, watch} from 'vue'
+import {ref, computed, watch, onMounted} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import LandingLayout from '../../layouts/LandingLayout.vue'
 import AuthDialog from '../../components/AuthDialog.vue'
@@ -58,6 +58,14 @@ function resolveRedirect() {
 }
 
 const authMode = ref(null)
+const resetToken = ref(props.token)
+
+onMounted(() => {
+  if (props.mode === 'reset' && route.query.token) {
+    const {token, ...rest} = route.query
+    router.replace({query: rest})
+  }
+})
 
 const prefillEmail = computed(() => {
   const e = route.query.email

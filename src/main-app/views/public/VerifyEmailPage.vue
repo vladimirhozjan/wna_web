@@ -91,12 +91,15 @@ const resendCooldown = ref(0)
 let redirectTimer = null
 let cooldownTimer = null
 
+const token = route.query.token
+
 onMounted(() => {
-  const token = route.query.token
   if (!token) {
     status.value = 'invalid'
     return
   }
+  const { token: _token, ...rest } = route.query
+  router.replace({ query: rest })
   doVerify()
 })
 
@@ -106,7 +109,6 @@ onUnmounted(() => {
 })
 
 async function doVerify() {
-  const token = route.query.token
   if (!token) {
     status.value = 'invalid'
     return
