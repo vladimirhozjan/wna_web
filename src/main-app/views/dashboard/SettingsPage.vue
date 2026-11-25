@@ -633,7 +633,7 @@
             <!-- AI Apps -->
             <div v-else-if="activeKey === 'aiApps'" class="card">
               <div class="settings-section-body">
-                <div class="settings-row settings-row--column">
+                <div v-if="mcpConfigured" class="settings-row settings-row--column">
                   <span class="settings-label">Connect an AI app</span>
                   <div class="email-address-row">
                     <span class="settings-value email-address">{{ mcpUrl }}</span>
@@ -2001,7 +2001,7 @@ const aiApps = ref([])
 const loadingAiApps = ref(false)
 const aiAppsError = ref(false)
 const removingAiAppId = ref(null)
-const mcpUrl = getDomains().mcp_url
+const { mcp_url: mcpUrl, mcp_url_configured: mcpConfigured } = getDomains()
 
 // Other state
 const isMobile = ref(false)

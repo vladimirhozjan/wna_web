@@ -13,8 +13,8 @@ export function getDomains() {
         base_url: rc.API_DOMAIN || '',
         google_client_id: rc.GOOGLE_CLIENT_ID || '',
         apple_client_id: rc.APPLE_CLIENT_ID || '',
-        mcp_url: rc.MCP_URL || 'http://localhost:8000/mcp',
-        // false in the pre-render (no config.js), so the localhost fallback never reaches public HTML
+        mcp_url: rc.MCP_URL || '',
+        // false in the pre-render (no config.js) and wherever MCP_URL is unset: the connect address stays hidden
         mcp_url_configured: Boolean(rc.MCP_URL),
         // null in the pre-render (no config.js), so App Store elements only appear once the app is live
         app_store_url,
