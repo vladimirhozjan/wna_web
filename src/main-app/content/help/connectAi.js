@@ -3,6 +3,10 @@
 // ChatGPT: https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt
 export const connectAi = {
     lastChecked: '2026-11-02',
+    glama: {
+        listingUrl: 'https://glama.ai/mcp/connectors/com.whatsnextaction/wna',
+        badgeSrc: '/badges/glama-score.svg',
+    },
     vendors: [
         {
             id: 'claude',

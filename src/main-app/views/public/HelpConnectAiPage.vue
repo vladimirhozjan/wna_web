@@ -58,12 +58,25 @@
           <Btn variant="link" size="md" @click="contactSupport">Contact Support</Btn>
         </div>
 
-        <p class="text-footnote listed" data-testid="help-connect-ai-glama">
-          Listed on Glama
-          <a href="https://glama.ai/mcp/connectors/com.whatsnextaction/wna" target="_blank" rel="noopener" class="listed__link">
-            <img src="https://glama.ai/mcp/connectors/com.whatsnextaction/wna/badges/score.svg" alt="WhatsNextAction MCP connector" height="20">
-          </a>
-        </p>
+        <a
+          v-if="!glamaFailed"
+          :href="connectAi.glama.listingUrl"
+          target="_blank"
+          rel="noopener"
+          class="text-footnote listed"
+          data-testid="help-connect-ai-glama"
+        >
+          Listed in the Glama MCP directory
+          <img
+            :src="connectAi.glama.badgeSrc"
+            alt="Glama score for the WhatsNextAction connector"
+            width="110"
+            height="20"
+            loading="lazy"
+            data-testid="help-connect-ai-glama-badge"
+            @error="glamaFailed = true"
+          />
+        </a>
       </div>
     </section>
 
@@ -97,6 +110,7 @@ const authMode = ref(null)
 const { mcp_url: mcpUrl, mcp_url_configured: mcpConfigured } = getDomains()
 const lastChecked = format(parseISO(connectAi.lastChecked), 'd MMMM yyyy')
 const copied = ref(false)
+const glamaFailed = ref(false)
 let copiedTimer = null
 
 async function copyAddress() {
@@ -260,9 +274,11 @@ function onSuccessPasswordReset() { authMode.value = null; router.push({ name: '
   gap: 8px;
   margin-top: 24px;
   color: var(--color-text-tertiary);
+  text-decoration: none;
 }
 
-.listed__link {
-  display: inline-flex;
+.listed:hover,
+.listed:focus-visible {
+  color: var(--color-text-secondary);
 }
 </style>

@@ -23,6 +23,9 @@ const ROUTES = [
 
 // Rendered with no backend: API calls and the CI-generated config.js are aborted, so pages use built-in defaults
 const isBlocked = (url) => url.pathname.startsWith('/v1/') || url.pathname === '/config.js'
+// Served by the edge in production; the placeholder keeps the Glama line in the snapshot
+const GLAMA_BADGE_PATH = '/badges/glama-score.svg'
+const GLAMA_BADGE_PLACEHOLDER = '<svg xmlns="http://www.w3.org/2000/svg" width="110" height="20"/>'
 
 process.env.APP = 'main-app'
 const server = await preview({
@@ -44,6 +47,7 @@ try {
     page.on('request', (req) => {
         const url = new URL(req.url())
         if (url.origin !== origin || isBlocked(url)) req.abort()
+        else if (url.pathname === GLAMA_BADGE_PATH) req.respond({status: 200, contentType: 'image/svg+xml', body: GLAMA_BADGE_PLACEHOLDER})
         else req.continue()
     })
 
