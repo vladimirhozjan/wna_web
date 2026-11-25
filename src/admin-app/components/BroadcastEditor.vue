@@ -97,6 +97,7 @@ const ALLOWED_TAGS = new Set([
 const DROP_TAGS = new Set([
   'script', 'style', 'link', 'meta', 'title', 'head', 'iframe', 'object', 'embed',
   'form', 'input', 'textarea', 'button', 'select', 'svg', 'video', 'audio',
+  'template', 'noscript', 'math', 'base', 'frame', 'frameset', 'applet', 'noembed', 'noframes',
 ])
 const ALLOWED_ATTRS = new Set([
   'style', 'href', 'src', 'alt', 'width', 'height', 'cellpadding', 'cellspacing',
@@ -153,7 +154,7 @@ function sanitizeChildren(node) {
       const name = attr.name.toLowerCase()
       if (!ALLOWED_ATTRS.has(name)) { child.removeAttribute(attr.name); continue }
       if ((name === 'href' || name === 'src') && !safeUrl(name, attr.value)) child.removeAttribute(attr.name)
-      if (name === 'style' && /url\s*\(|expression\s*\(|@import/i.test(attr.value)) child.removeAttribute('style')
+      if (name === 'style' && /url\s*\(|expression\s*\(|@import|javascript:|\\/i.test(attr.value)) child.removeAttribute('style')
     }
     sanitizeChildren(child)
   }
@@ -192,7 +193,7 @@ function emitValue(value) {
 
 function renderSurface() {
   if (!surfaceRef.value) return
-  surfaceRef.value.innerHTML = toPreview(splitDocument(props.modelValue).inner)
+  surfaceRef.value.innerHTML = toPreview(sanitizeInner(splitDocument(props.modelValue).inner))
 }
 
 function syncFromSurface() {
