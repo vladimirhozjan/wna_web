@@ -7,7 +7,6 @@ window.addEventListener('storage', (event) => {
         isAuthenticated.value = false
         localStorage.removeItem('admin_auth_token')
         localStorage.removeItem('admin_refresh_token')
-        localStorage.removeItem('admin_current_user')
     }
 })
 
@@ -17,7 +16,6 @@ window.addEventListener('admin_token_refreshed', () => {
         const claims = decodeJwt(token)
         if (claims) {
             currentAdmin.value = claims
-            localStorage.setItem('admin_current_user', JSON.stringify(claims))
         }
     }
 })
@@ -60,23 +58,16 @@ function decodeJwt(token) {
 export function authModel() {
 
     function _init() {
+        localStorage.removeItem('admin_current_user')
         const token = localStorage.getItem('admin_auth_token')
         if (token) {
             const claims = decodeJwt(token)
             if (claims && claims.exp > Math.floor(Date.now() / 1000)) {
                 currentAdmin.value = claims
                 isAuthenticated.value = true
-
-                const savedAdmin = localStorage.getItem('admin_current_user')
-                if (savedAdmin) {
-                    try {
-                        currentAdmin.value = { ...claims, ...JSON.parse(savedAdmin) }
-                    } catch { /* ignore */ }
-                }
             } else {
                 localStorage.removeItem('admin_auth_token')
                 localStorage.removeItem('admin_refresh_token')
-                localStorage.removeItem('admin_current_user')
             }
         }
     }
@@ -93,7 +84,6 @@ export function authModel() {
                 const claims = decodeJwt(token)
                 if (claims) {
                     currentAdmin.value = claims
-                    localStorage.setItem('admin_current_user', JSON.stringify(claims))
                     isAuthenticated.value = true
                 }
             }
@@ -142,7 +132,6 @@ export function authModel() {
             const claims = decodeJwt(token)
             if (claims) {
                 currentAdmin.value = claims
-                localStorage.setItem('admin_current_user', JSON.stringify(claims))
             }
         }
         return data
@@ -169,7 +158,6 @@ export function authModel() {
         isAuthenticated.value = false
         localStorage.removeItem('admin_auth_token')
         localStorage.removeItem('admin_refresh_token')
-        localStorage.removeItem('admin_current_user')
         localStorage.setItem('admin_logout', Date.now().toString())
     }
 

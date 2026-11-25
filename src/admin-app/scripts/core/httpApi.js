@@ -21,7 +21,6 @@ function logout() {
     loggingOut = true
     localStorage.removeItem('admin_auth_token')
     localStorage.removeItem('admin_refresh_token')
-    localStorage.removeItem('admin_current_user')
     localStorage.setItem('admin_logout', Date.now().toString())
     window.location.href = '/login'
 }
