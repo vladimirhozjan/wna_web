@@ -50,7 +50,7 @@ export const faq = [
   {
     question: 'I didn\'t get the verification email. What do I do?',
     answer:
-      'Check your spam or junk folder first. If it\'s not there, use the "Resend Verification Email" button on the verification screen — you can resend every 60 seconds. The app will automatically detect when you verify from any browser or device and log you in. If you still have trouble, contact support@whatsnextaction.com.',
+      'Check your spam or junk folder first. If it\'s not there, use the "Resend Verification Email" button on the verification screen — you can resend every 60 seconds. The app will automatically detect when you verify from any browser or device and log you in. If you still have trouble, contact support@whatsnextaction.com. An account that is not verified within 30 days is deleted; you can then sign up again with the same email address.',
   },
 
   // --- Methodology ---

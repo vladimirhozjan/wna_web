@@ -21,8 +21,10 @@ Parent: `wna_orchestration/features/FEAT-150-purge-unverified-accounts.md` — D
 
 ## Checklist
 Consumes nothing from another sibling. Screens: n/a (parent § Screens). Data: n/a (parent § Data contract). Backend B6 and deploy DP3 wait for W1's date.
-- [ ] W1 — Legal impact: `src/main-app/content/legal/terms.md` §3.2 sentence and `src/main-app/content/legal/privacy.md` §7 Data Retention row, exactly as parent § Legal impact; both "Last updated" = the day of the edit (that date is what backend B6 / deploy DP3 copy). `npm run build:main` passes (the build parses the ToS date).
-- [ ] W2 — Help impact: `src/main-app/content/help/faq.js` entry "I didn't get the verification email. What do I do?" — append the text exactly as parent § Help impact.
+- [x] W1 — Legal impact: `src/main-app/content/legal/terms.md` §3.2 sentence and `src/main-app/content/legal/privacy.md` §7 Data Retention row, exactly as parent § Legal impact; both "Last updated" = the day of the edit (that date is what backend B6 / deploy DP3 copy). `npm run build:main` passes (the build parses the ToS date).
+  Done: `src/main-app/content/legal/terms.md:3` (November 25, 2026), `:62` (§3.2 sentence); `src/main-app/content/legal/privacy.md:3` (November 25, 2026), `:345` (§7 row). Build green; bundle ToS version `2026-11-25` (`config/vite.core.js:141`); text present in `dist/main-app/_prerender/legal/{terms,privacy}/index.html`. **B6 / DP3 date = `2026-11-25`.**
+- [x] W2 — Help impact: `src/main-app/content/help/faq.js` entry "I didn't get the verification email. What do I do?" — append the text exactly as parent § Help impact.
+  Done: `src/main-app/content/help/faq.js:53`; present in `dist/main-app/_prerender/help/faq/index.html`.
 
 Landing / Pricing: n/a (parent). No existing test asserts the legal or help text; no test box.
 

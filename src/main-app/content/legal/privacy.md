@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** November 23, 2026
+**Last updated:** November 25, 2026
 
 This Privacy Policy explains how **QubForge, tehnološke rešitve, d.o.o.** ("we", "us", "our") collects, uses, stores, and protects your personal data when you use the WhatsNextAction platform ("Service"). We are committed to protecting your privacy in accordance with the General Data Protection Regulation (EU) 2016/679 ("GDPR"), the Slovenian Personal Data Protection Act (ZVOP-2), and other applicable data protection laws.
 
@@ -342,6 +342,7 @@ If any data transfer outside the EEA becomes necessary in the future, we will en
 | Data | Retention Period |
 |---|---|
 | Active account data (including your name and Google / Apple sign-in identifiers) and content | Retained for the duration of your account |
+| Account whose email address was never verified (email address, password hash, sign-up details) | Deleted 30 days after the sign-up, the last sign-up again with the same address, the last request for a new verification email or the last sign-in attempt, whichever is latest |
 | Profile picture | Until you replace or remove it (then deleted at once) or delete your account; backups as in the Backups row |
 | Deleted items (trash) | Soft-deleted; permanently removed when you empty the trash |
 | Sync records of permanently deleted data (the identifier of what was deleted and when — no content), kept so your other devices remove it too | Deleted 90 days after the deletion, or with your account |

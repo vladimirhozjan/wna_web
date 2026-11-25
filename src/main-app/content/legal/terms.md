@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated:** November 23, 2026
+**Last updated:** November 25, 2026
 
 These Terms of Service ("Terms") govern your access to and use of the WhatsNextAction platform ("Service"), operated by **QubForge, tehnološke rešitve, d.o.o.**, Jakopičeva ulica 9, 2000 Maribor, Slovenia ("we", "us", "our", "QubForge").
 
@@ -59,7 +59,7 @@ You must be at least **15 years old** to use the Service. By registering, you re
 
 ### 3.2 Account Creation
 
-To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol), or sign in with your Google account or your Apple ID. You must verify your email address before you can access the Service.
+To use the Service, you must create an account with a valid email address and a password meeting our security requirements (minimum 8 characters, containing at least one letter, one digit, and one symbol), or sign in with your Google account or your Apple ID. You must verify your email address before you can access the Service. If an account's email address is not verified within 30 days, we delete the account; signing up again with the same address, asking for a new verification email or trying to sign in restarts the 30 days.
 
 ### 3.3 Account Security
 
